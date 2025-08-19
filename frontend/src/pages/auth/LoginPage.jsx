@@ -41,8 +41,8 @@ const LoginPage = () => {
         password,
       });
 
-      const { token, userId, name } = response.data;
-      const user = { email, userId, name };
+      const { token, userId, name, role, role_id } = response.data;
+      const user = { email, userId, name, role, role_id };
 
       dispatch(setUser({ user, token }));
       localStorage.setItem('token', token);
