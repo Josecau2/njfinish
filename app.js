@@ -9,6 +9,8 @@ const app = express();
 
 const allowedOrigins = [
   'https://app.njcontractors.com',
+  'https://app.nj.contractors',
+  'http://app.nj.contractors',
   'http://localhost:3000',
   'http://localhost:8080',
   'http://localhost:5173'
