@@ -33,7 +33,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     useEffect(() => {
         fetchPdfCustomization();
-    }, [formData]);
+    }, []); // Empty dependency array - only run once on mount
 
     const {
         companyName,

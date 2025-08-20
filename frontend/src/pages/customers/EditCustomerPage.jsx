@@ -32,6 +32,162 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useParams, useNavigate } from "react-router-dom";
 
+// External components to avoid re-creation on each render
+const FormSection = ({ title, icon, children, className = "" }) => (
+  <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
+    <CCardBody className="p-4">
+      <div className="d-flex align-items-center mb-3">
+        <div 
+          className="rounded-circle d-flex align-items-center justify-content-center me-3"
+          style={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#e7f3ff',
+            color: '#0d6efd'
+          }}
+        >
+          <CIcon icon={icon} size="sm" />
+        </div>
+        <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
+      </div>
+      {children}
+    </CCardBody>
+  </CCard>
+);
+
+const CustomFormInput = ({ 
+  label, 
+  name, 
+  type = "text", 
+  required = false, 
+  icon = null,
+  placeholder = "",
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  inputRef,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText 
+          style={{ 
+            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+            border: '1px solid #e3e6f0',
+            borderRight: 'none'
+          }}
+        >
+          <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
+        </CInputGroupText>
+      )}
+      <CFormInput
+        id={name}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        invalid={isInvalid}
+        ref={inputRef}
+        placeholder={placeholder}
+        style={{
+          border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
+          borderRadius: icon ? '0 10px 10px 0' : '10px',
+          fontSize: '14px',
+          padding: '12px 16px',
+          transition: 'all 0.3s ease',
+          borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+        }}
+        onFocus={(e) => {
+          if (!isInvalid) {
+            e.target.style.borderColor = '#0d6efd';
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
+          }
+        }}
+        onBlur={(e) => {
+          if (!isInvalid) {
+            e.target.style.borderColor = '#e3e6f0';
+            e.target.style.boxShadow = 'none';
+          }
+        }}
+        {...props}
+      />
+    </CInputGroup>
+    {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
+  </div>
+);
+
+const CustomFormSelect = ({ 
+  label, 
+  name, 
+  required = false, 
+  icon = null,
+  children,
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  inputRef,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText 
+          style={{ 
+            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+            border: '1px solid #e3e6f0',
+            borderRight: 'none'
+          }}
+        >
+          <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
+        </CInputGroupText>
+      )}
+      <CFormSelect
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        invalid={isInvalid}
+        ref={inputRef}
+        style={{
+          border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
+          borderRadius: icon ? '0 10px 10px 0' : '10px',
+          fontSize: '14px',
+          padding: '12px 16px',
+          transition: 'all 0.3s ease',
+          borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+        }}
+        onFocus={(e) => {
+          if (!isInvalid) {
+            e.target.style.borderColor = '#0d6efd';
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
+          }
+        }}
+        onBlur={(e) => {
+          if (!isInvalid) {
+            e.target.style.borderColor = '#e3e6f0';
+            e.target.style.boxShadow = 'none';
+          }
+        }}
+        {...props}
+      >
+        {children}
+      </CFormSelect>
+    </CInputGroup>
+    {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
+  </div>
+);
+
 const EditCustomerPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -71,9 +227,7 @@ const EditCustomerPage = () => {
         setIsLoading(false);
       }
     };
-    if (customerId) {
-      fetchCustomer();
-    }
+    if (customerId) fetchCustomer();
   }, [customerId, api_url]);
 
   const handleChange = (e) => {
@@ -88,32 +242,13 @@ const EditCustomerPage = () => {
 
   const validateForm = () => {
     const errors = {};
-    const required = [
-      "name",
-      "email",
-      "address",
-      "city",
-      "state",
-      "zipCode",
-      "mobile",
-      "leadSource",
-    ];
+    const required = ["name", "email", "address", "city", "state", "zipCode", "mobile", "leadSource"];
     required.forEach((f) => {
-      if (!formData[f]?.toString().trim()) {
-        errors[f] = "This field is required";
-      }
+      if (!formData[f]?.toString().trim()) errors[f] = "This field is required";
     });
-
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "Invalid email format";
-    }
-    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
-      errors.zipCode = "Zip code must be 5 digits";
-    }
-    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
-      errors.mobile = "Mobile number must be 10 digits";
-    }
-
+    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = "Invalid email format";
+    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) errors.zipCode = "Zip code must be 5 digits";
+    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) errors.mobile = "Mobile number must be 10 digits";
     return errors;
   };
 
@@ -121,19 +256,14 @@ const EditCustomerPage = () => {
     e.preventDefault();
     const errs = validateForm();
     setValidationErrors(errs);
-
     if (Object.keys(errs).length) {
       const first = Object.keys(errs)[0];
       inputRefs.current[first]?.focus();
       return;
     }
-
     setIsSubmitting(true);
     try {
-      await axios.put(
-        `${api_url}/api/customers/update/${customerId}`,
-        formData,
-      );
+      await axios.put(`${api_url}/api/customers/update/${customerId}`, formData);
       Swal.fire({
         icon: "success",
         title: "Customer Updated!",
@@ -144,160 +274,11 @@ const EditCustomerPage = () => {
       navigate("/customers");
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Could not update customer. Please try again.",
-      });
+      Swal.fire({ icon: "error", title: "Error", text: "Could not update customer. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const FormSection = ({ title, icon, children, className = "" }) => (
-    <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
-      <CCardBody className="p-4">
-        <div className="d-flex align-items-center mb-3">
-          <div 
-            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#e7f3ff',
-              color: '#0d6efd'
-            }}
-          >
-            <CIcon icon={icon} size="sm" />
-          </div>
-          <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-        </div>
-        {children}
-      </CCardBody>
-    </CCard>
-  );
-
-  const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
-    icon = null,
-    placeholder = "",
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormInput
-          id={name}
-          name={name}
-          type={type}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!validationErrors[name]}
-          ref={(el) => (inputRefs.current[name] = el)}
-          placeholder={placeholder}
-          style={{
-            border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: '14px',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid #e3e6f0'
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        />
-      </CInputGroup>
-      <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
-    </div>
-  );
-
-  const CustomFormSelect = ({ 
-    label, 
-    name, 
-    required = false, 
-    icon = null,
-    children,
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormSelect
-          id={name}
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!validationErrors[name]}
-          ref={(el) => (inputRefs.current[name] = el)}
-          style={{
-            border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: '14px',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid #e3e6f0'
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        >
-          {children}
-        </CFormSelect>
-      </CInputGroup>
-      <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
-    </div>
-  );
 
   if (isLoading) {
     return (
@@ -367,6 +348,11 @@ const EditCustomerPage = () => {
                 required
                 icon={cilUser}
                 placeholder="Enter customer's full name"
+                value={formData.name}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.name}
+                feedback={validationErrors.name}
+                inputRef={(el) => (inputRefs.current.name = el)}
               />
             </CCol>
             <CCol md={6}>
@@ -377,6 +363,11 @@ const EditCustomerPage = () => {
                 required
                 icon={cilEnvelopeClosed}
                 placeholder="customer@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.email}
+                feedback={validationErrors.email}
+                inputRef={(el) => (inputRefs.current.email = el)}
               />
             </CCol>
           </CRow>
@@ -387,6 +378,11 @@ const EditCustomerPage = () => {
                 label="Customer Type"
                 name="customerType"
                 icon={cilUser}
+                value={formData.customerType}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.customerType}
+                feedback={validationErrors.customerType}
+                inputRef={(el) => (inputRefs.current.customerType = el)}
               >
                 <option value="Home Owner">Home Owner</option>
                 <option value="Contractor">Contractor</option>
@@ -400,6 +396,11 @@ const EditCustomerPage = () => {
                 name="companyName"
                 icon={cilBuilding}
                 placeholder="Company name (if applicable)"
+                value={formData.companyName}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.companyName}
+                feedback={validationErrors.companyName}
+                inputRef={(el) => (inputRefs.current.companyName = el)}
               />
             </CCol>
           </CRow>
@@ -415,6 +416,11 @@ const EditCustomerPage = () => {
                 required
                 icon={cilLocationPin}
                 placeholder="Enter street address"
+                value={formData.address}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.address}
+                feedback={validationErrors.address}
+                inputRef={(el) => (inputRefs.current.address = el)}
               />
             </CCol>
             <CCol md={4}>
@@ -422,6 +428,11 @@ const EditCustomerPage = () => {
                 label="Apt/Suite #"
                 name="aptOrSuite"
                 placeholder="Apt, suite, unit"
+                value={formData.aptOrSuite}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.aptOrSuite}
+                feedback={validationErrors.aptOrSuite}
+                inputRef={(el) => (inputRefs.current.aptOrSuite = el)}
               />
             </CCol>
           </CRow>
@@ -432,6 +443,11 @@ const EditCustomerPage = () => {
                 name="city"
                 required
                 placeholder="Enter city"
+                value={formData.city}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.city}
+                feedback={validationErrors.city}
+                inputRef={(el) => (inputRefs.current.city = el)}
               />
             </CCol>
             <CCol md={4}>
@@ -439,6 +455,11 @@ const EditCustomerPage = () => {
                 label="State"
                 name="state"
                 required
+                value={formData.state}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.state}
+                feedback={validationErrors.state}
+                inputRef={(el) => (inputRefs.current.state = el)}
               >
                 <option value="">Select State</option>
                 <option value="AL">Alabama</option>
@@ -499,6 +520,11 @@ const EditCustomerPage = () => {
                 name="zipCode"
                 required
                 placeholder="12345"
+                value={formData.zipCode}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.zipCode}
+                feedback={validationErrors.zipCode}
+                inputRef={(el) => (inputRefs.current.zipCode = el)}
               />
             </CCol>
           </CRow>
@@ -514,6 +540,11 @@ const EditCustomerPage = () => {
                 required
                 icon={cilPhone}
                 placeholder="1234567890"
+                value={formData.mobile}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.mobile}
+                feedback={validationErrors.mobile}
+                inputRef={(el) => (inputRefs.current.mobile = el)}
               />
             </CCol>
             <CCol md={6}>
@@ -522,6 +553,11 @@ const EditCustomerPage = () => {
                 name="homePhone"
                 icon={cilPhone}
                 placeholder="1234567890"
+                value={formData.homePhone}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.homePhone}
+                feedback={validationErrors.homePhone}
+                inputRef={(el) => (inputRefs.current.homePhone = el)}
               />
             </CCol>
           </CRow>
@@ -536,6 +572,11 @@ const EditCustomerPage = () => {
                 name="leadSource"
                 required
                 placeholder="Enter lead source"
+                value={formData.leadSource}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.leadSource}
+                feedback={validationErrors.leadSource}
+                inputRef={(el) => (inputRefs.current.leadSource = el)}
               />
             </CCol>
             <CCol md={6}>
@@ -546,6 +587,11 @@ const EditCustomerPage = () => {
                 min={0}
                 max={100}
                 placeholder="0"
+                value={formData.defaultDiscount}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.defaultDiscount}
+                feedback={validationErrors.defaultDiscount}
+                inputRef={(el) => (inputRefs.current.defaultDiscount = el)}
               />
             </CCol>
           </CRow>

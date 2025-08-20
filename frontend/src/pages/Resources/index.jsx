@@ -41,6 +41,104 @@ import {
     cilCloudUpload
 } from '@coreui/icons';
 
+// Externalized input components to prevent remount/focus loss on keystrokes
+const CustomFormInput = ({ 
+    label, 
+    name, 
+    type = "text", 
+    required = false, 
+    icon = null,
+    placeholder = "",
+    value,
+    onChange,
+    ...props 
+}) => (
+    <div className="mb-3">
+        <CFormLabel className="fw-medium text-dark mb-2">
+            {label}
+            {required && <span className="text-danger ms-1">*</span>}
+        </CFormLabel>
+        <CInputGroup>
+            {icon && (
+                <CInputGroupText 
+                    style={{ 
+                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                        border: '1px solid #e3e6f0',
+                        borderRight: 'none',
+                        borderRadius: '10px 0 0 10px'
+                    }}
+                >
+                    <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
+                </CInputGroupText>
+            )}
+            <CFormInput
+                name={name}
+                type={type}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                style={{
+                    border: '1px solid #e3e6f0',
+                    borderRadius: icon ? '0 10px 10px 0' : '10px',
+                    fontSize: '14px',
+                    padding: '12px 16px',
+                    transition: 'all 0.3s ease',
+                    borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+                }}
+                {...props}
+            />
+        </CInputGroup>
+    </div>
+);
+
+const CustomFormSelect = ({ 
+    label, 
+    name, 
+    required = false, 
+    icon = null,
+    children,
+    value,
+    onChange,
+    ...props 
+}) => (
+    <div className="mb-3">
+        <CFormLabel className="fw-medium text-dark mb-2">
+            {label}
+            {required && <span className="text-danger ms-1">*</span>}
+        </CFormLabel>
+        <CInputGroup>
+            {icon && (
+                <CInputGroupText 
+                    style={{ 
+                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                        border: '1px solid #e3e6f0',
+                        borderRight: 'none',
+                        borderRadius: '10px 0 0 10px'
+                    }}
+                >
+                    <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
+                </CInputGroupText>
+            )}
+            <CFormSelect
+                name={name}
+                value={value}
+                onChange={onChange}
+                style={{
+                    border: '1px solid #e3e6f0',
+                    borderRadius: icon ? '0 10px 10px 0' : '10px',
+                    fontSize: '14px',
+                    padding: '12px 16px',
+                    transition: 'all 0.3s ease',
+                    borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+                }}
+                {...props}
+            >
+                {children}
+            </CFormSelect>
+        </CInputGroup>
+    </div>
+);
+
 const Resources = () => {
     const [links, setLinks] = useState([
         { 
@@ -462,102 +560,7 @@ const Resources = () => {
         </CListGroupItem>
     );
 
-    const CustomFormInput = ({ 
-        label, 
-        name, 
-        type = "text", 
-        required = false, 
-        icon = null,
-        placeholder = "",
-        value,
-        onChange,
-        ...props 
-    }) => (
-        <div className="mb-3">
-            <CFormLabel className="fw-medium text-dark mb-2">
-                {label}
-                {required && <span className="text-danger ms-1">*</span>}
-            </CFormLabel>
-            <CInputGroup>
-                {icon && (
-                    <CInputGroupText 
-                        style={{ 
-                            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                            border: '1px solid #e3e6f0',
-                            borderRight: 'none',
-                            borderRadius: '10px 0 0 10px'
-                        }}
-                    >
-                        <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-                    </CInputGroupText>
-                )}
-                <CFormInput
-                    name={name}
-                    type={type}
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    style={{
-                        border: '1px solid #e3e6f0',
-                        borderRadius: icon ? '0 10px 10px 0' : '10px',
-                        fontSize: '14px',
-                        padding: '12px 16px',
-                        transition: 'all 0.3s ease',
-                        borderLeft: icon ? 'none' : '1px solid #e3e6f0'
-                    }}
-                    {...props}
-                />
-            </CInputGroup>
-        </div>
-    );
-
-    const CustomFormSelect = ({ 
-        label, 
-        name, 
-        required = false, 
-        icon = null,
-        children,
-        value,
-        onChange,
-        ...props 
-    }) => (
-        <div className="mb-3">
-            <CFormLabel className="fw-medium text-dark mb-2">
-                {label}
-                {required && <span className="text-danger ms-1">*</span>}
-            </CFormLabel>
-            <CInputGroup>
-                {icon && (
-                    <CInputGroupText 
-                        style={{ 
-                            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                            border: '1px solid #e3e6f0',
-                            borderRight: 'none',
-                            borderRadius: '10px 0 0 10px'
-                        }}
-                    >
-                        <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-                    </CInputGroupText>
-                )}
-                <CFormSelect
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    style={{
-                        border: '1px solid #e3e6f0',
-                        borderRadius: icon ? '0 10px 10px 0' : '10px',
-                        fontSize: '14px',
-                        padding: '12px 16px',
-                        transition: 'all 0.3s ease',
-                        borderLeft: icon ? 'none' : '1px solid #e3e6f0'
-                    }}
-                    {...props}
-                >
-                    {children}
-                </CFormSelect>
-            </CInputGroup>
-        </div>
-    );
+    
 
     const ModalComponent = ({ visible, onClose, title, children, onSave, saveButtonText, isLoading }) => (
         <CModal 

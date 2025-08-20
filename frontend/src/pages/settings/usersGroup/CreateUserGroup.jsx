@@ -27,6 +27,83 @@ import { useNavigate } from 'react-router-dom';
 import { addUser } from '../../../store/slices/userGroupSlice';
 import Swal from 'sweetalert2';
 
+// External components to avoid re-creation on each render
+const FormSection = ({ title, icon, children, className = "" }) => (
+    <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
+        <CCardBody className="p-3 p-md-4">
+            <div className="d-flex align-items-center mb-3">
+                <div 
+                    className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
+                    style={{
+                        width: '32px',
+                        height: '32px',
+                        backgroundColor: '#e7f3ff',
+                        color: '#0d6efd'
+                    }}
+                >
+                    <CIcon icon={icon} size="sm" />
+                </div>
+                <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
+            </div>
+            {children}
+        </CCardBody>
+    </CCard>
+);
+
+const CustomFormInput = ({ 
+    label, 
+    name, 
+    type = "text", 
+    required = false, 
+    icon = null,
+    placeholder = "",
+    value,
+    onChange,
+    isInvalid,
+    feedback,
+    ...props 
+}) => (
+    <div className="mb-3">
+        <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
+            {label}
+            {required && <span className="text-danger ms-1">*</span>}
+        </CFormLabel>
+        <CInputGroup>
+            {icon && (
+                <CInputGroupText 
+                    className="d-none d-md-flex"
+                    style={{ 
+                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                        border: '1px solid #e3e6f0',
+                        borderRight: 'none'
+                    }}
+                >
+                    <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
+                </CInputGroupText>
+            )}
+            <CFormInput
+                id={name}
+                name={name}
+                type={type}
+                value={value}
+                onChange={onChange}
+                invalid={isInvalid}
+                placeholder={placeholder}
+                style={{
+                    border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
+                    borderRadius: icon ? '0 8px 8px 0' : '8px',
+                    fontSize: '14px',
+                    padding: '12px 16px',
+                    transition: 'all 0.3s ease',
+                    borderLeft: (icon && window.innerWidth >= 768) ? 'none' : '1px solid #e3e6f0'
+                }}
+                {...props}
+            />
+        </CInputGroup>
+        {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
+    </div>
+);
+
 const initialForm = {
     name: '',
 };
@@ -80,89 +157,7 @@ const AddUserGroupForm = () => {
         return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current);
     };
 
-    const FormSection = ({ title, icon, children, className = "" }) => (
-        <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
-            <CCardBody className="p-3 p-md-4">
-                <div className="d-flex align-items-center mb-3">
-                    <div 
-                        className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
-                        style={{
-                            width: '32px',
-                            height: '32px',
-                            backgroundColor: '#e7f3ff',
-                            color: '#0d6efd'
-                        }}
-                    >
-                        <CIcon icon={icon} size="sm" />
-                    </div>
-                    <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
-                </div>
-                {children}
-            </CCardBody>
-        </CCard>
-    );
-
-    const CustomFormInput = ({ 
-        label, 
-        name, 
-        type = "text", 
-        required = false, 
-        icon = null,
-        placeholder = "",
-        ...props 
-    }) => (
-        <div className="mb-3">
-            <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
-                {label}
-                {required && <span className="text-danger ms-1">*</span>}
-            </CFormLabel>
-            <CInputGroup>
-                {icon && (
-                    <CInputGroupText 
-                        className="d-none d-md-flex"
-                        style={{ 
-                            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                            border: '1px solid #e3e6f0',
-                            borderRight: 'none'
-                        }}
-                    >
-                        <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-                    </CInputGroupText>
-                )}
-                <CFormInput
-                    id={name}
-                    name={name}
-                    type={type}
-                    value={formData[name]}
-                    onChange={handleChange}
-                    invalid={!!errors[name]}
-                    placeholder={placeholder}
-                    style={{
-                        border: `1px solid ${errors[name] ? '#dc3545' : '#e3e6f0'}`,
-                        borderRadius: icon ? '0 8px 8px 0' : '8px',
-                        fontSize: '14px',
-                        padding: '12px 16px',
-                        transition: 'all 0.3s ease',
-                        borderLeft: (icon && window.innerWidth >= 768) ? 'none' : '1px solid #e3e6f0'
-                    }}
-                    onFocus={(e) => {
-                        if (!errors[name]) {
-                            e.target.style.borderColor = '#0d6efd';
-                            e.target.style.boxShadow = '0 0 0 0.15rem rgba(13, 110, 253, 0.25)';
-                        }
-                    }}
-                    onBlur={(e) => {
-                        if (!errors[name]) {
-                            e.target.style.borderColor = '#e3e6f0';
-                            e.target.style.boxShadow = 'none';
-                        }
-                    }}
-                    {...props}
-                />
-            </CInputGroup>
-            <CFormFeedback invalid>{errors[name]}</CFormFeedback>
-        </div>
-    );
+    
 
     return (
         <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
@@ -245,6 +240,10 @@ const AddUserGroupForm = () => {
                                 required
                                 icon={cilGroup}
                                 placeholder="Enter group name (e.g., Administrators, Sales Team, etc.)"
+                                value={formData.name}
+                                onChange={handleChange}
+                                isInvalid={!!errors.name}
+                                feedback={errors.name}
                             />
                         </CCol>
                     </CRow>

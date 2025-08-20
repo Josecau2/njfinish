@@ -33,6 +33,108 @@ import { addUser } from '../../../store/slices/userSlice';
 import Swal from 'sweetalert2';
 import { fetchUsers } from '../../../store/slices/userGroupSlice';
 
+// Move component definitions outside to prevent re-creation on every render
+const FormSection = ({ title, icon, children, className = "" }) => (
+  <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
+    <CCardBody className="p-3 p-md-4">
+      <div className="d-flex align-items-center mb-3">
+        <div 
+          className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
+          style={{
+            width: '32px',
+            height: '32px',
+            backgroundColor: '#e7f3ff',
+            color: '#0d6efd'
+          }}
+        >
+          <CIcon icon={icon} size="sm" />
+        </div>
+        <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
+      </div>
+      {children}
+    </CCardBody>
+  </CCard>
+);
+
+const CustomFormInput = ({ 
+  label, 
+  name, 
+  type = "text", 
+  required = false, 
+  icon = null,
+  placeholder = "",
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText className="bg-light border-end-0">
+          <CIcon icon={icon} size="sm" className="text-muted" />
+        </CInputGroupText>
+      )}
+      <CFormInput
+        type={type}
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        invalid={isInvalid}
+        className={icon ? "border-start-0" : ""}
+        {...props}
+      />
+      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
+    </CInputGroup>
+  </div>
+);
+
+const CustomFormSelect = ({ 
+  label, 
+  name, 
+  required = false, 
+  icon = null,
+  children,
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText className="bg-light border-end-0">
+          <CIcon icon={icon} size="sm" className="text-muted" />
+        </CInputGroupText>
+      )}
+      <CFormSelect
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        invalid={isInvalid}
+        className={icon ? "border-start-0" : ""}
+        {...props}
+      >
+        {children}
+      </CFormSelect>
+      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
+    </CInputGroup>
+  </div>
+);
+
 const initialForm = {
   name: '',
   email: '',
@@ -131,174 +233,6 @@ const AddUserForm = () => {
   const isFormDirty = () => {
     return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current);
   };
-
-  const FormSection = ({ title, icon, children, className = "" }) => (
-    <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
-      <CCardBody className="p-3 p-md-4">
-        <div className="d-flex align-items-center mb-3">
-          <div 
-            className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
-            style={{
-              width: '32px',
-              height: '32px',
-              backgroundColor: '#e7f3ff',
-              color: '#0d6efd'
-            }}
-          >
-            <CIcon icon={icon} size="sm" />
-          </div>
-          <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
-        </div>
-        {children}
-      </CCardBody>
-    </CCard>
-  );
-
-  const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
-    icon = null,
-    placeholder = "",
-    showToggle = false,
-    showState = false,
-    onToggle = null,
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            className="d-none d-md-flex"
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormInput
-          id={name}
-          name={name}
-          type={type}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!errors[name]}
-          placeholder={placeholder}
-          style={{
-            border: `1px solid ${errors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: showToggle ? '8px 0 0 8px' : (icon ? '0 8px 8px 0' : '8px'),
-            fontSize: '14px',
-            padding: '10px 12px',
-            transition: 'all 0.3s ease',
-            borderLeft: (icon && window.innerWidth >= 768) ? 'none' : '1px solid #e3e6f0',
-            borderRight: showToggle ? 'none' : '1px solid #e3e6f0'
-          }}
-          onFocus={(e) => {
-            if (!errors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.15rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!errors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        />
-        {showToggle && (
-          <CInputGroupText 
-            onClick={onToggle}
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderLeft: 'none',
-              cursor: 'pointer',
-              borderRadius: '0 8px 8px 0'
-            }}
-          >
-            <CIcon 
-              icon={showState ? cilEyedropper : cilLockLocked} 
-              size="sm" 
-              style={{ color: '#6c757d' }} 
-            />
-          </CInputGroupText>
-        )}
-      </CInputGroup>
-      <CFormFeedback invalid>{errors[name]}</CFormFeedback>
-    </div>
-  );
-
-  const CustomFormSelect = ({ 
-    label, 
-    name, 
-    required = false, 
-    icon = null,
-    children,
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            className="d-none d-md-flex"
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormSelect
-          id={name}
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!errors[name]}
-          style={{
-            border: `1px solid ${errors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: icon ? '0 8px 8px 0' : '8px',
-            fontSize: '14px',
-            padding: '10px 12px',
-            transition: 'all 0.3s ease',
-            borderLeft: (icon && window.innerWidth >= 768) ? 'none' : '1px solid #e3e6f0'
-          }}
-          onFocus={(e) => {
-            if (!errors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.15rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!errors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        >
-          {children}
-        </CFormSelect>
-      </CInputGroup>
-      <CFormFeedback invalid>{errors[name]}</CFormFeedback>
-    </div>
-  );
-
   return (
     <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
@@ -366,6 +300,10 @@ const AddUserForm = () => {
                 required
                 icon={cilUser}
                 placeholder="Enter user's full name"
+                value={formData.name}
+                onChange={handleChange}
+                isInvalid={!!errors.name}
+                feedback={errors.name}
               />
             </CCol>
             <CCol xs={12} md={6}>
@@ -376,6 +314,10 @@ const AddUserForm = () => {
                 required
                 icon={cilEnvelopeClosed}
                 placeholder="user@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!errors.email}
+                feedback={errors.email}
               />
             </CCol>
           </CRow>
@@ -392,9 +334,10 @@ const AddUserForm = () => {
                 required
                 icon={cilLockLocked}
                 placeholder="Enter secure password"
-                showToggle={true}
-                showState={showPassword}
-                onToggle={() => setShowPassword(!showPassword)}
+                value={formData.password}
+                onChange={handleChange}
+                isInvalid={!!errors.password}
+                feedback={errors.password}
               />
             </CCol>
             <CCol xs={12} md={6}>
@@ -405,9 +348,10 @@ const AddUserForm = () => {
                 required
                 icon={cilLockLocked}
                 placeholder="Confirm password"
-                showToggle={true}
-                showState={showConfirmPassword}
-                onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                isInvalid={!!errors.confirmPassword}
+                feedback={errors.confirmPassword}
               />
             </CCol>
           </CRow>
@@ -422,6 +366,10 @@ const AddUserForm = () => {
                 name="userGroup"
                 required
                 icon={cilUser}
+                value={formData.userGroup}
+                onChange={handleChange}
+                isInvalid={!!errors.userGroup}
+                feedback={errors.userGroup}
               >
                 <option value="">-- Select Group --</option>
                 {usersGroup.map(group => (
@@ -437,6 +385,10 @@ const AddUserForm = () => {
                 name="location"
                 required
                 icon={cilLocationPin}
+                value={formData.location}
+                onChange={handleChange}
+                isInvalid={!!errors.location}
+                feedback={errors.location}
               >
                 <option value="">-- Select Location --</option>
                 <option value="1">Main 1</option>

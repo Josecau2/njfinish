@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
     CFormCheck, CFormSwitch,
 } from '@coreui/react';
@@ -54,12 +54,14 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [discountPercent, setDiscountPercent] = useState(0);
     const { taxes, loading } = useSelector((state) => state.taxes);
     const [customItemError, setCustomItemError] = useState('');
-    const filteredItems = Array.isArray(tableItems)
-        ? tableItems.filter(item =>
-            (typeof item.code === 'string' && item.code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (typeof item.description === 'string' && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-        : [];
+    const filteredItems = useMemo(() => (
+        Array.isArray(tableItems)
+            ? tableItems.filter(item =>
+                (typeof item.code === 'string' && item.code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (typeof item.description === 'string' && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            )
+            : []
+    ), [tableItems, searchTerm]);
 
 
     const [fetchedCollections, setFetchedCollections] = useState([]);
@@ -82,15 +84,64 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         }
     }, []);
 
+    // Load existing custom items from formData when version changes (guard against redundant updates)
     useEffect(() => {
-        if (selectVersion) {
+        if (
+            formData &&
+            Array.isArray(formData.manufacturersData) &&
+            formData.manufacturersData.length > 0
+        ) {
+            const currentVersion = formData.manufacturersData.find(
+                manufacturer => manufacturer.versionName === selectVersion?.versionName
+            );
+
+            if (currentVersion && Array.isArray(currentVersion.customItems)) {
+                const incoming = currentVersion.customItems;
+                // Only update when changed to avoid feedback loops
+                const same = JSON.stringify(incoming) === JSON.stringify(customItems);
+                if (!same) setCustomItems(incoming);
+            }
+        }
+    }, [selectVersion?.versionName]);
+
+    const selectVersionInStore = useSelector(state => state.selectVersionNew?.data);
+    const versionNameInStore = useSelector(state => state.selectVersionNew?.data?.versionName || null);
+    useEffect(() => {
+        const nextVersionName = selectVersion?.versionName || null;
+        if (!nextVersionName) return;
+        if (versionNameInStore !== nextVersionName) {
             dispatch(setSelectVersionNewEdit(selectVersion));
         }
-    }, [selectVersion]);
+        // Only run when the versionName changes to avoid deep-equals thrash
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectVersion?.versionName]);
 
     // console.log('tableItems', tableItems);
 
-    const updateManufacturerData = () => {
+    // Computed values needed for updateManufacturerData
+    const defaultTax = taxes.find(tax => tax.isDefault);
+    const defaultTaxValue = parseFloat(defaultTax?.value || '0');
+
+    const totalAssemblyFee = isAssembled
+        ? filteredItems.reduce(
+            (sum, item) => sum + (item.includeAssemblyFee ? Number(item.assemblyFee || 0) : 0),
+            0
+        )
+        : 0;
+
+    const totalModificationsCost = filteredItems.reduce((sum, item) => {
+        if (!item.modifications) return sum;
+
+        const itemModsTotal = item.modifications.reduce((modSum, mod) => {
+            const modPrice = parseFloat(mod.price || 0);
+            const modQty = parseFloat(mod.qty || 1);
+            return modSum + modPrice * modQty;
+        }, 0);
+
+        return sum + itemModsTotal;
+    }, 0);
+
+    const updateManufacturerData = useCallback(() => {
         try {
             const cabinetPartsTotal = filteredItems.reduce((sum, item) => sum + item.price * item.qty, 0);
             const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
@@ -109,63 +160,67 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const taxAmount = (totalAfterDiscount * defaultTaxValue) / 100;
             const grandTotal = totalAfterDiscount + taxAmount;
 
-            const updatedManufacturersData = formData.manufacturersData.map(manufacturer => {
-                if (manufacturer.versionName === selectVersion?.versionName) {
-                    const matchedCustomItems = customItems.filter(
-                        (item) => item.selectVersion === selectVersion?.versionName
-                    );
-                    const matchedItems = filteredItems.filter(
-                        (item) => item.selectVersion === selectVersion?.versionName
-                    );
-                    return {
-                        ...manufacturer,
-                        selectedStyle: selectVersion?.selectedStyle,
-                        items: matchedItems,
-                        customItems: matchedCustomItems,
-                        summary: {
-                            cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
-                            assemblyFee: Number(totalAssemblyFee) || 0,
-                            modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
-                            styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
-                            discountPercent: Number(discountPercent) || 0,
-                            discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
-                            total: parseFloat((Number(totalAfterDiscount) || 0).toFixed(2)),
-                            taxRate: Number(defaultTaxValue) || 0,
-                            taxAmount: parseFloat((Number(taxAmount) || 0).toFixed(2)),
-                            grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
-                        }
+            setFormData(prev => {
+                const existing = Array.isArray(prev?.manufacturersData) ? prev.manufacturersData : [];
+                const updated = existing.map(manufacturer => {
+                    if (manufacturer.versionName === selectVersion?.versionName) {
+                        const matchedCustomItems = customItems.filter(
+                            (item) => item.selectVersion === selectVersion?.versionName
+                        );
+                        const matchedItems = filteredItems.filter(
+                            (item) => item.selectVersion === selectVersion?.versionName
+                        );
+                        return {
+                            ...manufacturer,
+                            selectedStyle: selectVersion?.selectedStyle,
+                            items: matchedItems,
+                            customItems: matchedCustomItems,
+                            summary: {
+                                cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
+                                assemblyFee: Number(totalAssemblyFee) || 0,
+                                modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
+                                styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
+                                discountPercent: Number(discountPercent) || 0,
+                                discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
+                                total: parseFloat((Number(totalAfterDiscount) || 0).toFixed(2)),
+                                taxRate: Number(defaultTaxValue) || 0,
+                                taxAmount: parseFloat((Number(taxAmount) || 0).toFixed(2)),
+                                grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
+                            }
+                        };
+                    }
+                    return manufacturer;
+                });
 
-                    };
-                }
-                return manufacturer;
+                // Avoid unnecessary state updates to prevent loops
+                const same = JSON.stringify(existing) === JSON.stringify(updated);
+                if (same) return prev;
+                return { ...prev, manufacturersData: updated };
             });
-
-            setFormData(prev => ({
-                ...prev,
-                manufacturersData: updatedManufacturersData
-            }));
         } catch (error) {
             console.log("err::::::", error)
         }
-    };
+    }, [filteredItems, customItems, totalModificationsCost, isAssembled, discountPercent, defaultTaxValue, totalAssemblyFee, selectVersion?.versionName, selectVersion?.selectedStyle]);
 
     useEffect(() => {
         updateManufacturerData();
-    }, [tableItems, customItems, discountPercent, isAssembled]);
+    }, [updateManufacturerData]);
 
     useEffect(() => {
         dispatch(fetchTaxes());
     }, [dispatch]);
 
 
+    const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
     useEffect(() => {
         const fetchCollections = async () => {
+            if (!manufacturerId) return;
             setCollectionsLoading(true);
             try {
-                const manufacturerId = formData?.manufacturersData[0]?.manufacturer;
-                // console.log('formData4444', formData)
                 const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
-                setFetchedCollections(response.data); // Adjust based on actual structure
+                const incoming = response.data || [];
+                const same = JSON.stringify(incoming) === JSON.stringify(fetchedCollections);
+                if (!same) setFetchedCollections(incoming); // Avoid redundant state updates
             } catch (error) {
                 console.error('Error fetching styles with catalog:', error);
             } finally {
@@ -174,24 +229,26 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         };
 
         fetchCollections();
-    }, [formData, selectVersion]);
-
-
-    const defaultTax = taxes.find(tax => tax.isDefault);
-    const defaultTaxValue = parseFloat(defaultTax?.value || '0');
+        // Depend only on manufacturerId to avoid loops
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [manufacturerId]);
 
     useEffect(() => {
         if (selectVersion?.selectedStyle && fetchedCollections.length > 0) {
-            const match = fetchedCollections.find(col => col.id === selectVersion.selectedStyle);
-            // console.log('match++', match);
-            setSelectedStyleData(match);
+            const match = fetchedCollections.find(col => col.id === selectVersion.selectedStyle) || null;
+            const same = JSON.stringify(match) === JSON.stringify(selectedStyleData);
+            if (!same) setSelectedStyleData(match);
         }
-    }, [selectVersion, fetchedCollections]);
+    }, [selectVersion?.selectedStyle, fetchedCollections]);
 
     const handleDelete = (index) => {
         setTableItemsEdit(prev => {
             const updatedItems = prev.filter((_, i) => i !== index);
-            dispatch(setSelectVersionNewEdit(updatedItems)); // Update Redux as well
+            // Only attempt to sync if store currently holds an array shape
+            if (Array.isArray(selectVersionInStore)) {
+                const same = JSON.stringify(updatedItems) === JSON.stringify(selectVersionInStore);
+                if (!same) dispatch(setSelectVersionNewEdit(updatedItems)); // Update Redux as well
+            }
             return updatedItems;
         });
     };
@@ -453,27 +510,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             setSelectedStyleData(styleData);
         }
     };
-
-    const totalAssemblyFee = isAssembled
-        ? filteredItems.reduce(
-            (sum, item) => sum + (item.includeAssemblyFee ? Number(item.assemblyFee || 0) : 0),
-            0
-        )
-        : 0;
-
-   const totalModificationsCost = filteredItems.reduce((sum, item) => {
-        if (!item.modifications) return sum;
-
-        const itemModsTotal = item.modifications.reduce((modSum, mod) => {
-            const modPrice = parseFloat(mod.price || 0);
-            const modQty = parseFloat(mod.qty || 1);
-            return modSum + modPrice * modQty;
-        }, 0);
-
-        return sum + itemModsTotal;
-    }, 0);
-
-
 
     const toggleRowAssembly = (index, isChecked) => {
         const updatedItems = [...tableItems];
@@ -774,7 +810,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             </tr>
                         </thead>
                         <tbody>
-                            {selectVersion?.customItems?.map((item, idx) => (
+                            {customItems?.map((item, idx) => (
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
                                     <td>{item.name}</td>

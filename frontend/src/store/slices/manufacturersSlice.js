@@ -4,8 +4,41 @@ import axiosInstance from '../../helpers/axiosInstance';
 export const fetchManufacturers = createAsyncThunk(
   'manufacturers/fetchManufacturers',
   async () => {
-    const response = await axiosInstance.get('/api/manufacturers');
-    return response.data;
+    console.log('fetchManufacturers Redux action called');
+    try {
+      const response = await axiosInstance.get('/api/manufacturers');
+      console.log('Manufacturers fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching manufacturers:', error);
+      throw error;
+    }
+  }
+);
+
+export const addManufacturer = createAsyncThunk(
+  'manufacturers/addManufacturer',
+  async (formData, { rejectWithValue }) => {
+    try {
+      console.log('addManufacturer Redux action called');
+      console.log('FormData entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+      
+      const response = await axiosInstance.post('/api/manufacturers/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      console.log('Manufacturer creation response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Manufacturer creation error:', error);
+      console.error('Error response:', error.response?.data);
+      return rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
@@ -109,6 +142,20 @@ const manufacturersSlice = createSlice({
       .addCase(fetchManufacturerById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch manufacturer';
+      })
+      .addCase(addManufacturer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addManufacturer.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.manufacturer) {
+          state.list.unshift(action.payload.manufacturer);
+        }
+      })
+      .addCase(addManufacturer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to add manufacturer';
       });
   }
 });

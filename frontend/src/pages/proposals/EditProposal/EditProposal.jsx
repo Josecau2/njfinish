@@ -87,6 +87,13 @@ const EditProposal = () => {
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
 
+  // Helper function to safely get manufacturersData as array
+  const getManufacturersData = () => {
+    const data = Array.isArray(formData?.manufacturersData) ? formData.manufacturersData : [];
+    console.log('getManufacturersData called, returning:', data);
+    return data;
+  };
+
   const defaultFormData = {
     manufacturersData: [],
     designer: '',
@@ -103,14 +110,47 @@ const EditProposal = () => {
   };
 
   const [formData, setFormData] = useState(defaultFormData);
+  
+  // Debug log for formData changes
+  useEffect(() => {
+    console.log('FormData changed:', formData);
+    console.log('ManufacturersData type:', typeof formData?.manufacturersData);
+    console.log('ManufacturersData isArray:', Array.isArray(formData?.manufacturersData));
+    console.log('ManufacturersData value:', formData?.manufacturersData);
+  }, [formData]);
   // Fetch initial data
   useEffect(() => {
     axiosInstance
       .get(`/api/proposals/proposalByID/${id}`)
       .then((res) => {
-        setInitialData(res.data);
-        setFormData(res.data || defaultFormData);
-        setManufacturersById(res.data.manufacturersData || [])
+        console.log('Raw proposal data:', res.data);
+        
+        // Parse manufacturersData if it's a string
+        let parsedManufacturersData = res.data.manufacturersData;
+        if (typeof parsedManufacturersData === 'string') {
+          try {
+            parsedManufacturersData = JSON.parse(parsedManufacturersData);
+          } catch (error) {
+            console.error('Error parsing manufacturersData:', error);
+            parsedManufacturersData = [];
+          }
+        }
+        
+        // Ensure it's an array
+        if (!Array.isArray(parsedManufacturersData)) {
+          parsedManufacturersData = [];
+        }
+        
+        console.log('Parsed manufacturersData:', parsedManufacturersData);
+        
+        const processedData = {
+          ...res.data,
+          manufacturersData: parsedManufacturersData
+        };
+        
+        setInitialData(processedData);
+        setFormData(processedData || defaultFormData);
+        setManufacturersById(parsedManufacturersData || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -146,13 +186,14 @@ const EditProposal = () => {
 
   // Fetch manufacturers data
   useEffect(() => {
-
-    if (formData?.manufacturersData?.length > 0) {
+    const manufacturersData = getManufacturersData();
+    
+    if (manufacturersData.length > 0) {
       setSelectedVersionIndex(0);
-      setSelectedVersion(formData?.manufacturersData);
-      dispatch(setSelectVersionNewEdit(formData?.manufacturersData));
+      setSelectedVersion(manufacturersData);
+      dispatch(setSelectVersionNewEdit(manufacturersData));
 
-      formData.manufacturersData.forEach((item) => {
+      manufacturersData.forEach((item) => {
 
         if (item.manufacturer && !manufacturersById[item.manufacturer]) {
           dispatch(fetchManufacturerById(item.manufacturer));
@@ -163,11 +204,13 @@ const EditProposal = () => {
   }, [formData?.manufacturersData, dispatch, manufacturersById]);
 
   useEffect(() => {
-    if (!formData.manufacturersData || formData.manufacturersData.length === 0) {
+    const manufacturersData = getManufacturersData();
+    
+    if (manufacturersData.length === 0) {
       return;
     }
 
-    const versionDetails = formData.manufacturersData.map((item) => ({
+    const versionDetails = manufacturersData.map((item) => ({
       ...item,
       manufacturerData: manufacturersById[item.manufacturer],
     }));
@@ -215,7 +258,9 @@ const EditProposal = () => {
   };
 
   const saveEditVersionName = () => {
-    const existingEntry = formData.manufacturersData.find(
+    const manufacturersData = getManufacturersData();
+    
+    const existingEntry = manufacturersData.find(
       (entry, idx) => entry.versionName === editedVersionName && idx !== currentEditIndex
     );
     if (existingEntry) {
@@ -226,9 +271,12 @@ const EditProposal = () => {
       });
       return;
     }
-    const updatedManufacturersData = [...formData.manufacturersData];
-    updatedManufacturersData[currentEditIndex].versionName = editedVersionName;
-    updateFormData({ manufacturersData: updatedManufacturersData });
+    
+    const updatedManufacturersData = [...getManufacturersData()];
+    if (updatedManufacturersData[currentEditIndex]) {
+      updatedManufacturersData[currentEditIndex].versionName = editedVersionName;
+      updateFormData({ manufacturersData: updatedManufacturersData });
+    }
     setEditModalOpen(false);
   };
 
@@ -238,7 +286,9 @@ const EditProposal = () => {
   };
 
   const confirmDelete = () => {
-    const updatedManufacturersData = formData.manufacturersData.filter(
+    const manufacturersData = getManufacturersData();
+    
+    const updatedManufacturersData = manufacturersData.filter(
       (_, i) => i !== currentDeleteIndex
     );
     updateFormData({ manufacturersData: updatedManufacturersData });
@@ -254,15 +304,21 @@ const EditProposal = () => {
   };
 
   const duplicateVersion = (index) => {
-    const copy = { ...formData.manufacturersData[index] };
+    const manufacturersData = getManufacturersData();
+    
+    if (!manufacturersData[index]) {
+      return;
+    }
+    
+    const copy = { ...manufacturersData[index] };
     copy.versionName = `Copy of ${copy.versionName}`;
     updateFormData({ manufacturersData: [...formData.manufacturersData, copy] });
   };
 
-  const versionDetails = formData?.manufacturersData?.map((item) => ({
+  const versionDetails = getManufacturersData().map((item) => ({
     ...item,
     manufacturerData: manufacturersById[item.manufacturer],
-  })) || [];
+  }));
 
   const selectVersion = versionDetails[selectedVersionIndex] || null;
 
@@ -346,16 +402,25 @@ const EditProposal = () => {
 
       <div>
         <Formik
-          initialValues={formData}
+          initialValues={initialData || defaultFormData}
           enableReinitialize
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => {
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => {
             // Sync formData with Formik's values
             useEffect(() => {
-              updateFormData(values);
-            }, [values]);
+              // Prevent feedback loop: only update when values actually differ from formData
+              try {
+                const a = JSON.stringify(values);
+                const b = JSON.stringify(formData);
+                if (a !== b) {
+                  updateFormData(values);
+                }
+              } catch (e) {
+                // Fallback: if comparison fails, avoid updating to prevent loops
+              }
+            }, [values, formData]);
 
             return (
               <CForm onSubmit={handleSubmit}>
@@ -370,7 +435,7 @@ const EditProposal = () => {
                       options={designerOptions}
                       value={designerOptions.find((opt) => opt.value === values.designer) || null}
                       onChange={(selectedOption) => {
-                        updateFormData({ designer: selectedOption?.value || '' });
+                        setFieldValue('designer', selectedOption?.value || '');
                       }}
                       onBlur={handleBlur}
                     />
@@ -400,7 +465,7 @@ const EditProposal = () => {
                       options={statusOptions}
                       value={statusOptions.find((opt) => opt.value === (values.status || 'Draft'))}
                       onChange={(selectedOption) => {
-                        updateFormData({ status: selectedOption?.value || 'Draft' });
+                        setFieldValue('status', selectedOption?.value || 'Draft');
                       }}
                       onBlur={handleBlur}
                       inputId="status"
@@ -411,8 +476,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="date">Date</CFormLabel>
                       <DatePicker
                         id="date"
-                        selected={formData.date ? new Date(formData.date) : new Date()}
-                        onChange={(date) => updateFormData({ date })}
+                        selected={values.date ? new Date(values.date) : new Date()}
+                        onChange={(date) => setFieldValue('date', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -435,8 +500,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
                       <DatePicker
                         id="designDate"
-                        selected={formData.designDate ? new Date(formData.designDate) : null}
-                        onChange={(date) => updateFormData({ designDate: date })}
+                        selected={values.designDate ? new Date(values.designDate) : null}
+                        onChange={(date) => setFieldValue('designDate', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -459,8 +524,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
                       <DatePicker
                         id="measurementDate"
-                        selected={formData.measurementDate ? new Date(formData.measurementDate) : null}
-                        onChange={(date) => updateFormData({ measurementDate: date })}
+                        selected={values.measurementDate ? new Date(values.measurementDate) : null}
+                        onChange={(date) => setFieldValue('measurementDate', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -483,8 +548,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
                       <DatePicker
                         id="followUp1Date"
-                        selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
-                        onChange={(date) => updateFormData({ followUp1Date: date })}
+                        selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
+                        onChange={(date) => setFieldValue('followUp1Date', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText="Follow up 1 Date"
@@ -507,8 +572,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
                       <DatePicker
                         id="followUp2Date"
-                        selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
-                        onChange={(date) => updateFormData({ followUp2Date: date })}
+                        selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
+                        onChange={(date) => setFieldValue('followUp2Date', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText="Follow up 2 Date"
@@ -531,8 +596,8 @@ const EditProposal = () => {
                       <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
                       <DatePicker
                         id="followUp3Date"
-                        selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
-                        onChange={(date) => updateFormData({ followUp3Date: date })}
+                        selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
+                        onChange={(date) => setFieldValue('followUp3Date', date)}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText="Follow up 3 Date"

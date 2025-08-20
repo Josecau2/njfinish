@@ -782,7 +782,7 @@ const Contracts = () => {
         </CModalFooter>
       </CModal>
 
-      <style jsx>{`
+      <style jsx={true}>{`
         .contract-modal .modal-dialog {
           max-width: 95%;
         }

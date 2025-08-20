@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addManufacturer } from '../../../store/slices/manufacturersSlice';
 import {
   CForm,
   CFormInput,
@@ -35,7 +38,157 @@ import {
   cilInfo
 } from '@coreui/icons';
 
+// Move component definitions outside to prevent re-creation on every render
+const FormSection = ({ title, icon, children, className = "" }) => (
+  <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
+    <CCardBody className="p-4">
+      <div className="d-flex align-items-center mb-4">
+        <div 
+          className="rounded-circle d-flex align-items-center justify-content-center me-3"
+          style={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#e7f3ff',
+            color: '#0d6efd'
+          }}
+        >
+          <CIcon icon={icon} size="sm" />
+        </div>
+        <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
+      </div>
+      {children}
+    </CCardBody>
+  </CCard>
+);
+
+const CustomFormInput = ({ 
+  label, 
+  name, 
+  type = "text", 
+  required = false, 
+  icon = null,
+  placeholder = "",
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText className="bg-light border-end-0">
+          <CIcon icon={icon} size="sm" className="text-muted" />
+        </CInputGroupText>
+      )}
+      <CFormInput
+        type={type}
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        invalid={isInvalid}
+        className={icon ? "border-start-0" : ""}
+        {...props}
+      />
+      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
+    </CInputGroup>
+  </div>
+);
+
+const CustomFormTextarea = ({ 
+  label, 
+  name, 
+  required = false, 
+  icon = null,
+  placeholder = "",
+  rows = 4,
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  ...props 
+}) => (
+  <div className="mb-3">
+    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </CFormLabel>
+    <CInputGroup>
+      {icon && (
+        <CInputGroupText className="bg-light border-end-0">
+          <CIcon icon={icon} size="sm" className="text-muted" />
+        </CInputGroupText>
+      )}
+      <CFormTextarea
+        id={name}
+        name={name}
+        rows={rows}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        invalid={isInvalid}
+        className={icon ? "border-start-0" : ""}
+        {...props}
+      />
+      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
+    </CInputGroup>
+  </div>
+);
+
+const FileUploadCard = ({ title, icon, accept, multiple = false, onChange, selectedFiles, helpText }) => (
+  <div className="mb-3">
+    <CFormLabel className="fw-medium text-dark mb-2">{title}</CFormLabel>
+    <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
+      <CIcon icon={icon} size="xl" className="text-muted mb-2" />
+      <p className="text-muted mb-2">Click to browse or drag and drop files here</p>
+      <CFormInput
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        onChange={onChange}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          cursor: 'pointer'
+        }}
+      />
+      {helpText && <CFormText className="text-muted d-block">{helpText}</CFormText>}
+      {selectedFiles && (
+        <div className="mt-3">
+          {Array.isArray(selectedFiles) ? (
+            selectedFiles.length === 0 ? (
+              <span className="text-danger small">No files selected</span>
+            ) : (
+              <div className="text-success small">
+                <CIcon icon={cilCloudUpload} className="me-1" />
+                {selectedFiles.length} file(s) selected
+              </div>
+            )
+          ) : (
+            <div className="text-success small">
+              <CIcon icon={cilImage} className="me-1" />
+              Image selected: {selectedFiles.name}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 const ManufacturerForm = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -108,10 +261,14 @@ const ManufacturerForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('Form submitted');
+    console.log('Form data:', formData);
+    
     const errors = validateForm();
     setValidationErrors(errors);
     
     if (Object.keys(errors).length > 0) {
+      console.log('Validation errors:', errors);
       setMessage({
         text: 'Please fix the validation errors before submitting.',
         type: 'danger',
@@ -119,11 +276,41 @@ const ManufacturerForm = () => {
       return;
     }
 
+    console.log('Validation passed, proceeding with submission');
     setLoading(true);
     setMessage({ text: '', type: '' });
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      
+      // Append form fields
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('address', formData.address);
+      formDataToSend.append('website', formData.website);
+      formDataToSend.append('isPriceMSRP', formData.isPriceMSRP);
+      formDataToSend.append('costMultiplier', formData.costMultiplier);
+      formDataToSend.append('instructions', formData.instructions);
+      
+      // Append logo image if selected
+      if (logoImage) {
+        formDataToSend.append('manufacturerImage', logoImage);
+        console.log('Logo image added:', logoImage.name);
+      }
+      
+      // Append catalog files if selected
+      files.forEach((file) => {
+        formDataToSend.append('catalogFiles', file);
+        console.log('Catalog file added:', file.name);
+      });
+
+      console.log('Dispatching addManufacturer action');
+      // Dispatch Redux action
+      const result = await dispatch(addManufacturer(formDataToSend)).unwrap();
+
+      console.log('Manufacturer creation successful:', result);
       setMessage({
         text: 'Manufacturer created successfully!',
         type: 'success',
@@ -143,8 +330,20 @@ const ManufacturerForm = () => {
       setFiles([]);
       setLogoImage(null);
       setValidationErrors({});
+      
+      // Redirect to manufacturers list after 2 seconds
+      setTimeout(() => {
+        navigate('/settings/manufacturers');
+      }, 2000);
+    } catch (error) {
+      console.error('Error creating manufacturer:', error);
+      setMessage({
+        text: error.message || 'Failed to create manufacturer',
+        type: 'danger',
+      });
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   const calculateMultiplierExample = () => {
@@ -162,205 +361,6 @@ const ManufacturerForm = () => {
       </CFormText>
     );
   };
-
-  const FormSection = ({ title, icon, children, className = "" }) => (
-    <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
-      <CCardBody className="p-4">
-        <div className="d-flex align-items-center mb-4">
-          <div 
-            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#e7f3ff',
-              color: '#0d6efd'
-            }}
-          >
-            <CIcon icon={icon} size="sm" />
-          </div>
-          <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-        </div>
-        {children}
-      </CCardBody>
-    </CCard>
-  );
-
-  const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
-    icon = null,
-    placeholder = "",
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormInput
-          id={name}
-          name={name}
-          type={type}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!validationErrors[name]}
-          placeholder={placeholder}
-          style={{
-            border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: '14px',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid #e3e6f0'
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        />
-      </CInputGroup>
-      <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
-    </div>
-  );
-
-  const CustomFormTextarea = ({ 
-    label, 
-    name, 
-    required = false, 
-    icon = null,
-    placeholder = "",
-    rows = 4,
-    ...props 
-  }) => (
-    <div className="mb-3">
-      <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </CFormLabel>
-      <CInputGroup>
-        {icon && (
-          <CInputGroupText 
-            style={{ 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid #e3e6f0',
-              borderRight: 'none',
-              alignItems: 'flex-start',
-              paddingTop: '12px'
-            }}
-          >
-            <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-          </CInputGroupText>
-        )}
-        <CFormTextarea
-          id={name}
-          name={name}
-          rows={rows}
-          value={formData[name]}
-          onChange={handleChange}
-          invalid={!!validationErrors[name]}
-          placeholder={placeholder}
-          style={{
-            border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: '14px',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid #e3e6f0',
-            resize: 'vertical'
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#0d6efd';
-              e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = '#e3e6f0';
-              e.target.style.boxShadow = 'none';
-            }
-          }}
-          {...props}
-        />
-      </CInputGroup>
-      <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
-    </div>
-  );
-
-  const FileUploadCard = ({ title, icon, accept, multiple = false, onChange, selectedFiles, helpText }) => (
-    <div className="mb-3">
-      <CFormLabel className="fw-medium text-dark mb-2">{title}</CFormLabel>
-      <div 
-        className="border-2 border-dashed rounded-3 p-4 text-center position-relative"
-        style={{ 
-          borderColor: '#e3e6f0',
-          backgroundColor: '#fafbfc',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        <CIcon icon={icon} size="xl" className="text-muted mb-2" />
-        <p className="text-muted mb-2">Click to browse or drag and drop files here</p>
-        <CFormInput
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          onChange={onChange}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0,
-            cursor: 'pointer'
-          }}
-        />
-        {helpText && <CFormText className="text-muted d-block">{helpText}</CFormText>}
-        {selectedFiles && (
-          <div className="mt-3">
-            {Array.isArray(selectedFiles) ? (
-              selectedFiles.length === 0 ? (
-                <span className="text-danger small">No files selected</span>
-              ) : (
-                <div className="text-success small">
-                  <CIcon icon={cilCloudUpload} className="me-1" />
-                  {selectedFiles.length} file(s) selected
-                </div>
-              )
-            ) : (
-              <div className="text-success small">
-                <CIcon icon={cilImage} className="me-1" />
-                Image selected: {selectedFiles.name}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <CContainer fluid className="p-2 m-2 manufacturer-form" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
@@ -475,6 +475,10 @@ const ManufacturerForm = () => {
                 required
                 icon={cilBuilding}
                 placeholder="Enter manufacturer name"
+                value={formData.name}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.name}
+                feedback={validationErrors.name}
               />
             </CCol>
             <CCol md={6}>
@@ -485,6 +489,10 @@ const ManufacturerForm = () => {
                 required
                 icon={cilEnvelopeClosed}
                 placeholder="orders@manufacturer.com"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.email}
+                feedback={validationErrors.email}
               />
             </CCol>
           </CRow>
@@ -498,6 +506,10 @@ const ManufacturerForm = () => {
                 required
                 icon={cilPhone}
                 placeholder="+1 (555) 123-4567"
+                value={formData.phone}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.phone}
+                feedback={validationErrors.phone}
               />
             </CCol>
             <CCol md={6}>
@@ -508,6 +520,10 @@ const ManufacturerForm = () => {
                 required
                 icon={cilLocationPin}
                 placeholder="https://www.manufacturer.com"
+                value={formData.website}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.website}
+                feedback={validationErrors.website}
               />
             </CCol>
           </CRow>
@@ -518,6 +534,10 @@ const ManufacturerForm = () => {
             required
             icon={cilLocationPin}
             placeholder="Enter complete address"
+            value={formData.address}
+            onChange={handleChange}
+            isInvalid={!!validationErrors.address}
+            feedback={validationErrors.address}
           />
         </FormSection>
 
@@ -583,6 +603,10 @@ const ManufacturerForm = () => {
                 required
                 icon={cilCalculator}
                 placeholder="2.0"
+                value={formData.costMultiplier}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.costMultiplier}
+                feedback={validationErrors.costMultiplier}
               />
               {calculateMultiplierExample()}
             </CCol>
@@ -597,6 +621,10 @@ const ManufacturerForm = () => {
             icon={cilDescription}
             placeholder="Enter any special instructions or notes for this manufacturer..."
             rows={4}
+            value={formData.instructions}
+            onChange={handleChange}
+            isInvalid={!!validationErrors.instructions}
+            feedback={validationErrors.instructions}
           />
         </FormSection>
 

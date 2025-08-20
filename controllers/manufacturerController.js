@@ -22,15 +22,22 @@ const fetchManufacturer = async (req, res) => {
 };
 
 const addManufacturer = async (req, res) => {
+    console.log('addManufacturer called');
+    console.log('Request body:', req.body);
+    console.log('Request files:', req.files);
+    
     try {
         upload.fields([
             { name: 'catalogFiles', maxCount: 10 },
             { name: 'manufacturerImage', maxCount: 1 }
         ])(req, res, async function (err) {
+            console.log('Multer processing complete');
             if (err) {
+                console.error('Multer error:', err);
                 return res.status(400).json({ message: err.message });
             }
 
+            console.log('Form data received:', req.body);
             const {
                 name,
                 email,
@@ -43,6 +50,7 @@ const addManufacturer = async (req, res) => {
             } = req.body;
 
             if (!name || !email || !phone || !address || !website || !costMultiplier) {
+                console.log('Validation failed - missing required fields');
                 return res.status(400).json({ message: 'Please provide all required fields' });
             }
 
@@ -51,6 +59,18 @@ const addManufacturer = async (req, res) => {
             const imagePath = manufacturerImage?.filename || null;
 
             try {
+                console.log('Creating manufacturer with data:', {
+                    name,
+                    email,
+                    phone,
+                    address,
+                    website,
+                    isPriceMSRP: isPriceMSRP === 'true',
+                    costMultiplier: parseFloat(costMultiplier),
+                    instructions: instructions || '',
+                    image: imagePath
+                });
+                
                 const newManufacturer = await Manufacturer.create({
                     name,
                     email,
@@ -62,6 +82,8 @@ const addManufacturer = async (req, res) => {
                     instructions: instructions || '',
                     image: imagePath
                 });
+
+                console.log('Manufacturer created successfully:', newManufacturer.toJSON());
 
                 if (catalogFiles.length > 0) {
                     const file = catalogFiles[0];
@@ -90,6 +112,7 @@ const addManufacturer = async (req, res) => {
                     }
                 }
 
+                console.log('Sending response with manufacturer:', newManufacturer.toJSON());
                 return res.status(201).json({
                     success: true,
                     status: 200,
