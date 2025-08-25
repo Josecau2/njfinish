@@ -46,6 +46,7 @@ app.use('/api', apiRoutes);
 // Serve static uploads using configured path
 app.use('/uploads', express.static(path.resolve(__dirname, env.UPLOAD_PATH)));
 app.use('/uploads/images', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'images')));
+app.use('/uploads/logos', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'logos')));
 app.use('/uploads/manufacturer_catalogs', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'manufacturer_catalogs')));
 
 const buildPath = path.join(__dirname, 'frontend', 'build');

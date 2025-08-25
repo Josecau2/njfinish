@@ -16,7 +16,7 @@ exports.saveCustomization = async (req, res) => {
     let logoImagePath = null
 
     if (req.file) {
-      logoImagePath = `/uploads/logos/${req.file.filename}`
+      logoImagePath = `/uploads/images/${req.file.filename}`
     }
 
     const payload = {
