@@ -8,6 +8,14 @@ const getLinks = async (req, res) => {
     try {
         const user = req.user;
         
+        // Check if user exists
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'User not authenticated' 
+            });
+        }
+        
         // Build where clause with group visibility
         let whereClause = {};
         
@@ -171,6 +179,14 @@ const deleteLink = async (req, res) => {
 const getFiles = async (req, res) => {
     try {
         const user = req.user;
+        
+        // Check if user exists
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'User not authenticated' 
+            });
+        }
         
         // Build where clause with group visibility
         let whereClause = { is_deleted: false };
@@ -428,6 +444,14 @@ const downloadFile = async (req, res) => {
     try {
         const { id } = req.params;
         const user = req.user;
+
+        // Check if user exists
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'User not authenticated' 
+            });
+        }
 
         // Build where clause with group visibility
         let whereClause = { id: id, is_deleted: false };

@@ -5,6 +5,7 @@ const apiRoutes = require('./routes/apiRoutes');
 const sequelize = require('./config/db');
 const path = require('path');
 const env = require('./config/env');
+const startupHandler = require('./startup-handler');
 
 // Initialize event manager for domain events
 require('./utils/eventManager');
@@ -44,6 +45,7 @@ app.use('/api', apiRoutes);
 // Serve static uploads
 // Serve static uploads using configured path
 app.use('/uploads', express.static(path.resolve(__dirname, env.UPLOAD_PATH)));
+app.use('/uploads/images', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'images')));
 app.use('/uploads/manufacturer_catalogs', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'manufacturer_catalogs')));
 
 const buildPath = path.join(__dirname, 'frontend', 'build');
@@ -58,8 +60,15 @@ app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.resolve(buildPath, 'index.html'));
 });
 
-sequelize.sync().then(() => {
+sequelize.sync().then(async () => {
   console.log('Database synced');
+  
+  // Run production setup automatically if needed
+  if (process.env.NODE_ENV === 'production') {
+    await startupHandler.checkAndRunSetup();
+  }
+}).catch(error => {
+  console.error('Database sync failed:', error);
 });
 
 module.exports = app;

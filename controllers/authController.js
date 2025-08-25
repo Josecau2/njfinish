@@ -316,8 +316,8 @@ exports.addUser = async (req, res) => {
       password: hashedPassword,
       isSalesRep: !!isSalesRep,
       location,
-      group_id: userGroup,
-      role_id: userGroup // Also set role_id for contractor access
+      group_id: parseInt(userGroup) || null,
+      role_id: 0 // Default role_id as integer
     });
 
     // await UserRole.create({
@@ -363,11 +363,11 @@ exports.updateUser = async (req, res) => {
     if (name) user.name = name;
     if (location) user.location = location;
     if (userGroup) {
-      user.group_id = userGroup;
-      user.role_id = userGroup; // Also set role_id to match the group_id for contractor access
+      user.group_id = parseInt(userGroup) || null;
+      user.role_id = 0; // Set default role_id as integer
     }
     if (typeof isSalesRep === 'boolean') user.isSalesRep = isSalesRep;
-    if (role_id !== undefined) user.role_id = role_id;
+    if (role_id !== undefined) user.role_id = parseInt(role_id) || 0;
 
     if (password && password.trim() !== '') {
       user.password = await bcrypt.hash(password, 10);

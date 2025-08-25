@@ -10,6 +10,7 @@ const ManufacturerStyleCollection = require('../models/ManufacturerStyleCollecti
 const ManufacturerAssemblyCost = require('../models/ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('../models/ManufacturerHingesDetails');
 const ManufacturerModificationDetails = require('../models/ManufacturerModificationDetails');
+const imageLogger = require('../utils/imageLogger');
 
 
 const fetchManufacturer = async (req, res) => {
@@ -52,6 +53,15 @@ const addManufacturer = async (req, res) => {
             const manufacturerImage = req.files?.['manufacturerImage']?.[0];
             const catalogFiles = req.files?.['catalogFiles'] || [];
             const imagePath = manufacturerImage?.filename || null;
+
+            // Log image upload
+            if (manufacturerImage) {
+                imageLogger.logUpload(
+                    manufacturerImage.filename,
+                    manufacturerImage.fieldname,
+                    manufacturerImage.size
+                );
+            }
 
             try {
                 const newManufacturer = await Manufacturer.create({
@@ -201,6 +211,16 @@ const updateManufacturer = async (req, res) => {
         const catalogFiles = req.files?.['catalogFiles'] || [];
         const imagePath = manufacturerImage?.filename || null;
 
+        // Log image upload for updates
+        if (manufacturerImage) {
+            imageLogger.logUpload(
+                manufacturerImage.filename,
+                manufacturerImage.fieldname,
+                manufacturerImage.size,
+                manufacturerId
+            );
+        }
+
         try {
             const manufacturer = await Manufacturer.findByPk(manufacturerId);
 
@@ -210,8 +230,14 @@ const updateManufacturer = async (req, res) => {
 
             // Optional: delete old image if replaced
             if (imagePath && manufacturer.image) {
-                fs.unlink(`uploads/${manufacturer.image}`, err => {
-                    if (err) console.warn('Failed to delete old image:', err.message);
+                const oldImagePath = path.resolve(__dirname, '..', process.env.UPLOAD_PATH || './uploads', 'images', manufacturer.image);
+                fs.unlink(oldImagePath, err => {
+                    if (err) {
+                        console.warn('Failed to delete old image:', err.message);
+                        imageLogger.logDelete(manufacturer.image, manufacturerId, false, err);
+                    } else {
+                        imageLogger.logDelete(manufacturer.image, manufacturerId, true);
+                    }
                 });
             }
 

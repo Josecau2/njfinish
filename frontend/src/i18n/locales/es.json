@@ -1539,6 +1539,7 @@
         "title": "Editar fabricante",
         "back": "Atrás",
         "updateImage": "Actualizar imagen del fabricante",
+        "currentImage": "Imagen actual",
         "newImageSelected": "Nueva imagen seleccionada: {{name}}",
         "priceInfo": "Información de precios",
         "costMultiplier": "Multiplicador de costo",

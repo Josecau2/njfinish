@@ -1,14 +1,21 @@
 {
-  "name": "Njcabinates",
+  "name": "Njcabinets",
   "version": "5.4.0",
   "private": true,
   "scripts": {
-    "build": "vite build",
+    "build": "npm run build:frontend && npm run setup:production",
+    "build:frontend": "cd frontend && npm run build && cd ..",
+    "build:backend": "npm install --production",
+    "postinstall": "chmod +x scripts/postinstall.sh && ./scripts/postinstall.sh",
     "lint": "eslint",
     "serve": "vite preview",
-  "start": "vite",
-  "seed:dev": "node scripts/seed-dev.js",
-  "db:sync": "node scripts/sync-db.js"
+    "start": "node index.js",
+    "dev": "node index.js",
+    "seed:dev": "node scripts/seed-dev.js",
+    "db:sync": "node scripts/sync-db.js",
+    "setup:production": "npm run build:backend && node check-production-setup.js && node setup-production.js && node verify-production-images.js",
+    "verify:production": "node verify-production-images.js",
+    "check:production": "node check-production-setup.js"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^41.4.2",

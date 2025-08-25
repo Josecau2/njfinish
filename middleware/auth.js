@@ -41,8 +41,9 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
       return res.status(403).json({ message: 'User not found' });
     }
 
-    // Inject group metadata into request
-    req.user.group_id = req.user.group_id || null;
+    // Ensure group_id is properly set (convert to integer if needed)
+    req.user.group_id = req.user.group_id ? parseInt(req.user.group_id) : null;
+    
     req.groupMetadata = req.user.group ? {
       id: req.user.group.id,
       name: req.user.group.name,

@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "setup:production": "node setup-production.js",
+    "migrate:images": "node migrate-manufacturer-images.js",
+    "verify:production": "node verify-production-images.js",
+    "check:production": "node check-production-setup.js"
   },
   "dependencies": {
     "express": "^4.18.2",

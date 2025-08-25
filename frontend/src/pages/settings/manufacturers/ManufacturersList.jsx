@@ -381,7 +381,7 @@ const ManufacturersList = () => {
                       <img
                         src={
                           manufacturer.image
-                            ? `${api_url}/uploads/manufacturer_catalogs/${manufacturer.image}`
+                            ? `${api_url}/uploads/images/${manufacturer.image}`
                             : "/images/nologo.png"
                         }
                         alt={`${manufacturer.name} logo`}

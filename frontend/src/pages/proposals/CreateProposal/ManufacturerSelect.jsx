@@ -48,7 +48,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
     label: (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img
-          src={`${api_url}/uploads/manufacturer_catalogs/${m.image}`}
+          src={`${api_url}/uploads/images/${m.image}`}
           alt={m.name}
           style={{ width: 30, height: 30, borderRadius: '50%', marginRight: 10 }}
         />

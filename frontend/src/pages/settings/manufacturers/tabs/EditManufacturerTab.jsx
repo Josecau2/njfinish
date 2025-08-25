@@ -166,8 +166,38 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
                 <div className="mb-3">
                   <CFormLabel htmlFor="manufacturerImage">{t('settings.manufacturers.edit.updateImage')}</CFormLabel>
-                  <CFormInput type="file" id="manufacturerImage" accept="image/*" onChange={(e) => setLogoImage(e.target.files[0])} />
-                  {logoImage && <div className="mt-2 text-success">{t('settings.manufacturers.edit.newImageSelected', { name: logoImage.name })}</div>}
+                  
+                  {/* Display current image if exists */}
+                  {manufacturer?.image && !logoImage && (
+                    <div className="mb-3">
+                      <p className="text-muted">{t('settings.manufacturers.edit.currentImage')}:</p>
+                      <img 
+                        src={`${import.meta.env.VITE_API_URL}/uploads/images/${manufacturer.image}`}
+                        alt={manufacturer.name}
+                        style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
+                        className="border rounded"
+                      />
+                    </div>
+                  )}
+                  
+                  <CFormInput 
+                    type="file" 
+                    id="manufacturerImage" 
+                    accept="image/*" 
+                    onChange={(e) => setLogoImage(e.target.files[0])} 
+                  />
+                  {logoImage && (
+                    <div className="mt-2">
+                      <div className="text-success">{t('settings.manufacturers.edit.newImageSelected', { name: logoImage.name })}</div>
+                      {/* Preview of new image */}
+                      <img 
+                        src={URL.createObjectURL(logoImage)}
+                        alt="Preview"
+                        style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
+                        className="border rounded mt-2"
+                      />
+                    </div>
+                  )}
                 </div>
               </CCardBody>
             </CCard>

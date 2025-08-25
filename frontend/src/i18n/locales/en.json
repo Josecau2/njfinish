@@ -1540,6 +1540,7 @@
         "title": "Edit Manufacturer",
         "back": "Back",
         "updateImage": "Update Manufacturer Image",
+        "currentImage": "Current Image",
         "newImageSelected": "New image selected: {{name}}",
         "priceInfo": "Price Information",
         "costMultiplier": "Cost multiplier",
