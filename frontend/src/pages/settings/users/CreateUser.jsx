@@ -146,9 +146,6 @@ const AddUserForm = () => {
   const { list: usersGroup = [] } = useSelector((state) => state.usersGroup || {});
   const { list: locations = [] } = useSelector((state) => state.locations || {});
   const navigate = useNavigate();
-  
-  // Debug log for locations
-  console.log('Locations from Redux:', locations);
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);
   const [showPassword, setShowPassword] = useState(false);
@@ -158,9 +155,7 @@ const AddUserForm = () => {
 
   useEffect(() => {
     dispatch(fetchUsers());
-    dispatch(fetchLocations()).then((result) => {
-      console.log('Locations fetch result:', result);
-    });
+    dispatch(fetchLocations());
   }, [dispatch]);
 
   const validate = () => {
