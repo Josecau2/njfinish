@@ -183,7 +183,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const response = await fetch(`${api_url}/api/manufacturers/catalog/${manufacturer.id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify(manualForm),
       });
 
@@ -255,7 +258,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const response = await fetch(`${api_url}/api/manufacturers/catalog/edit/${editForm.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify(editForm),
       });
 
@@ -316,6 +322,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog/upload`, {
         method: 'POST',
+        headers: {
+          ...getAuthHeaders()
+        },
         body: formData
       });
 
