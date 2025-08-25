@@ -6,7 +6,6 @@
     "build": "npm run build:frontend && npm run setup:production",
     "build:frontend": "cd frontend && npm run build && cd ..",
     "build:backend": "npm install --production",
-    "postinstall": "chmod +x scripts/postinstall.sh && ./scripts/postinstall.sh",
     "lint": "eslint",
     "serve": "vite preview",
     "start": "node index.js",
