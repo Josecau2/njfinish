@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     CModal,
     CModalHeader,
@@ -16,6 +17,7 @@ import {
 } from '@coreui/react'
 
 const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
+    const { t } = useTranslation()
     const [formData, setFormData] = useState({
         name: '',
         multiplier: '',
@@ -67,7 +69,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
         <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center" scrollable>
             <CForm onSubmit={handleSubmit}>
                 <CModalHeader>
-                    <CModalTitle>Edit Manufacturer</CModalTitle>
+                    <CModalTitle>{t('settings.userGroups.multipliers.modal.title')}</CModalTitle>
                 </CModalHeader>
                 <CModalBody>
                     {error && <CAlert color="danger">{error}</CAlert>}
@@ -75,19 +77,19 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                     <CContainer fluid>
                         <CRow className="mb-3">
                             <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="name">Name</CFormLabel>
+                                <CFormLabel htmlFor="name">{t('settings.userGroups.multipliers.modal.labels.name')}</CFormLabel>
                                 <CFormInput
                                     type="text"
                                     id="name"
                                     name="name"
                                     value={formData.name}
                                     readOnly
-                                    placeholder="Manufacturer name"
+                                    placeholder={t('settings.userGroups.multipliers.modal.placeholders.name')}
                                     style={readOnlyStyle}
                                 />
                             </CCol>
                             <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="multiplier">Multiplier</CFormLabel>
+                                <CFormLabel htmlFor="multiplier">{t('settings.userGroups.multipliers.modal.labels.multiplier')}</CFormLabel>
                                 <CFormInput
                                     type="number"
                                     step="0.01"
@@ -104,7 +106,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                                             }))
                                         }
                                     }}
-                                    placeholder="Enter multiplier"
+                                    placeholder={t('settings.userGroups.multipliers.modal.placeholders.multiplier')}
                                     style={inputStyle}
                                 />
                             </CCol>
@@ -130,7 +132,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                                         htmlFor="enabled"
                                         style={{ fontSize: '1.1rem' }}
                                     >
-                                        Enabled
+                                        {t('settings.userGroups.multipliers.modal.labels.enabled')}
                                     </label>
                                 </div>
                             </CCol>
@@ -139,10 +141,10 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" variant="outline" onClick={onClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </CButton>
                     <CButton color="primary" type="submit">
-                        Save Changes
+                        {t('common.save')}
                     </CButton>
                 </CModalFooter>
             </CForm>

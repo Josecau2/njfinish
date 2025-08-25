@@ -52,6 +52,13 @@ const Proposal = sequelize.define('proposal', {
     },
     status: {
         type: DataTypes.ENUM(
+            // New standardized statuses
+            'draft',
+            'sent', 
+            'accepted',
+            'rejected',
+            'expired',
+            // Legacy statuses (for backward compatibility)
             'Draft',
             'Follow up 1',
             'Follow up 2',
@@ -64,6 +71,7 @@ const Proposal = sequelize.define('proposal', {
             'Proposal rejected'
         ),
         allowNull: true,
+        comment: 'Extended status enum with new values while preserving existing ones'
     },      
     followUp1Date: {
         type: DataTypes.DATE,
@@ -89,10 +97,49 @@ const Proposal = sequelize.define('proposal', {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
+    owner_group_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'user_groups',
+            key: 'id'
+        },
+        comment: 'Owning contractor group or admin group'
+    },
+    accepted_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        comment: 'Timestamp when proposal was accepted'
+    },
+    accepted_by: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: 'User ID or external signer name who accepted proposal'
+    },
+    sent_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        comment: 'Timestamp when proposal was sent to customer'
+    },
+    is_locked: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        comment: 'Locks prices after acceptance'
+    },
     
 }, {
     timestamps: true,
     tableName: 'proposals',
+    indexes: [
+        {
+            name: 'idx_proposals_owner_group',
+            fields: ['owner_group_id']
+        },
+        {
+            name: 'idx_proposals_owner_status', 
+            fields: ['owner_group_id', 'status']
+        }
+    ]
 });
 
 module.exports = Proposal;

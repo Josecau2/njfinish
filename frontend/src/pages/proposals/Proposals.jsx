@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CContainer,
   CRow,
@@ -25,38 +26,79 @@ import {
   CInputGroupText,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
-import { deleteFormData, getProposal } from '../../store/slices/proposalSlice';
+import { deleteFormData, getProposal, updateProposalStatus, acceptProposal } from '../../store/slices/proposalSlice';
+import axiosInstance from '../../helpers/axiosInstance';
+import { hasPermission } from '../../helpers/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import withContractorScope from '../../components/withContractorScope';
+import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal';
+import PermissionGate from '../../components/PermissionGate';
 import CIcon from '@coreui/icons-react';
-import { cilPencil, cilTrash, cilSearch, cilPlus } from '@coreui/icons';
+import { cilPencil, cilTrash, cilSearch, cilPlus, cilPaperPlane, cilCheck, cilX, cilLockLocked, cilChart, cilBriefcase, cilSend, cilCheckCircle } from '@coreui/icons';
 import PaginationComponent from '../../components/common/PaginationComponent';
 
-const Proposals = () => {
+const Proposals = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAcceptanceModal, setShowAcceptanceModal] = useState(false);
+  const [selectedProposalForAcceptance, setSelectedProposalForAcceptance] = useState(null);
   const itemsPerPage = 10;
   const navigate = useNavigate();
   const { data, loading, error } = useSelector((state) => state.proposal);
   const proposal = Array.isArray(data) ? data : [];
-
-  console.log('proposal', proposal);
+  
+  // Get user data for permission checks
+  const loggedInUser = JSON.parse(localStorage.getItem('user'));
+  const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
 
   const tabs = [
-    'All', 'Draft', 'Measurement Scheduled', 'Measurement done',
+    'All', 'draft', 'sent', 'accepted', 'rejected', 'expired',
+    // Legacy statuses for backward compatibility
+    'Draft', 'Measurement Scheduled', 'Measurement done',
     'Design done', 'Follow up 1', 'Follow up 2', 'Follow up 3',
-    'Proposal accepted'
+    'Proposal accepted', 'Proposal rejected'
   ];
 
+  const getTabLabel = (tab) => {
+    switch (tab) {
+      case 'All': return t('proposals.tabs.all');
+      case 'draft': return t('proposals.status.draft');
+      case 'sent': return t('proposals.status.sent');
+      case 'accepted': return t('proposals.status.accepted');
+      case 'rejected': return t('proposals.status.rejected');
+      case 'expired': return t('proposals.status.expired');
+      case 'Draft': return t('proposals.status.draft');
+      case 'Measurement Scheduled': return t('proposals.status.measurementScheduled');
+      case 'Measurement done': return t('proposals.status.measurementDone');
+      case 'Design done': return t('proposals.status.designDone');
+      case 'Follow up 1': return t('proposals.status.followUp1');
+      case 'Follow up 2': return t('proposals.status.followUp2');
+      case 'Follow up 3': return t('proposals.status.followUp3');
+      case 'Proposal accepted': return t('proposals.status.proposalAccepted');
+      case 'Proposal rejected': return t('proposals.status.proposalRejected');
+      default: return tab;
+    }
+  };
+
   useEffect(() => {
-    dispatch(getProposal());
-  }, [dispatch]);
+    // For contractor users, filter by their group ID
+    const groupId = isContractor ? contractorGroupId : null;
+    dispatch(getProposal(groupId));
+  }, [dispatch, isContractor, contractorGroupId]);
 
   const getTabCounts = () => {
     const counts = {
       All: proposal?.length,
+      'draft': 0,
+      'sent': 0,
+      'accepted': 0,
+      'rejected': 0,
+      'expired': 0,
+      // Legacy statuses
       'Draft': 0,
       'Measurement Scheduled': 0,
       'Measurement done': 0,
@@ -64,11 +106,12 @@ const Proposals = () => {
       'Follow up 1': 0,
       'Follow up 2': 0,
       'Follow up 3': 0,
-      'Proposal accepted': 0
+      'Proposal accepted': 0,
+      'Proposal rejected': 0
     };
 
     proposal?.forEach((item) => {
-      const status = item.status || 'Draft';
+      const status = item.status || 'draft';
       if (counts[status] !== undefined) {
         counts[status]++;
       }
@@ -106,28 +149,199 @@ const Proposals = () => {
     navigate('/proposals/create?quick=yes');
   };
 
+  const getAvailableActions = (proposal) => {
+    const status = proposal.status?.toLowerCase() || 'draft';
+    const isLocked = proposal.is_locked;
+    
+    if (isLocked) {
+      return []; // No actions available for locked proposals
+    }
+
+    const actions = [];
+    
+    switch (status) {
+      case 'draft':
+        actions.push({ type: 'send', label: t('proposals.actions.send'), icon: cilPaperPlane, color: 'info' });
+        actions.push({ type: 'share', label: t('proposals.actions.share'), icon: cilSend, color: 'primary' });
+        break;
+      case 'sent':
+        actions.push({ type: 'accept', label: t('proposals.actions.accept'), icon: cilCheck, color: 'success' });
+        actions.push({ type: 'reject', label: t('proposals.actions.reject'), icon: cilX, color: 'danger' });
+        actions.push({ type: 'share', label: t('proposals.actions.share'), icon: cilSend, color: 'primary' });
+        break;
+      case 'rejected':
+      case 'expired':
+        actions.push({ type: 'send', label: t('proposals.actions.resend'), icon: cilPaperPlane, color: 'info' });
+        actions.push({ type: 'share', label: t('proposals.actions.share'), icon: cilSend, color: 'primary' });
+        break;
+      default:
+        break;
+    }
+    // Hide internal-only actions for contractors until fully implemented
+    if (isContractor) {
+      return actions.filter(a => a.type !== 'send' && a.type !== 'share');
+    }
+
+    return actions;
+  };
+
+  const renderStatusActions = (proposal) => {
+    const availableActions = getAvailableActions(proposal);
+    
+    return availableActions.map((action) => (
+      <CButton
+        key={action.type}
+        color="light"
+        size="sm"
+        className="p-2 me-1"
+        onClick={() => {
+          if (action.type === 'send') {
+            handleSendProposal(proposal.id);
+          } else if (action.type === 'accept') {
+            handleAcceptProposal(proposal);
+          } else if (action.type === 'reject') {
+            handleRejectProposal(proposal.id);
+          } else if (action.type === 'share') {
+            handleCreateShareLink(proposal);
+          }
+        }}
+        style={{
+          borderRadius: '8px',
+          border: `1px solid ${action.color === 'info' ? '#0dcaf0' : action.color === 'success' ? '#198754' : action.color === 'danger' ? '#dc3545' : '#0d6efd'}`,
+          transition: 'all 0.2s ease'
+        }}
+        title={action.label}
+      >
+        <CIcon
+          icon={action.icon}
+          size="sm"
+          style={{ color: action.color === 'info' ? '#0dcaf0' : action.color === 'success' ? '#198754' : action.color === 'danger' ? '#dc3545' : '#0d6efd' }}
+        />
+      </CButton>
+    ));
+  };
+
+  const handleStatusAction = async (proposalId, action, newStatus) => {
+    try {
+      await dispatch(updateProposalStatus({ id: proposalId, action, status: newStatus })).unwrap();
+      const successMap = {
+        send: t('proposals.toast.successSend'),
+        accept: t('proposals.toast.successAccept'),
+        reject: t('proposals.toast.successReject')
+      };
+      Swal.fire(t('common.success') || 'Success', successMap[action] || t('proposals.toast.successSend'), 'success');
+      const groupId = isContractor ? contractorGroupId : null;
+      dispatch(getProposal(groupId));
+    } catch (error) {
+      console.error('Status update error:', error);
+      Swal.fire(t('common.error'), error.message || t('proposals.toast.errorGeneric'), 'error');
+    }
+  };
+
+  const handleSendProposal = (proposalId) => {
+  // Defense-in-depth: contractors should not trigger send
+  if (isContractor) return;
+    Swal.fire({
+      title: t('proposals.confirm.sendTitle'),
+      text: t('proposals.confirm.sendText'),
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: t('proposals.confirm.sendConfirm'),
+      cancelButtonText: t('proposals.confirm.cancel'),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleStatusAction(proposalId, 'send', 'sent');
+      }
+    });
+  };
+
+  const handleAcceptProposal = (proposal) => {
+    setSelectedProposalForAcceptance(proposal);
+    setShowAcceptanceModal(true);
+  };
+
+  const handleAcceptanceComplete = () => {
+    const groupId = isContractor ? contractorGroupId : null;
+    dispatch(getProposal(groupId));
+    setSelectedProposalForAcceptance(null);
+  };
+
+  const handleRejectProposal = (proposalId) => {
+    Swal.fire({
+      title: t('proposals.confirm.rejectTitle'),
+      text: t('proposals.confirm.rejectText'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: t('proposals.confirm.rejectConfirm'),
+      cancelButtonText: t('proposals.confirm.cancel'),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleStatusAction(proposalId, 'reject', 'rejected');
+      }
+    });
+  };
+
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      title: t('proposals.confirm.deleteTitle'),
+      text: t('proposals.confirm.deleteText'),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: t('proposals.confirm.deleteConfirm'),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteFormData(id))
           .then((res) => {
             if (res.meta.requestStatus === 'fulfilled') {
-              Swal.fire('Deleted!', 'Your proposal has been deleted.', 'success');
-              dispatch(getProposal());
+              Swal.fire(t('common.deleted') || 'Deleted', t('proposals.toast.deleted') || 'Your proposal has been deleted.', 'success');
+              const groupId = isContractor ? contractorGroupId : null;
+              dispatch(getProposal(groupId));
             } else {
-              Swal.fire('Error!', 'Failed to delete the proposal.', 'error');
+              Swal.fire(t('common.error'), t('proposals.toast.deleteFailed') || 'Failed to delete the proposal.', 'error');
             }
           });
       }
     });
+  };
+
+  const handleCreateShareLink = async (proposal) => {
+  // Defense-in-depth: contractors should not create share links
+  if (isContractor) return;
+    try {
+      const res = await axiosInstance.post(`/api/proposals/${proposal.id}/sessions`);
+      const payload = res.data;
+      if (!payload?.success) throw new Error(payload?.message || 'Failed to create share link');
+      const { token, expires_at } = payload.data || {};
+      if (!token) throw new Error('Session token missing in response');
+      const link = `${window.location.origin}/p/${encodeURIComponent(token)}`;
+      const expiryStr = expires_at ? new Date(expires_at).toLocaleString() : t('common.na');
+
+      await Swal.fire({
+        title: t('proposals.share.createdTitle'),
+        html: `
+          <div class="mb-2">${t('proposals.share.expires')} <b>${expiryStr}</b></div>
+          <input id="share-link" class="swal2-input" value="${link}" readonly />
+        `,
+        showCancelButton: true,
+        confirmButtonText: t('proposals.share.copy'),
+        didOpen: () => {
+          const el = document.getElementById('share-link');
+          if (el) { el.focus(); el.select(); }
+        },
+        preConfirm: async () => {
+          try { await navigator.clipboard.writeText(link); } catch (e) { /* ignore */ }
+        }
+      });
+
+      // Refresh list to reflect possible sent_at/status updates
+      const groupId = isContractor ? contractorGroupId : null;
+      dispatch(getProposal(groupId));
+    } catch (err) {
+      console.error('Create share link error:', err);
+  Swal.fire(t('common.error'), err.message || t('proposals.share.error'), 'error');
+    }
   };
 
   const handleNavigate = (id) => {
@@ -136,6 +350,13 @@ const Proposals = () => {
 
   const getStatusColor = (status) => {
     const statusColors = {
+      // New standardized statuses
+      'draft': 'secondary',
+      'sent': 'info',
+      'accepted': 'success',
+      'rejected': 'danger',
+      'expired': 'warning',
+      // Legacy statuses (for backward compatibility)
       'Draft': 'secondary',
       'Measurement Scheduled': 'info',
       'Measurement done': 'primary',
@@ -143,289 +364,268 @@ const Proposals = () => {
       'Follow up 1': 'warning',
       'Follow up 2': 'warning',
       'Follow up 3': 'warning',
-      'Proposal accepted': 'success'
+      'Proposal accepted': 'success',
+      'Proposal rejected': 'danger'
     };
     return statusColors[status] || 'secondary';
   };
 
   return (
-    <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container">
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <h3 className="text-white mb-1 fw-bold">Proposals</h3>
-              <p className="text-white-50 mb-0">Manage and track all your proposals</p>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex gap-2">
+      <div className="page-header">
+        <CRow className="align-items-center">
+          <CCol>
+            <h3 className="page-header-title">{t('proposals.header')}</h3>
+            <p className="page-header-subtitle">{t('proposals.subtitle')}</p>
+          </CCol>
+          <CCol xs="auto">
+            <div className="d-flex gap-2">
+              <PermissionGate permission="proposals:create">
                 <CButton
                   color="light"
-                  className="shadow-sm px-4 fw-semibold"
                   onClick={handleCreateProposal}
-                  style={{
-                    borderRadius: '5px',
-                    border: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
                 >
                   <CIcon icon={cilPlus} className="me-2" />
-                  New Proposal
+                  {t('proposals.new')}
                 </CButton>
+              </PermissionGate>
+              <PermissionGate permission="proposals:create">
                 <CButton
                   color="success"
-                  className="shadow-sm px-4 fw-semibold"
+                  className="btn-gradient-green"
                   onClick={handleCreateQuickProposal}
-                  style={{
-                    borderRadius: '5px',
-                    border: 'none',
-                    background: 'linear-gradient(45deg, #28a745, #20c997)',
-                    transition: 'all 0.3s ease'
-                  }}
                 >
-                  Quick Proposal
+                  {t('proposals.quick')}
                 </CButton>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
-
+              </PermissionGate>
+            </div>
+          </CCol>
+        </CRow>
+      </div>
 
       {/* Status Tabs */}
-      <CCard className="border-0 shadow-sm mb-2">
-        <CCardBody className="pb-2">
-          <div className="d-flex flex-wrap gap-2">
-            {tabs.map((tab, idx) => {
-              const isActive = activeTab === tab;
-              const count = tabCounts[tab] || 0;
-              return (
-                <CButton
-                  key={idx}
-                  color="light"
-                  className={`position-relative fw-semibold ${isActive ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveTab(tab);
-                    setCurrentPage(1);
-                  }}
-                  style={{
-                    borderRadius: '25px',
-                    padding: '8px 10px',
-                    border: isActive ? '2px solid #0d6efd' : '1px solid #e3e6f0',
-                    backgroundColor: isActive ? '#e7f3ff' : '#ffffff',
-                    color: isActive ? '#0d6efd' : '#6c757d',
-                    transition: 'all 0.3s ease',
-                    transform: isActive ? 'translateY(-1px)' : 'none',
-                    boxShadow: isActive ? '0 4px 8px rgba(13, 110, 253, 0.2)' : 'none',
-                    fontSize: '10px'
-                  }}
-                >
-                  {tab}
-                  <CBadge
-                    color={isActive ? 'primary' : 'secondary'}
-                    className="ms-2"
-                    style={{
-                      fontSize: '10px',
-                      borderRadius: '10px',
-                      padding: '3px 8px'
-                    }}
-                  >
-                    {count}
-                  </CBadge>
-                </CButton>
-              );
-            })}
-          </div>
-        </CCardBody>
-      </CCard>
+      <div className="tabs-container">
+        {tabs.map((tab, idx) => {
+          const isActive = activeTab === tab;
+          const count = tabCounts[tab] || 0;
+          if (count === 0 && tab !== 'All' && !tabs.slice(0, 6).includes(tab)) return null; // Hide unused legacy tabs
+          return (
+            <CButton
+              key={idx}
+              color="light"
+              className={`tab-button ${isActive ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab(tab);
+                setCurrentPage(1);
+              }}
+            >
+              {getTabLabel(tab)}
+              <CBadge
+                color={isActive ? 'light' : 'secondary'}
+                shape="rounded-pill"
+                className="ms-2"
+              >
+                {count}
+              </CBadge>
+            </CButton>
+          );
+        })}
+      </div>
+
       {/* Search and Filters */}
-      <CCard className="border-0 shadow-sm  mb-1">
+      <CCard className="filter-card">
         <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
+          <CRow className="align-items-center g-3">
+            <CCol md={8}>
               <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
+                <CInputGroupText>
                   <CIcon icon={cilSearch} />
                 </CInputGroupText>
                 <CFormInput
                   type="text"
-                  placeholder="Search by customer name..."
+                  placeholder={t('proposals.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    padding: '12px 16px'
-                  }}
                 />
               </CInputGroup>
             </CCol>
-            <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-              <span className="text-muted small">
-                Showing {filteredProposals?.length || 0} of {proposal?.length || 0} proposals
-              </span>
+            <CCol md={4} className="text-md-end">
+              <small className="text-muted">
+                {t('proposals.showingCount', { count: filteredProposals?.length || 0, total: proposal?.length || 0 })}
+              </small>
             </CCol>
           </CRow>
         </CCardBody>
       </CCard>
 
-
-      {/* Table */}
-      <CCard className="border-0 shadow-sm">
-        <CCardBody className="p-0">
-          <div style={{ overflowX: 'auto' }}>
-            <CTable hover responsive className="mb-0">
-              <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
+      {/* Desktop Table */}
+      <div className="table-responsive-md">
+        <CCard className="data-table-card">
+          <CTable hover>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell>{t('proposals.headers.date')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('proposals.headers.customer')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('proposals.headers.description')}</CTableHeaderCell>
+                {canAssignDesigner && <CTableHeaderCell>{t('proposals.headers.designer')}</CTableHeaderCell>}
+                <CTableHeaderCell>{t('proposals.headers.status')}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{t('proposals.headers.actions')}</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {paginatedItems?.length === 0 ? (
                 <CTableRow>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Date</CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Customer</CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Description</CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Designer</CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Status</CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">Actions</CTableHeaderCell>
+                  <CTableDataCell colSpan={canAssignDesigner ? 6 : 5} className="text-center py-5">
+                    <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+                    <p className="mb-0">{t('proposals.empty.title')}</p>
+                    <small className="text-muted">{t('proposals.empty.subtitle')}</small>
+                  </CTableDataCell>
                 </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {paginatedItems?.length === 0 ? (
-                  <CTableRow>
-                    <CTableDataCell colSpan="6" className="text-center py-5">
-                      <div className="text-muted">
-                        <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
-                        <p className="mb-0">No proposals found</p>
-                        <small>Try adjusting your search or filters</small>
+              ) : (
+                paginatedItems?.map((item) => (
+                  <CTableRow key={item.id}>
+                    <CTableDataCell>
+                      {new Date(item.date || item.createdAt).toLocaleDateString()}
+                    </CTableDataCell>
+                    <CTableDataCell
+                      className="fw-medium"
+                      style={{ cursor: 'pointer', color: 'var(--cui-primary)' }}
+                      onClick={() => item.customer?.id && navigate(`/customers/edit/${item.customer.id}`)}
+                    >
+                      {item.customer?.name || t('common.na')}
+                    </CTableDataCell>
+                    <CTableDataCell className="text-muted">{item.description || t('common.na')}</CTableDataCell>
+                    {canAssignDesigner && <CTableDataCell>{item.designerData?.name || t('common.na')}</CTableDataCell>}
+                    <CTableDataCell>
+                      <CBadge color={getStatusColor(item.status || 'Draft')} shape="rounded-pill">
+                        {getTabLabel(item.status || 'Draft')}
+                      </CBadge>
+                    </CTableDataCell>
+                    <CTableDataCell className="text-center">
+                      <div className="d-flex justify-content-center gap-2">
+                        {renderStatusActions(item)}
+                        <PermissionGate action="update" resource="proposal" item={item}>
+                          <CButton
+                            color="primary"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleNavigate(item.id)}
+                          >
+                            <CIcon icon={cilPencil} />
+                          </CButton>
+                        </PermissionGate>
+                        {!item.is_locked && (
+                          <PermissionGate action="delete" resource="proposal" item={item}>
+                            <CButton
+                              color="danger"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <CIcon icon={cilTrash} />
+                            </CButton>
+                          </PermissionGate>
+                        )}
                       </div>
                     </CTableDataCell>
                   </CTableRow>
-                ) : (
-                  paginatedItems?.map((item, index) => (
-                    <CTableRow key={index} style={{ transition: 'all 0.2s ease' }}>
-                      <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                        <span className="fw-medium">
-                          {new Date(item.date || item.createdAt).toLocaleDateString()}
-                        </span>
-                      </CTableDataCell>
-                      <CTableDataCell
-                        className="py-3 border-0 border-bottom border-light"
-                        style={{
-                          color: '#0d6efd',
-                          cursor: 'pointer',
-                          fontWeight: '500'
-                        }}
-                        onClick={() => {
-                          if (item.customer?.id) {
-                            navigate(`/customers/edit/${item.customer.id}`);
-                          }
-                        }}
-                      >
-                        {item.customer?.name || 'N/A'}
-                      </CTableDataCell>
-                      <CTableDataCell
-                        className="py-3 border-0 border-bottom border-light"
-                        style={{
-                          whiteSpace: 'normal',
-                          wordBreak: 'break-word',
-                          maxWidth: '200px'
-                        }}
-                      >
-                        <span className="text-muted">
-                          {item.description || 'N/A'}
-                        </span>
-                      </CTableDataCell>
-                      <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                        <span className="fw-medium">
-                          {item.designerData?.name || 'N/A'}
-                        </span>
-                      </CTableDataCell>
-                      <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                        <CBadge
-                          color={getStatusColor(item.status || 'Draft')}
-                          className="px-3 py-2"
-                          style={{
-                            borderRadius: '20px',
-                            fontSize: '12px',
-                            fontWeight: '500'
-                          }}
-                        >
-                          {item.status || 'Draft'}
-                        </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
-                        <div className="d-flex justify-content-center gap-2">
-                          <CButton
-                            color="light"
-                            size="sm"
-                            className="p-2"
-                            onClick={() => handleNavigate(item.id)}
-                            style={{
-                              borderRadius: '8px',
-                              border: '1px solid #e3e6f0',
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#e7f3ff';
-                              e.currentTarget.style.borderColor = '#0d6efd';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.borderColor = '#e3e6f0';
-                            }}
-                          >
-                            <CIcon
-                              icon={cilPencil}
-                              size="sm"
-                              style={{ color: '#0d6efd' }}
-                            />
-                          </CButton>
+                ))
+              )}
+            </CTableBody>
+          </CTable>
+        </CCard>
+      </div>
 
-                          <CButton
-                            color="light"
-                            size="sm"
-                            className="p-2"
-                            onClick={() => handleDelete(item.id)}
-                            style={{
-                              borderRadius: '8px',
-                              border: '1px solid #e3e6f0',
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#ffe6e6';
-                              e.currentTarget.style.borderColor = '#dc3545';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.borderColor = '#e3e6f0';
-                            }}
-                          >
-                            <CIcon
-                              icon={cilTrash}
-                              size="sm"
-                              style={{ color: '#dc3545' }}
-                            />
-                          </CButton>
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))
-                )}
-              </CTableBody>
-            </CTable>
-          </div>
+      {/* Mobile Card Layout */}
+      <div className="mobile-card-view">
+        {paginatedItems?.length === 0 ? (
+          <CCard>
+            <CCardBody className="text-center py-5">
+              <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+              <p className="mb-0">{t('proposals.empty.title')}</p>
+              <small className="text-muted">{t('proposals.empty.subtitle')}</small>
+            </CCardBody>
+          </CCard>
+        ) : (
+          paginatedItems?.map((item) => (
+            <CCard key={item.id} className="proposal-mobile-card">
+              <CCardBody>
+                <div className="d-flex justify-content-between align-items-start">
+                  <div className="customer-name">{item.customer?.name || t('common.na')}</div>
+                  <CBadge color={getStatusColor(item.status || 'Draft')} shape="rounded-pill">
+                    {getTabLabel(item.status || 'Draft')}
+                  </CBadge>
+                </div>
+                <div className="proposal-details">
+                  <div className="detail-item">
+                    <span>{new Date(item.date || item.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span>{item.description || t('common.na')}</span>
+                  </div>
+                  {canAssignDesigner && (
+                    <div className="detail-item">
+                      <strong>{t('proposals.headers.designer')}:</strong>
+                      <span>{item.designerData?.name || t('common.na')}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="actions">
+                  {renderStatusActions(item)}
+                  <PermissionGate action="update" resource="proposal" item={item}>
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleNavigate(item.id)}
+                    >
+                      <CIcon icon={cilPencil} className="me-1" />
+                      {t('common.edit')}
+                    </CButton>
+                  </PermissionGate>
+                  {!item.is_locked && (
+                    <PermissionGate action="delete" resource="proposal" item={item}>
+                      <CButton
+                        color="danger"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        <CIcon icon={cilTrash} className="me-1" />
+                        {t('common.delete')}
+                      </CButton>
+                    </PermissionGate>
+                  )}
+                </div>
+              </CCardBody>
+            </CCard>
+          ))
+        )}
+      </div>
 
-          {/* Pagination */}
-          <div className="p-3 border-top border-light">
-            <PaginationComponent
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-            />
-          </div>
+      {/* Pagination */}
+      <CCard className="data-table-card mt-4">
+        <CCardBody>
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+          />
         </CCardBody>
       </CCard>
+
+      {/* Proposal Acceptance Modal */}
+      <ProposalAcceptanceModal
+        show={showAcceptanceModal}
+        onClose={() => setShowAcceptanceModal(false)}
+        proposal={selectedProposalForAcceptance}
+        onAcceptanceComplete={handleAcceptanceComplete}
+        isContractor={isContractor}
+      />
     </CContainer>
   );
 };
 
-export default Proposals;
+export default withContractorScope(Proposals, 'proposals');

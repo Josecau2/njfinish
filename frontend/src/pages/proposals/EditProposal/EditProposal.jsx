@@ -21,6 +21,7 @@ import {
   CModalTitle,
   CModalBody,
   CModalFooter,
+  CAlert,
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
@@ -33,22 +34,24 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CIcon from '@coreui/icons-react';
 import { cilCopy, cilFile, cilList, cilOptions, cilPencil, cilTrash } from '@coreui/icons';
-import { FaCalendarAlt, FaPrint, FaEnvelope, FaFileContract } from 'react-icons/fa';
+import { FaCalendarAlt, FaPrint, FaEnvelope, FaFileContract, FaCheckCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import ItemSelectionContentEdit from '../../../components/ItemSelectionContentEdit';
 import FileUploadSection from '../CreateProposal/FileUploadSection';
 import PrintProposalModal from '../../../components/model/PrintProposalModal';
+import { hasPermission } from '../../../helpers/permissions';
 import EmailProposalModal from '../../../components/model/EmailProposalModal';
 import EmailContractModal from '../../../components/model/EmailContractModal';
 import Loader from '../../../components/Loader';
+import withContractorScope from '../../../components/withContractorScope';
 import axiosInstance from '../../../helpers/axiosInstance';
+import { useTranslation } from 'react-i18next';
 
-
-const validationSchema = Yup.object().shape({
-  //   customerName: Yup.string().required('Customer name is required'),
-  description: Yup.string().required('Description is required'),
-  designer: Yup.string().required('Designer is required'),
-});
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 const statusOptions = [
   { label: 'Draft', value: 'Draft' },
@@ -63,7 +66,7 @@ const statusOptions = [
   { label: 'Proposal rejected', value: 'Proposal rejected' },
 ];
 
-const EditProposal = () => {
+const EditProposal = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -86,15 +89,29 @@ const EditProposal = () => {
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
+  const { t } = useTranslation();
+  
+  // Check if user can assign designers (admin only)
+  const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
+  
+  // Check if user is a contractor (should not see manufacturer version names)
+  const isUserContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
+  const isAdmin = !!(loggedInUser?.role && String(loggedInUser.role).toLowerCase() === 'admin');
+  const effectiveIsContractor = typeof isContractor === 'boolean' ? isContractor : !!isUserContractor;
+  
+  // Dynamic validation schema based on user permissions
+  const validationSchema = Yup.object().shape({
+    description: Yup.string().required('Description is required'),
+    ...(canAssignDesigner && {
+      designer: Yup.string().required('Designer is required'),
+    }),
+  });
 
   // Helper function to safely get manufacturersData as array
   const getManufacturersData = () => {
-    const data = Array.isArray(formData?.manufacturersData) ? formData.manufacturersData : [];
-    console.log('getManufacturersData called, returning:', data);
+    const data = formData?.manufacturersData || [];
     return data;
-  };
-
-  const defaultFormData = {
+  };  const defaultFormData = {
     manufacturersData: [],
     designer: '',
     description: '',
@@ -110,21 +127,29 @@ const EditProposal = () => {
   };
 
   const [formData, setFormData] = useState(defaultFormData);
+  const [hasLocalEdits, setHasLocalEdits] = useState(false);
+
+  // Derived view-only state
+  const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted';
+  const isLocked = !!formData?.is_locked;
+  const isViewOnly = isLocked || (isAccepted && !isAdmin); // contractors view-only once accepted; locked is view-only for everyone
+
+  // Wrapped setFormData that marks local edits
+  const setFormDataWithEdits = (updater) => {
+    setHasLocalEdits(true);
+    setFormData(updater);
+  };
   
   // Debug log for formData changes
   useEffect(() => {
-    console.log('FormData changed:', formData);
-    console.log('ManufacturersData type:', typeof formData?.manufacturersData);
-    console.log('ManufacturersData isArray:', Array.isArray(formData?.manufacturersData));
-    console.log('ManufacturersData value:', formData?.manufacturersData);
   }, [formData]);
   // Fetch initial data
   useEffect(() => {
     axiosInstance
-      .get(`/api/proposals/proposalByID/${id}`)
+      .get(`/api/proposals/proposalByID/${id}`, {
+        headers: getAuthHeaders()
+      })
       .then((res) => {
-        console.log('Raw proposal data:', res.data);
-        
         // Parse manufacturersData if it's a string
         let parsedManufacturersData = res.data.manufacturersData;
         if (typeof parsedManufacturersData === 'string') {
@@ -141,8 +166,6 @@ const EditProposal = () => {
           parsedManufacturersData = [];
         }
         
-        console.log('Parsed manufacturersData:', parsedManufacturersData);
-        
         const processedData = {
           ...res.data,
           manufacturersData: parsedManufacturersData
@@ -150,6 +173,7 @@ const EditProposal = () => {
         
         setInitialData(processedData);
         setFormData(processedData || defaultFormData);
+        setHasLocalEdits(false); // Reset local edits flag on initial load
         setManufacturersById(parsedManufacturersData || []);
         setLoading(false);
       })
@@ -164,7 +188,9 @@ const EditProposal = () => {
   useEffect(() => {
     const fetchDesigners = async () => {
       try {
-        const response = await axiosInstance.get('/api/designers');
+        const response = await axiosInstance.get('/api/designers', {
+          headers: getAuthHeaders()
+        });
         const designerData = response.data.users.map((designer) => ({
           value: designer.id,
           label: designer.name,
@@ -174,30 +200,27 @@ const EditProposal = () => {
         console.error('Error fetching designers:', error);
       }
     };
-    fetchDesigners();
-  }, []);
+    
+    // Only fetch designers if user can assign them (admin only)
+    if (canAssignDesigner) {
+      fetchDesigners();
+    }
+  }, [canAssignDesigner]);
 
-  // Update formData when initialData changes
+  // Update formData when initialData changes (but not if we have local edits)
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !hasLocalEdits) {
       setFormData(initialData);
     }
-  }, [initialData]);
+  }, [initialData, hasLocalEdits]);
 
-  // Fetch manufacturers data
+  // Fetch manufacturers data (ensure manufacturer details are loaded)
   useEffect(() => {
     const manufacturersData = getManufacturersData();
-    
     if (manufacturersData.length > 0) {
-      setSelectedVersionIndex(0);
-      setSelectedVersion(manufacturersData);
-      dispatch(setSelectVersionNewEdit(manufacturersData));
-
       manufacturersData.forEach((item) => {
-
         if (item.manufacturer && !manufacturersById[item.manufacturer]) {
           dispatch(fetchManufacturerById(item.manufacturer));
-
         }
       });
     }
@@ -252,6 +275,7 @@ const EditProposal = () => {
   };
 
   const openEditModal = (index) => {
+  if (isContractor) return;
     setCurrentEditIndex(index);
     setEditedVersionName(versionDetails[index].versionName);
     setEditModalOpen(true);
@@ -281,11 +305,13 @@ const EditProposal = () => {
   };
 
   const openDeleteModal = (index) => {
+  if (isContractor) return;
     setCurrentDeleteIndex(index);
     setDeleteModalOpen(true);
   };
 
   const confirmDelete = () => {
+  if (isContractor) return;
     const manufacturersData = getManufacturersData();
     
     const updatedManufacturersData = manufacturersData.filter(
@@ -304,6 +330,7 @@ const EditProposal = () => {
   };
 
   const duplicateVersion = (index) => {
+  if (isContractor) return;
     const manufacturersData = getManufacturersData();
     
     if (!manufacturersData[index]) {
@@ -323,24 +350,47 @@ const EditProposal = () => {
   const selectVersion = versionDetails[selectedVersionIndex] || null;
 
   const handleSubmit = (values) => {
-    sendToBackend({ ...formData, ...values });
+    sendToBackend({ ...formData, ...values }, 'update');
   };
 
-  const handleSaveOrder = () => sendToBackend({ ...formData, type: '0' });
-  const handleAcceptOrder = () => sendToBackend({ ...formData, type: '1' });
-  const handleRejectOrder = () => sendToBackend({ ...formData, type: '2' });
+  const handleSaveOrder = () => sendToBackend({ ...formData }, 'update');
+  const handleAcceptOrder = () => sendToBackend({ ...formData, status: 'Proposal accepted' }, 'accept');
+  const handleRejectOrder = () => sendToBackend({ ...formData, status: 'Proposal rejected' }, 'reject');
 
-  const sendToBackend = async (finalData) => {
+  const sendToBackend = async (finalData, action = 'update') => {
     try {
-      const payload = { formData: finalData };
+      // Client-side guards to avoid calling backend in view-only scenarios
+      if (isLocked) {
+        Swal.fire(t('common.warning', 'Warning'), t('proposals.lockedStatus.description'), 'warning');
+        return;
+      }
+      if (!isAdmin && isAccepted && action !== 'update') {
+        Swal.fire(t('common.warning', 'Warning'), t('proposals.lockedStatus.description'), 'info');
+        return;
+      }
+
+      const payload = { action, formData: finalData };
       const response = await dispatch(sendFormDataToBackend(payload));
-      if (response.payload.success === true) {
+      if (response.payload?.success === true) {
         Swal.fire('Success!', 'Proposal saved successfully!', 'success');
         navigate('/proposals');
+      } else if (response.error) {
+        const msg = response.error.message || response.payload?.message || 'Failed to save proposal';
+        if (/locked/i.test(msg)) {
+          Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
+        } else {
+          Swal.fire('Error', msg, 'error');
+        }
       }
     } catch (error) {
       console.error('Error sending data to backend:', error);
-      Swal.fire('Error!', 'Failed to save proposal.', 'error');
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message || error?.message || 'Failed to save proposal';
+      if (status === 403 && /locked/i.test(message)) {
+        Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
+      } else {
+        Swal.fire('Error', message, 'error');
+      }
     }
   };
 
@@ -350,7 +400,15 @@ const EditProposal = () => {
   return (
     <>
       <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
-        <h4 className="text-muted m-0">Edit Proposal</h4>
+        <div className="d-flex align-items-center gap-3">
+          <h4 className="text-muted m-0">Edit Proposal</h4>
+          {isAccepted && (
+            <CBadge color="success" className="px-2 py-1">{t('proposals.lockedStatus.title')}</CBadge>
+          )}
+          {isLocked && (
+            <CBadge color="dark" className="px-2 py-1">Locked</CBadge>
+          )}
+        </div>
         <div className="d-flex gap-2 flex-wrap">
           <div
             className="px-3 py-2 rounded d-flex align-items-center"
@@ -367,36 +425,40 @@ const EditProposal = () => {
             <FaPrint className="me-2" />
             Print Proposal
           </div>
-          <div
-            className="px-3 py-2 rounded d-flex align-items-center"
-            style={{
-              backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-              color: '#fff',
-              cursor: 'pointer',
-              transition: '0.2s',
-            }}
-            onMouseEnter={() => setHovered('email')}
-            onMouseLeave={() => setHovered(null)}
-            onClick={() => setShowEmailModal(true)}
-          >
-            <FaEnvelope className="me-2" />
-            Email Proposal
-          </div>
-          <div
-            className="px-3 py-2 rounded d-flex align-items-center"
-            style={{
-              backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-              color: '#212529',
-              cursor: 'pointer',
-              transition: '0.2s',
-            }}
-            onMouseEnter={() => setHovered('contract')}
-            onMouseLeave={() => setHovered(null)}
-            onClick={() => setShowContractModal(true)}
-          >
-            <FaFileContract className="me-2" />
-            Email Contract
-          </div>
+          {!isUserContractor && (
+            <>
+              <div
+                className="px-3 py-2 rounded d-flex align-items-center"
+                style={{
+                  backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  transition: '0.2s',
+                }}
+                onMouseEnter={() => setHovered('email')}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => setShowEmailModal(true)}
+              >
+                <FaEnvelope className="me-2" />
+                Email Proposal
+              </div>
+              <div
+                className="px-3 py-2 rounded d-flex align-items-center"
+                style={{
+                  backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                  color: '#212529',
+                  cursor: 'pointer',
+                  transition: '0.2s',
+                }}
+                onMouseEnter={() => setHovered('contract')}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => setShowContractModal(true)}
+              >
+                <FaFileContract className="me-2" />
+                Email Contract
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -407,42 +469,43 @@ const EditProposal = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => {
-            // Sync formData with Formik's values
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, setValues }) => {
+            // Sync Formik values FROM formData (single source of truth)
             useEffect(() => {
-              // Prevent feedback loop: only update when values actually differ from formData
               try {
                 const a = JSON.stringify(values);
                 const b = JSON.stringify(formData);
                 if (a !== b) {
-                  updateFormData(values);
+                  setValues(formData);
                 }
               } catch (e) {
-                // Fallback: if comparison fails, avoid updating to prevent loops
+                // no-op
               }
-            }, [values, formData]);
+            }, [formData]);
 
             return (
               <CForm onSubmit={handleSubmit}>
                 <CRow>
 
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="designer">Designer *</CFormLabel>
-                    <CreatableSelect
-                      isClearable
-                      id="designer"
-                      name="designer"
-                      options={designerOptions}
-                      value={designerOptions.find((opt) => opt.value === values.designer) || null}
-                      onChange={(selectedOption) => {
-                        setFieldValue('designer', selectedOption?.value || '');
-                      }}
-                      onBlur={handleBlur}
-                    />
-                    {errors.designer && touched.designer && (
-                      <div className="text-danger small mt-1">{errors.designer}</div>
-                    )}
-                  </CCol>
+                  {canAssignDesigner && (
+                    <CCol xs={12} md={2} className="mt-4">
+                      <CFormLabel htmlFor="designer">Designer *</CFormLabel>
+                      <CreatableSelect
+                        isClearable
+                        id="designer"
+                        name="designer"
+                        options={designerOptions}
+                        value={designerOptions.find((opt) => opt.value === values.designer) || null}
+                        onChange={(selectedOption) => {
+                          setFieldValue('designer', selectedOption?.value || '');
+                        }}
+                        onBlur={handleBlur}
+                      />
+                      {errors.designer && touched.designer && (
+                        <div className="text-danger small mt-1">{errors.designer}</div>
+                      )}
+                    </CCol>
+                  )}
                   <CCol xs={12} md={2} className="mt-4">
                     <CFormLabel htmlFor="description">Description *</CFormLabel>
                     <CFormInput
@@ -617,6 +680,7 @@ const EditProposal = () => {
                   </CCol>
                 </CRow>
 
+                {!isUserContractor && (
                 <div className="mb-4 mt-5 d-flex flex-wrap gap-4">
                   {versionDetails.map((version, index) => {
                     const isSelected = index === selectedVersionIndex;
@@ -640,7 +704,9 @@ const EditProposal = () => {
                         onClick={() => handleBadgeClick(index, version)}
                       >
                         <div>
-                          <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                          {!isUserContractor && (
+                            <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                          )}
                           <small
                             style={{
                               fontSize: '0.7rem',
@@ -650,70 +716,73 @@ const EditProposal = () => {
                             $ {version.manufacturerData?.costMultiplier || 'N/A'}
                           </small>
                         </div>
-                        <CDropdown onClick={(e) => e.stopPropagation()}>
-                          <CDropdownToggle
-                            color="transparent"
-                            size="sm"
-                            style={{
-                              padding: '0 4px',
-                              color: isSelected ? '#d0e7ff' : '#084298',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              boxShadow: 'none',
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <CIcon icon={cilOptions} />
-                          </CDropdownToggle>
-                          <CDropdownMenu
-                            style={{
-                              minWidth: '120px',
-                              border: '1px solid #e0e0e0',
-                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                              borderRadius: '4px',
-                              padding: '4px 0',
-                            }}
-                          >
-                            <CDropdownItem
-                              onClick={() => openEditModal(index)}
+                        {!isUserContractor && (
+                          <CDropdown onClick={(e) => e.stopPropagation()}>
+                            <CDropdownToggle
+                              color="transparent"
+                              size="sm"
                               style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#333',
+                                padding: '0 4px',
+                                color: isSelected ? '#d0e7ff' : '#084298',
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                boxShadow: 'none',
                                 transition: 'all 0.2s ease',
                               }}
                             >
-                              <CIcon icon={cilPencil} className="me-2" /> Edit
-                            </CDropdownItem>
-                            <CDropdownItem
-                              onClick={() => openDeleteModal(index)}
+                              <CIcon icon={cilOptions} />
+                            </CDropdownToggle>
+                            <CDropdownMenu
                               style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#dc3545',
-                                transition: 'all 0.2s ease',
+                                minWidth: '120px',
+                                border: '1px solid #e0e0e0',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                borderRadius: '4px',
+                                padding: '4px 0',
                               }}
                             >
-                              <CIcon icon={cilTrash} className="me-2" /> Delete
-                            </CDropdownItem>
-                            <CDropdownItem
-                              onClick={() => duplicateVersion(index)}
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#333',
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              <CIcon icon={cilCopy} className="me-2" /> Duplicate
-                            </CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
+                              <CDropdownItem
+                                onClick={() => openEditModal(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#333',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilPencil} className="me-2" /> Edit
+                              </CDropdownItem>
+                              <CDropdownItem
+                                onClick={() => openDeleteModal(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#dc3545',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilTrash} className="me-2" /> Delete
+                              </CDropdownItem>
+                              <CDropdownItem
+                                onClick={() => duplicateVersion(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#333',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilCopy} className="me-2" /> Duplicate
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
+                        )}
                       </CBadge>
                     );
                   })}
                 </div>
+                )}
 
                 <hr />
 
@@ -772,9 +841,10 @@ const EditProposal = () => {
                     <ItemSelectionContentEdit
                       selectedVersion={selectedVersion}
                       formData={formData}
-                      setFormData={setFormData}
+                      setFormData={setFormDataWithEdits}
                       setSelectedVersion={setSelectedVersion}
                       selectVersion={selectVersion}
+                      readOnly={isViewOnly}
                     />
                   </div>
                 )}
@@ -795,29 +865,50 @@ const EditProposal = () => {
                   className="d-flex justify-content-center align-items-center flex-wrap gap-3 p-3"
                   style={{ maxWidth: '600px', margin: '0 auto' }}
                 >
-                  <CButton
-                    color="secondary"
-                    variant="outline"
-                    onClick={handleSaveOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Save
-                  </CButton>
-                  <CButton
-                    color="success"
-                    onClick={handleAcceptOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Accept and Order
-                  </CButton>
-                  <CButton
-                    color="danger"
-                    variant="outline"
-                    onClick={handleRejectOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Reject and Archive
-                  </CButton>
+                  {isViewOnly ? (
+                    <div className="w-100">
+                      <CAlert color="success" className="text-center">
+                        <h5 className="alert-heading mb-3">
+                          <FaCheckCircle className="me-2" />
+                          {t('proposals.lockedStatus.title')}
+                        </h5>
+                        <p className="mb-2">
+                          {t('proposals.lockedStatus.description')}
+                        </p>
+                        <small className="text-muted">
+                          {t('proposals.lockedStatus.processingNote')}
+                        </small>
+                      </CAlert>
+                    </div>
+                  ) : (
+                    <>
+                      <CButton
+                        color="secondary"
+                        variant="outline"
+                        onClick={handleSaveOrder}
+                        style={{ minWidth: '140px' }}
+                      >
+                        Save
+                      </CButton>
+                      <CButton
+                        color="success"
+                        onClick={handleAcceptOrder}
+                        style={{ minWidth: '140px' }}
+                        disabled={isAccepted}
+                        title={isAccepted ? 'Already accepted' : undefined}
+                      >
+                        Accept and Order
+                      </CButton>
+                      <CButton
+                        color="danger"
+                        variant="outline"
+                        onClick={handleRejectOrder}
+                        style={{ minWidth: '140px' }}
+                      >
+                        Reject and Archive
+                      </CButton>
+                    </>
+                  )}
                 </div>
               </CForm>
             );
@@ -881,4 +972,4 @@ const EditProposal = () => {
   );
 };
 
-export default EditProposal;
+export default withContractorScope(EditProposal, 'proposals');

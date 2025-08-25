@@ -19,6 +19,7 @@ import ct from 'countries-and-timezones';
 import moment from 'moment-timezone';
 import { fetchLocationById, updateLocation } from '../../../store/slices/locationSlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const initialForm = {
   locationName: '',
@@ -31,6 +32,7 @@ const initialForm = {
 };
 
 const LocationForm = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);
@@ -52,7 +54,7 @@ const LocationForm = () => {
           setFormData(res);
           initialFormRef.current = res;
         } catch (err) {
-          Swal.fire('Error', 'Failed to load location data', 'error');
+          Swal.fire(t('common.error'), t('settings.locations.edit.loadFailedOne'), 'error');
         }
       }
     };
@@ -70,17 +72,17 @@ const LocationForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.locationName.trim()) newErrors.locationName = 'Location name is required';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.website.trim()) newErrors.website = 'Website is required';
+    if (!formData.locationName.trim()) newErrors.locationName = t('settings.locations.form.validation.locationNameRequired');
+    if (!formData.address.trim()) newErrors.address = t('settings.locations.form.validation.addressRequired');
+    if (!formData.website.trim()) newErrors.website = t('settings.locations.form.validation.websiteRequired');
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('settings.locations.form.validation.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email';
+      newErrors.email = t('settings.locations.form.validation.invalidEmail');
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.country) newErrors.country = 'Country is required';
-    if (!formData.timezone) newErrors.timezone = 'Timezone is required';
+    if (!formData.phone.trim()) newErrors.phone = t('settings.locations.form.validation.phoneRequired');
+    if (!formData.country) newErrors.country = t('settings.locations.form.validation.countryRequired');
+    if (!formData.timezone) newErrors.timezone = t('settings.locations.form.validation.timezoneRequired');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -114,11 +116,11 @@ const LocationForm = () => {
       const response = await dispatch(updateLocation({ id, data: formData })).unwrap();
 
       if (response?.status == 200) {
-        Swal.fire('Updated!', 'Location updated successfully!', 'success');
+        Swal.fire(t('settings.locations.alerts.updatedTitle'), t('settings.locations.alerts.updatedText'), 'success');
         navigate('/settings/locations');
       }
     } catch (error) {
-      Swal.fire('Error', error.message || 'Something went wrong', 'error');
+      Swal.fire(t('common.error'), error.message || t('settings.locations.alerts.genericError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -131,14 +133,14 @@ const LocationForm = () => {
   return (
     <CContainer className="mt-4 mb-4">
       <CCard>
-        <CCardHeader className="bg-white border-bottom">
-          <h5 className="mb-2 mt-2">Edit Location</h5>
+        <CCardHeader className="bg-body border-bottom">
+          <h5 className="mb-2 mt-2">{t('settings.locations.edit.title')}</h5>
         </CCardHeader>
         <CCardBody>
           <CForm onSubmit={handleSubmit}>
             <CRow className="mb-3">
               <CCol md={6}>
-                <CFormLabel>Location Name</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.locationName')}</CFormLabel>
                 <CFormInput
                   name="locationName"
                   value={formData.locationName}
@@ -148,7 +150,7 @@ const LocationForm = () => {
                 <CFormFeedback invalid>{errors.locationName}</CFormFeedback>
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Address</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.address')}</CFormLabel>
                 <CFormInput
                   name="address"
                   value={formData.address}
@@ -161,7 +163,7 @@ const LocationForm = () => {
 
             <CRow className="mb-3">
               <CCol md={6}>
-                <CFormLabel>Website</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.website')}</CFormLabel>
                 <CFormInput
                   name="website"
                   value={formData.website}
@@ -171,7 +173,7 @@ const LocationForm = () => {
                 <CFormFeedback invalid>{errors.website}</CFormFeedback>
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Email</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.email')}</CFormLabel>
                 <CFormInput
                   name="email"
                   value={formData.email}
@@ -184,7 +186,7 @@ const LocationForm = () => {
 
             <CRow className="mb-3">
               <CCol md={6}>
-                <CFormLabel>Phone</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.phone')}</CFormLabel>
                 <CFormInput
                   name="phone"
                   value={formData.phone}
@@ -194,14 +196,14 @@ const LocationForm = () => {
                 <CFormFeedback invalid>{errors.phone}</CFormFeedback>
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Country</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.country')}</CFormLabel>
                 <CFormSelect
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
                   invalid={!!errors.country}
                 >
-                  <option value="">-- Select Country --</option>
+                  <option value="">{t('settings.locations.form.select.country')}</option>
                   {countries.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
@@ -212,14 +214,14 @@ const LocationForm = () => {
 
             <CRow className="mb-3">
               <CCol md={6}>
-                <CFormLabel>Timezone</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.timezone')}</CFormLabel>
                 <CFormSelect
                   name="timezone"
                   value={formData.timezone}
                   onChange={handleChange}
                   invalid={!!errors.timezone}
                 >
-                  <option value="">-- Select Timezone --</option>
+                  <option value="">{t('settings.locations.form.select.timezone')}</option>
                   {timezonesForCountry.map((tz) => (
                     <option key={tz} value={tz}>{tz}</option>
                   ))}
@@ -227,7 +229,7 @@ const LocationForm = () => {
                 <CFormFeedback invalid>{errors.timezone}</CFormFeedback>
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Current Time</CFormLabel>
+                <CFormLabel>{t('settings.locations.form.labels.currentTime')}</CFormLabel>
                 <CFormInput
                   value={currentTime}
                   readOnly
@@ -243,8 +245,8 @@ const LocationForm = () => {
             <hr className="my-4" />
 
             <div className="d-flex gap-2 mt-4">
-              <CButton type="submit" color="success" disabled={loading}>
-                {loading ? 'Updating...' : 'Update'}
+      <CButton type="submit" color="success" disabled={loading}>
+        {loading ? t('settings.locations.edit.updating') : t('settings.locations.edit.update')}
               </CButton>
               <CButton
                 type="button"
@@ -252,12 +254,12 @@ const LocationForm = () => {
                 onClick={() => {
                   if (isFormDirty()) {
                     Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'Changes you made will be lost if you leave now.',
+          title: t('common.confirm'),
+          text: t('settings.locations.alerts.leaveWarning'),
                       icon: 'warning',
                       showCancelButton: true,
-                      confirmButtonText: 'Leave Anyway',
-                      cancelButtonText: 'Stay on Page',
+          confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
+          cancelButtonText: t('settings.locations.alerts.stayOnPage'),
                       confirmButtonColor: '#d33',
                       cancelButtonColor: '#6c757d',
                     }).then((result) => {
@@ -270,7 +272,7 @@ const LocationForm = () => {
                   }
                 }}
               >
-                Cancel
+        {t('common.cancel')}
               </CButton>
             </div>
           </CForm>

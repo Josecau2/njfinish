@@ -1,5 +1,6 @@
 const { Op, Sequelize } = require('sequelize');
 const { Proposals } = require('../models');
+const { logActivity } = require('../utils/activityLogger');
 const Customer = require('../models/Customer'); // Assuming the Customer model is in the models folder
 
 const fetchCustomer = async (req, res) => {
@@ -7,9 +8,23 @@ const fetchCustomer = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const { group_id } = req.query;
+    const user = req.user;
+
+    // Build where clause
+    let whereClause = { status: 1 };
+    
+    // Apply group scoping
+    if (user.group_id && user.group && user.group.group_type === 'contractor') {
+      // Contractors can only see their own group's customers
+      whereClause.group_id = user.group_id;
+    } else if (group_id) {
+      // Admins can filter by specific group
+      whereClause.group_id = group_id;
+    }
 
     const { count, rows } = await Customer.findAndCountAll({
-      where: { status: 1 },
+      where: whereClause,
       limit,
       offset,
       order: [['createdAt', 'DESC']],
@@ -52,19 +67,27 @@ const fetchCustomer = async (req, res) => {
 // fetch sinle  customers
 const fetchSingleCustomer = async (req, res) => {
   const customerId = req.params.id;
+  const user = req.user;
+  
   try {
-   const customer = await Customer.findByPk(customerId); // OR use findOne if needed
+    // Build where clause with contractor scoping
+    let whereClause = { id: customerId };
+    
+    // Apply group scoping for contractors
+    if (user.group_id && user.group && user.group.group_type === 'contractor') {
+      whereClause.group_id = user.group_id;
+    }
+    
+    const customer = await Customer.findOne({ where: whereClause });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-     res.json(customer);
+    res.json(customer);
 
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Error fetching customer', error });
   }
-
-
 }
 
 
@@ -88,6 +111,10 @@ const addCustomer = async (req, res) => {
       note,
     } = req.body;
 
+    // Get user info from JWT token (added by auth middleware)
+    const userId = req.user?.id;
+    const userGroupId = req.user?.group_id;
+
     // Create a new customer entry
     const newCustomer = await Customer.create({
       name,
@@ -104,6 +131,17 @@ const addCustomer = async (req, res) => {
       defaultDiscount,
       companyName,
       note,
+      created_by_user_id: userId,
+      group_id: userGroupId,
+    });
+
+    // Audit: customer.create
+    await logActivity({
+      actorId: userId,
+      action: 'customer.create',
+      targetType: 'Customer',
+      targetId: newCustomer.id,
+      diff: { after: newCustomer.toJSON() }
     });
 
     // Respond with success
@@ -139,12 +177,24 @@ const updateCustomer = async (req, res) => {
     } = req.body;
 
   try {
-   const customer = await Customer.findByPk(id);
-    res.json(customer);
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
+    // Get user info from JWT token (added by auth middleware)
+    const userId = req.user?.id;
+    const userGroupId = req.user?.group_id;
+
+    // Build where clause for security - contractors can only update their own group's customers
+    let whereClause = { id };
+    if (userGroupId) {
+      whereClause.group_id = userGroupId;
     }
-    // Update fields
+
+    const customer = await Customer.findOne({ where: whereClause });
+    
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found or access denied' });
+    }
+    
+  // Update fields
+  const before = customer.toJSON();
     customer.name = name;
     customer.email = email;
     customer.mobile = mobile;
@@ -159,8 +209,18 @@ const updateCustomer = async (req, res) => {
     customer.customerType = customerType;
     customer.leadSource = leadSource;
     customer.defaultDiscount = defaultDiscount;
-     await customer.save();
-      return res.json({ message: 'Customer updated successfully', customer });
+    
+    await customer.save();
+
+    // Audit: customer.update
+    await logActivity({
+      actorId: userId,
+      action: 'customer.update',
+      targetType: 'Customer',
+      targetId: customer.id,
+      diff: { before, after: customer.toJSON() }
+    });
+    return res.json({ message: 'Customer updated successfully', customer });
 
   } catch (error) {
     console.error(error);
@@ -174,18 +234,34 @@ const updateCustomer = async (req, res) => {
 
 const deleteCustomer = async (req, res) => {
   const { id } = req.params; // Get the customer ID from the request parameters
+  const user = req.user;
 
   try {
-    // Update the status of the customer to 0 where the customer ID matches
+    // Build where clause with contractor scoping
+    let whereClause = { id };
+    if (user.group_id && user.group && user.group.group_type === 'contractor') {
+      whereClause.group_id = user.group_id;
+    }
+
+    // Update the status of the customer to 0 where the customer ID matches and group matches
     const updatedCustomer = await Customer.update(
       { status: 0 }, // Set status to 0
-      { where: { id } } // Find the customer with the specified ID
+      { where: whereClause } // Find the customer with the specified ID and group
     );
 
     // If no customer was found to update
     if (updatedCustomer[0] === 0) {
-      return res.status(404).json({ message: 'Customer not found or status already updated' });
+      return res.status(404).json({ message: 'Customer not found or access denied' });
     }
+
+    // Audit: customer.delete
+    await logActivity({
+      actorId: user.id,
+      action: 'customer.delete',
+      targetType: 'Customer',
+      targetId: id,
+      diff: { before: { status: 1 }, after: { status: 0 } }
+    });
 
     // Send success response
     res.json({ message: 'Customer status updated successfully' });

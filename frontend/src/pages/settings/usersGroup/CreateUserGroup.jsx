@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addUser } from '../../../store/slices/userGroupSlice';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 // External components to avoid re-creation on each render
 const FormSection = ({ title, icon, children, className = "" }) => (
@@ -106,9 +107,17 @@ const CustomFormInput = ({
 
 const initialForm = {
     name: '',
+    group_type: 'standard',
+    modules: {
+        dashboard: false,
+        proposals: false,
+        customers: false,
+        resources: false
+    }
 };
 
 const AddUserGroupForm = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [formData, setFormData] = useState(initialForm);
@@ -118,7 +127,7 @@ const AddUserGroupForm = () => {
 
     const validate = () => {
         const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Group name is required';
+        if (!formData.name.trim()) newErrors.name = t('settings.userGroups.form.validation.nameRequired');
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -138,16 +147,24 @@ const AddUserGroupForm = () => {
     const handleSubmit = async (e, force = false) => {
         e.preventDefault();
         if (!validate()) return;
-        
+
         setLoading(true);
         try {
-            const response = await dispatch(addUser({ ...formData, force }));
-            if (response?.payload?.status == 200) {
-                Swal.fire('Success!', response.payload.message, 'success');
-                navigate('/settings/users');
+            const action = await dispatch(addUser({ ...formData, force }));
+            const payload = action?.payload;
+
+            // Success path
+            if (payload?.status === 200) {
+                await Swal.fire(t('common.success') + '!', payload.message || t('settings.userGroups.alerts.created'), 'success');
+                navigate('/settings/users/groups');
+                return;
             }
-        } catch (error) {
-            Swal.fire('Error', error.message || 'Something went wrong', 'error');
+
+            // Error path: show server message (e.g., duplicate name)
+            const serverMsg = payload?.message || action?.error?.message || t('settings.userGroups.alerts.createFailed');
+            await Swal.fire(t('common.error'), serverMsg, 'error');
+        } catch (err) {
+            await Swal.fire(t('common.error'), err?.message || t('settings.userGroups.alerts.genericError'), 'error');
         } finally {
             setLoading(false);
         }
@@ -179,8 +196,8 @@ const AddUserGroupForm = () => {
                                     <CIcon icon={cilUserFollow} size="sm" className="text-white" />
                                 </div>
                                 <div>
-                                    <h5 className="text-white mb-1 fw-bold">Add New User Group</h5>
-                                    <p className="text-white-50 mb-0 small d-none d-md-block">Create a new user group to organize permissions and access</p>
+                                    <h5 className="text-white mb-1 fw-bold">{t('settings.userGroups.create.title')}</h5>
+                                    <p className="text-white-50 mb-0 small d-none d-md-block">{t('settings.userGroups.create.subtitle')}</p>
                                 </div>
                             </div>
                         </CCol>
@@ -197,7 +214,7 @@ const AddUserGroupForm = () => {
                                 }}
                             >
                                 <CIcon icon={cilArrowLeft} className="me-2" />
-                                Back
+                                {t('common.back')}
                             </CButton>
                         </CCol>
                     </CRow>
@@ -206,7 +223,7 @@ const AddUserGroupForm = () => {
 
             <CForm onSubmit={handleSubmit}>
                 {/* Group Information Section */}
-                <FormSection title="Group Information" icon={cilGroup}>
+                <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={cilGroup}>
                     {/* Info Card */}
                     <div className="mb-4">
                         <div className="d-flex align-items-start p-3 rounded-3" 
@@ -223,10 +240,9 @@ const AddUserGroupForm = () => {
                                 <CIcon icon={cilSettings} size="sm" />
                             </div>
                             <div>
-                                <div className="fw-semibold text-dark small mb-1">About User Groups</div>
+                                <div className="fw-semibold text-dark small mb-1">{t('settings.userGroups.about.title')}</div>
                                 <div className="text-muted" style={{ fontSize: '12px', lineHeight: '1.4' }}>
-                                    User groups help you organize users with similar roles and permissions. 
-                                    Once created, you can assign specific permissions and access levels to the entire group.
+                                    {t('settings.userGroups.about.description')}
                                 </div>
                             </div>
                         </div>
@@ -235,16 +251,39 @@ const AddUserGroupForm = () => {
                     <CRow>
                         <CCol xs={12} md={8} lg={6}>
                             <CustomFormInput
-                                label="Group Name"
+                                label={t('settings.userGroups.form.labels.name')}
                                 name="name"
                                 required
                                 icon={cilGroup}
-                                placeholder="Enter group name (e.g., Administrators, Sales Team, etc.)"
+                                placeholder={t('settings.userGroups.form.placeholders.name')}
                                 value={formData.name}
                                 onChange={handleChange}
                                 isInvalid={!!errors.name}
                                 feedback={errors.name}
                             />
+                        </CCol>
+                        <CCol xs={12} md={4} lg={6}>
+                            <div className="mb-3">
+                                <CFormLabel className="fw-medium text-dark mb-2 small">
+                                    {t('settings.userGroups.form.labels.type')}
+                                    <span className="text-danger ms-1">*</span>
+                                </CFormLabel>
+                                <select
+                                    name="group_type"
+                                    value={formData.group_type}
+                                    onChange={handleChange}
+                                    className="form-select"
+                                    style={{
+                                        border: '1px solid #e3e6f0',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        padding: '12px 16px'
+                                    }}
+                                >
+                                    <option value="standard">{t('settings.userGroups.types.standard')}</option>
+                                    <option value="contractor">{t('settings.userGroups.types.contractor')}</option>
+                                </select>
+                            </div>
                         </CCol>
                     </CRow>
 
@@ -262,37 +301,103 @@ const AddUserGroupForm = () => {
                             >
                                 <CIcon icon={cilSettings} size="sm" />
                             </div>
-                            <h6 className="mb-0 fw-semibold text-dark" style={{ fontSize: '13px' }}>What you can do after creating this group:</h6>
+                <h6 className="mb-0 fw-semibold text-dark" style={{ fontSize: '13px' }}>{t('settings.userGroups.create.afterCreateTitle')}</h6>
                         </div>
                         
                         <div className="row g-2">
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                                    <span style={{ fontSize: '12px', color: '#6c757d' }}>Assign users to this group</span>
+                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.assignUsers')}</span>
                                 </div>
                             </div>
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                                    <span style={{ fontSize: '12px', color: '#6c757d' }}>Set group permissions</span>
+                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.setPermissions')}</span>
                                 </div>
                             </div>
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                                    <span style={{ fontSize: '12px', color: '#6c757d' }}>Manage access levels</span>
+                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.manageAccess')}</span>
                                 </div>
                             </div>
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
                                     <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                                    <span style={{ fontSize: '12px', color: '#6c757d' }}>Bulk user management</span>
+                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.bulkManagement')}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </FormSection>
+
+                {/* Module Permissions Section - Only for Contractor Groups */}
+                {formData.group_type === 'contractor' && (
+                    <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} icon={cilSettings}>
+                        <div className="mb-4">
+                            <div className="d-flex align-items-start p-3 rounded-3" 
+                                 style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>
+                                <div 
+                                    className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                                    style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        backgroundColor: '#0d6efd',
+                                        color: 'white'
+                                    }}
+                                >
+                                    <CIcon icon={cilSettings} size="sm" />
+                                </div>
+                                <div>
+                                    <div className="fw-semibold text-dark small mb-1">{t('settings.userGroups.moduleAccess.title')}</div>
+                                    <div className="text-muted" style={{ fontSize: '12px', lineHeight: '1.4' }}>
+                                        {t('settings.userGroups.moduleAccess.description')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <CRow>
+                            {Object.entries(formData.modules).map(([module, enabled]) => (
+                                <CCol xs={12} sm={6} md={3} key={module} className="mb-3">
+                                    <div className="form-check form-switch">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id={`module-${module}`}
+                                            name={`modules.${module}`}
+                                            checked={enabled}
+                                            onChange={(e) => {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    modules: {
+                                                        ...prev.modules,
+                                                        [module]: e.target.checked
+                                                    }
+                                                }));
+                                            }}
+                                            style={{
+                                                width: '3rem',
+                                                height: '1.5rem'
+                                            }}
+                                        />
+                                        <label className="form-check-label fw-medium" htmlFor={`module-${module}`}>
+                                            {module.charAt(0).toUpperCase() + module.slice(1)}
+                                        </label>
+                                    </div>
+                                    <small className="text-muted d-block mt-1">
+                                        {module === 'dashboard' && t('settings.userGroups.moduleDescriptions.dashboard')}
+                                        {module === 'proposals' && t('settings.userGroups.moduleDescriptions.proposals')}
+                                        {module === 'customers' && t('settings.userGroups.moduleDescriptions.customers')}
+                                        {module === 'resources' && t('settings.userGroups.moduleDescriptions.resources')}
+                                    </small>
+                                </CCol>
+                            ))}
+                        </CRow>
+                    </FormSection>
+                )}
 
                 {/* Action Buttons */}
                 <CCard className="border-0 shadow-sm">
@@ -306,12 +411,12 @@ const AddUserGroupForm = () => {
                                 onClick={() => {
                                     if (isFormDirty()) {
                                         Swal.fire({
-                                            title: 'Are you sure?',
-                                            text: 'Changes you made will be lost if you leave now.',
+                                            title: t('common.confirm'),
+                                            text: t('settings.userGroups.alerts.leaveWarning'),
                                             icon: 'warning',
                                             showCancelButton: true,
-                                            confirmButtonText: 'Leave Anyway',
-                                            cancelButtonText: 'Stay on Page',
+                                            confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
+                                            cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
                                             confirmButtonColor: '#d33',
                                             cancelButtonColor: '#6c757d',
                                         }).then((result) => {
@@ -330,7 +435,7 @@ const AddUserGroupForm = () => {
                                 }}
                             >
                                 <CIcon icon={cilArrowLeft} className="me-2" />
-                                Cancel
+                                {t('common.cancel')}
                             </CButton>
                             <CButton
                                 type="submit"
@@ -352,14 +457,14 @@ const AddUserGroupForm = () => {
                                             role="status"
                                             style={{ width: '14px', height: '14px' }}
                                         >
-                                            <span className="visually-hidden">Loading...</span>
+                                            <span className="visually-hidden">{t('common.loading')}</span>
                                         </div>
-                                        Creating...
+                                        {t('settings.userGroups.create.creating')}
                                     </>
                                 ) : (
                                     <>
                                         <CIcon icon={cilSave} className="me-2" />
-                                        Create Group
+                                        {t('settings.userGroups.create.submit')}
                                     </>
                                 )}
                             </CButton>

@@ -37,6 +37,15 @@ const ResourceFile = sequelize.define('resource_file', {
   file_category: {
     type: DataTypes.STRING, // or ENUM if you want fixed values
     allowNull: true,
+  },
+  visible_to_group_types: {
+    type: DataTypes.JSON, // Array of group types: ['admin', 'contractor'] 
+    allowNull: true,
+    defaultValue: ['admin'] // Default to admin only
+  },
+  visible_to_group_ids: {
+    type: DataTypes.JSON, // Array of specific group IDs, optional
+    allowNull: true,
   }
 }, {
   timestamps: true,

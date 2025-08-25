@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import CreatableSelect from 'react-select/creatable';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -15,23 +16,32 @@ import {
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice';
-import Swal from 'sweetalert2';
-
-const validationSchema = Yup.object().shape({
-  manufacturer: Yup.string().required('Manufacturer is required'),
-  versionName: Yup.string().required('Version name is required'),
-});
+import { isAdmin } from '../../../helpers/permissions';
 
 const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBack }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { list: allManufacturers, loading } = useSelector(
-    (state) => state.manufacturers
-  );
+  const { list: allManufacturers, loading } = useSelector((state) => state.manufacturers);
+  const authUser = useSelector((state) => state.auth?.user);
+  const isUserAdmin = isAdmin(authUser);
   const api_url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     dispatch(fetchManufacturers());
   }, [dispatch]);
+
+  const validationSchema = Yup.object().shape({
+    manufacturer: Yup.string().required(
+      t('proposals.create.manufacturer.validation.manufacturerRequired')
+    ),
+    ...(isUserAdmin
+      ? {
+          versionName: Yup.string().required(
+            t('proposals.create.manufacturer.validation.versionNameRequired')
+          ),
+        }
+      : {}),
+  });
 
   const options = allManufacturers.map((m) => ({
     value: m.id,
@@ -49,90 +59,46 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   }));
 
   return (
-    <div className="my-4 w-100">
+    <div className="my-4 w-100 proposal-form-mobile">
       <CCard>
         <CCardBody className="p-4">
-          <h4 className="mb-4 fw-semibold">Manufacturer Details</h4>
+          <h4 className="mb-4 fw-semibold">{t('proposals.create.manufacturer.title')}</h4>
 
           <Formik
             initialValues={{
               manufacturer: formData.manufacturer,
-              versionName: formData.versionName,
+              versionName: formData.versionName || '',
             }}
             enableReinitialize
             validationSchema={validationSchema}
-            // onSubmit={(values) => {
-            //   const existingEntry = formData.manufacturersData.find(
-            //     (entry) => entry.versionName === values.versionName
-            //   );
-
-            //   if (existingEntry) {
-            //     Swal.fire({
-            //       icon: 'warning',
-            //       title: 'Duplicate Manufacturer',
-            //       text: `Manufacturer "${values.versionName}" already exists.`,
-            //     });
-            //     return;
-            //   }
-
-            //   const newEntry = {
-            //     manufacturer: values.manufacturer,
-            //     versionName: values.versionName,
-            //   };
-
-            //   updateFormData({
-            //     ...formData,
-            //     manufacturersData: [...formData.manufacturersData, newEntry],
-            //     manufacturerId: values.manufacturer
-            //   });
-
-            //   nextStep();
-            // }}
             onSubmit={(values) => {
               const newEntry = {
                 manufacturer: values.manufacturer,
-                versionName: values.versionName,
+                versionName: values.versionName || '',
               };
-
-              // Filter out any existing entry with the same versionName
-              // const filtered = formData.manufacturersData.filter(
-              //   (entry) => entry.versionName !== values.versionName
-              // );
-
-              // // Add the new/updated entry (only one allowed)
-              // const updatedManufacturers = [...filtered, newEntry];
 
               updateFormData({
                 ...formData,
-                manufacturersData: [newEntry],  // ✅ Replace entire array
+                manufacturersData: [newEntry],
                 manufacturerId: values.manufacturer,
               });
 
               nextStep();
             }}
-
-
           >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              setFieldValue,
-              handleSubmit,
-            }) => {
-              const selectedOption = options.find(
-                (opt) => opt.value === values.manufacturer
-              ) || null;
+            {({ values, errors, touched, handleChange, handleBlur, setFieldValue, handleSubmit }) => {
+              const selectedOption =
+                options.find((opt) => opt.value === values.manufacturer) || null;
 
               return (
                 <CForm onSubmit={handleSubmit} noValidate>
-                  <CRow className="mb-3">
-                    <CCol>
-                      <CFormLabel htmlFor="manufacturer" className="fw-semibold">
-                        Manufacturer <span className="text-danger">*</span>
-                      </CFormLabel>
+                  <div className="form-section">
+                    <CRow className="mb-3">
+                      <CCol>
+                        <CFormLabel htmlFor="manufacturer" className="fw-semibold">
+                          {t('proposals.create.manufacturer.labels.manufacturer')}{' '}
+                          <span className="text-danger">*</span>
+                        </CFormLabel>
 
                       <CreatableSelect
                         id="manufacturer"
@@ -140,7 +106,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                         isClearable
                         options={options}
                         value={selectedOption}
-                        onChange={(newValue, actionMeta) => {
+                        onChange={(newValue) => {
                           if (newValue) {
                             setFieldValue('manufacturer', newValue.value);
                             if (!values.versionName) {
@@ -181,7 +147,9 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                             alignItems: 'center',
                           }),
                         }}
-                        placeholder="Select Manufacturer"
+                        placeholder={t(
+                          'proposals.create.manufacturer.placeholders.selectManufacturer'
+                        )}
                       />
                       {errors.manufacturer && touched.manufacturer && (
                         <CFormFeedback invalid style={{ display: 'block' }}>
@@ -191,27 +159,34 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                     </CCol>
                   </CRow>
 
-                  <CRow className="mb-4">
-                    <CCol>
-                      <CFormLabel htmlFor="versionName" className="fw-semibold">
-                        Version Name <span className="text-danger">*</span>
-                      </CFormLabel>
-                      <CFormInput
-                        id="versionName"
-                        name="versionName"
-                        type="text"
-                        placeholder="Enter version name"
-                        value={values.versionName}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        invalid={!!errors.versionName && touched.versionName}
-                        style={{ height: '42px', borderRadius: '6px' }}
-                      />
-                      <CFormFeedback invalid>{errors.versionName}</CFormFeedback>
-                    </CCol>
-                  </CRow>
+                  {isUserAdmin && (
+                    <CRow className="mb-4">
+                      <CCol>
+                        <CFormLabel htmlFor="versionName" className="fw-semibold">
+                          {t('proposals.create.manufacturer.labels.versionName')}{' '}
+                          <span className="text-danger">*</span>
+                        </CFormLabel>
+                        <CFormInput
+                          id="versionName"
+                          name="versionName"
+                          type="text"
+                          placeholder={t(
+                            'proposals.create.manufacturer.placeholders.enterVersionName'
+                          )}
+                          value={values.versionName}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.versionName && touched.versionName}
+                          style={{ height: '42px', borderRadius: '6px' }}
+                        />
+                        <CFormFeedback invalid>{errors.versionName}</CFormFeedback>
+                      </CCol>
+                    </CRow>
+                  )}
+                  
+                  </div> {/* End form-section */}
 
-                  <div className="d-flex justify-content-between">
+                  <div className="button-group">
                     {!hideBack && (
                       <CButton
                         color="secondary"
@@ -219,15 +194,11 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                         onClick={prevStep}
                         style={{ borderRadius: '6px', minWidth: '90px' }}
                       >
-                        Back
+                        {t('common.back')}
                       </CButton>
                     )}
-                    <CButton
-                      type="submit"
-                      color="primary"
-                      style={{ borderRadius: '6px', minWidth: '90px' }}
-                    >
-                      Next
+                    <CButton type="submit" color="primary" style={{ borderRadius: '6px', minWidth: '90px' }}>
+                      {t('common.next')}
                     </CButton>
                   </div>
                 </CForm>
@@ -235,51 +206,49 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
             }}
           </Formik>
 
-          <div
-            className="mt-5 p-4 rounded text-center"
-            style={{
-              backgroundColor: '#e9f0f6',
-              border: '1px solid #b3c7db',
-              color: '#2c3e50',
-              fontSize: '0.95rem',
-              margin: '0 auto',
-            }}
-          >
-            <h6 className="mb-2 fw-semibold" style={{ letterSpacing: '0.03em' }}>
-              Need another manufacturer?
-            </h6>
-            {/* <p className="mb-4" style={{ lineHeight: 1.4, fontWeight: 500 }}>
-              Request via app or contact us via live chat.
-            </p> */}
-            <CButton
-              color="primary"
-              variant="outline"
-              size="sm"
+      {isUserAdmin && (
+            <div
+              className="mt-5 p-4 rounded text-center"
               style={{
-                borderRadius: '25px',
-                padding: '6px 20px',
-                fontWeight: '600',
-                letterSpacing: '0.05em',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = '#0275d8';
-                e.currentTarget.style.color = '#fff';
-                e.currentTarget.style.borderColor = '#0275d8';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = '#0275d8';
-                e.currentTarget.style.borderColor = '#0275d8';
+                backgroundColor: '#e9f0f6',
+        border: '1px solid #b3c7db',
+                color: '#2c3e50',
+                fontSize: '0.95rem',
+                margin: '0 auto',
               }}
             >
-              Add manufacturer
-            </CButton>
-          </div>
-
+              <h6 className="mb-2 fw-semibold" style={{ letterSpacing: '0.03em' }}>
+                {t('proposals.create.manufacturer.cta.needAnother')}
+              </h6>
+              <CButton
+                color="primary"
+                variant="outline"
+                size="sm"
+                style={{
+                  borderRadius: '25px',
+                  padding: '6px 20px',
+                  fontWeight: '600',
+                  letterSpacing: '0.05em',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0275d8';
+                  e.currentTarget.style.color = '#fff';
+                  e.currentTarget.style.borderColor = '#0275d8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#0275d8';
+                  e.currentTarget.style.borderColor = '#0275d8';
+                }}
+              >
+                {t('proposals.create.manufacturer.cta.addManufacturer')}
+              </CButton>
+            </div>
+          )}
         </CCardBody>
       </CCard>
-    </div >
+    </div>
   );
 };
 

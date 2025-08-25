@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
-  CFormSelect,
   CFormCheck,
   CInputGroup,
   CFormInput,
@@ -43,35 +43,82 @@ const CatalogTable = ({
   updateHingeSide,
   updateExposedSide,
 }) => {
+  const { t } = useTranslation();
+  const [partQuery, setPartQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Map internal codes to localized short labels
+  const codeToLabel = (code) => {
+    switch (code) {
+      case 'L':
+        return t('common.short.left', { defaultValue: 'L' })
+      case 'R':
+        return t('common.short.right', { defaultValue: 'R' })
+      case 'B':
+        return t('common.short.both', { defaultValue: 'B' })
+      default:
+        return code
+    }
+  }
+
+  const filteredOptions = useMemo(() => {
+    const byStyle = Array.isArray(catalogData)
+      ? catalogData.filter((item) =>
+          Array.isArray(item.styleVariants) &&
+          item.styleVariants.length > 0 &&
+          item.style === selectedStyleData?.style
+        )
+      : [];
+    const q = (partQuery || '').toLowerCase().trim();
+    if (!q) return [];
+    return byStyle
+      .filter((item) =>
+        (item.code && String(item.code).toLowerCase().includes(q)) ||
+        (item.description && String(item.description).toLowerCase().includes(q))
+      )
+      .slice(0, 20);
+  }, [catalogData, selectedStyleData?.style, partQuery]);
+
+  const pickItem = (item) => {
+    if (!item) return;
+    // Reuse existing handler contract
+    handleCatalogSelect({ target: { value: `${item.code} -- ${item.description}` } });
+    setPartQuery('');
+    setShowSuggestions(false);
+  };
   return (
     <div className="mt-5 mb-5">
-      <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
-        <CFormSelect
-          onChange={handleCatalogSelect}
-          value=""
-          className="flex-grow-1"
-          style={{ minWidth: '200px', maxWidth: '600px' }}
-        >
-          <option disabled value="">
-            Enter Part code
-          </option>
-          {catalogData
-            .filter(
-              (item) =>
-                Array.isArray(item.styleVariants) &&
-                item.styleVariants.length > 0 &&
-                item.style === selectedStyleData?.style
-            )
-            .map((item) => (
-              <option key={item.id}>
-                {item.code} -- {item.description}
-              </option>
-            ))}
-        </CFormSelect>
+      <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
+        <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }}>
+          <CInputGroup>
+            <CFormInput
+              placeholder={t('proposalUI.enterPartCode')}
+              value={partQuery}
+              onChange={(e) => { setPartQuery(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && filteredOptions[0]) { e.preventDefault(); pickItem(filteredOptions[0]); } }}
+            />
+          </CInputGroup>
+          {showSuggestions && filteredOptions.length > 0 && (
+            <div className="dropdown-menu show w-100" style={{ maxHeight: '260px', overflowY: 'auto' }}>
+              {filteredOptions.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className="dropdown-item text-wrap"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => pickItem(item)}
+                >
+                  <strong>{item.code}</strong> — {item.description}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="d-flex flex-wrap align-items-center gap-3 flex-shrink-0">
           <CFormCheck
-            label={<span style={{ fontSize: '1rem' }}>Add items on top</span>}
+            label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.addOnTop')}</span>}
             checked={addOnTop}
             onChange={(e) => setAddOnTop(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -79,11 +126,11 @@ const CatalogTable = ({
 
           <div className="d-flex align-items-center gap-2">
             <CIcon icon={cilCopy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
-            <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>Copy</span>
+            <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t('proposalUI.copy')}</span>
           </div>
 
           <CFormCheck
-            label={<span style={{ fontSize: '1rem' }}>Group</span>}
+            label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.group')}</span>}
             checked={groupEnabled}
             onChange={(e) => setGroupEnabled(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -96,7 +143,7 @@ const CatalogTable = ({
         >
           <CInputGroup>
             <CFormInput
-              placeholder="Find in cart"
+              placeholder={t('proposalUI.findInCart')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -104,29 +151,31 @@ const CatalogTable = ({
         </div>
       </div>
 
-      <div className="table-responsive">
+      {/* Desktop Table View */}
+      <div className="table-responsive table-responsive-md">
         <CTable>
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell>#</CTableHeaderCell>
-              <CTableHeaderCell>Qty</CTableHeaderCell>
-              <CTableHeaderCell>Item</CTableHeaderCell>
-              <CTableHeaderCell>Hinge side</CTableHeaderCell>
-              <CTableHeaderCell>Exposed side</CTableHeaderCell>
-              <CTableHeaderCell>Price</CTableHeaderCell>
-              <CTableHeaderCell>
-                <BsTools />
-              </CTableHeaderCell>
-              <CTableHeaderCell>Total</CTableHeaderCell>
-              <CTableHeaderCell>Action</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.no')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.qty')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.item')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.hingeSide')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.exposedSide')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.total')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposals.headers.actions')}</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
 
           <CTableBody>
             {selectVersion?.items?.map((item, idx) => {
-              const assembled = isAssembled || item.isRowAssembled
-              const assemblyFee = assembled && item.includeAssemblyFee ? Number(item.assemblyFee || 0) : 0
-              const total = Number(item.price || 0) * Number(item.qty || 1) + assemblyFee
+              // Use global assembled toggle only; assembly fee applies automatically when on
+              const assembled = !!isAssembled
+              const qty = Number(item.qty || 1)
+              const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
+              const assemblyFee = unitAssembly * qty
+              const total = Number(item.price || 0) * qty + assemblyFee
 
               return (
                 <React.Fragment key={idx}>
@@ -147,48 +196,47 @@ const CatalogTable = ({
                     <CTableDataCell>
                       {assembled ? (
                         <div className="d-flex gap-1">
-                          {hingeOptions.map((opt) => (
+              {hingeOptions.map((opt) => (
                             <button
                               key={opt}
                               className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-light'}`}
                               onClick={() => updateHingeSide(idx, opt)}
                             >
-                              {opt}
+                {codeToLabel(opt)}
                             </button>
                           ))}
                         </div>
                       ) : (
-                        'N/A'
+                        t('common.na')
                       )}
                     </CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
                         <div className="d-flex gap-1">
-                          {exposedOptions.map((opt) => (
+              {exposedOptions.map((opt) => (
                             <button
                               key={opt}
                               className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-light'}`}
                               onClick={() => updateExposedSide(idx, opt)}
                             >
-                              {opt}
+                {codeToLabel(opt)}
                             </button>
                           ))}
                         </div>
                       ) : (
-                        'N/A'
+                        t('common.na')
                       )}
                     </CTableDataCell>
 
                     <CTableDataCell>{formatPrice(item.price)}</CTableDataCell>
 
                     <CTableDataCell>
-                      <CFormCheck
-                        checked={item.includeAssemblyFee || false}
-                        onChange={(e) => toggleRowAssembly(idx, e.target.checked)}
-                        disabled={!isAssembled}
-                        label={formatPrice(item.includeAssemblyFee ? item.assemblyFee : 0)}
-                      />
+                      {assembled ? (
+                        <span>{formatPrice(assemblyFee)}</span>
+                      ) : (
+                        <span className="text-muted">{formatPrice(0)}</span>
+                      )}
                     </CTableDataCell>
 
                     <CTableDataCell>{formatPrice(total)}</CTableDataCell>
@@ -211,7 +259,7 @@ const CatalogTable = ({
                   {Array.isArray(item.modifications) && item.modifications.length > 0 && (
                     <CTableRow className="table-light">
                       <CTableDataCell colSpan={9} className="fw-bold text-muted">
-                        Modifications:
+                        {t('proposalDoc.modifications')}
                       </CTableDataCell>
                     </CTableRow>
                   )}
@@ -224,7 +272,7 @@ const CatalogTable = ({
                         <CTableDataCell>{mod.qty}</CTableDataCell>
 
                         <CTableDataCell colSpan={3}>
-                          {mod.name || 'Unnamed Modification'}
+                          {mod.name || t('proposalUI.mod.unnamed')}
                         </CTableDataCell>
                         <CTableDataCell>
                           {formatPrice(mod.price || 0)}
@@ -250,6 +298,127 @@ const CatalogTable = ({
             })}
           </CTableBody>
         </CTable>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="mobile-card-view d-none">
+        {selectVersion?.items?.map((item, idx) => {
+          const assembled = !!isAssembled
+          const qty = Number(item.qty || 1)
+          const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
+          const assemblyFee = unitAssembly * qty
+          const total = Number(item.price || 0) * qty + assemblyFee
+
+          return (
+            <React.Fragment key={`mobile-${idx}`}>
+              <div className="item-card-mobile">
+                <div className="item-header">
+                  <div className="item-number">{idx + 1}</div>
+                  <div className="item-actions">
+                    <CIcon
+                      icon={cilSettings}
+                      style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: '1.2rem' }}
+                      onClick={() => handleOpenModificationModal(idx, item.id)}
+                    />
+                    <CIcon
+                      icon={cilTrash}
+                      style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: '1.2rem' }}
+                      onClick={() => handleDelete(idx)}
+                    />
+                  </div>
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.item')}</span>
+                  <span className="item-value item-code">{item.code}</span>
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.qty')}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.qty}
+                    onChange={(e) => updateQty(idx, parseInt(e.target.value))}
+                    className="qty-input-mobile"
+                  />
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.price')}</span>
+                  <span className="item-value">{formatPrice(item.price)}</span>
+                </div>
+
+                {assembled && (
+                  <>
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                      <div className="btn-group-mobile">
+                        {hingeOptions.map((opt) => (
+                          <button
+                            key={opt}
+                            className={`btn ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            onClick={() => updateHingeSide(idx, opt)}
+                          >
+                            {codeToLabel(opt)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                      <div className="btn-group-mobile">
+                        {exposedOptions.map((opt) => (
+                          <button
+                            key={opt}
+                            className={`btn ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            onClick={() => updateExposedSide(idx, opt)}
+                          >
+                            {codeToLabel(opt)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
+                      <span className="item-value">{formatPrice(assemblyFee)}</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="total-highlight">
+                  <strong>{t('proposalColumns.total')}: {formatPrice(total)}</strong>
+                </div>
+              </div>
+
+              {/* Mobile Modification Cards */}
+              {Array.isArray(item.modifications) && item.modifications.length > 0 && (
+                item.modifications.map((mod, modIdx) => (
+                  <div key={`mobile-mod-${idx}-${modIdx}`} className="modification-card-mobile">
+                    <div className="mod-header">
+                      <span className="mod-label">{t('proposalDoc.modifications')}</span>
+                      <CIcon
+                        icon={cilTrash}
+                        style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
+                        onClick={() => handleDeleteModification(idx, modIdx)}
+                      />
+                    </div>
+                    <div className="mod-detail">
+                      <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
+                      <span>Qty: {mod.qty}</span>
+                    </div>
+                    <div className="mod-detail">
+                      <span>{t('proposalColumns.price')}: {formatPrice(mod.price || 0)}</span>
+                      <span><strong>{t('proposalColumns.total')}: {formatPrice((mod.price || 0) * (mod.qty || 1))}</strong></span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </React.Fragment>
+          )
+        })}
       </div>
     </div>
   )

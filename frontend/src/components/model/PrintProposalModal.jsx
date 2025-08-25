@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import {
@@ -15,12 +16,38 @@ import Select from 'react-select';
 import axiosInstance from '../../helpers/axiosInstance';
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
-    console.log('formdata', formData);
+    const { t, i18n } = useTranslation();
+         // helper to localize short codes for hinge/exposed side
+         const shortLabel = (code) => {
+             switch (code) {
+                 case 'L':
+                     return t('common.short.left', { defaultValue: 'L' })
+                 case 'R':
+                     return t('common.short.right', { defaultValue: 'R' })
+                 case 'B':
+                     return t('common.short.both', { defaultValue: 'B' })
+                 default:
+                     return code
+             }
+         }
     const api_url = import.meta.env.VITE_API_URL;
     const selectedVersion = useSelector((state) => state.selectedVersion.data);
     const selectVersionNew = useSelector(state => state.selectVersionNew.data);
     const [isLoading, setIsLoading] = useState(false);
     const [pdfCustomization, setPdfCustomization] = useState(null);
+
+    // Determine if current user is a contractor (hide internal-only controls)
+    const loggedInUser = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('user'));
+        } catch (_) {
+            return null;
+        }
+    })();
+    const isContractor = !!(
+        (loggedInUser?.group && loggedInUser.group.group_type === 'contractor') ||
+        (loggedInUser?.role && String(loggedInUser.role).toLowerCase() === 'contractor')
+    );
 
     const fetchPdfCustomization = async () => {
         try {
@@ -50,7 +77,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const proposalSummary = {
         description: formData?.description || 'kitchen project',
         customer: formData?.customerName || '',
-        date: new Date().toLocaleDateString('en-US'),
+        date: new Date().toLocaleDateString(i18n.language || 'en-US'),
     };
 
     const summary = formData?.manufacturersData?.[0]?.summary || {};
@@ -82,9 +109,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const proposalItems = items.map((item) => ({
         qty: item.qty || 0,
         code: item.code || '',
-        assembled: item.isRowAssembled ? 'Yes' : 'No', // or use item.assembled if you store it directly
-        hingeSide: item.hingeSide || 'N/A',
-        exposedSide: item.exposedSide || 'N/A',
+        assembled: item.isRowAssembled ? t('common.yes') : t('common.no'),
+        hingeSide: item.hingeSide || t('common.na'),
+        exposedSide: item.exposedSide || t('common.na'),
         price: parseFloat(item.price) || 0,
         assemblyCost: item.includeAssemblyFee ? parseFloat(item.assemblyFee) || 0 : 0,
         total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
@@ -98,15 +125,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
         const selectedCols = values.selectedColumns;
         const columnHeaders = selectedCols.map(col => {
-            const colName = col === 'no' ? 'No.' :
-                col === 'qty' ? 'Qty' :
-                    col === 'item' ? 'Item' :
-                        col === 'assembled' ? 'Assembled' :
-                            col === 'hingeSide' ? 'Hinge side' :
-                                col === 'exposedSide' ? 'Exposed side' :
-                                    col === 'price' ? 'Price' :
-                                        col === 'assemblyCost' ? 'Assembly cost' :
-                                            col === 'total' ? 'Total' : col;
+            const colName = col === 'no' ? t('proposalColumns.no') :
+                col === 'qty' ? t('proposalColumns.qty') :
+                    col === 'item' ? t('proposalColumns.item') :
+                        col === 'assembled' ? t('proposalColumns.assembled') :
+                            col === 'hingeSide' ? t('proposalColumns.hingeSide') :
+                                col === 'exposedSide' ? t('proposalColumns.exposedSide') :
+                                    col === 'price' ? t('proposalColumns.price') :
+                                        col === 'assemblyCost' ? t('proposalColumns.assemblyCost') :
+                                            col === 'total' ? t('proposalColumns.total') : col;
             return `<th>${colName}</th>`;
         }).join('');
 
@@ -117,8 +144,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     case 'item': return `<td>${item.item}</td>`;
                     case 'qty': return `<td>${item.qty}</td>`;
                     case 'assembled': return `<td>${item.assembled}</td>`;
-                    case 'hingeSide': return `<td>${item.hingeSide}</td>`;
-                    case 'exposedSide': return `<td>${item.exposedSide}</td>`;
+                    case 'hingeSide': return `<td>${shortLabel(item.hingeSide)}</td>`;
+                    case 'exposedSide': return `<td>${shortLabel(item.exposedSide)}</td>`;
                     case 'price': return `<td>$${item.price.toFixed(2)}</td>`;
                     case 'assemblyCost': return `<td>$${item.assemblyCost.toFixed(2)}</td>`;
                     case 'total': return `<td>$${item.total.toFixed(2)}</td>`;
@@ -134,7 +161,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Proposal</title>
+    <title>${t('proposalDoc.title')}</title>
     <style>
         @page {
             margin: 20mm;
@@ -329,7 +356,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     <!-- Header Section -->
     <div class="header">
         <div>
-            ${logoUrl ? `<img src="${logoUrl}" alt="Company Logo" class="logo">` : `<div class="company-name">${companyName || 'Company Name'}</div>`}
+            ${logoUrl ? `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">` : `<div class="company-name">${companyName || t('proposalDoc.fallbackCompanyName')}</div>`}
         </div>
         <div class="company-info">
             <div><strong>${companyName || ''}</strong></div>
@@ -342,20 +369,20 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     <!-- Greeting -->
     <div class="greeting">
-        Dear ${proposalSummary.customer},
+    ${t('proposalDoc.greeting', { name: proposalSummary.customer })}
     </div>
 
     <div class="description">
-        We are glad you are using our services, here is your design and pricing info:
+    ${t('proposalDoc.descriptionIntro')}
     </div>
 
     <!-- Proposal Summary -->
     <table class="summary-table">
         <thead>
             <tr>
-                <th>Description</th>
+                <th>${t('proposalDoc.summary.description')}</th>
                 <!--  <th>Customer</th>-->
-                <th>Date</th>
+                <th>${t('proposalDoc.summary.date')}</th>
             </tr>
         </thead>
         <tbody>
@@ -369,25 +396,25 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     ${proposalItems && proposalItems.length > 0 ? `
     <!-- Proposal Items Section -->
-    <div class="section-header">Proposal Items</div>
+    <div class="section-header">${t('proposalDoc.sections.proposalItems')}</div>
     <table class="items-table">
         <thead>
             <tr style="background-color: #f0f0f0;">
-                <th style="border: 1px solid #ccc; padding: 5px;">No.</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Qty</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Item</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Assembled</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Hinge Side</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Exposed Side</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Price</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Assembly Fee</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Total</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.no')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.qty')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.item')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.assembled')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.hingeSide')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.exposedSide')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.price')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.assemblyCost')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.total')}</th>
             </tr>
         </thead>
         <tbody>
             <!-- Category Row -->
             <tr class="category-row">
-                <td colspan="9" style="padding: 6px;"><strong>Items</strong></td>
+                <td colspan="9" style="padding: 6px;"><strong>${t('proposalColumns.items')}</strong></td>
             </tr>
             <!-- Dynamically inserted rows -->
             ${proposalItems
@@ -397,9 +424,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         <td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled ? 'Yes' : 'No'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide || 'N/A'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide || 'N/A'}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.hingeSide)}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.exposedSide)}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>
@@ -408,7 +435,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         const modRows = item.modifications && item.modifications.length > 0
                             ? `
                         <tr>
-                            <td colspan="9" style="padding: 5px;  background-color: #f9f9f9;"><strong>Modifications:</strong></td>
+                            <td colspan="9" style="padding: 5px;  background-color: #f9f9f9;"><strong>${t('proposalDoc.modifications')}</strong></td>
                         </tr>
                         ${item.modifications
                                 .map((mod, modIdx) => {
@@ -437,31 +464,31 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     <div class="price-summary">
         <table>
             <tr>
-                <td class="text-left">Cabinets & Parts:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.cabinets')}</td>
                 <td class="text-right">$${priceSummary.cabinets.toFixed(2)}</td>
             </tr>
             <tr>
-                <td class="text-left">Assembly fee:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.assembly')}</td>
                 <td class="text-right">$${priceSummary.assemblyFee.toFixed(2)}</td>
             </tr>
             <tr class="total-row">
-                <td class="text-left">Modifications:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.modifications')}</td>
                 <td class="text-right">$${priceSummary.modifications.toFixed(2)}</td>
             </tr>
             <tr >
-                <td class="text-left">Style Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.styleTotal')}</td>
                 <td class="text-right">$${priceSummary.styleTotal.toFixed(2)}</td>
             </tr>
             <tr >
-                <td class="text-left">Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.total')}</td>
                 <td class="text-right">$${priceSummary.total.toFixed(2)}</td>
             </tr>
             <tr class="total-row">
-                <td class="text-left">Tax:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.tax')}</td>
                 <td class="text-right">$${priceSummary.tax.toFixed(2)}</td>
             </tr>
             <tr class="grand-total">
-                <td class="text-left">Grand Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.grandTotal')}</td>
                 <td class="text-right">$${priceSummary.grandTotal.toFixed(2)}</td>
             </tr>
         </table>
@@ -470,14 +497,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     ${formData?.selectedCatalog?.length > 0 ? `
     <!-- Catalog Items -->
-    <div class="section-header">Catalog Items</div>
+    <div class="section-header">${t('proposalDoc.sections.catalogItems')}</div>
     <table class="items-table">
         <thead>
             <tr>
-                <th>Item Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <th>${t('proposalDoc.catalog.itemName')}</th>
+                <th>${t('proposalDoc.catalog.quantity')}</th>
+                <th>${t('proposalDoc.catalog.unitPrice')}</th>
+                <th>${t('proposalDoc.catalog.total')}</th>
             </tr>
         </thead>
         <tbody>
@@ -577,7 +604,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     return (
         <CModal visible={show} onClose={onClose} size="lg" alignment="center" scrollable>
             <CModalHeader closeButton className="border-bottom-0 pb-0">
-                <CModalTitle className="h4">Print Proposal</CModalTitle>
+                <CModalTitle className="h4">{t('proposalCommon.printTitle')}</CModalTitle>
             </CModalHeader>
             <form onSubmit={formik.handleSubmit}>
                 <CModalBody className="pt-0">
@@ -587,7 +614,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             <div className="d-flex align-items-center">
                                 <CFormSwitch
                                     id="showProposalItems"
-                                    label={<span className="fw-medium">Show Proposal Items</span>}
+                                    label={<span className="fw-medium">{t('proposalCommon.showProposalItems')}</span>}
                                     checked={formik.values.showProposalItems}
                                     onChange={formik.handleChange}
                                     className="me-2"
@@ -596,7 +623,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             <div className="d-flex align-items-center">
                                 <CFormSwitch
                                     id="showGroupItems"
-                                    label={<span className="fw-medium">Show Group Items</span>}
+                                    label={<span className="fw-medium">{t('proposalCommon.showGroupItems')}</span>}
                                     checked={formik.values.showGroupItems}
                                     onChange={formik.handleChange}
                                     className="me-2"
@@ -605,36 +632,38 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         </div>
                     </div>
 
-                    <div className="mb-4">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                            <CFormLabel htmlFor="selectedVersions" className="fw-medium">
-                                Select Version
-                            </CFormLabel>
+                    {!isContractor && (
+                        <div className="mb-4">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <CFormLabel htmlFor="selectedVersions" className="fw-medium">
+                                    {t('proposalCommon.selectVersion')}
+                                </CFormLabel>
+                            </div>
+                            <Select
+                                id="selectedVersions"
+                                name="selectedVersions"
+                                options={versionOptions}
+                                isMulti
+                                value={versionOptions.filter(option =>
+                                    formik.values.selectedVersions.includes(option.value)
+                                )}
+                                onChange={(selected) => {
+                                    formik.setFieldValue(
+                                        'selectedVersions',
+                                        selected ? selected.map(option => option.value) : []
+                                    );
+                                }}
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                placeholder={t('proposalCommon.selectVersionsPlaceholder')}
+                            />
                         </div>
-                        <Select
-                            id="selectedVersions"
-                            name="selectedVersions"
-                            options={versionOptions}
-                            isMulti
-                            value={versionOptions.filter(option =>
-                                formik.values.selectedVersions.includes(option.value)
-                            )}
-                            onChange={(selected) => {
-                                formik.setFieldValue(
-                                    'selectedVersions',
-                                    selected ? selected.map(option => option.value) : []
-                                );
-                            }}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                            placeholder="Select versions..."
-                        />
-                    </div>
+                    )}
 
                     <div className="mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <CFormLabel htmlFor="selectedColumns" className="fw-medium">
-                                Select Columns
+                                {t('proposalCommon.selectColumns')}
                             </CFormLabel>
                         </div>
                         <Select
@@ -655,7 +684,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                                 formik.setFieldValue('selectedColumns', [...new Set(selectedValues)]);
                             }}
                             classNamePrefix="select"
-                            placeholder="Select columns..."
+                            placeholder={t('proposalCommon.selectColumnsPlaceholder')}
                         />
                     </div>
                 </CModalBody>
@@ -667,7 +696,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         variant="outline"
                         className="px-4"
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </CButton>
                     <CButton
                         color="primary"
@@ -675,7 +704,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         className="px-4"
                     >
                         <i className="cil-cloud-download me-2"></i>
-                        {isLoading ? "Downloading..." : "Download PDF"}
+                        {isLoading ? t('proposalCommon.downloading') : t('proposalCommon.downloadPdf')}
                     </CButton>
                 </CModalFooter>
             </form>

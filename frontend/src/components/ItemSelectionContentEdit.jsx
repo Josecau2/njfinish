@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     CFormCheck, CFormSwitch,
 } from '@coreui/react';
@@ -11,10 +12,18 @@ import CatalogTableEdit from './CatalogTableEdit';
 import axiosInstance from '../helpers/axiosInstance';
 import { setTableItemsEdit as setTableItemsRedux } from '../store/slices/selectedVersionEditSlice';
 import { setSelectVersionNewEdit } from '../store/slices/selectVersionNewEditSlice';
+import { isAdmin } from '../helpers/permissions';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 
 
-const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion }) => {
+const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion, readOnly = false }) => {
+    const { t } = useTranslation();
 
 
     // console.log('selectVersion edit: ', selectVersion);
@@ -46,14 +55,18 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [customModQty, setCustomModQty] = useState(1);
     const [customModPrice, setCustomModPrice] = useState('');
     const [customModNote, setCustomModNote] = useState('');
-    const [customModTaxable, setCustomModTaxable] = useState(false);
+    const [customModTaxable, setCustomModTaxable] = useState(true);
     const [validationAttempted, setValidationAttempted] = useState(false);
     const [selectedExistingMod, setSelectedExistingMod] = useState('');
     const [modificationsMap, setModificationsMap] = useState({});
     const [isAssembled, setIsAssembled] = useState(true);
     const [discountPercent, setDiscountPercent] = useState(0);
+    const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
     const { taxes, loading } = useSelector((state) => state.taxes);
     const [customItemError, setCustomItemError] = useState('');
+    const authUser = useSelector((state) => state.auth?.user);
+    const isUserAdmin = isAdmin(authUser);
+    const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
     const filteredItems = useMemo(() => (
         Array.isArray(tableItems)
             ? tableItems.filter(item =>
@@ -62,6 +75,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             )
             : []
     ), [tableItems, searchTerm]);
+
+    // Items to use for calculations (do NOT depend on search filter)
+    const versionItems = useMemo(() => (
+        Array.isArray(tableItems)
+            ? tableItems.filter(item => item.selectVersion === selectVersion?.versionName)
+            : []
+    ), [tableItems, selectVersion?.versionName]);
 
 
     const [fetchedCollections, setFetchedCollections] = useState([]);
@@ -75,10 +95,40 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         if (
             formData &&
             Array.isArray(formData.manufacturersData) &&
-            formData.manufacturersData.length > 0 &&
-            Array.isArray(formData.manufacturersData[0].items)
+            formData.manufacturersData.length > 0
         ) {
-            setTableItemsEdit(formData.manufacturersData[0].items);
+            // Prefer items matching the current versionName; fallback to first entry
+            const md = formData.manufacturersData;
+            const idx = selectVersion?.versionName
+                ? md.findIndex(m => m.versionName === selectVersion.versionName)
+                : 0;
+            const itemsSrc = (idx !== -1 ? md[idx]?.items : md[0]?.items) || [];
+
+            // Ensure existing items have proper includeAssemblyFee flag
+            const itemsWithAssemblyFlag = itemsSrc.map(item => ({
+                ...item,
+                // Ensure items are attributed to this version so totals pick them up
+                selectVersion: item.selectVersion || selectVersion?.versionName || '',
+                includeAssemblyFee: item.includeAssemblyFee !== undefined ? item.includeAssemblyFee : true, // Default to true if assembly fee exists
+                isRowAssembled: item.isRowAssembled !== undefined ? item.isRowAssembled : true
+            }));
+            setTableItemsEdit(itemsWithAssemblyFlag);
+            // Also propagate to backing form/selectVersion so UI table uses these enriched items
+            setFormData(prev => {
+                const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+                const vIdx = selectVersion?.versionName
+                    ? md.findIndex(m => m.versionName === selectVersion.versionName)
+                    : -1;
+                if (vIdx !== -1) {
+                    md[vIdx] = { ...md[vIdx], items: itemsWithAssemblyFlag };
+                } else if (md.length > 0) {
+                    md[0] = { ...md[0], items: itemsWithAssemblyFlag };
+                }
+                return { ...prev, manufacturersData: md };
+            });
+            if (setSelectedVersion && selectVersion) {
+                setSelectedVersion({ ...selectVersion, items: itemsWithAssemblyFlag });
+            }
         } else {
             setTableItemsEdit([]); // fallback in case data is missing
         }
@@ -116,20 +166,95 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectVersion?.versionName]);
 
+    // Fetch user group multiplier on component mount
+    useEffect(() => {
+        const fetchUserMultiplier = async () => {
+            try {
+                const response = await axiosInstance.get('/api/user/multiplier', {
+                    headers: getAuthHeaders()
+                });
+                if (response.data && response.data.multiplier) {
+                    setUserGroupMultiplier(response.data.multiplier);
+                }
+            } catch (error) {
+                console.error('Error fetching user multiplier:', error);
+                // Keep default multiplier of 1.0 if error
+            }
+        };
+
+        fetchUserMultiplier();
+    }, []);
+
+    // Force taxable ON for non-admins
+    useEffect(() => {
+        if (!isUserAdmin && customItemTaxable !== true) {
+            setCustomItemTaxable(true);
+        }
+    }, [isUserAdmin]);
+
+    useEffect(() => {
+        if (!isUserAdmin && customModTaxable !== true) {
+            setCustomModTaxable(true);
+        }
+    }, [isUserAdmin]);
+
+    // Apply multiplier to existing items when multiplier is loaded
+    useEffect(() => {
+        if (userGroupMultiplier !== 1.0 && tableItems.length > 0) {
+            const updatedItems = tableItems.map(item => {
+                // Derive base price in an idempotent way
+                const prevApplied = Number(item.appliedMultiplier || 0) || null;
+                const currentPrice = Number(item.price) || 0;
+                const base = item.originalPrice != null
+                    ? Number(item.originalPrice)
+                    : prevApplied && prevApplied > 0
+                        ? currentPrice / prevApplied
+                        : currentPrice;
+
+                const multipliedPrice = Number(base) * Number(userGroupMultiplier || 1);
+                const unitAssembly = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                const qty = Number(item?.qty || 1);
+
+                return {
+                    ...item,
+                    originalPrice: item.originalPrice != null ? item.originalPrice : base,
+                    appliedMultiplier: Number(userGroupMultiplier || 1),
+                    price: multipliedPrice,
+                    total: (qty * multipliedPrice) + (unitAssembly * qty),
+                };
+            });
+
+            // Update local table items and redux
+            setTableItemsEdit(updatedItems);
+            dispatch(setTableItemsRedux(updatedItems));
+
+            // Propagate into formData.manufacturersData for the active version so UI table reflects it
+            setFormData(prev => {
+                const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+                const idx = selectVersion?.versionName
+                    ? md.findIndex(m => m.versionName === selectVersion.versionName)
+                    : -1;
+                if (idx !== -1) {
+                    md[idx] = { ...md[idx], items: updatedItems };
+                }
+                const next = { ...prev, manufacturersData: md };
+                return next;
+            });
+
+            // Also update selectVersion items if setter available
+            if (setSelectedVersion && selectVersion) {
+                setSelectedVersion({ ...selectVersion, items: updatedItems });
+            }
+        }
+    }, [userGroupMultiplier, dispatch]);
+
     // console.log('tableItems', tableItems);
 
     // Computed values needed for updateManufacturerData
     const defaultTax = taxes.find(tax => tax.isDefault);
     const defaultTaxValue = parseFloat(defaultTax?.value || '0');
 
-    const totalAssemblyFee = isAssembled
-        ? filteredItems.reduce(
-            (sum, item) => sum + (item.includeAssemblyFee ? Number(item.assemblyFee || 0) : 0),
-            0
-        )
-        : 0;
-
-    const totalModificationsCost = filteredItems.reduce((sum, item) => {
+    const totalModificationsCost = versionItems.reduce((sum, item) => {
         if (!item.modifications) return sum;
 
         const itemModsTotal = item.modifications.reduce((modSum, mod) => {
@@ -143,18 +268,25 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     const updateManufacturerData = useCallback(() => {
         try {
-            const cabinetPartsTotal = filteredItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-            const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
+            // Since prices already include multiplier, don't apply it again
+            const cabinetPartsTotal = versionItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const customItemsTotal = customItems.reduce((sum, item) => sum + (item.price * userGroupMultiplier), 0); // Only apply to custom items
             const modificationsTotal = totalModificationsCost;
 
             const assemblyFeeTotal = isAssembled
-                ? filteredItems.reduce((sum, item) => sum + item.assemblyFee, 0)
+                ? versionItems.reduce((sum, item) => {
+                    // Respect per-row toggle: only include when includeAssemblyFee is true
+                    const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                    const qty = Number(item?.qty || 1);
+                    const fee = unitFee * qty;
+                    return sum + fee;
+                }, 0)
                 : 0;
 
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
 
-            const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
-                filteredItems.reduce((sum, item) => sum + item.price * item.qty, 0)
+            const cabinets = customItems?.reduce((sum, item) => sum + (item.price * userGroupMultiplier), 0) +
+                versionItems.reduce((sum, item) => sum + (item.price * item.qty), 0)
             const discountAmount = (styleTotal * discountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
             const taxAmount = (totalAfterDiscount * defaultTaxValue) / 100;
@@ -167,17 +299,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         const matchedCustomItems = customItems.filter(
                             (item) => item.selectVersion === selectVersion?.versionName
                         );
-                        const matchedItems = filteredItems.filter(
-                            (item) => item.selectVersion === selectVersion?.versionName
-                        );
-                        return {
+                        const matchedItems = versionItems;
+                        const updatedManufacturer = {
                             ...manufacturer,
                             selectedStyle: selectVersion?.selectedStyle,
                             items: matchedItems,
                             customItems: matchedCustomItems,
                             summary: {
                                 cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
-                                assemblyFee: Number(totalAssemblyFee) || 0,
+                                assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
                                 modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
                                 styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
                                 discountPercent: Number(discountPercent) || 0,
@@ -188,6 +318,16 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
                             }
                         };
+                        
+                        // Also update selectVersion if setSelectedVersion is available
+                        if (setSelectedVersion && selectVersion) {
+                            setSelectedVersion({
+                                ...selectVersion,
+                                summary: updatedManufacturer.summary
+                            });
+                        }
+                        
+                        return updatedManufacturer;
                     }
                     return manufacturer;
                 });
@@ -198,9 +338,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 return { ...prev, manufacturersData: updated };
             });
         } catch (error) {
-            console.log("err::::::", error)
+            // Error calculating totals
         }
-    }, [filteredItems, customItems, totalModificationsCost, isAssembled, discountPercent, defaultTaxValue, totalAssemblyFee, selectVersion?.versionName, selectVersion?.selectedStyle]);
+    }, [filteredItems, customItems, totalModificationsCost, isAssembled, discountPercent, defaultTaxValue, selectVersion?.versionName, selectVersion?.selectedStyle, userGroupMultiplier]);
 
     useEffect(() => {
         updateManufacturerData();
@@ -217,7 +357,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             if (!manufacturerId) return;
             setCollectionsLoading(true);
             try {
-                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
+                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
+                    headers: getAuthHeaders()
+                });
                 const incoming = response.data || [];
                 const same = JSON.stringify(incoming) === JSON.stringify(fetchedCollections);
                 if (!same) setFetchedCollections(incoming); // Avoid redundant state updates
@@ -242,15 +384,39 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     }, [selectVersion?.selectedStyle, fetchedCollections]);
 
     const handleDelete = (index) => {
-        setTableItemsEdit(prev => {
-            const updatedItems = prev.filter((_, i) => i !== index);
-            // Only attempt to sync if store currently holds an array shape
-            if (Array.isArray(selectVersionInStore)) {
-                const same = JSON.stringify(updatedItems) === JSON.stringify(selectVersionInStore);
-                if (!same) dispatch(setSelectVersionNewEdit(updatedItems)); // Update Redux as well
-            }
-            return updatedItems;
-        });
+        // Update the formData.manufacturersData through the parent component
+        if (selectVersion && selectVersion.items) {
+            const updatedItems = selectVersion.items.filter((_, i) => i !== index);
+            
+            // Update formData.manufacturersData
+            setFormData(prev => {
+                const manufacturersData = Array.isArray(prev.manufacturersData) ? [...prev.manufacturersData] : [];
+                
+                // Find the manufacturer index that corresponds to selectVersion
+                // Use versionName as stable identifier in this flow
+                const manufacturerIndex = manufacturersData.findIndex(m => m.versionName === selectVersion.versionName);
+                
+                if (manufacturerIndex !== -1) {
+                    // Update the items array for this manufacturer
+                    manufacturersData[manufacturerIndex] = {
+                        ...manufacturersData[manufacturerIndex],
+                        items: updatedItems
+                    };
+                }
+                
+                const newFormData = {
+                    ...prev,
+                    manufacturersData
+                };
+                return newFormData;
+            });
+
+            // Also update Redux store
+            dispatch(setSelectVersionNewEdit(updatedItems));
+        }
+        
+        // Update local state as well for consistency
+        setTableItemsEdit(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleCatalogSelect = (e) => {
@@ -259,53 +425,78 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         // console.log('fetchedCollections: ' , fetchedCollections);
 
         const item = fetchedCollections.find(cd => `${cd.code} -- ${cd.description}` === code);
-        if (item) {
+    if (item) {
             const priceFields = [
                 'AL', 'CM', 'CT', 'DS', 'GL', 'GR', 'KS',
                 'NV', 'PE', 'SE', 'SG', 'WW'
             ];
-            const price = item.price;
-            const assemblyFee = parseFloat(item?.styleVariantsAssemblyCost?.price) || 0;
-            const total = price + assemblyFee;
+            const basePrice = Number(item.price) || 0;
+            const price = basePrice * Number(userGroupMultiplier || 1); // Apply multiplier to displayed price
+            const baseAssemblyFee = parseFloat(item?.styleVariantsAssemblyCost?.price) || 0;
+            const assemblyFee = baseAssemblyFee; // Don't multiply assembly fee
+            const includeAssemblyFee = isAssembled; // Default to assembled state
+            const totalAssemblyFee = includeAssemblyFee ? assemblyFee : 0;
+            const total = price + totalAssemblyFee;
 
             const newItem = {
                 id: item.id,
                 code: item.code,
                 description: item.description,
                 qty: 1,
+                // Track base and applied multiplier for idempotent recalculation later
+                originalPrice: basePrice,
+                appliedMultiplier: Number(userGroupMultiplier || 1),
                 price,
                 assemblyFee,
+                includeAssemblyFee,
+                isRowAssembled: isAssembled,
                 total,
                 selectVersion: selectVersion?.versionName
             };
 
-            setTableItemsEdit(prev => {
-                const updatedItems = addOnTop ? [newItem, ...prev] : [...prev, newItem];
-                console.log('1');
-                dispatch(setTableItemsRedux(updatedItems));  // Send the full list to Redux
-
-                return updatedItems;
+            // Update manufacturersData items for current version
+            setFormData(prev => {
+                const manufacturersData = Array.isArray(prev.manufacturersData) ? [...prev.manufacturersData] : [];
+                const idx = manufacturersData.findIndex(m => m.versionName === selectVersion.versionName);
+                const currentItems = idx !== -1 && Array.isArray(manufacturersData[idx].items) ? manufacturersData[idx].items : [];
+                const updatedItems = addOnTop ? [newItem, ...currentItems] : [...currentItems, newItem];
+                if (idx !== -1) {
+                    manufacturersData[idx] = { ...manufacturersData[idx], items: updatedItems };
+                }
+                // keep local table items in sync
+                setTableItemsEdit(updatedItems);
+                dispatch(setTableItemsRedux(updatedItems));
+                return { ...prev, manufacturersData };
             });
 
         }
     };
 
     const updateQty = (index, newQty) => {
-        setTableItemsEdit(prev => {
-            if (newQty < 1) return prev;
-
-            const updated = prev.map((item, i) => {
-                if (i !== index) return item;
-                return {
-                    ...item,
-                    qty: newQty,
-                    total: newQty * item.price + item.assemblyFee,
-                };
-            });
-            console.log('2');
-
-            dispatch(setTableItemsRedux(updated)); // Sync Redux
-            return updated;
+        if (newQty < 1) return;
+        setFormData(prev => {
+            const manufacturersData = Array.isArray(prev.manufacturersData) ? [...prev.manufacturersData] : [];
+            const idx = manufacturersData.findIndex(m => m.versionName === selectVersion.versionName);
+            if (idx !== -1) {
+                const items = Array.isArray(manufacturersData[idx].items) ? [...manufacturersData[idx].items] : [];
+                const updated = items.map((item, i) => {
+                    if (i !== index) return item;
+                    const assemblyFeeToAdd = item.includeAssemblyFee ? Number(item.assemblyFee || 0) : 0;
+                    const unitAssembly = assemblyFeeToAdd;
+                    return {
+                        ...item,
+                        qty: newQty,
+                        total: newQty * Number(item.price || 0) + (unitAssembly * newQty),
+                    };
+                });
+                manufacturersData[idx] = { ...manufacturersData[idx], items: updated };
+                setTableItemsEdit(updated);
+                dispatch(setTableItemsRedux(updated));
+                if (setSelectedVersion && selectVersion) {
+                    setSelectedVersion({ ...selectVersion, items: updated });
+                }
+            }
+            return { ...prev, manufacturersData };
         });
     };
 
@@ -331,7 +522,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         const newItem = {
             name: customItemName,
             price: parseFloat(customItemPrice),
-            taxable: customItemTaxable,
+            taxable: isUserAdmin ? customItemTaxable : true,
             selectVersion: selectVersion?.versionName
         };
 
@@ -339,7 +530,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
         setCustomItemName('');
         setCustomItemPrice('');
-        setCustomItemTaxable(true);
+    setCustomItemTaxable(true);
     };
 
     const handleDeleteCustomItem = (index) => {
@@ -380,15 +571,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const fetchCatalogItems = async (id) => {
         try {
             if (id) {
-                const response = await axiosInstance.get(`${api_url}/api/manufacturers/catalogs/modificationsItems/${id}`);
+                const response = await axiosInstance.get(`${api_url}/api/manufacturers/catalogs/modificationsItems/${id}`, {
+                    headers: getAuthHeaders()
+                });
                 setModificationItems(response.data);
                 // setExistingModifications(response.data); // <--- Add this
             }
         } catch (error) {
-            console.log('error', error);
+            // Error fetching modification items
         }
-
-
     }
 
     const handleSaveCustomModification = async (customData, catalogId) => {
@@ -401,7 +592,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 description: customData.note, // optional or use customData.description
             };
 
-            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload);
+            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload, {
+                headers: getAuthHeaders()
+            });
         } catch (err) {
             console.error('Error saving custom mod:', err);
         }
@@ -424,7 +617,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         const mods = modificationsMap[selectedItemIndexForMod] || [];
         const selectedModObj = modificationItems.find(mod => mod.id == selectedExistingMod);
 
-        const newMod = modificationType === 'existing'
+    const newMod = modificationType === 'existing'
             ? {
                 type: 'existing',
                 modificationId: selectedExistingMod,
@@ -437,7 +630,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 type: 'custom',
                 qty: customModQty,
                 price: customModPrice,
-                taxable: customModTaxable,
+        taxable: isUserAdmin ? customModTaxable : true,
                 note: customModNote,
                 name: customModName
             };
@@ -450,7 +643,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         setCustomModQty(1);
         setCustomModPrice('');
         setCustomModNote('');
-        setCustomModTaxable(false);
+    setCustomModTaxable(isUserAdmin ? false : true);
         setSelectedExistingMod('');
         setValidationAttempted(false);
         setCustomModName('')
@@ -515,24 +708,36 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         const updatedItems = [...tableItems];
         const item = updatedItems[index];
 
-        const newAssemblyFee = isChecked ? Number(item.assemblyFee || 0) : 0;
+        const newAssemblyFeeUnit = isChecked ? Number(item.assemblyFee || 0) : 0;
+        const qty = Number(item.qty || 1);
         const newHinge = isChecked ? (item.hingeSide === "N/A" ? "" : item.hingeSide) : "N/A";
         const newExposed = isChecked ? (item.exposedSide === "N/A" ? "" : item.exposedSide) : "N/A";
-        console.log('item++', item);
-        console.log('tableItems++', tableItems);
         updatedItems[index] = {
             ...item,
             includeAssemblyFee: isChecked,
             isRowAssembled: isChecked,
             hingeSide: newHinge,
             exposedSide: newExposed,
-            total: item.qty * Number(item.price || 0) + newAssemblyFee,
+            total: qty * Number(item.price || 0) + (newAssemblyFeeUnit * qty),
         };
 
         setTableItemsEdit(updatedItems);
-        console.log('3');
-
         dispatch(setTableItemsRedux(updatedItems));
+
+        // Update backing formData/selectVersion for consistency
+        setFormData(prev => {
+            const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+            const idx = selectVersion?.versionName
+                ? md.findIndex(m => m.versionName === selectVersion.versionName)
+                : -1;
+            if (idx !== -1) {
+                md[idx] = { ...md[idx], items: updatedItems };
+            }
+            return { ...prev, manufacturersData: md };
+        });
+        if (setSelectedVersion && selectVersion) {
+            setSelectedVersion({ ...selectVersion, items: updatedItems });
+        }
     };
 
     const updateHingeSide = (index, selectedSide) => {
@@ -571,7 +776,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 <>
                     <div className="d-flex gap-5 mb-4 flex-wrap" style={{ alignItems: 'stretch' }}>
                         <div style={{ minWidth: '250px', flex: '0 0 auto' }}>
-                            <h5>Current Style</h5>
+                            <h5>{t('proposalUI.currentStyle')}</h5>
                             <div className="d-flex gap-4 align-items-start mt-3">
                                 <div style={{ width: '100px' }}>
                                     <img
@@ -605,92 +810,97 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     </div>
                                     <div className="d-flex align-items-center" style={{ fontSize: '1.1rem' }}>
                                         <CIcon icon={cilSettings} className="me-2 text-success" style={{ width: '20px', height: '20px' }} />
-                                        <span className="me-2">Assembled</span>
+                                        <span className="me-2">{t('proposalColumns.assembled')}</span>
                                         <CFormSwitch
                                             size="md"
                                             shape="pill"
                                             checked={isAssembled}
-                                            onChange={(e) => setIsAssembled(e.target.checked)}
+                                            onChange={(e) => { if (!readOnly) setIsAssembled(e.target.checked); }}
+                                            disabled={readOnly}
                                         />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div
-                            style={{
-                                width: '1px',
-                                backgroundColor: '#ccc',
-                                marginInline: '16px',
-                            }}
-                        />
+                        {!hideOtherStyles && (
+                            <>
+                                <div
+                                    style={{
+                                        width: '1px',
+                                        backgroundColor: '#ccc',
+                                        marginInline: '16px',
+                                    }}
+                                />
 
-                        <div style={{ flex: 1 }}>
-                            <h5>Other Styles & Price Comparison</h5>
-                            <div
-                                style={{
-                                    maxHeight: '270px',
-                                    overflowY: 'auto',
-                                    paddingRight: '8px',
-                                }}
-                            >
+                                <div style={{ flex: 1 }}>
+                                    <h5>{t('proposalUI.otherStyles')}</h5>
+                                    <div
+                                        style={{
+                                            maxHeight: '270px',
+                                            overflowY: 'auto',
+                                            paddingRight: '8px',
+                                        }}
+                                    >
 
-                                {collectionsLoading ? (
-                                    <div className="py-4 text-muted">Loading styles...</div>
-                                ) : fetchedCollections.length === 0 ? (
-                                    <div className="py-4 text-muted">No styles found.</div>
-                                ) : (
-                                    <div className="d-flex flex-wrap gap-3 mt-3">
-                                        {Array.from(
-                                            new Map(
-                                                fetchedCollections.map(item => [item.style, item]) // Deduplicate by `style`
-                                            ).values()
-                                        ).map((styleItem, index) => {
-                                            const variant = styleItem.styleVariants?.[0]; // First variant (for image)
+                                        {collectionsLoading ? (
+                                            <div className="py-4 text-muted">{t('proposalUI.loadingStyles')}</div>
+                                        ) : fetchedCollections.length === 0 ? (
+                                            <div className="py-4 text-muted">{t('proposalUI.noStyles')}</div>
+                                        ) : (
+                                            <div className="d-flex flex-wrap gap-3 mt-3">
+                                                {Array.from(
+                                                    new Map(
+                                                        fetchedCollections.map(item => [item.style, item]) // Deduplicate by `style`
+                                                    ).values()
+                                                ).map((styleItem, index) => {
+                                                    const variant = styleItem.styleVariants?.[0]; // First variant (for image)
 
-                                            return (
-                                                <div
-                                                    key={`style-${styleItem.id}-${index}`}
-                                                    className="text-center"
-                                                    style={{ width: '100px', flex: '0 0 auto', cursor: 'pointer' }}
-                                                    onClick={() => handleStyleSelect(styleItem.id)}
-                                                >
-                                                    <img
-                                                        src={
-                                                            variant?.image
-                                                                ? `${api_url}/uploads/manufacturer_catalogs/${variant.image}`
-                                                                : "/images/nologo.png"
-                                                        }
-                                                        alt={variant?.shortName || styleItem.style}
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '190px',
-                                                            objectFit: 'cover',
-                                                            borderRadius: '10px',
-                                                        }}
-                                                    />
-                                                    <div
-                                                        className="mt-2 border p-1 rounded"
-                                                        style={{
-                                                            backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
-                                                            border: styleItem.id === selectedStyleData?.id ? '3px solid #1a73e8' : '1px solid #ced4da',
-                                                            fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
-                                                        }}
-                                                    >
-                                                        <strong>${styleItem.price}</strong>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                                    return (
+                                                        <div
+                                                            key={`style-${styleItem.id}-${index}`}
+                                                            className="text-center"
+                                                            style={{ width: '100px', flex: '0 0 auto', cursor: 'pointer' }}
+                                                            onClick={() => handleStyleSelect(styleItem.id)}
+                                                        >
+                                                            <img
+                                                                src={
+                                                                    variant?.image
+                                                                        ? `${api_url}/uploads/manufacturer_catalogs/${variant.image}`
+                                                                        : "/images/nologo.png"
+                                                                }
+                                                                alt={variant?.shortName || styleItem.style}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '190px',
+                                                                    objectFit: 'cover',
+                                                                    borderRadius: '10px',
+                                                                }}
+                                                            />
+                                                            <div
+                                                                className="mt-2 border p-1 rounded"
+                                                                style={{
+                                                                    backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
+                                                                    border: styleItem.id === selectedStyleData?.id ? '3px solid #1a73e8' : '1px solid #ced4da',
+                                                                    fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
+                                                                }}
+                                                            >
+                                                                <strong>${styleItem.price}</strong>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+
+
+                                            </div>
+
+                                        )}
 
 
                                     </div>
-
-                                )}
-
-
-                            </div>
-                        </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </>
             )}
@@ -700,26 +910,27 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 catalogData={fetchedCollections}
                 handleCatalogSelect={handleCatalogSelect}
                 addOnTop={addOnTop}
-                setAddOnTop={setAddOnTop}
+                setAddOnTop={readOnly ? () => {} : setAddOnTop}
                 handleCopy={handleCopy}
                 groupEnabled={groupEnabled}
-                setGroupEnabled={setGroupEnabled}
+                setGroupEnabled={readOnly ? () => {} : setGroupEnabled}
                 searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                updateQty={updateQty}
-                handleOpenModificationModal={handleOpenModificationModal}
-                handleDelete={handleDelete}
-                updateModification={updateModification}
+                setSearchTerm={readOnly ? () => {} : setSearchTerm}
+                updateQty={readOnly ? () => {} : updateQty}
+                handleOpenModificationModal={readOnly ? () => {} : handleOpenModificationModal}
+                handleDelete={readOnly ? () => {} : handleDelete}
+                updateModification={readOnly ? () => {} : updateModification}
                 setModificationsMap={setModificationsMap}
                 modificationsMap={modificationsMap}
-                handleDeleteModification={handleDeleteModification}
+                handleDeleteModification={readOnly ? () => {} : handleDeleteModification}
                 formatPrice={formatPrice}
                 selectVersion={selectVersion}
                 isAssembled={isAssembled}
                 selectedStyleData={selectedStyleData}
-                toggleRowAssembly={toggleRowAssembly}
-                updateHingeSide={updateHingeSide}
-                updateExposedSide={updateExposedSide}
+                toggleRowAssembly={readOnly ? () => {} : toggleRowAssembly}
+                updateHingeSide={readOnly ? () => {} : updateHingeSide}
+                updateExposedSide={readOnly ? () => {} : updateExposedSide}
+                readOnly={readOnly}
             />
 
             {copied && (
@@ -730,10 +941,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     <div className="toast show align-items-center text-white bg-success border-0">
                         <div className="d-flex">
                             <div className="toast-body">
-                                {textChanges ?
-                                    "There are no items to copy in the cart" :
-                                    'Items copied to clipboard'
-                                }
+                                {textChanges ? t('proposalUI.toast.copyEmpty') : t('proposalUI.toast.copySuccess')}
                             </div>
                             <button
                                 type="button"
@@ -745,16 +953,17 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 </div>
             )}
 
+            {!readOnly && (
             <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
                 <div
                     className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
                     style={{ rowGap: '0.75rem' }}
                 >
-                    <h6 className="mb-0 w-100 w-md-auto">Custom Items:</h6>
+                    <h6 className="mb-0 w-100 w-md-auto">{t('proposalUI.custom.title')}</h6>
 
                     <input
                         type="text"
-                        placeholder="Item name"
+                        placeholder={t('proposalUI.custom.itemName')}
                         value={customItemName}
                         onChange={e => {
                             setCustomItemName(e.target.value);
@@ -766,7 +975,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
                     <input
                         type="number"
-                        placeholder="Price"
+                        placeholder={t('proposalUI.custom.price')}
                         value={customItemPrice}
                         onChange={e => {
                             setCustomItemPrice(e.target.value);
@@ -781,14 +990,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     <div className="form-check d-flex align-items-center">
                         <CFormCheck
                             checked={customItemTaxable}
-                            onChange={(e) => setCustomItemTaxable(e.target.checked)}
+                            onChange={(e) => { if (isUserAdmin) setCustomItemTaxable(e.target.checked); }}
+                            disabled={!isUserAdmin}
                             style={{ transform: 'scale(1.4)' }}
-                            label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>Taxable</span>}
+                            label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>{t('proposalUI.custom.taxable')}</span>}
                         />
                     </div>
 
                     <button className="btn btn-primary" style={{ minWidth: '80px' }} onClick={handleAddCustomItem}>
-                        Add
+                        {t('proposalUI.custom.add')}
                     </button>
                 </div>
 
@@ -802,11 +1012,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     <table className="table mt-5">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Item Name</th>
-                                <th>Price</th>
-                                <th>Taxable</th>
-                                <th>Actions</th>
+                                <th>{t('proposalUI.custom.table.index')}</th>
+                                <th>{t('proposalUI.custom.table.itemName')}</th>
+                                <th>{t('proposalUI.custom.table.price')}</th>
+                                <th>{t('proposalUI.custom.table.taxable')}</th>
+                                <th>{t('proposalUI.custom.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -816,13 +1026,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     <td>{item.name}</td>
                                     <td>${(Number(item.price) || 0).toFixed(2)}</td>
 
-                                    <td>{item.taxable ? 'Yes' : 'No'}</td>
+                                    <td>{item.taxable ? t('common.yes') : t('common.no')}</td>
                                     <td>
                                         <button
                                             className="btn btn-sm btn-danger text-white"
                                             onClick={() => handleDeleteCustomItem(idx)}
+                                            disabled={readOnly}
+                                            title={readOnly ? t('proposals.lockedTooltip') : undefined}
                                         >
-                                            Delete
+                                            {t('proposalUI.custom.delete')}
                                         </button>
                                     </td>
                                 </tr>
@@ -831,37 +1043,38 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     </table>
                 </div>
             </div>
+            )}
 
             {/* Totals Summary */}
             <div className="mt-5 mb-5 d-flex justify-content-center">
                 <table className="table shadow-lg" style={{ maxWidth: '500px' }}>
                     <tbody>
                         <tr>
-                            <th className="bg-light">Cabinets & Parts:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.cabinets')}</th>
                             <td className="text-center fw-medium">
                                 ${selectVersion?.summary?.cabinets || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Assembly Fee:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.assembly')}</th>
                             <td className="text-center">${selectVersion?.summary?.assemblyFee || "0"}</td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Modifications:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.modifications')}</th>
                             <td className="text-center">${selectVersion?.summary?.modificationsCost || "0"}</td>
                         </tr>
 
                         <tr className="table-secondary">
-                            <th>Style Total:</th>
+                            <th>{t('proposalDoc.priceSummary.styleTotal')}</th>
                             <td className="text-center fw-semibold">
                                 ${selectVersion?.summary?.styleTotal || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Discount (%):</th>
+                            <th className="bg-light">{t('proposalUI.summary.discountPct')}</th>
                             <td className="text-center">
                                 <input
                                     type="number"
@@ -885,26 +1098,26 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Total:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.total')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.total || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Tax Rate:</th>
+                            <th className="bg-light">{t('proposalUI.summary.taxRate')}</th>
                             <td className="text-center">{selectVersion?.summary?.taxRate || "0"}%</td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Tax:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.tax')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.taxAmount || "0"}
                             </td>
                         </tr>
 
                         <tr className="table-success fw-bold">
-                            <th>Grand Total:</th>
+                            <th>{t('proposalDoc.priceSummary.grandTotal')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.grandTotal || "0"}
                             </td>
@@ -939,6 +1152,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 customModNote={customModNote}
                 setCustomModNote={setCustomModNote}
                 validationAttempted={validationAttempted}
+                isUserAdmin={isUserAdmin}
             />
         </div>
     );

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CFormCheck, CFormSwitch } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilSettings, cilHome, cilBrush } from '@coreui/icons';
+import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight } from '@coreui/icons';
 import ModificationModal from '../components/model/ModificationModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
@@ -9,8 +10,16 @@ import CatalogTable from './CatalogTable';
 import axiosInstance from '../helpers/axiosInstance';
 import { setTableItems as setTableItemsRedux } from '../store/slices/selectedVersionSlice';
 import { setSelectVersionNew } from '../store/slices/selectVersionNewSlice';
+import { isAdmin } from '../helpers/permissions';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion }) => {
+    const { t } = useTranslation();
     const api_url = import.meta.env.VITE_API_URL;
     const dispatch = useDispatch();
     const [selectedStyleData, setSelectedStyleData] = useState(null);
@@ -35,16 +44,19 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [customModQty, setCustomModQty] = useState(1);
     const [customModPrice, setCustomModPrice] = useState('');
     const [customModNote, setCustomModNote] = useState('');
-    const [customModTaxable, setCustomModTaxable] = useState(false);
+    const [customModTaxable, setCustomModTaxable] = useState(true);
     const [validationAttempted, setValidationAttempted] = useState(false);
     const [selectedExistingMod, setSelectedExistingMod] = useState('');
     const [modificationsMap, setModificationsMap] = useState({});
     const [isAssembled, setIsAssembled] = useState(true);
     const [discountPercent, setDiscountPercent] = useState(0);
     const { taxes, loading } = useSelector((state) => state.taxes);
+    const authUser = useSelector((state) => state.auth?.user);
+    const isUserAdmin = isAdmin(authUser);
     const [customItemError, setCustomItemError] = useState('');
     const [itemModificationID, setItemModificationID] = useState('');
     const [modificationItems, setModificationItems] = useState('');
+    const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
 
 
 
@@ -59,23 +71,59 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     const [fetchedCollections, setFetchedCollections] = useState([]);
     const [collectionsLoading, setCollectionsLoading] = useState(true);
+    const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
     useEffect(() => {
         if (selectVersion) {
             dispatch(setSelectVersionNew(selectVersion));
         }
     }, [selectVersion]);
 
+    // Fetch user group multiplier on mount
+    useEffect(() => {
+        const fetchUserMultiplier = async () => {
+            try {
+                const response = await axiosInstance.get('/api/user/multiplier', { headers: getAuthHeaders() });
+                if (response?.data?.multiplier) {
+                    setUserGroupMultiplier(Number(response.data.multiplier));
+                }
+            } catch (err) {
+                // keep default 1.0
+                // console.warn('Multiplier fetch failed', err?.message || err);
+            }
+        };
+        fetchUserMultiplier();
+    }, []);
+
+    // Force taxable ON for non-admins
+    useEffect(() => {
+        if (!isUserAdmin && customItemTaxable !== true) {
+            setCustomItemTaxable(true);
+        }
+    }, [isUserAdmin]);
+
+    useEffect(() => {
+        if (!isUserAdmin && customModTaxable !== true) {
+            setCustomModTaxable(true);
+        }
+    }, [isUserAdmin]);
+
     const updateManufacturerData = () => {
         try {
-            const cabinetPartsTotal = filteredItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const cabinetPartsTotal = filteredItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
             const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
             const modificationsTotal = totalModificationsCost;
+            // Respect per-row assembly toggle; only count rows with includeAssemblyFee when assembled
             const assemblyFeeTotal = isAssembled
-                ? filteredItems.reduce((sum, item) => sum + item.assemblyFee, 0)
+                ? filteredItems.reduce((sum, item) => {
+                    const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                    const qty = Number(item?.qty || 1);
+                    return sum + unitFee * qty;
+                }, 0)
                 : 0;
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
             const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
-                filteredItems.reduce((sum, item) => sum + item.price * item.qty, 0)
+                filteredItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
             const discountAmount = (styleTotal * discountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
             const taxAmount = (totalAfterDiscount * defaultTaxValue) / 100;
@@ -96,7 +144,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         customItems: matchedCustomItems,
                         summary: {
                             cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
-                            assemblyFee: Number(totalAssemblyFee) || 0,
+                            // Use the correctly computed assemblyFeeTotal
+                            assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
                             modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
                             styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
                             discountPercent: Number(discountPercent) || 0,
@@ -131,10 +180,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     useEffect(() => {
         const fetchCollections = async () => {
+            const manufacturerId = selectVersion?.manufacturerData?.id;
+            if (!manufacturerId) {
+                return; // Don't make API call if no manufacturer ID
+            }
+            
             setCollectionsLoading(true);
             try {
-                const manufacturerId = selectVersion?.manufacturerData?.id;
-                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
+                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
+                    headers: getAuthHeaders()
+                });
                 setFetchedCollections(response.data); // Adjust based on actual structure
             } catch (error) {
                 console.error('Error fetching styles with catalog:', error);
@@ -145,6 +200,52 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
         fetchCollections();
     }, [selectVersion?.manufacturerData?.id]);
+
+    // Handle responsive items per page
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 767) {
+                setItemsPerPage(2); // Mobile: 2 items per page
+            } else if (window.innerWidth <= 992) {
+                setItemsPerPage(3); // Tablet: 3 items per page
+            } else {
+                setItemsPerPage(4); // Desktop: 4 items per page
+            }
+        };
+
+        handleResize(); // Initial check
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Reset carousel when collections change
+    useEffect(() => {
+        setCarouselCurrentIndex(0);
+    }, [fetchedCollections]);
+
+    // Carousel navigation functions
+    const nextSlide = () => {
+        const uniqueStyles = Array.from(
+            new Map(fetchedCollections.map(item => [item.style, item])).values()
+        );
+        const maxIndex = Math.max(0, uniqueStyles.length - itemsPerPage);
+        setCarouselCurrentIndex(prev => Math.min(prev + 1, maxIndex));
+    };
+
+    const prevSlide = () => {
+        setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
+    };
+
+    const canGoNext = () => {
+        const uniqueStyles = Array.from(
+            new Map(fetchedCollections.map(item => [item.style, item])).values()
+        );
+        return carouselCurrentIndex < uniqueStyles.length - itemsPerPage;
+    };
+
+    const canGoPrev = () => {
+        return carouselCurrentIndex > 0;
+    };
 
 
     const defaultTax = taxes.find(tax => tax.isDefault);
@@ -169,7 +270,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         const code = e.target.value;
         const item = fetchedCollections.find(cd => `${cd.code} -- ${cd.description}` === code);
         if (item) {
-            const price = item.price;
+            const basePrice = Number(item.price) || 0;
             const assemblyCost = item.styleVariantsAssemblyCost;
             let assemblyFee = 0;
 
@@ -177,19 +278,24 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 const feePrice = parseFloat(assemblyCost.price || 0);
                 const feeType = assemblyCost.type;
 
-                if (feeType === 'flat') {
+                if (feeType === 'flat' || feeType === 'fixed') {
                     assemblyFee = feePrice;
                 } else if (feeType === 'percentage') {
-                    assemblyFee = (price * feePrice) / 100;
+                    // percentage based on base price, not multiplied price
+                    assemblyFee = (basePrice * feePrice) / 100;
                 }
             }
-            const total = price + assemblyFee;
+            const multipliedPrice = basePrice * Number(userGroupMultiplier || 1);
+            const qty = 1;
+            const total = multipliedPrice * qty + assemblyFee * qty;
             const newItem = {
                 id: item.id,
                 code: item.code,
                 description: item.description,
-                qty: 1,
-                price,
+                qty,
+                originalPrice: basePrice,
+                appliedMultiplier: Number(userGroupMultiplier || 1),
+                price: multipliedPrice,
                 assemblyFee,
                 total,
                 selectVersion: selectVersion?.versionName
@@ -212,7 +318,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 return {
                     ...item,
                     qty: newQty,
-                    total: newQty * item.price + item.assemblyFee,
+                    total: newQty * Number(item.price || 0) + (Number(item.includeAssemblyFee ? item.assemblyFee || 0 : 0) * newQty),
                 };
             });
             dispatch(setTableItemsRedux(updated)); // Sync Redux
@@ -241,7 +347,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         const newItem = {
             name: customItemName,
             price: parseFloat(customItemPrice),
-            taxable: customItemTaxable,
+            taxable: isUserAdmin ? customItemTaxable : true,
             selectVersion: selectVersion?.versionName
         };
 
@@ -291,7 +397,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const fetchCatalogItems = async (id) => {
         try {
             if (id) {
-                const response = await axiosInstance.get(`${api_url}/api/manufacturers/catalogs/modificationsItems/${id}`);
+                const response = await axiosInstance.get(`${api_url}/api/manufacturers/catalogs/modificationsItems/${id}`, {
+                    headers: getAuthHeaders()
+                });
                 setModificationItems(response.data);
                 // setExistingModifications(response.data); // <--- Add this
             }
@@ -313,7 +421,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 description: customData.note, // optional or use customData.description
             };
 
-            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload);
+            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload, {
+                headers: getAuthHeaders()
+            });
         } catch (err) {
             console.error('Error saving custom mod:', err);
         }
@@ -338,7 +448,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         const mods = modificationsMap[selectedItemIndexForMod] || [];
         const selectedModObj = modificationItems.find(mod => mod.id == selectedExistingMod);
 
-        const newMod = modificationType === 'existing'
+    const newMod = modificationType === 'existing'
             ? {
                 type: 'existing',
                 modificationId: selectedExistingMod,
@@ -350,8 +460,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             : {
                 type: 'custom',
                 qty: customModQty,
-                price: customModPrice,
-                taxable: customModTaxable,
+        price: customModPrice,
+        taxable: isUserAdmin ? customModTaxable : true,
                 note: customModNote,
                 name: customModName
             };
@@ -364,7 +474,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         setCustomModQty(1);
         setCustomModPrice('');
         setCustomModNote('');
-        setCustomModTaxable(false);
+    setCustomModTaxable(isUserAdmin ? false : true);
         setSelectedExistingMod('');
         setValidationAttempted(false);
         setCustomModName('')
@@ -440,6 +550,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         const item = updatedItems[index];
 
         const newAssemblyFee = isChecked ? Number(item.assemblyFee || 0) : 0;
+        const qty = Number(item.qty || 1);
         const newHinge = isChecked ? (item.hingeSide === "N/A" ? "" : item.hingeSide) : "N/A";
         const newExposed = isChecked ? (item.exposedSide === "N/A" ? "" : item.exposedSide) : "N/A";
 
@@ -449,7 +560,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             isRowAssembled: isChecked,
             hingeSide: newHinge,
             exposedSide: newExposed,
-            total: item.qty * Number(item.price || 0) + newAssemblyFee,
+            total: qty * Number(item.price || 0) + (newAssemblyFee * qty),
         };
 
         setTableItems(updatedItems);
@@ -486,10 +597,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     };
 
     useEffect(() => {
+        let nextUpdated = null;
         setTableItems(prevItems => {
             const updated = prevItems.map(item => {
-                const includeFee = isAssembled ? item.includeAssemblyFee !== false : false;
-                const assemblyFee = includeFee ? item.assemblyFee || 0 : 0;
+                // Force includeAssemblyFee to follow global assembled toggle
+                const includeFee = !!isAssembled;
+                const unitAssembly = includeFee ? Number(item.assemblyFee || 0) : 0;
+                const qty = Number(item.qty || 1);
 
                 return {
                     ...item,
@@ -497,14 +611,44 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     isRowAssembled: includeFee,
                     hingeSide: isAssembled ? (item.hingeSide || "") : "N/A",
                     exposedSide: isAssembled ? (item.exposedSide || "") : "N/A",
-                    total: item.qty * item.price + assemblyFee,
+                    total: qty * Number(item.price || 0) + (unitAssembly * qty),
                 };
             });
-
-            dispatch(setTableItemsRedux(updated));
+            nextUpdated = updated;
             return updated;
         });
+        if (nextUpdated) {
+            dispatch(setTableItemsRedux(nextUpdated));
+        }
     }, [isAssembled]);
+
+    // Apply multiplier to existing table items when loaded (idempotent)
+    useEffect(() => {
+        if (!tableItems?.length) return;
+        if (!userGroupMultiplier || userGroupMultiplier === 1) return;
+        const updated = tableItems.map((item) => {
+            const prevApplied = Number(item.appliedMultiplier || 0) || null;
+            const currentPrice = Number(item.price) || 0;
+            const base = item.originalPrice != null
+                ? Number(item.originalPrice)
+                : prevApplied && prevApplied > 0
+                    ? currentPrice / prevApplied
+                    : currentPrice;
+            const price = Number(base) * Number(userGroupMultiplier || 1);
+            const unitAssembly = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+            const qty = Number(item?.qty || 1);
+            return {
+                ...item,
+                originalPrice: item.originalPrice != null ? item.originalPrice : base,
+                appliedMultiplier: Number(userGroupMultiplier || 1),
+                price,
+                total: qty * price + unitAssembly * qty,
+            };
+        });
+        setTableItems(updated);
+        // Dispatch after local state update; effect runs post-render
+        dispatch(setTableItemsRedux(updated));
+    }, [userGroupMultiplier]);
 
 
     // const fetchModifications = () => async{
@@ -524,9 +668,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         <div>
             {selectedStyleData && (
                 <>
-                    <div className="d-flex gap-5 mb-4 flex-wrap" style={{ alignItems: 'stretch' }}>
+                    <div className="d-flex gap-5 mb-4 flex-wrap style-selection-mobile" style={{ alignItems: 'stretch' }}>
                         <div style={{ minWidth: '250px', flex: '0 0 auto' }}>
-                            <h5>Current Style</h5>
+                            <h5>{t('proposalUI.currentStyle')}</h5>
                             <div className="d-flex gap-4 align-items-start mt-3">
                                 <div style={{ width: '100px' }}>
                                     <img
@@ -538,9 +682,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                         alt="Selected Style"
                                         style={{
                                             width: '110%',
-                                            height: '220px',
-                                            objectFit: 'cover',
+                                            height: '240px',
+                                            objectFit: 'contain',
                                             borderRadius: '10px',
+                                            backgroundColor: '#f8f9fa',
                                         }}
                                     />
                                 </div>
@@ -559,7 +704,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     </div>
                                     <div className="d-flex align-items-center" style={{ fontSize: '1.1rem' }}>
                                         <CIcon icon={cilSettings} className="me-2 text-success" style={{ width: '20px', height: '20px' }} />
-                                        <span className="me-2">Assembled</span>
+                                        <span className="me-2">{t('proposalColumns.assembled')}</span>
                                         <CFormSwitch
                                             size="md"
                                             shape="pill"
@@ -579,67 +724,111 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             }}
                         />
 
-                        <div style={{ flex: 1 }}>
-                            <h5>Other Styles & Price Comparison</h5>
+                        <div style={{ flex: 1 }} className="other-styles-mobile">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h5 className="mb-0">{t('proposalUI.otherStyles')}</h5>
+                                {/* Carousel controls */}
+                                <div className="d-flex gap-2">
+                                    <button
+                                        className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
+                                        onClick={prevSlide}
+                                        disabled={!canGoPrev()}
+                                        style={{ padding: '0.25rem 0.5rem' }}
+                                    >
+                                        <CIcon icon={cilChevronLeft} size="sm" />
+                                    </button>
+                                    <button
+                                        className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
+                                        onClick={nextSlide}
+                                        disabled={!canGoNext()}
+                                        style={{ padding: '0.25rem 0.5rem' }}
+                                    >
+                                        <CIcon icon={cilChevronRight} size="sm" />
+                                    </button>
+                                </div>
+                            </div>
                             <div
                                 style={{
-                                    maxHeight: '270px',
-                                    overflowY: 'auto',
+                                    maxHeight: '300px',
+                                    overflowY: 'hidden',
                                     paddingRight: '8px',
                                 }}
                             >
 
                                 {collectionsLoading ? (
-                                    <div className="py-4 text-muted">Loading styles...</div>
+                                    <div className="py-4 text-muted">{t('proposalUI.loadingStyles')}</div>
                                 ) : fetchedCollections.length === 0 ? (
-                                    <div className="py-4 text-muted">No styles found.</div>
+                                    <div className="py-4 text-muted">{t('proposalUI.noStyles')}</div>
                                 ) : (
-                                    <div className="d-flex flex-wrap gap-3 mt-3">
-                                        {Array.from(
-                                            new Map(
-                                                fetchedCollections.map(item => [item.style, item]) // Deduplicate by `style`
-                                            ).values()
-                                        ).map((styleItem, index) => {
-                                            const variant = styleItem.styleVariants?.[0]; // First variant (for image)
+                                    <div className="styles-carousel-container">
+                                        <div 
+                                            className="styles-carousel-track"
+                                            style={{
+                                                display: 'flex',
+                                                gap: '1rem',
+                                                transform: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`,
+                                                transition: 'transform 0.3s ease-in-out',
+                                                width: `${(Array.from(new Map(fetchedCollections.map(item => [item.style, item])).values()).length / itemsPerPage) * 100}%`
+                                            }}
+                                        >
+                                            {Array.from(
+                                                new Map(
+                                                    fetchedCollections.map(item => [item.style, item]) // Deduplicate by `style`
+                                                ).values()
+                                            ).map((styleItem, index) => {
+                                                const variant = styleItem.styleVariants?.[0]; // First variant (for image)
 
-                                            return (
-                                                <div
-                                                    key={`style-${styleItem.id}-${index}`}
-                                                    className="text-center"
-                                                    style={{ width: '100px', flex: '0 0 auto', cursor: 'pointer' }}
-                                                    onClick={() => handleStyleSelect(styleItem.id)}
-                                                >
-                                                    <img
-                                                        src={
-                                                            variant?.image
-                                                                ? `${api_url}/uploads/manufacturer_catalogs/${variant.image}`
-                                                                : "/images/nologo.png"
-                                                        }
-                                                        alt={variant?.shortName || styleItem.style}
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '190px',
-                                                            objectFit: 'cover',
-                                                            borderRadius: '10px',
-                                                        }}
-                                                    />
+                                                return (
                                                     <div
-                                                        className="mt-2 border p-1 rounded"
-                                                        style={{
-                                                            backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
-                                                            border: styleItem.id === selectedStyleData?.id ? '3px solid #1a73e8' : '1px solid #ced4da',
-                                                            fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
+                                                        key={`style-${styleItem.id}-${index}`}
+                                                        className="style-carousel-item text-center"
+                                                        style={{ 
+                                                            minWidth: `calc(${100 / itemsPerPage}% - 0.75rem)`,
+                                                            cursor: 'pointer',
+                                                            transition: 'transform 0.2s ease'
+                                                        }}
+                                                        onClick={() => handleStyleSelect(styleItem.id)}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1.02)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1)';
                                                         }}
                                                     >
-                                                        <strong>${styleItem.price}</strong>
+                                                        <img
+                                                            src={
+                                                                variant?.image
+                                                                    ? `${api_url}/uploads/manufacturer_catalogs/${variant.image}`
+                                                                    : "/images/nologo.png"
+                                                            }
+                                                            alt={variant?.shortName || styleItem.style}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '220px',
+                                                                objectFit: 'contain',
+                                                                borderRadius: '10px',
+                                                                backgroundColor: '#f8f9fa',
+                                                                border: styleItem.id === selectedStyleData?.id ? '3px solid #1a73e8' : '1px solid #e9ecef',
+                                                            }}
+                                                        />
+                                                        <div
+                                                            className="mt-2 p-2 rounded"
+                                                            style={{
+                                                                backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
+                                                                border: styleItem.id === selectedStyleData?.id ? '2px solid #1a73e8' : '1px solid #ced4da',
+                                                                fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
+                                                            }}
+                                                        >
+                                                            <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                                                                {styleItem.style}
+                                                            </div>
+                                                            <strong style={{ color: '#28a745' }}>${styleItem.price}</strong>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
-
-
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-
                                 )}
 
 
@@ -648,9 +837,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     </div>
                 </>
             )}
-            <hr />
-
-            <CatalogTable
+            <hr />            <CatalogTable
                 catalogData={fetchedCollections}
                 handleCatalogSelect={handleCatalogSelect}
                 addOnTop={addOnTop}
@@ -684,10 +871,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     <div className="toast show align-items-center text-white bg-success border-0">
                         <div className="d-flex">
                             <div className="toast-body">
-                                {textChanges ?
-                                    "There are no items to copy in the cart" :
-                                    'Items copied to clipboard'
-                                }
+                                {textChanges ? t('proposalUI.toast.copyEmpty') : t('proposalUI.toast.copySuccess')}
                             </div>
                             <button
                                 type="button"
@@ -699,16 +883,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </div>
             )}
 
-            <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
+            <div className="mt-5 p-0 custom-items-mobile" style={{ maxWidth: '100%' }}>
                 <div
                     className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
                     style={{ rowGap: '0.75rem' }}
                 >
-                    <h6 className="mb-0 w-100 w-md-auto">Custom Items:</h6>
+                    <h6 className="mb-0 w-100 w-md-auto">{t('proposalUI.custom.title')}</h6>
 
                     <input
                         type="text"
-                        placeholder="Item name"
+                        placeholder={t('proposalUI.custom.itemName')}
                         value={customItemName}
                         onChange={e => {
                             setCustomItemName(e.target.value);
@@ -720,7 +904,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                     <input
                         type="number"
-                        placeholder="Price"
+                        placeholder={t('proposalUI.custom.price')}
                         value={customItemPrice}
                         onChange={e => {
                             setCustomItemPrice(e.target.value);
@@ -735,14 +919,15 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     <div className="form-check d-flex align-items-center">
                         <CFormCheck
                             checked={customItemTaxable}
-                            onChange={(e) => setCustomItemTaxable(e.target.checked)}
+                            onChange={(e) => { if (isUserAdmin) setCustomItemTaxable(e.target.checked); }}
+                            disabled={!isUserAdmin}
                             style={{ transform: 'scale(1.4)' }}
-                            label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>Taxable</span>}
+                            label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>{t('proposalUI.custom.taxable')}</span>}
                         />
                     </div>
 
                     <button className="btn btn-primary" style={{ minWidth: '80px' }} onClick={handleAddCustomItem}>
-                        Add
+                        {t('proposalUI.custom.add')}
                     </button>
                 </div>
 
@@ -756,11 +941,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     <table className="table mt-5">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Item Name</th>
-                                <th>Price</th>
-                                <th>Taxable</th>
-                                <th>Actions</th>
+                                <th>{t('proposalUI.custom.table.index')}</th>
+                                <th>{t('proposalUI.custom.table.itemName')}</th>
+                                <th>{t('proposalUI.custom.table.price')}</th>
+                                <th>{t('proposalUI.custom.table.taxable')}</th>
+                                <th>{t('proposalUI.custom.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -770,13 +955,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     <td>{item.name}</td>
                                     <td>${(Number(item.price) || 0).toFixed(2)}</td>
 
-                                    <td>{item.taxable ? 'Yes' : 'No'}</td>
+                                    <td>{item.taxable ? t('common.yes') : t('common.no')}</td>
                                     <td>
                                         <button
                                             className="btn btn-sm btn-danger text-white"
                                             onClick={() => handleDeleteCustomItem(idx)}
                                         >
-                                            Delete
+                                            {t('proposalUI.custom.delete')}
                                         </button>
                                     </td>
                                 </tr>
@@ -787,35 +972,35 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             </div>
 
             {/* Totals Summary */}
-            <div className="mt-5 mb-5 d-flex justify-content-center">
+            <div className="mt-5 mb-5 d-flex justify-content-center totals-summary-mobile">
                 <table className="table shadow-lg" style={{ maxWidth: '500px' }}>
                     <tbody>
                         <tr>
-                            <th className="bg-light">Cabinets & Parts:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.cabinets')}</th>
                             <td className="text-center fw-medium">
                                 ${selectVersion?.summary?.cabinets || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Assembly Fee:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.assembly')}</th>
                             <td className="text-center">${selectVersion?.summary?.assemblyFee || "0"}</td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Modifications:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.modifications')}</th>
                             <td className="text-center">${selectVersion?.summary?.modificationsCost || "0"}</td>
                         </tr>
 
                         <tr className="table-secondary">
-                            <th>Style Total:</th>
+                            <th>{t('proposalDoc.priceSummary.styleTotal')}</th>
                             <td className="text-center fw-semibold">
                                 ${selectVersion?.summary?.styleTotal || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Discount (%):</th>
+                            <th className="bg-light">{t('proposalUI.summary.discountPct')}</th>
                             <td className="text-center">
                                 <input
                                     type="number"
@@ -839,26 +1024,26 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Total:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.total')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.total || "0"}
                             </td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Tax Rate:</th>
+                            <th className="bg-light">{t('proposalUI.summary.taxRate')}</th>
                             <td className="text-center">{selectVersion?.summary?.taxRate || "0"}%</td>
                         </tr>
 
                         <tr>
-                            <th className="bg-light">Tax:</th>
+                            <th className="bg-light">{t('proposalDoc.priceSummary.tax')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.taxAmount || "0"}
                             </td>
                         </tr>
 
                         <tr className="table-success fw-bold">
-                            <th>Grand Total:</th>
+                            <th>{t('proposalDoc.priceSummary.grandTotal')}</th>
                             <td className="text-center">
                                 ${selectVersion?.summary?.grandTotal || "0"}
                             </td>
@@ -893,6 +1078,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 customModNote={customModNote}
                 setCustomModNote={setCustomModNote}
                 validationAttempted={validationAttempted}
+                isUserAdmin={isUserAdmin}
             />
         </div>
     );

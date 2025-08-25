@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import CIcon from '@coreui/icons-react'
 import {
   cilCog,
@@ -6,125 +8,226 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilCalendar,
-  cilFolderOpen  
+  cilFolderOpen,
+  cilPeople,
+  cilSettings,
+  cilUser,
+  cilGroup,
+  cilBell,
+  cilNotes,
+  cilLocationPin,
+  cilCalculator,
+  cilBrush,
+  cilIndustry
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
-
-const ROLE_ADMIN = 2
-const ROLE_USER = 3
+import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
 
 const useNavItems = () => {
   const [navItems, setNavItems] = useState([])
+  const { t, i18n } = useTranslation()
 
+  // Prefer Redux auth user, fallback to localStorage once on mount
+  const authUser = useSelector((state) => state.auth?.user)
   const user = useMemo(() => {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
-  }, [])
+    if (authUser) return authUser
+    const userData = localStorage.getItem('user')
+    return userData ? JSON.parse(userData) : null
+  }, [authUser])
 
   useEffect(() => {
-    const fetchNavItems = async () => {
-      if (!user?.userId) {
-        console.log('No user or userId found:', user);
+    const buildNavigation = () => {
+      // Check for user ID in multiple possible locations
+      const hasUserId = user?.userId || user?.id;
+      if (!hasUserId) {
+        setNavItems([]);
         return;
       }
 
-      // Use role_id from localStorage if available, otherwise fallback to API call
-      let role = user.role_id;
-      console.log('User data:', user);
-      console.log('Role from localStorage:', role);
-      
-      if (!role) {
-        try {
-          const axiosInstance = (await import('./helpers/axiosInstance')).default;
-          const res = await axiosInstance.get(`/api/user-role/${user.userId}`);
-          role = res.data.role;
-          console.log('Role from API:', role);
-        } catch (error) {
-          console.error('Failed to fetch user role:', error);
-          return;
+      const navigationItems = [];
+
+      // Dashboard - always visible
+      navigationItems.push({
+        component: CNavItem,
+        name: t('nav.dashboard'),
+        to: '/',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      });
+
+      // Proposals section
+      if (hasPermission(user, 'proposals:read')) {
+        const proposalItems = [
+          { component: CNavItem, name: t('nav.viewProposals'), to: '/proposals' }
+        ];
+
+        if (hasPermission(user, 'proposals:create')) {
+          proposalItems.push({ component: CNavItem, name: t('nav.createProposal'), to: '/proposals/create' });
         }
-      }
 
-      console.log('Final role for navigation:', role);
-      console.log('ROLE_ADMIN constant:', ROLE_ADMIN);
-      console.log('ROLE_USER constant:', ROLE_USER);
-
-      const base = [
-        {
-          component: CNavItem,
-          name: 'Dashboard',
-          to: '/',
-          icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  // Contracts: visible only to non-contractors
+  if (!isContractor(user)) {
+          proposalItems.push({ component: CNavItem, name: t('nav.contracts'), to: '/contracts' });
         }
-      ]
 
-      if (role === ROLE_ADMIN) {
-        console.log('Adding admin navigation items');
-        base.push(
-          {
-            component: CNavItem,
-            name: 'Customers',
-            to: '/customers',
-            icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-          },
-          {
-            component: CNavGroup,
-            name: 'Proposals',
-            icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-            items: [
-              { component: CNavItem, name: 'New Proposal', to: '/proposals' },
-              { component: CNavItem, name: 'Contracts', to: '/contracts' },
-            ],
-          },
-          {
-            component: CNavItem,
-            name: 'Calender',
-            to: '/calender',
-            icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-          },
-          {
-            component: CNavItem,
-            name: 'Resources',
-            to: '/resources',
-            icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
-          },
-          {
-            component: CNavGroup,
-            name: 'Settings',
-            icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
-            items: [
-              { component: CNavItem, name: 'Manufactureres', to: '/settings/manufacturers' },
-              { component: CNavItem, name: 'User Group Multipliers', to: '/settings/usergroup/multipliers' },
-              { component: CNavItem, name: 'Users', to: '/settings/users' },
-              { component: CNavItem, name: 'Taxes', to: '/settings/taxes' },
-              { component: CNavItem, name: 'Locations', to: '/settings/locations' },
-              { component: CNavItem, name: 'UI Customization', to: '/settings/ui-customization' },
-            ],
-          }
-        )
-      } else if (role === ROLE_USER) {
-        console.log('Adding user navigation items');
-        base.push({
+        navigationItems.push({
           component: CNavGroup,
-          name: 'Proposals',
+          name: t('nav.proposals'),
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-          items: [
-            { component: CNavItem, name: 'New Proposal', to: '/proposals' },
-            { component: CNavItem, name: 'Contracts', to: '/contracts' },
-          ],
-        })
-      } else {
-        console.log('Role does not match any expected values. Role:', role, typeof role);
+          items: proposalItems,
+        });
       }
 
-      console.log('Final navigation items:', base);
-      setNavItems(base)
-    }
+      // Customers section
+      if (hasPermission(user, 'customers:read')) {
+        const customerItems = [
+          { component: CNavItem, name: t('nav.viewCustomers'), to: '/customers' }
+        ];
 
-    fetchNavItems()
-  }, [user?.userId])
+        if (hasPermission(user, 'customers:create')) {
+          customerItems.push({ component: CNavItem, name: t('nav.addCustomer'), to: '/customers/add' });
+        }
 
-  return navItems
-}
+        navigationItems.push({
+          component: CNavGroup,
+          name: t('nav.customers'),
+          icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+          items: customerItems,
+        });
+      }
 
-export default useNavItems
+      // Resources section
+      if (hasPermission(user, 'resources:read')) {
+        navigationItems.push({
+          component: CNavItem,
+          name: t('nav.resources'),
+          to: '/resources',
+          icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
+        });
+      }
+
+      // Calendar section
+      if (hasModuleAccess(user, 'calendar')) {
+        navigationItems.push({
+          component: CNavItem,
+          name: t('nav.calendar'),
+          to: '/calender',
+          icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+        });
+      }
+
+      // Admin section
+      if (isAdmin(user)) {
+        const adminItems = [];
+
+        if (hasPermission(user, 'admin:contractors')) {
+          adminItems.push({ component: CNavItem, name: t('nav.contractors'), to: '/admin/contractors' });
+        }
+
+        if (hasPermission(user, 'admin:notifications')) {
+          adminItems.push({ component: CNavItem, name: t('nav.notifications'), to: '/admin/notifications' });
+        }
+
+        if (adminItems.length > 0) {
+          navigationItems.push({
+            component: CNavGroup,
+            name: t('nav.admin'),
+            icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+            items: adminItems,
+          });
+        }
+      }
+
+      // Settings section - only for admin users
+      if (isAdmin(user)) {
+        const settingsItems = [];
+
+        // User Management
+        if (hasPermission(user, 'settings:users') || hasPermission(user, 'settings:groups')) {
+          const userManagementItems = [];
+          
+          // Add Users if user has permission
+          if (hasPermission(user, 'settings:users')) {
+            userManagementItems.push({ component: CNavItem, name: t('nav.users'), to: '/settings/users' });
+          }
+          
+          // Add User Groups if user has permission
+          if (hasPermission(user, 'settings:groups')) {
+            userManagementItems.push({ component: CNavItem, name: t('nav.userGroups'), to: '/settings/users/groups' });
+          }
+          
+          settingsItems.push({
+            component: CNavGroup,
+            name: t('nav.userManagement'),
+            icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+            items: userManagementItems,
+          });
+        }
+
+        // Manufacturers
+        if (hasPermission(user, 'settings:manufacturers')) {
+          settingsItems.push({
+            component: CNavGroup,
+            name: t('nav.manufacturers'),
+            icon: <CIcon icon={cilIndustry} customClassName="nav-icon" />,
+            items: [
+              { component: CNavItem, name: t('nav.manufacturers'), to: '/settings/manufacturers' },
+              { component: CNavItem, name: t('nav.multipliers'), to: '/settings/usergroup/multipliers' },
+            ],
+          });
+        }
+
+        // Locations
+        if (hasPermission(user, 'settings:locations')) {
+          settingsItems.push({
+            component: CNavItem,
+            name: t('nav.locations'),
+            to: '/settings/locations',
+            icon: <CIcon icon={cilLocationPin} customClassName="nav-icon" />,
+          });
+        }
+
+        // Taxes
+        if (hasPermission(user, 'settings:taxes')) {
+          settingsItems.push({
+            component: CNavItem,
+            name: t('nav.taxes'),
+            to: '/settings/taxes',
+            icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
+          });
+        }
+
+        // Customization
+        if (hasPermission(user, 'settings:customization')) {
+          settingsItems.push({
+            component: CNavGroup,
+            name: t('nav.customization'),
+            icon: <CIcon icon={cilBrush} customClassName="nav-icon" />,
+            items: [
+              { component: CNavItem, name: t('nav.general'), to: '/settings/customization' },
+              { component: CNavItem, name: t('nav.pdfLayout'), to: '/settings/pdflayoutcustomization' },
+              { component: CNavItem, name: t('nav.loginPage'), to: '/settings/loginlayoutcustomization' },
+              { component: CNavItem, name: t('nav.uiCustomization'), to: '/settings/ui-customization' },
+            ],
+          });
+        }
+
+        if (settingsItems.length > 0) {
+          navigationItems.push({
+            component: CNavGroup,
+            name: t('nav.settings'),
+            icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+            items: settingsItems,
+          });
+        }
+      }
+
+      setNavItems(navigationItems);
+    };
+
+    buildNavigation();
+  }, [user, i18n.language]);
+
+  return navItems;
+};
+
+export default useNavItems;

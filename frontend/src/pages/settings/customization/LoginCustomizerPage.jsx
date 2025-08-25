@@ -21,12 +21,21 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilSettings, cilPaintBucket, cilText, cilColorPalette, cilSave, cilImage } from '@coreui/icons';
 import axios from "axios";
+import axiosInstance from "../../../helpers/axiosInstance";
 import LoginPreview from "../../../components/LoginPreview";
 import { FaCog, FaPalette, FaEye } from "react-icons/fa";
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 const LoginCustomizerPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
+  const { t } = useTranslation();
 
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -49,13 +58,15 @@ const LoginCustomizerPage = () => {
     const fetchCustomization = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${api_url}/api/login-customization`);
+        const res = await axiosInstance.get('/api/login-customization', {
+          headers: getAuthHeaders()
+        });
         if (res.data.customization) {
           setSettings(res.data.customization);
         }
       } catch (err) {
-        console.error("Error fetching customization:", err);
-        Swal.fire('Error!', 'Failed to load customization settings.', 'error');
+  console.error("Error fetching customization:", err);
+  Swal.fire(t('common.error'), t('settings.customization.login.alerts.loadFailed'), 'error');
       } finally {
         setLoading(false);
       }
@@ -81,11 +92,13 @@ const LoginCustomizerPage = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await axios.post(`${api_url}/api/login-customization`, settings);
-      await Swal.fire('Success!', 'Customization saved successfully!', 'success');
+  await axiosInstance.post('/api/login-customization', settings, {
+        headers: getAuthHeaders()
+      });
+  await Swal.fire(t('common.success'), t('settings.customization.login.alerts.saveSuccess'), 'success');
     } catch (err) {
       console.error("Failed to save customization:", err);
-      Swal.fire('Error!', 'Failed to save customization.', 'error');
+  Swal.fire(t('common.error'), t('settings.customization.login.alerts.saveFailed'), 'error');
     } finally {
       setSaving(false);
     }
@@ -103,7 +116,7 @@ const LoginCustomizerPage = () => {
 
   return (
     <CContainer fluid className="p-2 m-2 main-div-custom-login" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      {/* Header Section */}
+  {/* Header Section */}
       <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <CCardBody className="py-4">
           <CRow className="align-items-center">
@@ -116,8 +129,8 @@ const LoginCustomizerPage = () => {
                   <FaCog className="text-white" style={{ fontSize: '24px' }} />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Login Customization</h3>
-                  <p className="text-white-50 mb-0">Customize your login page appearance and content</p>
+          <h3 className="text-white mb-1 fw-bold">{t('settings.customization.login.headerTitle')}</h3>
+          <p className="text-white-50 mb-0">{t('settings.customization.login.headerSubtitle')}</p>
                 </div>
               </div>
             </CCol>
@@ -135,7 +148,7 @@ const LoginCustomizerPage = () => {
                   }}
                 >
                   <CIcon icon={cilSave} className="me-2" />
-                  Preview
+          {t('settings.customization.login.buttons.preview')}
                 </CButton>
                 <CButton 
                   color="success" 
@@ -151,12 +164,12 @@ const LoginCustomizerPage = () => {
                   {saving ? (
                     <>
                       <CSpinner size="sm" className="me-2" />
-                      Saving...
+            {t('settings.customization.login.buttons.saving')}
                     </>
                   ) : (
                     <>
                       <CIcon icon={cilSave} className="me-2" />
-                      Save Settings
+            {t('settings.customization.login.buttons.saveSettings')}
                     </>
                   )}
                 </CButton>
@@ -171,7 +184,7 @@ const LoginCustomizerPage = () => {
         <CCard className="border-0 shadow-sm">
           <CCardBody className="text-center py-5">
             <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">Loading customization settings...</p>
+            <p className="text-muted mt-3 mb-0">{t('settings.customization.login.loading')}</p>
           </CCardBody>
         </CCard>
       )}
@@ -197,7 +210,7 @@ const LoginCustomizerPage = () => {
                       >
                         <CIcon icon={cilText} style={{ color: '#0d6efd', fontSize: '16px' }} />
                       </div>
-                      <h5 className="fw-bold mb-0 text-dark">Login Form Settings</h5>
+                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.form.title')}</h5>
                     </div>
 
                     {/* Logo Upload */}
@@ -222,13 +235,11 @@ const LoginCustomizerPage = () => {
 
                     {/* Title */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Login Title
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.form.loginTitle')}</CFormLabel>
                       <CFormInput
                         value={settings.title}
                         onChange={(e) => handleChange("title", e.target.value)}
-                        placeholder="Enter login title"
+                        placeholder={t('settings.customization.login.form.placeholders.title')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -241,13 +252,11 @@ const LoginCustomizerPage = () => {
 
                     {/* Subtitle */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Login Subtitle
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.form.loginSubtitle')}</CFormLabel>
                       <CFormInput
                         value={settings.subtitle}
                         onChange={(e) => handleChange("subtitle", e.target.value)}
-                        placeholder="Enter login subtitle"
+                        placeholder={t('settings.customization.login.form.placeholders.subtitle')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -262,7 +271,7 @@ const LoginCustomizerPage = () => {
                     <div className="mb-4">
                       <CFormLabel className="fw-semibold text-dark mb-2">
                         <CIcon icon={cilColorPalette} className="me-2" />
-                        Background Color
+                        {t('settings.customization.login.form.backgroundColor')}
                       </CFormLabel>
                       <CInputGroup>
                         <input
@@ -292,9 +301,7 @@ const LoginCustomizerPage = () => {
 
                     {/* Options */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-3">
-                        Login Options
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-3">{t('settings.customization.login.options.title')}</CFormLabel>
                       <div className="d-flex flex-column gap-3">
                         <div 
                           className="p-3 rounded"
@@ -302,12 +309,12 @@ const LoginCustomizerPage = () => {
                         >
                           <CFormCheck
                             className="mb-0"
-                            label="Show Forgot Password Link"
+                            label={t('settings.customization.login.options.showForgot')}
                             checked={settings.showForgotPassword}
                             onChange={(e) => handleChange("showForgotPassword", e.target.checked)}
                             id="forgotPassword"
                           />
-                          <small className="text-muted">Display forgot password option for users</small>
+                          <small className="text-muted">{t('settings.customization.login.options.showForgotHint')}</small>
                         </div>
 
                         <div 
@@ -316,12 +323,12 @@ const LoginCustomizerPage = () => {
                         >
                           <CFormCheck
                             className="mb-0"
-                            label="Show Keep Me Logged In"
+                            label={t('settings.customization.login.options.showKeep')}
                             checked={settings.showKeepLoggedIn}
                             onChange={(e) => handleChange("showKeepLoggedIn", e.target.checked)}
                             id="keepLoggedIn"
                           />
-                          <small className="text-muted">Allow users to stay logged in longer</small>
+                          <small className="text-muted">{t('settings.customization.login.options.showKeepHint')}</small>
                         </div>
                       </div>
                     </div>
@@ -343,18 +350,16 @@ const LoginCustomizerPage = () => {
                       >
                         <FaPalette style={{ color: '#198754', fontSize: '16px' }} />
                       </div>
-                      <h5 className="fw-bold mb-0 text-dark">Right Panel Content</h5>
+                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.rightPanel.title')}</h5>
                     </div>
 
                     {/* Panel Title */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Panel Title
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.panelTitle')}</CFormLabel>
                       <CFormInput
                         value={settings.rightTitle}
                         onChange={(e) => handleChange("rightTitle", e.target.value)}
-                        placeholder="Enter panel title"
+                        placeholder={t('settings.customization.login.rightPanel.placeholders.title')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -367,13 +372,11 @@ const LoginCustomizerPage = () => {
 
                     {/* Panel Subtitle */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Panel Subtitle
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.panelSubtitle')}</CFormLabel>
                       <CFormInput
                         value={settings.rightSubtitle}
                         onChange={(e) => handleChange("rightSubtitle", e.target.value)}
-                        placeholder="Enter panel subtitle"
+                        placeholder={t('settings.customization.login.rightPanel.placeholders.subtitle')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -386,13 +389,11 @@ const LoginCustomizerPage = () => {
 
                     {/* Tagline */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Tagline
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.tagline')}</CFormLabel>
                       <CFormInput
                         value={settings.rightTagline}
                         onChange={(e) => handleChange("rightTagline", e.target.value)}
-                        placeholder="Enter tagline"
+                        placeholder={t('settings.customization.login.rightPanel.placeholders.tagline')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -405,14 +406,12 @@ const LoginCustomizerPage = () => {
 
                     {/* Description */}
                     <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">
-                        Description
-                      </CFormLabel>
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.description')}</CFormLabel>
                       <CFormTextarea
                         rows={5}
                         value={settings.rightDescription}
                         onChange={(e) => handleChange("rightDescription", e.target.value)}
-                        placeholder="Enter detailed description"
+                        placeholder={t('settings.customization.login.rightPanel.placeholders.description')}
                         style={{ 
                           borderRadius: '8px',
                           border: '1px solid #e3e6f0',
@@ -436,7 +435,7 @@ const LoginCustomizerPage = () => {
                         }}
                       >
                         <FaEye className="me-1" />
-                        Changes will be visible in preview
+                        {t('settings.customization.login.previewBadge')}
                       </CBadge>
                     </div>
                   </div>
@@ -455,14 +454,14 @@ const LoginCustomizerPage = () => {
         className="login-preview-modal"
       >
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-          <h5 className="mb-0 fw-bold">Login Page Preview</h5>
+          <h5 className="mb-0 fw-bold">{t('settings.customization.login.previewTitle')}</h5>
           <CButton 
             color="light" 
             size="sm"
             onClick={() => setShowPreview(false)}
             style={{ borderRadius: '6px' }}
           >
-            Close Preview
+            {t('settings.customization.login.closePreview')}
           </CButton>
         </div>
         <CModalBody className="p-0">

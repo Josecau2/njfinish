@@ -6,7 +6,8 @@
     "build": "vite build",
     "lint": "eslint",
     "serve": "vite preview",
-    "start": "vite"
+  "start": "vite",
+  "test:pricing": "node ./scripts/simulatePricingTest.mjs"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^41.4.2",
@@ -31,6 +32,7 @@
     "country-timezone-list": "^1.0.5",
     "formik": "^2.4.6",
     "framer-motion": "^12.16.0",
+    "i18next": "^25.4.0",
     "lucide-react": "^0.511.0",
     "moment-timezone": "^0.6.0",
     "pdfmake": "^0.2.20",
@@ -38,6 +40,7 @@
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
+    "react-i18next": "^15.7.1",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5",

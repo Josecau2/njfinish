@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CCard,
   CCardBody,
@@ -11,7 +12,14 @@ import {
 } from '@coreui/react'
 import axiosInstance from '../../../helpers/axiosInstance';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
 const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, formData, hideBack, prevStep }) => {
+  const { t } = useTranslation();
 
   const api_url = import.meta.env.VITE_API_URL;
   const [activeTab, setActiveTab] = useState('import')
@@ -65,7 +73,9 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
   const fetchManufacturerCollection = async (manufacturerId) => {
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
+      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
+        headers: getAuthHeaders()
+      });
       setManufacturerCollections(response.data); // assuming array
     } catch (error) {
       console.error('Error fetching manufacturer collection', error);
@@ -74,11 +84,11 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
 
   return (
-    <div className="w-100">
+    <div className="w-100 proposal-form-mobile">
       <CCard className="my-4 shadow-sm w-100">
         <CCardBody className="p-4">
           <div className="d-flex justify-content-between">
-            <h5 className="mb-4 text-dark fw-semibold">Design Import</h5>
+            <h5 className="mb-4 text-dark fw-semibold">{t('proposals.create.design.title')}</h5>
 
             {!hideBack && (
               <CButton
@@ -87,19 +97,19 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                 onClick={prevStep}
                 style={{ borderRadius: '6px', minWidth: '90px' }}
               >
-                Back
+                {t('common.back')}
               </CButton>
             )}
           </div>
 
-          <CNav variant="tabs" role="tablist" className="mb-4">
+          <CNav variant="tabs" role="tablist" className="mb-4 tabs-container">
             <CNavItem>
               <CNavLink
                 active={activeTab === 'import'}
                 onClick={() => handleTabSelect('import')}
                 style={{ cursor: 'pointer' }}
               >
-                Import 2020 Design
+                {t('proposals.create.design.tabs.import2020')}
               </CNavLink>
             </CNavItem>
             <CNavItem>
@@ -108,14 +118,14 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                 onClick={() => handleTabSelect('manual')}
                 style={{ cursor: 'pointer' }}
               >
-                Select Style & Enter Parts Manually
+                {t('proposals.create.design.tabs.manualEntry')}
               </CNavLink>
             </CNavItem>
           </CNav>
 
           {activeTab === 'import' ? (
-            <div className="text-center py-5">
-              <p className="text-muted mb-4">Supported file types: <strong>.TXT</strong>, <strong>.CSV</strong></p>
+            <div className="form-section text-center py-5">
+              <p className="text-muted mb-4">{t('proposals.create.design.supportedTypes', { types: '.TXT, .CSV' })}</p>
 
               <div
                 className="upload-area p-5 border border-dashed rounded mb-4 bg-light d-flex flex-column align-items-center justify-content-center"
@@ -123,9 +133,9 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                 onClick={() => document.getElementById('fileInput').click()}
               >
                 <i className="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
-                <p className="text-muted mb-2">Select the exported design file</p>
+                <p className="text-muted mb-2">{t('proposals.create.design.selectExportedFile')}</p>
                 <CButton color="success" onClick={() => document.getElementById('fileInput').click()}>
-                  Select a File
+                  {t('proposals.create.design.selectFileCta')}
                 </CButton>
                 <CFormInput
                   type="file"
@@ -137,11 +147,11 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
               </div>
 
               <p className="text-primary mb-2" style={{ cursor: 'pointer' }} onClick={() => handleTabSelect('manual')}>
-                I don’t have a 2020 design. Let me enter parts manually.
+                {t('proposals.create.design.no2020SwitchToManual')}
               </p>
 
               <CButton color="link" className="text-primary p-0">
-                <i className="bi bi-question-circle me-1"></i> How to export a design file?
+                <i className="bi bi-question-circle me-1"></i> {t('proposals.create.design.howToExport')}
               </CButton>
             </div>
           ) : (
@@ -156,10 +166,10 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
             //     </CButton>
             //   </div>
             // ) : (
-              <div className="text-center py-5">
+              <div className="form-section text-center py-5">
                 <div className="mb-4 d-flex justify-content-center">
                   <CFormInput
-                    placeholder="Search Style..."
+                    placeholder={t('proposals.create.design.searchStylePlaceholder')}
                     style={{ maxWidth: 300 }}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -215,10 +225,10 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                               borderRadius: '8px',
                             }}
                           >
-                            {style.catalogName || 'No Name'}
+              {style.catalogName || t('common.na')}
                           </div>
                         </div>
-                        <div className="mt-2 text-muted fw-semibold">{style.shortName}</div>
+            <div className="mt-2 text-muted fw-semibold">{style.shortName}</div>
                       </div>
                     ))}
                   </div>

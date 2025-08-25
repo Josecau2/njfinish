@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const api_url = import.meta.env.VITE_API_URL;
+  const { t } = useTranslation();
 
   const [customization, setCustomization] = useState(null);
   const [email, setEmail] = useState('');
@@ -30,6 +32,9 @@ const LoginPage = () => {
       }
     };
 
+    // Force light mode on login page
+    localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
+    
     fetchCustomization();
   }, []);
 
@@ -41,17 +46,20 @@ const LoginPage = () => {
         password,
       });
 
-      const { token, userId, name, role, role_id } = response.data;
-      const user = { email, userId, name, role, role_id };
+      const { token, userId, name, role, role_id, group_id, group } = response.data;
+      const user = { email, userId, name, role, role_id, group_id, group };
 
       dispatch(setUser({ user, token }));
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
+      
+      // Force light mode as default theme on login
+      localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
 
       navigate('/');
     } catch (err) {
       const errorMsg =
-        err.response?.data?.message || 'Login failed. Please check your credentials.';
+        err.response?.data?.message || t('auth.loginFailed');
       dispatch(setError(errorMsg));
       setErrorMessage(errorMsg);
     }
@@ -59,29 +67,40 @@ const LoginPage = () => {
 
   const settings = customization || {
     logo: "",
-    title: "Sign In",
-    subtitle: "Enter your email and password to sign in!",
+  title: t('auth.signIn'),
+  subtitle: t('auth.enterCredentials'),
     backgroundColor: "#0e1446",
     showForgotPassword: true,
     showKeepLoggedIn: true,
-    rightTitle: "NJ Cabinets",
-    rightSubtitle: "Configure - Price - Quote",
-    rightTagline: "Dealer Portal",
-    rightDescription:
-      "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.",
+  rightTitle: t('common.appName'),
+  rightSubtitle: t('auth.rightSubtitle'),
+  rightTagline: t('common.dealerPortal'),
+  rightDescription: t('auth.rightDescription'),
   };
 
   return (
-    <div className="d-flex flex-column flex-md-row min-vh-100">
-      {/* Left Form */}
-      <div className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5 bg-white">
-        <div className="w-100" style={{ maxWidth: '400px' }}>
+    <div className="login-page-wrapper">
+      {/* Left Panel - Illustration and Branding */}
+      <div
+        className="login-left-panel"
+        style={{ backgroundColor: settings.backgroundColor }}
+      >
+        <div className="login-left-content">
+          <h1 className="mb-3">{settings.rightTitle}</h1>
+          <p className="lead mb-4">{settings.rightSubtitle}</p>
+          <p>{settings.rightDescription}</p>
+        </div>
+      </div>
+
+      {/* Right Panel - Form */}
+      <div className="login-right-panel">
+        <div className="login-form-container">
           {settings.logo && (
-            <div className="text-center mb-3">
+            <div className="text-center mb-4">
               <img src={settings.logo} alt="Logo" style={{ height: 50 }} />
             </div>
           )}
-          <h2 className="mb-1 fw-bold">{settings.title}</h2>
+          <h2 className="mb-2 fw-bold">{settings.title}</h2>
           <p className="text-muted mb-4">{settings.subtitle}</p>
 
           {errorMessage && (
@@ -93,27 +112,27 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label fw-medium">
-                Email <span className="text-danger">*</span>
+                {t('auth.email')} <span className="text-danger">*</span>
               </label>
               <input
                 type="email"
-                className="form-control"
-                placeholder="info@gmail.com"
+                className="form-control form-control-lg"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
 
-            <div className="mb-3">
+            <div className="mb-4">
               <label htmlFor="password" className="form-label fw-medium">
-                Password <span className="text-danger">*</span>
+                {t('auth.password')} <span className="text-danger">*</span>
               </label>
               <div className="input-group">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="form-control"
-                  placeholder="Enter your password"
+                  className="form-control form-control-lg"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -129,7 +148,7 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-4">
               {settings.showKeepLoggedIn && (
                 <div className="form-check">
                   <input
@@ -137,37 +156,26 @@ const LoginPage = () => {
                     type="checkbox"
                     id="keepLoggedIn"
                     checked={keepLoggedIn}
-                    onChange={() => setKeepLoggedIn(!keepLoggedIn)}
+                    onChange={(e) => setKeepLoggedIn(e.target.checked)}
                   />
                   <label className="form-check-label" htmlFor="keepLoggedIn">
-                    Keep me logged in
+                    {t('auth.keepLoggedIn')}
                   </label>
                 </div>
               )}
               {settings.showForgotPassword && (
-                <a href="/reset-password" className="text-primary">
-                  Forgot password?
+                <a href="/reset-password" className="small text-decoration-none">
+                  {t('auth.forgotPassword')}
                 </a>
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
-              Sign in
-            </button>
+            <div className="d-grid">
+              <button type="submit" className="btn btn-primary btn-lg">
+                {t('auth.signIn')}
+              </button>
+            </div>
           </form>
-        </div>
-      </div>
-
-      {/* Right Panel */}
-      <div
-        className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5 text-white"
-        style={{ backgroundColor: settings.backgroundColor }}
-      >
-        <div className="text-center px-5">
-          <h2>{settings.rightTitle}</h2>
-          <p className="text-light">{settings.rightSubtitle}</p>
-          <p className="text-light">{settings.rightTagline}</p>
-          <p className="text-light">{settings.rightDescription}</p>
         </div>
       </div>
     </div>

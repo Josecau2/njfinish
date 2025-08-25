@@ -31,6 +31,7 @@ import {
   cilArrowLeft,
   cilCheckCircle
 } from '@coreui/icons';
+import { useTranslation } from 'react-i18next';
 
 const initialForm = {
   locationName: '',
@@ -43,6 +44,7 @@ const initialForm = {
 };
 
 const LocationForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);
@@ -66,17 +68,17 @@ const LocationForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.locationName.trim()) newErrors.locationName = 'Location name is required';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.website.trim()) newErrors.website = 'Website is required';
+    if (!formData.locationName.trim()) newErrors.locationName = t('settings.locations.form.validation.locationNameRequired');
+    if (!formData.address.trim()) newErrors.address = t('settings.locations.form.validation.addressRequired');
+    if (!formData.website.trim()) newErrors.website = t('settings.locations.form.validation.websiteRequired');
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('settings.locations.form.validation.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email';
+      newErrors.email = t('settings.locations.form.validation.invalidEmail');
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.country) newErrors.country = 'Country is required';
-    if (!formData.timezone) newErrors.timezone = 'Timezone is required';
+    if (!formData.phone.trim()) newErrors.phone = t('settings.locations.form.validation.phoneRequired');
+    if (!formData.country) newErrors.country = t('settings.locations.form.validation.countryRequired');
+    if (!formData.timezone) newErrors.timezone = t('settings.locations.form.validation.timezoneRequired');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -110,8 +112,8 @@ const LocationForm = () => {
       const response = await dispatch(addLocation(formData));
       if (response.payload.status == 200) {
         Swal.fire({
-          title: 'Success!',
-          text: 'Location saved successfully!',
+          title: t('settings.locations.alerts.savedTitle'),
+          text: t('settings.locations.alerts.savedText'),
           icon: 'success',
           confirmButtonColor: '#28a745',
           showClass: {
@@ -125,8 +127,8 @@ const LocationForm = () => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: error.message || 'Something went wrong',
+        title: t('common.error'),
+        text: error.message || t('settings.locations.alerts.genericError'),
         icon: 'error',
         confirmButtonColor: '#dc3545'
       });
@@ -140,14 +142,14 @@ const LocationForm = () => {
   };
 
   const handleCancel = () => {
-    if (isFormDirty()) {
+  if (isFormDirty()) {
       Swal.fire({
-        title: 'Unsaved Changes',
-        text: 'Changes you made will be lost if you leave now.',
+    title: t('common.confirm'),
+    text: t('settings.locations.alerts.leaveWarning'),
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Leave Anyway',
-        cancelButtonText: 'Stay on Page',
+    showCancelButton: true,
+    confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
+    cancelButtonText: t('settings.locations.alerts.stayOnPage'),
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
         showClass: {
@@ -189,15 +191,15 @@ const LocationForm = () => {
                   <CIcon icon={cilArrowLeft} />
                 </CButton>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Add New Location</h3>
-                  <p className="text-white-50 mb-0">Create a new business location with timezone settings</p>
+                  <h3 className="text-white mb-1 fw-bold">{t('settings.locations.create.title')}</h3>
+                  <p className="text-white-50 mb-0">{t('settings.locations.create.subtitle')}</p>
                 </div>
               </div>
             </CCol>
             <CCol xs="auto">
               <div className="d-flex align-items-center gap-2 text-white-50">
                 <CIcon icon={cilLocationPin} />
-                <span className="small">Location Management</span>
+                <span className="small">{t('settings.locations.management')}</span>
               </div>
             </CCol>
           </CRow>
@@ -223,13 +225,13 @@ const LocationForm = () => {
                 >
                   <CIcon icon={cilHome} size="sm" />
                 </div>
-                Basic Information
+                {t('settings.locations.form.titles.basicInfo')}
               </h5>
               
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Location Name
+                    {t('settings.locations.form.labels.locationName')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CInputGroup>
@@ -241,7 +243,7 @@ const LocationForm = () => {
                       value={formData.locationName}
                       onChange={handleChange}
                       invalid={!!errors.locationName}
-                      placeholder="Enter location name"
+                      placeholder={t('settings.locations.form.placeholders.locationName')}
                       style={{
                         border: '1px solid #e3e6f0',
                         borderLeft: 'none',
@@ -258,7 +260,7 @@ const LocationForm = () => {
                 </CCol>
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Address
+                    {t('settings.locations.form.labels.address')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CInputGroup>
@@ -270,7 +272,7 @@ const LocationForm = () => {
                       value={formData.address}
                       onChange={handleChange}
                       invalid={!!errors.address}
-                      placeholder="Enter full address"
+                      placeholder={t('settings.locations.form.placeholders.address')}
                       style={{
                         border: '1px solid #e3e6f0',
                         borderLeft: 'none',
@@ -303,13 +305,13 @@ const LocationForm = () => {
                 >
                   <CIcon icon={cilEnvelopeClosed} size="sm" />
                 </div>
-                Contact Information
+                {t('settings.locations.form.titles.contactInfo')}
               </h5>
               
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Website
+                    {t('settings.locations.form.labels.website')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CInputGroup>
@@ -321,7 +323,7 @@ const LocationForm = () => {
                       value={formData.website}
                       onChange={handleChange}
                       invalid={!!errors.website}
-                      placeholder="https://www.example.com"
+                      placeholder={t('settings.locations.form.placeholders.website')}
                       style={{
                         border: '1px solid #e3e6f0',
                         borderLeft: 'none',
@@ -338,7 +340,7 @@ const LocationForm = () => {
                 </CCol>
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Email
+                    {t('settings.locations.form.labels.email')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CInputGroup>
@@ -351,7 +353,7 @@ const LocationForm = () => {
                       value={formData.email}
                       onChange={handleChange}
                       invalid={!!errors.email}
-                      placeholder="contact@example.com"
+                      placeholder={t('settings.locations.form.placeholders.email')}
                       style={{
                         border: '1px solid #e3e6f0',
                         borderLeft: 'none',
@@ -371,7 +373,7 @@ const LocationForm = () => {
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Phone
+                    {t('settings.locations.form.labels.phone')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CInputGroup>
@@ -384,7 +386,7 @@ const LocationForm = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       invalid={!!errors.phone}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder={t('settings.locations.form.placeholders.phone')}
                       style={{
                         border: '1px solid #e3e6f0',
                         borderLeft: 'none',
@@ -417,13 +419,13 @@ const LocationForm = () => {
                 >
                   <CIcon icon={cilClock} size="sm" />
                 </div>
-                Location & Time Settings
+                {t('settings.locations.form.titles.locationTime')}
               </h5>
               
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Country
+                    {t('settings.locations.form.labels.country')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CFormSelect
@@ -438,7 +440,7 @@ const LocationForm = () => {
                       padding: '12px 16px'
                     }}
                   >
-                    <option value="">-- Select Country --</option>
+                    <option value="">{t('settings.locations.form.select.country')}</option>
                     {countries.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
@@ -451,7 +453,7 @@ const LocationForm = () => {
                 </CCol>
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
-                    Timezone
+                    {t('settings.locations.form.labels.timezone')}
                     <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
                   </CFormLabel>
                   <CFormSelect
@@ -468,7 +470,7 @@ const LocationForm = () => {
                       backgroundColor: !formData.country ? '#f8f9fa' : 'white'
                     }}
                   >
-                    <option value="">-- Select Timezone --</option>
+                    <option value="">{t('settings.locations.form.select.timezone')}</option>
                     {timezonesForCountry.map((tz) => (
                       <option key={tz} value={tz}>{tz}</option>
                     ))}
@@ -484,7 +486,7 @@ const LocationForm = () => {
               {currentTime && (
                 <CRow className="mb-3">
                   <CCol md={6}>
-                    <CFormLabel className="fw-semibold text-dark">Current Time</CFormLabel>
+                    <CFormLabel className="fw-semibold text-dark">{t('settings.locations.form.labels.currentTime')}</CFormLabel>
                     <CInputGroup>
                       <CInputGroupText style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}>
                         <CIcon icon={cilClock} className="text-primary" />
@@ -504,7 +506,7 @@ const LocationForm = () => {
                         }}
                       />
                     </CInputGroup>
-                    <small className="text-muted">Live time in selected timezone</small>
+                    <small className="text-muted">{t('settings.locations.form.hints.liveTime')}</small>
                   </CCol>
                 </CRow>
               )}
@@ -527,7 +529,7 @@ const LocationForm = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Cancel
+                {t('common.cancel')}
               </CButton>
               <CButton
                 type="submit"
@@ -544,14 +546,14 @@ const LocationForm = () => {
                 {loading ? (
                   <>
                     <div className="spinner-border spinner-border-sm me-2" role="status">
-                      <span className="visually-hidden">Loading...</span>
+                      <span className="visually-hidden">{t('common.loading')}</span>
                     </div>
-                    Saving...
+                    {t('settings.locations.create.saving')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilCheckCircle} className="me-2" />
-                    Save Location
+                    {t('settings.locations.create.submit')}
                   </>
                 )}
               </CButton>

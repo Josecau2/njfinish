@@ -8,7 +8,7 @@ const LoginPreview = ({ config }) => {
   return (
     <div className="d-flex flex-column flex-md-row min-vh-100 border rounded shadow overflow-hidden">
       {/* Left Panel */}
-      <div className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5 bg-white">
+  <div className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5 bg-body">
         <div className="w-100" style={{ maxWidth: "400px" }}>
           {config.logo && (
             <img

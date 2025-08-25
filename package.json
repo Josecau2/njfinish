@@ -6,7 +6,9 @@
     "build": "vite build",
     "lint": "eslint",
     "serve": "vite preview",
-    "start": "vite"
+  "start": "vite",
+  "seed:dev": "node scripts/seed-dev.js",
+  "db:sync": "node scripts/sync-db.js"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^41.4.2",

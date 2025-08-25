@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CButton, CCard, CCardBody, CCardHeader, CCol, CRow,
   CProgress, CAlert, CBadge, CDropdown, CDropdownToggle,
@@ -12,7 +13,10 @@ import {
 } from '@coreui/icons'
 import Swal from 'sweetalert2'
 
+const api_url = import.meta.env.VITE_API_URL;
+
 const FileUploadSection = ({ proposalId, onFilesChange }) => {
+  const { t } = useTranslation();
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
@@ -46,7 +50,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   }
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes'
+  if (bytes === 0) return '0 Bytes'
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -55,10 +59,10 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const validateFile = (file) => {
     if (!allAcceptedTypes.includes(file.type)) {
-      return `File type ${file.type} is not supported`
+  return t('files.validation.unsupportedType', { type: file.type })
     }
     if (file.size > maxFileSize) {
-      return `File size exceeds ${formatFileSize(maxFileSize)} limit`
+  return t('files.validation.sizeExceeded', { size: formatFileSize(maxFileSize) })
     }
     return null
   }
@@ -70,7 +74,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     formData.append('fileType', getFileType(file.type))
 
     try {
-      const response = await fetch('/api/proposals/upload-file', {
+      const response = await fetch(`${api_url}/api/proposals/upload-file`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -79,7 +83,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+  throw new Error('Upload failed')
       }
 
       return await response.json()
@@ -106,7 +110,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     if (errors.length > 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Invalid Files',
+        title: t('files.invalidTitle'),
         html: errors.join('<br>'),
       })
     }
@@ -137,16 +141,16 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
       Swal.fire({
         icon: 'success',
-        title: 'Success!',
-        text: `${uploadedFiles.length} file(s) uploaded successfully`,
+        title: t('common.success'),
+        text: t('files.uploadSuccess', { count: uploadedFiles.length }),
         timer: 2000,
         showConfirmButton: false
       })
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Upload Failed',
-        text: 'Failed to upload files. Please try again.',
+        title: t('files.uploadFailedTitle'),
+        text: t('files.uploadFailedText'),
       })
     } finally {
       setUploading(false)
@@ -181,7 +185,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const deleteFile = async (fileId) => {
     try {
-      const response = await fetch(`/api/proposals/files/${fileId}`, {
+      const response = await fetch(`${api_url}/api/proposals/files/${fileId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -190,7 +194,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
       })
 
       if (!response.ok) {
-        throw new Error('Delete failed')
+  throw new Error('Delete failed')
       }
 
       const updatedFiles = files.filter(file => file.id !== fileId)
@@ -199,29 +203,29 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
       Swal.fire({
         icon: 'success',
-        title: 'Deleted!',
-        text: 'File has been deleted successfully',
+        title: t('common.deleted'),
+        text: t('files.deleteSuccess'),
         timer: 2000,
         showConfirmButton: false
       })
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Delete Failed',
-        text: 'Failed to delete file. Please try again.',
+        title: t('files.deleteFailedTitle'),
+        text: t('files.deleteFailedText'),
       })
     }
   }
 
   const confirmDelete = (file) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: `Do you want to delete "${file.name}"?`,
+      title: t('customers.confirmTitle'),
+      text: t('files.confirmDelete', { name: file.name }),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: t('customers.confirmYes')
     }).then((result) => {
       if (result.isConfirmed) {
         deleteFile(file.id)
@@ -258,17 +262,17 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
           style={{ maxWidth: '100%', maxHeight: '400px' }}
         >
           <source src={file.url} type={file.mimeType} />
-          Your browser does not support the video tag.
+          {t('files.videoNotSupported')}
         </video>
       )
     } else {
       return (
         <div className="text-center p-4">
           <CIcon icon={cilFile} size="4xl" className="mb-3" />
-          <p>Document preview not available</p>
+          <p>{t('files.docPreviewNA')}</p>
           <CButton color="primary" onClick={() => downloadFile(file)}>
             <CIcon icon={cilSettings} className="me-2" />
-            Download to view
+            {t('files.downloadToView')}
           </CButton>
         </div>
       )
@@ -279,9 +283,9 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     <>
       <CCard>
         <CCardHeader>
-          <h5 className="mb-0">File Upload</h5>
+          <h5 className="mb-0">{t('files.title')}</h5>
           <small className="text-muted">
-            Supported: Images (JPEG, PNG, GIF, WebP), Documents (PDF, DOC, DOCX, TXT), Videos (MP4, AVI, MOV, WMV, FLV)
+            {t('files.supportedList')}
           </small>
         </CCardHeader>
         <CCardBody>
@@ -317,14 +321,14 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             {uploading ? (
               <div>
                 <CSpinner color="primary" className="mb-3" />
-                <p className="mb-0">Uploading files...</p>
+                <p className="mb-0">{t('files.uploading')}</p>
               </div>
             ) : (
               <div>
                 <CIcon icon={cilCloudUpload} size="3xl" className="mb-3 text-primary" />
-                <h6>Drop files here or click to browse</h6>
+                <h6>{t('files.dropOrBrowse')}</h6>
                 <p className="text-muted mb-0">
-                  Maximum file size: {formatFileSize(maxFileSize)}
+                  {t('files.maxSize', { size: formatFileSize(maxFileSize) })}
                 </p>
               </div>
             )}
@@ -333,7 +337,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
           {/* File List */}
           {files.length > 0 && (
             <div>
-              <h6 className="mb-3">Uploaded Files ({files.length})</h6>
+              <h6 className="mb-3">{t('files.uploadedCount', { count: files.length })}</h6>
               <CRow>
                 {files.map((file) => (
                   <CCol key={file.id} xs={12} sm={6} md={4} lg={3} className="mb-3">
@@ -360,18 +364,18 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                             <CDropdownMenu>
                               <CDropdownItem onClick={() => previewFile(file)}>
                                 <CIcon icon={cilSettings} className="me-2" />
-                                Preview
+                                {t('files.preview')}
                               </CDropdownItem>
                               <CDropdownItem onClick={() => downloadFile(file)}>
                                 <CIcon icon={cilSettings} className="me-2" />
-                                Download
+                                {t('files.download')}
                               </CDropdownItem>
                               <CDropdownItem
                                 onClick={() => confirmDelete(file)}
                                 className="text-danger"
                               >
                                 <CIcon icon={cilSettings} className="me-2" />
-                                Delete
+                                {t('common.delete')}
                               </CDropdownItem>
                             </CDropdownMenu>
                           </CDropdown>
@@ -402,9 +406,9 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             </div>
           )}
 
-          {files.length === 0 && !uploading && (
+      {files.length === 0 && !uploading && (
             <CAlert color="info" className="mb-0">
-              <strong>No files uploaded yet.</strong> Drag and drop files above or click to browse.
+        <strong>{t('files.noneYet')}</strong> {t('files.dropHint')}
             </CAlert>
           )}
         </CCardBody>
@@ -429,13 +433,13 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             onClick={() => downloadFile(previewModal.file)}
           >
             <CIcon icon={cilSettings} className="me-2" />
-            Download
+            {t('files.download')}
           </CButton>
           <CButton
             color="secondary"
             onClick={() => setPreviewModal({ open: false, file: null })}
           >
-            Close
+            {t('common.cancel')}
           </CButton>
         </CModalFooter>
       </CModal>

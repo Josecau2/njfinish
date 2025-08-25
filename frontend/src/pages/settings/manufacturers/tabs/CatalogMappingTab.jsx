@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
 import {
   CButton,
   CModal,
@@ -25,6 +33,7 @@ import axiosInstance from '../../../../helpers/axiosInstance';
 import CreatableSelect from 'react-select/creatable';
 
 const CatalogMappingTab = ({ manufacturer, id }) => {
+  const { t } = useTranslation();
   const api_url = import.meta.env.VITE_API_URL;
 
   // const catalogData = manufacturer?.catalogData || [];
@@ -179,7 +188,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
 
 
-      if (!response.ok) throw new Error('Failed to save');
+  if (!response.ok) throw new Error('Failed to save');
       Swal.fire({
         toast: true,
         position: "top",
@@ -244,7 +253,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     // if (!validateManualForm()) return;
     setIsUpdating(true); // Start loading
     try {
-      const response = await fetch(`/api/manufacturers/catalog/edit/${editForm.id}`, {
+      const response = await fetch(`${api_url}/api/manufacturers/catalog/edit/${editForm.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
@@ -312,13 +321,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       if (!response.ok) throw new Error('Upload failed');
 
-      Swal.fire("Success", "Catalog file uploaded successfully", "success");
+  Swal.fire(t('common.success'), t('settings.manufacturers.catalogMapping.file.uploadSuccess'), "success");
       setFileModalVisible(false);
       setFile(null);
       dispatch(fetchManufacturerById(id)); // Reload updated data
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "File upload failed", "error");
+  Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.file.uploadFailed'), "error");
     }
   };
 
@@ -338,7 +347,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     const { id: catalogId, manufacturerId, style, code } = item;
 
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`);
+      const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`, {
+        headers: getAuthHeaders()
+      });
       const data = response.data;
 
       if (data) {
@@ -414,7 +425,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       const response = await axiosInstance.post('/api/manufacturers/style/create', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        },
+          ...getAuthHeaders()
+        }
       });
       if (response.data.status == 200) {
         setStyleForm({
@@ -443,12 +455,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
     } catch (error) {
-      console.log('error', error);
+      // Error handling for style save
     } finally {
       // setLoading(false);
       setStyleImage('');
       setShowStyleModal(false);
-
     }
 
   };
@@ -459,7 +470,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const handleShowStyleOnClick = async (item) => {
     try {
       const { id } = item
-      const res = await axiosInstance.get(`/api/manufacturers/style/${id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/style/${id}`, {
+        headers: getAuthHeaders()
+      });
 
       if (res.data) {
         setStyleDetails(res.data);
@@ -479,9 +492,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const { id } = item
 
-      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`, {
+        headers: getAuthHeaders()
+      });
 
-      console.log('res++++++++', res);
       const { type, price } = res.data || {};
       setSelectedCatalogItem(item);
       setAssemblyData({
@@ -528,7 +542,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       setSelectedCatalogItem(item);
 
-      const res = await axiosInstance.get(`/api/manufacturers/items/modifications/${item.id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/items/modifications/${item.id}`, {
+        headers: getAuthHeaders()
+      });
       const { modificationName, description, notes, price } = res.data.data || {};
 
       setModificationData({
@@ -563,7 +579,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         manufacturerId: selectedCatalogItem.manufacturerId
       };
 
-      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
+      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload, {
+        headers: getAuthHeaders()
+      });
       setShowAssemblyModal(false);
       // Optionally refetch the catalog data to update the UI
     } catch (error) {
@@ -582,7 +600,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         exposedSidePrice: parseFloat(hingesData.exposedSidePrice) || 0,
       };
 
-      await axiosInstance.post('/api/manufacturers/items/hinges', payload);
+      await axiosInstance.post('/api/manufacturers/items/hinges', payload, {
+        headers: getAuthHeaders()
+      });
       setShowHingesModal(false);
     } catch (error) {
       console.error('Failed to save hinges details:', error);
@@ -599,7 +619,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         price: parseFloat(modificationData.price) || 0,
       };
 
-      await axiosInstance.post('/api/manufacturers/items/modifications', payload);
+      await axiosInstance.post('/api/manufacturers/items/modifications', payload, {
+        headers: getAuthHeaders()
+      });
       setShowModificationModal(false);
     } catch (error) {
       console.error('Failed to save modification details:', error);
@@ -616,17 +638,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     <div>
       {/* Heading with Buttons aligned right */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0">Catalog Data</h5>
+        <h5 className="mb-0">{t('settings.manufacturers.catalogMapping.title')}</h5>
         <div>
           <CButton
             color="primary"
             className="me-2"
             onClick={() => setFileModalVisible(true)}
           >
-            File Upload
+            {t('settings.manufacturers.catalogMapping.file.uploadCta')}
           </CButton>
           <CButton color="success" onClick={() => setManualModalVisible(true)}>
-            Manual Upload
+            {t('settings.manufacturers.catalogMapping.manual.uploadCta')}
           </CButton>
         </div>
 
@@ -662,7 +684,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setTypeFilter(e.target.value);
             }}
           >
-            <option value="">All Types</option>
+            <option value="">{t('settings.manufacturers.catalogMapping.filters.allTypes')}</option>
             {uniqueTypes.map((type, idx) => (
               <option key={idx} value={type}>
                 {type}
@@ -680,7 +702,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setStyleFilter(e.target.value);
             }}
           >
-            <option value="">All Styles</option>
+            <option value="">{t('settings.manufacturers.catalogMapping.filters.allStyles')}</option>
             {sortedUniqueStyles.map((style, idx) => (
               <option key={idx} value={style}>
                 {style}
@@ -693,18 +715,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </div>
 
       {/* Table */}
-      {catalogData.length === 0 ? (
-        <p>No catalog data available.</p>
+  {catalogData.length === 0 ? (
+    <p>{t('settings.manufacturers.catalogMapping.empty')}</p>
       ) : (
         <CTable hover responsive>
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell>Code</CTableHeaderCell>
-              <CTableHeaderCell>Description</CTableHeaderCell>
-              <CTableHeaderCell>Style</CTableHeaderCell>
-              <CTableHeaderCell>Price</CTableHeaderCell>
-              <CTableHeaderCell>Type</CTableHeaderCell>
-              <CTableHeaderCell>Actions</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.code')}</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.description')}</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.style')}</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.price')}</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
+      <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.actions')}</CTableHeaderCell>
 
 
               {/* Add more if needed */}
@@ -714,7 +736,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {currentItems.map((item, index) => (
               <CTableRow key={index}>
                 <CTableDataCell>{item.code}</CTableDataCell>
-                <CTableDataCell>{item.description ? item.description : "N/A"}</CTableDataCell>
+                <CTableDataCell>{item.description ? item.description : t('common.na')}</CTableDataCell>
                 <CTableDataCell style={{ cursor: 'pointer' }} >
                   <CButton
                     size="sm"
@@ -735,7 +757,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onClick={() => handleEditClick(item)}
                     className="me-2"
                   >
-                    Edit
+                    {t('common.edit')}
                   </CButton>
 
                   <CButton
@@ -744,7 +766,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onClick={() => handleManageStyleClick(item)}
                     className="me-2"
                   >
-                    Manage Style
+                    {t('settings.manufacturers.catalogMapping.actions.manageStyle')}
                   </CButton>
 
                   <CButton
@@ -753,7 +775,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onClick={() => handleAssemblyCostClick(item)}
                     className="me-2"
                   >
-                    Assembly Cost
+                    {t('settings.manufacturers.catalogMapping.actions.assemblyCost')}
 
                   </CButton>
 
@@ -774,7 +796,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onClick={() => handleModificationDetailsClick(item)}
                     className="me-2"
                   >
-                    Modification
+                    {t('settings.manufacturers.catalogMapping.actions.modification')}
 
                   </CButton>
 
@@ -790,7 +812,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {catalogData.length > 0 ? (
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
-            Page {currentPage} of {totalPages}
+            {t('pagination.pageInfo', { current: currentPage, total: totalPages })}
           </div>
           <div>
             <CButton
@@ -800,7 +822,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onClick={() => setCurrentPage(currentPage - 1)}
               className="me-2"
             >
-              Previous
+              {t('pagination.prevPageTitle')}
             </CButton>
             <CButton
               size="sm"
@@ -808,7 +830,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
             >
-              Next
+              {t('pagination.nextPageTitle')}
             </CButton>
           </div>
         </div>
@@ -820,19 +842,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         onClose={() => setFileModalVisible(false)}
       >
         <CModalHeader onClose={() => setFileModalVisible(false)}>
-          <CModalTitle>Upload Catalog File</CModalTitle>
+          <CModalTitle>{t('settings.manufacturers.catalogMapping.file.modalTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
-            <CFormInput type="file" name="catalogFiles" label="Select Catalog CSV or Excel File" onChange={handleFileChange} />
+            <CFormInput type="file" name="catalogFiles" label={t('settings.manufacturers.catalogMapping.file.selectLabel')} onChange={handleFileChange} />
 
           </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setFileModalVisible(false)}>
-            Cancel
+            {t('common.cancel')}
           </CButton>
-          <CButton color="primary" onClick={handleUpload}>Upload</CButton>
+          <CButton color="primary" onClick={handleUpload}>{t('settings.manufacturers.catalogMapping.file.uploadBtn')}</CButton>
 
         </CModalFooter>
       </CModal>
@@ -843,7 +865,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         onClose={() => setManualModalVisible(false)}
       >
         <CModalHeader onClose={() => setManualModalVisible(false)}>
-          <CModalTitle>Manual Catalog Entry</CModalTitle>
+      <CModalTitle>{t('settings.manufacturers.catalogMapping.manual.modalTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -851,7 +873,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <CreatableSelect
               isClearable
               className="mb-2"
-              placeholder="Select or type a style"
+        placeholder={t('settings.manufacturers.catalogMapping.stylePlaceholder')}
               options={styleOptions}
               value={manualForm.style ? { label: manualForm.style, value: manualForm.style } : null}
               onChange={(selectedOption) =>
@@ -863,7 +885,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             />
             <CFormInput
               className="mb-2"
-              label="Code"
+        label={t('settings.manufacturers.catalogMapping.fields.code')}
               name="code"
               value={manualForm.code}
               onChange={handleManualChange}
@@ -872,7 +894,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             />
             <CFormInput
               className="mb-2"
-              label="Description"
+        label={t('settings.manufacturers.catalogMapping.fields.description')}
               name="description"
               value={manualForm.description}
               onChange={handleManualChange}
@@ -882,7 +904,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <CFormInput
               className="mb-2"
               type="number"
-              label="Price"
+        label={t('settings.manufacturers.catalogMapping.fields.price')}
               name="price"
               value={manualForm.price}
               onChange={handleManualChange}
@@ -892,7 +914,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             <CFormInput
               className="mb-2"
-              label="type"
+        label={t('settings.manufacturers.catalogMapping.fields.type')}
               name="type"
               value={manualForm.type}
               onChange={handleManualChange}
@@ -905,21 +927,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setManualModalVisible(false)}>
-            Cancel
+            {t('common.cancel')}
           </CButton>
-          <CButton color="success" onClick={handleSaveManualItem}>Save</CButton>
+          <CButton color="success" onClick={handleSaveManualItem}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 
       <CModal visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
         <CModalHeader>
-          <CModalTitle>Edit Catalog Item</CModalTitle>
+      <CModalTitle>{t('settings.manufacturers.catalogMapping.edit.modalTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <CreatableSelect
               isClearable
-              placeholder="Select or type a style"
+        placeholder={t('settings.manufacturers.catalogMapping.stylePlaceholder')}
               options={styleOptions}
               value={editForm.style ? { label: editForm.style, value: editForm.style } : null}
               onChange={(selectedOption) =>
@@ -945,7 +967,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <CFormInput
                 key={field}
                 className="mb-2"
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
+                label={
+                  field === 'code'
+                    ? t('settings.manufacturers.catalogMapping.fields.code')
+                    : field === 'description'
+                    ? t('settings.manufacturers.catalogMapping.fields.description')
+                    : t('settings.manufacturers.catalogMapping.fields.type')
+                }
                 name={field}
                 value={editForm[field]}
                 onChange={(e) => setEditForm({ ...editForm, [field]: e.target.value })}
@@ -957,7 +985,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               type="number"
               step="0.01"
               min="0"
-              label="Price"
+              label={t('settings.manufacturers.catalogMapping.fields.price')}
               name="price"
               value={editForm.price}
               onChange={(e) => {
@@ -969,9 +997,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>Cancel</CButton>
+          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>{t('common.cancel')}</CButton>
           <CButton color="primary" onClick={handleUpdateItem} disabled={isUpdating}>
-            {isUpdating ? 'Updating...' : 'Update'}
+            {isUpdating ? t('settings.manufacturers.catalogMapping.edit.updating') : t('settings.manufacturers.catalogMapping.edit.update')}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -979,14 +1007,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Style Modal */}
       <CModal visible={showStyleModal} onClose={() => setShowStyleModal(false)}>
         <CModalHeader>
-          <CModalTitle>Manage Style: {selectedStyle}</CModalTitle>
+          <CModalTitle>{t('settings.manufacturers.catalogMapping.style.manageTitle', { style: selectedStyle })}</CModalTitle>
         </CModalHeader>
 
         <CModalBody>
           <CForm>
             {/* Short Name */}
             <CFormInput
-              label="Short Name"
+              label={t('settings.manufacturers.catalogMapping.style.shortName')}
               name="shortName"
               value={styleForm.shortName}
               onChange={handleStyleFormChange}
@@ -995,7 +1023,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Description */}
             <CFormTextarea
-              label="Description"
+              label={t('settings.manufacturers.catalogMapping.fields.description')}
               name="description"
               value={styleForm.description}
               onChange={handleStyleFormChange}
@@ -1006,7 +1034,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {/* Image Upload */}
             <CFormInput
               type="file"
-              label="Upload Image"
+              label={t('settings.manufacturers.catalogMapping.style.uploadImage')}
               accept="image/*"
               id="styleImage"
               onChange={(e) => setStyleImage(e.target.files[0])}
@@ -1014,10 +1042,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Show selected image name or current image */}
             {styleImage ? (
-              <div className="mt-2 text-success">Image selected: {styleImage.name}</div>
+              <div className="mt-2 text-success">{t('settings.manufacturers.catalogMapping.style.imageSelected', { name: styleImage.name })}</div>
             ) : styleForm.image ? (
               <div className="mt-3">
-                <p className="mb-1"><strong>Current Image:</strong></p>
+                <p className="mb-1"><strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong></p>
                 <img
                   // src={`/uploads/manufacturer_catalogs/${styleForm.image}`}
                   src={
@@ -1042,8 +1070,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
 
         <CModalFooter>
-          <CButton color="primary" onClick={handleSaveStyle}>Save</CButton>
-          <CButton color="secondary" onClick={() => setShowStyleModal(false)}>Cancel</CButton>
+          <CButton color="primary" onClick={handleSaveStyle}>{t('common.save')}</CButton>
+          <CButton color="secondary" onClick={() => setShowStyleModal(false)}>{t('common.cancel')}</CButton>
         </CModalFooter>
       </CModal>
 
@@ -1051,15 +1079,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Style View Modal */}
       <CModal visible={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size="lg">
         <CModalHeader>
-          <CModalTitle>📝 Style Details</CModalTitle>
+          <CModalTitle>📝 {t('settings.manufacturers.catalogMapping.style.detailsTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           {styleDetails ? (
             <div style={{ padding: '10px 5px' }}>
               <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap' }}>
                 <div style={{ flex: '1 1 100%', paddingRight: '10px' }}>
-                  <p><strong>🏷️ Short Name:</strong> {styleDetails.shortName ? styleDetails.shortName : 'N/A '}</p>
-                  <p><strong>📝 Description:</strong> {styleDetails.description ? styleDetails.description : 'N/A'}</p>
+                  <p><strong>🏷️ {t('settings.manufacturers.catalogMapping.style.shortName')}:</strong> {styleDetails.shortName ? styleDetails.shortName : t('common.na')}</p>
+                  <p><strong>📝 {t('settings.manufacturers.catalogMapping.fields.description')}:</strong> {styleDetails.description ? styleDetails.description : t('common.na')}</p>
                 </div>
               </div>
               {styleDetails.image ? (
@@ -1081,16 +1109,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   />
                 </div>
               ) : (
-                <p style={{ textAlign: 'center', color: '#888' }}>No image available</p>
+                <p style={{ textAlign: 'center', color: '#888' }}>{t('settings.manufacturers.catalogMapping.style.noImage')}</p>
               )}
             </div>
           ) : (
-            <p>No style data available.</p>
+            <p>{t('settings.manufacturers.catalogMapping.style.noData')}</p>
           )}
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowStyleViewModal(false)}>
-            Close
+            {t('common.cancel')}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -1100,35 +1128,34 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       <CModal visible={showAssemblyModal} onClose={() => setShowAssemblyModal(false)}>
         <CModalHeader>
-          <CModalTitle>Add Assembly Cost</CModalTitle>
+          <CModalTitle>{t('settings.manufacturers.catalogMapping.assembly.modalTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <CFormLabel>Type</CFormLabel>
+          <CFormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</CFormLabel>
           <CFormSelect
             value={assemblyData.type}
             onChange={(e) => setAssemblyData({ ...assemblyData, type: e.target.value })}
           >
-            <option value="">Select Type</option>
-            <option value="percentage">Percentage per cabinet</option>
-            <option value="fixed">Fixed rate per cabinet</option>
+            <option value="">{t('settings.manufacturers.catalogMapping.assembly.selectType')}</option>
+            <option value="percentage">{t('settings.manufacturers.catalogMapping.assembly.percentage')}</option>
+            <option value="fixed">{t('settings.manufacturers.catalogMapping.assembly.fixed')}</option>
           </CFormSelect>
 
-          <CFormLabel className="mt-2">Price</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.price')}</CFormLabel>
           <CFormInput
             type="number"
             value={assemblyData.price}
             onChange={(e) => setAssemblyData({ ...assemblyData, price: e.target.value })}
-            placeholder="Enter price"
+            placeholder={t('settings.manufacturers.catalogMapping.placeholders.price')}
           />
 
-          <CFormLabel className="mt-2">Apply To</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.applyTo')}</CFormLabel>
           <CFormSelect
             value={assemblyData.applyTo}
             onChange={(e) => setAssemblyData({ ...assemblyData, applyTo: e.target.value })}
           >
-
-            <option value="all">Apply to All Items</option>
-            <option value="one">Apply to This Item Only</option>
+            <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
+            <option value="one">{t('settings.manufacturers.catalogMapping.assembly.applyOne')}</option>
           </CFormSelect>
 
 
@@ -1136,10 +1163,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowAssemblyModal(false)}>
-            Cancel
+            {t('common.cancel')}
           </CButton>
           <CButton color="primary" onClick={saveAssemblyCost}>
-            Save
+            {t('common.save')}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -1147,72 +1174,72 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       <CModal visible={showHingesModal} onClose={() => setShowHingesModal(false)}>
         <CModalHeader>
-          <CModalTitle>Add Hinges & Exposed Side Pricing</CModalTitle>
+          <CModalTitle>{t('settings.manufacturers.catalogMapping.hinges.modalTitle')}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <CFormLabel>Left Hinge Price</CFormLabel>
+          <CFormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</CFormLabel>
           <CFormInput
             type="number"
             value={hingesData.leftHingePrice}
             onChange={(e) => setHingesData({ ...hingesData, leftHingePrice: e.target.value })}
-            placeholder="Enter left hinge price"
+            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderLeft')}
           />
 
-          <CFormLabel className="mt-2">Right Hinge Price</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.right')}</CFormLabel>
           <CFormInput
             type="number"
             value={hingesData.rightHingePrice}
             onChange={(e) => setHingesData({ ...hingesData, rightHingePrice: e.target.value })}
-            placeholder="Enter right hinge price"
+            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderRight')}
           />
 
-          <CFormLabel className="mt-2">Both Hinges Price</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.both')}</CFormLabel>
           <CFormInput
             type="number"
             value={hingesData.bothHingePrice}
             onChange={(e) => setHingesData({ ...hingesData, bothHingePrice: e.target.value })}
-            placeholder="Enter both hinges price"
+            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderBoth')}
           />
 
-          <CFormLabel className="mt-2">Exposed Side Price</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.exposedSide')}</CFormLabel>
           <CFormInput
             type="number"
             value={hingesData.exposedSidePrice}
             onChange={(e) => setHingesData({ ...hingesData, exposedSidePrice: e.target.value })}
-            placeholder="Enter exposed side price"
+            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderExposed')}
           />
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowHingesModal(false)}>Cancel</CButton>
-          <CButton color="primary" onClick={saveHingesDetails}>Save</CButton>
+          <CButton color="secondary" onClick={() => setShowHingesModal(false)}>{t('common.cancel')}</CButton>
+          <CButton color="primary" onClick={saveHingesDetails}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 
 
       <CModal visible={showModificationModal} onClose={() => setShowModificationModal(false)}>
-        <CModalHeader><CModalTitle>Add Modification</CModalTitle></CModalHeader>
+        <CModalHeader><CModalTitle>{t('settings.manufacturers.catalogMapping.mod.modalTitle')}</CModalTitle></CModalHeader>
         <CModalBody>
-          <CFormLabel>Modification Name</CFormLabel>
+          <CFormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</CFormLabel>
           <CFormInput
             value={modificationData.modificationName}
             onChange={(e) => setModificationData({ ...modificationData, modificationName: e.target.value })}
           />
 
-          <CFormLabel className="mt-2">Description</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.description')}</CFormLabel>
           <CFormTextarea
             value={modificationData.description}
             onChange={(e) => setModificationData({ ...modificationData, description: e.target.value })}
             rows={3}
           />
 
-          <CFormLabel className="mt-2">Notes</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.mod.notes')}</CFormLabel>
           <CFormTextarea
             value={modificationData.notes}
             onChange={(e) => setModificationData({ ...modificationData, notes: e.target.value })}
             rows={2}
           />
 
-          <CFormLabel className="mt-2">Price</CFormLabel>
+          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.price')}</CFormLabel>
           <CFormInput
             type="number"
             value={modificationData.price}
@@ -1220,8 +1247,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           />
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowModificationModal(false)}>Cancel</CButton>
-          <CButton color="primary" onClick={saveModificationDetails}>Save</CButton>
+          <CButton color="secondary" onClick={() => setShowModificationModal(false)}>{t('common.cancel')}</CButton>
+          <CButton color="primary" onClick={saveModificationDetails}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 

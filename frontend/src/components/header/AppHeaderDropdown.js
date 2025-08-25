@@ -23,7 +23,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser } from '../../store/slices/authSlice'; // Adjust the path as needed
+import { logout } from '../../store/slices/authSlice'; // Adjust the path as needed
 
 const AppHeaderDropdown = () => {
 
@@ -32,7 +32,7 @@ const AppHeaderDropdown = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    dispatch(setUser(null));
+  dispatch(logout());
     navigate('/login');
   };
 

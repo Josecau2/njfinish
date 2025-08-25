@@ -4,7 +4,7 @@ import { CFooter } from '@coreui/react'
 const AppFooter = () => {
   const currentYear = new Date().getFullYear()
   return (
-    <CFooter className="px-4">
+    <CFooter className="px-4 footer">
       <div>
         {/* <a href="https://coreui.io" target="_blank" rel="noopener noreferrer">
           CoreUI

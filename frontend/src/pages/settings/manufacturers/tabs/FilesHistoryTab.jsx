@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CTable,
   CTableHead,
@@ -9,6 +10,7 @@ import {
 } from '@coreui/react';
 
 const FilesHistoryTab = ({ manufacturer }) => {
+  const { t } = useTranslation();
   const files = manufacturer?.catalogFiles || [];
 
   // const downloadBaseUrl = process.env.VITE_API_URL || ''; 
@@ -18,20 +20,20 @@ const FilesHistoryTab = ({ manufacturer }) => {
 
   return (
     <div>
-      <h5>Uploaded Catalog Files</h5>
+  <h5>{t('settings.manufacturers.filesHistory.title')}</h5>
 
       {files.length === 0 ? (
-        <p>No catalog files uploaded.</p>
+    <p>{t('settings.manufacturers.filesHistory.empty')}</p>
       ) : (
         <CTable hover responsive>
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell>#</CTableHeaderCell>
-              <CTableHeaderCell>Original Name</CTableHeaderCell>
-              <CTableHeaderCell>Filename</CTableHeaderCell>
-              <CTableHeaderCell>Size (KB)</CTableHeaderCell>
-              <CTableHeaderCell>Uploaded On</CTableHeaderCell>
-              <CTableHeaderCell>Download</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.index')}</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.originalName')}</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.filename')}</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.sizeKb')}</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.uploadedOn')}</CTableHeaderCell>
+  <CTableHeaderCell>{t('settings.manufacturers.filesHistory.table.download')}</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
@@ -48,7 +50,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Download
+  {t('settings.manufacturers.filesHistory.table.download')}
                   </a>
                 </CTableDataCell>
               </CTableRow>

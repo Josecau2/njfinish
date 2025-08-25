@@ -47,7 +47,16 @@ const   User = sequelize.define('User', {
   role_id: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
-  }
+  },
+  group_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'user_groups',
+      key: 'id'
+    },
+    comment: 'User group membership'
+  },
 }, {
   timestamps: true,
   tableName: 'users',

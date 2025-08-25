@@ -1,9 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { UserGroup, UserRole, UserGroupMultiplier ,User} = require('../models/index');
+const { logActivity } = require('../utils/activityLogger');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
+const { getGroupPermissions } = require('../constants/permissions');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -20,13 +22,71 @@ const transporter = nodemailer.createTransport({
 
 
 
-// Get all users
+// Get all user groups
 exports.fetchUsers = async (req, res) => {
   try {
-    const users = await UserGroupMultiplier.findAll({
-      attributes: ['id', 'name']
+    const users = await UserGroup.findAll({
+      attributes: ['id', 'name', 'group_type', 'modules']
     });
-    return res.status(200).json({ message: 'Fetch User', users });
+    
+    // Add computed permissions to each group and ensure modules has default values
+    const usersWithPermissions = users.map(user => {
+      const userJson = user.toJSON();
+      
+      // Ensure modules is always a proper object
+      let modules;
+      if (typeof userJson.modules === 'string') {
+        try {
+          modules = JSON.parse(userJson.modules);
+        } catch (e) {
+          console.error('Failed to parse modules for user:', userJson.name, userJson.modules);
+          modules = {
+            dashboard: false,
+            proposals: false,
+            customers: false,
+            resources: false
+          };
+        }
+      } else if (userJson.modules && typeof userJson.modules === 'object') {
+        modules = userJson.modules;
+      } else {
+        modules = {
+          dashboard: false,
+          proposals: false,
+          customers: false,
+          resources: false
+        };
+      }
+      
+      userJson.modules = modules;
+      userJson.permissions = getGroupPermissions(userJson.group_type, userJson.modules);
+      
+      return userJson;
+    });
+    
+    return res.status(200).json({ message: 'Fetch User Groups', users: usersWithPermissions });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', err: err });
+  }
+};
+
+// Get single user group
+exports.fetchSingleUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await UserGroup.findByPk(id, {
+      attributes: ['id', 'name', 'group_type', 'modules']
+    });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User Group not found' });
+    }
+    
+    // Add computed permissions
+    const userJson = user.toJSON();
+    userJson.permissions = getGroupPermissions(userJson.group_type, userJson.modules);
+    
+    return res.status(200).json({ message: 'User Group found', user: userJson });
   } catch (err) {
     res.status(500).json({ message: 'Server error', err: err });
   }
@@ -53,23 +113,10 @@ exports.fetchUsersGroupMultiplier = async (req, res) => {
   }
 };
 
-// Get single user by id
-exports.fetchSingleUser = async (req, res) => {
-  try {
-    const user = await UserGroup.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'email', 'role', 'location', 'isSalesRep']
-    });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 // Add user
 exports.addUser = async (req, res) => {
   try {
-    const { name, force } = req.body;
+    const { name, group_type = 'standard', modules } = req.body;
 
     const existingUser = await UserGroup.findOne({
       where: {
@@ -79,8 +126,27 @@ exports.addUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User Group already exists" });
     }
+
+    // Set default modules based on group type
+    let defaultModules = {
+      dashboard: false,
+      proposals: false,
+      customers: false,
+      resources: false
+    };
+
+    // For contractor groups, start with all modules disabled unless explicitly provided
+    if (group_type === 'contractor' && modules) {
+      defaultModules = { ...defaultModules, ...modules };
+    } else if (group_type === 'standard') {
+      // For standard groups, you might want different defaults
+      defaultModules = modules || defaultModules;
+    }
+
     const newUser = await UserGroup.create({
-      name
+      name,
+      group_type,
+      modules: defaultModules
     });
     // Add corresponding multiplier row with 'N/A'
     await UserGroupMultiplier.create({
@@ -89,14 +155,14 @@ exports.addUser = async (req, res) => {
       enabled: 0
     });
 
-
-
     res.status(201).json({
       message: "User Group added successfully",
       status: 200,
       user: {
         id: newUser.id,
         name: newUser.name,
+        group_type: newUser.group_type,
+        modules: newUser.modules,
       },
     });
   } catch (err) {
@@ -110,22 +176,39 @@ exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      name
+      name,
+      group_type,
+      modules
     } = req.body;
 
     const user = await UserGroup.findByPk(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Conditionally update fields
+    const before = user.toJSON();
     if (name) user.name = name;
+    if (group_type) user.group_type = group_type;
+    if (modules !== undefined) user.modules = modules; // Changed condition to check for undefined instead of truthy
 
     await user.save();
 
-
+    // Audit: module toggles or group updates
+    await logActivity({
+      actorId: req.user?.id,
+      action: modules !== undefined ? 'group.modules.update' : 'group.update',
+      targetType: 'UserGroup',
+      targetId: user.id,
+      diff: { before: before, after: user.toJSON() }
+    });
 
     res.json({
       message: 'User Group updated successfully',
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        group_type: user.group_type,
+        modules: user.modules,
+      },
       status: 200
     });
 
@@ -174,5 +257,48 @@ exports.getDesingers = async (req, res) => {
       return res.status(200).json({ message: 'Fetch User', users });
   } catch (error) {
      res.status(500).json({ message: 'Server error' });
+  }
+}
+
+// Get current user's group multiplier
+exports.getCurrentUserMultiplier = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Get the user with their group information
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: UserGroup,
+          as: 'group',
+          attributes: ['id', 'name', 'group_type']
+        }
+      ]
+    });
+
+    if (!user || !user.group_id) {
+      return res.status(400).json({ message: 'User group not found' });
+    }
+
+    // Get the group multiplier
+    const groupMultiplier = await UserGroupMultiplier.findOne({
+      where: {
+        user_group_id: user.group_id,
+        enabled: 1
+      }
+    });
+
+    const multiplier = groupMultiplier && groupMultiplier.multiplier !== 'N/A' 
+      ? parseFloat(groupMultiplier.multiplier) 
+      : 1.0;
+
+    return res.status(200).json({ 
+      message: 'User multiplier fetched', 
+      multiplier: multiplier,
+      groupName: user.group?.name || 'Unknown'
+    });
+  } catch (error) {
+    console.error('Error fetching user multiplier:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CButton,
   CCol,
@@ -21,6 +22,7 @@ import {
   CModalTitle,
   CModalBody,
   CModalFooter,
+  CAlert,
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice';
@@ -33,7 +35,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CIcon from '@coreui/icons-react';
 import { cilCopy, cilFile, cilList, cilOptions, cilPencil, cilTrash } from '@coreui/icons';
-import { FaCalendarAlt, FaPrint, FaEnvelope, FaFileContract } from 'react-icons/fa';
+import { FaCalendarAlt, FaPrint, FaEnvelope, FaFileContract, FaCheckCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import ItemSelectionContentEdit from '../../components/ItemSelectionContentEdit';
 import FileUploadSection from './CreateProposal/FileUploadSection';
@@ -66,7 +68,12 @@ const statusOptions = [
 const EditProposal = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
+  
+  // Get user info from store/localStorage
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = userInfo.role === 'Admin' || userInfo.role === 'admin';
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('item');
@@ -86,6 +93,9 @@ const EditProposal = () => {
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
+  
+  // Check if user is a contractor (should not see manufacturer version names)
+  const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
 
   const defaultFormData = {
     manufacturersData: [],
@@ -103,7 +113,19 @@ const EditProposal = () => {
   };
 
   const [formData, setFormData] = useState(defaultFormData);
-  console.log('manufacturersById', manufacturersById);
+  // Determine if form should be disabled (locked proposal OR contractor viewing accepted proposal)
+  const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted';
+  const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin);
+  
+  // Debug logging to see current state
+  console.log('🔍 EditProposal Debug:', {
+    'formData.is_locked': formData?.is_locked,
+    'formData.status': formData?.status,
+    'userRole': userInfo?.role,
+    'isAdmin': isAdmin,
+    'isFormDisabled': isFormDisabled,
+    'proposal_id': formData?.id
+  });
   // Fetch initial data
   useEffect(() => {
     axiosInstance
@@ -148,17 +170,13 @@ const EditProposal = () => {
   useEffect(() => {
 
     if (formData?.manufacturersData?.length > 0) {
-      console.log('formData?.manufacturersData', formData?.manufacturersData);
       setSelectedVersionIndex(0);
       setSelectedVersion(formData?.manufacturersData);
       dispatch(setSelectVersionNewEdit(formData?.manufacturersData));
 
       formData.manufacturersData.forEach((item) => {
-        console.log('formData?.manufacturersData: ', item);
-
         if (item.manufacturer && !manufacturersById[item.manufacturer]) {
           dispatch(fetchManufacturerById(item.manufacturer));
-
         }
       });
     }
@@ -269,24 +287,84 @@ const EditProposal = () => {
   const selectVersion = versionDetails[selectedVersionIndex] || null;
 
   const handleSubmit = (values) => {
-    sendToBackend({ ...formData, ...values });
+    sendToBackend({ ...formData, ...values }, 'update');
   };
 
-  const handleSaveOrder = () => sendToBackend({ ...formData, status: 'Draft' });
-  const handleAcceptOrder = () => sendToBackend({ ...formData, status: 'Proposal accepted' });
-  const handleRejectOrder = () => sendToBackend({ ...formData, status: 'Proposal rejected' });
+  const handleSaveOrder = () => sendToBackend({ ...formData }, 'update');
+  const handleAcceptOrder = () => sendToBackend({ ...formData, status: 'Proposal accepted' }, 'accept');
+  const handleRejectOrder = () => sendToBackend({ ...formData, status: 'Proposal rejected' }, 'reject');
 
-  const sendToBackend = async (finalData) => {
+  const sendToBackend = async (finalData, action = 'update') => {
     try {
-      const payload = { formData: finalData };
+      const payload = { action, formData: finalData };
+      
+      // Add validation checks
+      if (!finalData.id) {
+        Swal.fire('Error!', 'Proposal ID is missing. Cannot update proposal.', 'error');
+        return;
+      }
+      
+      // Check if proposal is already locked
+      if (finalData.is_locked && (action === 'accept' || action === 'reject')) {
+        Swal.fire('Cannot Modify', 'This proposal is already accepted and locked. It cannot be modified.', 'warning');
+        return;
+      }
+      
+      // Check if trying to accept an already accepted proposal
+      if (action === 'accept' && (finalData.status === 'Proposal accepted' || finalData.status === 'accepted')) {
+        Swal.fire('Already Accepted', 'This proposal has already been accepted.', 'info');
+        return;
+      }
+      
+      console.log('🔄 Sending proposal update:', { 
+        id: finalData.id, 
+        action, 
+        currentStatus: finalData.status,
+        isLocked: finalData.is_locked,
+        newStatus: action === 'accept' ? 'Proposal accepted' : finalData.status
+      });
+      
       const response = await dispatch(sendFormDataToBackend(payload));
+      
       if (response.payload.success === true) {
         Swal.fire('Success!', 'Proposal saved successfully!', 'success');
         navigate('/proposals');
+      } else if (response.error) {
+        // Handle Redux Toolkit's error format
+        const errorMessage = response.error.message || response.payload?.message || 'Failed to save proposal';
+        console.error('❌ Update failed:', response.error);
+        
+        if (errorMessage.includes('locked')) {
+          Swal.fire('Cannot Edit', 'This proposal is locked and cannot be edited.', 'warning');
+        } else if (errorMessage.includes('permission') || errorMessage.includes('access')) {
+          Swal.fire('Access Denied', 'You do not have permission to edit this proposal.', 'error');
+        } else if (errorMessage.includes('Invalid status transition')) {
+          Swal.fire('Invalid Action', 'This status change is not allowed. The proposal may already be processed.', 'warning');
+        } else {
+          Swal.fire('Error!', errorMessage, 'error');
+        }
       }
     } catch (error) {
       console.error('Error sending data to backend:', error);
-      Swal.fire('Error!', 'Failed to save proposal.', 'error');
+      
+      // More specific error handling
+      if (error.response?.status === 403) {
+        const message = error.response.data?.message || 'Access denied';
+        if (message.includes('locked')) {
+          Swal.fire('Cannot Edit', 'This proposal is locked and cannot be edited.', 'warning');
+        } else {
+          Swal.fire('Access Denied', message, 'error');
+        }
+      } else if (error.response?.status === 400) {
+        const message = error.response.data?.message || 'Invalid request';
+        if (message.includes('Invalid status transition')) {
+          Swal.fire('Invalid Action', 'This status change is not allowed. The proposal may already be processed.', 'warning');
+        } else {
+          Swal.fire('Validation Error', message, 'error');
+        }
+      } else {
+        Swal.fire('Error!', 'Failed to save proposal. Please try again.', 'error');
+      }
     }
   };
 
@@ -296,16 +374,18 @@ const EditProposal = () => {
 
 
 
-  console.log('selectedVersion: ', selectedVersion);
-  console.log('selectVersion: ', selectVersion);
-  console.log('formData: ', formData);
-  // console.log('formDasetFormDatata: ', setFormData);
-  // console.log('setSelectedVersion: ', setSelectedVersion);
-
   return (
     <>
       <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
-        <h4 className="text-muted m-0">Edit Proposal</h4>
+        <div className="d-flex align-items-center gap-3">
+          <h4 className="text-muted m-0">Edit Proposal</h4>
+          {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
+            <CBadge color="success" className="px-2 py-1">{t('proposals.lockedStatus.title')}</CBadge>
+          )}
+          {formData?.is_locked && (
+            <CBadge color="dark" className="px-2 py-1">Locked</CBadge>
+          )}
+        </div>
         <div className="d-flex gap-2 flex-wrap">
           <div
             className="px-3 py-2 rounded d-flex align-items-center"
@@ -322,36 +402,40 @@ const EditProposal = () => {
             <FaPrint className="me-2" />
             Print Proposal
           </div>
-          <div
-            className="px-3 py-2 rounded d-flex align-items-center"
-            style={{
-              backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-              color: '#fff',
-              cursor: 'pointer',
-              transition: '0.2s',
-            }}
-            onMouseEnter={() => setHovered('email')}
-            onMouseLeave={() => setHovered(null)}
-            onClick={() => setShowEmailModal(true)}
-          >
-            <FaEnvelope className="me-2" />
-            Email Proposal
-          </div>
-          <div
-            className="px-3 py-2 rounded d-flex align-items-center"
-            style={{
-              backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-              color: '#212529',
-              cursor: 'pointer',
-              transition: '0.2s',
-            }}
-            onMouseEnter={() => setHovered('contract')}
-            onMouseLeave={() => setHovered(null)}
-            onClick={() => setShowContractModal(true)}
-          >
-            <FaFileContract className="me-2" />
-            Email Contract
-          </div>
+          {!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') && (
+            <>
+              <div
+                className="px-3 py-2 rounded d-flex align-items-center"
+                style={{
+                  backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  transition: '0.2s',
+                }}
+                onMouseEnter={() => setHovered('email')}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => setShowEmailModal(true)}
+              >
+                <FaEnvelope className="me-2" />
+                Email Proposal
+              </div>
+              <div
+                className="px-3 py-2 rounded d-flex align-items-center"
+                style={{
+                  backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                  color: '#212529',
+                  cursor: 'pointer',
+                  transition: '0.2s',
+                }}
+                onMouseEnter={() => setHovered('contract')}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => setShowContractModal(true)}
+              >
+                <FaFileContract className="me-2" />
+                Email Contract
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -381,6 +465,7 @@ const EditProposal = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       placeholder="Customer Name"
+                      disabled={isFormDisabled}
                     />
                     {errors.customerName && touched.customerName && (
                       <div className="text-danger small mt-1">{errors.customerName}</div>
@@ -413,6 +498,7 @@ const EditProposal = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       placeholder="Description"
+                      disabled={isFormDisabled}
                     />
                     {errors.description && touched.description && (
                       <div className="text-danger small mt-1">{errors.description}</div>
@@ -429,6 +515,7 @@ const EditProposal = () => {
                       }}
                       onBlur={handleBlur}
                       inputId="status"
+                      isDisabled={isFormDisabled}
                     />
                   </CCol>
                   <CCol xs={12} md={2} className="mt-4">
@@ -441,6 +528,7 @@ const EditProposal = () => {
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
+                        disabled={isFormDisabled}
                         placeholderText="Date"
                       />
                       <FaCalendarAlt
@@ -600,7 +688,9 @@ const EditProposal = () => {
                         onClick={() => handleBadgeClick(index, version)}
                       >
                         <div>
-                          <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                          {!isContractor && (
+                            <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                          )}
                           <small
                             style={{
                               fontSize: '0.7rem',
@@ -610,66 +700,68 @@ const EditProposal = () => {
                             $ {version.manufacturerData?.costMultiplier || 'N/A'}
                           </small>
                         </div>
-                        <CDropdown onClick={(e) => e.stopPropagation()}>
-                          <CDropdownToggle
-                            color="transparent"
-                            size="sm"
-                            style={{
-                              padding: '0 4px',
-                              color: isSelected ? '#d0e7ff' : '#084298',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              boxShadow: 'none',
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <CIcon icon={cilOptions} />
-                          </CDropdownToggle>
-                          <CDropdownMenu
-                            style={{
-                              minWidth: '120px',
-                              border: '1px solid #e0e0e0',
-                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                              borderRadius: '4px',
-                              padding: '4px 0',
-                            }}
-                          >
-                            <CDropdownItem
-                              onClick={() => openEditModal(index)}
+                        {!isContractor && (
+                          <CDropdown onClick={(e) => e.stopPropagation()}>
+                            <CDropdownToggle
+                              color="transparent"
+                              size="sm"
                               style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#333',
+                                padding: '0 4px',
+                                color: isSelected ? '#d0e7ff' : '#084298',
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                boxShadow: 'none',
                                 transition: 'all 0.2s ease',
                               }}
                             >
-                              <CIcon icon={cilPencil} className="me-2" /> Edit
-                            </CDropdownItem>
-                            <CDropdownItem
-                              onClick={() => openDeleteModal(index)}
+                              <CIcon icon={cilOptions} />
+                            </CDropdownToggle>
+                            <CDropdownMenu
                               style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#dc3545',
-                                transition: 'all 0.2s ease',
+                                minWidth: '120px',
+                                border: '1px solid #e0e0e0',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                borderRadius: '4px',
+                                padding: '4px 0',
                               }}
                             >
-                              <CIcon icon={cilTrash} className="me-2" /> Delete
-                            </CDropdownItem>
-                            <CDropdownItem
-                              onClick={() => duplicateVersion(index)}
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#333',
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              <CIcon icon={cilCopy} className="me-2" /> Duplicate
-                            </CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
+                              <CDropdownItem
+                                onClick={() => openEditModal(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#333',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilPencil} className="me-2" /> Edit
+                              </CDropdownItem>
+                              <CDropdownItem
+                                onClick={() => openDeleteModal(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#dc3545',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilTrash} className="me-2" /> Delete
+                              </CDropdownItem>
+                              <CDropdownItem
+                                onClick={() => duplicateVersion(index)}
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.875rem',
+                                  color: '#333',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
+                                <CIcon icon={cilCopy} className="me-2" /> Duplicate
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
+                        )}
                       </CBadge>
                     );
                   })}
@@ -735,6 +827,7 @@ const EditProposal = () => {
                       setFormData={setFormData}
                       setSelectedVersion={setSelectedVersion}
                       selectVersion={selectVersion}
+                      readOnly={isFormDisabled}
                     />
                   </div>
                 )}
@@ -755,29 +848,54 @@ const EditProposal = () => {
                   className="d-flex justify-content-center align-items-center flex-wrap gap-3 p-3"
                   style={{ maxWidth: '600px', margin: '0 auto' }}
                 >
-                  <CButton
-                    color="secondary"
-                    variant="outline"
-                    onClick={handleSaveOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Save
-                  </CButton>
-                  <CButton
-                    color="success"
-                    onClick={handleAcceptOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Accept and Order
-                  </CButton>
-                  <CButton
-                    color="danger"
-                    variant="outline"
-                    onClick={handleRejectOrder}
-                    style={{ minWidth: '140px' }}
-                  >
-                    Reject and Archive
-                  </CButton>
+                  {(isFormDisabled) ? (
+                    // Show status message instead of buttons when proposal is locked OR when contractor views accepted proposal
+                    <div className="w-100">
+                      <CAlert color="success" className="text-center">
+                        <h5 className="alert-heading mb-3">
+                          <FaCheckCircle className="me-2" />
+                          {t('proposals.lockedStatus.title')}
+                        </h5>
+                        <p className="mb-2">
+                          {t('proposals.lockedStatus.description')}
+                        </p>
+                        <small className="text-muted">
+                          {t('proposals.lockedStatus.processingNote')}
+                        </small>
+                      </CAlert>
+                    </div>
+                  ) : (
+                    // Show action buttons only when proposal is not locked
+                    <>
+                      <CButton
+                        color="secondary"
+                        variant="outline"
+                        onClick={handleSaveOrder}
+                        style={{ minWidth: '140px' }}
+                      >
+                        Save
+                      </CButton>
+                      {formData.status !== 'Proposal accepted' && formData.status !== 'accepted' && (
+                        <>
+                          <CButton
+                            color="success"
+                            onClick={handleAcceptOrder}
+                            style={{ minWidth: '140px' }}
+                          >
+                            Accept and Order
+                          </CButton>
+                          <CButton
+                            color="danger"
+                            variant="outline"
+                            onClick={handleRejectOrder}
+                            style={{ minWidth: '140px' }}
+                          >
+                            Reject and Archive
+                          </CButton>
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
               </CForm>
             );

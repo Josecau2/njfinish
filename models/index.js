@@ -7,10 +7,14 @@ const Tax = require('./Taxes');
 const UserRole = require('./UserRole');
 const Collection = require('./Collection');
 const Proposals = require('./Proposals');
+const ProposalSession = require('./ProposalSession');
 const Customer = require('./Customer');
 const UserGroupMultiplier = require('./UserGroupMultiplier');
 const {ManufacturerCatalogFile} = require('./ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('./ManufacturerStyleCollection');
+const Notification = require('./Notification');
+const ActivityLog = require('./ActivityLog');
+const ResourceLink = require('./ResourceLink');
 
 const ManufacturerAssemblyCost = require('./ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('./ManufacturerHingesDetails');
@@ -72,6 +76,27 @@ Proposals.belongsTo(Customer, { foreignKey: 'customerId', as: 'customer' });
 Proposals.belongsTo(User, { foreignKey: 'designer', as: 'designerData' });
 Proposals.belongsTo(Location, { foreignKey: 'location', targetKey: 'id', as: 'locationData' });
 
+// New associations for scoping and ownership
+UserGroup.hasMany(Customer, { foreignKey: 'group_id', as: 'customers' });
+Customer.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'group' });
+
+User.hasMany(Customer, { foreignKey: 'created_by_user_id', as: 'createdCustomers' });
+Customer.belongsTo(User, { foreignKey: 'created_by_user_id', as: 'createdBy' });
+
+UserGroup.hasMany(Proposals, { foreignKey: 'owner_group_id', as: 'proposals' });
+Proposals.belongsTo(UserGroup, { foreignKey: 'owner_group_id', as: 'ownerGroup' });
+
+User.hasMany(Notification, { foreignKey: 'recipient_user_id', as: 'notifications' });
+Notification.belongsTo(User, { foreignKey: 'recipient_user_id', as: 'recipient' });
+
+// User belongs to group association
+UserGroup.hasMany(User, { foreignKey: 'group_id', as: 'users' });
+User.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'group' });
+
+// User belongs to role association
+UserRole.hasMany(User, { foreignKey: 'role_id', as: 'users' });
+User.belongsTo(UserRole, { foreignKey: 'role_id', as: 'userRole' });
+
 
 ManufacturerCatalogData.hasMany(ManufacturerStyleCollection, {
   foreignKey: 'catalog_id',
@@ -112,6 +137,11 @@ ManufacturerCatalogData.hasMany(ManufacturerModificationDetails, {
 // ManufacturerHingesDetails.belongsTo(ManufacturerCatalogData, { foreignKey: 'catalogDataId' });
 // ManufacturerModificationDetails.belongsTo(ManufacturerCatalogData, { foreignKey: 'catalogDataId' });
 
+// Proposal sessions associations
+Proposals.hasMany(ProposalSession, { foreignKey: 'proposal_id', as: 'sessions' });
+ProposalSession.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
+
+
 
 module.exports = {
     Manufacturer,
@@ -125,5 +155,9 @@ module.exports = {
     Customer,
     UserGroup,
     UserGroupMultiplier,
-    ManufacturerStyleCollection
+    ManufacturerStyleCollection,
+  Notification,
+  ActivityLog,
+  ResourceLink,
+  ProposalSession
 };

@@ -32,24 +32,17 @@ import { useNavigate } from 'react-router-dom';
 import { addUser } from '../../../store/slices/userSlice';
 import Swal from 'sweetalert2';
 import { fetchUsers } from '../../../store/slices/userGroupSlice';
+import { useTranslation } from 'react-i18next';
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, className = "" }) => (
-  <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
+  <CCard className={`settings-section-card ${className}`}>
     <CCardBody className="p-3 p-md-4">
-      <div className="d-flex align-items-center mb-3">
-        <div 
-          className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
-          style={{
-            width: '32px',
-            height: '32px',
-            backgroundColor: '#e7f3ff',
-            color: '#0d6efd'
-          }}
-        >
+      <div className="settings-section-header">
+        <div className="settings-section-icon">
           <CIcon icon={icon} size="sm" />
         </div>
-        <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
+        <h6 className="settings-section-title">{title}</h6>
       </div>
       {children}
     </CCardBody>
@@ -70,13 +63,13 @@ const CustomFormInput = ({
   ...props 
 }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <CFormLabel htmlFor={name} className="settings-form-label">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText className="bg-light border-end-0">
+        <CInputGroupText className="settings-form-input-group-text">
           <CIcon icon={icon} size="sm" className="text-muted" />
         </CInputGroupText>
       )}
@@ -88,7 +81,7 @@ const CustomFormInput = ({
         onChange={onChange}
         placeholder={placeholder}
         invalid={isInvalid}
-        className={icon ? "border-start-0" : ""}
+        className={`settings-form-input ${icon ? "border-start-0" : ""}`}
         {...props}
       />
       {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
@@ -109,13 +102,13 @@ const CustomFormSelect = ({
   ...props 
 }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <CFormLabel htmlFor={name} className="settings-form-label">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText className="bg-light border-end-0">
+        <CInputGroupText className="settings-form-input-group-text">
           <CIcon icon={icon} size="sm" className="text-muted" />
         </CInputGroupText>
       )}
@@ -125,7 +118,7 @@ const CustomFormSelect = ({
         value={value}
         onChange={onChange}
         invalid={isInvalid}
-        className={icon ? "border-start-0" : ""}
+        className={`settings-form-input ${icon ? "border-start-0" : ""}`}
         {...props}
       >
         {children}
@@ -146,9 +139,10 @@ const initialForm = {
 };
 
 const AddUserForm = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { error } = useSelector(state => state.users);
-  const { list: usersGroup } = useSelector((state) => state.usersGroup);
+  const { list: usersGroup = [] } = useSelector((state) => state.usersGroup || {});
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);
@@ -163,20 +157,20 @@ const AddUserForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    if (!formData.name.trim()) newErrors.name = t('settings.users.form.validation.nameRequired');
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('settings.users.form.validation.emailRequired');
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = t('settings.users.form.validation.invalidEmail');
     }
-    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.password) newErrors.password = t('settings.users.form.validation.passwordRequired');
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Confirm password is required';
+      newErrors.confirmPassword = t('settings.users.form.validation.confirmPasswordRequired');
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('settings.users.form.validation.passwordMismatch');
     }
-    if (!formData.userGroup) newErrors.userGroup = 'User group is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    if (!formData.userGroup) newErrors.userGroup = t('settings.users.form.validation.userGroupRequired');
+    if (!formData.location.trim()) newErrors.location = t('settings.users.form.validation.locationRequired');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -204,12 +198,12 @@ const AddUserForm = () => {
 
       if (response?.payload?.email_exists_but_deleted) {
         const result = await Swal.fire({
-          title: 'Email Previously Deleted',
-          text: 'A user with this email already exists but is currently Deleted. Do you want to restore the account?',
+          title: t('settings.users.alerts.emailDeletedTitle'),
+          text: t('settings.users.alerts.emailDeletedText'),
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, restore',
-          cancelButtonText: 'No'
+          confirmButtonText: t('settings.users.alerts.restoreYes'),
+          cancelButtonText: t('common.no')
         });
 
         if (result.isConfirmed) {
@@ -220,11 +214,11 @@ const AddUserForm = () => {
       }
 
       if (response?.payload?.status == 200) {
-        Swal.fire('Success!', response.payload.message, 'success');
+        Swal.fire(t('common.success') + '!', response.payload.message, 'success');
         navigate('/settings/users');
       }
     } catch (error) {
-      Swal.fire('Error', error.message || 'Something went wrong', 'error');
+      Swal.fire(t('common.error'), error.message || t('settings.users.alerts.genericError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -234,44 +228,31 @@ const AddUserForm = () => {
     return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current);
   };
   return (
-    <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="settings-form-container">
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2 mb-md-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <CCard className="settings-form-header">
         <CCardBody className="py-3 py-md-4 px-3 px-md-4">
           <CRow className="align-items-center">
             <CCol>
               <div className="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
-                <div 
-                  className="rounded-circle d-flex align-items-center justify-content-center me-md-3 mb-2 mb-md-0"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
+                <div className="settings-form-icon">
                   <CIcon icon={cilUserPlus} size="sm" className="text-white" />
                 </div>
                 <div>
-                  <h5 className="text-white mb-1 fw-bold">Add New User</h5>
-                  <p className="text-white-50 mb-0 small d-none d-md-block">Create a new user account with role-based access</p>
+                  <h5 className="settings-form-title">{t('settings.users.create.title')}</h5>
+                  <p className="settings-form-subtitle d-none d-md-block">{t('settings.users.create.subtitle')}</p>
                 </div>
               </div>
             </CCol>
             <CCol xs="12" className="mt-3 mt-md-0" md="auto">
               <CButton
                 color="light"
-                className="shadow-sm px-3 px-md-4 fw-semibold w-100 w-md-auto"
+                className="settings-back-button w-100 w-md-auto"
                 size="sm"
                 onClick={() => navigate('/settings/users')}
-                style={{
-                  borderRadius: '25px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Back
+                {t('common.back')}
               </CButton>
             </CCol>
           </CRow>
@@ -280,10 +261,10 @@ const AddUserForm = () => {
 
       {/* Error Alert */}
       {error && (
-        <CCard className="border-0 shadow-sm mb-2 mb-md-4">
+        <CCard className="settings-section-card">
           <CCardBody className="p-3">
             <div className="alert alert-danger mb-0">
-              <strong>Error:</strong> {typeof error === 'string' ? error : error.message || 'An error occurred'}
+              <strong>{t('common.error')}:</strong> {typeof error === 'string' ? error : error.message || t('settings.users.alerts.genericError')}
             </div>
           </CCardBody>
         </CCard>
@@ -291,15 +272,15 @@ const AddUserForm = () => {
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
-        <FormSection title="Basic Information" icon={cilUser}>
+  <FormSection title={t('settings.users.form.titles.basicInfo')} icon={cilUser}>
           <CRow>
             <CCol xs={12} md={6}>
               <CustomFormInput
-                label="Full Name"
+    label={t('settings.users.form.labels.fullName')}
                 name="name"
                 required
                 icon={cilUser}
-                placeholder="Enter user's full name"
+    placeholder={t('settings.users.form.placeholders.fullName')}
                 value={formData.name}
                 onChange={handleChange}
                 isInvalid={!!errors.name}
@@ -308,12 +289,12 @@ const AddUserForm = () => {
             </CCol>
             <CCol xs={12} md={6}>
               <CustomFormInput
-                label="Email Address"
+    label={t('settings.users.form.labels.email')}
                 name="email"
                 type="email"
                 required
                 icon={cilEnvelopeClosed}
-                placeholder="user@example.com"
+    placeholder={t('settings.users.form.placeholders.email')}
                 value={formData.email}
                 onChange={handleChange}
                 isInvalid={!!errors.email}
@@ -324,16 +305,16 @@ const AddUserForm = () => {
         </FormSection>
 
         {/* Security Information Section */}
-        <FormSection title="Security Settings" icon={cilSettings}>
+  <FormSection title={t('settings.users.form.titles.security')} icon={cilSettings}>
           <CRow>
             <CCol xs={12} md={6}>
               <CustomFormInput
-                label="Password"
+    label={t('settings.users.form.labels.password')}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 icon={cilLockLocked}
-                placeholder="Enter secure password"
+    placeholder={t('settings.users.form.placeholders.password')}
                 value={formData.password}
                 onChange={handleChange}
                 isInvalid={!!errors.password}
@@ -342,12 +323,12 @@ const AddUserForm = () => {
             </CCol>
             <CCol xs={12} md={6}>
               <CustomFormInput
-                label="Confirm Password"
+    label={t('settings.users.form.labels.confirmPassword')}
                 name="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 required
                 icon={cilLockLocked}
-                placeholder="Confirm password"
+    placeholder={t('settings.users.form.placeholders.confirmPassword')}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 isInvalid={!!errors.confirmPassword}
@@ -358,11 +339,11 @@ const AddUserForm = () => {
         </FormSection>
 
         {/* Role & Access Section */}
-        <FormSection title="Role & Access" icon={cilSettings}>
+  <FormSection title={t('settings.users.form.titles.roleAccess')} icon={cilSettings}>
           <CRow>
             <CCol xs={12} md={6}>
               <CustomFormSelect
-                label="User Group"
+    label={t('settings.users.form.labels.userGroup')}
                 name="userGroup"
                 required
                 icon={cilUser}
@@ -371,17 +352,20 @@ const AddUserForm = () => {
                 isInvalid={!!errors.userGroup}
                 feedback={errors.userGroup}
               >
-                <option value="">-- Select Group --</option>
-                {usersGroup.map(group => (
-                  <option key={group.id} value={group.user_group.name}>
-                    {group.user_group.name}
-                  </option>
-                ))}
+    <option value="">{t('settings.users.form.select.group')}</option>
+                {(usersGroup || []).map((group) => {
+                  const name = group?.user_group?.name ?? group?.name ?? `Group #${group?.id ?? ''}`;
+                  return (
+                    <option key={group?.id ?? name} value={name}>
+                      {name}
+                    </option>
+                  );
+                })}
               </CustomFormSelect>
             </CCol>
             <CCol xs={12} md={6}>
               <CustomFormSelect
-                label="Location"
+    label={t('settings.users.form.labels.location')}
                 name="location"
                 required
                 icon={cilLocationPin}
@@ -390,10 +374,10 @@ const AddUserForm = () => {
                 isInvalid={!!errors.location}
                 feedback={errors.location}
               >
-                <option value="">-- Select Location --</option>
-                <option value="1">Main 1</option>
-                <option value="2">Main 2</option>
-                <option value="3">Main 3</option>
+    <option value="">{t('settings.users.form.select.location')}</option>
+    <option value="1">{t('settings.users.form.locations.main1')}</option>
+    <option value="2">{t('settings.users.form.locations.main2')}</option>
+    <option value="3">{t('settings.users.form.locations.main3')}</option>
               </CustomFormSelect>
             </CCol>
           </CRow>
@@ -415,9 +399,9 @@ const AddUserForm = () => {
                   <CIcon icon={cilUser} size="sm" />
                 </div>
                 <div>
-                  <div className="fw-semibold text-dark small">Sales Representative</div>
+                  <div className="fw-semibold text-dark small">{t('settings.users.form.labels.salesRep')}</div>
                   <div className="text-muted" style={{ fontSize: '12px' }}>
-                    Grant sales-specific permissions and access
+                    {t('settings.users.form.hints.salesRep')}
                   </div>
                 </div>
               </div>
@@ -436,23 +420,23 @@ const AddUserForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <CCard className="border-0 shadow-sm">
+        <CCard className="settings-form-actions">
           <CCardBody className="p-3 p-md-4">
             <div className="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-end">
               <CButton
                 type="button"
                 color="light"
                 size="md"
-                className="px-3 px-md-4 fw-semibold order-2 order-md-1"
+                className="settings-form-cancel-btn order-2 order-md-1"
                 onClick={() => {
                   if (isFormDirty()) {
                     Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'Changes you made will be lost if you leave now.',
+                      title: t('common.confirm') || 'Are you sure?',
+                      text: t('settings.users.form.alerts.leaveWarning'),
                       icon: 'warning',
                       showCancelButton: true,
-                      confirmButtonText: 'Leave Anyway',
-                      cancelButtonText: 'Stay on Page',
+                      confirmButtonText: t('settings.users.form.alerts.leaveAnyway'),
+                      cancelButtonText: t('settings.users.form.alerts.stayOnPage'),
                       confirmButtonColor: '#d33',
                       cancelButtonColor: '#6c757d',
                     }).then((result) => {
@@ -464,27 +448,16 @@ const AddUserForm = () => {
                     navigate('/settings/users');
                   }
                 }}
-                style={{
-                  borderRadius: '25px',
-                  border: '1px solid #e3e6f0',
-                  transition: 'all 0.3s ease'
-                }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Cancel
+                {t('common.cancel')}
               </CButton>
               <CButton
                 type="submit"
                 color="success"
                 size="md"
                 disabled={loading}
-                className="px-4 px-md-5 fw-semibold order-1 order-md-2"
-                style={{
-                  borderRadius: '25px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
-                  transition: 'all 0.3s ease'
-                }}
+                className="settings-form-submit-btn order-1 order-md-2"
               >
                 {loading ? (
                   <>
@@ -493,14 +466,14 @@ const AddUserForm = () => {
                       role="status"
                       style={{ width: '14px', height: '14px' }}
                     >
-                      <span className="visually-hidden">Loading...</span>
+                      <span className="visually-hidden">{t('common.loading')}</span>
                     </div>
-                    Submitting...
+                    {t('settings.users.create.submitting')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilSave} className="me-2" />
-                    Create User
+                    {t('settings.users.create.submit')}
                   </>
                 )}
               </CButton>

@@ -37,6 +37,7 @@ import {
   cilDollar,
   cilInfo
 } from '@coreui/icons';
+import { useTranslation } from 'react-i18next';
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, className = "" }) => (
@@ -187,6 +188,7 @@ const FileUploadCard = ({ title, icon, accept, multiple = false, onChange, selec
 );
 
 const ManufacturerForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -239,12 +241,12 @@ const ManufacturerForm = () => {
     
     required.forEach((field) => {
       if (!formData[field]?.toString().trim()) {
-        errors[field] = 'This field is required';
+        errors[field] = t('settings.users.form.validation.required');
       }
     });
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Invalid email format';
+      errors.email = t('customers.form.validation.invalidEmail');
     }
 
     if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
@@ -252,7 +254,7 @@ const ManufacturerForm = () => {
     }
 
     if (formData.costMultiplier && (parseFloat(formData.costMultiplier) <= 0)) {
-      errors.costMultiplier = 'Cost multiplier must be greater than 0';
+      errors.costMultiplier = t('settings.manufacturers.edit.costMultiplier') + ' ' + t('customers.form.validation.required');
     }
 
     return errors;
@@ -260,23 +262,17 @@ const ManufacturerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    console.log('Form submitted');
-    console.log('Form data:', formData);
-    
     const errors = validateForm();
     setValidationErrors(errors);
     
     if (Object.keys(errors).length > 0) {
-      console.log('Validation errors:', errors);
       setMessage({
-        text: 'Please fix the validation errors before submitting.',
+  text: t('settings.manufacturers.create.messages.validationFix'),
         type: 'danger',
       });
       return;
     }
 
-    console.log('Validation passed, proceeding with submission');
     setLoading(true);
     setMessage({ text: '', type: '' });
 
@@ -297,22 +293,18 @@ const ManufacturerForm = () => {
       // Append logo image if selected
       if (logoImage) {
         formDataToSend.append('manufacturerImage', logoImage);
-        console.log('Logo image added:', logoImage.name);
       }
       
       // Append catalog files if selected
       files.forEach((file) => {
         formDataToSend.append('catalogFiles', file);
-        console.log('Catalog file added:', file.name);
       });
 
-      console.log('Dispatching addManufacturer action');
       // Dispatch Redux action
       const result = await dispatch(addManufacturer(formDataToSend)).unwrap();
 
-      console.log('Manufacturer creation successful:', result);
       setMessage({
-        text: 'Manufacturer created successfully!',
+  text: t('settings.manufacturers.create.messages.created'),
         type: 'success',
       });
       
@@ -338,7 +330,7 @@ const ManufacturerForm = () => {
     } catch (error) {
       console.error('Error creating manufacturer:', error);
       setMessage({
-        text: error.message || 'Failed to create manufacturer',
+  text: error.message || t('settings.manufacturers.create.messages.createFailed'),
         type: 'danger',
       });
     } finally {
@@ -398,7 +390,7 @@ const ManufacturerForm = () => {
       </style>
 
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+  <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <CCardBody className="py-4">
           <CRow className="align-items-center">
             <CCol>
@@ -415,8 +407,8 @@ const ManufacturerForm = () => {
                   <CIcon icon={cilBuilding} size="xl" className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Add New Manufacturer</h3>
-                  <p className="text-white-50 mb-0">Create a comprehensive manufacturer profile</p>
+                  <h3 className="text-white mb-1 fw-bold">{t('settings.manufacturers.create.title')}</h3>
+                  <p className="text-white-50 mb-0">{t('settings.manufacturers.create.subtitle')}</p>
                 </div>
               </div>
             </CCol>
@@ -432,7 +424,7 @@ const ManufacturerForm = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Back
+                {t('settings.manufacturers.create.back')}
               </CButton>
             </CCol>
           </CRow>
@@ -459,22 +451,22 @@ const ManufacturerForm = () => {
             <div className="d-flex align-items-start">
               <CIcon icon={cilInfo} className="text-primary me-2 mt-1" />
               <p className="mb-0 text-primary">
-                <strong>Important:</strong> Please enter information for the new manufacturer. We need your help to add the catalog into our system as manufacturers do not share the pricing spec sheets with us.
+                <strong>{t('settings.manufacturers.create.infoTitle')}</strong> {t('settings.manufacturers.create.infoText')}
               </p>
             </div>
           </CCardBody>
         </CCard>
 
         {/* Basic Information */}
-        <FormSection title="Basic Information" icon={cilBuilding}>
+        <FormSection title={t('settings.manufacturers.sections.basicInfo')} icon={cilBuilding}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Manufacturer Name"
+                label={t('settings.manufacturers.fields.manufacturerName')}
                 name="name"
                 required
                 icon={cilBuilding}
-                placeholder="Enter manufacturer name"
+                placeholder={t('settings.manufacturers.placeholders.manufacturerName')}
                 value={formData.name}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.name}
@@ -483,12 +475,12 @@ const ManufacturerForm = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Order Email"
+                label={t('settings.manufacturers.fields.orderEmail')}
                 name="email"
                 type="email"
                 required
                 icon={cilEnvelopeClosed}
-                placeholder="orders@manufacturer.com"
+                placeholder={t('settings.manufacturers.placeholders.orderEmail')}
                 value={formData.email}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.email}
@@ -500,12 +492,12 @@ const ManufacturerForm = () => {
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Phone"
+                label={t('settings.manufacturers.fields.phone')}
                 name="phone"
                 type="tel"
                 required
                 icon={cilPhone}
-                placeholder="+1 (555) 123-4567"
+                placeholder={t('settings.manufacturers.placeholders.phone')}
                 value={formData.phone}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.phone}
@@ -514,12 +506,12 @@ const ManufacturerForm = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Website"
+                label={t('settings.manufacturers.fields.website')}
                 name="website"
                 type="url"
                 required
                 icon={cilLocationPin}
-                placeholder="https://www.manufacturer.com"
+                placeholder={t('settings.manufacturers.placeholders.website')}
                 value={formData.website}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.website}
@@ -529,11 +521,11 @@ const ManufacturerForm = () => {
           </CRow>
 
           <CustomFormInput
-            label="Address"
+            label={t('settings.manufacturers.fields.address')}
             name="address"
             required
             icon={cilLocationPin}
-            placeholder="Enter complete address"
+            placeholder={t('settings.manufacturers.placeholders.address')}
             value={formData.address}
             onChange={handleChange}
             isInvalid={!!validationErrors.address}
@@ -542,21 +534,21 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Logo Upload */}
-        <FormSection title="Manufacturer Logo" icon={cilImage}>
+        <FormSection title={t('settings.manufacturers.sections.logo')} icon={cilImage}>
           <FileUploadCard
-            title="Upload Logo"
+            title={t('settings.manufacturers.fields.uploadLogo')}
             icon={cilImage}
             accept="image/*"
             onChange={handleLogoChange}
             selectedFiles={logoImage}
-            helpText="Upload a logo or image representing the manufacturer (JPG, PNG, GIF)"
+            helpText={t('settings.manufacturers.help.logo')}
           />
         </FormSection>
 
         {/* Pricing Information */}
-        <FormSection title="Pricing Information" icon={cilDollar}>
+        <FormSection title={t('settings.manufacturers.sections.pricing')} icon={cilDollar}>
           <div className="mb-4">
-            <CFormLabel className="fw-medium text-dark mb-3">Price Information Type</CFormLabel>
+            <CFormLabel className="fw-medium text-dark mb-3">{t('settings.manufacturers.fields.priceInfoType')}</CFormLabel>
             <div className="d-flex flex-column gap-2">
               <div 
                 className={`border rounded-3 p-3 cursor-pointer transition-all ${formData.isPriceMSRP ? 'border-primary bg-light' : 'border-light'}`}
@@ -571,7 +563,7 @@ const ManufacturerForm = () => {
                   className="mb-0"
                 />
                 <label htmlFor="msrpPrices" className="ms-2 fw-medium" style={{ cursor: 'pointer' }}>
-                  Prices in the attached files are MSRP
+                  {t('settings.manufacturers.fields.msrpOption')}
                 </label>
               </div>
               <div 
@@ -587,7 +579,7 @@ const ManufacturerForm = () => {
                   className="mb-0"
                 />
                 <label htmlFor="costPrices" className="ms-2 fw-medium" style={{ cursor: 'pointer' }}>
-                  Prices in the attached files are my cost when ordering from manufacturer
+                  {t('settings.manufacturers.fields.costOption')}
                 </label>
               </div>
             </div>
@@ -596,30 +588,39 @@ const ManufacturerForm = () => {
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Cost Multiplier"
+                label={t('settings.manufacturers.fields.costMultiplier')}
                 name="costMultiplier"
                 type="number"
                 step="0.1"
                 required
                 icon={cilCalculator}
-                placeholder="2.0"
+                placeholder={t('settings.manufacturers.placeholders.costMultiplier')}
                 value={formData.costMultiplier}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.costMultiplier}
                 feedback={validationErrors.costMultiplier}
               />
-              {calculateMultiplierExample()}
+              {formData.costMultiplier && (
+                <CFormText className="text-info mt-2">
+                  <CIcon icon={cilInfo} className="me-1" size="sm" />
+                  {t('settings.manufacturers.example.multiplier', {
+                    msrp: (200.0).toFixed(2),
+                    cost: (100.0).toFixed(2),
+                    multiplier: parseFloat(formData.costMultiplier).toFixed(1)
+                  })}
+                </CFormText>
+              )}
             </CCol>
           </CRow>
         </FormSection>
 
         {/* Instructions */}
-        <FormSection title="Special Instructions" icon={cilDescription}>
+        <FormSection title={t('settings.manufacturers.sections.instructions')} icon={cilDescription}>
           <CustomFormTextarea
-            label="Instructions"
+            label={t('settings.manufacturers.fields.instructions')}
             name="instructions"
             icon={cilDescription}
-            placeholder="Enter any special instructions or notes for this manufacturer..."
+            placeholder={t('settings.manufacturers.placeholders.instructions')}
             rows={4}
             value={formData.instructions}
             onChange={handleChange}
@@ -629,15 +630,15 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Catalog Files */}
-        <FormSection title="Catalog Files" icon={cilCloudUpload}>
+        <FormSection title={t('settings.manufacturers.sections.catalog')} icon={cilCloudUpload}>
           <FileUploadCard
-            title="Choose Catalog Files"
+            title={t('settings.manufacturers.fields.chooseCatalogFiles')}
             icon={cilCloudUpload}
             accept=".pdf,.xlsx,.xls,.csv"
             multiple={true}
             onChange={handleFileChange}
             selectedFiles={files}
-            helpText="Supported file types: PDF, Excel files (.xlsx, .xls) and CSV files"
+            helpText={t('settings.manufacturers.help.catalog')}
           />
         </FormSection>
 
@@ -656,8 +657,8 @@ const ManufacturerForm = () => {
                   transition: 'all 0.3s ease'
                 }}
               >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                Cancel
+        <CIcon icon={cilArrowLeft} className="me-2" />
+        {t('common.cancel')}
               </CButton>
               <CButton
                 type="submit"
@@ -675,12 +676,12 @@ const ManufacturerForm = () => {
                 {loading ? (
                   <>
                     <CSpinner size="sm" className="me-2" />
-                    Submitting...
+          {t('settings.manufacturers.create.submitting')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilSave} className="me-2" />
-                    Create Manufacturer
+          {t('settings.manufacturers.create.submit')}
                   </>
                 )}
               </CButton>

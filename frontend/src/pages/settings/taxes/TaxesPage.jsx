@@ -11,9 +11,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addTax, fetchTaxes, deleteTax, setDefaultTax } from '../../../store/slices/taxSlice';
 import { CiCircleQuestion } from "react-icons/ci";
 import { FaCoins, FaPercentage } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 
 const TaxesPage = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { taxes, loading } = useSelector((state) => state.taxes);
   const [newTaxes, setNewTaxes] = useState([]);
 
@@ -35,7 +37,7 @@ const TaxesPage = () => {
 
     const lastTax = newTaxes[newTaxes.length - 1];
     if (!lastTax.label.trim() || !lastTax.value.trim()) {
-      alert('Please complete the current tax fields before adding a new one.');
+      alert(t('settings.taxes.alerts.completeFields'));
       return;
     }
 
@@ -48,7 +50,7 @@ const TaxesPage = () => {
       await dispatch(addTax(tax)).unwrap();
       setNewTaxes((prev) => prev.filter((_, i) => i !== index));
     } catch (error) {
-      alert('Failed to add tax');
+      alert(t('settings.taxes.alerts.addFailed'));
     }
   };
 
@@ -84,8 +86,8 @@ const TaxesPage = () => {
                   <FaCoins className="text-white" style={{ fontSize: '24px' }} />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Tax Management</h3>
-                  <p className="text-white-50 mb-0">Configure tax rates for your proposals</p>
+                  <h3 className="text-white mb-1 fw-bold">{t('settings.taxes.header')}</h3>
+                  <p className="text-white-50 mb-0">{t('settings.taxes.subtitle')}</p>
                 </div>
               </div>
             </CCol>
@@ -106,7 +108,7 @@ const TaxesPage = () => {
                 }}
               >
                 <CIcon icon={cilPlus} className="me-2" />
-                Add Tax
+                {t('settings.taxes.addTax')}
               </CButton>
             </CCol>
           </CRow>
@@ -120,12 +122,12 @@ const TaxesPage = () => {
             <CCol md={6}>
               <div className="d-flex align-items-center gap-3">
                 <CTooltip
-                  content="Taxes defined here will be available when creating proposals"
+                  content={t('settings.taxes.help.tooltip')}
                   placement="bottom"
                 >
                   <div className="d-flex align-items-center gap-2 text-muted">
                     <CiCircleQuestion style={{ fontSize: '20px', cursor: 'pointer' }} />
-                    <small>Hover for help</small>
+                    <small>{t('settings.taxes.help.hover')}</small>
                   </div>
                 </CTooltip>
               </div>
@@ -141,7 +143,7 @@ const TaxesPage = () => {
                     fontWeight: '500'
                   }}
                 >
-                  Total: {taxes?.length || 0} taxes
+                  {t('settings.taxes.stats.total', { count: taxes?.length || 0 })}
                 </CBadge>
                 <CBadge 
                   color="success" 
@@ -152,7 +154,7 @@ const TaxesPage = () => {
                     fontWeight: '500'
                   }}
                 >
-                  {taxes?.filter(tax => tax.isDefault).length || 0} default
+                  {t('settings.taxes.stats.defaultCount', { count: taxes?.filter(tax => tax.isDefault).length || 0 })}
                 </CBadge>
               </div>
             </CCol>
@@ -165,7 +167,7 @@ const TaxesPage = () => {
         <CCard className="border-0 shadow-sm">
           <CCardBody className="text-center py-5">
             <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">Loading taxes...</p>
+            <p className="text-muted mt-3 mb-0">{t('settings.taxes.loading')}</p>
           </CCardBody>
         </CCard>
       )}
@@ -178,7 +180,7 @@ const TaxesPage = () => {
             {/* Existing Taxes */}
             {taxes?.length > 0 ? (
               <div className="p-3">
-                <h6 className="text-muted fw-semibold mb-3 px-2">Existing Taxes</h6>
+                <h6 className="text-muted fw-semibold mb-3 px-2">{t('settings.taxes.existing.title')}</h6>
                 {taxes.map((tax, index) => (
                   <div
                     key={tax.id}
@@ -202,7 +204,7 @@ const TaxesPage = () => {
                       <CRow className="align-items-center">
                         <CCol xs={12} md={4} className="mb-3 mb-md-0">
                           <CFormLabel className="mb-2 fw-semibold text-dark">
-                            Tax Label
+                            {t('settings.taxes.fields.taxLabel')}
                           </CFormLabel>
                           <CFormInput 
                             value={tax.label} 
@@ -219,7 +221,7 @@ const TaxesPage = () => {
 
                         <CCol xs={12} md={3} className="mb-3 mb-md-0">
                           <CFormLabel className="mb-2 fw-semibold text-dark">
-                            Tax Rate
+                            {t('settings.taxes.fields.taxRate')}
                           </CFormLabel>
                           <CInputGroup>
                             <CFormInput 
@@ -246,7 +248,7 @@ const TaxesPage = () => {
 
                         <CCol xs={6} md={2} className="mb-3 mb-md-0 text-center">
                           <CFormLabel className="mb-2 fw-semibold text-dark d-block">
-                            Default
+                            {t('settings.taxes.fields.default')}
                           </CFormLabel>
                           <div className="d-flex justify-content-center align-items-center" style={{ height: '38px' }}>
                             {tax.isDefault ? (
@@ -260,10 +262,10 @@ const TaxesPage = () => {
                                 }}
                               >
                                 <CIcon icon={cilCheckAlt} className="me-1" size="sm" />
-                                Default
+                                {t('settings.taxes.fields.defaultBadge')}
                               </CBadge>
                             ) : (
-                              <CTooltip content="Set as default tax" placement="top">
+                              <CTooltip content={t('settings.taxes.fields.setDefault')} placement="top">
                                 <CFormCheck
                                   type="radio"
                                   name="defaultTax"
@@ -279,7 +281,7 @@ const TaxesPage = () => {
 
                         <CCol xs={6} md={3} className="text-center">
                           <CFormLabel className="mb-2 fw-semibold text-dark d-block">
-                            Actions
+                            {t('settings.taxes.fields.actions')}
                           </CFormLabel>
                           <CButton
                             color="light"
@@ -316,8 +318,8 @@ const TaxesPage = () => {
               !loading && (
                 <div className="text-center py-5">
                   <FaCoins className="text-muted mb-3" style={{ fontSize: '48px', opacity: 0.3 }} />
-                  <p className="text-muted mb-1 fs-5">No taxes configured yet</p>
-                  <small className="text-muted">Click "Add Tax" to create your first tax rate</small>
+                  <p className="text-muted mb-1 fs-5">{t('settings.taxes.empty.title')}</p>
+                  <small className="text-muted">{t('settings.taxes.empty.subtitle')}</small>
                 </div>
               )
             )}
@@ -325,7 +327,7 @@ const TaxesPage = () => {
             {/* New Tax Forms */}
             {newTaxes.length > 0 && (
               <div className="p-3 border-top border-light">
-                <h6 className="text-muted fw-semibold mb-3 px-2">New Tax Entry</h6>
+                <h6 className="text-muted fw-semibold mb-3 px-2">{t('settings.taxes.new.title')}</h6>
                 {newTaxes.map((tax, i) => (
                   <div
                     key={i}
@@ -341,12 +343,12 @@ const TaxesPage = () => {
                       <CRow className="align-items-end">
                         <CCol xs={12} md={4} className="mb-3 mb-md-0">
                           <CFormLabel className="mb-2 fw-semibold text-dark">
-                            Tax Label *
+                            {t('settings.taxes.new.taxLabelRequired')}
                           </CFormLabel>
                           <CFormInput
                             value={tax.label}
                             onChange={(e) => handleNewTaxChange(i, 'label', e.target.value)}
-                            placeholder="e.g., GST, VAT, Sales Tax"
+                            placeholder={t('settings.taxes.new.placeholderLabel')}
                             autoFocus
                             style={{ 
                               borderRadius: '8px',
@@ -359,14 +361,14 @@ const TaxesPage = () => {
 
                         <CCol xs={12} md={3} className="mb-3 mb-md-0">
                           <CFormLabel className="mb-2 fw-semibold text-dark">
-                            Tax Rate * (%)
+                            {t('settings.taxes.new.taxRateRequired')}
                           </CFormLabel>
                           <CInputGroup>
                             <CFormInput
                               type="number"
                               value={tax.value}
                               onChange={(e) => handleNewTaxChange(i, 'value', e.target.value)}
-                              placeholder="18"
+                              placeholder={t('settings.taxes.new.placeholderRate')}
                               min={0}
                               max={100}
                               step="0.01"
@@ -404,7 +406,7 @@ const TaxesPage = () => {
                               }}
                             >
                               <CIcon icon={cilSave} className="me-2" />
-                              Save Tax
+                              {t('settings.taxes.new.save')}
                             </CButton>
                             <CButton
                               color="light"
@@ -419,7 +421,7 @@ const TaxesPage = () => {
                               }}
                             >
                               <CIcon icon={cilX} className="me-2" />
-                              Cancel
+                              {t('settings.taxes.new.cancel')}
                             </CButton>
                           </div>
                         </CCol>

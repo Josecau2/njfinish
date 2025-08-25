@@ -12,6 +12,8 @@ import {
 } from '@coreui/icons'
 import Swal from 'sweetalert2'
 
+const api_url = import.meta.env.VITE_API_URL;
+
 const FileUploadSection = ({ proposalId, onFilesChange }) => {
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
@@ -70,7 +72,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     formData.append('fileType', getFileType(file.type))
 
     try {
-      const response = await fetch('/api/proposals/upload-file', {
+      const response = await fetch(`${api_url}/api/proposals/upload-file`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -181,7 +183,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const deleteFile = async (fileId) => {
     try {
-      const response = await fetch(`/api/proposals/files/${fileId}`, {
+      const response = await fetch(`${api_url}/api/proposals/files/${fileId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

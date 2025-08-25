@@ -1,0 +1,1671 @@
+{
+  "common": {
+    "appName": "NJ Cabinets",
+    "dealerPortal": "Dealer Portal",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "deleted": "Deleted",
+  "na": "N/A",
+  "yes": "Yes",
+  "no": "No",
+  "light": "Light",
+  "dark": "Dark",
+  "auto": "Auto",
+  "next": "Next",
+  "confirm": "Are you sure?",
+  "search": "Search",
+  "displayedColumns": "Displayed Columns",
+  "noData": "No data found.",
+  "itemsPerPage": "Items per page:",
+  "pageOf": "Page {{page}} of {{total}}",
+  "close": "Close",
+  "short": {
+    "left": "L",
+    "right": "R",
+    "both": "B"
+  }
+  },
+  "proposalUI": {
+    "currentStyle": "Current Style",
+    "otherStyles": "Other Styles & Price Comparison",
+    "loadingStyles": "Loading styles...",
+    "noStyles": "No styles found.",
+    "enterPartCode": "Enter Part code",
+    "addOnTop": "Add items on top",
+    "copy": "Copy",
+    "group": "Group",
+    "findInCart": "Find in cart",
+    "mod": {
+      "unnamed": "Unnamed Modification"
+    },
+    "toast": {
+      "copyEmpty": "There are no items to copy in the cart",
+      "copySuccess": "Items copied to clipboard"
+    },
+    "custom": {
+      "title": "Custom Items:",
+      "itemName": "Item name",
+      "price": "Price",
+      "taxable": "Taxable",
+      "add": "Add",
+      "table": {
+        "index": "#",
+        "itemName": "Item Name",
+        "price": "Price",
+        "taxable": "Taxable",
+        "actions": "Actions"
+      },
+      "delete": "Delete"
+    },
+    "summary": {
+      "discountPct": "Discount (%):",
+      "taxRate": "Tax Rate:"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "keepMeLoggedIn": "Keep me logged in",
+    "keepLoggedIn": "Keep me logged in",
+    "forgotPassword": "Forgot password?",
+  "enterCredentials": "Enter your email and password to sign in!",
+  "emailPlaceholder": "you@example.com",
+  "passwordPlaceholder": "Enter your password",
+  "loginFailed": "Login failed. Please check your credentials.",
+  "rightSubtitle": "Configure - Price - Quote",
+  "rightDescription": "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "proposals": "Proposals",
+    "viewProposals": "View Proposals",
+    "createProposal": "Create Proposal",
+    "contracts": "Contracts",
+    "customers": "Customers",
+  "viewCustomers": "View Customers",
+    "addCustomer": "Add Customer",
+    "resources": "Resources",
+    "calendar": "Calendar",
+    "admin": "Admin",
+    "contractors": "Contractors",
+    "notifications": "Notifications",
+  "settings": "Settings",
+  "userManagement": "User Management",
+  "users": "Users",
+  "userGroups": "User Groups",
+  "manufacturers": "Manufacturers",
+  "multipliers": "Multipliers",
+  "locations": "Locations",
+  "taxes": "Taxes",
+  "customization": "Customization",
+  "general": "General",
+  "pdfLayout": "PDF Layout",
+  "loginPage": "Login Page",
+  "uiCustomization": "UI Customization"
+  },
+  "customers": {
+    "header": "Customers",
+    "subtitle": "Manage your customer database",
+    "searchPlaceholder": "Search customers by name or email...",
+    "noResults": "No customers found",
+    "tryAdjusting": "Try adjusting your search criteria",
+    "total": "Total Customers",
+    "active": "Active",
+    "withEmail": "With Email",
+    "filtered": "Filtered Results",
+    "proposalsCount": "{{count}} Proposals",
+  "ordersCount": "{{count}} Orders",
+  "perPage": "per page",
+  "showing": "Showing",
+  "of": "of",
+  "customersLower": "customers",
+  "loading": "Loading customers...",
+  "location": "Location",
+  "name": "Name",
+  "email": "Email",
+  "proposalsHeader": "Proposals",
+  "ordersHeader": "Orders",
+  "actions": "Actions",
+  "main": "Main",
+  "editTooltip": "Edit customer",
+  "deleteTooltip": "Delete customer",
+  "confirmTitle": "Are you sure?",
+  "confirmText": "This action cannot be undone!",
+  "confirmYes": "Yes, delete it!",
+  "confirmNo": "No, cancel!",
+  "deleted": "Deleted!",
+  "deletedMsg": "The customer has been deleted.",
+  "deleteFailed": "Failed to delete customer. Please try again.",
+  "cancelled": "Cancelled",
+  "notDeleted": "The customer was not deleted.",
+    "form": {
+      "titles": {
+        "add": "Add New Customer",
+        "edit": "Edit Customer",
+        "basicInfo": "Basic Information",
+        "addressInfo": "Address Information",
+        "contactInfo": "Contact Information",
+        "businessInfo": "Business Information"
+      },
+      "labels": {
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "mobile": "Mobile Phone",
+        "homePhone": "Home Phone",
+        "address": "Street Address",
+        "aptSuite": "Apt/Suite #",
+        "city": "City",
+        "state": "State",
+        "zipCode": "Zip Code",
+        "companyName": "Company Name",
+        "customerType": "Customer Type",
+        "leadSource": "Lead Source",
+        "defaultDiscount": "Default Discount (%)",
+        "notes": "Notes"
+      },
+      "placeholders": {
+        "fullName": "Enter customer's full name",
+        "email": "customer@example.com",
+        "companyName": "Company name (if applicable)",
+        "street": "Enter street address",
+        "aptSuite": "Apt, suite, unit",
+        "city": "Enter city",
+        "zip": "12345",
+        "mobile": "1234567890",
+        "homePhone": "1234567890",
+        "leadSource": "Enter lead source",
+        "defaultDiscount": "0",
+        "notes": "Add any additional notes about the customer..."
+      },
+      "select": {
+        "selectType": "Select type...",
+        "selectSource": "Select source...",
+        "selectState": "Select State"
+      },
+      "types": {
+        "residential": "Residential",
+        "commercial": "Commercial",
+        "contractor": "Contractor",
+        "subContractor": "Sub Contractor",
+        "homeOwner": "Home Owner",
+        "landlord": "Landlord",
+        "tenant": "Tenant",
+        "company": "Company",
+        "other": "Other"
+      },
+      "sources": {
+        "website": "Website",
+        "referral": "Referral",
+        "google": "Google",
+        "facebook": "Facebook",
+        "phoneCall": "Phone Call",
+        "walkIn": "Walk-in",
+        "advertising": "Advertising",
+        "social": "Social Media",
+        "other": "Other"
+      },
+      "actions": {
+        "backToCustomers": "Back to Customers",
+        "cancel": "Cancel",
+        "create": "Create Customer",
+        "update": "Update Customer",
+        "saveCustomer": "Save Customer",
+        "saving": "Saving...",
+        "updating": "Updating..."
+      },
+      "validation": {
+        "required": "This field is required",
+        "nameRequired": "Name is required",
+        "invalidEmail": "Invalid email format",
+        "zip5": "Zip code must be 5 digits",
+        "mobile10": "Mobile number must be 10 digits",
+        "phoneAtLeastOne": "At least one phone number is required"
+      },
+      "alerts": {
+        "createdTitle": "Customer Added!",
+        "createdText": "The customer was added successfully.",
+        "updatedTitle": "Customer Updated!",
+        "updatedText": "The customer details were updated successfully.",
+        "createFailed": "Could not add customer. Please try again.",
+        "updateFailed": "Could not update customer. Please try again.",
+        "saveFailed": "Failed to save customer",
+        "notFound": "Customer not found"
+      }
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome to {{group}} Dashboard",
+    "portal": "Contractor Portal",
+    "quickActions": "Quick Actions",
+    "createProposal": "Create New Proposal",
+    "viewProfile": "View Profile",
+    "loadError": "Failed to load dashboard data",
+    "activeProposals": "Active Proposals",
+    "activeOrders": "Active Orders",
+    "latestProductUpdates": "Latest Product Updates",
+    "noProductUpdates": "No product updates available.",
+    "quickLinks": "Quick Links",
+    "recentFiles": "Recent Files",
+    "myLatestProposals": "My Latest Proposals",
+    "viewAllProposals": "View All Proposals",
+    "newProposal": "New Proposal",
+    "quickProposal": "Quick Proposal"
+  }
+  ,
+  "resources": {
+    "manage": "Manage your {{title}}",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "added": "Added",
+    "downloadFile": "Download file",
+    "openLink": "Open link",
+    "headerContractor": "Access your curated resources",
+    "headerAdmin": "Manage your links and files in one place",
+    "searchPlaceholder": "Search resources...",
+    "allLinkTypes": "All Link Types",
+    "allFileTypes": "All File Types",
+    "loading": "Loading resources...",
+    "links": "Links",
+    "files": "Files",
+    "addLink": "Add Link",
+    "noLinks": "No links available",
+    "noLinksContractor": "No links have been shared with your group",
+    "noLinksAdmin": "Start by adding your first link",
+    "noLinksAdminAlt": "Start by adding your first useful link",
+    "addFirstLink": "Add First Link",
+    "addFile": "Add File",
+    "noFiles": "No files available",
+    "noFilesContractor": "No files have been shared with your group",
+    "noFilesAdmin": "Upload your first file",
+    "noFilesAdminAlt": "Start by uploading your first document",
+    "uploadFirstFile": "Upload First File",
+    "editLink": "Edit Link",
+    "addNewLink": "Add New Link",
+    "updateLink": "Update Link",
+    "linkTitle": "Link Title",
+    "enterLinkTitle": "Enter link title",
+    "url": "URL",
+    "urlPlaceholder": "https://example.com",
+    "linkType": {
+      "label": "Link Type",
+      "external": "External Link",
+      "internal": "Internal Link",
+      "document": "Document",
+      "help": "Help/Support"
+    },
+    "editFile": "Edit File",
+    "uploadNewFile": "Upload New File",
+    "updateFile": "Update File",
+    "uploadFile": "Upload File",
+    "file": "File",
+    "fileName": "File Name",
+    "enterFileName": "Enter file name",
+    "fileType": {
+      "label": "File Type",
+      "pdf": "PDF Document",
+      "excel": "Excel Spreadsheet",
+      "word": "Word Document",
+      "video": "Video File",
+      "image": "Image File",
+      "other": "Other"
+    },
+    "leaveEmpty": "Leave empty to keep current file"
+  },
+  "proposals": {
+    "header": "Proposals",
+    "subtitle": "Manage and track all your proposals",
+    "new": "New Proposal",
+    "quick": "Quick Proposal",
+    "searchPlaceholder": "Search by customer name...",
+    "showingCount": "Showing {{count}} of {{total}} proposals",
+    "headers": {
+      "date": "Date",
+      "customer": "Customer",
+      "description": "Description",
+      "designer": "Designer",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No proposals found",
+      "subtitle": "Try adjusting your search or filters"
+    },
+    "labels": {
+      "sentOn": "Sent:",
+      "description": "Description",
+      "designer": "Designer"
+    },
+    "tabs": {
+      "all": "All"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "measurementScheduled": "Measurement Scheduled",
+      "measurementDone": "Measurement done",
+      "designDone": "Design done",
+      "followUp1": "Follow up 1",
+      "followUp2": "Follow up 2",
+      "followUp3": "Follow up 3",
+      "proposalAccepted": "Proposal accepted",
+      "proposalRejected": "Proposal rejected",
+      "proposalDone": "Proposal done"
+    },
+    "actions": {
+      "send": "Send",
+      "accept": "Accept",
+      "reject": "Reject",
+      "resend": "Resend",
+      "share": "Create share link",
+      "view": "View proposal",
+      "edit": "Edit proposal",
+      "delete": "Delete proposal"
+    },
+    "confirm": {
+      "sendTitle": "Send Proposal?",
+      "sendText": "This will mark the proposal as sent to the customer.",
+      "sendConfirm": "Yes, send it!",
+      "rejectTitle": "Reject Proposal?",
+      "rejectText": "This will mark the proposal as rejected.",
+      "rejectConfirm": "Yes, reject it!",
+      "deleteTitle": "Are you sure?",
+      "deleteText": "You won't be able to revert this!",
+      "deleteConfirm": "Yes, delete it!",
+      "cancel": "Cancel"
+    },
+    "toast": {
+      "successSend": "Proposal sent successfully",
+      "successAccept": "Proposal accepted successfully",
+      "successReject": "Proposal rejected successfully",
+      "deleted": "Your proposal has been deleted.",
+      "deleteFailed": "Failed to delete the proposal.",
+      "errorGeneric": "An error occurred"
+    },
+    "lockedStatus": {
+      "title": "Proposal Accepted",
+      "description": "This proposal has been accepted and is now being processed for delivery. No further changes are allowed.",
+      "processingNote": "Your order is currently being prepared for manufacturing and delivery."
+    },
+    "share": {
+      "createdTitle": "Share link created",
+      "expires": "This link expires:",
+      "copy": "Copy link",
+      "error": "Could not create share link"
+    },
+    "lockedTooltip": "Proposal is locked",
+    "create": {
+      "steps": {
+        "1": "Customer Information",
+        "2": "Manufacturer Selection",
+        "3": "Design & Style",
+        "4": "Proposal Summary"
+      },
+      "quickMode": "Quick Mode",
+      "standardMode": "Standard Mode",
+      "stepOf": "Step {{current}} of {{total}}",
+      "loadingManufacturer": "Loading manufacturer data...",
+      "actions": {
+        "print": "Print Proposal",
+        "email": "Email Proposal",
+        "contract": "Email Contract"
+  },
+      "customerInfo": {
+        "title": "Customer Details",
+        "customerName": "Customer Name",
+        "customerNamePlaceholder": "Select or type a name",
+        "customerEmail": "Customer Email",
+        "designer": "Designer",
+        "description": "Description",
+        "descriptionPlaceholder": "Description",
+        "schedule": "Schedule",
+        "measurementDone": "Measurement Done",
+        "measurementDoneDate": "Measurement Done Date",
+        "measurementScheduledDate": "Measurement Scheduled Date",
+        "designDone": "Design Done",
+        "designDoneDate": "Design Done Date",
+        "designScheduledDate": "Design Scheduled Date",
+        "moreOptions": "More Options ▼",
+        "hideOptions": "Hide Options ▲",
+        "additionalInfo": "Additional Info",
+        "salesRep": "Sales Representative",
+        "type": "Type",
+        "validation": {
+          "customerName": "Customer name is required",
+          "description": "Description is required",
+          "designer": "Designer is required"
+        },
+        "sources": {
+          "existing": "Existing customer",
+          "online": "Online",
+          "call": "Call",
+          "email": "Email"
+        },
+        "types": {
+          "builder": "Builder",
+          "architect": "Architect",
+          "interiorDesigner": "Interior Designer"
+        }
+      },
+      "manufacturer": {
+        "title": "Manufacturer Details",
+        "labels": {
+          "manufacturer": "Manufacturer",
+          "versionName": "Version Name"
+        },
+        "placeholders": {
+          "selectManufacturer": "Select Manufacturer",
+          "enterVersionName": "Enter version name"
+        },
+        "validation": {
+          "manufacturerRequired": "Manufacturer is required",
+          "versionNameRequired": "Version name is required"
+        },
+        "cta": {
+          "needAnother": "Need another manufacturer?",
+          "addManufacturer": "Add manufacturer"
+        }
+      },
+      "design": {
+        "title": "Design Import",
+        "tabs": {
+          "import2020": "Import 2020 Design",
+          "manualEntry": "Select Style & Enter Parts Manually"
+        },
+        "supportedTypes": "Supported file types: {{types}}",
+        "selectExportedFile": "Select the exported design file",
+        "selectFileCta": "Select a File",
+        "no2020SwitchToManual": "I don't have a 2020 design. Let me enter parts manually.",
+        "howToExport": "How to export a design file?",
+        "searchStylePlaceholder": "Search Style..."
+      },
+      "files": {
+        "title": "File Upload",
+        "subtitle": "This section allows users to upload or manage files.",
+        "uploaded": "Files Uploaded",
+        "upload": "Upload",
+        "titleShort": "Files",
+        "supportedList": "Supported: Images (JPEG, PNG, GIF, WebP), Documents (PDF, DOC, DOCX, TXT), Videos (MP4, AVI, MOV, WMV, FLV)",
+        "uploading": "Uploading files...",
+        "dropOrBrowse": "Drop files here or click to browse",
+        "maxSize": "Maximum file size: {{size}}",
+        "uploadedCount": "Uploaded Files ({{count}})",
+        "preview": "Preview",
+        "download": "Download",
+        "noneYet": "No files uploaded yet.",
+        "dropHint": "Drag and drop files above or click to browse.",
+        "docPreviewNA": "Document preview not available",
+        "downloadToView": "Download to view",
+        "videoNotSupported": "Your browser does not support the video tag.",
+        "validation": {
+          "unsupportedType": "File type {{type}} is not supported",
+          "sizeExceeded": "File size exceeds {{size}} limit"
+        },
+        "uploadSuccess": "{{count}} file(s) uploaded successfully",
+        "uploadFailedTitle": "Upload Failed",
+        "uploadFailedText": "Failed to upload files. Please try again.",
+        "deleteSuccess": "File has been deleted successfully",
+        "deleteFailedTitle": "Delete Failed",
+        "deleteFailedText": "Failed to delete file. Please try again.",
+        "confirmDelete": "Do you want to delete \"{{name}}\"?",
+        "invalidTitle": "Invalid Files"
+      },
+      "summary": {
+        "duplicate": "Duplicate",
+        "acceptAndOrder": "Accept and Order",
+        "rejectAndArchive": "Reject and Archive",
+        "editVersionTitle": "Edit Version Name",
+        "confirmDeleteVersion": "Are you sure you want to delete this version?"
+      }
+    }
+  }
+  ,
+  "profile": {
+    "header": "My Profile",
+    "fullName": "Full Name",
+    "enterName": "Enter your name",
+    "newPassword": "New Password",
+    "leaveBlank": "Leave blank to keep current",
+    "confirmPassword": "Confirm Password",
+    "reenterPassword": "Re-enter new password",
+    "location": "Location",
+    "selectLocation": "Select Location",
+    "updateProfile": "Update Profile",
+    "saving": "Saving...",
+    "updateSuccess": "Profile updated successfully",
+    "updateFailed": "Failed to update",
+    "errorGeneric": "Something went wrong",
+    "validation": {
+      "nameRequired": "Name is required",
+      "passwordMismatch": "Passwords do not match",
+      "locationRequired": "Location is required"
+    }
+  }
+  ,
+  "pagination": {
+  "itemsShort": "Items:",
+  "itemsPerPage": "Items per page:",
+  "firstPageTitle": "First page",
+  "prevPageTitle": "Previous page",
+  "nextPageTitle": "Next page",
+  "lastPageTitle": "Last page",
+  "pageInfo": "Page {{current}} of {{total}}"
+  },
+  "proposalAcceptance": {
+  "title": "Accept Proposal",
+  "details": "Proposal Details:",
+  "warningTitle": "Warning:",
+  "warningText": "Accepting this proposal will permanently lock it and prevent any further edits.",
+  "externalCheck": "Accept on behalf of external customer",
+  "externalInfo": "External Signer Information",
+  "signerName": "Signer Name",
+  "signerEmail": "Signer Email",
+  "signerNamePlaceholder": "Enter signer's full name",
+  "signerEmailPlaceholder": "Enter signer's email",
+  "externalHint": "Provide at least one form of identification for the external signer.",
+  "acceptButton": "Accept Proposal",
+  "errors": {
+    "needNameOrEmail": "Please provide either signer name or email for external acceptance",
+    "invalidEmail": "Please provide a valid email address",
+    "failedAccept": "Failed to accept proposal"
+  },
+  "labels": {
+    "customer": "Customer",
+    "total": "Total",
+    "status": "Status",
+    "description": "Description"
+  }
+  },
+  "proposalColumns": {
+  "no": "No.",
+  "qty": "Qty",
+  "item": "Item",
+  "assembled": "Assembled",
+  "hingeSide": "Hinge Side",
+  "exposedSide": "Exposed Side",
+  "price": "Price",
+  "assemblyCost": "Assembly Cost",
+  "total": "Total",
+  "items": "Items"
+  },
+  "proposalDoc": {
+  "title": "Proposal",
+  "altCompanyLogo": "Company Logo",
+  "fallbackCompanyName": "Company Name",
+  "greeting": "Dear {{name}}:",
+  "descriptionIntro": "We are glad you are using our services, here is your design and pricing info:",
+  "summary": {
+    "description": "Description",
+    "date": "Date"
+  },
+  "sections": {
+    "proposalItems": "Proposal Items",
+    "catalogItems": "Catalog Items"
+  },
+  "modifications": "Modifications:",
+  "priceSummary": {
+    "cabinets": "Cabinets & Parts:",
+    "assembly": "Assembly fee:",
+    "modifications": "Modifications:",
+    "styleTotal": "Style Total:",
+    "total": "Total:",
+    "tax": "Tax:",
+    "grandTotal": "Grand Total:"
+  },
+  "catalog": {
+    "itemName": "Item Name",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "total": "Total"
+  }
+  },
+  "proposalCommon": {
+  "emailTitle": "Email Proposal",
+  "emailAddress": "Email Address *",
+  "emailPlaceholder": "Enter customer email",
+  "emailBody": "Email Body *",
+  "includeItems": "Include proposal items",
+  "selectVersion": "Select Version *",
+  "selectVersionsPlaceholder": "Select versions...",
+  "selectColumns": "Select Columns",
+  "selectColumnsPlaceholder": "Select columns...",
+  "updateCustomerEmail": "Update customer email",
+  "sendEmail": "Send Email",
+  "sending": "Sending...",
+  "printTitle": "Print Proposal",
+  "showProposalItems": "Show Proposal Items",
+  "showGroupItems": "Show Group Items",
+  "downloadPdf": "Download PDF",
+  "downloading": "Downloading...",
+  "validation": {
+    "invalidEmail": "Invalid email",
+    "emailRequired": "Email is required",
+    "bodyRequired": "Email body is required",
+    "selectAtLeastOneVersion": "Select at least one version",
+    "selectAtLeastOneColumn": "Select at least one column"
+  }
+  }
+  ,
+  "contracts": {
+    "subtitle": "Manage and track all your contracts",
+    "searchPlaceholder": "Search by customer name...",
+    "view": {
+      "cards": "Cards",
+      "table": "Table"
+    },
+    "empty": {
+      "title": "No contracts found",
+      "subtitle": "Try adjusting your search criteria or create a new contract"
+    },
+    "table": {
+      "date": "Date",
+      "customer": "Customer",
+      "description": "Description",
+      "designer": "Designer",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "viewDetails": "View Details",
+    "noDescription": "No description available",
+    "noDesigner": "No designer assigned",
+    "status": {
+      "draft": "Draft",
+      "measurementScheduled": "Measurement Scheduled",
+      "measurementDone": "Measurement done",
+      "designDone": "Design done",
+      "followUp1": "Follow up 1",
+      "followUp2": "Follow up 2",
+      "followUp3": "Follow up 3",
+      "proposalAccepted": "Proposal accepted"
+    },
+    "modal": {
+      "title": "Contract Details"
+    },
+    "loadingDetails": "Loading contract details...",
+    "noData": "No contract data available",
+    "pdf": {
+      "sectionHeader": "Contract Items Details",
+      "columns": {
+        "no": "No.",
+        "qty": "Qty",
+        "item": "Item",
+        "assembled": "Assembled",
+        "hingeSide": "Hinge Side",
+        "exposedSide": "Exposed Side",
+        "price": "Price",
+        "assemblyFee": "Assembly Fee",
+        "total": "Total"
+      },
+      "categories": {
+        "items": "Items"
+      },
+      "summary": {
+        "cabinetsParts": "Cabinets & Parts:",
+        "assemblyFee": "Assembly fee:",
+        "modifications": "Modifications:",
+        "styleTotal": "Style Total:",
+        "total": "Total:",
+        "tax": "Tax:",
+        "grandTotal": "Grand Total:"
+      }
+    },
+    "sendTitle": "Send contract",
+    "noContractsMsg": "No contracts available for selection. Please go to contract settings to add one.",
+    "sendCta": "Send Contract"
+  }
+  ,
+  "contractorsAdmin": {
+    "header": "Contractors",
+    "searchPlaceholder": "Search contractors...",
+    "showing": "Showing {{count}} of {{total}} contractors",
+    "stats": {
+      "totalContractors": "Total Contractors",
+      "totalUsers": "Total Users",
+      "totalCustomers": "Total Customers",
+      "totalProposals": "Total Proposals"
+    },
+    "table": {
+      "contractorName": "Contractor Name",
+      "users": "Users",
+      "customers": "Customers",
+      "proposals": "Proposals",
+      "modules": "Modules",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No contractors found",
+      "tryAdjusting": "Try adjusting your search criteria"
+    },
+    "noModules": "No modules",
+    "modules": {
+      "dashboard": "Dashboard",
+      "proposals": "Proposals",
+      "customers": "Customers",
+      "resources": "Resources"
+    },
+    "actions": {
+      "viewDetails": "View Details"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Overview",
+        "proposals": "Proposals",
+        "customers": "Customers",
+        "settings": "Settings"
+      },
+      "errorTitle": "Error Loading Contractor",
+      "notFoundTitle": "Contractor Not Found",
+      "notFoundText": "The requested contractor could not be found.",
+      "backToList": "Back to Contractors",
+      "contractorId": "Contractor ID",
+      "contractor": "contractor",
+      "basicInfo": {
+        "title": "Basic Information",
+        "contractorName": "Contractor Name",
+        "createdDate": "Created Date",
+        "groupType": "Group Type",
+        "maxUsers": "Max Users"
+      },
+      "moduleAccess": {
+        "title": "Module Access",
+        "enabledOfTotal": "{{enabled}} of {{total}} enabled",
+        "percentEnabled": "{{percent}}% of modules enabled"
+      },
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "activity": {
+        "title": "Activity Summary",
+        "totalUsers": "Total Users",
+        "totalUsersHint": "Active contractors and staff",
+        "totalCustomers": "Total Customers",
+        "totalCustomersHint": "Managed customer accounts",
+        "totalProposals": "Total Proposals",
+        "totalProposalsHint": "Created project proposals"
+      },
+      "customers": {
+        "header": "Customers ({{count}})",
+        "searchPlaceholder": "Search customers...",
+        "showing": "Showing {{count}} of {{total}} customers",
+        "stats": {
+          "total": "Total Customers",
+          "active": "Active Customers",
+          "withEmail": "With Email",
+          "withPhone": "With Phone"
+        },
+        "table": {
+          "phone": "Phone",
+          "address": "Address",
+          "created": "Created",
+          "status": "Status"
+        },
+        "empty": {
+          "title": "No customers found",
+          "subtitle": "Try adjusting your search criteria."
+        },
+        "noEmail": "No email",
+        "noPhone": "No phone",
+        "noAddress": "No address",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "proposals": {
+        "header": "Proposals ({{count}})",
+        "searchPlaceholder": "Search proposals by title, customer...",
+        "quickFilters": "Quick Filters:",
+        "loadFailed": "Failed to load proposals",
+        "empty": {
+          "title": "No proposals found",
+          "subtitle": "Try adjusting your search criteria or status filters."
+        },
+        "table": {
+          "title": "Proposal Title",
+          "amount": "Amount",
+          "updated": "Last Updated"
+        },
+        "status": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "inProgress": "In Progress",
+          "completed": "Completed"
+        },
+        "modal": {
+          "title": "Proposal Details",
+          "loading": "Loading proposal details...",
+          "group": "Group",
+          "totalAmount": "Total Amount",
+          "goToProposal": "Go to Proposal",
+          "basicInfo": "Basic Information",
+          "proposalId": "Proposal ID",
+          "created": "Created Date",
+          "updated": "Last Updated",
+          "sent": "Sent Date",
+          "contractorGroup": "Contractor Group",
+          "accepted": "Accepted Date",
+          "failed": "Failed to load proposal details. Please try again.",
+          "openFull": "Open Full Proposal"
+        },
+        "timeline": {
+          "title": "Status Timeline",
+          "created": "Proposal was created and added to the system",
+          "sent": "Proposal was sent to the customer for review",
+          "accepted": "Proposal has been accepted by the contractor",
+          "approved": "Proposal has been accepted by the contractor"
+        },
+        "itemsTitle": "Proposal Items ({{count}})",
+        "totals": {
+          "subtotal": "Subtotal",
+          "tax": "Tax",
+          "total": "Total"
+        }
+      }
+      ,
+      "settings": {
+        "title": "Contractor Settings",
+        "noModuleSettings": "No module settings configured",
+        "noneConfigured": "No contractor settings configured",
+        "labels": {
+          "allowSubcontractors": "Allow Subcontractors",
+          "maxUsers": "Maximum Users",
+          "billingEnabled": "Billing Enabled",
+          "customBranding": "Custom Branding",
+          "apiAccess": "API Access",
+          "notificationPreferences": "Notification Preferences",
+          "dataRetentionDays": "Data Retention (Days)",
+          "timezone": "Timezone",
+          "locale": "Locale"
+        },
+        "descriptions": {
+          "allowSubcontractors": "Whether this contractor can add subcontractors",
+          "maxUsers": "Maximum number of users allowed in this group",
+          "billingEnabled": "Enable billing and payment features",
+          "customBranding": "Allow custom logos and branding",
+          "apiAccess": "Enable API access for integrations",
+          "dataRetentionDays": "How long to retain deleted data"
+        },
+        "moduleDescriptions": {
+          "dashboard": "Access to main dashboard and analytics",
+          "proposals": "Create and manage project proposals",
+          "customers": "Manage customer database",
+          "resources": "Access to shared resources and files"
+        },
+        "objectLabel": "Object",
+        "raw": {
+          "title": "Raw Configuration Data",
+          "modules": "Modules Configuration",
+          "contractorSettings": "Contractor Settings"
+        },
+        "summary": {
+          "title": "Configuration Summary",
+          "enabledModules": "Enabled Modules",
+          "ofTotal": "of {{total}} total",
+          "settingsConfigured": "Settings Configured",
+          "customOptions": "Custom configuration options",
+          "unlimited": "Unlimited",
+          "maxUsers": "Max Users",
+          "userLimitHint": "User limit for this contractor"
+        }
+      }
+    }
+  }
+  ,
+  "settings": {
+    "customization": {
+      "ui": {
+        "headerTitle": "UI Customization",
+        "headerSubtitle": "Customize your application's appearance and branding",
+        "buttons": {
+          "saveChanges": "Save Changes",
+          "saving": "Saving..."
+        },
+        "alerts": {
+          "fileTooLarge": "File size must be less than 5MB",
+          "invalidImage": "Please select a valid image file",
+          "removeLogoSuccess": "Logo removed successfully",
+          "removeLogoFailed": "Failed to remove logo. Please try again.",
+          "saveSuccess": "Customization saved successfully!",
+          "saveFailed": "Failed to save customization. Please try again."
+        },
+        "brandLogo": {
+          "title": "Brand Logo",
+          "subtitle": "Configure your application's logo and branding",
+          "labels": {
+            "logoText": "Logo Text",
+            "uploadLogo": "Upload Logo",
+            "preview": "Preview"
+          },
+          "placeholders": {
+            "logoText": "Enter your brand name"
+          },
+          "chooseImageCta": "Choose Image",
+          "supportedTypes": "JPG, PNG, SVG up to 5MB",
+          "alt": {
+            "logoPreview": "Logo Preview"
+          }
+        },
+        "colorPalette": {
+          "title": "Color Palette",
+          "subtitle": "Customize colors for different UI elements",
+          "headerBadge": "HEADER",
+          "headerTitle": "Header & Navigation",
+          "labels": {
+            "logoBg": "Logo Background",
+            "headerBg": "Header Background",
+            "headerText": "Header Text",
+            "sidebarBg": "Background",
+            "sidebarText": "Text Color"
+          },
+          "sidebarBadge": "SIDEBAR",
+          "sidebarTitle": "Sidebar"
+        }
+      },
+      "pdf": {
+        "headerTitle": "PDF Layout Customization",
+        "headerSubtitle": "Configure your PDF documents appearance and company branding",
+        "buttons": {
+          "preview": "Preview PDF",
+          "saveChanges": "Save Changes",
+          "saving": "Saving..."
+        },
+        "alerts": {
+          "loadFailed": "Failed to load existing settings.",
+          "imageType": "Please select an image file (JPG, PNG, GIF).",
+          "fileTooLarge": "Logo file size must be less than 5MB.",
+          "saveSuccess": "PDF customization saved successfully!",
+          "invalidData": "Invalid data provided.",
+          "serverError": "Server error. Please try again later.",
+          "saveFailedGeneric": "Failed to save PDF customization. Please try again."
+        },
+        "validation": {
+          "companyNameRequired": "Company name is required."
+        },
+        "sections": {
+          "headerFooter": {
+            "title": "PDF Header & Footer",
+            "subtitle": "Configure header text, footer content and colors"
+          },
+          "companyInfo": {
+            "title": "Company Information",
+            "subtitle": "Configure company details and logo for PDF documents"
+          }
+        },
+        "labels": {
+          "headerText": "Header Text",
+          "footerTerms": "Footer / Terms",
+          "headerColors": "Header Colors",
+          "backgroundColor": "Background Color",
+          "textColor": "Text Color",
+          "companyLogo": "Company Logo",
+          "logoPreview": "Logo Preview",
+          "companyName": "Company Name",
+          "phoneNumber": "Phone Number",
+          "email": "Email Address",
+          "website": "Website",
+          "address": "Business Address"
+        },
+        "placeholders": {
+          "headerText": "e.g. Invoice #12345",
+          "footerTerms": "Enter terms, conditions, or signature block",
+          "companyName": "Your Company Name",
+          "phoneNumber": "+1 (555) 123-4567",
+          "email": "contact@company.com",
+          "website": "www.company.com",
+          "address": "123 Business St, City, State, ZIP"
+        },
+        "badges": {
+          "colors": "COLORS"
+        },
+        "dropHere": "Drop logo here",
+        "chooseLogo": "Choose Company Logo",
+        "supportedTypes": "JPG, PNG, SVG up to 5MB",
+        "preview": {
+          "title": "PDF Preview (Live Preview)"
+        }
+      },
+      "login": {
+        "headerTitle": "Login Customization",
+        "headerSubtitle": "Customize your login page appearance and content",
+        "buttons": {
+          "preview": "Preview",
+          "saveSettings": "Save Settings",
+          "saving": "Saving..."
+        },
+        "alerts": {
+          "loadFailed": "Failed to load customization settings.",
+          "saveSuccess": "Customization saved successfully!",
+          "saveFailed": "Failed to save customization."
+        },
+        "loading": "Loading customization settings...",
+        "form": {
+          "title": "Login Form Settings",
+          "loginTitle": "Login Title",
+          "loginSubtitle": "Login Subtitle",
+          "backgroundColor": "Background Color",
+          "placeholders": {
+            "title": "Enter login title",
+            "subtitle": "Enter login subtitle"
+          }
+        },
+        "options": {
+          "title": "Login Options",
+          "showForgot": "Show Forgot Password Link",
+          "showForgotHint": "Display forgot password option for users",
+          "showKeep": "Show Keep Me Logged In",
+          "showKeepHint": "Allow users to stay logged in longer"
+        },
+        "rightPanel": {
+          "title": "Right Panel Content",
+          "panelTitle": "Panel Title",
+          "panelSubtitle": "Panel Subtitle",
+          "tagline": "Tagline",
+          "description": "Description",
+          "placeholders": {
+            "title": "Enter panel title",
+            "subtitle": "Enter panel subtitle",
+            "tagline": "Enter tagline",
+            "description": "Enter detailed description"
+          }
+        },
+        "previewBadge": "Changes will be visible in preview",
+        "previewTitle": "Login Page Preview",
+        "closePreview": "Close Preview"
+      }
+    },
+    "users": {
+      "header": "User Management",
+      "subtitle": "Manage users and user groups in your system",
+      "addUser": "Add User",
+      "addGroup": "Add Group",
+      "searchPlaceholder": "Search by name or email...",
+      "showing": "Showing {{count}} of {{total}} users",
+      "loading": "Loading users...",
+      "loadFailed": "Failed to load users",
+      "stats": {
+        "totalUsers": "Total Users",
+        "administrators": "Administrators",
+        "regularUsers": "Regular Users"
+      },
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "group": "User Group",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No users found",
+        "subtitle": "Try adjusting your search criteria"
+      },
+      "noGroup": "No Group",
+      "confirm": {
+        "title": "Are you sure?",
+        "text": "Do you really want to delete this user?",
+        "confirmYes": "Yes, delete it",
+        "deletedText": "The user has been deleted.",
+        "errorText": "Failed to delete the user.",
+        "cancelledTitle": "Cancelled",
+        "cancelledText": "The user is safe."
+      },
+      "create": {
+        "title": "Add New User",
+        "subtitle": "Create a new user account with role-based access",
+        "submit": "Create User",
+        "submitting": "Submitting..."
+      },
+      "edit": {
+        "title": "Edit User",
+        "update": "Update"
+      },
+      "form": {
+        "titles": {
+          "basicInfo": "Basic Information",
+          "security": "Security Settings",
+          "roleAccess": "Role & Access"
+        },
+        "labels": {
+          "fullName": "Full Name",
+          "email": "Email Address",
+          "password": "Password",
+          "confirmPassword": "Confirm Password",
+          "userGroup": "User Group",
+          "location": "Location",
+          "salesRep": "Sales Representative"
+        },
+        "placeholders": {
+          "fullName": "Enter user's full name",
+          "email": "user@example.com",
+          "password": "Enter secure password",
+          "confirmPassword": "Confirm password"
+        },
+        "select": {
+          "group": "-- Select Group --",
+          "location": "-- Select Location --"
+        },
+        "locations": {
+          "main1": "Main 1",
+          "main2": "Main 2",
+          "main3": "Main 3"
+        },
+        "hints": {
+          "salesRep": "Grant sales-specific permissions and access"
+        },
+        "alerts": {
+          "leaveWarning": "Changes you made will be lost if you leave now.",
+          "leaveAnyway": "Leave Anyway",
+          "stayOnPage": "Stay on Page"
+        },
+        "validation": {
+          "nameRequired": "Name is required",
+          "emailRequired": "Email is required",
+          "invalidEmail": "Invalid email format",
+          "passwordRequired": "Password is required",
+          "confirmPasswordRequired": "Confirm password is required",
+          "passwordMismatch": "Passwords do not match",
+          "userGroupRequired": "User group is required",
+          "locationRequired": "Location is required",
+          "required": "This field is required"
+        }
+      },
+      "alerts": {
+        "emailDeletedTitle": "Email Previously Deleted",
+        "emailDeletedText": "A user with this email already exists but is currently Deleted. Do you want to restore the account?",
+        "restoreYes": "Yes, restore",
+        "genericError": "Something went wrong"
+      }
+    }
+    ,
+    "userGroups": {
+      "header": "User Groups",
+      "actions": {
+        "create": "Create Group"
+      },
+      "loadFailed": "Failed to load user groups",
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "actions": "Actions"
+      },
+      "empty": "No user groups found",
+      "types": {
+        "standard": "Standard Group",
+        "contractor": "Contractor Group"
+      },
+      "about": {
+        "title": "About User Groups",
+        "description": "User groups let you organize users and control access to different modules. Contractor groups can have module-level permissions."
+      },
+      "form": {
+        "titles": {
+          "groupInfo": "Group Information",
+          "modulePermissions": "Module Permissions"
+        },
+        "labels": {
+          "name": "Group Name",
+          "type": "Group Type"
+        },
+        "placeholders": {
+          "name": "Enter group name (e.g., Administrators, Sales Team, etc.)"
+        },
+        "validation": {
+          "nameRequired": "Group name is required"
+        }
+      },
+      "moduleAccess": {
+        "title": "Module Access Control",
+        "description": "For contractor groups, you can control which modules are accessible. Only enabled modules will be visible in the navigation menu for users in this group."
+      },
+      "moduleDescriptions": {
+        "dashboard": "Main dashboard and overview",
+        "proposals": "Create and manage proposals",
+        "customers": "Customer management",
+        "resources": "Resource library access"
+      },
+      "create": {
+        "title": "Add User Group",
+        "subtitle": "Create a new user group and manage its permissions",
+        "afterCreateTitle": "After creating this group, you can:",
+        "afterCreate": {
+          "assignUsers": "Assign users to this group",
+          "setPermissions": "Set module permissions",
+          "manageAccess": "Manage access to features",
+          "bulkManagement": "Use bulk management tools"
+        },
+        "submit": "Create Group",
+        "creating": "Creating..."
+      },
+      "edit": {
+        "title": "Edit User Group",
+        "subtitle": "Modify user group settings and permissions",
+        "update": "Update Group",
+        "updating": "Updating...",
+        "loadingOne": "Loading user group data...",
+        "loadFailedOne": "Failed to load user group data"
+      },
+      "alerts": {
+        "leaveWarning": "Changes you made will be lost if you leave now.",
+        "leaveAnyway": "Leave Anyway",
+        "stayOnPage": "Stay on Page",
+        "created": "User group created successfully",
+        "updated": "User group updated successfully",
+        "createFailed": "Could not create user group. Please try again.",
+        "genericError": "Something went wrong"
+      },
+      "multipliers": {
+        "header": "User Group Multipliers",
+        "subtitle": "Manage pricing multipliers for different user groups",
+        "stats": {
+          "activeGroups": "Active Groups",
+          "inactiveGroups": "Inactive Groups",
+          "totalGroups": "Total Groups"
+        },
+        "groups": "Groups",
+        "searchPlaceholder": "Search by group name...",
+        "showing": "Showing {{count}} of {{total}} groups",
+        "table": {
+          "groupName": "Group Name",
+          "multiplier": "Multiplier",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "empty": {
+          "title": "No groups found",
+          "subtitle": "Try adjusting your search criteria"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "toast": {
+          "updateSuccess": "Multiplier updated successfully",
+          "updateFailed": "Failed to update multiplier"
+        },
+        "actions": {
+          "edit": "Edit"
+        },
+        "modal": {
+          "title": "Edit Group Multiplier",
+          "labels": {
+            "name": "Name",
+            "multiplier": "Multiplier",
+            "enabled": "Enabled"
+          },
+          "placeholders": {
+            "name": "Group name",
+            "multiplier": "Enter multiplier"
+          }
+        }
+      }
+    },
+    "locations": {
+      "header": "Locations",
+      "subtitle": "Manage your business locations",
+      "add": "Add Location",
+      "searchPlaceholder": "Search by name or email...",
+      "stats": {
+        "total": "Total: {{count}} locations",
+        "showingResults": "Showing {{count}} results"
+      },
+      "loading": "Loading locations...",
+      "errorLoad": "Failed to load locations",
+      "table": {
+        "locationName": "Location Name",
+        "address": "Address",
+        "email": "Email",
+        "website": "Website",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No locations found",
+        "subtitle": "Try adjusting your search criteria or add a new location"
+      },
+      "showingRange": "Showing {{start}}–{{end}} of {{total}} locations",
+      "showItems": "Show {{count}}",
+      "confirm": {
+        "text": "Do you really want to delete this location?",
+        "confirmYes": "Yes, delete it",
+        "deletedTitle": "Deleted!",
+        "deletedText": "The Location has been deleted.",
+        "errorTitle": "Error!",
+        "errorText": "Failed to delete the Location.",
+        "cancelledTitle": "Cancelled",
+        "cancelledText": "The Location is safe."
+      },
+      "management": "Location Management",
+      "form": {
+        "titles": {
+          "basicInfo": "Basic Information",
+          "contactInfo": "Contact Information",
+          "locationTime": "Location & Time Settings"
+        },
+        "labels": {
+          "locationName": "Location Name",
+          "address": "Address",
+          "website": "Website",
+          "email": "Email",
+          "phone": "Phone",
+          "country": "Country",
+          "timezone": "Timezone",
+          "currentTime": "Current Time"
+        },
+        "placeholders": {
+          "locationName": "Enter location name",
+          "address": "Enter full address",
+          "website": "https://www.example.com",
+          "email": "contact@example.com",
+          "phone": "+1 (555) 123-4567"
+        },
+        "select": {
+          "country": "-- Select Country --",
+          "timezone": "-- Select Timezone --"
+        },
+        "hints": {
+          "liveTime": "Live time in selected timezone"
+        },
+        "validation": {
+          "locationNameRequired": "Location name is required",
+          "addressRequired": "Address is required",
+          "websiteRequired": "Website is required",
+          "emailRequired": "Email is required",
+          "invalidEmail": "Invalid email",
+          "phoneRequired": "Phone number is required",
+          "countryRequired": "Country is required",
+          "timezoneRequired": "Timezone is required"
+        }
+      },
+      "create": {
+        "title": "Add New Location",
+        "subtitle": "Create a new business location with timezone settings",
+        "submit": "Save Location",
+        "saving": "Saving..."
+      },
+      "edit": {
+        "title": "Edit Location",
+        "update": "Update",
+        "updating": "Updating...",
+        "loadFailedOne": "Failed to load location data"
+      },
+      "alerts": {
+        "leaveWarning": "Changes you made will be lost if you leave now.",
+        "leaveAnyway": "Leave Anyway",
+        "stayOnPage": "Stay on Page",
+        "savedTitle": "Success!",
+        "savedText": "Location saved successfully!",
+        "updatedTitle": "Updated!",
+        "updatedText": "Location updated successfully!",
+        "genericError": "Something went wrong"
+      }
+    },
+    "taxes": {
+      "header": "Tax Management",
+      "subtitle": "Configure tax rates for your proposals",
+      "addTax": "Add Tax",
+      "help": {
+        "tooltip": "Taxes defined here will be available when creating proposals",
+        "hover": "Hover for help"
+      },
+      "stats": {
+        "total": "Total: {{count}} taxes",
+        "defaultCount": "{{count}} default"
+      },
+      "loading": "Loading taxes...",
+      "existing": {
+        "title": "Existing Taxes"
+      },
+      "fields": {
+        "taxLabel": "Tax Label",
+        "taxRate": "Tax Rate",
+        "default": "Default",
+        "actions": "Actions",
+        "setDefault": "Set as default tax",
+        "defaultBadge": "Default"
+      },
+      "empty": {
+        "title": "No taxes configured yet",
+        "subtitle": "Click Add Tax to create your first tax rate"
+      },
+      "new": {
+        "title": "New Tax Entry",
+        "taxLabelRequired": "Tax Label *",
+        "taxRateRequired": "Tax Rate * (%)",
+        "placeholderLabel": "e.g., GST, VAT, Sales Tax",
+        "placeholderRate": "18",
+        "save": "Save Tax",
+        "cancel": "Cancel"
+      },
+      "alerts": {
+        "completeFields": "Please complete the current tax fields before adding a new one.",
+        "addFailed": "Failed to add tax"
+      }
+    }
+    ,
+    "manufacturers": {
+      "header": "Manufacturers",
+      "subtitle": "Manage your manufacturing partners",
+      "add": "New Manufacturer",
+      "search": "Search",
+      "searchPlaceholder": "Search by name or email...",
+      "sortBy": "Sort by",
+      "order": "Order",
+      "sort": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "capacity": "Capacity"
+      },
+      "orderOptions": {
+        "descending": "Descending",
+        "ascending": "Ascending"
+      },
+      "stats": {
+        "total": "Total: {{count}}"
+      },
+      "loading": "Loading manufacturers...",
+      "errorPrefix": "Error:",
+      "empty": {
+        "title": "No manufacturers found",
+        "subtitleStart": "Get started by adding your first manufacturer",
+        "subtitleFiltered": "Try adjusting your search criteria"
+      },
+      "labels": {
+        "capacity": "Capacity: {{capacity}}",
+        "active": "Active",
+        "inactive": "Inactive",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "toast": {
+        "updateSuccess": "Manufacturer updated successfully",
+        "updateFailed": "Failed to update manufacturer"
+      },
+      "create": {
+        "title": "Add New Manufacturer",
+        "subtitle": "Create a comprehensive manufacturer profile",
+        "back": "Back",
+        "infoTitle": "Important:",
+        "infoText": "Please enter information for the new manufacturer. We need your help to add the catalog into our system as manufacturers do not share the pricing spec sheets with us.",
+        "submitting": "Submitting...",
+        "submit": "Create Manufacturer",
+        "messages": {
+          "validationFix": "Please fix the validation errors before submitting.",
+          "created": "Manufacturer created successfully!",
+          "createFailed": "Failed to create manufacturer"
+        }
+      },
+      "sections": {
+        "basicInfo": "Basic Information",
+        "logo": "Manufacturer Logo",
+        "pricing": "Pricing Information",
+        "instructions": "Special Instructions",
+        "catalog": "Catalog Files"
+      },
+      "fields": {
+        "manufacturerName": "Manufacturer Name",
+        "orderEmail": "Order Email",
+        "phone": "Phone",
+        "website": "Website",
+        "address": "Address",
+        "uploadLogo": "Upload Logo",
+        "priceInfoType": "Price Information Type",
+        "msrpOption": "Prices in the attached files are MSRP",
+        "costOption": "Prices in the attached files are my cost when ordering from manufacturer",
+        "costMultiplier": "Cost Multiplier",
+        "instructions": "Instructions",
+        "chooseCatalogFiles": "Choose Catalog Files"
+      },
+      "placeholders": {
+        "manufacturerName": "Enter manufacturer name",
+        "orderEmail": "orders@manufacturer.com",
+        "phone": "+1 (555) 123-4567",
+        "website": "https://www.manufacturer.com",
+        "address": "Enter complete address",
+        "costMultiplier": "2.0",
+        "instructions": "Enter any special instructions or notes for this manufacturer..."
+      },
+      "help": {
+        "logo": "Upload a logo or image representing the manufacturer (JPG, PNG, GIF)",
+        "catalog": "Supported file types: PDF, Excel files (.xlsx, .xls) and CSV files"
+      },
+      "example": {
+        "multiplier": "Example: If cabinet's MSRP is ${{msrp}} and you pay ${{cost}} to manufacturer, your multiplier would be {{multiplier}}"
+      },
+      "edit": {
+        "title": "Edit Manufacturer",
+        "back": "Back",
+        "updateImage": "Update Manufacturer Image",
+        "newImageSelected": "New image selected: {{name}}",
+        "priceInfo": "Price Information",
+        "costMultiplier": "Cost multiplier",
+        "uploadNewCatalog": "Upload New Catalog Files",
+        "supported": "Supported: Excel, CSV files",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "updated": "Manufacturer updated successfully!",
+        "updateFailed": "Could not update manufacturer data"
+      },
+      "tabs": {
+        "editDetails": "Edit Manufacturer Details",
+        "settings": "Settings",
+        "catalogMapping": "Catalog Mapping",
+        "filesHistory": "Files & History"
+      },
+      "catalogMapping": {
+        "title": "Catalog Data",
+        "empty": "No catalog data available.",
+        "filters": {
+          "allTypes": "All Types",
+          "allStyles": "All Styles"
+        },
+        "table": {
+          "code": "Code",
+          "description": "Description",
+          "style": "Style",
+          "price": "Price",
+          "type": "Type",
+          "actions": "Actions"
+        },
+        "actions": {
+          "manageStyle": "Manage Style",
+          "assemblyCost": "Assembly Cost",
+          "modification": "Modification"
+        },
+        "file": {
+          "uploadCta": "File Upload",
+          "modalTitle": "Upload Catalog File",
+          "selectLabel": "Select Catalog CSV or Excel File",
+          "uploadBtn": "Upload",
+          "uploadSuccess": "Catalog file uploaded successfully",
+          "uploadFailed": "File upload failed",
+          "unsupported": "Unsupported file type",
+          "allowed": "Please upload a CSV or Excel file."
+        },
+        "manual": {
+          "uploadCta": "Manual Upload",
+          "modalTitle": "Manual Catalog Entry"
+        },
+        "stylePlaceholder": "Select or type a style",
+        "fields": {
+          "code": "Code",
+          "description": "Description",
+          "price": "Price",
+          "type": "Type"
+        },
+        "placeholders": {
+          "price": "Enter price"
+        },
+        "edit": {
+          "modalTitle": "Edit Catalog Item",
+          "update": "Update",
+          "updating": "Updating..."
+        },
+        "style": {
+          "manageTitle": "Manage Style: {{style}}",
+          "shortName": "Short Name",
+          "uploadImage": "Upload Image",
+          "imageSelected": "Image selected: {{name}}",
+          "currentImage": "Current Image:",
+          "noImage": "No image available",
+          "noData": "No style data available",
+          "detailsTitle": "Style Details"
+        },
+        "assembly": {
+          "modalTitle": "Add Assembly Cost",
+          "type": "Type",
+          "selectType": "Select Type",
+          "percentage": "Percentage per cabinet",
+          "fixed": "Fixed rate per cabinet",
+          "applyTo": "Apply To",
+          "applyAll": "Apply to All Items",
+          "applyOne": "Apply to This Item Only"
+        },
+        "hinges": {
+          "modalTitle": "Add Hinges & Exposed Side Pricing",
+          "left": "Left Hinge Price",
+          "right": "Right Hinge Price",
+          "both": "Both Hinges Price",
+          "exposedSide": "Exposed Side Price",
+          "placeholderLeft": "Enter left hinge price",
+          "placeholderRight": "Enter right hinge price",
+          "placeholderBoth": "Enter both hinges price",
+          "placeholderExposed": "Enter exposed side price"
+        },
+        "mod": {
+          "modalTitle": "Add Modification",
+          "name": "Modification Name",
+          "notes": "Notes"
+        },
+        "toast": {
+          "addSuccess": "Catalog added successfully",
+          "addFailed": "Failed to save catalog",
+          "updateSuccess": "Catalog updated successfully",
+          "updateFailed": "Failed to update catalog"
+        }
+      },
+      "settings": {
+        "costMultiplierTitle": "Your cost multiplier",
+        "costMultiplierHelp": "Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.",
+        "customerMultiplierTitle": "Customer price multiplier",
+        "customerMultiplierHelp": "Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit."
+      },
+      "filesHistory": {
+        "title": "Uploaded Catalog Files",
+        "empty": "No catalog files uploaded.",
+        "table": {
+          "index": "#",
+          "originalName": "Original Name",
+          "filename": "Filename",
+          "sizeKb": "Size (KB)",
+          "uploadedOn": "Uploaded On",
+          "download": "Download"
+        }
+      }
+    }
+  }
+}

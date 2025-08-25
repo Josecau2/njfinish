@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import axiosInstance from '../../helpers/axiosInstance';
 import {
     CContainer,
     CRow,
@@ -30,7 +32,7 @@ import {
     cilPlus,
     cilPencil,
     cilTrash,
-    
+    cilMagnifyingGlass,
     cilGlobeAlt,
     cilHome,
     cilBook,
@@ -40,6 +42,7 @@ import {
     cilChart,
     cilCloudUpload
 } from '@coreui/icons';
+import withContractorScope from '../../components/withContractorScope';
 
 // Externalized input components to prevent remount/focus loss on keystrokes
 const CustomFormInput = ({ 
@@ -139,49 +142,16 @@ const CustomFormSelect = ({
     </div>
 );
 
-const Resources = () => {
-    const [links, setLinks] = useState([
-        { 
-            id: 1, 
-            title: "Google Drive", 
-            url: "https://drive.google.com", 
-            type: "external", 
-            createdAt: "2025-01-15" 
-        },
-        { 
-            id: 2, 
-            title: "Internal Dashboard", 
-            url: "/dashboard", 
-            type: "internal", 
-            createdAt: "2025-01-14" 
-        },
-        { 
-            id: 3, 
-            title: "Help Documentation", 
-            url: "https://help.example.com", 
-            type: "help", 
-            createdAt: "2025-01-13" 
-        }
-    ]);
-    
-    const [files, setFiles] = useState([
-        { 
-            id: 1, 
-            name: "User Manual.pdf", 
-            type: "pdf", 
-            size: "2.4 MB", 
-            uploadedAt: "2025-01-15",
-            url: "#"
-        },
-        { 
-            id: 2, 
-            name: "Sales Report.xlsx", 
-            type: "excel", 
-            size: "1.8 MB", 
-            uploadedAt: "2025-01-14",
-            url: "#"
-        }
-    ]);
+const Resources = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
+    const { t } = useTranslation();
+    const [links, setLinks] = useState([]);
+    const [files, setFiles] = useState([]);
+    const [filteredLinks, setFilteredLinks] = useState([]);
+    const [filteredFiles, setFilteredFiles] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [linkTypeFilter, setLinkTypeFilter] = useState('all');
+    const [fileTypeFilter, setFileTypeFilter] = useState('all');
+    const [loading, setLoading] = useState(true);
 
     const [showLinkModal, setShowLinkModal] = useState(false);
     const [showFileModal, setShowFileModal] = useState(false);
@@ -202,19 +172,19 @@ const Resources = () => {
     });
 
     const linkTypes = [
-        { value: 'external', label: 'External Link', icon: cilGlobeAlt },
-        { value: 'internal', label: 'Internal Link', icon: cilHome },
-        { value: 'document', label: 'Document', icon: cilBook },
-        { value: 'help', label: 'Help/Support', icon: cilBook },
+        { value: 'external', label: t('resources.linkType.external'), icon: cilGlobeAlt },
+        { value: 'internal', label: t('resources.linkType.internal'), icon: cilHome },
+        { value: 'document', label: t('resources.linkType.document'), icon: cilBook },
+        { value: 'help', label: t('resources.linkType.help'), icon: cilBook },
     ];
 
     const fileTypes = [
-        { value: 'pdf', label: 'PDF Document', icon: cilDescription },
-        { value: 'excel', label: 'Excel Spreadsheet', icon: cilChart },
-        { value: 'word', label: 'Word Document', icon: cilDescription },
-        { value: 'video', label: 'Video File', icon: cilDescription },
-        { value: 'image', label: 'Image File', icon: cilDescription },
-        { value: 'other', label: 'Other', icon: cilDescription },
+        { value: 'pdf', label: t('resources.fileType.pdf'), icon: cilDescription },
+        { value: 'excel', label: t('resources.fileType.excel'), icon: cilChart },
+        { value: 'word', label: t('resources.fileType.word'), icon: cilDescription },
+        { value: 'video', label: t('resources.fileType.video'), icon: cilDescription },
+        { value: 'image', label: t('resources.fileType.image'), icon: cilDescription },
+        { value: 'other', label: t('resources.fileType.other'), icon: cilDescription },
     ];
 
     const getTypeColor = (type) => {
@@ -252,132 +222,111 @@ const Resources = () => {
         setEditingFile(null);
     };
 
+    // API functions
+    const fetchResources = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.get('/api/resources?scope=contractor', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.data.success) {
+                setLinks(response.data.data.links);
+                setFiles(response.data.data.files);
+                setFilteredLinks(response.data.data.links);
+                setFilteredFiles(response.data.data.files);
+            }
+        } catch (error) {
+            console.error('Error fetching resources:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Filter functions
+    const applyFilters = () => {
+        let filteredLinksResult = links;
+        let filteredFilesResult = files;
+
+        // Apply search term
+        if (searchTerm) {
+            filteredLinksResult = filteredLinksResult.filter(link =>
+                link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                link.url.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            filteredFilesResult = filteredFilesResult.filter(file =>
+                file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                file.original_name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Apply type filters
+        if (linkTypeFilter !== 'all') {
+            filteredLinksResult = filteredLinksResult.filter(link => link.type === linkTypeFilter);
+        }
+        if (fileTypeFilter !== 'all') {
+            filteredFilesResult = filteredFilesResult.filter(file => file.type === fileTypeFilter);
+        }
+
+        setFilteredLinks(filteredLinksResult);
+        setFilteredFiles(filteredFilesResult);
+    };
+
+    // Effects
+    useEffect(() => {
+        if (isContractor) {
+            fetchResources();
+        }
+    }, [isContractor]);
+
+    useEffect(() => {
+        applyFilters();
+    }, [searchTerm, linkTypeFilter, fileTypeFilter, links, files]);
+
     const handleAddLink = () => {
-        resetLinkForm();
-        setShowLinkModal(true);
+        // For contractors, this should be disabled or hidden
+        // Only admins can add resources
     };
 
     const handleEditLink = (link) => {
-        setLinkForm({
-            title: link.title,
-            url: link.url,
-            type: link.type
-        });
-        setEditingLink(link);
-        setShowLinkModal(true);
+        // For contractors, this should be disabled or hidden
     };
 
-    const handleDeleteLink = (linkId) => {
-        setLinks(links.filter(link => link.id !== linkId));
+    const handleDeleteLink = (id) => {
+        // For contractors, this should be disabled or hidden
     };
 
     const handleSaveLink = () => {
-        if (!linkForm.title.trim() || !linkForm.url.trim()) {
-            return;
-        }
-
-        setIsLoading(true);
-        
-        setTimeout(() => {
-            if (editingLink) {
-                setLinks(links.map(link => 
-                    link.id === editingLink.id 
-                        ? { ...editingLink, ...linkForm }
-                        : link
-                ));
-            } else {
-                const newLink = {
-                    id: Date.now(),
-                    ...linkForm,
-                    createdAt: new Date().toISOString().split('T')[0]
-                };
-                setLinks([...links, newLink]);
-            }
-            
-            resetLinkForm();
-            setShowLinkModal(false);
-            setIsLoading(false);
-        }, 1000);
+        // For contractors, this should be disabled or hidden
     };
 
     const handleAddFile = () => {
-        resetFileForm();
-        setShowFileModal(true);
+        // For contractors, this should be disabled or hidden
     };
 
     const handleEditFile = (file) => {
-        setFileForm({
-            name: file.name,
-            file: null,
-            type: file.type
-        });
-        setEditingFile(file);
-        setShowFileModal(true);
+        // For contractors, this should be disabled or hidden
     };
 
-    const handleDeleteFile = (fileId) => {
-        setFiles(files.filter(file => file.id !== fileId));
+    const handleDeleteFile = (id) => {
+        // For contractors, this should be disabled or hidden
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const extension = file.name.split('.').pop().toLowerCase();
-            let type = 'other';
-
-            if (['pdf'].includes(extension)) type = 'pdf';
-            else if (['xlsx', 'xls', 'csv'].includes(extension)) type = 'excel';
-            else if (['docx', 'doc'].includes(extension)) type = 'word';
-            else if (['mp4', 'avi', 'mov'].includes(extension)) type = 'video';
-            else if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) type = 'image';
-
-            setFileForm({
-                ...fileForm,
-                name: file.name,
-                file: file,
-                type: type
-            });
-        }
+    const handleFileChange = (event) => {
+        // For contractors, this should be disabled or hidden
     };
 
     const handleSaveFile = () => {
-        if (!fileForm.name.trim() || (!fileForm.file && !editingFile)) {
-            return;
-        }
-
-        setIsLoading(true);
-        
-        setTimeout(() => {
-            if (editingFile) {
-                setFiles(files.map(file =>
-                    file.id === editingFile.id
-                        ? {
-                            ...file,
-                            name: fileForm.name,
-                            type: fileForm.type,
-                            uploadedAt: new Date().toISOString().split('T')[0]
-                        }
-                        : file
-                ));
-            } else {
-                const newFile = {
-                    id: Date.now(),
-                    name: fileForm.name,
-                    type: fileForm.type,
-                    size: fileForm.file ? `${(fileForm.file.size / (1024 * 1024)).toFixed(1)} MB` : '0 MB',
-                    uploadedAt: new Date().toISOString().split('T')[0],
-                    url: '#'
-                };
-                setFiles([...files, newFile]);
-            }
-            
-            resetFileForm();
-            setShowFileModal(false);
-            setIsLoading(false);
-        }, 1500);
+        // For contractors, this should be disabled or hidden
     };
 
-    const ResourceCard = ({ title, icon, children, gradient, onAddClick, addButtonText, emptyStateIcon, emptyStateText, emptyStateSubtext }) => (
+    const handleDownloadFile = (file) => {
+        // Open file URL for download
+        window.open(file.url, '_blank');
+    };
+
+    const ResourceCard = ({ title, icon, children, gradient, onAddClick, addButtonText, emptyStateIcon, emptyStateText, emptyStateSubtext, showAddButton = true }) => (
         <CCard className="border-0 shadow-sm mb-2 h-100" style={{ borderRadius: '16px' }}>
             <CCardHeader 
                 className="border-0 pb-2"
@@ -402,23 +351,25 @@ const Resources = () => {
                         </div>
                         <div>
                             <h5 className="text-white mb-1 fw-bold">{title}</h5>
-                            <p className="text-white-50 mb-0 small">Manage your {title.toLowerCase()}</p>
+                            <p className="text-white-50 mb-0 small">{t('resources.manage', { title })}</p>
                         </div>
                     </div>
-                    <CButton
-                        color="light"
-                        className="shadow-sm fw-semibold"
-                        onClick={onAddClick}
-                        style={{
-                            borderRadius: '12px',
-                            border: 'none',
-                            padding: '8px 20px',
-                            minWidth: '120px'
-                        }}
-                    >
-                        <CIcon icon={cilPlus} className="me-2" size="sm" />
-                        {addButtonText}
-                    </CButton>
+                    {showAddButton && onAddClick && (
+                        <CButton
+                            color="light"
+                            className="shadow-sm fw-semibold"
+                            onClick={onAddClick}
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                padding: '8px 20px',
+                                minWidth: '120px'
+                            }}
+                        >
+                            <CIcon icon={cilPlus} className="me-2" size="sm" />
+                            {addButtonText}
+                        </CButton>
+                    )}
                 </div>
             </CCardHeader>
             <CCardBody className="p-0">
@@ -427,7 +378,7 @@ const Resources = () => {
         </CCard>
     );
 
-    const EmptyState = ({ icon, title, subtitle, onAddClick, buttonText }) => (
+    const EmptyState = ({ icon, title, subtitle, onAddClick, buttonText, showButton = true }) => (
         <div className="text-center py-5">
             <div 
                 className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
@@ -442,23 +393,25 @@ const Resources = () => {
             </div>
             <h6 className="text-muted mb-2">{title}</h6>
             <p className="text-muted small mb-3">{subtitle}</p>
-            <CButton
-                variant="outline"
-                color="primary"
-                onClick={onAddClick}
-                style={{
-                    borderRadius: '12px',
-                    border: '2px solid #e2e8f0',
-                    padding: '8px 20px'
-                }}
-            >
-                <CIcon icon={cilPlus} className="me-2" size="sm" />
-                {buttonText}
-            </CButton>
+            {showButton && onAddClick && (
+                <CButton
+                    variant="outline"
+                    color="primary"
+                    onClick={onAddClick}
+                    style={{
+                        borderRadius: '12px',
+                        border: '2px solid #e2e8f0',
+                        padding: '8px 20px'
+                    }}
+                >
+                    <CIcon icon={cilPlus} className="me-2" size="sm" />
+                    {buttonText}
+                </CButton>
+            )}
         </div>
     );
 
-    const ResourceItem = ({ item, isFile = false, onEdit, onDelete, onDownload }) => (
+    const ResourceItem = ({ item, isFile = false, onEdit, onDelete, onDownload, isContractor = false }) => (
         <CListGroupItem 
             className="border-0 px-4 py-3"
             style={{ 
@@ -482,7 +435,7 @@ const Resources = () => {
                     <div className="flex-grow-1 min-width-0">
                         <div className="d-flex align-items-center mb-2 flex-wrap gap-2">
                             <h6 className="mb-0 fw-semibold text-dark text-truncate">
-                                {isFile ? item.name : item.title}
+                                {isFile ? (item.original_name || item.name) : item.title}
                             </h6>
                             <CBadge 
                                 color={getTypeColor(item.type)} 
@@ -494,21 +447,23 @@ const Resources = () => {
                         </div>
                         {!isFile && (
                             <p className="text-muted small mb-1 text-truncate">
-                                {item.url}
+                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
+                                    {item.url}
+                                </a>
                             </p>
                         )}
                         {isFile && (
                             <p className="text-muted small mb-1">
-                                Size: {item.size}
+                                {t('resources.size')}: {item.size}
                             </p>
                         )}
                         <small className="text-muted">
-                            {isFile ? 'Uploaded' : 'Added'}: {new Date(isFile ? item.uploadedAt : item.createdAt).toLocaleDateString()}
+                            {isFile ? t('resources.uploaded') : t('resources.added')}: {new Date(isFile ? item.uploadedAt : item.createdAt).toLocaleDateString()}
                         </small>
                     </div>
                 </div>
                 <div className="d-flex gap-1 ms-2 flex-shrink-0">
-                    {isFile && (
+                    {isFile && onDownload && (
                         <CButton
                             size="sm"
                             variant="ghost"
@@ -521,40 +476,65 @@ const Resources = () => {
                                 transition: 'all 0.2s ease'
                             }}
                             className="hover-shadow"
+                            title={t('resources.downloadFile')}
                         >
                             <CIcon icon={cilGlobeAlt} size="sm" />
                         </CButton>
                     )}
-                    <CButton
-                        size="sm"
-                        variant="ghost"
-                        color="primary"
-                        onClick={() => onEdit(item)}
-                        style={{ 
-                            borderRadius: '8px', 
-                            padding: '6px 8px',
-                            border: '1px solid transparent',
-                            transition: 'all 0.2s ease'
-                        }}
-                        className="hover-shadow"
-                    >
-                        <CIcon icon={cilPencil} size="sm" />
-                    </CButton>
-                    <CButton
-                        size="sm"
-                        variant="ghost"
-                        color="danger"
-                        onClick={() => onDelete(item.id)}
-                        style={{ 
-                            borderRadius: '8px', 
-                            padding: '6px 8px',
-                            border: '1px solid transparent',
-                            transition: 'all 0.2s ease'
-                        }}
-                        className="hover-shadow"
-                    >
-                        <CIcon icon={cilTrash} size="sm" />
-                    </CButton>
+                    {!isFile && !isContractor && (
+                        <CButton
+                            size="sm"
+                            variant="ghost"
+                            color="info"
+                            onClick={() => window.open(item.url, '_blank')}
+                            style={{ 
+                                borderRadius: '8px', 
+                                padding: '6px 8px',
+                                border: '1px solid transparent',
+                                transition: 'all 0.2s ease'
+                            }}
+                            className="hover-shadow"
+                            title={t('resources.openLink')}
+                        >
+                            <CIcon icon={cilGlobeAlt} size="sm" />
+                        </CButton>
+                    )}
+                    {!isContractor && onEdit && (
+                        <CButton
+                            size="sm"
+                            variant="ghost"
+                            color="primary"
+                            onClick={() => onEdit(item)}
+                            style={{ 
+                                borderRadius: '8px', 
+                                padding: '6px 8px',
+                                border: '1px solid transparent',
+                                transition: 'all 0.2s ease'
+                            }}
+                            className="hover-shadow"
+                            title={t('common.edit')}
+                        >
+                            <CIcon icon={cilPencil} size="sm" />
+                        </CButton>
+                    )}
+                    {!isContractor && onDelete && (
+                        <CButton
+                            size="sm"
+                            variant="ghost"
+                            color="danger"
+                            onClick={() => onDelete(item.id)}
+                            style={{ 
+                                borderRadius: '8px', 
+                                padding: '6px 8px',
+                                border: '1px solid transparent',
+                                transition: 'all 0.2s ease'
+                            }}
+                            className="hover-shadow"
+                            title={t('common.delete')}
+                        >
+                            <CIcon icon={cilTrash} size="sm" />
+                        </CButton>
+                    )}
                 </div>
             </div>
         </CListGroupItem>
@@ -601,7 +581,7 @@ const Resources = () => {
                         border: '1px solid #e3e6f0'
                     }}
                 >
-                    Cancel
+                    {t('common.cancel')}
                 </CButton>
                 <CButton
                     style={{
@@ -693,182 +673,248 @@ const Resources = () => {
                             <CIcon icon={cilFolder} size="xl" className="text-white" />
                         </div>
                         <div>
-                            <h2 className="text-white mb-1 fw-bold">Resources</h2>
-                            <p className="text-white-50 mb-0">Manage your links and files in one place</p>
+                            <h2 className="text-white mb-1 fw-bold">{t('nav.resources')}</h2>
+                            <p className="text-white-50 mb-0">{isContractor ? t('resources.headerContractor') : t('resources.headerAdmin')}</p>
                         </div>
                     </div>
                 </CCardBody>
             </CCard>
 
-            <CRow className="g-4">
-                {/* Links Section */}
-                <CCol lg={6} className="mb-4">
-                    <ResourceCard
-                        title="Links"
-                        icon={cilLink}
-                        gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
-                        onAddClick={handleAddLink}
-                        addButtonText="Add Link"
-                        emptyStateIcon={cilLink}
-                        emptyStateText="No links added yet"
-                        emptyStateSubtext="Start by adding your first link"
-                        
-                    >
-                        {links.length === 0 ? (
-                            <EmptyState
-                                icon={cilLink}
-                                title="No links added yet"
-                                subtitle="Start by adding your first useful link"
-                                onAddClick={handleAddLink}
-                                buttonText="Add First Link"
-                            />
-                        ) : (
-                            <CListGroup flush>
-                                {links.map((link) => (
-                                    <ResourceItem
-                                        key={link.id}
-                                        item={link}
-                                        isFile={false}
-                                        onEdit={handleEditLink}
-                                        onDelete={handleDeleteLink}
-                                    />
+            {/* Search and Filter Section */}
+            <CCard className="border-0 shadow-sm mb-4">
+                <CCardBody>
+                    <CRow className="g-3">
+                        <CCol md={6}>
+                            <CInputGroup>
+                                <CInputGroupText>
+                                    <CIcon icon={cilMagnifyingGlass} />
+                                </CInputGroupText>
+                                <CFormInput
+                                    placeholder={t('resources.searchPlaceholder')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </CInputGroup>
+                        </CCol>
+                        <CCol md={3}>
+                            <CFormSelect
+                                value={linkTypeFilter}
+                                onChange={(e) => setLinkTypeFilter(e.target.value)}
+                            >
+                                <option value="all">{t('resources.allLinkTypes')}</option>
+                                {linkTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
                                 ))}
-                            </CListGroup>
-                        )}
-                    </ResourceCard>
-                </CCol>
+                            </CFormSelect>
+                        </CCol>
+                        <CCol md={3}>
+                            <CFormSelect
+                                value={fileTypeFilter}
+                                onChange={(e) => setFileTypeFilter(e.target.value)}
+                            >
+                                <option value="all">{t('resources.allFileTypes')}</option>
+                                {fileTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                </CCardBody>
+            </CCard>
 
-                {/* Files Section */}
-                <CCol lg={6} className="mb-4">
-                    <ResourceCard
-                        title="Files"
-                        icon={cilFolder}
-                        gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                        onAddClick={handleAddFile}
-                        addButtonText="Add File"
-                        emptyStateIcon={cilFolder}
-                        emptyStateText="No files uploaded yet"
-                        emptyStateSubtext="Upload your first file"
-                    >
-                        {files.length === 0 ? (
-                            <EmptyState
-                                icon={cilCloudUpload}
-                                title="No files uploaded yet"
-                                subtitle="Start by uploading your first document"
-                                onAddClick={handleAddFile}
-                                buttonText="Upload First File"
-                            />
-                        ) : (
-                            <CListGroup flush>
-                                {files.map((file) => (
-                                    <ResourceItem
-                                        key={file.id}
-                                        item={file}
-                                        isFile={true}
-                                        onEdit={handleEditFile}
-                                        onDelete={handleDeleteFile}
-                                        onDownload={(file) => window.open(file.url, '_blank')}
+            <CRow className="g-4">
+                {/* Loading State */}
+                {loading ? (
+                        <CCol className="text-center py-5">
+                        <CSpinner color="primary" />
+                            <div className="mt-3 text-muted">{t('resources.loading')}</div>
+                    </CCol>
+                ) : (
+                    <>
+                        {/* Links Section */}
+                        <CCol lg={6} className="mb-4">
+                            <ResourceCard
+                title={t('resources.links')}
+                                icon={cilLink}
+                                gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+                                onAddClick={!isContractor ? handleAddLink : null}
+                addButtonText={t('resources.addLink')}
+                                emptyStateIcon={cilLink}
+                emptyStateText={t('resources.noLinks')}
+                emptyStateSubtext={isContractor ? t('resources.noLinksContractor') : t('resources.noLinksAdmin')}
+                                showAddButton={!isContractor}
+                            >
+                                {filteredLinks.length === 0 ? (
+                                    <EmptyState
+                                        icon={cilLink}
+                    title={t('resources.noLinks')}
+                    subtitle={isContractor ? t('resources.noLinksContractor') : t('resources.noLinksAdminAlt')}
+                                        onAddClick={!isContractor ? handleAddLink : null}
+                    buttonText={t('resources.addFirstLink')}
+                                        showButton={!isContractor}
                                     />
-                                ))}
-                            </CListGroup>
-                        )}
-                    </ResourceCard>
-                </CCol>
+                                ) : (
+                                    <CListGroup flush>
+                                        {filteredLinks.map((link) => (
+                                            <ResourceItem
+                                                key={link.id}
+                                                item={link}
+                                                isFile={false}
+                                                onEdit={!isContractor ? handleEditLink : null}
+                                                onDelete={!isContractor ? handleDeleteLink : null}
+                                                isContractor={isContractor}
+                                            />
+                                        ))}
+                                    </CListGroup>
+                                )}
+                            </ResourceCard>
+                        </CCol>
+
+                        {/* Files Section */}
+                        <CCol lg={6} className="mb-4">
+                            <ResourceCard
+                title={t('resources.files')}
+                                icon={cilFolder}
+                                gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                                onAddClick={!isContractor ? handleAddFile : null}
+                addButtonText={t('resources.addFile')}
+                                emptyStateIcon={cilFolder}
+                emptyStateText={t('resources.noFiles')}
+                emptyStateSubtext={isContractor ? t('resources.noFilesContractor') : t('resources.noFilesAdmin')}
+                                showAddButton={!isContractor}
+                            >
+                                {filteredFiles.length === 0 ? (
+                                    <EmptyState
+                                        icon={cilCloudUpload}
+                    title={t('resources.noFiles')}
+                    subtitle={isContractor ? t('resources.noFilesContractor') : t('resources.noFilesAdminAlt')}
+                                        onAddClick={!isContractor ? handleAddFile : null}
+                    buttonText={t('resources.uploadFirstFile')}
+                                        showButton={!isContractor}
+                                    />
+                                ) : (
+                                    <CListGroup flush>
+                                        {filteredFiles.map((file) => (
+                                            <ResourceItem
+                                                key={file.id}
+                                                item={file}
+                                                isFile={true}
+                                                onEdit={!isContractor ? handleEditFile : null}
+                                                onDelete={!isContractor ? handleDeleteFile : null}
+                                                onDownload={handleDownloadFile}
+                                                isContractor={isContractor}
+                                            />
+                                        ))}
+                                    </CListGroup>
+                                )}
+                            </ResourceCard>
+                        </CCol>
+                    </>
+                )}
             </CRow>
 
-            {/* Link Modal */}
-            <ModalComponent
-                visible={showLinkModal}
-                onClose={() => { setShowLinkModal(false); resetLinkForm(); }}
-                title={editingLink ? 'Edit Link' : 'Add New Link'}
-                onSave={handleSaveLink}
-                saveButtonText={editingLink ? 'Update Link' : 'Add Link'}
-                isLoading={isLoading}
-            >
-                <CForm>
-                    <CustomFormInput
-                        label="Link Title"
-                        name="title"
-                        required
-                        icon={cilLink}
-                        placeholder="Enter link title"
-                        value={linkForm.title}
-                        onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
-                    />
-                    <CustomFormInput
-                        label="URL"
-                        name="url"
-                        type="url"
-                        required
-                        icon={cilGlobeAlt}
-                        placeholder="https://example.com"
-                        value={linkForm.url}
-                        onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
-                    />
-                    <CustomFormSelect
-                        label="Link Type"
-                        name="type"
-                        icon={cilBook}
-                        value={linkForm.type}
-                        onChange={(e) => setLinkForm({ ...linkForm, type: e.target.value })}
+            {/* Admin Modals - Hidden for contractors */}
+            {!isContractor && (
+                <>
+                    {/* Link Modal */}
+                    <ModalComponent
+                        visible={showLinkModal}
+                        onClose={() => { setShowLinkModal(false); resetLinkForm(); }}
+            title={editingLink ? t('resources.editLink') : t('resources.addNewLink')}
+                        onSave={handleSaveLink}
+            saveButtonText={editingLink ? t('resources.updateLink') : t('resources.addLink')}
+                        isLoading={isLoading}
                     >
-                        {linkTypes.map(type => (
-                            <option key={type.value} value={type.value}>
-                                {type.label}
-                            </option>
-                        ))}
-                    </CustomFormSelect>
-                </CForm>
-            </ModalComponent>
+                        <CForm>
+                            <CustomFormInput
+                label={t('resources.linkTitle')}
+                                name="title"
+                                required
+                                icon={cilLink}
+                placeholder={t('resources.enterLinkTitle')}
+                                value={linkForm.title}
+                                onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
+                            />
+                            <CustomFormInput
+                label={t('resources.url')}
+                                name="url"
+                                type="url"
+                                required
+                                icon={cilGlobeAlt}
+                placeholder={t('resources.urlPlaceholder')}
+                                value={linkForm.url}
+                                onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+                            />
+                            <CustomFormSelect
+                label={t('resources.linkType.label')}
+                                name="type"
+                                icon={cilBook}
+                                value={linkForm.type}
+                                onChange={(e) => setLinkForm({ ...linkForm, type: e.target.value })}
+                            >
+                                {linkTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </CustomFormSelect>
+                        </CForm>
+                    </ModalComponent>
 
-            {/* File Modal */}
-            <ModalComponent
-                visible={showFileModal}
-                onClose={() => { setShowFileModal(false); resetFileForm(); }}
-                title={editingFile ? 'Edit File' : 'Upload New File'}
-                onSave={handleSaveFile}
-                saveButtonText={editingFile ? 'Update File' : 'Upload File'}
-                isLoading={isLoading}
-            >
-                <CForm>
-                    <CustomFormInput
-                        label="File"
-                        name="file"
-                        type="file"
-                        required={!editingFile}
-                        icon={cilCloudUpload}
-                        onChange={handleFileChange}
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif"
-                    />
-                    {editingFile && (
-                        <small className="text-muted d-block mb-3">Leave empty to keep current file</small>
-                    )}
-                    <CustomFormInput
-                        label="File Name"
-                        name="name"
-                        required
-                        icon={cilDescription}
-                        placeholder="Enter file name"
-                        value={fileForm.name}
-                        onChange={(e) => setFileForm({ ...fileForm, name: e.target.value })}
-                    />
-                    <CustomFormSelect
-                        label="File Type"
-                        name="type"
-                        icon={cilChart}
-                        value={fileForm.type}
-                        onChange={(e) => setFileForm({ ...fileForm, type: e.target.value })}
+                    {/* File Modal */}
+                    <ModalComponent
+                        visible={showFileModal}
+                        onClose={() => { setShowFileModal(false); resetFileForm(); }}
+            title={editingFile ? t('resources.editFile') : t('resources.uploadNewFile')}
+                        onSave={handleSaveFile}
+            saveButtonText={editingFile ? t('resources.updateFile') : t('resources.uploadFile')}
+                        isLoading={isLoading}
                     >
-                        {fileTypes.map(type => (
-                            <option key={type.value} value={type.value}>
-                                {type.label}
-                            </option>
-                        ))}
-                    </CustomFormSelect>
-                </CForm>
-            </ModalComponent>
+                        <CForm>
+                            <CustomFormInput
+                label={t('resources.file')}
+                                name="file"
+                                type="file"
+                                required={!editingFile}
+                                icon={cilCloudUpload}
+                                onChange={handleFileChange}
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif"
+                            />
+                            {editingFile && (
+                <small className="text-muted d-block mb-3">{t('resources.leaveEmpty')}</small>
+                            )}
+                            <CustomFormInput
+                label={t('resources.fileName')}
+                                name="name"
+                                required
+                                icon={cilDescription}
+                placeholder={t('resources.enterFileName')}
+                                value={fileForm.name}
+                                onChange={(e) => setFileForm({ ...fileForm, name: e.target.value })}
+                            />
+                            <CustomFormSelect
+                label={t('resources.fileType.label')}
+                                name="type"
+                                icon={cilChart}
+                                value={fileForm.type}
+                                onChange={(e) => setFileForm({ ...fileForm, type: e.target.value })}
+                            >
+                                {fileTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </CustomFormSelect>
+                        </CForm>
+                    </ModalComponent>
+                </>
+            )}
         </CContainer>
     );
 };
 
-export default Resources;
+export default withContractorScope(Resources, 'resources');

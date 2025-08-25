@@ -12,6 +12,8 @@ import EmailContractModal from '../../components/model/EmailContractModal';
 import { sendFormDataToBackend } from '../../store/slices/proposalSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import withContractorScope from '../../components/withContractorScope';
+import { useTranslation } from 'react-i18next';
 import {
   CContainer,
   CCard,
@@ -23,8 +25,9 @@ import {
   CSpinner
 } from '@coreui/react';
 
-const ProposalForm = () => {
+const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const location = useLocation();
+  const { t } = useTranslation();
   const queryParams = new URLSearchParams(location.search);
   const isQuick = queryParams.get('quick') === 'yes';
   const [currentStep, setCurrentStep] = useState(isQuick ? 2 : 1);
@@ -147,10 +150,10 @@ const ProposalForm = () => {
 
   const getStepInfo = () => {
     const steps = [
-      { number: 1, title: 'Customer Information', icon: FaClipboardList },
-      { number: 2, title: 'Manufacturer Selection', icon: FaCog },
-      { number: 3, title: 'Design & Style', icon: FaFileContract },
-      { number: 4, title: 'Proposal Summary', icon: FaPrint },
+      { number: 1, title: t('proposals.create.steps.1'), icon: FaClipboardList },
+      { number: 2, title: t('proposals.create.steps.2'), icon: FaCog },
+      { number: 3, title: t('proposals.create.steps.3'), icon: FaFileContract },
+      { number: 4, title: t('proposals.create.steps.4'), icon: FaPrint },
     ];
     return steps.find(step => step.number === currentStep) || steps[0];
   };
@@ -177,44 +180,47 @@ const ProposalForm = () => {
           onClick={() => setShowPrintModal(true)}
         >
           <FaPrint className="me-2" />
-          Print Proposal
+          {t('proposals.create.actions.print')}
         </CButton>
+        {!isContractor && (
+          <>
+            <CButton
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
+              style={{
+                backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                borderColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                color: '#fff',
+                borderRadius: '8px',
+                border: 'none',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={() => setHovered('email')}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => setShowEmailModal(true)}
+            >
+              <FaEnvelope className="me-2" />
+              {t('proposals.create.actions.email')}
+            </CButton>
 
-        <CButton
-          className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-          style={{
-            backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-            borderColor: hovered === 'email' ? '#138496' : '#17a2b8',
-            color: '#fff',
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={() => setHovered('email')}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => setShowEmailModal(true)}
-        >
-          <FaEnvelope className="me-2" />
-          Email Proposal
-        </CButton>
-
-        <CButton
-          className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-          style={{
-            backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-            borderColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-            color: '#212529',
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={() => setHovered('contract')}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => setShowContractModal(true)}
-        >
-          <FaFileContract className="me-2" />
-          Email Contract
-        </CButton>
+            <CButton
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
+              style={{
+                backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                borderColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                color: '#212529',
+                borderRadius: '8px',
+                border: 'none',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={() => setHovered('contract')}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => setShowContractModal(true)}
+            >
+              <FaFileContract className="me-2" />
+              {t('proposals.create.actions.contract')}
+            </CButton>
+          </>
+        )}
       </div>
     );
   };
@@ -227,6 +233,8 @@ const ProposalForm = () => {
             formData={formData}
             updateFormData={updateFormData}
             nextStep={nextStep}
+            isContractor={isContractor}
+            contractorGroupId={contractorGroupId}
           />
         );
       case 2:
@@ -245,7 +253,7 @@ const ProposalForm = () => {
             <CCard className="border-0 shadow-sm">
               <CCardBody className="text-center py-5">
                 <CSpinner color="primary" size="lg" />
-                <p className="text-muted mt-3 mb-0">Loading manufacturer data...</p>
+                <p className="text-muted mt-3 mb-0">{t('proposals.create.loadingManufacturer')}</p>
               </CCardBody>
             </CCard>
           );
@@ -281,9 +289,9 @@ const ProposalForm = () => {
   };
 
   return (
-    <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <CCard className="proposal-form-header">
         <CCardBody className="py-4">
           <CRow className="align-items-center">
             <CCol>
@@ -308,7 +316,7 @@ const ProposalForm = () => {
                 <div>
                   <h3 className="text-white mb-1 fw-bold">{currentStepInfo.title}</h3>
                   <div className="d-flex align-items-center gap-3">
-                    <p className="text-white-50 mb-0">Step {currentStep} of 4</p>
+                    <p className="text-white-50 mb-0">{t('proposals.create.stepOf', { current: currentStep, total: 4 })}</p>
                     <CBadge 
                       color="light" 
                       className="px-3 py-2"
@@ -320,7 +328,7 @@ const ProposalForm = () => {
                         color: '#667eea'
                       }}
                     >
-                      {isQuick ? 'Quick Mode' : 'Standard Mode'}
+                      {isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode')}
                     </CBadge>
                   </div>
                 </div>
@@ -334,7 +342,7 @@ const ProposalForm = () => {
       </CCard>
 
       {/* Progress Bar */}
-      <CCard className="border-0 shadow-sm mb-2">
+      <CCard className="proposal-progress-bar">
         <CCardBody className="py-3">
           <div className="d-flex align-items-center justify-content-between">
             {[1, 2, 3, 4].map((step, index) => (
@@ -382,4 +390,4 @@ const ProposalForm = () => {
   );
 };
 
-export default ProposalForm;
+export default withContractorScope(ProposalForm, 'proposals', ['proposals:create']);

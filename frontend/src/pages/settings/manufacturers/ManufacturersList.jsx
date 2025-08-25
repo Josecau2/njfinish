@@ -15,8 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 
 const ManufacturersList = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { list: allManufacturers, loading, error } = useSelector(state => state.manufacturers);
   const [manufacturers, setManufacturers] = useState([]);
@@ -54,7 +56,7 @@ const ManufacturersList = () => {
           toast: true,
           position: "top",
           icon: "success",
-          title: "Manufacturer updated successfully",
+          title: t('settings.manufacturers.toast.updateSuccess'),
           showConfirmButton: false,
           timer: 1500,
           width: '360px',
@@ -71,7 +73,7 @@ const ManufacturersList = () => {
           toast: true,
           position: "top",
           icon: "error",
-          title: "Failed to update manufacturer",
+          title: t('settings.manufacturers.toast.updateFailed'),
           showConfirmButton: false,
           timer: 1500,
           width: '330px',
@@ -200,9 +202,9 @@ const ManufacturersList = () => {
             <div className="col">
               <h3 className="text-white mb-1 fw-bold d-flex align-items-center">
                 <Factory className="me-2" size={24} />
-                Manufacturers
+                {t('settings.manufacturers.header')}
               </h3>
-              <p className="text-white-50 mb-0">Manage your manufacturing partners</p>
+              <p className="text-white-50 mb-0">{t('settings.manufacturers.subtitle')}</p>
             </div>
             <div className="col-auto">
               <button
@@ -215,7 +217,7 @@ const ManufacturersList = () => {
                 }}
               >
                 <Plus className="me-2" size={16} />
-                New Manufacturer
+                {t('settings.manufacturers.add')}
               </button>
             </div>
           </div>
@@ -229,14 +231,14 @@ const ManufacturersList = () => {
             <div className="col-lg-4 col-md-6 mb-3 mb-lg-0">
               <label className="form-label fw-medium text-muted mb-2">
                 <Search size={14} className="me-1" />
-                Search
+                {t('settings.manufacturers.search')}
               </label>
               <div style={cardStyles.inputGroup}>
                 <Search size={16} style={cardStyles.searchIcon} />
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search by name or email..."
+                  placeholder={t('settings.manufacturers.searchPlaceholder')}
                   value={filterText}
                   onChange={handleFilterChange}
                   style={cardStyles.searchInput}
@@ -246,7 +248,7 @@ const ManufacturersList = () => {
             <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
               <label className="form-label fw-medium text-muted mb-2">
                 <Filter size={14} className="me-1" />
-                Sort by
+                {t('settings.manufacturers.sortBy')}
               </label>
               <select 
                 className="form-select"
@@ -259,16 +261,16 @@ const ManufacturersList = () => {
                   padding: '12px 16px'
                 }}
               >
-                <option value="id">ID</option>
-                <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="capacity">Capacity</option>
+                <option value="id">{t('settings.manufacturers.sort.id')}</option>
+                <option value="name">{t('settings.manufacturers.sort.name')}</option>
+                <option value="email">{t('settings.manufacturers.sort.email')}</option>
+                <option value="capacity">{t('settings.manufacturers.sort.capacity')}</option>
               </select>
             </div>
             <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
               <label className="form-label fw-medium text-muted mb-2">
                 {sortDirection === 'asc' ? <SortAsc size={14} className="me-1" /> : <SortDesc size={14} className="me-1" />}
-                Order
+                {t('settings.manufacturers.order')}
               </label>
               <select 
                 className="form-select" 
@@ -281,8 +283,8 @@ const ManufacturersList = () => {
                   padding: '12px 16px'
                 }}
               >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
+                <option value="desc">{t('settings.manufacturers.orderOptions.descending')}</option>
+                <option value="asc">{t('settings.manufacturers.orderOptions.ascending')}</option>
               </select>
             </div>
             <div className="col-lg-2 col-md-6">
@@ -295,7 +297,7 @@ const ManufacturersList = () => {
                     // color: '#0d6efd'
                   }}
                 >
-                  Total: {allManufacturers?.length || 0}
+                  {t('settings.manufacturers.stats.total', { count: allManufacturers?.length || 0 })}
                 </span>
               </div>
             </div>
@@ -308,9 +310,9 @@ const ManufacturersList = () => {
         <div className="card" style={cardStyles.controlsCard}>
           <div className="card-body text-center py-5">
             <div className="spinner-border text-primary mb-3" role="status">
-              <span className="visually-hidden">Loading...</span>
+              <span className="visually-hidden">{t('common.loading')}</span>
             </div>
-            <p className="text-muted mb-0">Loading manufacturers...</p>
+            <p className="text-muted mb-0">{t('settings.manufacturers.loading')}</p>
           </div>
         </div>
       )}
@@ -320,7 +322,7 @@ const ManufacturersList = () => {
         <div className="card" style={cardStyles.controlsCard}>
           <div className="card-body">
             <div className="alert alert-danger mb-0">
-              <strong>Error:</strong> {error}
+              <strong>{t('settings.manufacturers.errorPrefix')}</strong> {error}
             </div>
           </div>
         </div>
@@ -331,9 +333,9 @@ const ManufacturersList = () => {
         <div className="card" style={cardStyles.controlsCard}>
           <div className="card-body text-center py-5">
             <Factory size={48} className="text-muted mb-3 opacity-25" />
-            <h5 className="text-muted mb-2">No manufacturers found</h5>
+            <h5 className="text-muted mb-2">{t('settings.manufacturers.empty.title')}</h5>
             <p className="text-muted mb-0">
-              {filterText ? 'Try adjusting your search criteria' : 'Get started by adding your first manufacturer'}
+              {filterText ? t('settings.manufacturers.empty.subtitleFiltered') : t('settings.manufacturers.empty.subtitleStart')}
             </p>
           </div>
         </div>
@@ -435,7 +437,7 @@ const ManufacturersList = () => {
                             border: '1px solid #e9ecef'
                           }}
                         >
-                          Capacity: {manufacturer.capacity}
+                          {t('settings.manufacturers.labels.capacity', { capacity: manufacturer.capacity })}
                         </span>
                       </div>
 
@@ -455,14 +457,14 @@ const ManufacturersList = () => {
                             htmlFor={`enabledSwitch${manufacturer.id}`}
                             style={{ cursor: 'pointer', fontSize: '14px' }}
                           >
-                            {manufacturer.status ? 'Active' : 'Inactive'}
+                            {manufacturer.status ? t('settings.manufacturers.labels.active') : t('settings.manufacturers.labels.inactive')}
                           </label>
                         </div>
                         <span 
                           className={`badge ${manufacturer.status ? 'bg-success' : 'bg-secondary'}`}
                           style={cardStyles.badge}
                         >
-                          {manufacturer.status ? 'Enabled' : 'Disabled'}
+                          {manufacturer.status ? t('settings.manufacturers.labels.enabled') : t('settings.manufacturers.labels.disabled')}
                         </span>
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, UserRole } = require('../models/index');
+const { User, UserRole, UserGroup } = require('../models/index');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
@@ -52,7 +52,14 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ 
+      where: { email },
+      include: [{
+        model: UserGroup,
+        as: 'group',
+        attributes: ['id', 'name', 'group_type', 'modules']
+      }]
+    });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -64,16 +71,73 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role, role_id: user.role_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Determine user role - for contractors, use group_type as role
+    let userRole = user.role;
+    if (user.group && user.group.group_type === 'contractor' && (!userRole || userRole.trim() === '')) {
+      userRole = 'contractor';
+    }
+
+    const token = jwt.sign({ 
+      id: user.id, 
+      email: user.email, 
+      name: user.name, 
+      role: userRole, 
+      role_id: user.role_id,
+      group_id: user.group_id 
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ 
       token, 
       userId: user.id, 
       name: user.name, 
-      role: user.role, 
-      role_id: user.role_id 
+      role: userRole, 
+      role_id: user.role_id,
+      group_id: user.group_id,
+      group: user.group
     });
   } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get current authenticated user (self)
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const id = req.user?.id;
+    if (!id) return res.status(401).json({ message: 'Unauthenticated' });
+
+    const user = await User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'role', 'group_id', 'role_id', 'location', 'isSalesRep'],
+      include: [{ model: UserGroup, as: 'group', attributes: ['id', 'name', 'group_type', 'modules'], required: false }]
+    });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    console.error('getCurrentUser error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update current authenticated user (self)
+exports.updateCurrentUser = async (req, res) => {
+  try {
+    const id = req.user?.id;
+    if (!id) return res.status(401).json({ message: 'Unauthenticated' });
+
+    const { name, password } = req.body; // Contractors cannot change location/group via self-update
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (name) user.name = name;
+    if (password && password.trim() !== '') {
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+    res.json({ message: 'Profile updated successfully', status: 200, id: user.id, name: user.name, email: user.email });
+  } catch (err) {
+    console.error('updateCurrentUser error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -146,10 +210,20 @@ exports.fetchUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       where: { isDeleted: false },
-      attributes: ['id', 'name', 'email', 'role', 'location', 'isSalesRep']
+      attributes: ['id', 'name', 'email', 'role', 'group_id', 'role_id', 'location', 'isSalesRep'],
+      include: [
+        {
+          model: UserGroup,
+          as: 'group',
+          attributes: ['id', 'name'],
+          required: false
+        }
+      ]
     });
+    
     return res.status(200).json({ message: 'Fetch User', users });
   } catch (err) {
+    console.error('Error fetching users:', err);
     res.status(500).json({ message: 'Server error', err: err });
   }
 };
@@ -158,11 +232,20 @@ exports.fetchUsers = async (req, res) => {
 exports.fetchSingleUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'email', 'role', 'location', 'isSalesRep']
+      attributes: ['id', 'name', 'email', 'role', 'group_id', 'role_id', 'location', 'isSalesRep'],
+      include: [
+        {
+          model: UserGroup,
+          as: 'group',
+          attributes: ['id', 'name'],
+          required: false
+        }
+      ]
     });
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
+    console.error('Error fetching user:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -201,7 +284,8 @@ exports.addUser = async (req, res) => {
       deletedUser.password = await bcrypt.hash(password, 10);
       deletedUser.isSalesRep = !!isSalesRep;
       deletedUser.location = location;
-      deletedUser.role = userGroup;
+      deletedUser.group_id = userGroup;
+      deletedUser.role_id = userGroup; // Also set role_id for contractor access
       deletedUser.isDeleted = false;
       await deletedUser.save();
 
@@ -232,7 +316,8 @@ exports.addUser = async (req, res) => {
       password: hashedPassword,
       isSalesRep: !!isSalesRep,
       location,
-      role: userGroup
+      group_id: userGroup,
+      role_id: userGroup // Also set role_id for contractor access
     });
 
     // await UserRole.create({
@@ -267,7 +352,8 @@ exports.updateUser = async (req, res) => {
       password,
       location,
       userGroup,
-      isSalesRep
+      isSalesRep,
+      role_id
     } = req.body;
 
     const user = await User.findByPk(id);
@@ -276,8 +362,12 @@ exports.updateUser = async (req, res) => {
     // Conditionally update fields
     if (name) user.name = name;
     if (location) user.location = location;
-    if (userGroup) user.role = userGroup;
+    if (userGroup) {
+      user.group_id = userGroup;
+      user.role_id = userGroup; // Also set role_id to match the group_id for contractor access
+    }
     if (typeof isSalesRep === 'boolean') user.isSalesRep = isSalesRep;
+    if (role_id !== undefined) user.role_id = role_id;
 
     if (password && password.trim() !== '') {
       user.password = await bcrypt.hash(password, 10);
@@ -335,12 +425,20 @@ exports.deleteUser = async (req, res) => {
 exports.getUserRole = async (req, res) => {
   try {
     const { userId } = req.params;
-    const role = await User.findOne({ where: { id: userId } });
+    
+    const user = await User.findOne({ where: { id: userId } });
 
-    if (!role) return res.status(404).json({ message: 'Role not found' });
+    if (!user) {
+      return res.status(404).json({ 
+        message: 'User not found',
+        userId: userId,
+        error: 'USER_NOT_FOUND'
+      });
+    }
 
-    res.json({ role: role.role_id });
+    res.json({ role: user.role_id });
   } catch (err) {
-    res.status(500).json({ message: err });
+    console.error('Error in getUserRole:', err);
+    res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };

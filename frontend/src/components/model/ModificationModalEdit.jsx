@@ -1,5 +1,7 @@
 // ModificationModal.jsx
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { isAdmin } from '../../helpers/permissions'
 import {
     CModal,
     CModalHeader,
@@ -42,6 +44,9 @@ const ModificationModalEdit = ({
 }) => {
     // console.log('catalogData modification: ', catalogData);
     // console.log('catalogData itemModificationID: ', itemModificationID);
+    const authUser = useSelector((state) => state.auth?.user);
+    const isUserAdmin = isAdmin(authUser);
+
     return (
         <CModal
             visible={visible}
@@ -165,7 +170,8 @@ const ModificationModalEdit = ({
                             <div className="form-check mt-2 d-flex align-items-center" style={{ gap: '0.5rem' }}>
                                 <CFormCheck
                                     checked={customModTaxable}
-                                    onChange={(e) => setCustomModTaxable(e.target.checked)}
+                                    onChange={(e) => { if (isUserAdmin) setCustomModTaxable(e.target.checked); }}
+                                    disabled={!isUserAdmin}
                                     style={{ transform: 'scale(1.4)' }}
                                     label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>Taxable</span>}
                                 />

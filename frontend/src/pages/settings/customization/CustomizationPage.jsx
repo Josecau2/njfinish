@@ -9,8 +9,10 @@ import { setCustomization } from '../../../store/slices/customizationSlice'
 import axiosInstance from '../../../helpers/axiosInstance'
 import CIcon from '@coreui/icons-react'
 import { cilSettings, cilImage, cilColorPalette, cilSave, cilTrash } from '@coreui/icons'
+import { useTranslation } from 'react-i18next'
 
 const CustomizationPage = () => {
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
     const api_url = import.meta.env.VITE_API_URL
@@ -37,12 +39,12 @@ const CustomizationPage = () => {
         const file = e.target.files[0]
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                setMessage({ type: 'danger', text: 'File size must be less than 5MB' })
+                setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.fileTooLarge') })
                 return
             }
             
             if (!file.type.startsWith('image/')) {
-                setMessage({ type: 'danger', text: 'Please select a valid image file' })
+                setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.invalidImage') })
                 return
             }
 
@@ -62,10 +64,10 @@ const CustomizationPage = () => {
             setFormData((prev) => ({ ...prev, logoImage: '' }))
             setPreviewLogo(null)
             dispatch(setCustomization({ ...customization, logoImage: '' }))
-            setMessage({ type: 'success', text: 'Logo removed successfully' })
+            setMessage({ type: 'success', text: t('settings.customization.ui.alerts.removeLogoSuccess') })
         } catch (error) {
             console.error("Failed to remove logo:", error)
-            setMessage({ type: 'danger', text: 'Failed to remove logo. Please try again.' })
+            setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.removeLogoFailed') })
         } finally {
             setLoading(false)
         }
@@ -87,10 +89,10 @@ const CustomizationPage = () => {
 
             const { data } = await axiosInstance.get('/api/settings/customization')
             dispatch(setCustomization(data))
-            setMessage({ type: 'success', text: 'Customization saved successfully!' })
+            setMessage({ type: 'success', text: t('settings.customization.ui.alerts.saveSuccess') })
         } catch (err) {
             console.error('Failed to save customization:', err)
-            setMessage({ type: 'danger', text: 'Failed to save customization. Please try again.' })
+            setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.saveFailed') })
         } finally {
             setLoading(false)
         }
@@ -115,8 +117,8 @@ const CustomizationPage = () => {
                                     <CIcon icon={cilSettings} style={{ color: 'white', fontSize: '20px' }} />
                                 </div>
                                 <div>
-                                    <h3 className="text-white mb-1 fw-bold">UI Customization</h3>
-                                    <p className="text-white-50 mb-0">Customize your application's appearance and branding</p>
+                                    <h3 className="text-white mb-1 fw-bold">{t('settings.customization.ui.headerTitle')}</h3>
+                                    <p className="text-white-50 mb-0">{t('settings.customization.ui.headerSubtitle')}</p>
                                 </div>
                             </div>
                         </CCol>
@@ -132,15 +134,15 @@ const CustomizationPage = () => {
                                     transition: 'all 0.3s ease'
                                 }}
                             >
-                                {loading ? (
+                {loading ? (
                                     <>
                                         <CSpinner size="sm" className="me-2" />
-                                        Saving...
+                    {t('settings.customization.ui.buttons.saving')}
                                     </>
                                 ) : (
                                     <>
                                         <CIcon icon={cilSave} className="me-2" />
-                                        Save Changes
+                    {t('settings.customization.ui.buttons.saveChanges')}
                                     </>
                                 )}
                             </CButton>
@@ -186,20 +188,20 @@ const CustomizationPage = () => {
                                     <CIcon icon={cilImage} style={{ color: 'white', fontSize: '14px' }} />
                                 </div>
                                 <div>
-                                    <h5 className="mb-0 fw-semibold text-dark">Brand Logo</h5>
-                                    <small className="text-muted">Configure your application's logo and branding</small>
+                                    <h5 className="mb-0 fw-semibold text-dark">{t('settings.customization.ui.brandLogo.title')}</h5>
+                                    <small className="text-muted">{t('settings.customization.ui.brandLogo.subtitle')}</small>
                                 </div>
                             </div>
                         </div>
                         
                         <CCardBody className="p-4">
                             <div className="mb-3">
-                                <CFormLabel className="fw-medium text-dark mb-2">Logo Text</CFormLabel>
+                                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.logoText')}</CFormLabel>
                                 <CFormInput
                                     name="logoText"
                                     value={formData.logoText}
                                     onChange={handleChange}
-                                    placeholder="Enter your brand name"
+                                    placeholder={t('settings.customization.ui.brandLogo.placeholders.logoText')}
                                     style={{ 
                                         border: '1px solid #e3e6f0',
                                         borderRadius: '8px',
@@ -210,7 +212,7 @@ const CustomizationPage = () => {
                             </div>
 
                             <div className="mb-3">
-                                <CFormLabel className="fw-medium text-dark mb-2">Upload Logo</CFormLabel>
+                                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.uploadLogo')}</CFormLabel>
                                 <div className="position-relative">
                                     <CFormInput 
                                         type="file" 
@@ -232,8 +234,8 @@ const CustomizationPage = () => {
                                     >
                                         <div>
                                             <CIcon icon={cilImage} className="mb-2" style={{ fontSize: '24px', color: '#6c757d' }} />
-                                            <p className="mb-0 text-muted">Choose Image</p>
-                                            <small className="text-muted">JPG, PNG, SVG up to 5MB</small>
+                                            <p className="mb-0 text-muted">{t('settings.customization.ui.brandLogo.chooseImageCta')}</p>
+                                            <small className="text-muted">{t('settings.customization.ui.brandLogo.supportedTypes')}</small>
                                         </div>
                                     </div>
                                 </div>
@@ -241,7 +243,7 @@ const CustomizationPage = () => {
 
                             {previewLogo && (
                                 <div className="mb-0">
-                                    <CFormLabel className="fw-medium text-dark mb-2">Preview</CFormLabel>
+                                    <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.preview')}</CFormLabel>
                                     <div 
                                         className="d-flex align-items-center gap-3 p-3"
                                         style={{
@@ -252,7 +254,7 @@ const CustomizationPage = () => {
                                     >
                                         <img 
                                             src={previewLogo} 
-                                            alt="Logo Preview" 
+                                            alt={t('settings.customization.ui.brandLogo.alt.logoPreview')} 
                                             style={{
                                                 height: '40px',
                                                 width: 'auto',
@@ -301,8 +303,8 @@ const CustomizationPage = () => {
                                     <CIcon icon={cilColorPalette} style={{ color: 'white', fontSize: '14px' }} />
                                 </div>
                                 <div>
-                                    <h5 className="mb-0 fw-semibold text-dark">Color Palette</h5>
-                                    <small className="text-muted">Customize colors for different UI elements</small>
+                                    <h5 className="mb-0 fw-semibold text-dark">{t('settings.customization.ui.colorPalette.title')}</h5>
+                                    <small className="text-muted">{t('settings.customization.ui.colorPalette.subtitle')}</small>
                                 </div>
                             </div>
                         </div>
@@ -316,14 +318,14 @@ const CustomizationPage = () => {
                                         className="px-2 py-1"
                                         style={{ borderRadius: '4px', fontSize: '10px' }}
                                     >
-                                        HEADER
+                                        {t('settings.customization.ui.colorPalette.headerBadge')}
                                     </CBadge>
-                                    Header & Navigation
+                                    {t('settings.customization.ui.colorPalette.headerTitle')}
                                 </h6>
                                 
                                 <CRow className="g-3 mb-3">
                                     <CCol sm={6}>
-                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>Logo Background</CFormLabel>
+                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.logoBg')}</CFormLabel>
                                         <div className="d-flex align-items-center gap-2">
                                             <input
                                                 type="color"
@@ -355,7 +357,7 @@ const CustomizationPage = () => {
                                         </div>
                                     </CCol>
                                     <CCol sm={6}>
-                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>Header Background</CFormLabel>
+                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.headerBg')}</CFormLabel>
                                         <div className="d-flex align-items-center gap-2">
                                             <input
                                                 type="color"
@@ -390,7 +392,7 @@ const CustomizationPage = () => {
                                 
                                 <CRow className="g-3">
                                     <CCol sm={6}>
-                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>Header Text</CFormLabel>
+                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.headerText')}</CFormLabel>
                                         <div className="d-flex align-items-center gap-2">
                                             <input
                                                 type="color"
@@ -432,14 +434,14 @@ const CustomizationPage = () => {
                                         className="px-2 py-1"
                                         style={{ borderRadius: '4px', fontSize: '10px' }}
                                     >
-                                        SIDEBAR
+                                        {t('settings.customization.ui.colorPalette.sidebarBadge')}
                                     </CBadge>
-                                    Sidebar
+                                    {t('settings.customization.ui.colorPalette.sidebarTitle')}
                                 </h6>
                                 
                                 <CRow className="g-3">
                                     <CCol sm={6}>
-                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>Background</CFormLabel>
+                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.sidebarBg')}</CFormLabel>
                                         <div className="d-flex align-items-center gap-2">
                                             <input
                                                 type="color"
@@ -471,7 +473,7 @@ const CustomizationPage = () => {
                                         </div>
                                     </CCol>
                                     <CCol sm={6}>
-                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>Text Color</CFormLabel>
+                                        <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.sidebarText')}</CFormLabel>
                                         <div className="d-flex align-items-center gap-2">
                                             <input
                                                 type="color"

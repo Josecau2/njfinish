@@ -31,6 +31,7 @@ import Swal from "sweetalert2";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 // External components to avoid re-creation on each render
 const FormSection = ({ title, icon, children, className = "" }) => (
@@ -189,6 +190,7 @@ const CustomFormSelect = ({
 );
 
 const EditCustomerPage = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -222,7 +224,7 @@ const EditCustomerPage = () => {
         setFormData(res.data);
       } catch (err) {
         console.error(err);
-        Swal.fire("Error", "Could not fetch customer data.", "error");
+  Swal.fire(t('common.error'), t('customers.form.alerts.notFound'), 'error');
       } finally {
         setIsLoading(false);
       }
@@ -244,11 +246,11 @@ const EditCustomerPage = () => {
     const errors = {};
     const required = ["name", "email", "address", "city", "state", "zipCode", "mobile", "leadSource"];
     required.forEach((f) => {
-      if (!formData[f]?.toString().trim()) errors[f] = "This field is required";
+      if (!formData[f]?.toString().trim()) errors[f] = t('customers.form.validation.required');
     });
-    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = "Invalid email format";
-    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) errors.zipCode = "Zip code must be 5 digits";
-    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) errors.mobile = "Mobile number must be 10 digits";
+    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = t('customers.form.validation.invalidEmail');
+    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) errors.zipCode = t('customers.form.validation.zip5');
+    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) errors.mobile = t('customers.form.validation.mobile10');
     return errors;
   };
 
@@ -266,15 +268,15 @@ const EditCustomerPage = () => {
       await axios.put(`${api_url}/api/customers/update/${customerId}`, formData);
       Swal.fire({
         icon: "success",
-        title: "Customer Updated!",
-        text: "The customer details were updated successfully.",
+        title: t('customers.form.alerts.updatedTitle'),
+        text: t('customers.form.alerts.updatedText'),
         timer: 2000,
         showConfirmButton: false,
       });
       navigate("/customers");
     } catch (err) {
       console.error(err);
-      Swal.fire({ icon: "error", title: "Error", text: "Could not update customer. Please try again." });
+      Swal.fire({ icon: "error", title: t('common.error'), text: t('customers.form.alerts.updateFailed') });
     } finally {
       setIsSubmitting(false);
     }
@@ -282,11 +284,11 @@ const EditCustomerPage = () => {
 
   if (isLoading) {
     return (
-      <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <CContainer fluid className="p-2 m-2 bg-body" style={{ minHeight: '100vh' }}>
         <CCard className="border-0 shadow-sm">
           <CCardBody className="text-center py-5">
             <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">Loading customer data...</p>
+            <p className="text-muted mt-3 mb-0">{t('customers.loading')}</p>
           </CCardBody>
         </CCard>
       </CContainer>
@@ -294,7 +296,7 @@ const EditCustomerPage = () => {
   }
 
   return (
-    <CContainer fluid className="p-2 m-2 edit-customer-page" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="p-2 m-2 edit-customer-page bg-body" style={{ minHeight: '100vh' }}>
       {/* Header Section */}
       <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <CCardBody className="py-4">
@@ -313,7 +315,7 @@ const EditCustomerPage = () => {
                   <CIcon icon={cilPencil} size="lg" className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Edit Customer</h3>
+                  <h3 className="text-white mb-1 fw-bold">{t('customers.form.titles.edit')}</h3>
                   <p className="text-white-50 mb-0">Update customer profile with detailed information</p>
                 </div>
               </div>
@@ -330,7 +332,7 @@ const EditCustomerPage = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Back to Customers
+                {t('customers.form.actions.backToCustomers')}
               </CButton>
             </CCol>
           </CRow>
@@ -339,15 +341,15 @@ const EditCustomerPage = () => {
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
-        <FormSection title="Basic Information" icon={cilUser}>
+  <FormSection title={t('customers.form.titles.basicInfo')} icon={cilUser}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Full Name"
+    label={t('customers.form.labels.fullName')}
                 name="name"
                 required
                 icon={cilUser}
-                placeholder="Enter customer's full name"
+    placeholder={t('customers.form.placeholders.fullName')}
                 value={formData.name}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.name}
@@ -357,12 +359,12 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Email Address"
+    label={t('customers.form.labels.email')}
                 name="email"
                 type="email"
                 required
                 icon={cilEnvelopeClosed}
-                placeholder="customer@example.com"
+    placeholder={t('customers.form.placeholders.email')}
                 value={formData.email}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.email}
@@ -375,7 +377,7 @@ const EditCustomerPage = () => {
           <CRow>
             <CCol md={6}>
               <CustomFormSelect
-                label="Customer Type"
+    label={t('customers.form.labels.customerType')}
                 name="customerType"
                 icon={cilUser}
                 value={formData.customerType}
@@ -384,18 +386,18 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.customerType}
                 inputRef={(el) => (inputRefs.current.customerType = el)}
               >
-                <option value="Home Owner">Home Owner</option>
-                <option value="Contractor">Contractor</option>
-                <option value="Company">Company</option>
-                <option value="Sub Contractor">Sub Contractor</option>
+    <option value="Home Owner">{t('customers.form.types.homeOwner')}</option>
+    <option value="Contractor">{t('customers.form.types.contractor')}</option>
+    <option value="Company">{t('customers.form.types.company')}</option>
+    <option value="Sub Contractor">{t('customers.form.types.subContractor')}</option>
               </CustomFormSelect>
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Company Name"
+    label={t('customers.form.labels.companyName')}
                 name="companyName"
                 icon={cilBuilding}
-                placeholder="Company name (if applicable)"
+    placeholder={t('customers.form.placeholders.companyName')}
                 value={formData.companyName}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.companyName}
@@ -407,15 +409,15 @@ const EditCustomerPage = () => {
         </FormSection>
 
         {/* Address Information Section */}
-        <FormSection title="Address Information" icon={cilLocationPin}>
+  <FormSection title={t('customers.form.titles.addressInfo')} icon={cilLocationPin}>
           <CRow>
             <CCol md={8}>
               <CustomFormInput
-                label="Street Address"
+    label={t('customers.form.labels.address')}
                 name="address"
                 required
                 icon={cilLocationPin}
-                placeholder="Enter street address"
+    placeholder={t('customers.form.placeholders.street')}
                 value={formData.address}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.address}
@@ -425,9 +427,9 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormInput
-                label="Apt/Suite #"
+    label={t('customers.form.labels.aptSuite')}
                 name="aptOrSuite"
-                placeholder="Apt, suite, unit"
+    placeholder={t('customers.form.placeholders.aptSuite')}
                 value={formData.aptOrSuite}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.aptOrSuite}
@@ -439,10 +441,10 @@ const EditCustomerPage = () => {
           <CRow>
             <CCol md={4}>
               <CustomFormInput
-                label="City"
+    label={t('customers.form.labels.city')}
                 name="city"
                 required
-                placeholder="Enter city"
+    placeholder={t('customers.form.placeholders.city')}
                 value={formData.city}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.city}
@@ -452,7 +454,7 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormSelect
-                label="State"
+    label={t('customers.form.labels.state')}
                 name="state"
                 required
                 value={formData.state}
@@ -461,7 +463,7 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.state}
                 inputRef={(el) => (inputRefs.current.state = el)}
               >
-                <option value="">Select State</option>
+    <option value="">{t('customers.form.select.selectState')}</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -516,10 +518,10 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormInput
-                label="Zip Code"
+    label={t('customers.form.labels.zipCode')}
                 name="zipCode"
                 required
-                placeholder="12345"
+    placeholder={t('customers.form.placeholders.zip')}
                 value={formData.zipCode}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.zipCode}
@@ -531,15 +533,15 @@ const EditCustomerPage = () => {
         </FormSection>
 
         {/* Contact Information Section */}
-        <FormSection title="Contact Information" icon={cilPhone}>
+  <FormSection title={t('customers.form.titles.contactInfo')} icon={cilPhone}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Mobile Phone"
+    label={t('customers.form.labels.mobile')}
                 name="mobile"
                 required
                 icon={cilPhone}
-                placeholder="1234567890"
+    placeholder={t('customers.form.placeholders.mobile')}
                 value={formData.mobile}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.mobile}
@@ -549,10 +551,10 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Home Phone"
+    label={t('customers.form.labels.homePhone')}
                 name="homePhone"
                 icon={cilPhone}
-                placeholder="1234567890"
+    placeholder={t('customers.form.placeholders.homePhone')}
                 value={formData.homePhone}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.homePhone}
@@ -564,14 +566,14 @@ const EditCustomerPage = () => {
         </FormSection>
 
         {/* Business Information Section */}
-        <FormSection title="Business Information" icon={cilBuilding}>
+  <FormSection title={t('customers.form.titles.businessInfo')} icon={cilBuilding}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Lead Source"
+    label={t('customers.form.labels.leadSource')}
                 name="leadSource"
                 required
-                placeholder="Enter lead source"
+    placeholder={t('customers.form.placeholders.leadSource')}
                 value={formData.leadSource}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.leadSource}
@@ -581,12 +583,12 @@ const EditCustomerPage = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Default Discount (%)"
+    label={t('customers.form.labels.defaultDiscount')}
                 name="defaultDiscount"
                 type="number"
                 min={0}
                 max={100}
-                placeholder="0"
+                placeholder={t('customers.form.placeholders.defaultDiscount')}
                 value={formData.defaultDiscount}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.defaultDiscount}
@@ -596,7 +598,7 @@ const EditCustomerPage = () => {
             </CCol>
           </CRow>
           <div className="mb-3">
-            <CFormLabel className="fw-medium text-dark mb-2">Notes</CFormLabel>
+      <CFormLabel className="fw-medium text-dark mb-2">{t('customers.form.labels.notes')}</CFormLabel>
             <div style={{ 
               border: '1px solid #e3e6f0', 
               borderRadius: '10px',
@@ -611,7 +613,7 @@ const EditCustomerPage = () => {
                 }}
                 config={{
                   toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
-                  placeholder: 'Add any additional notes about the customer...'
+      placeholder: t('customers.form.placeholders.notes')
                 }}
               />
             </div>
@@ -634,7 +636,7 @@ const EditCustomerPage = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Cancel
+                {t('customers.form.actions.cancel')}
               </CButton>
               <CButton
                 type="submit"
@@ -656,14 +658,14 @@ const EditCustomerPage = () => {
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >
-                      <span className="visually-hidden">Loading...</span>
+                      <span className="visually-hidden">{t('common.loading')}</span>
                     </div>
-                    Updating...
+                    {t('customers.form.actions.updating')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilSave} className="me-2" />
-                    Update Customer
+                    {t('customers.form.actions.update')}
                   </>
                 )}
               </CButton>

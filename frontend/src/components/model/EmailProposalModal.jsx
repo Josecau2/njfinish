@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     CModal,
     CModalHeader,
@@ -23,7 +24,20 @@ import { useSelector } from 'react-redux';
 
 
 const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
-    const api_url = import.meta.env.VITE_API_URL;
+    const { t, i18n } = useTranslation();
+        const api_url = import.meta.env.VITE_API_URL;
+        const shortLabel = (code) => {
+            switch (code) {
+                case 'L':
+                    return t('common.short.left', { defaultValue: 'L' })
+                case 'R':
+                    return t('common.short.right', { defaultValue: 'R' })
+                case 'B':
+                    return t('common.short.both', { defaultValue: 'B' })
+                default:
+                    return code
+            }
+        }
     const selectedVersion = useSelector((state) => state.selectedVersion.data);
     const selectVersionNew = useSelector(state => state.selectVersionNew.data);
     const [loading, setLoading] = useState(false);
@@ -60,7 +74,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     const proposalSummary = {
         description: formData?.description || 'kitchen project',
         customer: formData?.customerName || '',
-        date: new Date().toLocaleDateString('en-US'),
+        date: new Date().toLocaleDateString(i18n.language || 'en-US'),
     };
 
 
@@ -92,9 +106,9 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     const proposalItems = items.map((item) => ({
         qty: item.qty || 0,
         code: item.code || '',
-        assembled: item.isRowAssembled ? 'Yes' : 'No', // or use item.assembled if you store it directly
-        hingeSide: item.hingeSide || 'N/A',
-        exposedSide: item.exposedSide || 'N/A',
+        assembled: item.isRowAssembled ? t('common.yes') : t('common.no'),
+        hingeSide: item.hingeSide || t('common.na'),
+        exposedSide: item.exposedSide || t('common.na'),
         price: parseFloat(item.price) || 0,
         assemblyCost: item.includeAssemblyFee ? parseFloat(item.assemblyFee) || 0 : 0,
         total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
@@ -110,15 +124,15 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
 
     const columnOptions = [
-        { value: 'no', label: 'No.' },
-        { value: 'qty', label: 'Qty', isFixed: true },
-        { value: 'item', label: 'Item' },
-        { value: 'assembled', label: 'Assembled' },
-        { value: 'HingeSide', label: 'Hinge Side' },
-        { value: 'exposedSide', label: 'Exposed Side' },
-        { value: 'price', label: 'Price', isFixed: true },
-        { value: 'assemblyCost', label: 'Assembly Cost' },
-        { value: 'total', label: 'Total' },
+        { value: 'no', label: t('proposalColumns.no') },
+        { value: 'qty', label: t('proposalColumns.qty'), isFixed: true },
+        { value: 'item', label: t('proposalColumns.item') },
+        { value: 'assembled', label: t('proposalColumns.assembled') },
+        { value: 'hingeSide', label: t('proposalColumns.hingeSide') },
+        { value: 'exposedSide', label: t('proposalColumns.exposedSide') },
+        { value: 'price', label: t('proposalColumns.price'), isFixed: true },
+        { value: 'assemblyCost', label: t('proposalColumns.assemblyCost') },
+        { value: 'total', label: t('proposalColumns.total') },
     ];
     // Generate HTML template (copied from PrintProposalModal)
     const generateHTMLTemplate = (values) => {
@@ -128,23 +142,23 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             .map((col) => {
                 const colName =
                     col === 'no'
-                        ? 'No.'
+                        ? t('proposalColumns.no')
                         : col === 'qty'
-                            ? 'Qty'
+                            ? t('proposalColumns.qty')
                             : col === 'item'
-                                ? 'Item'
+                                ? t('proposalColumns.item')
                                 : col === 'assembled'
-                                    ? 'Assembled'
+                                    ? t('proposalColumns.assembled')
                                     : col === 'hingeSide'
-                                        ? 'Hinge Side'
+                                        ? t('proposalColumns.hingeSide')
                                         : col === 'exposedSide'
-                                            ? 'Exposed Side'
+                                            ? t('proposalColumns.exposedSide')
                                             : col === 'price'
-                                                ? 'Price'
+                                                ? t('proposalColumns.price')
                                                 : col === 'assemblyCost'
-                                                    ? 'Assembly Cost'
+                                                    ? t('proposalColumns.assemblyCost')
                                                     : col === 'total'
-                                                        ? 'Total'
+                                                        ? t('proposalColumns.total')
                                                         : col;
                 return `<th>${colName}</th>`;
             })
@@ -163,10 +177,10 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                                 return `<td>${item.item}</td>`;
                             case 'assembled':
                                 return `<td>${item.assembled}</td>`;
-                            case 'hingeSide':
-                                return `<td>${item.hingeSide}</td>`;
-                            case 'exposedSide':
-                                return `<td>${item.exposedSide}</td>`;
+                                case 'hingeSide':
+                                    return `<td>${shortLabel(item.hingeSide)}</td>`;
+                                case 'exposedSide':
+                                    return `<td>${shortLabel(item.exposedSide)}</td>`;
                             case 'price':
                                 return `<td>$${item.price.toFixed(2)}</td>`;
                             case 'assemblyCost':
@@ -188,7 +202,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Proposal</title>
+    <title>${t('proposalDoc.title')}</title>
     <style>
         @page {
             margin: 20mm;
@@ -383,7 +397,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     <!-- Header Section -->
     <div class="header">
         <div>
-            ${logoUrl ? `<img src="${logoUrl}" alt="Company Logo" class="logo">` : `<div class="company-name">${companyName || 'Company Name'}</div>`}
+            ${logoUrl ? `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">` : `<div class="company-name">${companyName || t('proposalDoc.fallbackCompanyName')}</div>`}
         </div>
         <div class="company-info">
             <div><strong>${companyName || ''}</strong></div>
@@ -396,20 +410,20 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     <!-- Greeting -->
     <div class="greeting">
-        Dear ${proposalSummary.customer},
+    ${t('proposalDoc.greeting', { name: proposalSummary.customer })}
     </div>
 
     <div class="description">
-        We are glad you are using our services, here is your design and pricing info:
+    ${t('proposalDoc.descriptionIntro')}
     </div>
 
     <!-- Proposal Summary -->
     <table class="summary-table">
         <thead>
             <tr>
-                <th>Description</th>
+                <th>${t('proposalDoc.summary.description')}</th>
                 <!--  <th>Customer</th>-->
-                <th>Date</th>
+                <th>${t('proposalDoc.summary.date')}</th>
             </tr>
         </thead>
         <tbody>
@@ -423,25 +437,25 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     ${proposalItems && proposalItems.length > 0 ? `
     <!-- Proposal Items Section -->
-    <div class="section-header">Proposal Items</div>
+    <div class="section-header">${t('proposalDoc.sections.proposalItems')}</div>
     <table class="items-table">
         <thead>
             <tr style="background-color: #f0f0f0;">
-                <th style="border: 1px solid #ccc; padding: 5px;">No.</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Qty</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Item</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Assembled</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Hinge Side</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Exposed Side</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Price</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Assembly Fee</th>
-                <th style="border: 1px solid #ccc; padding: 5px;">Total</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.no')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.qty')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.item')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.assembled')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.hingeSide')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.exposedSide')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.price')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.assemblyCost')}</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">${t('proposalColumns.total')}</th>
             </tr>
         </thead>
         <tbody>
             <!-- Category Row -->
             <tr class="category-row">
-                <td colspan="9" style="padding: 6px;"><strong>Items</strong></td>
+                <td colspan="9" style="padding: 6px;"><strong>${t('proposalColumns.items')}</strong></td>
             </tr>
             <!-- Dynamically inserted rows -->
             ${proposalItems
@@ -451,9 +465,9 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                         <td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled ? 'Yes' : 'No'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide || 'N/A'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide || 'N/A'}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
                         <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>
@@ -462,7 +476,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                         const modRows = item.modifications && item.modifications.length > 0
                             ? `
                         <tr>
-                            <td colspan="9" style="padding: 5px;  background-color: #f9f9f9;"><strong>Modifications:</strong></td>
+                            <td colspan="9" style="padding: 5px;  background-color: #f9f9f9;"><strong>${t('proposalDoc.modifications')}</strong></td>
                         </tr>
                         ${item.modifications
                                 .map((mod, modIdx) => {
@@ -491,31 +505,31 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     <div class="price-summary">
         <table>
             <tr>
-                <td class="text-left">Cabinets & Parts:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.cabinets')}</td>
                 <td class="text-right">$${priceSummary.cabinets.toFixed(2)}</td>
             </tr>
             <tr>
-                <td class="text-left">Assembly fee:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.assembly')}</td>
                 <td class="text-right">$${priceSummary.assemblyFee.toFixed(2)}</td>
             </tr>
             <tr class="total-row">
-                <td class="text-left">Modifications:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.modifications')}</td>
                 <td class="text-right">$${priceSummary.modifications.toFixed(2)}</td>
             </tr>
             <tr >
-                <td class="text-left">Style Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.styleTotal')}</td>
                 <td class="text-right">$${priceSummary.styleTotal.toFixed(2)}</td>
             </tr>
             <tr >
-                <td class="text-left">Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.total')}</td>
                 <td class="text-right">$${priceSummary.total.toFixed(2)}</td>
             </tr>
             <tr class="total-row">
-                <td class="text-left">Tax:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.tax')}</td>
                 <td class="text-right">$${priceSummary.tax.toFixed(2)}</td>
             </tr>
             <tr class="grand-total">
-                <td class="text-left">Grand Total:</td>
+                <td class="text-left">${t('proposalDoc.priceSummary.grandTotal')}</td>
                 <td class="text-right">$${priceSummary.grandTotal.toFixed(2)}</td>
             </tr>
         </table>
@@ -524,14 +538,14 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     ${formData?.selectedCatalog?.length > 0 ? `
     <!-- Catalog Items -->
-    <div class="section-header">Catalog Items</div>
+    <div class="section-header">${t('proposalDoc.sections.catalogItems')}</div>
     <table class="items-table">
         <thead>
             <tr>
-                <th>Item Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <th>${t('proposalDoc.catalog.itemName')}</th>
+                <th>${t('proposalDoc.catalog.quantity')}</th>
+                <th>${t('proposalDoc.catalog.unitPrice')}</th>
+                <th>${t('proposalDoc.catalog.total')}</th>
             </tr>
         </thead>
         <tbody>
@@ -612,19 +626,19 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     return (
         <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
             <CModalHeader closeButton>
-                <CModalTitle>Email Proposal</CModalTitle>
+                <CModalTitle>{t('proposalCommon.emailTitle')}</CModalTitle>
             </CModalHeader>
 
             <form onSubmit={formik.handleSubmit}>
                 <CModalBody className="px-4 pb-4">
                     {/* Email */}
                     <div className="mb-4">
-                        <CFormLabel htmlFor="email" className="fw-semibold">Email Address *</CFormLabel>
+                        <CFormLabel htmlFor="email" className="fw-semibold">{t('proposalCommon.emailAddress')}</CFormLabel>
                         <CFormInput
                             id="email"
                             type="email"
                             name="email"
-                            placeholder="Enter customer email"
+                            placeholder={t('proposalCommon.emailPlaceholder')}
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -637,8 +651,8 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
                     {/* Email Body */}
                     <div className="mb-4">
-                        <CFormLabel htmlFor="body" className="fw-semibold">Email Body *</CFormLabel>
-                        <div className="border rounded p-2 bg-white">
+                        <CFormLabel htmlFor="body" className="fw-semibold">{t('proposalCommon.emailBody')}</CFormLabel>
+                        <div className="border rounded p-2 bg-body">
                             <CKEditor
                                 editor={ClassicEditor}
                                 data={formik.values.body}
@@ -664,18 +678,19 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                             size="md"
                             style={{ transform: "scale(1.5)" }}
                         />
-                        <CFormLabel htmlFor="sendCopy" className="mb-0">Include proposal items</CFormLabel>
+                        <CFormLabel htmlFor="sendCopy" className="mb-0">{t('proposalCommon.includeItems')}</CFormLabel>
                     </div>
 
                     {/* Version Multi-select */}
                     <div className="mb-4">
-                        <CFormLabel className="fw-semibold">Select Version *</CFormLabel>
+                        <CFormLabel className="fw-semibold">{t('proposalCommon.selectVersion')}</CFormLabel>
                         <Select
                             isMulti
                             name="versions"
                             options={versions}
                             classNamePrefix="react-select"
                             value={formik.values.versions}
+                            placeholder={t('proposalCommon.selectVersionsPlaceholder')}
                             onChange={(selected) => formik.setFieldValue('versions', selected)}
                             onBlur={() => formik.setFieldTouched('versions', true)}
                             isDisabled={loading}
@@ -700,7 +715,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                             htmlFor="updateCustomerEmail"
                             className="line-height-2 mb-0 fw-semibold"
                         >
-                            Update customer email
+                            {t('proposalCommon.updateCustomerEmail')}
                         </CFormLabel>
                     </div>
 
@@ -708,16 +723,16 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
                 <CModalFooter className="px-4 pb-4">
                     <CButton color="secondary" variant="outline" onClick={onClose} disabled={loading}>
-                        Cancel
+                        {t('common.cancel')}
                     </CButton>
                     <CButton type="submit" color="primary" disabled={loading}>
                         {loading ? (
                             <>
                                 <CSpinner size="sm" className="me-2" />
-                                Sending...
+                                {t('proposalCommon.sending')}
                             </>
                         ) : (
-                            'Send Email'
+                            t('proposalCommon.sendEmail')
                         )}
                     </CButton>
                 </CModalFooter>

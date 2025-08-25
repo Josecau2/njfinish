@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ForgotPasswordPage = () => {
+  const api_url = import.meta.env.VITE_API_URL;
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
@@ -14,7 +15,7 @@ const ForgotPasswordPage = () => {
     setError('');
 
     try {
-      const res = await fetch('/api/forgot-password', {
+      const res = await fetch(`${api_url}/api/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

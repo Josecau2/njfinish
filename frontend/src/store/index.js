@@ -16,9 +16,13 @@ import selectVersionNewReducer from './slices/selectVersionNewSlice';
 import selectedVersionEditReducer from './slices/selectedVersionEditSlice';
 import selectVersionNewEditReducer from './slices/selectedVersionEditSlice';
 import contractsReducer from './slices/contractsSlice'
+import contractorReducer from './slices/contractorSlice';
+import notificationReducer from './notificationSlice';
+import authReducer from './slices/authSlice';
 
 const store = configureStore({
   reducer: {
+  auth: authReducer,
     sidebar: sidebarReducer,
     dashboard: dashboardReducer,
     customers: customerReducer,
@@ -35,6 +39,8 @@ const store = configureStore({
     selectedVersionEdit: selectedVersionEditReducer,
     selectVersionNewEdit: selectVersionNewEditReducer,
     contracts: contractsReducer,
+    contractors: contractorReducer,
+    notification: notificationReducer,
 
   },
 });

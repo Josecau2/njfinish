@@ -54,6 +54,23 @@ The app is configured to allow requests from:
 - `http://localhost:8080` (development - backend)
 - `http://localhost:5173` (development - Vite)
 
+## Database Indexes
+
+To ensure performant queries, apply the indexes in `db/indexes.sql` to your database:
+
+
+Run the SQL file on your MySQL instance as part of deployment or migration.
+
+## Activity logs (lightweight)
+
+A minimal `activity_logs` table is used to capture key actions: customer create/update, proposal create/update/accept, and user group module toggles. Sequelize will create the table automatically if sync is enabled. For existing databases, run `db/activity_logs.sql` once to provision the table and indexes.
+
+## Pagination and N+1
+
+All list endpoints support pagination via `?page` and `?limit`:
+
+Endpoints eager-load related records or use subqueries to avoid N+1 queries (e.g., proposals include customer, designer, location; contractor-scoped endpoints use counts or include associations).
+
 ## Security Notes
 
 1. **JWT Secret**: Generate a strong, unique JWT secret for production

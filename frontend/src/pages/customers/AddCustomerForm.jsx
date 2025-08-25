@@ -30,6 +30,7 @@ import Swal from "sweetalert2";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 // External component definitions to prevent re-rendering
 const FormSection = ({ title, icon, children, className = "" }) => (
@@ -186,6 +187,7 @@ const CustomFormSelect = ({
 );
 
 const AddCustomerForm = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -233,17 +235,17 @@ const AddCustomerForm = () => {
     ];
     required.forEach((f) => {
       if (!formData[f]?.toString().trim()) {
-        errors[f] = "This field is required";
+        errors[f] = t('form.validation.required');
       }
     });
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "Invalid email format";
+      errors.email = t('form.validation.invalidEmail');
     }
     if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
-      errors.zipCode = "Zip code must be 5 digits";
+      errors.zipCode = t('form.validation.zip5');
     }
     if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
-      errors.mobile = "Mobile number must be 10 digits";
+      errors.mobile = t('form.validation.mobile10');
     }
     return errors;
   };
@@ -263,8 +265,8 @@ const AddCustomerForm = () => {
       await axios.post(`${api_url}/api/customers/add`, formData);
       Swal.fire({
         icon: "success",
-        title: "Customer Added!",
-        text: "The customer was added successfully.",
+        title: t('form.alerts.createdTitle'),
+        text: t('form.alerts.createdText'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -289,8 +291,8 @@ const AddCustomerForm = () => {
       console.error(err);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "Could not add customer. Please try again.",
+  title: t('common.error'),
+  text: t('form.alerts.createFailed'),
       });
     } finally {
       setIsSubmitting(false);
@@ -298,7 +300,7 @@ const AddCustomerForm = () => {
   };
 
   return (
-    <CContainer fluid className="p-2 m-2 add-new-customer" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
       {/* Header Section */}
       <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <CCardBody className="py-4">
@@ -317,7 +319,7 @@ const AddCustomerForm = () => {
                   <CIcon icon={cilUserPlus} size="lg" className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Add New Customer</h3>
+                  <h3 className="text-white mb-1 fw-bold">{t('customers.form.titles.add')}</h3>
                   <p className="text-white-50 mb-0">Create a new customer profile with detailed information</p>
                 </div>
               </div>
@@ -334,7 +336,7 @@ const AddCustomerForm = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Back to Customers
+                {t('form.actions.backToCustomers')}
               </CButton>
             </CCol>
           </CRow>
@@ -343,15 +345,15 @@ const AddCustomerForm = () => {
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
-        <FormSection title="Basic Information" icon={cilUser}>
+  <FormSection title={t('customers.form.titles.basicInfo')} icon={cilUser}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Full Name"
+    label={t('customers.form.labels.fullName')}
                 name="name"
                 required
                 icon={cilUser}
-                placeholder="Enter customer's full name"
+    placeholder={t('customers.form.placeholders.fullName')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -360,12 +362,12 @@ const AddCustomerForm = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Email Address"
+    label={t('customers.form.labels.email')}
                 name="email"
                 type="email"
                 required
                 icon={cilEnvelopeClosed}
-                placeholder="customer@example.com"
+    placeholder={t('customers.form.placeholders.email')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -377,7 +379,7 @@ const AddCustomerForm = () => {
           <CRow>
             <CCol md={6}>
               <CustomFormSelect
-                label="Customer Type"
+    label={t('customers.form.labels.customerType')}
                 name="customerType"
                 icon={cilUser}
                 formData={formData}
@@ -385,18 +387,18 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-                <option value="Home Owner">Home Owner</option>
-                <option value="Landlord">Landlord</option>
-                <option value="Tenant">Tenant</option>
-                <option value="Other">Other</option>
+    <option value="Home Owner">{t('form.types.homeOwner')}</option>
+    <option value="Landlord">{t('form.types.landlord')}</option>
+    <option value="Tenant">{t('form.types.tenant')}</option>
+    <option value="Other">{t('form.types.other')}</option>
               </CustomFormSelect>
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Company Name"
+    label={t('customers.form.labels.companyName')}
                 name="companyName"
                 icon={cilBuilding}
-                placeholder="Company name (if applicable)"
+    placeholder={t('customers.form.placeholders.companyName')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -407,15 +409,15 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Address Information Section */}
-        <FormSection title="Address Information" icon={cilLocationPin}>
+  <FormSection title={t('customers.form.titles.addressInfo')} icon={cilLocationPin}>
           <CRow>
             <CCol md={8}>
               <CustomFormInput
-                label="Street Address"
+    label={t('customers.form.labels.address')}
                 name="address"
                 required
                 icon={cilLocationPin}
-                placeholder="Enter street address"
+    placeholder={t('customers.form.placeholders.street')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -424,9 +426,9 @@ const AddCustomerForm = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormInput
-                label="Apt/Suite #"
+    label={t('customers.form.labels.aptSuite')}
                 name="aptOrSuite"
-                placeholder="Apt, suite, unit"
+    placeholder={t('customers.form.placeholders.aptSuite')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -438,10 +440,10 @@ const AddCustomerForm = () => {
           <CRow>
             <CCol md={4}>
               <CustomFormInput
-                label="City"
+    label={t('customers.form.labels.city')}
                 name="city"
                 required
-                placeholder="Enter city"
+    placeholder={t('customers.form.placeholders.city')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -450,7 +452,7 @@ const AddCustomerForm = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormSelect
-                label="State"
+    label={t('customers.form.labels.state')}
                 name="state"
                 required
                 formData={formData}
@@ -458,7 +460,7 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-                <option value="">Select State</option>
+    <option value="">{t('customers.form.select.selectState')}</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -513,10 +515,10 @@ const AddCustomerForm = () => {
             </CCol>
             <CCol md={4}>
               <CustomFormInput
-                label="Zip Code"
+    label={t('customers.form.labels.zipCode')}
                 name="zipCode"
                 required
-                placeholder="12345"
+    placeholder={t('customers.form.placeholders.zip')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -527,15 +529,15 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Contact Information Section */}
-        <FormSection title="Contact Information" icon={cilPhone}>
+  <FormSection title={t('customers.form.titles.contactInfo')} icon={cilPhone}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
-                label="Mobile Phone"
+    label={t('form.labels.mobile')}
                 name="mobile"
                 required
                 icon={cilPhone}
-                placeholder="1234567890"
+    placeholder={t('form.placeholders.mobile')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -544,10 +546,10 @@ const AddCustomerForm = () => {
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Home Phone"
+    label={t('form.labels.homePhone')}
                 name="homePhone"
                 icon={cilPhone}
-                placeholder="1234567890"
+    placeholder={t('form.placeholders.homePhone')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -558,11 +560,11 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Business Information Section */}
-        <FormSection title="Business Information" icon={cilBuilding}>
+  <FormSection title={t('form.titles.businessInfo')} icon={cilBuilding}>
           <CRow>
             <CCol md={6}>
               <CustomFormSelect
-                label="Lead Source"
+    label={t('form.labels.leadSource')}
                 name="leadSource"
                 required
                 formData={formData}
@@ -570,22 +572,22 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-                <option value="">Select Lead Source</option>
-                <option value="Advertising">Advertising</option>
-                <option value="Google">Google</option>
-                <option value="Referral">Referral</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Website">Website</option>
+    <option value="">{t('form.select.selectSource')}</option>
+    <option value="Advertising">{t('form.sources.advertising')}</option>
+    <option value="Google">{t('form.sources.google')}</option>
+    <option value="Referral">{t('form.sources.referral')}</option>
+    <option value="Social Media">{t('form.sources.social')}</option>
+    <option value="Website">{t('form.sources.website')}</option>
               </CustomFormSelect>
             </CCol>
             <CCol md={6}>
               <CustomFormInput
-                label="Default Discount (%)"
+    label={t('form.labels.defaultDiscount')}
                 name="defaultDiscount"
                 type="number"
                 min={0}
                 max={100}
-                placeholder="0"
+                placeholder={t('form.placeholders.defaultDiscount')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
@@ -595,7 +597,7 @@ const AddCustomerForm = () => {
           </CRow>
 
           <div className="mb-3">
-            <CFormLabel className="fw-medium text-dark mb-2">Notes</CFormLabel>
+      <CFormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</CFormLabel>
             <div style={{ 
               border: '1px solid #e3e6f0', 
               borderRadius: '10px',
@@ -610,7 +612,7 @@ const AddCustomerForm = () => {
                 }}
                 config={{
                   toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
-                  placeholder: 'Add any additional notes about the customer...'
+      placeholder: t('form.placeholders.notes')
                 }}
               />
             </div>
@@ -633,7 +635,7 @@ const AddCustomerForm = () => {
                 }}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
-                Cancel
+                {t('form.actions.cancel')}
               </CButton>
               <CButton
                 type="submit"
@@ -655,14 +657,14 @@ const AddCustomerForm = () => {
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >
-                      <span className="visually-hidden">Loading...</span>
+                      <span className="visually-hidden">{t('common.loading')}</span>
                     </div>
-                    Saving...
+                    {t('form.actions.saving')}
                   </>
                 ) : (
                   <>
                     <CIcon icon={cilSave} className="me-2" />
-                    Save Customer
+                    {t('form.actions.saveCustomer')}
                   </>
                 )}
               </CButton>

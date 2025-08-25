@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CTable,
   CTableHead,
@@ -20,15 +21,18 @@ import {
   CInputGroupText,
 } from '@coreui/react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCustomers } from '../../store/slices/customerSlice';
+import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import CIcon from '@coreui/icons-react';
-import { cilSearch, cilPencil, cilTrash, cilPlus, cilUser, cilEnvelopeClosed } from '@coreui/icons';
+import { cilSearch, cilPencil, cilTrash, cilPlus, cilUser, cilEnvelopeClosed, cilPhone, cilLocationPin } from '@coreui/icons';
 import PaginationComponent from '../../components/common/PaginationComponent';
+import withContractorScope from '../../components/withContractorScope';
+import PermissionGate from '../../components/PermissionGate';
 
-const CustomerTable = () => {
+const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const customers = useSelector((state) => state.customers.list);
   const loading = useSelector((state) => state.customers.loading);
@@ -42,8 +46,41 @@ const CustomerTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage }));
-  }, [dispatch, currentPage, itemsPerPage]);
+    const groupId = isContractor ? contractorGroupId : null;
+    dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }));
+  }, [dispatch, currentPage, itemsPerPage, isContractor, contractorGroupId]);
+
+  const formatAddress = (customer) => {
+    const parts = [];
+    
+    // Add street address
+    if (customer.address) {
+      parts.push(customer.address);
+    }
+    
+    // Add apt/suite if present
+    if (customer.aptOrSuite) {
+      parts.push(customer.aptOrSuite);
+    }
+    
+    // Create city, state zip line
+    const cityStateZip = [];
+    if (customer.city) {
+      cityStateZip.push(customer.city);
+    }
+    if (customer.state) {
+      cityStateZip.push(customer.state);
+    }
+    if (customer.zipCode) {
+      cityStateZip.push(customer.zipCode);
+    }
+    
+    if (cityStateZip.length > 0) {
+      parts.push(cityStateZip.join(', '));
+    }
+    
+    return parts.length > 0 ? parts.join(', ') : null;
+  };
 
   const handleSort = (key) => {
     setSortConfig((prev) => {
@@ -58,27 +95,27 @@ const CustomerTable = () => {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone!',
+  title: t('customers.confirmTitle', 'Are you sure?'),
+  text: t('customers.confirmText', 'This action cannot be undone!'),
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
+  confirmButtonText: t('customers.confirmYes', 'Yes, delete it!'),
+  cancelButtonText: t('customers.confirmNo', 'No, cancel!'),
       reverseButtons: true,
     });
 
     if (result.isConfirmed) {
       try {
-        const api_url = import.meta.env.VITE_API_URL;
-        await axios.delete(`${api_url}/api/customers/delete/${id}`);
-
-        await Swal.fire('Deleted!', 'The customer has been deleted.', 'success');
-        dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage }));
+        await dispatch(deleteCustomer(id)).unwrap();
+  await Swal.fire(t('customers.deleted', 'Deleted!'), t('customers.deletedMsg', 'The customer has been deleted.'), 'success');
+        const groupId = isContractor ? contractorGroupId : null;
+        dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }));
       } catch (err) {
-        Swal.fire('Error!', 'Failed to delete customer. Please try again.', 'error');
+        console.error('Delete error:', err);
+  Swal.fire(t('common.error', 'Error!'), err.message || t('customers.deleteFailed', 'Failed to delete customer. Please try again.'), 'error');
       }
     } else {
-      Swal.fire('Cancelled', 'The customer was not deleted.', 'info');
+  Swal.fire(t('customers.cancelled', 'Cancelled'), t('customers.notDeleted', 'The customer was not deleted.'), 'info');
     }
   };
 
@@ -101,22 +138,12 @@ const CustomerTable = () => {
     return filtered;
   }, [customers, searchTerm, sortConfig]);
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const handleNewCustomer = () => {
     navigate('/customers/add');
-  };
-
-  const startIdx = total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-  const endIdx = Math.min(startIdx + itemsPerPage - 1, total);
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
   };
 
   const getSortIcon = (key) => {
@@ -125,77 +152,98 @@ const CustomerTable = () => {
   };
 
   return (
-    <CContainer fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container">
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm  mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <h3 className="text-white mb-1 fw-bold">Customers</h3>
-              <p className="text-white-50 mb-0">Manage your customer database</p>
-            </CCol>
-            <CCol xs="auto">
-              <CButton 
-                color="light" 
-                className="shadow-sm px-4 fw-semibold"
+      <div className="page-header">
+        <CRow className="align-items-center">
+          <CCol>
+            <h3 className="page-header-title">{t('customers.header')}</h3>
+            <p className="page-header-subtitle">{t('customers.subtitle')}</p>
+          </CCol>
+          <CCol xs="auto">
+            <PermissionGate permission="customers:create">
+              <CButton
+                color="light"
                 onClick={handleNewCustomer}
-                style={{ 
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
               >
                 <CIcon icon={cilPlus} className="me-2" />
-                New Customer
+                {t('nav.addCustomer')}
               </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+            </PermissionGate>
+          </CCol>
+        </CRow>
+      </div>
 
-      {/* Search and Stats */}
-      <CCard className="border-0 shadow-sm  mb-1 ">
+      {/* Stats Cards */}
+      <CRow className="mb-4 g-3">
+        <CCol sm={6} md={3}>
+          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-primary)' }}>
+            <CCardBody>
+              <div className="stat-number text-primary">{total || 0}</div>
+              <div className="stat-label">{t('customers.total')}</div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} md={3}>
+          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-success)' }}>
+            <CCardBody>
+              <div className="stat-number text-success">{customers.filter(c => !c.deleted_at).length}</div>
+              <div className="stat-label">{t('customers.active')}</div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} md={3}>
+          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-warning)' }}>
+            <CCardBody>
+              <div className="stat-number text-warning">{customers.filter(c => c.email).length}</div>
+              <div className="stat-label">{t('customers.withEmail')}</div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} md={3}>
+          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-danger)' }}>
+            <CCardBody>
+              <div className="stat-number text-danger">{sortedFilteredCustomers.length}</div>
+              <div className="stat-label">{t('customers.filtered')}</div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      {/* Search and Filters */}
+      <CCard className="filter-card">
         <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
+          <CRow className="align-items-center g-3">
+            <CCol md={6}>
               <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
+                <CInputGroupText>
                   <CIcon icon={cilSearch} />
                 </CInputGroupText>
                 <CFormInput
-                  type="text"
-                  placeholder="Search by name or email..."
+                  placeholder={t('customers.searchPlaceholder')}
                   value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value.toLowerCase());
-                    setCurrentPage(1);
-                  }}
-                  style={{ 
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    padding: '12px 16px'
-                  }}
+                  onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
                 />
               </CInputGroup>
             </CCol>
-            <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-              <div className="d-flex justify-content-md-end align-items-center gap-3">
-                <CBadge 
-                  color="info" 
-                  className="px-3 py-2"
-                  style={{ 
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: '500'
-                  }}
-                >
-                  Total: {total || 0} customers
-                </CBadge>
-                <span className="text-muted small">
-                  Showing {sortedFilteredCustomers?.length || 0} results
-                </span>
-              </div>
+            <CCol md={3}>
+              <CFormSelect
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+              >
+                <option value={5}>5 {t('customers.perPage', 'per page')}</option>
+                <option value={10}>10 {t('customers.perPage', 'per page')}</option>
+                <option value={25}>25 {t('customers.perPage', 'per page')}</option>
+                <option value={50}>50 {t('customers.perPage', 'per page')}</option>
+              </CFormSelect>
+            </CCol>
+            <CCol md={3} className="text-end">
+              <small className="text-muted">
+                {t('customers.showing', 'Showing')} {sortedFilteredCustomers.length} {t('customers.of', 'of')} {total} {t('customers.customersLower', 'customers')}
+                {isContractor && (
+                  <div className="text-primary small">({contractorGroupName})</div>
+                )}
+              </small>
             </CCol>
           </CRow>
         </CCardBody>
@@ -203,213 +251,196 @@ const CustomerTable = () => {
 
       {/* Loading State */}
       {loading && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="text-center py-5">
-            <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">Loading customers...</p>
-          </CCardBody>
-        </CCard>
+        <div className="text-center py-5">
+          <CSpinner color="primary" />
+          <p className="mt-3 text-muted">{t('customers.loading', 'Loading customers...')}</p>
+        </div>
       )}
 
       {/* Error State */}
       {error && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody>
-            <div className="alert alert-danger mb-0">
-              <strong>Error:</strong> {error}
-            </div>
-          </CCardBody>
-        </CCard>
+        <div className="alert alert-danger">
+          <strong>{t('common.error', 'Error')}:</strong> {error}
+        </div>
       )}
 
-      {/* Table */}
+      {/* Desktop Table */}
       {!loading && !error && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="p-0">
-            <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
-                <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
+        <div className="table-responsive-md">
+          <CCard className="data-table-card">
+            <CTable hover>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell>{t('customers.location', 'Location')}</CTableHeaderCell>
+                  <CTableHeaderCell onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                    <CIcon icon={cilUser} className="me-2" />
+                    {t('customers.name', 'Name')} {getSortIcon('name')}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
+                    <CIcon icon={cilEnvelopeClosed} className="me-2" />
+                    {t('customers.email', 'Email')} {getSortIcon('email')}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell>{t('customers.phone', 'Phone')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('customers.address', 'Address')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('customers.proposalsHeader', 'Proposals')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('customers.ordersHeader', 'Orders')}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{t('customers.actions', 'Actions')}</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>
+                {sortedFilteredCustomers?.length === 0 ? (
                   <CTableRow>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
-                      Location
-                    </CTableHeaderCell>
-                    <CTableHeaderCell 
-                      className="border-0 fw-semibold text-muted py-3"
-                      onClick={() => handleSort('name')}
-                      style={{ cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilUser} size="sm" />
-                        Name
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
-                          {getSortIcon('name')}
-                        </span>
-                      </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell 
-                      className="border-0 fw-semibold text-muted py-3"
-                      onClick={() => handleSort('email')}
-                      style={{ cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilEnvelopeClosed} size="sm" />
-                        Email
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
-                          {getSortIcon('email')}
-                        </span>
-                      </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
-                      Proposals
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
-                      Orders
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">
-                      Actions
-                    </CTableHeaderCell>
+                    <CTableDataCell colSpan="8" className="text-center py-5">
+                      <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+                      <p className="mb-0">{t('customers.noResults')}</p>
+                      <small className="text-muted">{t('customers.tryAdjusting')}</small>
+                    </CTableDataCell>
                   </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {sortedFilteredCustomers?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="6" className="text-center py-5">
-                        <div className="text-muted">
-                          <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
-                          <p className="mb-0">No customers found</p>
-                          <small>Try adjusting your search criteria</small>
+                ) : (
+                  sortedFilteredCustomers?.map((cust) => (
+                    <CTableRow key={cust.id}>
+                      <CTableDataCell>
+                        <CBadge color="secondary" shape="rounded-pill">
+                          {t('customers.main', 'Main')}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell className="fw-medium">{cust.name || 'N/A'}</CTableDataCell>
+                      <CTableDataCell className="text-muted">{cust.email || 'N/A'}</CTableDataCell>
+                      <CTableDataCell className="text-muted">{cust.mobile || cust.homePhone || 'No phone'}</CTableDataCell>
+                      <CTableDataCell className="text-muted">{formatAddress(cust) || 'No address'}</CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color="info" shape="rounded-pill">
+                          {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color="success" shape="rounded-pill">
+                          {t('customers.ordersCount', { count: 0 })}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell className="text-center">
+                        <div className="d-flex justify-content-center gap-2">
+                          <PermissionGate action="update" resource="customer" item={cust}>
+                            <CButton
+                              color="primary"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(cust)}
+                              title={t('customers.editTooltip', 'Edit customer')}
+                            >
+                              <CIcon icon={cilPencil} />
+                            </CButton>
+                          </PermissionGate>
+                          <PermissionGate action="delete" resource="customer" item={cust}>
+                            <CButton
+                              color="danger"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(cust.id)}
+                              title={t('customers.deleteTooltip', 'Delete customer')}
+                            >
+                              <CIcon icon={cilTrash} />
+                            </CButton>
+                          </PermissionGate>
                         </div>
                       </CTableDataCell>
                     </CTableRow>
-                  ) : (
-                    sortedFilteredCustomers?.map((cust) => (
-                      <CTableRow key={cust.id} style={{ transition: 'all 0.2s ease' }}>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="secondary" 
-                            className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '15px',
-                              fontSize: '11px',
-                              fontWeight: '500'
-                            }}
-                          >
-                            Main
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <div className="fw-medium text-dark">
-                            {cust.name || 'N/A'}
-                          </div>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <span className="text-muted">
-                            {cust.email || 'N/A'}
-                          </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="info" 
-                            className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '20px',
-                              fontSize: '12px',
-                              fontWeight: '500',
-                              // backgroundColor: '#e7f3ff',
-                              // color: '#0d6efd'
-                            }}
-                          >
-                            {cust.proposalCount || 0} Proposals
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="success" 
-                            className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '20px',
-                              fontSize: '12px',
-                              fontWeight: '500',
-                              // backgroundColor: '#e6ffed',
-                              // color: '#28a745'
-                            }}
-                          >
-                            0 Orders
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
-                          <div className="d-flex justify-content-center gap-2">
-                            <CButton
-                              color="light"
-                              size="sm"
-                              className="p-2"
-                              onClick={() => handleEdit(cust)}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e7f3ff';
-                                e.currentTarget.style.borderColor = '#0d6efd';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
-                            >
-                              <CIcon
-                                icon={cilPencil}
-                                size="sm"
-                                style={{ color: '#0d6efd' }}
-                              />
-                            </CButton>
+                  ))
+                )}
+              </CTableBody>
+            </CTable>
+          </CCard>
+        </div>
+      )}
 
-                            <CButton
-                              color="light"
-                              size="sm"
-                              className="p-2"
-                              onClick={() => handleDelete(cust.id)}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#ffe6e6';
-                                e.currentTarget.style.borderColor = '#dc3545';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
-                            >
-                              <CIcon
-                                icon={cilTrash}
-                                size="sm"
-                                style={{ color: '#dc3545' }}
-                              />
-                            </CButton>
-                          </div>
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))
-                  )}
-                </CTableBody>
-              </CTable>
-            </div>
-            
-            {/* Pagination */}
-            
-              <div className="p-3 border-top border-light">
-                <PaginationComponent
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  itemsPerPage={itemsPerPage}
-                />
-              </div>
-            
+      {/* Mobile Card Layout */}
+      {!loading && !error && (
+        <div className="mobile-card-view">
+          {sortedFilteredCustomers?.length === 0 ? (
+            <CCard>
+              <CCardBody className="text-center py-5">
+                <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+                <p className="mb-0">{t('customers.noResults')}</p>
+                <small className="text-muted">{t('customers.tryAdjusting')}</small>
+              </CCardBody>
+            </CCard>
+          ) : (
+            sortedFilteredCustomers?.map((cust) => (
+              <CCard key={cust.id}>
+                <CCardBody>
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div>
+                      <div className="customer-name">{cust.name || 'N/A'}</div>
+                      <CBadge color="secondary" shape="rounded-pill" className="mt-1">
+                        {t('customers.main', 'Main')}
+                      </CBadge>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="contact-info">
+                      <CIcon icon={cilEnvelopeClosed} />
+                      <span>{cust.email || 'N/A'}</span>
+                    </div>
+                    <div className="contact-info">
+                      <CIcon icon={cilPhone} />
+                      <span>{cust.mobile || cust.homePhone || 'No phone'}</span>
+                    </div>
+                    <div className="contact-info">
+                      <CIcon icon={cilLocationPin} />
+                      <span>{formatAddress(cust) || 'No address'}</span>
+                    </div>
+                  </div>
+                  <div className="stats-pills">
+                    <CBadge color="info" shape="rounded-pill">
+                      {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
+                    </CBadge>
+                    <CBadge color="success" shape="rounded-pill">
+                      {t('customers.ordersCount', { count: 0 })}
+                    </CBadge>
+                  </div>
+                  <div className="actions">
+                    <PermissionGate action="update" resource="customer" item={cust}>
+                      <CButton
+                        color="primary"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(cust)}
+                        className="flex-grow-1"
+                      >
+                        <CIcon icon={cilPencil} className="me-1" />
+                        {t('common.edit')}
+                      </CButton>
+                    </PermissionGate>
+                    <PermissionGate action="delete" resource="customer" item={cust}>
+                      <CButton
+                        color="danger"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(cust.id)}
+                        className="flex-grow-1"
+                      >
+                        <CIcon icon={cilTrash} className="me-1" />
+                        {t('common.delete')}
+                      </CButton>
+                    </PermissionGate>
+                  </div>
+                </CCardBody>
+              </CCard>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!loading && !error && totalPages > 1 && (
+        <CCard className="data-table-card mt-4">
+          <CCardBody>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+            />
           </CCardBody>
         </CCard>
       )}
@@ -417,4 +448,4 @@ const CustomerTable = () => {
   );
 };
 
-export default CustomerTable;
+export default withContractorScope(CustomerTable, 'customers');

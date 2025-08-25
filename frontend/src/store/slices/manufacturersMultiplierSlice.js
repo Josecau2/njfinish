@@ -37,6 +37,18 @@ export const updateMultiManufacturer = createAsyncThunk(
   }
 )
 
+export const createMultiManufacturer = createAsyncThunk(
+  'manufacturersMultiplierSlice/createMultiManufacturer',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/api/multi-manufacturer`, data)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message)
+    }
+  }
+)
+
 const manufacturersSlice = createSlice({
   name: 'multiManufacturer',
   initialState: {
@@ -84,6 +96,15 @@ const manufacturersSlice = createSlice({
       })
       .addCase(updateMultiManufacturer.rejected, (state, action) => {
         state.error = action.payload || 'Failed to update manufacturer'
+      })
+      .addCase(createMultiManufacturer.pending, (state) => {
+        state.error = null
+      })
+      .addCase(createMultiManufacturer.fulfilled, (state, action) => {
+        state.list.push(action.payload.manufacturer)
+      })
+      .addCase(createMultiManufacturer.rejected, (state, action) => {
+        state.error = action.payload || 'Failed to create manufacturer'
       })
   }
 });

@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 import {
   CCard, CCardBody, CFormInput, CInputGroup, CInputGroupText,
   CTable, CTableHead, CTableBody, CTableRow, CTableDataCell,
@@ -9,6 +16,7 @@ import PaginationControls from "../../../../components/PaginationControls";
 import axiosInstance from '../../../../helpers/axiosInstance';
 
 const SettingsTab = ({ manufacturer }) => {
+  const { t } = useTranslation();
   const [styleCollection, setStyleCollection] = useState([]);
 
   const [searchCode1, setSearchCode1] = useState('');
@@ -39,7 +47,9 @@ const SettingsTab = ({ manufacturer }) => {
     const fetchStyles = async () => {
       if (!manufacturer?.id) return;
       try {
-        const res = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`);
+        const res = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`, {
+          headers: getAuthHeaders()
+        });
         setStyleCollection(res.data);
       } catch (error) {
         console.error('Error fetching styles:', error);
@@ -107,9 +117,9 @@ const SettingsTab = ({ manufacturer }) => {
   const renderDropdown = (selectedFields, toggleHandler, prefix) => (
     <CDropdown className="ms-2">
       <CDropdownToggle color="secondary" variant="outline">
-        {selectedFields.length > 0
+          {selectedFields.length > 0
           ? selectedFields.slice(0, 4).map(f => f.toUpperCase()).join(', ')
-          : 'Displayed Columns'}
+          : t('common.displayedColumns', 'Displayed Columns')}
         {selectedFields.length > 4 && '...'}
       </CDropdownToggle>
       <CDropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -143,7 +153,7 @@ const SettingsTab = ({ manufacturer }) => {
         {data.length > 0 ? (
           data.map(item => (
             <CTableRow key={item.id}>
-              {selectedFields1.map(field => (
+              {selectedFields.map(field => (
                 <CTableDataCell key={field}>
                   {['code', 'description'].includes(field)
                     ? item[field]
@@ -158,7 +168,7 @@ const SettingsTab = ({ manufacturer }) => {
         ) : (
           <CTableRow>
             <CTableDataCell colSpan={selectedFields.length} className="text-center">
-              No data found.
+              {t('common.noData', 'No data found.')}
             </CTableDataCell>
           </CTableRow>
         )}
@@ -171,18 +181,18 @@ const SettingsTab = ({ manufacturer }) => {
       {/* Cost Multiplier Card */}
       <CCard>
         <CCardBody>
-          <p><strong>Your cost multiplier</strong></p>
+          <p><strong>{t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}</strong></p>
           <div className="border rounded p-2 mb-3 small" style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}>
-            Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.
+            {t('settings.manufacturers.settings.costMultiplierHelp', 'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.')}
           </div>
           <CFormInput
             value={multiplier1}
             onChange={e => {
               const value = e.target.value;
               setMultiplier1(value);
-              setMultiplier1Error(value.trim() === '' ? 'Cost multiplier is required' : '');
+              setMultiplier1Error(value.trim() === '' ? t('settings.users.form.validation.required') : '');
             }}
-            placeholder="1.000"
+            placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
           />
@@ -192,7 +202,7 @@ const SettingsTab = ({ manufacturer }) => {
             <CFormInput
               value={searchCode1}
               onChange={e => setSearchCode1(e.target.value)}
-              placeholder="Enter part code..."
+              placeholder={t('common.search') + '...'}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
             {/* {renderDropdown(selectedFields1, field => toggleField(field, setSelectedFields1, selectedFields1), '1')} */}
@@ -203,9 +213,9 @@ const SettingsTab = ({ manufacturer }) => {
           )}
 
           <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>Page {page1} of {totalPages1}</div>
+            <div>{t('common.pageOf', { page: page1, total: totalPages1, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              Items per page:
+              {t('common.itemsPerPage', 'Items per page:')}
               <CFormSelect
                 size="sm"
                 className="d-inline w-auto ms-2"
@@ -230,18 +240,18 @@ const SettingsTab = ({ manufacturer }) => {
       {/* Customer Multiplier Card */}
       <CCard className="mt-4">
         <CCardBody>
-          <p><strong>Customer price multiplier</strong></p>
+          <p><strong>{t('settings.manufacturers.settings.customerMultiplierTitle', 'Customer price multiplier')}</strong></p>
           <div className="border rounded p-2 mb-3 small" style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}>
-            Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.
+            {t('settings.manufacturers.settings.customerMultiplierHelp', 'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.')}
           </div>
           <CFormInput
             value={multiplier2}
             onChange={e => {
               const value = e.target.value;
               setMultiplier2(value);
-              setMultiplier2Error(value.trim() === '' ? 'Multiplier is required' : '');
+              setMultiplier2Error(value.trim() === '' ? t('settings.users.form.validation.required') : '');
             }}
-            placeholder="1.000"
+            placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
           />
@@ -251,7 +261,7 @@ const SettingsTab = ({ manufacturer }) => {
             <CFormInput
               value={searchCode2}
               onChange={e => setSearchCode2(e.target.value)}
-              placeholder="Enter part code..."
+              placeholder={t('common.search') + '...'}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
             {/* {renderDropdown(selectedFields2, field => toggleField(field, setSelectedFields2, selectedFields2), '2')} */}
@@ -262,9 +272,9 @@ const SettingsTab = ({ manufacturer }) => {
           )}
 
           <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>Page {page2} of {totalPages2}</div>
+            <div>{t('common.pageOf', { page: page2, total: totalPages2, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              Items per page:
+              {t('common.itemsPerPage', 'Items per page:')}
               <CFormSelect
                 size="sm"
                 className="d-inline w-auto ms-2"

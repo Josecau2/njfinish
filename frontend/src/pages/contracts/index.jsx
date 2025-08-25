@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CContainer,
   CRow,
@@ -50,6 +51,7 @@ import axiosInstance from '../../helpers/axiosInstance';
 import PaginationComponent from '../../components/common/PaginationComponent';
 
 const Contracts = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,11 +137,11 @@ const Contracts = () => {
   };
 
   const handleEdit = (id) => {
-    console.log('Edit contract:', id);
+    // TODO: Implement edit functionality
   };
 
   const handleDelete = (id) => {
-    console.log('Delete contract:', id);
+    // TODO: Implement delete functionality
   };
 
   const generateHTMLTemplate = (formData) => {
@@ -147,12 +149,44 @@ const Contracts = () => {
     const headerTxtColor = "#000000";
     const items = formData?.manufacturersData?.[0]?.items || [];
     
+    // Localized labels for the PDF/HTML template
+    const pdf = {
+      title: t('nav.contracts'),
+      sectionHeader: t('contracts.pdf.sectionHeader'),
+      columns: {
+        no: t('contracts.pdf.columns.no'),
+        qty: t('contracts.pdf.columns.qty'),
+        item: t('contracts.pdf.columns.item'),
+        assembled: t('contracts.pdf.columns.assembled'),
+        hingeSide: t('contracts.pdf.columns.hingeSide'),
+        exposedSide: t('contracts.pdf.columns.exposedSide'),
+        price: t('contracts.pdf.columns.price'),
+        assemblyFee: t('contracts.pdf.columns.assemblyFee'),
+        total: t('contracts.pdf.columns.total'),
+      },
+      categories: {
+        items: t('contracts.pdf.categories.items'),
+      },
+      summary: {
+        cabinets: t('contracts.pdf.summary.cabinetsParts'),
+        assemblyFee: t('contracts.pdf.summary.assemblyFee'),
+        modifications: t('contracts.pdf.summary.modifications'),
+        styleTotal: t('contracts.pdf.summary.styleTotal'),
+        total: t('contracts.pdf.summary.total'),
+        tax: t('contracts.pdf.summary.tax'),
+        grandTotal: t('contracts.pdf.summary.grandTotal'),
+      },
+      yes: t('common.yes'),
+      no: t('common.no'),
+      na: t('common.na'),
+    };
+
     const proposalItems = items.map((item) => ({
       qty: item.qty || 0,
       code: item.code || '',
-      assembled: item.isRowAssembled ? 'Yes' : 'No',
-      hingeSide: item.hingeSide || 'N/A',
-      exposedSide: item.exposedSide || 'N/A',
+      assembled: !!item.isRowAssembled,
+      hingeSide: item.hingeSide || null,
+      exposedSide: item.exposedSide || null,
       price: parseFloat(item.price) || 0,
       assemblyCost: item.includeAssemblyFee ? parseFloat(item.assemblyFee) || 0 : 0,
       total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
@@ -180,12 +214,12 @@ const Contracts = () => {
           grandTotal: 0,
         };
 
-    return `
+  return `
       <!DOCTYPE html>
       <html>
       <head>
           <meta charset="utf-8">
-          <title>Contract</title>
+      <title>${pdf.title}</title>
           <style>
               @page { margin: 20mm; size: A4; }
               * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -213,35 +247,35 @@ const Contracts = () => {
       </head>
       <body>
           ${proposalItems && proposalItems.length > 0 ? `
-          <div class="section-header">Contract Items Details</div>
+      <div class="section-header">${pdf.sectionHeader}</div>
           <table class="items-table">
               <thead>
                   <tr style="background-color: #f0f0f0;">
-                      <th style="border: 1px solid #ccc; padding: 5px;">No.</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Qty</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Item</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Assembled</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Hinge Side</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Exposed Side</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Price</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Assembly Fee</th>
-                      <th style="border: 1px solid #ccc; padding: 5px;">Total</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.no}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.qty}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.item}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.assembled}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.hingeSide}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.exposedSide}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.price}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.assemblyFee}</th>
+            <th style="border: 1px solid #ccc; padding: 5px;">${pdf.columns.total}</th>
                   </tr>
               </thead>
               <tbody>
                   <tr class="category-row">
-                      <td colspan="9" style="padding: 6px;"><strong>Items</strong></td>
+            <td colspan="9" style="padding: 6px;"><strong>${pdf.categories.items}</strong></td>
                   </tr>
                   ${proposalItems.map((item, index) => `
                       <tr>
                           <td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>
-                          <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled ? 'Yes' : 'No'}</td>
-                          <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide || 'N/A'}</td>
-                          <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide || 'N/A'}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled ? pdf.yes : pdf.no}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide || pdf.na}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide || pdf.na}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>
-                          <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>
                       </tr>
                   `).join('')}
@@ -250,31 +284,31 @@ const Contracts = () => {
           <div class="price-summary">
               <table>
                   <tr>
-                      <td class="text-left">Cabinets & Parts:</td>
+            <td class="text-left">${pdf.summary.cabinets}</td>
                       <td class="text-right">$${priceSummary.cabinets.toFixed(2)}</td>
                   </tr>
                   <tr>
-                      <td class="text-left">Assembly fee:</td>
+            <td class="text-left">${pdf.summary.assemblyFee}</td>
                       <td class="text-right">$${priceSummary.assemblyFee.toFixed(2)}</td>
                   </tr>
                   <tr class="total-row">
-                      <td class="text-left">Modifications:</td>
+            <td class="text-left">${pdf.summary.modifications}</td>
                       <td class="text-right">$${priceSummary.modifications.toFixed(2)}</td>
                   </tr>
                   <tr>
-                      <td class="text-left">Style Total:</td>
+            <td class="text-left">${pdf.summary.styleTotal}</td>
                       <td class="text-right">$${priceSummary.styleTotal.toFixed(2)}</td>
                   </tr>
                   <tr>
-                      <td class="text-left">Total:</td>
+            <td class="text-left">${pdf.summary.total}</td>
                       <td class="text-right">$${priceSummary.total.toFixed(2)}</td>
                   </tr>
                   <tr class="total-row">
-                      <td class="text-left">Tax:</td>
+            <td class="text-left">${pdf.summary.tax}</td>
                       <td class="text-right">$${priceSummary.tax.toFixed(2)}</td>
                   </tr>
                   <tr class="grand-total">
-                      <td class="text-left">Grand Total:</td>
+            <td class="text-left">${pdf.summary.grandTotal}</td>
                       <td class="text-right">$${priceSummary.grandTotal.toFixed(2)}</td>
                   </tr>
               </table>
@@ -288,14 +322,14 @@ const Contracts = () => {
   const htmlContent = generateHTMLTemplate(formData);
 
   return (
-    <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="contracts-container">
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-1" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <CCard className="contracts-header-card">
         <CCardBody className="py-4">
           <CRow className="align-items-center">
             <CCol>
-              <h3 className="text-white mb-1 fw-bold">Contracts</h3>
-              <p className="text-white-50 mb-0">Manage and track all your contracts</p>
+              <h3 className="contracts-header-title">{t('nav.contracts')}</h3>
+              <p className="contracts-header-subtitle">{t('contracts.subtitle')}</p>
             </CCol>
             {/* <CCol xs="auto">
               <div className="d-flex gap-2">
@@ -330,7 +364,7 @@ const Contracts = () => {
       </CCard>
 
       {/* Search and Controls */}
-      <CCard className="border-0 shadow-sm mb-1">
+      <CCard className="contracts-controls-card">
         <CCardBody>
           <CRow className="align-items-center">
             <CCol md={6} lg={4}>
@@ -340,15 +374,10 @@ const Contracts = () => {
                 </CInputGroupText>
                 <CFormInput
                   type="text"
-                  placeholder="Search by customer name..."
+                  placeholder={t('contracts.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    padding: '12px 16px'
-                  }}
+                  className="contracts-search-input"
                 />
               </CInputGroup>
             </CCol>
@@ -356,7 +385,7 @@ const Contracts = () => {
             <CCol xs="auto" className="ms-auto">
               <div className="d-flex align-items-center gap-3">
                 <div className="d-flex align-items-center gap-2">
-                  <small className="text-muted">Show:</small>
+                  <small className="text-muted">{t('common.itemsPerPage')}</small>
                   <CFormSelect
                     size="sm"
                     value={itemsPerPage}
@@ -373,16 +402,18 @@ const Contracts = () => {
                   <CButton
                     color={viewMode === 'card' ? 'primary' : 'light'}
                     onClick={() => setViewMode('card')}
+                    className="contracts-view-toggle"
                     style={{ borderRadius: '8px 0 0 8px' }}
                   >
-                    Cards
+                    {t('contracts.view.cards')}
                   </CButton>
                   <CButton
                     color={viewMode === 'table' ? 'primary' : 'light'}
                     onClick={() => setViewMode('table')}
+                    className="contracts-view-toggle"
                     style={{ borderRadius: '0 8px 8px 0' }}
                   >
-                    Table
+                    {t('contracts.view.table')}
                   </CButton>
                 </CButtonGroup>
               </div>
@@ -403,39 +434,24 @@ const Contracts = () => {
         <CRow className="g-3 mb-1">
           {paginatedItems?.length === 0 ? (
             <CCol xs={12}>
-              <CCard className="text-center py-5 border-0 shadow-sm">
+              <CCard className="contracts-empty-state">
                 <CCardBody>
-                  <h5 className="text-muted mb-2">No contracts found</h5>
-                  <p className="text-muted mb-0">Try adjusting your search criteria or create a new contract</p>
+                  <h5 className="text-muted mb-2">{t('contracts.empty.title')}</h5>
+                  <p className="text-muted mb-0">{t('contracts.empty.subtitle')}</p>
                 </CCardBody>
               </CCard>
             </CCol>
           ) : (
             paginatedItems?.map((item) => (
               <CCol key={item.id} xs={12} sm={6} lg={4} xl={3}>
-                <CCard 
-                  className="h-100 border-0 shadow-sm" 
-                  style={{ 
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '';
-                  }}
-                >
-                  <CCardHeader className="border-0 bg-white py-3">
+                <CCard className="contracts-card">
+                  <CCardHeader className="contracts-card-header">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center gap-2">
                         <CIcon 
                           icon={cilCalendar} 
                           size="sm" 
-                          className="text-primary"
-                          style={{ backgroundColor: '#e7f3ff', padding: '6px', borderRadius: '6px' }}
+                          className="contracts-card-date-icon"
                         />
                         <small className="text-muted fw-medium">
                           {new Date(item.date || item.createdAt).toLocaleDateString()}
@@ -473,7 +489,7 @@ const Contracts = () => {
                   </CCardHeader>
                   
                   <CCardBody className="pt-0">
-                    <CCardTitle className="h6 mb-3 d-flex align-items-center gap-2">
+                    <CCardTitle className="contracts-card-title d-flex align-items-center gap-2">
                       <div 
                         className="d-flex align-items-center justify-content-center"
                         style={{
@@ -488,25 +504,16 @@ const Contracts = () => {
                       >
                         {(item.customer?.name || 'N').charAt(0).toUpperCase()}
                       </div>
-                      <span 
-                        className="text-primary fw-semibold"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {item.customer?.name || 'N/A'}
+                      <span className="text-primary fw-semibold" style={{ cursor: 'pointer' }}>
+                        {item.customer?.name || t('common.na')}
                       </span>
                     </CCardTitle>
                     
-                    <CCardText 
-                      className="text-muted small mb-3" 
-                      style={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        minHeight: '40px'
-                      }}
-                    >
-                      {item.description || 'No description available'}
+                    <CCardText className="contracts-card-customer">
+                      {item.description || t('contracts.noDescription')}
+                    </CCardText>
+                    <CCardText className="contracts-card-customer">
+                      {item.description || t('contracts.noDescription')}
                     </CCardText>
                     
                     <div className="d-flex align-items-center gap-2 mb-3">
@@ -517,21 +524,29 @@ const Contracts = () => {
                         style={{ backgroundColor: '#e6f7e6', padding: '4px', borderRadius: '4px' }}
                       />
                       <small className="text-muted fw-medium">
-                        {item.designerData?.name || 'No designer assigned'}
+                        {item.designerData?.name || t('contracts.noDesigner')}
                       </small>
                     </div>
                     
                     <div className="d-flex justify-content-between align-items-center">
                       <CBadge
                         color={getStatusColor(item.status || 'Draft')}
-                        className="px-3 py-2"
-                        style={{
-                          borderRadius: '20px',
-                          fontSize: '11px',
-                          fontWeight: '500'
-                        }}
+                        className="contracts-card-status"
                       >
-                        {item.status || 'Draft'}
+                        {(() => {
+                          const map = {
+                            'draft': 'draft',
+                            'measurement scheduled': 'measurementScheduled',
+                            'measurement done': 'measurementDone',
+                            'design done': 'designDone',
+                            'follow up 1': 'followUp1',
+                            'follow up 2': 'followUp2',
+                            'follow up 3': 'followUp3',
+                            'proposal accepted': 'proposalAccepted',
+                          };
+                          const key = map[(item.status || 'Draft').toLowerCase()] || null;
+                          return key ? t(`contracts.status.${key}`) : (item.status || t('contracts.status.draft'));
+                        })()}
                       </CBadge>
                       
                       <CButton
@@ -546,7 +561,7 @@ const Contracts = () => {
                           fontWeight: '500'
                         }}
                       >
-                        View Details
+                        {t('contracts.viewDetails')}
                       </CButton>
                     </div>
                   </CCardBody>
@@ -557,18 +572,18 @@ const Contracts = () => {
         </CRow>
       ) : (
         /* Table View */
-        <CCard className="border-0 shadow-sm">
+        <CCard className="contracts-table-card">
           <CCardBody className="p-0">
             <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
-                <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
+              <CTable hover responsive className="contracts-table">
+                <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Date</CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Customer</CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Description</CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Designer</CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">Status</CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">Actions</CTableHeaderCell>
+                    <CTableHeaderCell>{t('contracts.table.date')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('contracts.table.customer')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('contracts.table.description')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('contracts.table.designer')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('contracts.table.status')}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center">{t('contracts.table.actions')}</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -576,8 +591,8 @@ const Contracts = () => {
                     <CTableRow>
                       <CTableDataCell colSpan="6" className="text-center py-5">
                         <div className="text-muted">
-                          <p className="mb-0">No contracts found</p>
-                          <small>Try adjusting your search or create a new contract</small>
+                          <p className="mb-0">{t('contracts.empty.title')}</p>
+                          <small>{t('contracts.empty.subtitle')}</small>
                         </div>
                       </CTableDataCell>
                     </CTableRow>
@@ -597,7 +612,7 @@ const Contracts = () => {
                             fontWeight: '500'
                           }}
                         >
-                          {item.customer?.name || 'N/A'}
+                          {item.customer?.name || t('common.na')}
                         </CTableDataCell>
                         <CTableDataCell 
                           className="py-3 border-0 border-bottom border-light"
@@ -608,12 +623,12 @@ const Contracts = () => {
                           }}
                         >
                           <span className="text-muted">
-                            {item.description || 'N/A'}
+                            {item.description || t('common.na')}
                           </span>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
                           <span className="fw-medium">
-                            {item.designerData?.name || 'N/A'}
+                            {item.designerData?.name || t('common.na')}
                           </span>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
@@ -626,7 +641,20 @@ const Contracts = () => {
                               fontWeight: '500'
                             }}
                           >
-                            {item.status || 'Draft'}
+                            {(() => {
+                              const map = {
+                                'draft': 'draft',
+                                'measurement scheduled': 'measurementScheduled',
+                                'measurement done': 'measurementDone',
+                                'design done': 'designDone',
+                                'follow up 1': 'followUp1',
+                                'follow up 2': 'followUp2',
+                                'follow up 3': 'followUp3',
+                                'proposal accepted': 'proposalAccepted',
+                              };
+                              const key = map[(item.status || 'Draft').toLowerCase()] || null;
+                              return key ? t(`contracts.status.${key}`) : (item.status || t('contracts.status.draft'));
+                            })()}
                           </CBadge>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
@@ -660,27 +688,10 @@ const Contracts = () => {
                             <CButton
                               color="light"
                               size="sm"
-                              className="p-2"
+                              className="contracts-action-btn"
                               onClick={() => handleDelete(item.id)}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#ffe6e6';
-                                e.currentTarget.style.borderColor = '#dc3545';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
                             >
-                              <CIcon
-                                icon={cilTrash}
-                                size="sm"
-                                style={{ color: '#dc3545' }}
-                              />
+                              <CIcon icon={cilTrash} size="sm" style={{ color: '#dc3545' }} />
                             </CButton>
                           </div>
                         </CTableDataCell>
@@ -692,7 +703,7 @@ const Contracts = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-3 border-top border-light">
+            <div className="contracts-pagination">
               <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -720,16 +731,16 @@ const Contracts = () => {
           }}
         >
           <CModalTitle className="fw-bold">
-            Contract Details
+            {t('contracts.modal.title')}
           </CModalTitle>
         </CModalHeader>
         <CModalBody className="p-4">
           {loadings ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('common.loading')}</span>
               </div>
-              <p className="mt-3 text-muted">Loading contract details...</p>
+              <p className="mt-3 text-muted">{t('contracts.loadingDetails')}</p>
             </div>
           ) : htmlContent ? (
             <div 
@@ -740,17 +751,17 @@ const Contracts = () => {
                 border: '1px solid #e3e6f0',
                 borderRadius: '8px',
                 padding: '20px',
-                backgroundColor: '#fefefe'
+                backgroundColor: 'var(--cui-body-bg)'
               }}
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
           ) : (
             <div className="text-center py-5">
-              <p className="text-muted mb-0">No contract data available</p>
+              <p className="text-muted mb-0">{t('contracts.noData')}</p>
             </div>
           )}
         </CModalBody>
-        <CModalFooter className="border-0 bg-light">
+  <CModalFooter className="border-0 bg-body-secondary">
           <div className="d-flex gap-2 w-100 justify-content-end">
             <CButton 
               color="secondary" 
@@ -758,7 +769,7 @@ const Contracts = () => {
               className="px-4"
               style={{ borderRadius: '8px' }}
             >
-              Close
+              {t('common.close')}
             </CButton>
             {/* <CButton 
               color="primary"

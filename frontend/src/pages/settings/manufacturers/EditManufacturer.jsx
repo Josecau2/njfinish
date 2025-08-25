@@ -15,12 +15,14 @@ import FilesHistoryTab from './tabs/FilesHistoryTab';
 import { useParams } from 'react-router-dom';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const EditManufacturer = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [activeKey, setActiveKey] = useState(0);
   const manufacturer = useSelector((state) => state.manufacturers.selected);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
@@ -37,7 +39,7 @@ const EditManufacturer = () => {
             active={activeKey === 0}
             onClick={() => setActiveKey(0)}
           >
-            Edit Manufacturer Details
+              {t('settings.manufacturers.tabs.editDetails')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
@@ -46,7 +48,7 @@ const EditManufacturer = () => {
             active={activeKey === 1}
             onClick={() => setActiveKey(1)}
           >
-            Settings
+              {t('settings.manufacturers.tabs.settings')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
@@ -55,7 +57,7 @@ const EditManufacturer = () => {
             active={activeKey === 2}
             onClick={() => setActiveKey(2)}
           >
-            Catalog Mapping
+              {t('settings.manufacturers.tabs.catalogMapping')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
@@ -64,7 +66,7 @@ const EditManufacturer = () => {
             active={activeKey === 3}
             onClick={() => setActiveKey(3)}
           >
-            Files & History
+              {t('settings.manufacturers.tabs.filesHistory')}
           </CNavLink>
         </CNavItem>
       </CNav>

@@ -1,10 +1,28 @@
 const ResourceLink = require('../models/ResourceLink');
 const ResourceFile = require('../models/ResourceFile');
+const { Op } = require('sequelize');
+const fs = require('fs');
 
 
 const getLinks = async (req, res) => {
     try {
+        const user = req.user;
+        
+        // Build where clause with group visibility
+        let whereClause = {};
+        
+        // Apply group visibility filtering
+        if (user.group_id && user.group && user.group.group_type === 'contractor') {
+            // Contractors can only see links visible to 'contractor' type or their specific group
+            whereClause[Op.or] = [
+                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
+                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+            ];
+        }
+        // Admins can see all links (no additional filtering)
+
         const links = await ResourceLink.findAll({
+            where: whereClause,
             order: [['createdAt', 'DESC']],
             attributes: ['id', 'title', 'url', 'type', 'createdAt', 'updatedAt'],
         });
@@ -152,8 +170,23 @@ const deleteLink = async (req, res) => {
 // 
 const getFiles = async (req, res) => {
     try {
+        const user = req.user;
+        
+        // Build where clause with group visibility
+        let whereClause = { is_deleted: false };
+        
+        // Apply group visibility filtering
+        if (user.group_id && user.group && user.group.group_type === 'contractor') {
+            // Contractors can only see files visible to 'contractor' type or their specific group
+            whereClause[Op.or] = [
+                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
+                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+            ];
+        }
+        // Admins can see all files (no additional filtering)
+
         const files = await ResourceFile.findAll({
-            where: { is_deleted: false },
+            where: whereClause,
             order: [['created_at', 'DESC']],
             attributes: [
                 'id',
@@ -200,7 +233,7 @@ const saveFile = async (req, res) => {
       });
     }
 
-    console.log('req.file',req.file);
+    // Avoid logging uploaded file details to prevent leaking paths/PII
     const { originalname, filename, path: filePath, size, mimetype } = req.file;
     const fileType = getFileType(originalname);
     const fileCategory = getFileType(originalname);
@@ -394,20 +427,32 @@ const deleteFile = async (req, res) => {
 const downloadFile = async (req, res) => {
     try {
         const { id } = req.params;
+        const user = req.user;
 
-        const [file] = await db.execute(
-            'SELECT file_path, original_name, mime_type FROM resource_files WHERE id = ? AND is_deleted = 0',
-            [id]
-        );
+        // Build where clause with group visibility
+        let whereClause = { id: id, is_deleted: false };
+        
+        // Apply group visibility filtering for contractors
+        if (user.group_id && user.group && user.group.group_type === 'contractor') {
+            whereClause[Op.or] = [
+                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
+                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+            ];
+        }
 
-        if (file.length === 0) {
+        const file = await ResourceFile.findOne({
+            where: whereClause,
+            attributes: ['file_path', 'original_name', 'mime_type']
+        });
+
+        if (!file) {
             return res.status(404).json({
                 success: false,
-                message: 'File not found'
+                message: 'File not found or access denied'
             });
         }
 
-        const filePath = file[0].file_path;
+        const filePath = file.file_path;
 
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({
@@ -416,8 +461,8 @@ const downloadFile = async (req, res) => {
             });
         }
 
-        res.setHeader('Content-Disposition', `attachment; filename="${file[0].original_name}"`);
-        res.setHeader('Content-Type', file[0].mime_type);
+        res.setHeader('Content-Disposition', `attachment; filename="${file.original_name}"`);
+        res.setHeader('Content-Type', file.mime_type);
 
         const fileStream = fs.createReadStream(filePath);
         fileStream.pipe(res);
@@ -426,7 +471,7 @@ const downloadFile = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error downloading file',
-            error: error.message
+            error: error.message,
         });
     }
 };
@@ -451,6 +496,94 @@ const getFileType = (filename) => {
     return 'other';
 };
 
+// Contractor-scoped resources endpoint
+const getResources = async (req, res) => {
+    try {
+        const { scope } = req.query;
+        const user = req.user;
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+
+        let whereClause = { is_deleted: false };
+
+        // Apply contractor scoping
+        if (scope === 'contractor' && user.group_id && user.group && user.group.type === 'contractor') {
+            // For contractors, show resources visible to:
+            // 1. All contractors (visible_to_group_types includes 'contractor')
+            // 2. Specific contractor group (visible_to_group_ids includes their group_id)
+            whereClause = {
+                ...whereClause,
+                [Op.or]: [
+                    // Resources visible to all contractors
+                    require('sequelize').literal(`JSON_CONTAINS(visible_to_group_types, '"contractor"')`),
+                    // Resources visible to specific contractor group
+                    require('sequelize').literal(`JSON_CONTAINS(visible_to_group_ids, '${user.group_id}')`),
+                ]
+            };
+        } else if (user.group && user.group.type === 'admin') {
+            // Admins can see all resources
+            // No additional filtering needed
+        } else {
+            // Non-contractor users get empty results
+            whereClause = { ...whereClause, id: -1 }; // Impossible condition
+        }
+
+        // Fetch links and files
+        const [links, files] = await Promise.all([
+            ResourceLink.findAll({
+                where: whereClause,
+                order: [['createdAt', 'DESC']],
+                attributes: ['id', 'title', 'url', 'type', 'createdAt', 'updatedAt', 'visible_to_group_types', 'visible_to_group_ids'],
+            }),
+            ResourceFile.findAll({
+                where: whereClause,
+                order: [['created_at', 'DESC']],
+                attributes: [
+                    'id',
+                    'name',
+                    'original_name',
+                    'file_path',
+                    'file_size',
+                    'file_type',
+                    'mime_type',
+                    ['created_at', 'uploadedAt'],
+                    ['updated_at', 'updatedAt'],
+                    'visible_to_group_types',
+                    'visible_to_group_ids'
+                ],
+            })
+        ]);
+
+        const formattedFiles = files.map(file => ({
+            ...file.toJSON(),
+            size: formatFileSize(file.file_size),
+            type: file.file_type,
+            url: `/api/resources/files/download/${file.id}`,
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: {
+                links: links,
+                files: formattedFiles
+            },
+            message: 'Resources fetched successfully',
+        });
+    } catch (error) {
+        console.error('Error fetching resources:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching resources',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     getLinks,
     saveLink,
@@ -460,5 +593,6 @@ module.exports = {
     saveFile,
     updateFile,
     deleteFile,
-    downloadFile
+    downloadFile,
+    getResources
 };

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const PaginationComponent = ({
   currentPage = 1,
   totalPages = 10,
-  onPageChange = (page) => console.log(`Page changed to: ${page}`),
+  onPageChange = () => {},
   showPageLabel = true,
   itemsPerPage = 10,
   maxVisiblePages = 2
 }) => {
+  const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [isSmallMobile, setIsSmallMobile] = useState(false);
 
@@ -88,7 +90,9 @@ const PaginationComponent = ({
     },
     itemsPerPageBadge: {
       background: '#fff',
-      border: '1px solid #ced4da',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: '#ced4da',
       borderRadius: '6px',
       padding: isSmallMobile ? '4px 8px' : '6px 12px',
       fontSize: isSmallMobile ? '12px' : '14px',
@@ -111,7 +115,9 @@ const PaginationComponent = ({
       justifyContent: 'center',
       width: isSmallMobile ? '32px' : '40px',
       height: isSmallMobile ? '32px' : '40px',
-      border: '1px solid #ced4da',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: '#ced4da',
       borderRadius: '6px',
       backgroundColor: '#fff',
       color: '#495057',
@@ -160,7 +166,9 @@ const PaginationComponent = ({
       justifyContent: 'center',
       width: isSmallMobile ? '32px' : '40px',
       height: isSmallMobile ? '32px' : '40px',
-      border: '1px solid #ced4da',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: '#ced4da',
       borderRadius: '6px',
       backgroundColor: '#fff',
       color: '#495057',
@@ -191,7 +199,9 @@ const PaginationComponent = ({
 
   const buttonHoverStyle = {
     backgroundColor: '#e3f2fd',
-    borderColor: '#2196f3',
+  borderColor: '#2196f3',
+  borderWidth: '1px',
+  borderStyle: 'solid',
     color: '#1976d2',
     transform: 'translateY(-1px)',
     boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)'
@@ -203,7 +213,7 @@ const PaginationComponent = ({
       {showPageLabel && (
         <div style={styles.itemsPerPageContainer}>
           <span style={styles.itemsPerPageLabel}>
-            {isSmallMobile ? 'Items:' : 'Items per page:'}
+            {isSmallMobile ? t('pagination.itemsShort') : t('pagination.itemsPerPage')}
           </span>
           <div style={styles.itemsPerPageBadge}>
             {itemsPerPage}
@@ -219,7 +229,7 @@ const PaginationComponent = ({
             onClick={() => handlePageClick(1)}
             disabled={currentPage === 1}
             style={getButtonStyle(false, currentPage === 1)}
-            title="First page"
+            title={t('pagination.firstPageTitle')}
             onMouseEnter={(e) => {
               if (currentPage !== 1) {
                 Object.assign(e.target.style, buttonHoverStyle);
@@ -240,7 +250,7 @@ const PaginationComponent = ({
           onClick={() => handlePageClick(currentPage - 1)}
           disabled={currentPage === 1}
           style={getButtonStyle(false, currentPage === 1)}
-          title="Previous page"
+          title={t('pagination.prevPageTitle')}
           onMouseEnter={(e) => {
             if (currentPage !== 1) {
               Object.assign(e.target.style, buttonHoverStyle);
@@ -292,7 +302,7 @@ const PaginationComponent = ({
           onClick={() => handlePageClick(currentPage + 1)}
           disabled={currentPage === totalPages}
           style={getButtonStyle(false, currentPage === totalPages)}
-          title="Next page"
+          title={t('pagination.nextPageTitle')}
           onMouseEnter={(e) => {
             if (currentPage !== totalPages) {
               Object.assign(e.target.style, buttonHoverStyle);
@@ -313,7 +323,7 @@ const PaginationComponent = ({
             onClick={() => handlePageClick(totalPages)}
             disabled={currentPage === totalPages}
             style={getButtonStyle(false, currentPage === totalPages)}
-            title="Last page"
+            title={t('pagination.lastPageTitle')}
             onMouseEnter={(e) => {
               if (currentPage !== totalPages) {
                 Object.assign(e.target.style, buttonHoverStyle);
@@ -332,7 +342,7 @@ const PaginationComponent = ({
 
       {/* Page Info */}
       <div style={styles.pageInfo}>
-        Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+        {t('pagination.pageInfo', { current: currentPage, total: totalPages })}
       </div>
     </div>
   );

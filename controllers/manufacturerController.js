@@ -22,22 +22,18 @@ const fetchManufacturer = async (req, res) => {
 };
 
 const addManufacturer = async (req, res) => {
-    console.log('addManufacturer called');
-    console.log('Request body:', req.body);
-    console.log('Request files:', req.files);
+    const isDev = process.env.NODE_ENV !== 'production';
     
     try {
         upload.fields([
             { name: 'catalogFiles', maxCount: 10 },
             { name: 'manufacturerImage', maxCount: 1 }
         ])(req, res, async function (err) {
-            console.log('Multer processing complete');
             if (err) {
-                console.error('Multer error:', err);
+                console.error('Multer error:', err && err.message ? err.message : err);
                 return res.status(400).json({ message: err.message });
             }
-
-            console.log('Form data received:', req.body);
+            // Avoid logging raw form data in production
             const {
                 name,
                 email,
@@ -50,7 +46,6 @@ const addManufacturer = async (req, res) => {
             } = req.body;
 
             if (!name || !email || !phone || !address || !website || !costMultiplier) {
-                console.log('Validation failed - missing required fields');
                 return res.status(400).json({ message: 'Please provide all required fields' });
             }
 
@@ -59,18 +54,6 @@ const addManufacturer = async (req, res) => {
             const imagePath = manufacturerImage?.filename || null;
 
             try {
-                console.log('Creating manufacturer with data:', {
-                    name,
-                    email,
-                    phone,
-                    address,
-                    website,
-                    isPriceMSRP: isPriceMSRP === 'true',
-                    costMultiplier: parseFloat(costMultiplier),
-                    instructions: instructions || '',
-                    image: imagePath
-                });
-                
                 const newManufacturer = await Manufacturer.create({
                     name,
                     email,
@@ -82,8 +65,6 @@ const addManufacturer = async (req, res) => {
                     instructions: instructions || '',
                     image: imagePath
                 });
-
-                console.log('Manufacturer created successfully:', newManufacturer.toJSON());
 
                 if (catalogFiles.length > 0) {
                     const file = catalogFiles[0];
@@ -108,11 +89,9 @@ const addManufacturer = async (req, res) => {
 
                         }
                     } catch (parseError) {
-                        console.error(`Error parsing file "${file.originalname}":`, parseError.message);
+                        console.error(`Error parsing file "${file.originalname}":`, parseError && parseError.message ? parseError.message : parseError);
                     }
                 }
-
-                console.log('Sending response with manufacturer:', newManufacturer.toJSON());
                 return res.status(201).json({
                     success: true,
                     status: 200,
@@ -268,7 +247,7 @@ const updateManufacturer = async (req, res) => {
                         await ManufacturerCatalogData.bulkCreate(saveData);
                     }
                 } catch (parseError) {
-                    console.error(`Error parsing file "${file.originalname}":`, parseError.message);
+                    console.error(`Error parsing file "${file.originalname}":`, parseError && parseError.message ? parseError.message : parseError);
                 }
             }
 
@@ -587,7 +566,7 @@ const addManufacturerStyle = async (req, res) => {
                 code
             } = req.body;
 
-            console.log('req.body', req.body);
+            // Avoid logging raw req.body in production
 
             if (!name || !manufacturerId) {
                 return res.status(400).json({ message: 'Style name and manufacturerId are required' });
@@ -631,7 +610,6 @@ const addManufacturerStyle = async (req, res) => {
 
 
             for (const item of catalogItems) {
-                console.log(`Processing catalogId: ${item.id}`);
                 const existingStyleRow = await ManufacturerStyleCollection.findOne({
                     where: {
                         catalogId: item.id,
@@ -647,7 +625,6 @@ const addManufacturerStyle = async (req, res) => {
                         code,
                         image: imagePath || existingStyleRow.image
                     });
-                    console.log(`Updated style for catalogId: ${item.id}`);
                 } else {
                     // Create
                     await ManufacturerStyleCollection.create({
@@ -659,7 +636,6 @@ const addManufacturerStyle = async (req, res) => {
                         code,
                         image: imagePath || null
                     });
-                    console.log(`Created style for catalogId: ${item.id}`);
                 }
             }
 
@@ -820,8 +796,7 @@ const fetchManufacturerItemsModification = async (req, res) => {
 
 const saveAssemblyCost = async (req, res) => {
     try {
-        const { catalogDataId, type, price, applyTo, manufacturerId } = req.body;
-        console.log('req.body', req.body);
+    const { catalogDataId, type, price, applyTo, manufacturerId } = req.body;
 
         if (!catalogDataId || !type || !price) {
             return res.status(400).json({ success: false, message: 'Missing required fields.' });

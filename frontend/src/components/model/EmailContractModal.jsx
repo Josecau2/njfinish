@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     CModal,
     CModalHeader,
@@ -9,17 +10,18 @@ import {
 } from '@coreui/react';
 
 const EmailContractModal = ({ show, onClose }) => {
+    const { t } = useTranslation();
     return (
         <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
             <CModalHeader closeButton>
-                <CModalTitle>Send contract</CModalTitle>
+                <CModalTitle>{t('contracts.sendTitle', 'Send contract')}</CModalTitle>
             </CModalHeader>
             <CModalBody>
-                <p className="text-center">No contracts available for selection. Please go to contract settings to add one.</p>
+                <p className="text-center">{t('contracts.noContractsMsg', 'No contracts available for selection. Please go to contract settings to add one.')}</p>
             </CModalBody>
             {/* <CModalFooter>
-                <CButton color="secondary" onClick={onClose}>Close</CButton>
-                <CButton color="warning">Send Contract</CButton>
+                <CButton color="secondary" onClick={onClose}>{t('common.cancel')}</CButton>
+                <CButton color="warning">{t('contracts.sendCta', 'Send Contract')}</CButton>
             </CModalFooter> */}
         </CModal>
     );

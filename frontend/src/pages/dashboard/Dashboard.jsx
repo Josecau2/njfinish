@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice';
+import { useTranslation } from 'react-i18next';
 import {
   CContainer,
   CRow,
@@ -20,6 +21,13 @@ import {
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../helpers/axiosInstance';
+import ContractorDashboard from '../contractor/ContractorDashboard';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 
 const modernCardStyle = {
@@ -48,6 +56,17 @@ const gradientOverlay = {
 };
 
 const Dashboard = () => {
+  // Check if user is a contractor
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isContractor = user.group && user.group.group_type === 'contractor';
+
+  // If contractor, show contractor dashboard
+  if (isContractor) {
+    return <ContractorDashboard />;
+  }
+
+  // Regular admin/user dashboard
+  const { t } = useTranslation();
   const activeProposals = useSelector(state => state.dashboard.activeProposals);
   const activeOrders = useSelector(state => state.dashboard.activeOrders);
   const latestProposals = useSelector(state => state.dashboard.latestProposals);
@@ -82,28 +101,28 @@ const Dashboard = () => {
   const fetchLinks = async () => {
     try {
 
-      const response = await axiosInstance.get('/api/resources/links');
+      const response = await axiosInstance.get('/api/resources/links', {
+        headers: getAuthHeaders()
+      });
       if (response.data.success) {
         setDummyLinks(response.data.data);
       }
     } catch (error) {
-
-      console.log('error in fetchLinksandFiles', error)
-
+      // Error fetching links and files
     }
   }
 
   const fetchFiles = async () => {
     try {
-            const response = await axiosInstance.get('/api/resources/files');
+            const response = await axiosInstance.get('/api/resources/files', {
+              headers: getAuthHeaders()
+            });
             if (response.data.success) {
                 setDummyFiles(response.data.data);
             }
 
     } catch (error) {
-
-      console.log('error in fetchLinksandFiles', error)
-
+      // Error fetching files
     }
   }
 
@@ -160,6 +179,34 @@ const Dashboard = () => {
     }
   };
 
+  const translateStatus = (status) => {
+    if (!status) return '';
+    
+    // Normalize the status string for mapping
+    const normalizedStatus = status.toLowerCase().replace(/\s+/g, '');
+    
+    // Map specific status values to translation keys
+    const statusMap = {
+      'draft': 'draft',
+      'sent': 'sent', 
+      'accepted': 'accepted',
+      'rejected': 'rejected',
+      'expired': 'expired',
+      'proposaldone': 'proposalDone',
+      'measurementscheduled': 'measurementScheduled',
+      'measurementdone': 'measurementDone',
+      'designdone': 'designDone',
+      'followup1': 'followUp1',
+      'followup2': 'followUp2', 
+      'followup3': 'followUp3',
+      'proposalaccepted': 'proposalAccepted',
+      'proposalrejected': 'proposalRejected'
+    };
+    
+    const translationKey = statusMap[normalizedStatus] || normalizedStatus;
+    return t(`status.${translationKey}`, status);
+  };
+
   const getFileIcon = (type) => {
     switch (type) {
       case 'pdf': return '📄';
@@ -186,273 +233,188 @@ const Dashboard = () => {
 
 
   return (
-    <CContainer fluid className="p-2 m-2 main-dashboard" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container">
       {/* Modern Navigation Header */}
-      <CNavbar>
-        <CNavbarNav className="me-auto d-flex flex-row">
-        </CNavbarNav>
+      <div className="dashboard-header">
+        <h4 className="mb-0">{t('dashboard.title', 'Dashboard')}</h4>
         <div className="d-flex gap-2">
           <CButton
-            style={{
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%)',
-              border: 'none',
-              fontWeight: '600',
-              padding: '10px 20px',
-              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            className="text-white"
+            color="primary"
+            className="btn-gradient-cyan"
             onClick={handleCreateProposal}
-            onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseLeave={(e) => e.target.style.transform = 'translateY(0px)'}
           >
-            New Proposal
+            {t('dashboard.newProposal')}
           </CButton>
           <CButton
-            style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              border: 'none',
-              fontWeight: '600',
-              padding: '10px 20px',
-              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            className="text-white"
+            color="success"
+            className="btn-gradient-green"
             onClick={handleCreateQuickProposal}
-            onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseLeave={(e) => e.target.style.transform = 'translateY(0px)'}
           >
-            Quick Proposal
+            {t('dashboard.quickProposal')}
           </CButton>
         </div>
-      </CNavbar>
+      </div>
 
-      {activeTab === 'quick-access' && (
-        <>
-          {/* Stats Cards Row */}
-          <CRow className="mb-4">
-            <CCol lg={3} md={6} className="mb-4">
-              <CCard
-                style={{
-                  ...modernCardStyle,
-                  background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                  color: 'white',
-                  ...(hoveredCard === 'proposals' ? hoverStyle : {}),
-                }}
-                onMouseEnter={() => setHoveredCard('proposals')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div style={gradientOverlay}></div>
-                <CCardBody className="text-center position-relative" style={{ zIndex: 1 }}>
-                  <div className="d-flex align-items-center justify-content-center mb-3">
-                    <div style={{ fontSize: '2.5rem', marginRight: '12px' }}>📊</div>
-                    <div>
-                      <h6 className="mb-0 fw-bold opacity-90">Active Proposals</h6>
+      {/* Stats Cards Row */}
+      <CRow className="mb-4">
+        <CCol lg={3} md={6} className="mb-4">
+          <CCard className="stat-card stat-card-proposals">
+            <CCardBody>
+              <div className="d-flex align-items-center justify-content-center">
+                <div className="stat-card-icon">📊</div>
+                <div>
+                  <h6 className="stat-card-title">{t('dashboard.activeProposals')}</h6>
+                </div>
+              </div>
+              <h1 className="stat-card-number mt-3">
+                {displayedNumber || <CSpinner size="sm" />}
+              </h1>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
+        <CCol lg={3} md={6} className="mb-4">
+          <CCard className="stat-card stat-card-orders">
+            <CCardBody>
+              <div className="d-flex align-items-center justify-content-center">
+                <div className="stat-card-icon">📦</div>
+                <div>
+                  <h6 className="stat-card-title">{t('dashboard.activeOrders')}</h6>
+                </div>
+              </div>
+              <h1 className="stat-card-number mt-3">
+                {displayedOrders || <CSpinner size="sm" />}
+              </h1>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
+        <CCol lg={6} className="mb-4">
+          <CCard className="dashboard-card">
+            <CCardBody>
+              <CCardTitle>
+                <span style={{ fontSize: '1.5rem' }}>📈</span>
+                {t('dashboard.latestProductUpdates')}
+              </CCardTitle>
+              <CListGroup flush>
+                {dummyProductUpdates.length > 0 ? (
+                  dummyProductUpdates.map((update) => (
+                    <CListGroupItem key={update.id}>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <div className="fw-semibold">{update.title}</div>
+                          <small className="text-muted">{update.date}</small>
+                        </div>
+                        <CBadge color={getStatusColor(update.status)} shape="rounded-pill">
+                          {translateStatus(update.status)}
+                        </CBadge>
+                      </div>
+                    </CListGroupItem>
+                  ))
+                ) : (
+                  <div className="text-muted text-center py-5">{t('dashboard.noProductUpdates')}</div>
+                )}
+              </CListGroup>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      {/* Content Cards Row */}
+      <CRow>
+        <CCol lg={4} className="mb-4">
+          <CCard className="dashboard-card">
+            <CCardBody>
+              <CCardTitle>
+                <span style={{ fontSize: '1.5rem' }}>🔗</span>
+                {t('dashboard.quickLinks')}
+              </CCardTitle>
+              <CListGroup flush>
+                {dummyLinks.map((link) => (
+                  <CListGroupItem key={link.id}>
+                    <div className="d-flex align-items-start">
+                      <span className="me-3 fs-5">{getLinkIcon(link.type)}</span>
+                      <div>
+                        <div className="fw-semibold">{link.title}</div>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-decoration-none text-primary small"
+                          style={{ wordBreak: 'break-all' }}
+                        >
+                          {link.url}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                  <h1 className="display-4 fw-bold mb-0" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-                    {displayedNumber || <CSpinner size="sm" />}
-                  </h1>
-                </CCardBody>
-              </CCard>
-            </CCol>
+                  </CListGroupItem>
+                ))}
+              </CListGroup>
+            </CCardBody>
+          </CCard>
+        </CCol>
 
-            <CCol lg={3} md={6} className="mb-4">
-              <CCard
-                style={{
-                  ...modernCardStyle,
-                  background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-                  color: 'white',
-                  ...(hoveredCard === 'orders' ? hoverStyle : {}),
-                }}
-                onMouseEnter={() => setHoveredCard('orders')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div style={gradientOverlay}></div>
-                <CCardBody className="text-center position-relative" style={{ zIndex: 1 }}>
-                  <div className="d-flex align-items-center justify-content-center mb-3">
-                    <div style={{ fontSize: '2.5rem', marginRight: '12px' }}>📦</div>
-                    <div>
-                      <h6 className="mb-0 fw-bold opacity-90">Active Orders</h6>
+        <CCol lg={4} className="mb-4">
+          <CCard className="dashboard-card">
+            <CCardBody>
+              <CCardTitle>
+                <span style={{ fontSize: '1.5rem' }}>📁</span>
+                {t('dashboard.recentFiles')}
+              </CCardTitle>
+              <CListGroup flush>
+                {dummyFiles.map((file) => (
+                  <CListGroupItem key={file.id} style={{ cursor: 'pointer' }}>
+                    <div className="d-flex align-items-center">
+                      <span className="me-2">{getFileIcon(file.type)}</span>
+                      <div>
+                        <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{file.name}</div>
+                        <small className="text-muted">{file.size} • {file.date}</small>
+                      </div>
                     </div>
-                  </div>
-                  <h1 className="display-4 fw-bold mb-0" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-                    {displayedOrders || <CSpinner size="sm" />}
-                  </h1>
-                </CCardBody>
-              </CCard>
-            </CCol>
+                  </CListGroupItem>
+                ))}
+              </CListGroup>
+            </CCardBody>
+          </CCard>
+        </CCol>
 
-            <CCol lg={6} className="mb-4">
-              <CCard style={modernCardStyle}>
-                <CCardBody>
-                  <div className="d-flex align-items-center mb-3">
-                    <div style={{ fontSize: '1.5rem', marginRight: '12px' }}>📈</div>
-                    <CCardTitle className="mb-0 fw-bold text-dark">Latest Product Updates</CCardTitle>
-                  </div>
-                  <CListGroup flush>
-                    {dummyProductUpdates.length > 0 ? (
-                      <CListGroup flush>
-                        {dummyProductUpdates.map((update) => (
-                          <CListGroupItem key={update.id} className="border-0 px-0 py-2">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div>
-                                <div className="fw-semibold text-dark">{update.title}</div>
-                                <small className="text-muted">{update.date}</small>
-                              </div>
-                              <CBadge color={getStatusColor(update.status)} shape="rounded-pill">
-                                {update.status}
-                              </CBadge>
-                            </div>
-                          </CListGroupItem>
-                        ))}
-                      </CListGroup>
-                    ) : (
-                      <div className="text-muted text-center py-3">No product updates available.</div>
-                    )}
-
-                  </CListGroup>
-                </CCardBody>
-              </CCard>
-            </CCol>
-          </CRow>
-
-          {/* Content Cards Row */}
-          <CRow>
-            <CCol lg={4} className="mb-4">
-              <CCard style={modernCardStyle}>
-                <CCardBody>
-                  <div className="d-flex align-items-center mb-3">
-                    <div style={{ fontSize: '1.5rem', marginRight: '12px' }}>🔗</div>
-                    <CCardTitle className="mb-0 fw-bold text-dark">Quick Links</CCardTitle>
-                  </div>
-                  <CListGroup flush>
-                    {dummyLinks.map((link) => (
-                      <CListGroupItem
-                        key={link.id}
-                        className="border-0 px-0 py-2"
-                        style={{ transition: 'all 0.2s ease' }}
-                      >
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-start">
-                            <span className="me-3 fs-5">{getLinkIcon(link.type)}</span>
-                            <div>
-                              <div className="fw-semibold">{link.title}</div>
-                              <a
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-decoration-none text-primary small"
-                                style={{ wordBreak: 'break-all' }}
-                              >
-                                {link.url}
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </CListGroupItem>
-                    ))}
-                  </CListGroup>
-
-                </CCardBody>
-              </CCard>
-            </CCol>
-
-            <CCol lg={4} className="mb-4">
-              <CCard style={modernCardStyle}>
-                <CCardBody>
-                  <div className="d-flex align-items-center mb-3">
-                    <div style={{ fontSize: '1.5rem', marginRight: '12px' }}>📁</div>
-                    <CCardTitle className="mb-0 fw-bold text-dark">Recent Files</CCardTitle>
-                  </div>
-                  <CListGroup flush>
-                    {dummyFiles.map((file) => (
-                      <CListGroupItem
-                        key={file.id}
-                        className="border-0 px-0 py-2 cursor-pointer"
-                        style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
-                      >
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center">
-                            <span className="me-2">{getFileIcon(file.type)}</span>
-                            <div>
-                              <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{file.name}</div>
-                              <small className="text-muted">{file.size} • {file.date}</small>
-                            </div>
-                          </div>
-                        </div>
-                      </CListGroupItem>
-                    ))}
-                  </CListGroup>
-                </CCardBody>
-              </CCard>
-            </CCol>
-
-            <CCol lg={4} className="mb-4">
-              <CCard style={modernCardStyle}>
-                <CCardBody>
-                  <div className="d-flex align-items-center mb-3">
-                    <div style={{ fontSize: '1.5rem', marginRight: '12px' }}>📝</div>
-                    <CCardTitle className="mb-0 fw-bold text-dark">My Lastest Proposals</CCardTitle>
-                  </div>
-                  <CListGroup flush>
-                    {latestProposals.slice(0, 5).map((proposal) => (
-                      <CListGroupItem
-                        key={proposal.id}
-                        className="border-0 px-0 py-2 cursor-pointer"
-                        style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
-                      >
-                        <div className="d-flex justify-content-between align-items-start">
-                          <div className="flex-grow-1">
-                            <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{proposal.description || 'No Description'}</div>
-                            {/* <div className="text-muted small">{proposal.description}</div> */}
-                            <small className="text-muted">{new Date(proposal.createdAt).toLocaleDateString()}</small>
-                          </div>
-                          <CBadge color={getStatusColor(proposal.status)} shape="rounded-pill" className="ms-2">
-                            {proposal.status}
-                          </CBadge>
-                        </div>
-                      </CListGroupItem>
-                    ))}
-                  </CListGroup>
-                  <div className="text-center mt-3">
-                    <CButton
-                      variant="outline"
-                      size="sm"
-                      style={{
-                        borderRadius: '8px',
-                        borderColor: '#e2e8f0',
-                        color: '#64748b'
-                      }}
-                      onClick={handleViewAllProposals}
-                    >
-                      View All Proposals
-                    </CButton>
-                  </div>
-                </CCardBody>
-              </CCard>
-            </CCol>
-          </CRow>
-        </>
-      )}
-
-      {activeTab === 'history' && (
-        <CCard style={modernCardStyle}>
-          <CCardBody>
-            <CCardTitle className="fw-bold text-dark">Activity History</CCardTitle>
-            <p className="text-muted">Your recent activity and changes will be displayed here.</p>
-          </CCardBody>
-        </CCard>
-      )}
-
-      {activeTab === 'catch-up' && (
-        <CCard style={modernCardStyle}>
-          <CCardBody>
-            <CCardTitle className="fw-bold text-dark">Catch Up</CCardTitle>
-            <p className="text-muted">Recent updates and notifications you may have missed will appear here.</p>
-          </CCardBody>
-        </CCard>
-      )}
+        <CCol lg={4} className="mb-4">
+          <CCard className="dashboard-card">
+            <CCardBody>
+              <CCardTitle>
+                <span style={{ fontSize: '1.5rem' }}>📝</span>
+                {t('dashboard.myLatestProposals')}
+              </CCardTitle>
+              <CListGroup flush>
+                {latestProposals.slice(0, 5).map((proposal) => (
+                  <CListGroupItem key={proposal.id} style={{ cursor: 'pointer' }}>
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div className="flex-grow-1">
+                        <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{proposal.description || 'No Description'}</div>
+                        <small className="text-muted">{new Date(proposal.createdAt).toLocaleDateString()}</small>
+                      </div>
+                      <CBadge color={getStatusColor(proposal.status)} shape="rounded-pill" className="ms-2">
+                        {translateStatus(proposal.status)}
+                      </CBadge>
+                    </div>
+                  </CListGroupItem>
+                ))}
+              </CListGroup>
+              <div className="text-center mt-3">
+                <CButton
+                  variant="outline"
+                  color="secondary"
+                  size="sm"
+                  className="btn-view-all"
+                  onClick={handleViewAllProposals}
+                >
+                  {t('dashboard.viewAllProposals')}
+                </CButton>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
     </CContainer>
   );
 };

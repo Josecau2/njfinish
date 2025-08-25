@@ -13,8 +13,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice';
 import Swal from 'sweetalert2';
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 
 const LocationPage = () => {
+  const { t } = useTranslation();
   const [filterText, setFilterText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -58,24 +60,24 @@ const LocationPage = () => {
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to delete this location?',
+      title: t('common.confirm'),
+      text: t('settings.locations.confirm.text'),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: t('settings.locations.confirm.confirmYes'),
+      cancelButtonText: t('common.cancel'),
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await dispatch(deleteLocation(id)).unwrap();
-          Swal.fire('Deleted!', 'The Location has been deleted.', 'success');
+          Swal.fire(t('settings.locations.confirm.deletedTitle'), t('settings.locations.confirm.deletedText'), 'success');
         } catch (error) {
-          Swal.fire('Error!', 'Failed to delete the Location.', 'error');
+          Swal.fire(t('settings.locations.confirm.errorTitle'), t('settings.locations.confirm.errorText'), 'error');
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'The Location is safe.', 'info');
+        Swal.fire(t('settings.locations.confirm.cancelledTitle'), t('settings.locations.confirm.cancelledText'), 'info');
       }
     });
   };
@@ -104,8 +106,8 @@ const LocationPage = () => {
                   <FaMapMarkerAlt className="text-white" style={{ fontSize: '24px' }} />
                 </div>
                 <div>
-                  <h3 className="text-white mb-1 fw-bold">Locations</h3>
-                  <p className="text-white-50 mb-0">Manage your business locations</p>
+                  <h3 className="text-white mb-1 fw-bold">{t('settings.locations.header')}</h3>
+                  <p className="text-white-50 mb-0">{t('settings.locations.subtitle')}</p>
                 </div>
               </div>
             </CCol>
@@ -121,7 +123,7 @@ const LocationPage = () => {
                 }}
               >
                 <CIcon icon={cilPlus} className="me-2" />
-                Add Location
+                {t('settings.locations.add')}
               </CButton>
             </CCol>
           </CRow>
@@ -139,7 +141,7 @@ const LocationPage = () => {
                 </CInputGroupText>
                 <CFormInput
                   type="text"
-                  placeholder="Search by name or email..."
+                  placeholder={t('settings.locations.searchPlaceholder')}
                   value={filterText}
                   onChange={(e) => {
                     setFilterText(e.target.value);
@@ -165,10 +167,10 @@ const LocationPage = () => {
                     fontWeight: '500'
                   }}
                 >
-                  Total: {locations?.length || 0} locations
+                  {t('settings.locations.stats.total', { count: locations?.length || 0 })}
                 </CBadge>
                 <span className="text-muted small">
-                  Showing {filteredData?.length || 0} results
+                  {t('settings.locations.stats.showingResults', { count: filteredData?.length || 0 })}
                 </span>
               </div>
             </CCol>
@@ -181,7 +183,7 @@ const LocationPage = () => {
         <CCard className="border-0 shadow-sm">
           <CCardBody>
             <div className="alert alert-danger mb-0">
-              <strong>Error:</strong> Failed to load locations: {error}
+              <strong>{t('common.error')}:</strong> {t('settings.locations.errorLoad')}: {error}
             </div>
           </CCardBody>
         </CCard>
@@ -192,7 +194,7 @@ const LocationPage = () => {
         <CCard className="border-0 shadow-sm">
           <CCardBody className="text-center py-5">
             <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">Loading locations...</p>
+            <p className="text-muted mt-3 mb-0">{t('settings.locations.loading')}</p>
           </CCardBody>
         </CCard>
       )}
@@ -211,26 +213,26 @@ const LocationPage = () => {
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
                       <div className="d-flex align-items-center gap-2">
                         <CIcon icon={cilLocationPin} size="sm" />
-                        Location Name
+                        {t('settings.locations.table.locationName')}
                       </div>
                     </CTableHeaderCell>
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
-                      Address
+                      {t('settings.locations.table.address')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
                       <div className="d-flex align-items-center gap-2">
                         <CIcon icon={cilEnvelopeClosed} size="sm" />
-                        Email
+                        {t('settings.locations.table.email')}
                       </div>
                     </CTableHeaderCell>
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
                       <div className="d-flex align-items-center gap-2">
                         <CIcon icon={cilGlobeAlt} size="sm" />
-                        Website
+                        {t('settings.locations.table.website')}
                       </div>
                     </CTableHeaderCell>
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">
-                      Actions
+                      {t('settings.locations.table.actions')}
                     </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
@@ -240,8 +242,8 @@ const LocationPage = () => {
                       <CTableDataCell colSpan="6" className="text-center py-5">
                         <div className="text-muted">
                           <CIcon icon={cilLocationPin} size="xl" className="mb-3 opacity-25" />
-                          <p className="mb-0">No locations found</p>
-                          <small>Try adjusting your search criteria or add a new location</small>
+                          <p className="mb-0">{t('settings.locations.empty.title')}</p>
+                          <small>{t('settings.locations.empty.subtitle')}</small>
                         </div>
                       </CTableDataCell>
                     </CTableRow>
@@ -263,12 +265,12 @@ const LocationPage = () => {
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
                           <div className="fw-medium text-dark">
-                            {location.locationName || 'N/A'}
+                            {location.locationName || t('common.na')}
                           </div>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
                           <span className="text-muted small">
-                            {location.address || 'N/A'}
+                            {location.address || t('common.na')}
                           </span>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
@@ -283,7 +285,7 @@ const LocationPage = () => {
                               {location.email}
                             </a>
                           ) : (
-                            <span className="text-muted">N/A</span>
+                            <span className="text-muted">{t('common.na')}</span>
                           )}
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
@@ -300,7 +302,7 @@ const LocationPage = () => {
                               {location.website}
                             </a>
                           ) : (
-                            <span className="text-muted">N/A</span>
+                            <span className="text-muted">{t('common.na')}</span>
                           )}
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
@@ -370,8 +372,8 @@ const LocationPage = () => {
               <div className="p-3 border-top border-light">
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                   {/* Left: Showing info */}
-                  <div className="text-muted small">
-                    Showing {filteredData.length === 0 ? 0 : startIdx}–{endIdx} of {filteredData.length} locations
+                    <div className="text-muted small">
+                    {t('settings.locations.showingRange', { start: filteredData.length === 0 ? 0 : startIdx, end: endIdx, total: filteredData.length })}
                   </div>
 
                   {/* Center: Pagination arrows */}
@@ -395,9 +397,9 @@ const LocationPage = () => {
                         fontSize: '12px'
                       }}
                     >
-                      {[5, 10, 15, 20, 25].map((val) => (
+            {[5, 10, 15, 20, 25].map((val) => (
                         <option key={val} value={val}>
-                          Show {val}
+              {t('settings.locations.showItems', { count: val })}
                         </option>
                       ))}
                     </CFormSelect>
