@@ -144,8 +144,11 @@ const AddUserForm = () => {
   const dispatch = useDispatch();
   const { error } = useSelector(state => state.users);
   const { list: usersGroup = [] } = useSelector((state) => state.usersGroup || {});
-  const { list: locations = [] } = useSelector((state) => state.location || {});
+  const { list: locations = [] } = useSelector((state) => state.locations || {});
   const navigate = useNavigate();
+  
+  // Debug log for locations
+  console.log('Locations from Redux:', locations);
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);
   const [showPassword, setShowPassword] = useState(false);
@@ -155,7 +158,9 @@ const AddUserForm = () => {
 
   useEffect(() => {
     dispatch(fetchUsers());
-    dispatch(fetchLocations());
+    dispatch(fetchLocations()).then((result) => {
+      console.log('Locations fetch result:', result);
+    });
   }, [dispatch]);
 
   const validate = () => {
@@ -379,7 +384,7 @@ const AddUserForm = () => {
     <option value="">{t('settings.users.form.select.location')}</option>
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
-                    {location.name}
+                    {location.locationName}
                   </option>
                 ))}
               </CustomFormSelect>
