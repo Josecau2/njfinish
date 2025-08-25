@@ -30,6 +30,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addUser } from '../../../store/slices/userSlice';
+import { fetchLocations } from '../../../store/slices/locationSlice';
 import Swal from 'sweetalert2';
 import { fetchUsers } from '../../../store/slices/userGroupSlice';
 import { useTranslation } from 'react-i18next';
@@ -143,6 +144,7 @@ const AddUserForm = () => {
   const dispatch = useDispatch();
   const { error } = useSelector(state => state.users);
   const { list: usersGroup = [] } = useSelector((state) => state.usersGroup || {});
+  const { list: locations = [] } = useSelector((state) => state.location || {});
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);
@@ -153,6 +155,7 @@ const AddUserForm = () => {
 
   useEffect(() => {
     dispatch(fetchUsers());
+    dispatch(fetchLocations());
   }, [dispatch]);
 
   const validate = () => {
@@ -170,7 +173,7 @@ const AddUserForm = () => {
       newErrors.confirmPassword = t('settings.users.form.validation.passwordMismatch');
     }
     if (!formData.userGroup) newErrors.userGroup = t('settings.users.form.validation.userGroupRequired');
-    if (!formData.location.trim()) newErrors.location = t('settings.users.form.validation.locationRequired');
+    // Location is optional, no validation required
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -367,7 +370,6 @@ const AddUserForm = () => {
               <CustomFormSelect
     label={t('settings.users.form.labels.location')}
                 name="location"
-                required
                 icon={cilLocationPin}
                 value={formData.location}
                 onChange={handleChange}
@@ -375,9 +377,11 @@ const AddUserForm = () => {
                 feedback={errors.location}
               >
     <option value="">{t('settings.users.form.select.location')}</option>
-    <option value="1">{t('settings.users.form.locations.main1')}</option>
-    <option value="2">{t('settings.users.form.locations.main2')}</option>
-    <option value="3">{t('settings.users.form.locations.main3')}</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
               </CustomFormSelect>
             </CCol>
           </CRow>
