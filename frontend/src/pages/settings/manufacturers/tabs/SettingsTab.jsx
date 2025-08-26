@@ -142,8 +142,8 @@ const SettingsTab = ({ manufacturer }) => {
     <CTable striped hover responsive>
       <CTableHead>
         <CTableRow>
-          {selectedFields.map(field => (
-            <CTableDataCell key={field} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
+          {selectedFields.map((field, fieldIndex) => (
+            <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
               {field.toUpperCase()}
             </CTableDataCell>
           ))}
@@ -153,8 +153,8 @@ const SettingsTab = ({ manufacturer }) => {
         {data.length > 0 ? (
           data.map(item => (
             <CTableRow key={item.id}>
-              {selectedFields.map(field => (
-                <CTableDataCell key={field}>
+              {selectedFields.map((field, fieldIndex) => (
+                <CTableDataCell key={`${item.id}-${fieldIndex}`}>
                   {['code', 'description'].includes(field)
                     ? item[field]
                     : (item.style?.toLowerCase() === field.toLowerCase()

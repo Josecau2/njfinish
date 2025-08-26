@@ -12,6 +12,7 @@ const Customer = require('./Customer');
 const UserGroupMultiplier = require('./UserGroupMultiplier');
 const {ManufacturerCatalogFile} = require('./ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('./ManufacturerStyleCollection');
+const CatalogUploadBackup = require('./CatalogUploadBackup');
 const Notification = require('./Notification');
 const ActivityLog = require('./ActivityLog');
 const ResourceLink = require('./ResourceLink');
@@ -156,8 +157,9 @@ module.exports = {
     UserGroup,
     UserGroupMultiplier,
     ManufacturerStyleCollection,
-  Notification,
-  ActivityLog,
-  ResourceLink,
-  ProposalSession
+    CatalogUploadBackup,
+    Notification,
+    ActivityLog,
+    ResourceLink,
+    ProposalSession
 };

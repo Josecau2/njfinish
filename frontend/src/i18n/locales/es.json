@@ -1571,13 +1571,38 @@
           "type": "Tipo",
           "actions": "Acciones"
         },
+        "pagination": {
+          "perPage": "por página",
+          "itemsSelected": "{{count}} ítem(s) seleccionado(s)"
+        },
+        "buttons": {
+          "uploadCsv": "📁 Subir CSV",
+          "addItem": "➕ Agregar ítem",
+          "deleteSelected": "🗑️ Eliminar seleccionados",
+          "deleteStyle": "🗑️ Eliminar estilo",
+          "rollback": "↩️ Revertir"
+        },
+        "rollback": {
+          "buttonText": "↩️ Revertir carga",
+          "modalTitle": "Revertir carga de catálogo",
+          "selectBackup": "Seleccionar carga a revertir:",
+          "noBackups": "No hay cargas recientes disponibles para revertir",
+          "uploadInfo": "Carga: {{filename}} el {{date}}",
+          "itemsCount": "{{count}} ítems",
+          "confirmText": "¿Está seguro de que desea revertir a esta copia de seguridad? Esto restaurará el catálogo al estado anterior a esta carga.",
+          "rollbackButton": "Revertir a este punto",
+          "rolling": "Revirtiendo...",
+          "success": "Catálogo revertido exitosamente",
+          "failed": "Error al revertir catálogo",
+          "warning": "⚠️ Esta acción reemplazará todos los datos actuales del catálogo con los datos de la copia de seguridad."
+        },
         "actions": {
           "manageStyle": "Gestionar estilo",
           "assemblyCost": "Costo de ensamblaje",
           "modification": "Modificación"
         },
         "file": {
-          "uploadCta": "Subir archivo",
+          "uploadCta": "📁 Subir CSV",
           "modalTitle": "Subir archivo de catálogo",
           "selectLabel": "Seleccione archivo CSV o Excel de catálogo",
           "uploadBtn": "Subir",
@@ -1587,8 +1612,58 @@
           "allowed": "Suba un archivo CSV o Excel."
         },
         "manual": {
-          "uploadCta": "Carga manual",
+          "uploadCta": "➕ Agregar ítem",
           "modalTitle": "Entrada manual de catálogo"
+        },
+        "bulk": {
+          "selected": "{{count}} ítem(s) seleccionado(s)",
+          "deleteSelected": "🗑️ Eliminar seleccionados",
+          "deleting": "Eliminando...",
+          "deleteModalTitle": "Eliminar múltiples ítems",
+          "deleteModalBody": "¿Está seguro de que desea eliminar {{count}} ítems de catálogo seleccionados?",
+          "itemsToDelete": "Ítems a eliminar:",
+          "andMore": "... y {{count}} ítems más",
+          "deleteButton": "Eliminar {{count}} ítems",
+          "deleteSuccess": "Se eliminaron correctamente {{count}} ítems",
+          "deleteFailed": "Error al eliminar algunos ítems"
+        },
+        "deleteItem": {
+          "modalTitle": "Eliminar ítem de catálogo",
+          "confirmText": "¿Está seguro de que desea eliminar este ítem de catálogo?",
+          "deleteButton": "Eliminar ítem",
+          "deleting": "Eliminando...",
+          "cannotUndo": "⚠️ Esta acción no se puede deshacer.",
+          "deleteSuccess": "Ítem eliminado correctamente",
+          "deleteFailed": "Error al eliminar el ítem"
+        },
+        "deleteStyle": {
+          "buttonText": "🗑️ Eliminar estilo",
+          "modalTitle": "Eliminar estilo: \"{{style}}\"",
+          "affectedItems": "Esto afectará {{count}} ítems de catálogo.",
+          "whatToDo": "¿Qué desea hacer con los ítems que actualmente tienen este estilo?",
+          "deleteItems": "Eliminar todos los ítems con este estilo permanentemente",
+          "mergeItems": "Fusionar ítems a otro estilo",
+          "selectTargetStyle": "Seleccionar estilo destino:",
+          "smartMergeInfo": "Acción de fusión inteligente: Todos los {{count}} ítems con estilo \"{{fromStyle}}\" serán procesados:",
+          "mergeUniqueItems": "Los ítems con códigos únicos se fusionarán al estilo \"{{toStyle}}\"",
+          "removeDuplicates": "Los ítems duplicados (mismo código + estilo) se eliminarán automáticamente",
+          "deleteInfo": "Acción de eliminación: Todos los {{count}} ítems con estilo \"{{style}}\" se eliminarán permanentemente. Esta acción no se puede deshacer.",
+          "mergeTo": "Fusionar a \"{{style}}\"",
+          "deletePermanently": "Eliminar permanentemente",
+          "processing": "Procesando...",
+          "mergeSuccess": "Se procesaron correctamente {{total}} ítems: {{merged}} fusionados a \"{{style}}\", {{duplicates}} duplicados eliminados",
+          "mergePartialSuccess": "Se procesaron correctamente {{total}} ítems del estilo \"{{fromStyle}}\"",
+          "deleteSuccess": "Se eliminaron correctamente {{count}} ítems con estilo \"{{style}}\"",
+          "operationFailed": "Error al eliminar/fusionar estilo"
+        },
+        "cleanupDuplicates": {
+          "buttonText": "🧹 Limpiar duplicados",
+          "cleaning": "Limpiando...",
+          "tooltip": "Eliminar ítems duplicados (mismo código + estilo)",
+          "success": "Se eliminaron correctamente {{count}} ítems duplicados",
+          "noduplicates": "No se encontraron duplicados",
+          "failed": "Error al limpiar duplicados",
+          "totalChecked": "Total de ítems verificados: {{count}}"
         },
         "stylePlaceholder": "Seleccione o escriba un estilo",
         "fields": {

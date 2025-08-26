@@ -1572,13 +1572,38 @@
           "type": "Type",
           "actions": "Actions"
         },
+        "pagination": {
+          "perPage": "per page",
+          "itemsSelected": "{{count}} item(s) selected"
+        },
+        "buttons": {
+          "uploadCsv": "📁 Upload CSV",
+          "addItem": "➕ Add Item",
+          "deleteSelected": "🗑️ Delete Selected",
+          "deleteStyle": "🗑️ Delete Style",
+          "rollback": "↩️ Rollback"
+        },
+        "rollback": {
+          "buttonText": "↩️ Rollback Upload",
+          "modalTitle": "Rollback Catalog Upload",
+          "selectBackup": "Select upload to rollback:",
+          "noBackups": "No recent uploads available for rollback",
+          "uploadInfo": "Upload: {{filename}} on {{date}}",
+          "itemsCount": "{{count}} items",
+          "confirmText": "Are you sure you want to rollback to this backup? This will restore the catalog to the state before this upload.",
+          "rollbackButton": "Rollback to This Point",
+          "rolling": "Rolling back...",
+          "success": "Catalog successfully rolled back",
+          "failed": "Failed to rollback catalog",
+          "warning": "⚠️ This action will replace all current catalog data with the backup data."
+        },
         "actions": {
           "manageStyle": "Manage Style",
           "assemblyCost": "Assembly Cost",
           "modification": "Modification"
         },
         "file": {
-          "uploadCta": "File Upload",
+          "uploadCta": "📁 Upload CSV",
           "modalTitle": "Upload Catalog File",
           "selectLabel": "Select Catalog CSV or Excel File",
           "uploadBtn": "Upload",
@@ -1588,8 +1613,58 @@
           "allowed": "Please upload a CSV or Excel file."
         },
         "manual": {
-          "uploadCta": "Manual Upload",
+          "uploadCta": "➕ Add Item",
           "modalTitle": "Manual Catalog Entry"
+        },
+        "bulk": {
+          "selected": "{{count}} item(s) selected",
+          "deleteSelected": "🗑️ Delete Selected",
+          "deleting": "Deleting...",
+          "deleteModalTitle": "Delete Multiple Items",
+          "deleteModalBody": "Are you sure you want to delete {{count}} selected catalog items?",
+          "itemsToDelete": "Items to be deleted:",
+          "andMore": "... and {{count}} more items",
+          "deleteButton": "Delete {{count}} Items",
+          "deleteSuccess": "Successfully deleted {{count}} items",
+          "deleteFailed": "Failed to delete some items"
+        },
+        "deleteItem": {
+          "modalTitle": "Delete Catalog Item",
+          "confirmText": "Are you sure you want to delete this catalog item?",
+          "deleteButton": "Delete Item",
+          "deleting": "Deleting...",
+          "cannotUndo": "⚠️ This action cannot be undone.",
+          "deleteSuccess": "Item deleted successfully",
+          "deleteFailed": "Failed to delete item"
+        },
+        "deleteStyle": {
+          "buttonText": "🗑️ Delete Style",
+          "modalTitle": "Delete Style: \"{{style}}\"",
+          "affectedItems": "This will affect {{count}} catalog items.",
+          "whatToDo": "What would you like to do with the items that currently have this style?",
+          "deleteItems": "Delete all items with this style permanently",
+          "mergeItems": "Merge items to another style",
+          "selectTargetStyle": "Select target style:",
+          "smartMergeInfo": "Smart Merge Action: All {{count}} items with style \"{{fromStyle}}\" will be processed:",
+          "mergeUniqueItems": "Items with unique codes will be merged to style \"{{toStyle}}\"",
+          "removeDuplicates": "Duplicate items (same code + style) will be automatically removed",
+          "deleteInfo": "Delete Action: All {{count}} items with style \"{{style}}\" will be permanently deleted. This action cannot be undone.",
+          "mergeTo": "Merge to \"{{style}}\"",
+          "deletePermanently": "Delete Permanently",
+          "processing": "Processing...",
+          "mergeSuccess": "Successfully processed {{total}} items: {{merged}} merged to \"{{style}}\", {{duplicates}} duplicates removed",
+          "mergePartialSuccess": "Successfully processed {{total}} items from style \"{{fromStyle}}\"",
+          "deleteSuccess": "Successfully deleted {{count}} items with style \"{{style}}\"",
+          "operationFailed": "Failed to delete/merge style"
+        },
+        "cleanupDuplicates": {
+          "buttonText": "🧹 Cleanup Duplicates",
+          "cleaning": "Cleaning...",
+          "tooltip": "Remove duplicate items (same code + style)",
+          "success": "Successfully removed {{count}} duplicate items",
+          "noduplicates": "No duplicates found",
+          "failed": "Failed to cleanup duplicates",
+          "totalChecked": "Total items checked: {{count}}"
         },
         "stylePlaceholder": "Select or type a style",
         "fields": {

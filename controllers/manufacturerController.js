@@ -4,13 +4,14 @@ const multer = require('multer');
 const { parseCatalogFile } = require('../utils/parseCatalogFile');
 const upload = require('../middleware/upload'); // Your multer setup
 const uploadCatalogOnly = require('../middleware/uploadCatalogOnly'); // Your multer setup
-const { Manufacturer, ManufacturerCatalogData, Collection } = require('../models');
+const { Manufacturer, ManufacturerCatalogData, Collection, CatalogUploadBackup } = require('../models');
 const { ManufacturerCatalogFile } = require('../models/ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('../models/ManufacturerStyleCollection');
 const ManufacturerAssemblyCost = require('../models/ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('../models/ManufacturerHingesDetails');
 const ManufacturerModificationDetails = require('../models/ManufacturerModificationDetails');
 const imageLogger = require('../utils/imageLogger');
+const { v4: uuidv4 } = require('uuid');
 
 
 const fetchManufacturer = async (req, res) => {
@@ -359,11 +360,37 @@ const editManualCabinetItem = async (req, res) => {
     }
 };
 
+const deleteManualCabinetItem = async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        if (!id) {
+            return res.status(400).json({ error: 'Item ID is required' });
+        }
+
+        const item = await ManufacturerCatalogData.findByPk(id);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        await item.destroy();
+
+        res.json({ 
+            success: true, 
+            message: 'Item deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error deleting item:', error);
+        res.status(500).json({ error: 'Failed to delete item' });
+    }
+};
 
 
 const uploadCatalogFile = async (req, res) => {
     const { manufacturerId } = req.params;
+    const userId = req.user?.id;
+    
     uploadCatalogOnly.single('catalogFiles')(req, res, async function (err) {
         if (err) {
             return res.status(400).json({ message: err.message });
@@ -375,12 +402,58 @@ const uploadCatalogFile = async (req, res) => {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
+        // Generate unique session ID for this upload
+        const uploadSessionId = uuidv4();
+        let backupData = [];
+
         try {
             const parsedData = await parseCatalogFile(file.path, file.mimetype);
 
             if (!Array.isArray(parsedData) || parsedData.length === 0) {
                 return res.status(400).json({ message: 'No valid data in the uploaded file' });
             }
+
+            // Create backup of existing data that will be affected
+            console.log('Creating backup of existing catalog data...');
+            
+            // Get all existing items for this manufacturer to backup
+            const existingItems = await ManufacturerCatalogData.findAll({
+                where: { manufacturerId: manufacturerId },
+                raw: true
+            });
+
+            // Store backup data
+            backupData = existingItems.map(item => ({
+                id: item.id,
+                manufacturerId: item.manufacturerId,
+                code: item.code,
+                description: item.description,
+                price: item.price,
+                discontinued: item.discontinued,
+                style: item.style,
+                type: item.type,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt
+            }));
+
+            // Create backup record
+            await CatalogUploadBackup.create({
+                manufacturerId: manufacturerId,
+                uploadSessionId: uploadSessionId,
+                filename: file.filename,
+                originalName: file.originalname,
+                backupData: backupData,
+                itemsCount: parsedData.length,
+                uploadedBy: userId
+            });
+
+            console.log(`Backup created with session ID: ${uploadSessionId}`);
+            console.log(`Processing ${parsedData.length} catalog items...`);
+
+            // Process uploaded data
+            let processedCount = 0;
+            let updatedCount = 0;
+            let createdCount = 0;
 
             for (const row of parsedData) {
                 const cleanStyle = row.style?.replace(/\+AC0-/g, '-').trim() || '';
@@ -406,10 +479,15 @@ const uploadCatalogFile = async (req, res) => {
                         code: row.code,
                         type: row.type
                     });
+                    updatedCount++;
+                } else {
+                    createdCount++;
                 }
+                
+                processedCount++;
             }
 
-
+            // Store file metadata
             await ManufacturerCatalogFile.create({
                 manufacturer_id: manufacturerId,
                 filename: file.filename,
@@ -419,16 +497,215 @@ const uploadCatalogFile = async (req, res) => {
                 mimetype: file.mimetype
             });
 
+            console.log(`Upload completed: ${createdCount} created, ${updatedCount} updated`);
+
             return res.status(201).json({
                 success: true,
-                message: 'Catalog file uploaded and data saved successfully'
+                message: 'Catalog file uploaded and data saved successfully',
+                uploadSessionId: uploadSessionId,
+                stats: {
+                    totalProcessed: processedCount,
+                    created: createdCount,
+                    updated: updatedCount,
+                    backupCreated: true
+                }
             });
 
         } catch (parseError) {
-            console.error('Error parsing file:', parseError);
-            return res.status(500).json({ message: 'Error parsing catalog file', error: parseError.message });
+            console.error('Error during catalog upload:', parseError);
+            
+            // If backup was created but upload failed, we should clean up the backup
+            if (uploadSessionId) {
+                try {
+                    await CatalogUploadBackup.destroy({
+                        where: { uploadSessionId: uploadSessionId }
+                    });
+                } catch (cleanupError) {
+                    console.error('Error cleaning up backup after failed upload:', cleanupError);
+                }
+            }
+            
+            return res.status(500).json({ 
+                message: 'Error processing catalog file', 
+                error: parseError.message 
+            });
         }
     });
+};
+
+// Get available catalog upload backups for a manufacturer
+const getCatalogUploadBackups = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+
+        const backups = await CatalogUploadBackup.findAll({
+            where: { 
+                manufacturerId: manufacturerId,
+                isRolledBack: false
+            },
+            order: [['uploadedAt', 'DESC']],
+            limit: 10, // Only show last 10 uploads
+            attributes: [
+                'id',
+                'uploadSessionId', 
+                'filename',
+                'originalName',
+                'itemsCount',
+                'uploadedAt',
+                'uploadedBy'
+            ]
+        });
+
+        res.json({
+            success: true,
+            backups: backups
+        });
+
+    } catch (error) {
+        console.error('Error fetching catalog backups:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Failed to fetch catalog backups',
+            error: error.message 
+        });
+    }
+};
+
+// Rollback a catalog upload
+const rollbackCatalogUpload = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+        const { uploadSessionId } = req.body;
+        const userId = req.user?.id;
+
+        if (!uploadSessionId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Upload session ID is required'
+            });
+        }
+
+        // Find the backup record
+        const backup = await CatalogUploadBackup.findOne({
+            where: { 
+                manufacturerId: manufacturerId,
+                uploadSessionId: uploadSessionId,
+                isRolledBack: false
+            }
+        });
+
+        if (!backup) {
+            return res.status(404).json({
+                success: false,
+                message: 'Backup not found or already rolled back'
+            });
+        }
+
+        console.log(`Starting rollback for session: ${uploadSessionId}`);
+
+        // Start transaction for rollback
+        const { sequelize } = require('../config/db');
+        const transaction = await sequelize.transaction();
+
+        try {
+            // Delete all current catalog data for this manufacturer
+            await ManufacturerCatalogData.destroy({
+                where: { manufacturerId: manufacturerId },
+                transaction
+            });
+
+            console.log('Deleted current catalog data');
+
+            // Restore backup data
+            const backupData = backup.backupData;
+            if (backupData && backupData.length > 0) {
+                // Prepare data for bulk insert
+                const dataToRestore = backupData.map(item => ({
+                    id: item.id,
+                    manufacturerId: item.manufacturerId,
+                    code: item.code,
+                    description: item.description,
+                    price: item.price,
+                    discontinued: item.discontinued,
+                    style: item.style,
+                    type: item.type,
+                    createdAt: item.createdAt,
+                    updatedAt: item.updatedAt
+                }));
+
+                await ManufacturerCatalogData.bulkCreate(dataToRestore, {
+                    transaction,
+                    updateOnDuplicate: ['manufacturerId', 'code', 'description', 'price', 'discontinued', 'style', 'type', 'updatedAt']
+                });
+
+                console.log(`Restored ${dataToRestore.length} catalog items`);
+            }
+
+            // Mark backup as rolled back
+            await backup.update({
+                isRolledBack: true,
+                rolledBackAt: new Date()
+            }, { transaction });
+
+            // Commit transaction
+            await transaction.commit();
+
+            console.log(`Rollback completed for session: ${uploadSessionId}`);
+
+            res.json({
+                success: true,
+                message: `Successfully rolled back catalog upload from ${backup.uploadedAt}`,
+                restoredItemsCount: backupData?.length || 0
+            });
+
+        } catch (rollbackError) {
+            // Rollback transaction on error
+            await transaction.rollback();
+            throw rollbackError;
+        }
+
+    } catch (error) {
+        console.error('Error during catalog rollback:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to rollback catalog upload',
+            error: error.message
+        });
+    }
+};
+
+// Delete old backups (cleanup function)
+const cleanupOldBackups = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+        const daysToKeep = 30; // Keep backups for 30 days
+
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+
+        const deletedCount = await CatalogUploadBackup.destroy({
+            where: {
+                manufacturerId: manufacturerId,
+                uploadedAt: {
+                    [require('sequelize').Op.lt]: cutoffDate
+                }
+            }
+        });
+
+        res.json({
+            success: true,
+            message: `Cleaned up ${deletedCount} old backup records`,
+            deletedCount: deletedCount
+        });
+
+    } catch (error) {
+        console.error('Error cleaning up old backups:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to cleanup old backups',
+            error: error.message
+        });
+    }
 };
 
 
@@ -1012,6 +1289,162 @@ const addModificationItem = async (req, res) => {
 
 
 
+const deleteStyle = async (req, res) => {
+  try {
+    const { manufacturerId, styleName } = req.params;
+    const { mergeToStyle } = req.body;
+
+    // Validate inputs
+    if (!manufacturerId || !styleName) {
+      return res.status(400).json({ error: 'Manufacturer ID and style name are required' });
+    }
+
+    // Check if manufacturer exists
+    const manufacturer = await Manufacturer.findByPk(manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ error: 'Manufacturer not found' });
+    }
+
+    // Find all items with the style to be deleted
+    const itemsToUpdate = await ManufacturerCatalogData.findAll({
+      where: {
+        manufacturerId: manufacturerId,
+        style: styleName
+      }
+    });
+
+    if (itemsToUpdate.length === 0) {
+      return res.status(404).json({ error: 'No items found with this style' });
+    }
+
+    // If merge option is provided, handle duplicates intelligently
+    if (mergeToStyle && mergeToStyle.trim() !== '') {
+      let mergedCount = 0;
+      let duplicatesRemoved = 0;
+
+      // Process each item to merge
+      for (const item of itemsToUpdate) {
+        // Check if there's already an item with the same code and target style
+        const existingItem = await ManufacturerCatalogData.findOne({
+          where: {
+            manufacturerId: manufacturerId,
+            code: item.code,
+            style: mergeToStyle.trim()
+          }
+        });
+
+        if (existingItem) {
+          // Duplicate found - delete the item being merged
+          await item.destroy();
+          duplicatesRemoved++;
+        } else {
+          // No duplicate - update the style
+          await item.update({ style: mergeToStyle.trim() });
+          mergedCount++;
+        }
+      }
+
+      let message = `Successfully processed ${itemsToUpdate.length} items from style "${styleName}"`;
+      if (mergedCount > 0 && duplicatesRemoved > 0) {
+        message += `: ${mergedCount} merged to "${mergeToStyle}", ${duplicatesRemoved} duplicates removed`;
+      } else if (mergedCount > 0) {
+        message += `: ${mergedCount} merged to "${mergeToStyle}"`;
+      } else if (duplicatesRemoved > 0) {
+        message += `: ${duplicatesRemoved} duplicates removed (all items already existed in target style)`;
+      }
+
+      res.json({ 
+        success: true, 
+        message: message,
+        itemsAffected: itemsToUpdate.length,
+        mergedCount: mergedCount,
+        duplicatesRemoved: duplicatesRemoved
+      });
+    } else {
+      // If no merge option, delete all items with this style
+      const deletedCount = await ManufacturerCatalogData.destroy({
+        where: {
+          manufacturerId: manufacturerId,
+          style: styleName
+        }
+      });
+
+      res.json({ 
+        success: true, 
+        message: `Successfully deleted ${deletedCount} items with style "${styleName}"`,
+        itemsDeleted: deletedCount
+      });
+    }
+
+  } catch (error) {
+    console.error('Error deleting/merging style:', error);
+    res.status(500).json({ error: 'Failed to delete/merge style' });
+  }
+};
+
+const cleanupDuplicates = async (req, res) => {
+  try {
+    const { manufacturerId } = req.params;
+
+    // Validate input
+    if (!manufacturerId) {
+      return res.status(400).json({ error: 'Manufacturer ID is required' });
+    }
+
+    // Check if manufacturer exists
+    const manufacturer = await Manufacturer.findByPk(manufacturerId);
+    if (!manufacturer) {
+      return res.status(404).json({ error: 'Manufacturer not found' });
+    }
+
+    // Find all items for this manufacturer
+    const allItems = await ManufacturerCatalogData.findAll({
+      where: { manufacturerId: manufacturerId },
+      order: [['createdAt', 'ASC']] // Keep the oldest item in case of duplicates
+    });
+
+    const seen = new Map(); // Track unique combinations
+    const duplicatesToDelete = [];
+    let duplicateCount = 0;
+
+    // Check for duplicates based on code + style combination
+    for (const item of allItems) {
+      const uniqueKey = `${item.code}_${item.style || 'NO_STYLE'}`;
+      
+      if (seen.has(uniqueKey)) {
+        // This is a duplicate, mark for deletion
+        duplicatesToDelete.push(item.id);
+        duplicateCount++;
+      } else {
+        // First occurrence, keep it
+        seen.set(uniqueKey, item);
+      }
+    }
+
+    // Delete duplicates if any found
+    if (duplicatesToDelete.length > 0) {
+      await ManufacturerCatalogData.destroy({
+        where: {
+          id: duplicatesToDelete
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      message: duplicateCount > 0 
+        ? `Successfully removed ${duplicateCount} duplicate items`
+        : 'No duplicates found',
+      duplicatesRemoved: duplicateCount,
+      totalItemsChecked: allItems.length
+    });
+
+  } catch (error) {
+    console.error('Error cleaning up duplicates:', error);
+    res.status(500).json({ error: 'Failed to cleanup duplicates' });
+  }
+};
+
 module.exports = {
     addManufacturer,
     fetchManufacturer,
@@ -1020,6 +1453,7 @@ module.exports = {
     updateManufacturer,
     saveManualCabinetItem,
     editManualCabinetItem,
+    deleteManualCabinetItem,
     uploadCatalogFile,
     addManufacturerStyle,
     fetchManufacturerStyleById,
@@ -1032,5 +1466,10 @@ module.exports = {
     saveHingesDetails,
     saveModificationDetails,
     fetchManufacturerCatalogModificationItems,
-    addModificationItem
+    addModificationItem,
+    deleteStyle,
+    cleanupDuplicates,
+    getCatalogUploadBackups,
+    rollbackCatalogUpload,
+    cleanupOldBackups
 };
