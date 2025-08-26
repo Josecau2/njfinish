@@ -66,6 +66,9 @@ router.delete('/manufacturers/catalog/edit/:id', verifyTokenWithGroup, requirePe
 // Catalog file upload (CSV/Excel) for existing manufacturer
 router.post('/manufacturers/:manufacturerId/catalog/upload', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), manufacturerController.uploadCatalogFile);
 
+// Paginated catalog fetch
+router.get('/manufacturers/:manufacturerId/catalog', verifyTokenWithGroup, validateIdParam('manufacturerId'), manufacturerController.getManufacturerCatalog);
+
 // Rollback capabilities
 router.get('/manufacturers/:manufacturerId/catalog/backups', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), manufacturerController.getCatalogUploadBackups);
 router.post('/manufacturers/:manufacturerId/catalog/rollback', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), sanitizeBodyStrings(), manufacturerController.rollbackCatalogUpload);

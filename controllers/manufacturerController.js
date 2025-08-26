@@ -1445,6 +1445,71 @@ const cleanupDuplicates = async (req, res) => {
   }
 };
 
+// Paginated fetch of catalog data for a manufacturer with optional filters
+const getManufacturerCatalog = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+        const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+        const limit = Math.min(Math.max(parseInt(req.query.limit || '50', 10), 1), 500);
+        const offset = (page - 1) * limit;
+        const { typeFilter = '', styleFilter = '' } = req.query;
+
+        // Validate manufacturer exists (optional but useful)
+        const manufacturer = await Manufacturer.findByPk(manufacturerId);
+        if (!manufacturer) {
+            return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+        }
+
+        const Sequelize = require('sequelize');
+        const where = {
+            manufacturerId,
+            ...(typeFilter ? { type: { [Sequelize.Op.eq]: typeFilter } } : {}),
+            ...(styleFilter ? { style: { [Sequelize.Op.eq]: styleFilter } } : {}),
+        };
+
+        const { rows, count } = await ManufacturerCatalogData.findAndCountAll({
+            where,
+            order: [['createdAt', 'DESC']],
+            offset,
+            limit,
+        });
+
+        // Build filter metadata (distinct types/styles) for this manufacturer
+        const [typeRows, styleRows] = await Promise.all([
+            ManufacturerCatalogData.findAll({
+                where: { manufacturerId },
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('type')), 'type']],
+                raw: true,
+            }),
+            ManufacturerCatalogData.findAll({
+                where: { manufacturerId },
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('style')), 'style']],
+                raw: true,
+            }),
+        ]);
+
+        const uniqueTypes = typeRows.map((r) => (r.type || '').trim()).filter(Boolean).sort((a, b) => a.localeCompare(b));
+        const uniqueStyles = styleRows.map((r) => (r.style || '').trim()).filter(Boolean).sort((a, b) => a.localeCompare(b));
+
+        return res.json({
+            success: true,
+            catalogData: rows,
+            pagination: {
+                total: count,
+                page,
+                limit,
+                totalPages: Math.ceil(count / limit),
+            },
+            filters: {
+                uniqueTypes,
+                uniqueStyles,
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching paginated catalog:', error);
+        return res.status(500).json({ success: false, message: 'Failed to fetch catalog', error: error.message });
+    }
+};
 module.exports = {
     addManufacturer,
     fetchManufacturer,
@@ -1471,5 +1536,6 @@ module.exports = {
     cleanupDuplicates,
     getCatalogUploadBackups,
     rollbackCatalogUpload,
-    cleanupOldBackups
+    cleanupOldBackups,
+    getManufacturerCatalog
 };

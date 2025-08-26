@@ -36,10 +36,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const { t } = useTranslation();
   const api_url = import.meta.env.VITE_API_URL;
 
-  // const catalogData = manufacturer?.catalogData || [];
-  const catalogData = Array.isArray(manufacturer?.catalogData)
-    ? [...manufacturer.catalogData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    : [];
+  // Server-side paginated catalog data (avoid loading all items at once)
+  const [catalogData, setCatalogData] = useState([]);
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 50, totalPages: 0 });
+  const [filterMeta, setFilterMeta] = useState({ uniqueTypes: [], uniqueStyles: [] });
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   const getInitialItemsPerPage = () => {
     const saved = localStorage.getItem('catalogItemsPerPage');
@@ -50,7 +52,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [styleFilter, setStyleFilter] = useState('');
 
 
-  const uniqueTypes = Array.from(new Set(catalogData.map(item => item.type?.trim()).filter(Boolean)));
+  const uniqueTypes = filterMeta.uniqueTypes || [];
   const typeOptions = uniqueTypes.map((type) => ({
     value: type,
     label: type,
@@ -78,15 +80,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   //   ? catalogData.filter(item => item.type === typeFilter)
   //   : catalogData;
 
-  const filteredCatalogData = catalogData.filter((item) => {
-    const matchesType = typeFilter ? item.type?.toLowerCase() === typeFilter.toLowerCase() : true;
-    const matchesStyle = styleFilter ? item.style?.toLowerCase() === styleFilter.toLowerCase() : true;
-    return matchesType && matchesStyle;
-  });
-
-
-  const totalPages = Math.ceil(filteredCatalogData.length / itemsPerPage);
-  const currentItems = filteredCatalogData.slice(indexOfFirstItem, indexOfLastItem);
+  // Use data as-is; backend applies filters and pagination
+  const filteredCatalogData = catalogData;
+  const totalPages = pagination.totalPages || Math.ceil(filteredCatalogData.length / itemsPerPage);
+  const currentItems = filteredCatalogData;
 
   const [showAssemblyModal, setShowAssemblyModal] = useState(false);
   const [showHingesModal, setShowHingesModal] = useState(false);
@@ -109,16 +106,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
 
-  const uniqueStyles = Array.from(
-    new Set(
-      catalogData
-        .map((item) => item.style?.trim())
-        .filter((style) => !!style) // remove null, undefined, or empty
-    )
-  );
-  const sortedUniqueStyles = [...uniqueStyles].sort((a, b) =>
-    a.localeCompare(b)
-  );
+  const uniqueStyles = filterMeta.uniqueStyles || [];
+  const sortedUniqueStyles = [...uniqueStyles];
   const styleOptions = sortedUniqueStyles.map((style) => ({
     value: style,
     label: style,
@@ -136,6 +125,57 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
   const [manualForm, setManualForm] = useState(initialManualForm);
+
+  // Fetch paginated catalog data from backend
+  const fetchCatalogData = async (page = currentPage, limit = itemsPerPage, type = typeFilter, style = styleFilter) => {
+    if (!id) return;
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (type) params.append('typeFilter', type);
+      if (style) params.append('styleFilter', style);
+      const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        }
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : []);
+      setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 });
+      if (page === 1 && data.filters) setFilterMeta(data.filters);
+      setCurrentPage(page);
+      setItemsPerPage(limit);
+    } catch (e) {
+      console.error('Error fetching catalog data:', e);
+      setLoadError(e.message);
+      setCatalogData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Keep filters in sync and refetch when they change
+  useEffect(() => {
+    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter, styleFilter, id]);
+
+  // Initial load
+  useEffect(() => {
+    if (id) {
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // Persist items per page
+  useEffect(() => {
+    localStorage.setItem('catalogItemsPerPage', String(itemsPerPage));
+  }, [itemsPerPage]);
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -235,7 +275,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
       // Reset and close modal
       setManualForm({ style: '', color: '', code: '', type: '', description: '', price: '' });
-      dispatch(fetchManufacturerById(id));
+  // Refresh list (keep filters, reset to page 1 to show newest)
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
 
       setErrors({});
       resetManualForm();
@@ -305,7 +346,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
 
       setEditModalVisible(false);
-      dispatch(fetchManufacturerById(id));
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -395,7 +436,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setItemToDelete(null);
       
       // Refresh data
-      dispatch(fetchManufacturerById(id));
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
       
     } catch (err) {
       console.error('Error:', err);
@@ -469,7 +510,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setIsSelectAll(false);
       
       // Refresh data
-      dispatch(fetchManufacturerById(id));
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
       
     } catch (err) {
       console.error('Error:', err);
@@ -528,7 +569,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       // Refresh data if duplicates were removed
       if (result.duplicatesRemoved > 0) {
-        dispatch(fetchManufacturerById(id));
+        fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
         setCurrentPage(1);
       }
       
@@ -633,7 +674,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setAvailableBackups([]);
       
       // Refresh data
-      dispatch(fetchManufacturerById(id));
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
       setCurrentPage(1);
       
     } catch (err) {
@@ -705,7 +746,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setMergeToStyle('');
       
       // Refresh data
-      dispatch(fetchManufacturerById(id));
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
       
       // Reset current page if we're beyond the new total pages
       setCurrentPage(1);
@@ -786,7 +827,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       
       setFileModalVisible(false);
       setFile(null);
-      dispatch(fetchManufacturerById(id)); // Reload updated data
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter); // Reload updated data
     } catch (err) {
       console.error(err);
       Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.file.uploadFailed'), "error");
@@ -1193,7 +1234,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             size="sm"
             className="flex-shrink-0"
             onClick={handleRollbackClick}
-            disabled={catalogData.length === 0}
+            disabled={(pagination.total || 0) === 0}
             title="Rollback recent catalog upload"
           >
             {t('settings.manufacturers.catalogMapping.rollback.buttonText')}
@@ -1473,14 +1514,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {catalogData.length > 0 ? (
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
-            {t('pagination.pageInfo', { current: currentPage, total: totalPages })}
+            {loading
+              ? 'Loading…'
+              : t('pagination.pageInfo', { current: pagination.page || 1, total: pagination.totalPages || 1 })}
           </div>
           <div>
             <CButton
               size="sm"
               color="secondary"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={loading || (pagination.page || 1) === 1}
+              onClick={() => fetchCatalogData((pagination.page || 1) - 1, itemsPerPage, typeFilter, styleFilter)}
               className="me-2"
             >
               {t('pagination.prevPageTitle')}
@@ -1488,8 +1531,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <CButton
               size="sm"
               color="secondary"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={loading || (pagination.page || 1) >= (pagination.totalPages || 1)}
+              onClick={() => fetchCatalogData((pagination.page || 1) + 1, itemsPerPage, typeFilter, styleFilter)}
             >
               {t('pagination.nextPageTitle')}
             </CButton>
