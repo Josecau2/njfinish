@@ -1,0 +1,116 @@
+/* Manufacturer Selection Styles */
+.manufacturer-grid-item {
+  transition: transform 0.2s ease;
+}
+
+.manufacturer-card {
+  min-height: 140px;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.manufacturer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.manufacturer-card.border-primary {
+  border-color: #0d6efd !important;
+  box-shadow: 0 4px 20px rgba(13, 110, 253, 0.15) !important;
+}
+
+.manufacturer-logo-container img {
+  transition: all 0.3s ease;
+}
+
+.manufacturer-card:hover .manufacturer-logo-container img {
+  transform: scale(1.05);
+}
+
+.manufacturer-name {
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .manufacturer-grid-item {
+    margin-bottom: 12px;
+  }
+  
+  .manufacturer-card {
+    min-height: 120px;
+  }
+  
+  .manufacturer-logo-container {
+    min-height: 60px !important;
+  }
+  
+  .manufacturer-logo-container img {
+    max-height: 60px !important;
+  }
+  
+  .manufacturer-name {
+    font-size: 0.8rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .manufacturer-card:hover {
+    transform: none;
+  }
+  
+  .manufacturer-card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Grid responsive adjustments */
+@media (min-width: 1400px) {
+  .manufacturer-grid-item {
+    max-width: 200px;
+  }
+}
+
+/* Loading animation */
+.manufacturer-card-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Selected state animation */
+.manufacturer-card.border-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background: linear-gradient(45deg, transparent 40%, rgba(13, 110, 253, 0.05) 50%, transparent 60%);
+  animation: shimmer 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

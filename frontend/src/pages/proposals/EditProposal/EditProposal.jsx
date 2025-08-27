@@ -224,7 +224,8 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     if (manufacturersData.length > 0) {
       manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersById[item.manufacturer]) {
-          dispatch(fetchManufacturerById(item.manufacturer));
+          // Don't load full catalog data for proposal editing - only manufacturer info needed
+          dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
         }
       });
     }

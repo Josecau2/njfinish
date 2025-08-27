@@ -279,7 +279,7 @@ exports.fetchSingleUser = async (req, res) => {
 // Add user
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, isSalesRep, location, userGroup, force } = req.body;
+    const { name, email, password, isSalesRep, location, userGroup, force, role } = req.body;
 
     const existingUser = await User.findOne({
       where: {
@@ -307,7 +307,7 @@ exports.addUser = async (req, res) => {
 
     if (deletedUser && force) {
       // Determine user role based on group type for restoration
-      let userRole = 'User'; // Default role
+      let userRole = role || 'User'; // Use provided role or default to 'User'
       let roleId = 0; // Default role_id
       
       if (userGroup) {
@@ -318,6 +318,7 @@ exports.addUser = async (req, res) => {
             roleId = parseInt(userGroup); // Set role_id to group_id for contractors
           } else if (group.name.toLowerCase() === 'admin' || group.group_type === 'admin') {
             userRole = 'Admin'; // Set role to Admin for admin groups
+            roleId = 2; // Set role_id to 2 for admin users
             roleId = 2; // Set role_id to 2 for admin users
             // Note: Admin users don't need group modules - they have access to everything by role
           }
@@ -355,11 +356,12 @@ exports.addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Determine user role based on group type
-    let userRole = 'User'; // Default role
+    // Determine user role - use explicitly provided role or determine from group type
+    let userRole = role || 'User'; // Use provided role or default to 'User'
     let roleId = 0; // Default role_id
     
-    if (userGroup) {
+    // Only override the role if userGroup is provided and role is not explicitly set
+    if (userGroup && !role) {
       const group = await UserGroup.findByPk(userGroup);
       if (group) {
         if (group.group_type === 'contractor') {

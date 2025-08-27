@@ -26,7 +26,8 @@ const EditManufacturer = () => {
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchManufacturerById(id));
+      // Don't load catalog data initially for manufacturer editing - only load basic info
+      dispatch(fetchManufacturerById({ id, includeCatalog: false }));
     }
   }, [id, dispatch]);
 

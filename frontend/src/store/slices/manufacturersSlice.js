@@ -72,9 +72,28 @@ export const updateManufacturer = createAsyncThunk(
 
 export const fetchManufacturerById = createAsyncThunk(
   'manufacturers/fetchById',
-  async (id, { rejectWithValue }) => {
+  async (idOrParams, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${id}`, {
+      // Handle backward compatibility - if just a string/number is passed, use old format
+      let id, page, limit, includeCatalog;
+      
+      if (typeof idOrParams === 'object' && idOrParams !== null) {
+        ({ id, page = 1, limit = 100, includeCatalog = true } = idOrParams);
+      } else {
+        // Backward compatibility: if just an ID is passed
+        id = idOrParams;
+        page = 1;
+        limit = 100;
+        includeCatalog = true;
+      }
+      
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        includeCatalog: includeCatalog.toString()
+      });
+      
+      const response = await axiosInstance.get(`/api/manufacturers/${id}?${params}`, {
         headers: getAuthHeaders()
       });
       return response.data;
@@ -91,7 +110,8 @@ const manufacturersSlice = createSlice({
     selected: null,
     loading: false,
     error: null,
-    byId: {},  
+    byId: {},
+    pagination: null, // Add pagination info for selected manufacturer
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -138,12 +158,16 @@ const manufacturersSlice = createSlice({
         state.loading = true;
         state.error = null;
         state.selected = null;
+        state.pagination = null;
       })
       .addCase(fetchManufacturerById.fulfilled, (state, action) => {
         state.loading = false;
-        state.selected = action.payload;
-        const id = action.payload.id;
-        state.byId[id] = action.payload;
+        // Handle new response format with manufacturer and pagination
+        const { manufacturer, pagination } = action.payload;
+        state.selected = manufacturer || action.payload; // Backward compatibility
+        state.pagination = pagination || null;
+        const id = (manufacturer || action.payload).id;
+        state.byId[id] = manufacturer || action.payload;
       })
       .addCase(fetchManufacturerById.rejected, (state, action) => {
         state.loading = false;

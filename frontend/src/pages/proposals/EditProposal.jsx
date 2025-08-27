@@ -177,7 +177,8 @@ const EditProposal = () => {
 
       formData.manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
-          dispatch(fetchManufacturerById(item.manufacturer));
+          // Don't load full catalog data for proposal editing - only manufacturer info needed
+          dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
         }
       });
     }

@@ -78,7 +78,8 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
   useEffect(() => {
     formData.manufacturersData?.forEach((item) => {
       if (item.manufacturer) {
-        dispatch(fetchManufacturerById(item.manufacturer));
+        // Don't load full catalog data for proposal summary - only manufacturer info needed
+        dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
       }
     });
   }, [formData.manufacturersData, dispatch]);

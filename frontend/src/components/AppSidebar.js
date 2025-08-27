@@ -46,40 +46,39 @@ const AppSidebar = () => {
           backgroundColor: customization.logoBg,
         }}
       >
-        <CSidebarBrand to="/" className="d-flex flex-column align-items-center justify-content-center w-100 text-decoration-none">
-          {/* Full sidebar logo */}
-          <div className="sidebar-brand-full fw-bold fs-5" style={{ color: '#fff', cursor: 'pointer' }}>
-            {customization.logoImage ? (
+        <CSidebarBrand to="/" className="d-flex align-items-center justify-content-center w-100 text-decoration-none">
+          {customization.logoImage ? (
+            <>
+              {/* Full sidebar logo - visible when expanded */}
               <img
                 src={`${api_url}${customization.logoImage}`}
                 alt="Logo"
+                className="sidebar-brand-full"
                 style={{
                   maxHeight: 60,
                   maxWidth: 120,
                   objectFit: 'contain',
-                  marginBottom: 5,
                 }}
               />
-            ) : (
-              customization.logoText
-            )}
-          </div>
-          
-          {/* Collapsed sidebar logo */}
-          {customization.logoImage ? (
-            <img
-              src={`${api_url}${customization.logoImage}`}
-              alt="Logo"
-              className="sidebar-brand-narrow"
-              style={{
-                maxHeight: 32,
-                maxWidth: 32,
-                objectFit: 'contain',
-                marginTop: 4,
-              }}
-            />
+              {/* Collapsed sidebar logo - visible when collapsed */}
+              <img
+                src={`${api_url}${customization.logoImage}`}
+                alt="Logo"
+                className="sidebar-brand-narrow"
+                style={{
+                  maxHeight: 32,
+                  maxWidth: 32,
+                  objectFit: 'contain',
+                }}
+              />
+            </>
           ) : (
-            <CIcon icon={sygnet} height={32} className="sidebar-brand-narrow mt-1" />
+            <>
+              <div className="sidebar-brand-full fw-bold fs-5" style={{ color: '#fff', cursor: 'pointer' }}>
+                {customization.logoText}
+              </div>
+              <CIcon icon={sygnet} height={32} className="sidebar-brand-narrow" />
+            </>
           )}
         </CSidebarBrand>
         <CCloseButton

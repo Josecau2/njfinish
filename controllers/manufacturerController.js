@@ -152,33 +152,70 @@ const fetchManufacturerById = async (req, res) => {
     const { id } = req.params;
 
     try {
+        // Get query parameters for pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 100; // Default to 100 items per page
+        const offset = (page - 1) * limit;
+        const includeCatalog = req.query.includeCatalog !== 'false'; // Default to true, but allow disabling
+        
+        // Build includes array conditionally to prevent memory overflow
+        const includes = [];
+        
+        // Always include style collections and catalog files (these are typically smaller)
+        includes.push(
+            {
+                model: ManufacturerStyleCollection,
+                as: 'collectionsstyles',
+                order: [['createdAt', 'DESC']]
+            },
+            {
+                model: ManufacturerCatalogFile,
+                as: 'catalogFiles',
+                order: [['createdAt', 'DESC']]
+            }
+        );
+        
+        // Only include catalog data if requested (with pagination to prevent memory overflow)
+        if (includeCatalog) {
+            includes.push({
+                model: ManufacturerCatalogData,
+                as: 'catalogData',
+                limit: limit,
+                offset: offset,
+                order: [['createdAt', 'DESC']]
+            });
+        }
+
         const manufacturer = await Manufacturer.findOne({
             where: { id },
-            include: [
-                {
-                    model: ManufacturerCatalogData,
-                    as: 'catalogData',
-                    order: [['createdAt', 'DESC']] // ordering catalog data by latest
-                },
-                {
-                    model: ManufacturerStyleCollection,
-                    as: 'collectionsstyles',
-                    order: [['createdAt', 'DESC']] // ordering catalog data by latest
-                },
-                {
-                    model: ManufacturerCatalogFile,
-                    as: 'catalogFiles',
-                    order: [['createdAt', 'DESC']] // ordering catalog data by latest
-                }
-            ],
-            order: [['createdAt', 'DESC']] // optional: sort manufacturer itself if needed
+            include: includes,
+            order: [['createdAt', 'DESC']]
         });
 
         if (!manufacturer) {
             return res.status(404).json({ error: 'Manufacturer not found' });
         }
 
-        res.json(manufacturer);
+        // If catalog data was requested, also return pagination info
+        let response = { manufacturer };
+        
+        if (includeCatalog) {
+            // Get total count of catalog items for pagination
+            const totalCatalogItems = await ManufacturerCatalogData.count({
+                where: { manufacturerId: id }
+            });
+            
+            response.pagination = {
+                page,
+                limit,
+                total: totalCatalogItems,
+                totalPages: Math.ceil(totalCatalogItems / limit),
+                hasNext: page < Math.ceil(totalCatalogItems / limit),
+                hasPrev: page > 1
+            };
+        }
+
+        res.json(response);
     } catch (error) {
         console.error(error);
         res.status(500).json({

@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, contractorGroupId }) => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false);
   const { t } = useTranslation();
   const [customerOptions, setCustomerOptions] = useState([]);
   const dispatch = useDispatch();
@@ -90,6 +91,29 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
     }
   }, [locations]);
 
+  // Auto-populate designer field when users are loaded
+  useEffect(() => {
+    if (canAssignDesigner && users.length > 0) {
+      const currentUser = users.find(user => user.id === loggedInUserId);
+      const availableDesigners = users.filter(user => user.role === 'Manufacturers');
+      const isCurrentDesignerValid = availableDesigners.some(designer => designer.id == formData.designer);
+      
+      // Auto-populate if designer field is empty OR if current value is invalid
+      if (!formData.designer || formData.designer === '' || !isCurrentDesignerValid) {
+        if (currentUser && currentUser.role === 'Manufacturers') {
+          // If current user is a designer, auto-populate with them
+          updateFormData({ designer: currentUser.id });
+        } else if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'User')) {
+          // If current user is Admin/User, auto-populate with the first available designer
+          if (availableDesigners.length > 0) {
+            const firstDesigner = availableDesigners[0];
+            updateFormData({ designer: firstDesigner.id });
+          }
+        }
+      }
+    }
+  }, [users, canAssignDesigner, loggedInUserId, formData.designer, updateFormData]);
+
   const toggleMoreOptions = () => setShowMoreOptions(!showMoreOptions);
 
   const handleSubmit = (values) => {
@@ -97,8 +121,44 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
     nextStep();
   };
 
+  // Function to create a new designer user
+  const createNewDesigner = async (designerName) => {
+    try {
+      setIsCreatingDesigner(true);
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      // Generate a temporary email for the designer
+      const tempEmail = `${designerName.toLowerCase().replace(/\s+/g, '.')}@designer.local`;
+      
+      const response = await axiosInstance.post('/api/users', {
+        name: designerName,
+        email: tempEmail,
+        password: 'temppassword123', // Temporary password
+        role: 'Manufacturers', // Set role as Manufacturers (designer)
+        isSalesRep: false,
+        location: null,
+        userGroup: null
+      }, { headers });
+
+      if (response.status === 200 || response.status === 201) {
+        // Refresh the users list to include the new designer
+        await dispatch(fetchUsers());
+        return response.data.user;
+      }
+    } catch (error) {
+      console.error('Error creating new designer:', error);
+      // Handle error - you could add a toast notification here
+      alert(`Error creating designer "${designerName}". Please try again.`);
+      return null;
+    } finally {
+      setIsCreatingDesigner(false);
+    }
+  };
+
+  // Include all users with designer role (Manufacturers), including the logged-in user
   const designerOptions = users
-    .filter((user) => user.id !== loggedInUserId && user.role == "Manufacturers")
+    .filter((user) => user.role === "Manufacturers")
     .map((user) => ({ value: user.id, label: user.name }));
 
   const locationOptions = locations.map((loc) => ({
@@ -199,6 +259,8 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
                       <CFormLabel htmlFor="designer">{t('proposals.create.customerInfo.designer')} *</CFormLabel>
                       <CreatableSelect
                         isClearable
+                        isLoading={isCreatingDesigner}
+                        isDisabled={isCreatingDesigner}
                         id="designer"
                         name="designer"
                         options={designerOptions}
@@ -208,10 +270,22 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
                           ) || null
                         }
                         onChange={(selectedOption) => {
-                          setFieldValue('designer', selectedOption?.value || '');
-                          updateFormData({ designer: selectedOption?.value || '' });
+                          const designerId = selectedOption?.value || '';
+                          setFieldValue('designer', designerId);
+                          updateFormData({ designer: designerId });
+                        }}
+                        onCreateOption={async (inputValue) => {
+                          // Create new designer when user types a name that doesn't exist
+                          const newDesigner = await createNewDesigner(inputValue);
+                          if (newDesigner) {
+                            // Set the new designer as selected
+                            setFieldValue('designer', newDesigner.id);
+                            updateFormData({ designer: newDesigner.id });
+                          }
                         }}
                         onBlur={handleBlur}
+                        placeholder={isCreatingDesigner ? "Creating designer..." : "Select or create a designer..."}
+                        formatCreateLabel={(inputValue) => `Create designer: "${inputValue}"`}
                       />
                       {errors.designer && touched.designer && (
                         <div className="text-danger small mt-1">

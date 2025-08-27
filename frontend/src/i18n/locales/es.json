@@ -482,7 +482,7 @@
         }
       },
       "design": {
-        "title": "Importar diseño",
+        "title": "Seleccionar Estilo",
         "tabs": {
           "import2020": "Importar diseño 2020",
           "manualEntry": "Seleccionar estilo e ingresar partes manualmente"

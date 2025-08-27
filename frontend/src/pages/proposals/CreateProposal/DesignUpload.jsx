@@ -99,7 +99,8 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
             )}
           </div>
 
-          <CNav variant="tabs" role="tablist" className="mb-4 tabs-container">
+          {/* Desktop/Tablet tabs - hidden on mobile */}
+          <CNav variant="tabs" role="tablist" className="mb-4 tabs-container d-none d-md-flex">
             <CNavItem>
               <CNavLink
                 active={activeTab === 'manual'}
@@ -245,6 +246,40 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
         </CCardBody>
       </CCard>
+      
+      {/* Mobile action buttons - fixed at bottom */}
+      <div className="d-md-none design-upload-mobile-actions">
+        <div className="container-fluid p-3">
+          <div className="row g-2">
+            <div className="col-6">
+              <CButton
+                color={activeTab === 'manual' ? 'primary' : 'light'}
+                className="w-100 mobile-tab-button"
+                onClick={() => handleTabSelect('manual')}
+                size="lg"
+              >
+                <div className="text-center">
+                  <i className="bi bi-pencil-square d-block mb-1"></i>
+                  <small>{t('proposals.create.design.tabs.manualEntry')}</small>
+                </div>
+              </CButton>
+            </div>
+            <div className="col-6">
+              <CButton
+                color={activeTab === 'import' ? 'primary' : 'light'}
+                className="w-100 mobile-tab-button"
+                onClick={() => handleTabSelect('import')}
+                size="lg"
+              >
+                <div className="text-center">
+                  <i className="bi bi-upload d-block mb-1"></i>
+                  <small>{t('proposals.create.design.tabs.import2020')}</small>
+                </div>
+              </CButton>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

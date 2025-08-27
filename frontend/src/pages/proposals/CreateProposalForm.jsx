@@ -96,7 +96,8 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
   useEffect(() => {
     if (formData.manufacturerId) {
-      dispatch(fetchManufacturerById(formData.manufacturerId));
+      // Don't load full catalog data for proposal creation - only manufacturer info needed
+      dispatch(fetchManufacturerById({ id: formData.manufacturerId, includeCatalog: false }));
     }
   }, [formData.manufacturerId, dispatch]);
 
@@ -298,7 +299,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
         subtitle={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
         badge={{
           text: isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode'),
-          variant: 'light'
+          variant: 'secondary'
         }}
         rightContent={renderActionButtons()}
       />
@@ -306,33 +307,55 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       {/* Progress Bar */}
       <CCard className="proposal-progress-bar">
         <CCardBody className="py-3">
-          <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center justify-content-between position-relative w-100">
+            {/* Progress line - full width background */}
+            <div 
+              className="position-absolute w-100"
+              style={{
+                height: '2px',
+                backgroundColor: '#e9ecef',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1
+              }}
+            />
+            
+            {/* Active progress line */}
+            <div 
+              className="position-absolute"
+              style={{
+                height: '2px',
+                backgroundColor: '#212529',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: `${((currentStep - 1) / 3) * 100}%`,
+                transition: 'all 0.3s ease',
+                zIndex: 2
+              }}
+            />
+            
+            {/* Step numbers - equally distributed */}
             {[1, 2, 3, 4].map((step, index) => (
-              <div key={step} className="d-flex align-items-center" style={{ flex: 1 }}>
-                <div
-                  className={`d-flex align-items-center justify-content-center fw-bold`}
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    backgroundColor: step <= currentStep ? 'var(--app-header-bg)' : '#e9ecef',
-                    color: step <= currentStep ? 'var(--header-text-primary, #fff)' : '#6c757d',
-                    fontSize: '14px',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {step}
-                </div>
-                {index < 3 && (
-                  <div
-                    className="flex-grow-1 mx-2"
-                    style={{
-                      height: '2px',
-                      backgroundColor: step < currentStep ? 'var(--app-header-bg)' : '#e9ecef',
-                      transition: 'all 0.3s ease'
-                    }}
-                  />
-                )}
+              <div
+                key={step}
+                className="d-flex align-items-center justify-content-center fw-bold proposal-step-number position-relative"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: step <= currentStep ? '#212529' : '#ffffff',
+                  color: step <= currentStep ? '#ffffff' : '#495057',
+                  fontSize: '14px',
+                  fontWeight: step <= currentStep ? '800' : '600',
+                  transition: 'all 0.3s ease',
+                  border: step <= currentStep ? '2px solid #343a40' : '2px solid #dee2e6',
+                  boxShadow: step <= currentStep ? '0 3px 6px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.05)',
+                  zIndex: 3,
+                  flexShrink: 0,
+                  textShadow: step <= currentStep ? '0 2px 4px rgba(0, 0, 0, 0.9)' : 'none'
+                }}
+              >
+                {step}
               </div>
             ))}
           </div>

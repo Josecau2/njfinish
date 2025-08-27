@@ -110,9 +110,9 @@ const PageHeader = ({
           border: isLight ? '#0dcaf0' : '#0ea5e9'
         },
         secondary: {
-          bg: isLight ? '#6c757d' : '#9ca3af',
-          color: isLight ? '#ffffff' : '#1f2937',
-          border: isLight ? '#6c757d' : '#9ca3af'
+          bg: isLight ? '#495057' : '#6c757d',
+          color: '#ffffff',
+          border: isLight ? '#495057' : '#6c757d'
         }
       },
       separator: isLight ? 'rgba(45, 55, 72, 0.2)' : 'rgba(255, 255, 255, 0.3)'

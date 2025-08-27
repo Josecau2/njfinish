@@ -14,13 +14,59 @@
 
 .sidebar-header.border-bottom {
   padding: 0 !important;
-  /* background-color: #0dcaf0 !important */
 }
-
 
 .sidebar-header.border-bottom a.sidebar-brand {
   width: 100% !important;
   text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+}
+
+/* Full sidebar logo - visible when expanded */
+.sidebar-brand-full {
+  display: block !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+/* Narrow sidebar logo - hidden by default, shown when sidebar is minimized */
+.sidebar-brand-narrow {
+  display: none !important;
+  margin: 0 auto !important;
+}
+
+/* CoreUI sidebar minimized state */
+.sidebar.sidebar-minimized .sidebar-brand-full {
+  display: none !important;
+}
+
+.sidebar.sidebar-minimized .sidebar-brand-narrow {
+  display: block !important;
+}
+
+/* Mobile responsive centering */
+@media (max-width: 991.98px) {
+  .sidebar-header.border-bottom a.sidebar-brand {
+    padding: 0.75rem !important;
+    min-height: 60px !important;
+  }
+  
+  .sidebar-brand-full img {
+    max-height: 40px !important;
+    max-width: 100px !important;
+  }
+  
+  /* On mobile, always show full logo and hide narrow */
+  .sidebar-brand-full {
+    display: block !important;
+  }
+  
+  .sidebar-brand-narrow {
+    display: none !important;
+  }
 }
 
 .col-md-6.text-white.d-flex.flex-column.justify-content-center.align-items-center.login-right-panel {
@@ -883,4 +929,36 @@
 
 .cursor-pointer:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Enhanced contrast for proposal step numbers */
+.proposal-step-number {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  font-weight: 700 !important;
+  position: relative !important;
+}
+
+/* Ensure step numbers are always readable regardless of header color */
+.proposal-step-number[style*="background-color"] {
+  color: #ffffff !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8) !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Force high contrast for inactive step numbers */
+.proposal-step-number:not([style*="var(--app-header-bg)"]) {
+  color: #495057 !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+  background-color: #ffffff !important;
+  border: 2px solid #dee2e6 !important;
+}
+
+/* Add extra contrast for active/completed steps */
+.proposal-step-number[style*="var(--app-header-bg)"] {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+  border: 2px solid #343a40 !important;
+  font-weight: 800 !important;
 }
