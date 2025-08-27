@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { getContrastColor } from '../utils/colorUtils'
 import {
   CFormCheck,
   CInputGroup,
@@ -45,6 +47,11 @@ const CatalogTableEdit = ({
   readOnly = false,
 }) => {
   const { t } = useTranslation();
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -91,7 +98,8 @@ const CatalogTableEdit = ({
   // console.log('selectedStyleData in Edit: ',selectedStyleData);
   return (
     <div className="mt-5 mb-5">
-      <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
+      {/* Controls - align with create (adds catalog-controls-mobile for responsive) */}
+      <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
         {!readOnly && (
           <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }}>
             <CInputGroup>
@@ -160,7 +168,8 @@ const CatalogTableEdit = ({
         )}
       </div>
 
-      <div className="table-responsive">
+  {/* Desktop table view */}
+  <div className="table-responsive table-responsive-md">
         <CTable>
           <CTableHead>
             <CTableRow>
@@ -185,9 +194,10 @@ const CatalogTableEdit = ({
               const assemblyFee = unitAssembly * qty
               const total = Number(item.price || 0) * qty + assemblyFee
 
+              const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
               return (
                 <React.Fragment key={idx}>
-                  <CTableRow>
+                  <CTableRow className={item.unavailable ? 'table-danger' : ''}>
                     <CTableDataCell>{idx + 1}</CTableDataCell>
                     <CTableDataCell>
                       <CFormInput
@@ -200,7 +210,7 @@ const CatalogTableEdit = ({
                       />
                     </CTableDataCell>
 
-                    <CTableDataCell>{item.code}</CTableDataCell>
+                    <CTableDataCell style={rowStyle}>{item.code}</CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
@@ -208,9 +218,16 @@ const CatalogTableEdit = ({
               {hingeOptions.map((opt) => (
                             <span
                               key={opt}
-                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-light'}`}
-                onClick={() => !readOnly && updateHingeSide(idx, opt)}
-                style={readOnly ? { pointerEvents: 'none', opacity: 0.6 } : undefined}
+                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-light' : 'btn-light'}`}
+                              style={{
+                                ...(item.hingeSide === opt ? {
+                                  background: headerBg,
+                                  color: textColor,
+                                  border: `1px solid ${headerBg}`
+                                } : {}),
+                                ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                              }}
+                              onClick={() => !readOnly && updateHingeSide(idx, opt)}
                             >
                               {codeToLabel(opt)}
                             </span>
@@ -227,9 +244,16 @@ const CatalogTableEdit = ({
               {exposedOptions.map((opt) => (
                             <span
                               key={opt}
-                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-light'}`}
-                onClick={() => !readOnly && updateExposedSide(idx, opt)}
-                style={readOnly ? { pointerEvents: 'none', opacity: 0.6 } : undefined}
+                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-light' : 'btn-light'}`}
+                              style={{
+                                ...(item.exposedSide === opt ? {
+                                  background: headerBg,
+                                  color: textColor,
+                                  border: `1px solid ${headerBg}`
+                                } : {}),
+                                ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                              }}
+                              onClick={() => !readOnly && updateExposedSide(idx, opt)}
                             >
                               {codeToLabel(opt)}
                             </span>
@@ -240,17 +264,17 @@ const CatalogTableEdit = ({
                       )}
                     </CTableDataCell>
 
-                    <CTableDataCell>{formatPrice(item.price)}</CTableDataCell>
+                    <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : item.price)}</CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
-                        <span>{formatPrice(assemblyFee)}</span>
+                        <span style={rowStyle}>{formatPrice(item.unavailable ? 0 : assemblyFee)}</span>
                       ) : (
                         <span className="text-muted">{formatPrice(0)}</span>
                       )}
                     </CTableDataCell>
 
-                    <CTableDataCell>{formatPrice(total)}</CTableDataCell>
+                    <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : total)}</CTableDataCell>
 
                     <CTableDataCell>
                       <div className="d-flex align-items-center">
@@ -315,6 +339,119 @@ const CatalogTableEdit = ({
             })}
           </CTableBody>
         </CTable>
+      </div>
+
+      {/* Mobile card view to match create */}
+      <div className="mobile-card-view d-none">
+        {selectVersion?.items?.map((item, idx) => {
+          const assembled = !!isAssembled;
+          const qty = Number(item.qty || 1);
+          const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0;
+          const assemblyFee = unitAssembly * qty;
+          const total = Number(item.price || 0) * qty + assemblyFee;
+          const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
+
+          return (
+            <React.Fragment key={`mobile-${idx}`}>
+              <div className="item-card-mobile">
+                <div className="item-header">
+                  <div className="item-number">{idx + 1}</div>
+                  {!readOnly && (
+                    <div className="item-actions">
+                      <CIcon
+                        icon={cilSettings}
+                        style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: '1.2rem' }}
+                        onClick={() => handleOpenModificationModal(idx, item.id)}
+                      />
+                      <CIcon
+                        icon={cilTrash}
+                        style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: '1.2rem' }}
+                        onClick={() => handleDelete(idx)}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.item')}</span>
+                  <span className="item-value item-code" style={rowStyle}>{item.code}</span>
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.qty')}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.qty}
+                    onChange={(e) => updateQty(idx, parseInt(e.target.value))}
+                    className="qty-input-mobile"
+                    disabled={readOnly}
+                  />
+                </div>
+
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.price')}</span>
+                  <span className="item-value" style={rowStyle}>{formatPrice(item.unavailable ? 0 : item.price)}</span>
+                </div>
+
+                {assembled && (
+                  <>
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                      <div className="btn-group-mobile">
+                        {hingeOptions.map((opt) => (
+                          <button
+                            key={opt}
+                            className={`btn ${item.hingeSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
+                            style={item.hingeSide === opt ? {
+                              background: headerBg,
+                              color: textColor,
+                              border: `1px solid ${headerBg}`
+                            } : {}}
+                            onClick={() => !readOnly && updateHingeSide(idx, opt)}
+                            disabled={readOnly}
+                          >
+                            {codeToLabel(opt)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                      <div className="btn-group-mobile">
+                        {exposedOptions.map((opt) => (
+                          <button
+                            key={opt}
+                            className={`btn ${item.exposedSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
+                            style={item.exposedSide === opt ? {
+                              background: headerBg,
+                              color: textColor,
+                              border: `1px solid ${headerBg}`
+                            } : {}}
+                            onClick={() => !readOnly && updateExposedSide(idx, opt)}
+                            disabled={readOnly}
+                          >
+                            {codeToLabel(opt)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="item-detail-row">
+                      <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
+                      <span className="item-value" style={rowStyle}>{formatPrice(item.unavailable ? 0 : assemblyFee)}</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="total-highlight">
+                  <strong style={rowStyle}>{t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}</strong>
+                </div>
+              </div>
+            </React.Fragment>
+          );
+        })}
       </div>
     </div>
   )

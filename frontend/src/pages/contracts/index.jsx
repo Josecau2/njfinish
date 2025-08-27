@@ -49,6 +49,7 @@ import { getContracts } from '../../store/slices/proposalSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import axiosInstance from '../../helpers/axiosInstance';
 import PaginationComponent from '../../components/common/PaginationComponent';
+import PageHeader from '../../components/PageHeader';
 
 const Contracts = () => {
   const { t } = useTranslation();
@@ -61,6 +62,23 @@ const Contracts = () => {
   const [selectedContract, setSelectedContract] = useState(null);
   const contractsState = useSelector((state) => state.contracts);
   const { data: contracts = [], loading, error } = contractsState;
+  const customization = useSelector((state) => state.customization);
+
+  // Function to get optimal text color for contrast
+  const getContrastColor = (backgroundColor) => {
+    if (!backgroundColor) return '#ffffff';
+    // Convert hex to RGB
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return dark color for light backgrounds, light color for dark backgrounds
+    return luminance > 0.5 ? '#2d3748' : '#ffffff';
+  };
 
   const contractsdata = Array.isArray(contracts) ? contracts : [];
 
@@ -324,44 +342,25 @@ const Contracts = () => {
   return (
     <CContainer fluid className="contracts-container">
       {/* Header Section */}
-      <CCard className="contracts-header-card">
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <h3 className="contracts-header-title">{t('nav.contracts')}</h3>
-              <p className="contracts-header-subtitle">{t('contracts.subtitle')}</p>
-            </CCol>
-            {/* <CCol xs="auto">
-              <div className="d-flex gap-2">
-                <CButton
-                  color="light"
-                  className="shadow-sm px-4 fw-semibold"
-                  style={{
-                    borderRadius: '5px',
-                    border: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <CIcon icon={cilPlus} className="me-2" />
-                  New Contract
-                </CButton>
-                <CButton
-                  color="success"
-                  className="shadow-sm px-4 fw-semibold"
-                  style={{
-                    borderRadius: '5px',
-                    border: 'none',
-                    background: 'linear-gradient(45deg, #28a745, #20c997)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Contract Template
-                </CButton>
-              </div>
-            </CCol> */}
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilBriefcase} style={{ fontSize: '24px', color: 'white' }} />
+            </div>
+            {t('nav.contracts')}
+          </div>
+        }
+        subtitle={t('contracts.subtitle')}
+      />
 
       {/* Search and Controls */}
       <CCard className="contracts-controls-card">
@@ -495,11 +494,11 @@ const Contracts = () => {
                         style={{
                           width: '32px',
                           height: '32px',
-                          backgroundColor: '#0d6efd',
+                          backgroundColor: customization.headerBg || '#667eea',
                           borderRadius: '8px',
                           fontSize: '14px',
                           fontWeight: 'bold',
-                          color: 'white'
+                          color: getContrastColor(customization.headerBg || '#667eea')
                         }}
                       >
                         {(item.customer?.name || 'N').charAt(0).toUpperCase()}
@@ -607,7 +606,7 @@ const Contracts = () => {
                         <CTableDataCell 
                           className="py-3 border-0 border-bottom border-light"
                           style={{
-                            color: '#0d6efd',
+                            color: customization.headerBg || '#667eea',
                             cursor: 'pointer',
                             fontWeight: '500'
                           }}
@@ -670,8 +669,8 @@ const Contracts = () => {
                                 transition: 'all 0.2s ease'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e7f3ff';
-                                e.currentTarget.style.borderColor = '#0d6efd';
+                                e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
+                                e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.backgroundColor = '';
@@ -726,8 +725,8 @@ const Contracts = () => {
           onClose={() => setShowModal(false)}
           className="border-0"
           style={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white'
+            background: customization.headerBg || '#667eea',
+            color: getContrastColor(customization.headerBg || '#667eea')
           }}
         >
           <CModalTitle className="fw-bold">
@@ -793,7 +792,7 @@ const Contracts = () => {
         </CModalFooter>
       </CModal>
 
-      <style jsx={true}>{`
+      <style>{`
         .contract-modal .modal-dialog {
           max-width: 95%;
         }

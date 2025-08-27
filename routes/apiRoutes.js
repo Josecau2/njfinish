@@ -85,6 +85,10 @@ router.post('/manufacturers/style/create', verifyTokenWithGroup, requirePermissi
 router.get('/manufacturers/style/:catalogID', verifyTokenWithGroup, validateIdParam('catalogID'), manufacturerController.fetchManufacturerStyleById);
 router.get('/manufacturers/:id/styles', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerAllStyleById);
 router.get('/manufacturers/:id/styleswithcatalog', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerStylesWithCatalog);
+// Lightweight styles meta for proposal step (unique styles with a representative catalog id and optional image)
+router.get('/manufacturers/:id/styles-meta', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerStylesMeta);
+// Items for a given style by representative catalog id, with pagination and optional includeDetails
+router.get('/manufacturers/:manufacturerId/styles/:catalogId/items', verifyTokenWithGroup, validateIdParam('manufacturerId'), validateIdParam('catalogId'), manufacturerController.getItemsByStyleCatalogId);
 
 router.get('/manufacturers/catalogs/modificationsItems/:id', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerCatalogModificationItems);
 router.post('/manufacturers/catalogs/modificationsItems/add', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.addModificationItem);
@@ -211,15 +215,15 @@ router.get('/dashboard/latest-proposals', proposalsController.getLatestProposals
 
 // Resources CRUD routes
 router.get('/resources', verifyTokenWithGroup, resourcesController.getResources); // Contractor-scoped endpoint
-router.get('/resources/links', resourcesController.getLinks);
-router.post('/resources/links', resourcesController.saveLink);
-router.put('/resources/links/:id', resourcesController.updateLink);
-router.delete('/resources/links/:id', resourcesController.deleteLink);
+router.get('/resources/links', verifyTokenWithGroup, resourcesController.getLinks);
+router.post('/resources/links', verifyTokenWithGroup, resourcesController.saveLink);
+router.put('/resources/links/:id', verifyTokenWithGroup, resourcesController.updateLink);
+router.delete('/resources/links/:id', verifyTokenWithGroup, resourcesController.deleteLink);
 
-router.get('/resources/files', resourcesController.getFiles);
-router.post('/resources/files', resourceUpload.single('file'), resourcesController.saveFile);
-router.put('/resources/files/:id', resourceUpload.single('file'), resourcesController.updateFile);
-router.delete('/resources/files/:id', resourcesController.deleteFile);
+router.get('/resources/files', verifyTokenWithGroup, resourcesController.getFiles);
+router.post('/resources/files', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.saveFile);
+router.put('/resources/files/:id', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.updateFile);
+router.delete('/resources/files/:id', verifyTokenWithGroup, resourcesController.deleteFile);
 router.get('/resources/files/download/:id', resourcesController.downloadFile);
 
 router.get('/calendar-events', calenderController.fetchEvents);

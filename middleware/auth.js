@@ -27,6 +27,31 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Rolling token refresh: if token is close to expiring, mint a fresh one
+    try {
+      const nowSec = Math.floor(Date.now() / 1000);
+      const exp = Number(decoded?.exp || 0);
+      const timeLeft = exp - nowSec;
+      // Refresh when less than 20 minutes remain
+      const REFRESH_THRESHOLD_SEC = 20 * 60;
+      if (timeLeft > 0 && timeLeft < REFRESH_THRESHOLD_SEC) {
+        // Use the original claims to sign a new token
+        const newToken = jwt.sign({
+          id: decoded.id,
+          email: decoded.email,
+          name: decoded.name,
+          role: decoded.role,
+          role_id: decoded.role_id,
+          group_id: decoded.group_id,
+        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Expose header to browser (CORS) if needed
+        res.setHeader('x-refresh-token', newToken);
+        res.setHeader('Access-Control-Expose-Headers', 'x-refresh-token');
+      }
+    } catch (e) {
+      // Non-fatal; proceed without refresh header
+    }
     
     // Load user with group information
     req.user = await User.findByPk(decoded.id, {

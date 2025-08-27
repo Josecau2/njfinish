@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useDeferredValue, startTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CFormCheck, CFormSwitch } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight } from '@coreui/icons';
+import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList } from '@coreui/icons';
 import ModificationModal from '../components/model/ModificationModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
@@ -27,7 +27,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [addOnTop, setAddOnTop] = useState(false);
     const [groupEnabled, setGroupEnabled] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const collections = selectVersion?.manufacturerData?.collectionsstyles || [];
+    const collections = selectVersion?.manufacturerData?.collections || [];
     const catalogData = selectVersion?.manufacturerData?.catalogData || [];
     const [copied, setCopied] = useState(false);
     const [textChanges, setTextChanges] = useState(false);
@@ -57,27 +57,30 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [itemModificationID, setItemModificationID] = useState('');
     const [modificationItems, setModificationItems] = useState('');
     const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
-
-
-
-    const filteredItems = tableItems.filter(item =>
-        typeof item.code === 'string' && item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        typeof item.description === 'string' && item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-
-
-
-
+    const [manufacturerCostMultiplier, setManufacturerCostMultiplier] = useState(1.0);
+    const [stylesMeta, setStylesMeta] = useState([]);
     const [fetchedCollections, setFetchedCollections] = useState([]);
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
+    // Stable baseline for comparison cards (prevents drift when switching styles)
+    const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
+    const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
+    const [unavailableCount, setUnavailableCount] = useState(0);
+    // Cache style items per manufacturer/style to avoid refetching and re-render churn
+    const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
+
+    // Seed local items once per versionName to avoid render/dispatch loops
+    const seededVersionRef = useRef(null);
     useEffect(() => {
-        if (selectVersion) {
-            dispatch(setSelectVersionNew(selectVersion));
-        }
-    }, [selectVersion]);
+        const versionName = selectVersion?.versionName;
+        if (!versionName) return;
+        if (seededVersionRef.current === versionName) return;
+        seededVersionRef.current = versionName;
+        const seed = Array.isArray(selectVersion?.items) ? selectVersion.items : [];
+        setTableItems(seed);
+        dispatch(setTableItemsRedux(seed));
+    }, [selectVersion?.versionName]);
 
     // Fetch user group multiplier on mount
     useEffect(() => {
@@ -107,6 +110,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             setCustomModTaxable(true);
         }
     }, [isUserAdmin]);
+
+    // Items filtered to the current version context (memoized to avoid recompute churn)
+    const filteredItems = useMemo(() => (
+        Array.isArray(tableItems)
+            ? tableItems.filter((item) => item?.selectVersion === selectVersion?.versionName)
+            : []
+    ), [tableItems, selectVersion?.versionName]);
+
+    // Defer large lists to avoid blocking renders during style switches
+    const deferredItems = useDeferredValue(filteredItems);
 
     const updateManufacturerData = () => {
         try {
@@ -178,28 +191,103 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     }, [dispatch]);
 
 
+    // Load styles meta (unique styles with representative catalog id)
     useEffect(() => {
-        const fetchCollections = async () => {
+        const fetchStyles = async () => {
             const manufacturerId = selectVersion?.manufacturerData?.id;
-            if (!manufacturerId) {
-                return; // Don't make API call if no manufacturer ID
-            }
-            
+            if (!manufacturerId) return;
             setCollectionsLoading(true);
             try {
-                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
-                    headers: getAuthHeaders()
-                });
-                setFetchedCollections(response.data); // Adjust based on actual structure
-            } catch (error) {
-                console.error('Error fetching styles with catalog:', error);
+                const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`, { headers: getAuthHeaders() });
+                
+                // Handle both old array format and new object format
+                if (res.data.styles && Array.isArray(res.data.styles)) {
+                    const filtered = res.data.styles.filter(s => String(s?.style || '').trim().length > 0);
+                    setStylesMeta(filtered);
+                    setManufacturerCostMultiplier(Number(res.data.manufacturerCostMultiplier || 1.0));
+                } else if (Array.isArray(res.data)) {
+                    // Fallback for old format
+                    const filtered = res.data.filter(s => String(s?.style || '').trim().length > 0);
+                    setStylesMeta(filtered);
+                } else {
+                    setStylesMeta([]);
+                }
+            } catch (e) {
+                console.error('Error fetching styles meta:', e);
+                setStylesMeta([]);
             } finally {
                 setCollectionsLoading(false);
             }
         };
-
-        fetchCollections();
+        fetchStyles();
     }, [selectVersion?.manufacturerData?.id]);
+
+    // Load items for selected style lazily (by representative catalog id), with cache
+    useEffect(() => {
+        const fetchItemsForStyle = async () => {
+            const manufacturerId = selectVersion?.manufacturerData?.id;
+            const catalogId = selectVersion?.selectedStyle;
+            if (!manufacturerId || !catalogId) {
+                setFetchedCollections([]);
+                return;
+            }
+            setCollectionsLoading(true);
+            try {
+                const cacheKey = `${manufacturerId}:${catalogId}`;
+                if (styleItemsCacheRef.current.has(cacheKey)) {
+                    const cached = styleItemsCacheRef.current.get(cacheKey) || [];
+                    setFetchedCollections(cached);
+                    return;
+                }
+                const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${catalogId}/items`, {
+                    headers: getAuthHeaders(),
+                    params: { includeDetails: '1', limit: 1000 }
+                });
+                const catalogData = res?.data?.catalogData || [];
+                // cache raw data (unfiltered)
+                styleItemsCacheRef.current.set(cacheKey, catalogData);
+                
+                // Update manufacturer cost multiplier if provided
+                if (res?.data?.manufacturerCostMultiplier !== undefined) {
+                    setManufacturerCostMultiplier(Number(res.data.manufacturerCostMultiplier || 1.0));
+                }
+                
+                // (debug logs removed)
+                
+                setFetchedCollections(catalogData);
+            } catch (e) {
+                // swallow fetch error to avoid noisy console; keep UX resilient
+                setFetchedCollections([]);
+            } finally {
+                setCollectionsLoading(false);
+            }
+        };
+        fetchItemsForStyle();
+    }, [selectVersion?.manufacturerData?.id, selectVersion?.selectedStyle]);
+
+    // Optimistic prefill: show items immediately from local catalogData while network fetch warms up
+    useEffect(() => {
+        const manufacturerId = selectVersion?.manufacturerData?.id;
+        const catalogId = selectVersion?.selectedStyle;
+        if (!manufacturerId || !catalogId) return;
+        if (!Array.isArray(catalogData) || catalogData.length === 0) return;
+        // Try to map style id -> style name using local collections
+        const styleName = (collections || []).find(c => c.id === catalogId)?.style;
+        if (!styleName) return;
+        // Only prefill if we currently have nothing (avoid flicker/overwrite)
+        if (fetchedCollections.length === 0) {
+            const local = catalogData.filter(cd => cd.style === styleName);
+            if (local.length) setFetchedCollections(local);
+        }
+    }, [selectVersion?.manufacturerData?.id, selectVersion?.selectedStyle, catalogData, collections]);
+
+    // Adjust selectedStyleData against stylesMeta
+    useEffect(() => {
+        if (selectVersion?.selectedStyle && stylesMeta.length) {
+            const match = stylesMeta.find(col => col.id === selectVersion.selectedStyle);
+            setSelectedStyleData(match || null);
+        }
+    }, [selectVersion, stylesMeta]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -207,9 +295,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             if (window.innerWidth <= 767) {
                 setItemsPerPage(2); // Mobile: 2 items per page
             } else if (window.innerWidth <= 992) {
-                setItemsPerPage(3); // Tablet: 3 items per page
+                setItemsPerPage(4); // Tablet: 4 items per page
+            } else if (window.innerWidth <= 1200) {
+                setItemsPerPage(5); // Small desktop: 5 items per page
             } else {
-                setItemsPerPage(4); // Desktop: 4 items per page
+                setItemsPerPage(6); // Large desktop: 6 items per page
             }
         };
 
@@ -225,26 +315,68 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     // Carousel navigation functions
     const nextSlide = () => {
-        const uniqueStyles = Array.from(
-            new Map(fetchedCollections.map(item => [item.style, item])).values()
-        );
-        const maxIndex = Math.max(0, uniqueStyles.length - itemsPerPage);
+        const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
         setCarouselCurrentIndex(prev => Math.min(prev + 1, maxIndex));
     };
 
-    const prevSlide = () => {
-        setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
-    };
+    const prevSlide = () => setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
 
-    const canGoNext = () => {
-        const uniqueStyles = Array.from(
-            new Map(fetchedCollections.map(item => [item.style, item])).values()
-        );
-        return carouselCurrentIndex < uniqueStyles.length - itemsPerPage;
-    };
+    const canGoNext = () => carouselCurrentIndex < stylesMeta.length - itemsPerPage;
 
-    const canGoPrev = () => {
-        return carouselCurrentIndex > 0;
+    const canGoPrev = () => carouselCurrentIndex > 0;
+
+    // Precompute comparison base totals (invariant across cards) to avoid repeated reduces
+    const comparisonBaseTotals = useMemo(() => {
+        try {
+            const cabinetPartsTotal = filteredItems.reduce((sum, item) => {
+                const unit = Number(item?.comparisonPriceFallback ?? item?.price ?? 0);
+                return sum + unit * Number(item?.qty || 1);
+            }, 0);
+            const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+            const modificationsTotal = filteredItems.reduce((sum, item) => {
+                if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
+                const mods = item.modifications.reduce((modSum, mod) => modSum + Number(mod.price || 0) * Number(mod.qty || 1), 0);
+                return sum + mods;
+            }, 0);
+            const assemblyFeeTotal = isAssembled
+                ? filteredItems.reduce((sum, item) => {
+                    const unitFee = Number(item?.comparisonAssemblyUnitFallback ?? (item?.assemblyFee || 0));
+                    const qty = Number(item?.qty || 1);
+                    return sum + unitFee * qty;
+                }, 0)
+                : 0;
+            const baseTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
+            return { cabinetPartsTotal, customItemsTotal, modificationsTotal, assemblyFeeTotal, baseTotal };
+        } catch {
+            return { cabinetPartsTotal: 0, customItemsTotal: 0, modificationsTotal: 0, assemblyFeeTotal: 0, baseTotal: 0 };
+        }
+    }, [filteredItems, customItems, isAssembled]);
+
+    // Calculate what the total proposal price would be if a different style was selected — mirror Edit logic
+    const calculateTotalForStyle = (stylePrice) => {
+        try {
+            // Use stable baseline style price so comparisons are consistent across selections
+            const baselineStylePrice = Number(
+                (comparisonBaseline?.stylePrice != null ? comparisonBaseline.stylePrice : selectedStyleData?.price) || 0
+            );
+            const styleDifference = Number(stylePrice || 0) - baselineStylePrice;
+
+            // Apply multipliers (manufacturer then user)
+            const manufacturerAdjustedDifference = styleDifference * Number(manufacturerCostMultiplier || 1);
+            const finalStyleDifference = manufacturerAdjustedDifference * Number(userGroupMultiplier || 1);
+
+            // Use precomputed base total; only add style delta
+            const newStyleTotal = Number(comparisonBaseTotals.baseTotal || 0) + finalStyleDifference;
+            const discountAmount = (newStyleTotal * Number(discountPercent || 0)) / 100;
+            const totalAfterDiscount = newStyleTotal - discountAmount;
+            const taxAmount = (totalAfterDiscount * Number(defaultTaxValue || 0)) / 100;
+            const grandTotal = totalAfterDiscount + taxAmount;
+
+            return grandTotal;
+        } catch (error) {
+            console.error('Error calculating total for style:', error);
+            return 0;
+        }
     };
 
 
@@ -253,15 +385,19 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     useEffect(() => {
         if (selectVersion?.selectedStyle && collections.length) {
-            const match = fetchedCollections.find(col => col.id === selectVersion.selectedStyle);
+            const match = stylesMeta.find(col => col.id === selectVersion.selectedStyle);
             setSelectedStyleData(match);
         }
     }, [selectVersion]);
 
     const handleDelete = (index) => {
+        // index is relative to filteredItems; map to tableItems index
+        const item = filteredItems[index];
+        if (!item) return;
         setTableItems(prev => {
-            const updatedItems = prev.filter((_, i) => i !== index);
-            dispatch(setSelectVersionNew(updatedItems)); // Update Redux as well
+            const removeIdx = prev.findIndex((it) => it?.id === item?.id && it?.selectVersion === item?.selectVersion);
+            const updatedItems = removeIdx >= 0 ? prev.filter((_, i) => i !== removeIdx) : prev;
+            dispatch(setTableItemsRedux(updatedItems));
             return updatedItems;
         });
     };
@@ -269,7 +405,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const handleCatalogSelect = (e) => {
         const code = e.target.value;
         const item = fetchedCollections.find(cd => `${cd.code} -- ${cd.description}` === code);
-        if (item) {
+        // Additional safety check: ensure the item belongs to the selected style
+        if (item && item.style === selectedStyleData?.style) {
             const basePrice = Number(item.price) || 0;
             const assemblyCost = item.styleVariantsAssemblyCost;
             let assemblyFee = 0;
@@ -285,43 +422,58 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     assemblyFee = (basePrice * feePrice) / 100;
                 }
             }
-            const multipliedPrice = basePrice * Number(userGroupMultiplier || 1);
+            
+            // Apply manufacturer cost multiplier first, then user group multiplier
+            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+            
+            // (debug logs removed)
+            
             const qty = 1;
-            const total = multipliedPrice * qty + assemblyFee * qty;
+            const total = finalPrice * qty + assemblyFee * qty;
             const newItem = {
                 id: item.id,
                 code: item.code,
                 description: item.description,
                 qty,
                 originalPrice: basePrice,
-                appliedMultiplier: Number(userGroupMultiplier || 1),
-                price: multipliedPrice,
+                manufacturerAdjustedPrice: manufacturerAdjustedPrice,
+                appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),
+                appliedUserGroupMultiplier: Number(userGroupMultiplier || 1),
+                price: finalPrice,
                 assemblyFee,
                 total,
                 selectVersion: selectVersion?.versionName
             };
+
+            // Initialize comparison fallbacks ONCE when item is first added
+            newItem.comparisonPriceFallback = Number(finalPrice || 0);
+            newItem.comparisonAssemblyUnitFallback = Number(assemblyFee || 0);
 
             setTableItems(prev => {
                 const updatedItems = addOnTop ? [newItem, ...prev] : [...prev, newItem];
                 dispatch(setTableItemsRedux(updatedItems));  // Send the full list to Redux
                 return updatedItems;
             });
-
-        }
+    }
     };
 
     const updateQty = (index, newQty) => {
+        // index is relative to filteredItems; map to tableItems index
+        const viewItem = filteredItems[index];
+        if (!viewItem || newQty < 1) return;
         setTableItems(prev => {
-            if (newQty < 1) return prev;
+            const targetIdx = prev.findIndex((it) => it?.id === viewItem?.id && it?.selectVersion === viewItem?.selectVersion);
+            if (targetIdx < 0) return prev;
             const updated = prev.map((item, i) => {
-                if (i !== index) return item;
+                if (i !== targetIdx) return item;
                 return {
                     ...item,
                     qty: newQty,
                     total: newQty * Number(item.price || 0) + (Number(item.includeAssemblyFee ? item.assemblyFee || 0 : 0) * newQty),
                 };
             });
-            dispatch(setTableItemsRedux(updated)); // Sync Redux
+            dispatch(setTableItemsRedux(updated));
             return updated;
         });
     };
@@ -357,8 +509,21 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         setCustomItemTaxable(true);
     };
 
-    const handleDeleteCustomItem = (index) => {
-        setCustomItems(prev => prev.filter((_, i) => i !== index));
+    const handleDeleteCustomItem = (itemToRemove) => {
+        setCustomItems(prev => prev.filter((ci, i) => {
+            // remove the first matching item for current version
+            if (ci === itemToRemove) return false;
+            if (
+                ci.name === itemToRemove.name &&
+                Number(ci.price) === Number(itemToRemove.price) &&
+                ci.selectVersion === itemToRemove.selectVersion &&
+                ci.taxable === itemToRemove.taxable
+            ) {
+                // prevent removing multiple duplicates: keep others after first mismatch handled
+                itemToRemove = { ...itemToRemove, name: `__removed__${Math.random()}` };
+            }
+            return true;
+        }));
     };
 
     const updateModification = (filteredIdx, updatedModifications) => {
@@ -502,7 +667,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     };
 
 
-    const handleStyleSelect = (newStyleId) => {
+    const handleStyleSelect = async (newStyleId) => {
         const updatedFormData = { ...formData };
         const versionIndex = updatedFormData.manufacturersData.findIndex(
             v => v.versionName === selectVersion.versionName
@@ -517,8 +682,87 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 selectedStyle: newStyleId,
             };
             setSelectedVersion(updatedVersion);
-            const styleData = collections.find(c => c.id === newStyleId);
+            const styleData = stylesMeta.find(c => c.id === newStyleId) || collections.find(c => c.id === newStyleId);
             setSelectedStyleData(styleData);
+
+            // Establish baseline once if not set
+            setComparisonBaseline(prev => prev?.styleId ? prev : { styleId: styleData?.id || newStyleId, stylePrice: styleData?.price || 0 });
+
+            // Fetch new style items to remap existing table items
+            try {
+                const manufacturerId = selectVersion?.manufacturerData?.id;
+                if (!manufacturerId || !newStyleId) return;
+                const cacheKey = `${manufacturerId}:${newStyleId}`;
+                let catalogData = styleItemsCacheRef.current.get(cacheKey);
+                if (!catalogData) {
+                    const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${newStyleId}/items`, {
+                        headers: getAuthHeaders(),
+                        params: { includeDetails: '1', limit: 1000 }
+                    });
+                    catalogData = res?.data?.catalogData || [];
+                    styleItemsCacheRef.current.set(cacheKey, catalogData);
+                }
+
+                // Build a quick lookup by code
+                const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
+
+                // Remap table items to the new style; mark missing as unavailable with $0
+        let missing = 0;
+                const remapped = tableItems.map(item => {
+                    const match = byCode.get(String(item.code).trim());
+                    if (!match) {
+                        // Item not available in new style
+                        const qty = Number(item.qty || 1);
+            missing += 1;
+                        return {
+                            ...item,
+                            unavailable: true,
+                            price: 0,
+                            assemblyFee: 0,
+                            total: 0 * qty,
+                            // Preserve existing fallbacks if any
+                            comparisonPriceFallback: item.comparisonPriceFallback ?? Number(item.price || 0),
+                            comparisonAssemblyUnitFallback: item.comparisonAssemblyUnitFallback ?? Number(item.assemblyFee || 0),
+                        };
+                    }
+
+                    // Compute new price and assembly based on new style
+                    const basePrice = Number(match.price) || 0;
+                    const assemblyCost = match.styleVariantsAssemblyCost;
+                    let newAssemblyUnit = 0;
+                    if (assemblyCost) {
+                        const feePrice = parseFloat(assemblyCost.price || 0);
+                        const feeType = assemblyCost.type;
+                        if (feeType === 'flat' || feeType === 'fixed') newAssemblyUnit = feePrice;
+                        else if (feeType === 'percentage') newAssemblyUnit = (basePrice * feePrice) / 100;
+                    }
+                    const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+                    const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                    const qty = Number(item.qty || 1);
+                    return {
+                        ...item,
+                        unavailable: false,
+                        originalPrice: basePrice,
+                        manufacturerAdjustedPrice,
+                        appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),
+                        appliedUserGroupMultiplier: Number(userGroupMultiplier || 1),
+                        price: finalPrice,
+                        assemblyFee: newAssemblyUnit,
+                        total: finalPrice * qty + (isAssembled ? newAssemblyUnit * qty : 0),
+                        // Preserve fallbacks if already set; otherwise initialize
+                        comparisonPriceFallback: item.comparisonPriceFallback ?? Number(item.price || finalPrice || 0),
+                        comparisonAssemblyUnitFallback: item.comparisonAssemblyUnitFallback ?? Number(item.assemblyFee || newAssemblyUnit || 0),
+                    };
+                });
+
+                startTransition(() => {
+                    setTableItems(remapped);
+                    dispatch(setTableItemsRedux(remapped));
+                    setUnavailableCount(missing);
+                });
+            } catch (err) {
+                console.error('Failed to remap items for style switch:', err);
+            }
         }
     };
 
@@ -546,15 +790,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
 
     const toggleRowAssembly = (index, isChecked) => {
+        const viewItem = filteredItems[index];
+        if (!viewItem) return;
+        const targetIdx = tableItems.findIndex((it) => it?.id === viewItem?.id && it?.selectVersion === viewItem?.selectVersion);
+        if (targetIdx < 0) return;
         const updatedItems = [...tableItems];
-        const item = updatedItems[index];
-
+        const item = updatedItems[targetIdx];
         const newAssemblyFee = isChecked ? Number(item.assemblyFee || 0) : 0;
         const qty = Number(item.qty || 1);
         const newHinge = isChecked ? (item.hingeSide === "N/A" ? "" : item.hingeSide) : "N/A";
         const newExposed = isChecked ? (item.exposedSide === "N/A" ? "" : item.exposedSide) : "N/A";
-
-        updatedItems[index] = {
+        updatedItems[targetIdx] = {
             ...item,
             includeAssemblyFee: isChecked,
             isRowAssembled: isChecked,
@@ -562,15 +808,20 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             exposedSide: newExposed,
             total: qty * Number(item.price || 0) + (newAssemblyFee * qty),
         };
-
-        setTableItems(updatedItems);
-        dispatch(setTableItemsRedux(updatedItems));
+        startTransition(() => {
+            setTableItems(updatedItems);
+            dispatch(setTableItemsRedux(updatedItems));
+        });
     };
 
     const updateHingeSide = (index, selectedSide) => {
+        const viewItem = filteredItems[index];
+        if (!viewItem) return;
         setTableItems(prevItems => {
+            const targetIdx = prevItems.findIndex((it) => it?.id === viewItem?.id && it?.selectVersion === viewItem?.selectVersion);
+            if (targetIdx < 0) return prevItems;
             const updated = prevItems.map((item, i) => {
-                if (i !== index) return item;
+                if (i !== targetIdx) return item;
                 return {
                     ...item,
                     hingeSide: selectedSide,
@@ -583,9 +834,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
 
     const updateExposedSide = (index, selectedSide) => {
+        const viewItem = filteredItems[index];
+        if (!viewItem) return;
         setTableItems(prevItems => {
+            const targetIdx = prevItems.findIndex((it) => it?.id === viewItem?.id && it?.selectVersion === viewItem?.selectVersion);
+            if (targetIdx < 0) return prevItems;
             const updated = prevItems.map((item, i) => {
-                if (i !== index) return item;
+                if (i !== targetIdx) return item;
                 return {
                     ...item,
                     exposedSide: selectedSide,
@@ -600,11 +855,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         let nextUpdated = null;
         setTableItems(prevItems => {
             const updated = prevItems.map(item => {
-                // Force includeAssemblyFee to follow global assembled toggle
                 const includeFee = !!isAssembled;
                 const unitAssembly = includeFee ? Number(item.assemblyFee || 0) : 0;
                 const qty = Number(item.qty || 1);
-
                 return {
                     ...item,
                     includeAssemblyFee: includeFee,
@@ -618,37 +871,39 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             return updated;
         });
         if (nextUpdated) {
-            dispatch(setTableItemsRedux(nextUpdated));
+            startTransition(() => dispatch(setTableItemsRedux(nextUpdated)));
         }
     }, [isAssembled]);
 
-    // Apply multiplier to existing table items when loaded (idempotent)
+    // Apply multipliers to existing table items when loaded (idempotent)
     useEffect(() => {
         if (!tableItems?.length) return;
-        if (!userGroupMultiplier || userGroupMultiplier === 1) return;
-        const updated = tableItems.map((item) => {
-            const prevApplied = Number(item.appliedMultiplier || 0) || null;
-            const currentPrice = Number(item.price) || 0;
-            const base = item.originalPrice != null
-                ? Number(item.originalPrice)
-                : prevApplied && prevApplied > 0
-                    ? currentPrice / prevApplied
-                    : currentPrice;
-            const price = Number(base) * Number(userGroupMultiplier || 1);
+        if ((!userGroupMultiplier || userGroupMultiplier === 1) && (!manufacturerCostMultiplier || manufacturerCostMultiplier === 1)) return;
+        
+    const updated = tableItems.map((item) => {
+            const base = item.originalPrice != null ? Number(item.originalPrice) : Number(item.price) || 0;
+            
+            // Apply manufacturer multiplier first, then user group multiplier
+            const manufacturerAdjustedPrice = base * Number(manufacturerCostMultiplier || 1);
+            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+            
             const unitAssembly = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
             const qty = Number(item?.qty || 1);
             return {
                 ...item,
                 originalPrice: item.originalPrice != null ? item.originalPrice : base,
-                appliedMultiplier: Number(userGroupMultiplier || 1),
-                price,
-                total: qty * price + unitAssembly * qty,
+                manufacturerAdjustedPrice: manufacturerAdjustedPrice,
+                appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),
+                appliedUserGroupMultiplier: Number(userGroupMultiplier || 1),
+                price: finalPrice,
+                total: qty * finalPrice + unitAssembly * qty,
             };
         });
-        setTableItems(updated);
-        // Dispatch after local state update; effect runs post-render
-        dispatch(setTableItemsRedux(updated));
-    }, [userGroupMultiplier]);
+        startTransition(() => {
+            setTableItems(updated);
+            dispatch(setTableItemsRedux(updated));
+        });
+    }, [userGroupMultiplier, manufacturerCostMultiplier]);
 
 
     // const fetchModifications = () => async{
@@ -669,27 +924,36 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             {selectedStyleData && (
                 <>
                     <div className="d-flex gap-5 mb-4 flex-wrap style-selection-mobile" style={{ alignItems: 'stretch' }}>
-                        <div style={{ minWidth: '250px', flex: '0 0 auto' }}>
-                            <h5>{t('proposalUI.currentStyle')}</h5>
-                            <div className="d-flex gap-4 align-items-start mt-3">
-                                <div style={{ width: '100px' }}>
+                        <div className="current-style-section" style={{ minWidth: '250px', flex: '0 0 auto' }}>
+                            <h5 className="mb-3">{t('proposalUI.currentStyle')}</h5>
+                            <div className="current-style-content d-flex gap-3 align-items-start">
+                                <div className="current-style-image" style={{ width: '100px', flexShrink: 0 }}>
                                     <img
                                         src={
                                             selectedStyleData.styleVariants?.[0]?.image
-                                                ? `${api_url}/uploads/manufacturer_catalogs/${selectedStyleData.styleVariants[0].image}`
+                                                ? `${api_url}/uploads/images/${selectedStyleData.styleVariants[0].image}`
                                                 : "/images/nologo.png"
                                         }
                                         alt="Selected Style"
                                         style={{
-                                            width: '110%',
+                                            width: '100%',
                                             height: '240px',
                                             objectFit: 'contain',
                                             borderRadius: '10px',
                                             backgroundColor: '#f8f9fa',
                                         }}
+                                        onError={(e) => {
+                                            const fname = selectedStyleData.styleVariants?.[0]?.image;
+                                            if (fname && !e.target.dataset.fallbackTried) {
+                                                e.target.dataset.fallbackTried = '1';
+                                                e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
+                                            } else {
+                                                e.target.src = '/images/nologo.png';
+                                            }
+                                        }}
                                     />
                                 </div>
-                                <div className="d-flex flex-column" style={{ gap: '2rem' }}>
+                                <div className="current-style-info d-flex flex-column" style={{ gap: '1.5rem', flex: 1 }}>
                                     <div className="d-flex align-items-center" style={{ fontSize: '1rem' }}>
                                         <CIcon
                                             icon={cilHome}
@@ -700,7 +964,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     </div>
                                     <div className="d-flex align-items-center text-muted" style={{ fontSize: '1rem' }}>
                                         <CIcon icon={cilBrush} className="me-2 text-secondary" style={{ width: '20px', height: '20px' }} />
-                                        <h5>{selectedStyleData.style}</h5>
+                                        <h5 className="mb-0">{selectedStyleData.style}</h5>
                                     </div>
                                     <div className="d-flex align-items-center" style={{ fontSize: '1.1rem' }}>
                                         <CIcon icon={cilSettings} className="me-2 text-success" style={{ width: '20px', height: '20px' }} />
@@ -717,6 +981,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         </div>
 
                         <div
+                            className="style-separator"
                             style={{
                                 width: '1px',
                                 backgroundColor: '#ccc',
@@ -724,110 +989,172 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             }}
                         />
 
-                        <div style={{ flex: 1 }} className="other-styles-mobile">
-                            <div className="d-flex justify-content-between align-items-center mb-3">
+                            <div className="other-styles-section" style={{ flex: 1 }}>
+                            <div className="other-styles-header d-flex justify-content-between align-items-center mb-3">
                                 <h5 className="mb-0">{t('proposalUI.otherStyles')}</h5>
-                                {/* Carousel controls */}
-                                <div className="d-flex gap-2">
+                                <div className="d-flex align-items-center gap-2">
+                                    {/* View toggle button - show on all screen sizes */}
                                     <button
-                                        className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
-                                        onClick={prevSlide}
-                                        disabled={!canGoPrev()}
-                                        style={{ padding: '0.25rem 0.5rem' }}
+                                        className={`btn btn-sm ${isStylesCollapsed ? 'btn-primary' : 'btn-outline-primary'}`}
+                                        onClick={() => setIsStylesCollapsed(!isStylesCollapsed)}
+                                        style={{ padding: '0.25rem 0.75rem' }}
                                     >
-                                        <CIcon icon={cilChevronLeft} size="sm" />
+                                        {isStylesCollapsed ? (
+                                            <>
+                                                <CIcon icon={cilList} size="sm" className="me-1" />
+                                                <span className="d-none d-sm-inline">{t('proposalUI.expandImages')}</span>
+                                                <span className="d-sm-none">📋</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CIcon icon={cilList} size="sm" className="me-1" />
+                                                <span className="d-none d-sm-inline">{t('proposalUI.compactView')}</span>
+                                                <span className="d-sm-none">🖼️</span>
+                                            </>
+                                        )}
                                     </button>
-                                    <button
-                                        className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
-                                        onClick={nextSlide}
-                                        disabled={!canGoNext()}
-                                        style={{ padding: '0.25rem 0.5rem' }}
-                                    >
-                                        <CIcon icon={cilChevronRight} size="sm" />
-                                    </button>
+                                    {/* Mobile carousel controls */}
+                                    {filteredItems.length > 0 && !isStylesCollapsed && (
+                                        <div className="carousel-controls d-flex gap-2 d-md-none">
+                                            <button
+                                                className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
+                                                onClick={prevSlide}
+                                                disabled={!canGoPrev()}
+                                                style={{ padding: '0.25rem 0.5rem' }}
+                                                aria-label="Previous styles"
+                                            >
+                                                <CIcon icon={cilChevronLeft} size="sm" />
+                                            </button>
+                                            <button
+                                                className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
+                                                onClick={nextSlide}
+                                                disabled={!canGoNext()}
+                                                style={{ padding: '0.25rem 0.5rem' }}
+                                                aria-label="Next styles"
+                                            >
+                                                <CIcon icon={cilChevronRight} size="sm" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                            <div
-                                style={{
-                                    maxHeight: '300px',
-                                    overflowY: 'hidden',
-                                    paddingRight: '8px',
-                                }}
-                            >
-
+                            {unavailableCount > 0 && (
+                                <div className="alert alert-warning py-2 px-3 mb-3" role="alert">
+                                    {unavailableCount} item{unavailableCount !== 1 ? 's' : ''} not available in this style. They remain listed in red with $0 and won’t affect totals.
+                                </div>
+                            )}
+                            <div className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}>
                                 {collectionsLoading ? (
                                     <div className="py-4 text-muted">{t('proposalUI.loadingStyles')}</div>
-                                ) : fetchedCollections.length === 0 ? (
+                                ) : stylesMeta.length === 0 ? (
                                     <div className="py-4 text-muted">{t('proposalUI.noStyles')}</div>
                                 ) : (
                                     <div className="styles-carousel-container">
-                                        <div 
-                                            className="styles-carousel-track"
-                                            style={{
-                                                display: 'flex',
-                                                gap: '1rem',
-                                                transform: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`,
-                                                transition: 'transform 0.3s ease-in-out',
-                                                width: `${(Array.from(new Map(fetchedCollections.map(item => [item.style, item])).values()).length / itemsPerPage) * 100}%`
-                                            }}
-                                        >
-                                            {Array.from(
-                                                new Map(
-                                                    fetchedCollections.map(item => [item.style, item]) // Deduplicate by `style`
-                                                ).values()
-                                            ).map((styleItem, index) => {
-                                                const variant = styleItem.styleVariants?.[0]; // First variant (for image)
-
-                                                return (
-                                                    <div
-                                                        key={`style-${styleItem.id}-${index}`}
-                                                        className="style-carousel-item text-center"
-                                                        style={{ 
-                                                            minWidth: `calc(${100 / itemsPerPage}% - 0.75rem)`,
-                                                            cursor: 'pointer',
-                                                            transition: 'transform 0.2s ease'
-                                                        }}
-                                                        onClick={() => handleStyleSelect(styleItem.id)}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.transform = 'scale(1.02)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.transform = 'scale(1)';
-                                                        }}
-                                                    >
-                                                        <img
-                                                            src={
-                                                                variant?.image
-                                                                    ? `${api_url}/uploads/manufacturer_catalogs/${variant.image}`
-                                                                    : "/images/nologo.png"
-                                                            }
-                                                            alt={variant?.shortName || styleItem.style}
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '220px',
-                                                                objectFit: 'contain',
-                                                                borderRadius: '10px',
-                                                                backgroundColor: '#f8f9fa',
-                                                                border: styleItem.id === selectedStyleData?.id ? '3px solid #1a73e8' : '1px solid #e9ecef',
-                                                            }}
-                                                        />
+                                        {filteredItems.length === 0 ? (
+                                            <div className="py-4 text-center text-muted" style={{ fontSize: '0.9rem' }}>
+                                                {t('proposalUI.styleComparison.selectItemsMessage')}
+                                            </div>
+                                        ) : isStylesCollapsed ? (
+                                            /* Collapsed/Compact View - List format */
+                                            <div className="styles-compact-list">
+                                                {stylesMeta.map((styleItem, index) => {
+                                                    const variant = styleItem.styleVariants?.[0];
+                                                    const totalPrice = calculateTotalForStyle(styleItem.price);
+                                                    const isCurrentStyle = styleItem.id === selectedStyleData?.id;
+                                                    
+                                                    return (
                                                         <div
-                                                            className="mt-2 p-2 rounded"
-                                                            style={{
-                                                                backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
-                                                                border: styleItem.id === selectedStyleData?.id ? '2px solid #1a73e8' : '1px solid #ced4da',
-                                                                fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
-                                                            }}
+                                                            key={`compact-style-${styleItem.id}-${index}`}
+                                                            className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''}`}
+                                                            onClick={() => handleStyleSelect(styleItem.id)}
                                                         >
-                                                            <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
-                                                                {styleItem.style}
+                                                            <div className="style-info">
+                                                                <span className="style-name">{styleItem.style}</span>
+                                                                <span className="price-label">
+                                                                    {isCurrentStyle 
+                                                                        ? t('proposalUI.styleComparison.currentTotal') 
+                                                                        : t('proposalUI.styleComparison.totalIfSelected')
+                                                                    }
+                                                                </span>
                                                             </div>
-                                                            <strong style={{ color: '#28a745' }}>${styleItem.price}</strong>
+                                                            <div className={`style-price ${isCurrentStyle ? 'current' : 'alternate'}`}>
+                                                                ${totalPrice.toFixed(2)}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className="styles-carousel-track"
+                                                style={{
+                                                    display: 'flex',
+                                                    gap: '1rem',
+                                                    transform: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`,
+                                                    transition: 'transform 0.3s ease-in-out',
+                                                    width: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%'
+                                                }}
+                                            >
+                                                {stylesMeta.map((styleItem, index) => {
+                                                    const variant = styleItem.styleVariants?.[0];
+                                                    return (
+                                                        <div
+                                                            key={`style-${styleItem.id}-${index}`}
+                                                            className="style-carousel-item text-center"
+                                                            style={{ 
+                                                                cursor: 'pointer', 
+                                                                transition: 'transform 0.2s ease',
+                                                                flexShrink: 0
+                                                            }}
+                                                            onClick={() => handleStyleSelect(styleItem.id)}
+                                                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+                                                            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                                                        >
+                                                            <img
+                                                                src={variant?.image ? `${api_url}/uploads/images/${variant.image}` : "/images/nologo.png"}
+                                                                alt={variant?.shortName || styleItem.style}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '220px',
+                                                                    objectFit: 'contain',
+                                                                    borderRadius: '10px',
+                                                                    backgroundColor: '#f8f9fa',
+                                                                    borderWidth: styleItem.id === selectedStyleData?.id ? '3px' : '1px',
+                                                                    borderStyle: 'solid',
+                                                                    borderColor: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef',
+                                                                }}
+                                                                onError={(e) => {
+                                                                    if (variant?.image && !e.target.dataset.fallbackTried) {
+                                                                        e.target.dataset.fallbackTried = '1';
+                                                                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${variant.image}`;
+                                                                    } else {
+                                                                        e.target.src = '/images/nologo.png';
+                                                                    }
+                                                                }}
+                                                            />
+                                                            <div className="mt-2 p-2 rounded" style={{
+                                                                backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
+                                                                borderWidth: styleItem.id === selectedStyleData?.id ? '2px' : '1px',
+                                                                borderStyle: 'solid',
+                                                                borderColor: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da',
+                                                                fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
+                                                            }}>
+                                                                <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>{styleItem.style}</div>
+                                                                <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
+                                                                    {styleItem.id === selectedStyleData?.id 
+                                                                        ? t('proposalUI.styleComparison.currentTotal') 
+                                                                        : t('proposalUI.styleComparison.totalIfSelected')
+                                                                    }
+                                                                </div>
+                                                                <strong style={{ color: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#28a745' }}>
+                                                                    ${calculateTotalForStyle(styleItem.price).toFixed(2)}
+                                                                </strong>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -861,6 +1188,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 toggleRowAssembly={toggleRowAssembly}
                 updateHingeSide={updateHingeSide}
                 updateExposedSide={updateExposedSide}
+                items={filteredItems}
             />
 
             {copied && (
@@ -883,6 +1211,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </div>
             )}
 
+            {isUserAdmin && (
             <div className="mt-5 p-0 custom-items-mobile" style={{ maxWidth: '100%' }}>
                 <div
                     className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
@@ -932,13 +1261,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </div>
 
                 {customItemError && (
-                    <div style={{ color: 'red', marginTop: '0.25rem' }}>
+                    <div style={{ color: 'red', marginTop: '0.25rem', marginBottom: '1rem' }}>
                         {customItemError}
                     </div>
                 )}
 
-                <div className="table-responsive">
-                    <table className="table mt-5">
+                {/* Desktop Table */}
+                <div className="table-responsive d-none d-md-block">
+                    <table className="table">
                         <thead>
                             <tr>
                                 <th>{t('proposalUI.custom.table.index')}</th>
@@ -949,17 +1279,18 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             </tr>
                         </thead>
                         <tbody>
-                            {selectVersion?.customItems?.map((item, idx) => (
+                            {customItems
+                                .filter(ci => ci.selectVersion === selectVersion?.versionName)
+                                .map((item, idx) => (
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
                                     <td>{item.name}</td>
                                     <td>${(Number(item.price) || 0).toFixed(2)}</td>
-
                                     <td>{item.taxable ? t('common.yes') : t('common.no')}</td>
                                     <td>
                                         <button
                                             className="btn btn-sm btn-danger text-white"
-                                            onClick={() => handleDeleteCustomItem(idx)}
+                                            onClick={() => handleDeleteCustomItem(item)}
                                         >
                                             {t('proposalUI.custom.delete')}
                                         </button>
@@ -969,7 +1300,45 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile List View */}
+                <div className="d-block d-md-none">
+                    {customItems && customItems.filter(ci => ci.selectVersion === selectVersion?.versionName).length > 0 && (
+                        <div className="row fw-bold text-muted mb-2 px-2" style={{ fontSize: '0.85rem' }}>
+                            <div className="col-1">#</div>
+                            <div className="col-4">{t('proposalUI.custom.table.itemName')}</div>
+                            <div className="col-3">{t('proposalUI.custom.table.price')}</div>
+                            <div className="col-2">{t('proposalUI.custom.table.taxable')}</div>
+                            <div className="col-2">{t('proposalUI.custom.table.actions')}</div>
+                        </div>
+                    )}
+                    {customItems
+                        .filter(ci => ci.selectVersion === selectVersion?.versionName)
+                        .map((item, idx) => (
+                        <div key={idx} className="row mb-2 py-2 border-bottom align-items-center">
+                            <div className="col-1 text-center">{idx + 1}</div>
+                            <div className="col-4" style={{ fontSize: '0.9rem' }}>{item.name}</div>
+                            <div className="col-3" style={{ fontSize: '0.9rem' }}>${(Number(item.price) || 0).toFixed(2)}</div>
+                            <div className="col-2 text-center" style={{ fontSize: '0.9rem' }}>{item.taxable ? t('common.yes') : t('common.no')}</div>
+                            <div className="col-2">
+                                <button
+                                    onClick={() => handleDeleteCustomItem(item)}
+                                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
+                                >
+                                    {t('proposalUI.custom.delete')}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+
+                    {(!customItems || customItems.filter(ci => ci.selectVersion === selectVersion?.versionName).length === 0) && (
+                        <div className="text-muted text-center py-3" style={{ fontSize: '0.9rem' }}>
+                            No custom items added yet
+                        </div>
+                    )}
+                </div>
             </div>
+            )}
 
             {/* Totals Summary */}
             <div className="mt-5 mb-5 d-flex justify-content-center totals-summary-mobile">

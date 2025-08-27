@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addManufacturer } from '../../../store/slices/manufacturersSlice';
+import { getContrastColor } from '../../../utils/colorUtils';
 import {
   CForm,
   CFormInput,
@@ -38,31 +39,35 @@ import {
   cilInfo
 } from '@coreui/icons';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 // Move component definitions outside to prevent re-creation on every render
-const FormSection = ({ title, icon, children, className = "" }) => (
-  <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
-    <CCardBody className="p-4">
-      <div className="d-flex align-items-center mb-4">
-        <div 
-          className="rounded-circle d-flex align-items-center justify-content-center me-3"
-          style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#e7f3ff',
-            color: '#0d6efd'
-          }}
-        >
-          <CIcon icon={icon} size="sm" />
+const FormSection = ({ title, icon, children, className = "", customization }) => {
+  const headerBg = customization?.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
+  return (
+    <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
+      <CCardBody className="p-4">
+        <div className="d-flex align-items-center mb-4">
+          <div
+            className="rounded-circle d-flex align-items-center justify-content-center me-3"
+            style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: headerBg,
+              color: textColor
+            }}
+          >
+            <CIcon icon={icon} size="sm" />
+          </div>
+          <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
         </div>
-        <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-      </div>
-      {children}
-    </CCardBody>
-  </CCard>
-);
-
-const CustomFormInput = ({ 
+        {children}
+      </CCardBody>
+    </CCard>
+  );
+};const CustomFormInput = ({ 
   label, 
   name, 
   type = "text", 
@@ -191,6 +196,11 @@ const ManufacturerForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -390,46 +400,26 @@ const ManufacturerForm = () => {
       </style>
 
       {/* Header Section */}
-  <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center">
-                <div 
-                  className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{
-                    width: '60px',
-                    height: '60px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <CIcon icon={cilBuilding} size="xl" className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('settings.manufacturers.create.title')}</h3>
-                  <p className="text-white-50 mb-0">{t('settings.manufacturers.create.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto" className="d-none d-md-block">
-              <CButton
-                color="light"
-                className="shadow-sm px-4 fw-semibold"
-                onClick={() => window.history.back()}
-                style={{
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                {t('settings.manufacturers.create.back')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={t('settings.manufacturers.create.title')}
+        subtitle={t('settings.manufacturers.create.subtitle')}
+        icon={cilBuilding}
+        rightContent={
+          <CButton
+            color="light"
+            className="shadow-sm px-4 fw-semibold d-none d-md-block"
+            onClick={() => window.history.back()}
+            style={{
+              borderRadius: '5px',
+              border: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <CIcon icon={cilArrowLeft} className="me-2" />
+            {t('settings.manufacturers.create.back')}
+          </CButton>
+        }
+      />
 
       {/* Alert Messages */}
       {message.text && (
@@ -446,7 +436,7 @@ const ManufacturerForm = () => {
 
       <CForm onSubmit={handleSubmit}>
         {/* Information Notice */}
-        <CCard className="border-0 shadow-sm mb-4" style={{ borderLeft: '4px solid #0d6efd' }}>
+        <CCard className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CCardBody className="py-3 px-4" style={{ backgroundColor: '#f0f7ff' }}>
             <div className="d-flex align-items-start">
               <CIcon icon={cilInfo} className="text-primary me-2 mt-1" />
@@ -458,7 +448,7 @@ const ManufacturerForm = () => {
         </CCard>
 
         {/* Basic Information */}
-        <FormSection title={t('settings.manufacturers.sections.basicInfo')} icon={cilBuilding}>
+        <FormSection title={t('settings.manufacturers.sections.basicInfo')} icon={cilBuilding} customization={customization}>
           <CRow>
             <CCol md={6}>
               <CustomFormInput
@@ -534,7 +524,7 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Logo Upload */}
-        <FormSection title={t('settings.manufacturers.sections.logo')} icon={cilImage}>
+        <FormSection title={t('settings.manufacturers.sections.logo')} icon={cilImage} customization={customization}>
           <FileUploadCard
             title={t('settings.manufacturers.fields.uploadLogo')}
             icon={cilImage}
@@ -546,7 +536,7 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Pricing Information */}
-        <FormSection title={t('settings.manufacturers.sections.pricing')} icon={cilDollar}>
+        <FormSection title={t('settings.manufacturers.sections.pricing')} icon={cilDollar} customization={customization}>
           <div className="mb-4">
             <CFormLabel className="fw-medium text-dark mb-3">{t('settings.manufacturers.fields.priceInfoType')}</CFormLabel>
             <div className="d-flex flex-column gap-2">
@@ -615,7 +605,7 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Instructions */}
-        <FormSection title={t('settings.manufacturers.sections.instructions')} icon={cilDescription}>
+        <FormSection title={t('settings.manufacturers.sections.instructions')} icon={cilDescription} customization={customization}>
           <CustomFormTextarea
             label={t('settings.manufacturers.fields.instructions')}
             name="instructions"
@@ -630,7 +620,7 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Catalog Files */}
-        <FormSection title={t('settings.manufacturers.sections.catalog')} icon={cilCloudUpload}>
+        <FormSection title={t('settings.manufacturers.sections.catalog')} icon={cilCloudUpload} customization={customization}>
           <FileUploadCard
             title={t('settings.manufacturers.fields.chooseCatalogFiles')}
             icon={cilCloudUpload}

@@ -217,14 +217,15 @@ const getProposal = async (req, res) => {
             isDeleted: false
         };
         
-        // Apply group scoping
-    if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
-            // Contractors can only see their own group's proposals
-            whereClause.owner_group_id = user.group_id;
+        // Apply user/group scoping
+        if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
+            // Contractors can only see their own proposals (user-specific)
+            whereClause.created_by_user_id = user.id;
         } else if (group_id) {
             // Admins can filter by specific group
             whereClause.owner_group_id = group_id;
         }
+        // If no group_id specified and user is admin, show all proposals
 
         const { count, rows } = await Proposals.findAndCountAll({
             where: whereClause,
@@ -322,9 +323,9 @@ const getProposalById = async (req, res) => {
 
         // For contractors, verify they own this proposal
     if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
-            if (proposal.owner_group_id !== user.group_id) {
+            if (proposal.created_by_user_id !== user.id) {
                 return res.status(403).json({ 
-                    message: 'Cannot access proposal from different contractor group' 
+                    message: 'Cannot access proposal created by different user' 
                 });
             }
         }

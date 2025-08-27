@@ -270,7 +270,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
                         selected={values.measurementDate ? new Date(values.measurementDate) : null}
                         onChange={(date) => {
                           setFieldValue('measurementDate', date);
-                          updateFormData({ measurementDate: date });
+                          // Defer syncing to parent until submit to avoid reinitialize loops
                         }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
@@ -316,7 +316,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
                         selected={values.designDate ? new Date(values.designDate) : null}
                         onChange={(date) => {
                           setFieldValue('designDate', date);
-                          updateFormData({ designDate: date });
+                          // Defer syncing to parent until submit to avoid reinitialize loops
                         }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"

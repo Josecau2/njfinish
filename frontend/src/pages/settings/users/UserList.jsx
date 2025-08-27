@@ -28,6 +28,7 @@ import { deleteUser, fetchUsers } from '../../../store/slices/userSlice';
 import Swal from 'sweetalert2';
 import PaginationComponent from '../../../components/common/PaginationComponent';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 
 const UsersPage = () => {
@@ -123,37 +124,30 @@ const UsersPage = () => {
 
   return (
     <CContainer fluid className="settings-container">
-      {/* Header Section */}
-      <CCard className="settings-header-card">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol>
-              <h3 className="settings-header-title">{t('settings.users.header')}</h3>
-              <p className="settings-header-subtitle">{t('settings.users.subtitle')}</p>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex gap-2">
-                <CButton
-                  color="light"
-                  className="settings-action-button"
-                  onClick={handleCreateUser}
-                >
-                  <CIcon icon={cilUserPlus} className="me-2" />
-                  {t('settings.users.addUser')}
-                </CButton>
-                <CButton
-                  color="success"
-                  className="settings-action-button success"
-                  onClick={handleCreateUserGroup}
-                >
-                  <CIcon icon={cilSettings} className="me-2" />
-                  {t('settings.users.addGroup')}
-                </CButton>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader 
+        title={t('settings.users.header')}
+        subtitle={t('settings.users.subtitle')}
+        rightContent={
+          <div className="d-flex gap-2">
+            <CButton
+              color="light"
+              className="settings-action-button"
+              onClick={handleCreateUser}
+            >
+              <CIcon icon={cilUserPlus} className="me-2" />
+              {t('settings.users.addUser')}
+            </CButton>
+            <CButton
+              color="success"
+              className="settings-action-button success"
+              onClick={handleCreateUserGroup}
+            >
+              <CIcon icon={cilSettings} className="me-2" />
+              {t('settings.users.addGroup')}
+            </CButton>
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
       <CRow className="mb-2">

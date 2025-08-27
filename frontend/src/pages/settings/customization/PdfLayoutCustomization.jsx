@@ -21,10 +21,27 @@ import axiosInstance from '../../../helpers/axiosInstance'
 import CIcon from '@coreui/icons-react'
 import { cilDescription, cilSettings, cilImage, cilBuilding, cilSave, cilGlobeAlt, cilTrash, cilColorPalette } from '@coreui/icons'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import PageHeader from '../../../components/PageHeader'
 
 const PdfLayoutCustomization = () => {
   const api_url = import.meta.env.VITE_API_URL
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization)
+
+  // Color calculation for modal header
+  const getContrastColor = (backgroundColor) => {
+    if (!backgroundColor) return '#ffffff';
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return brightness > 128 ? '#000000' : '#ffffff';
+  };
+
+  const headerBgColor = customization?.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBgColor);
 
   const [formData, setFormData] = useState({
     pdfHeader: '',
@@ -122,7 +139,10 @@ const PdfLayoutCustomization = () => {
     }
 
     // If it's a relative path (existing logo), prepend API URL
-    return `${api_url}${logoPreview}`
+    // Handle both undefined api_url and ensure no double slashes
+    const baseUrl = api_url || 'http://localhost:8080'
+    const cleanPath = logoPreview.startsWith('/') ? logoPreview : `/${logoPreview}`
+    return `${baseUrl}${cleanPath}`
   }
 
   const handleDrag = (e) => {
@@ -257,71 +277,70 @@ const PdfLayoutCustomization = () => {
   return (
     <CContainer fluid className="p-2 m-2 main-pdf-cutome-div" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
     {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <div 
-                  className="d-flex align-items-center justify-content-center setting-icon-div"
-                  
-                >
-                  <CIcon icon={cilDescription} style={{ color: 'white', fontSize: '20px' }} />
-                </div>
-                <div>
-          <h3 className="text-white mb-1 fw-bold">{t('settings.customization.pdf.headerTitle')}</h3>
-          <p className="text-white-50 mb-0">{t('settings.customization.pdf.headerSubtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex gap-2 preview-save-button">
-                <CButton 
-                  color="light" 
-                  variant="outline"
-                  className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-                  onClick={() => setPreviewVisible(true)}
-                  disabled={loading}
-                  style={{ 
-                    borderRadius: '8px',
-                    border: '2px solid white',
-                    color: 'white',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <CIcon icon={cilGlobeAlt} className="me-2" />
-          {t('settings.customization.pdf.buttons.preview')}
-                </CButton>
-                <CButton 
-                  color="light" 
-                  className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-                  onClick={handleSave}
-                  disabled={loading}
-                  style={{ 
-                    borderRadius: '8px',
-                    border: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {loading ? (
-                    <>
-                      <CSpinner size="sm" className="me-2" />
-            {t('settings.customization.pdf.buttons.saving')}
-                    </>
-                  ) : (
-                    <>
-                      <CIcon icon={cilSave} className="me-2" />
-            {t('settings.customization.pdf.buttons.saveChanges')}
-                    </>
-                  )}
-                </CButton>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center setting-icon-div"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilDescription} style={{ color: 'white', fontSize: '20px' }} />
+            </div>
+            {t('settings.customization.pdf.headerTitle')}
+          </div>
+        }
+        subtitle={t('settings.customization.pdf.headerSubtitle')}
+        rightContent={
+          <div className="d-flex gap-2 preview-save-button">
+            <CButton 
+              color="light" 
+              variant="outline"
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
+              onClick={() => setPreviewVisible(true)}
+              disabled={loading}
+              style={{ 
+                borderRadius: '8px',
+                border: '2px solid white',
+                color: 'white',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <CIcon icon={cilGlobeAlt} className="me-2" />
+              {t('settings.customization.pdf.buttons.preview')}
+            </CButton>
+            <CButton 
+              color="light" 
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
+              onClick={handleSave}
+              disabled={loading}
+              style={{ 
+                borderRadius: '8px',
+                border: 'none',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {loading ? (
+                <>
+                  <CSpinner size="sm" className="me-2" />
+                  {t('settings.customization.pdf.buttons.saving')}
+                </>
+              ) : (
+                <>
+                  <CIcon icon={cilSave} className="me-2" />
+                  {t('settings.customization.pdf.buttons.saveChanges')}
+                </>
+              )}
+            </CButton>
+          </div>
+        }
+      />
 
       {/* Alert Messages */}
       {message.text && (
@@ -682,13 +701,13 @@ const PdfLayoutCustomization = () => {
         size="xl"
       >
         <CModalHeader style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
+          background: headerBgColor,
+          color: textColor,
           borderRadius: '20px 20px 0 0',
           padding: '1.5rem 2rem',
           border: 'none'
         }}>
-          <CModalTitle style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>
+          <CModalTitle style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0, color: textColor }}>
             📄 {t('settings.customization.pdf.preview.title')}
           </CModalTitle>
         </CModalHeader>

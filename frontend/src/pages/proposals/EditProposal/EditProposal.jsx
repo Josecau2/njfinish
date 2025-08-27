@@ -22,6 +22,9 @@ import {
   CModalBody,
   CModalFooter,
   CAlert,
+  CContainer,
+  CCard,
+  CCardBody,
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
@@ -46,6 +49,7 @@ import Loader from '../../../components/Loader';
 import withContractorScope from '../../../components/withContractorScope';
 import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -394,581 +398,568 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     }
   };
 
+  const renderActionButtons = () => {
+    return (
+      <div className="d-flex gap-2 flex-wrap justify-content-center justify-content-sm-end">
+        <CButton
+          className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
+          style={{
+            backgroundColor: hovered === 'print' ? '#218838' : '#28a745',
+            borderColor: hovered === 'print' ? '#218838' : '#28a745',
+            color: '#fff',
+            borderRadius: '8px',
+            borderWidth: 0,
+            borderStyle: 'none',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={() => setHovered('print')}
+          onMouseLeave={() => setHovered(null)}
+          onClick={() => setShowPrintModal(true)}
+        >
+          <FaPrint className="me-2" />
+          {t('proposals.create.actions.print')}
+        </CButton>
+        {!isUserContractor && (
+          <>
+            <CButton
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
+              style={{
+                backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                borderColor: hovered === 'email' ? '#138496' : '#17a2b8',
+                color: '#fff',
+                borderRadius: '8px',
+                borderWidth: 0,
+                borderStyle: 'none',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={() => setHovered('email')}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => setShowEmailModal(true)}
+            >
+              <FaEnvelope className="me-2" />
+              {t('proposals.create.actions.email')}
+            </CButton>
+            <CButton
+              className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
+              style={{
+                backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                borderColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
+                color: '#212529',
+                borderRadius: '8px',
+                borderWidth: 0,
+                borderStyle: 'none',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={() => setHovered('contract')}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => setShowContractModal(true)}
+            >
+              <FaFileContract className="me-2" />
+              {t('proposals.create.actions.contract')}
+            </CButton>
+          </>
+        )}
+      </div>
+    );
+  };
+
   if (loading) {
     return <Loader />;
   }
   return (
-    <>
-      <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
-        <div className="d-flex align-items-center gap-3">
-          <h4 className="text-muted m-0">Edit Proposal</h4>
-          {isAccepted && (
-            <CBadge color="success" className="px-2 py-1">{t('proposals.lockedStatus.title')}</CBadge>
-          )}
-          {isLocked && (
-            <CBadge color="dark" className="px-2 py-1">Locked</CBadge>
-          )}
-        </div>
-        <div className="d-flex gap-2 flex-wrap">
-          <div
-            className="px-3 py-2 rounded d-flex align-items-center"
-            style={{
-              backgroundColor: hovered === 'print' ? '#218838' : '#28a745',
-              color: '#fff',
-              cursor: 'pointer',
-              transition: '0.2s',
-            }}
-            onMouseEnter={() => setHovered('print')}
-            onMouseLeave={() => setHovered(null)}
-            onClick={() => setShowPrintModal(true)}
+    <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Header Section */}
+      <PageHeader
+        title={t('proposals.edit.title', 'Edit Proposal')}
+        icon={FaCheckCircle}
+        badges={[
+          ...(isAccepted ? [{ text: t('proposals.lockedStatus.title'), variant: 'success' }] : []),
+          ...(isLocked ? [{ text: 'Locked', variant: 'dark' }] : [])
+        ]}
+        rightContent={renderActionButtons()}
+      />
+
+        {/* Main Form Content */}
+        <div className="mb-4">
+          <Formik
+            initialValues={initialData || defaultFormData}
+            enableReinitialize
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
           >
-            <FaPrint className="me-2" />
-            Print Proposal
-          </div>
-          {!isUserContractor && (
-            <>
-              <div
-                className="px-3 py-2 rounded d-flex align-items-center"
-                style={{
-                  backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  transition: '0.2s',
-                }}
-                onMouseEnter={() => setHovered('email')}
-                onMouseLeave={() => setHovered(null)}
-                onClick={() => setShowEmailModal(true)}
-              >
-                <FaEnvelope className="me-2" />
-                Email Proposal
-              </div>
-              <div
-                className="px-3 py-2 rounded d-flex align-items-center"
-                style={{
-                  backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-                  color: '#212529',
-                  cursor: 'pointer',
-                  transition: '0.2s',
-                }}
-                onMouseEnter={() => setHovered('contract')}
-                onMouseLeave={() => setHovered(null)}
-                onClick={() => setShowContractModal(true)}
-              >
-                <FaFileContract className="me-2" />
-                Email Contract
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <Formik
-          initialValues={initialData || defaultFormData}
-          enableReinitialize
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, setValues }) => {
-            // Sync Formik values FROM formData (single source of truth)
-            useEffect(() => {
-              try {
-                const a = JSON.stringify(values);
-                const b = JSON.stringify(formData);
-                if (a !== b) {
-                  setValues(formData);
+            {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, setValues }) => {
+              // Sync Formik values FROM formData (single source of truth)
+              useEffect(() => {
+                try {
+                  const a = JSON.stringify(values);
+                  const b = JSON.stringify(formData);
+                  if (a !== b) {
+                    setValues(formData);
+                  }
+                } catch (e) {
+                  // no-op
                 }
-              } catch (e) {
-                // no-op
-              }
-            }, [formData]);
+              }, [formData]);
 
-            return (
-              <CForm onSubmit={handleSubmit}>
-                <CRow>
-
-                  {canAssignDesigner && (
-                    <CCol xs={12} md={2} className="mt-4">
-                      <CFormLabel htmlFor="designer">Designer *</CFormLabel>
-                      <CreatableSelect
-                        isClearable
-                        id="designer"
-                        name="designer"
-                        options={designerOptions}
-                        value={designerOptions.find((opt) => opt.value === values.designer) || null}
-                        onChange={(selectedOption) => {
-                          setFieldValue('designer', selectedOption?.value || '');
-                        }}
-                        onBlur={handleBlur}
-                      />
-                      {errors.designer && touched.designer && (
-                        <div className="text-danger small mt-1">{errors.designer}</div>
-                      )}
-                    </CCol>
-                  )}
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="description">Description *</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={values.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Description"
-                    />
-                    {errors.description && touched.description && (
-                      <div className="text-danger small mt-1">{errors.description}</div>
-                    )}
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="status">Status</CFormLabel>
-                    <CreatableSelect
-                      isClearable
-                      options={statusOptions}
-                      value={statusOptions.find((opt) => opt.value === (values.status || 'Draft'))}
-                      onChange={(selectedOption) => {
-                        setFieldValue('status', selectedOption?.value || 'Draft');
-                      }}
-                      onBlur={handleBlur}
-                      inputId="status"
-                    />
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="date">Date</CFormLabel>
-                      <DatePicker
-                        id="date"
-                        selected={values.date ? new Date(values.date) : new Date()}
-                        onChange={(date) => setFieldValue('date', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText="Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
-                      <DatePicker
-                        id="designDate"
-                        selected={values.designDate ? new Date(values.designDate) : null}
-                        onChange={(date) => setFieldValue('designDate', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText="Design Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
-                      <DatePicker
-                        id="measurementDate"
-                        selected={values.measurementDate ? new Date(values.measurementDate) : null}
-                        onChange={(date) => setFieldValue('measurementDate', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText="Measurement Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp1Date"
-                        selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
-                        onChange={(date) => setFieldValue('followUp1Date', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 1 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp2Date"
-                        selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
-                        onChange={(date) => setFieldValue('followUp2Date', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 2 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp3Date"
-                        selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
-                        onChange={(date) => setFieldValue('followUp3Date', date)}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 3 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                </CRow>
-
-                {!isUserContractor && (
-                <div className="mb-4 mt-5 d-flex flex-wrap gap-4">
-                  {versionDetails.map((version, index) => {
-                    const isSelected = index === selectedVersionIndex;
-                    return (
-                      <CBadge
-                        key={index}
-                        className="p-2 d-flex"
-                        style={{
-                          fontSize: '0.8rem',
-                          cursor: 'pointer',
-                          minWidth: '190px',
-                          justifyContent: 'space-between',
-                          backgroundColor: isSelected ? '#084298' : '#d0e7ff',
-                          color: isSelected ? '#d0e7ff' : '#084298',
-                          boxShadow: isSelected
-                            ? '0 0 8px 2px rgba(8, 66, 152, 0.6)'
-                            : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                          borderRadius: '5px',
-                          transition: 'all 0.3s ease',
-                        }}
-                        onClick={() => handleBadgeClick(index, version)}
-                      >
-                        <div>
-                          {!isUserContractor && (
-                            <strong style={{ display: 'block' }}>{version.versionName}</strong>
-                          )}
-                          <small
-                            style={{
-                              fontSize: '0.7rem',
-                              color: isSelected ? '#a9c7ff' : '#4a6fa5',
-                            }}
-                          >
-                            $ {version.manufacturerData?.costMultiplier || 'N/A'}
-                          </small>
-                        </div>
-                        {!isUserContractor && (
-                          <CDropdown onClick={(e) => e.stopPropagation()}>
-                            <CDropdownToggle
-                              color="transparent"
-                              size="sm"
-                              style={{
-                                padding: '0 4px',
-                                color: isSelected ? '#d0e7ff' : '#084298',
-                                backgroundColor: 'transparent',
-                                border: 'none',
-                                outline: 'none',
-                                boxShadow: 'none',
-                                transition: 'all 0.2s ease',
+              return (
+                <CForm onSubmit={handleSubmit} className="proposal-summary-form">
+                  {/* Form Fields Card */}
+                  <div className="card border-0 shadow-sm mb-4">
+                    <div className="card-body p-4">
+                      <CRow className="g-3">
+                        {canAssignDesigner && (
+                          <CCol xs={12} sm={6} lg={4}>
+                            <CFormLabel htmlFor="designer">Designer *</CFormLabel>
+                            <CreatableSelect
+                              isClearable
+                              id="designer"
+                              name="designer"
+                              options={designerOptions}
+                              value={designerOptions.find((opt) => opt.value === values.designer) || null}
+                              onChange={(selectedOption) => {
+                                setFieldValue('designer', selectedOption?.value || '');
                               }}
-                            >
-                              <CIcon icon={cilOptions} />
-                            </CDropdownToggle>
-                            <CDropdownMenu
-                              style={{
-                                minWidth: '120px',
-                                border: '1px solid #e0e0e0',
-                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                                borderRadius: '4px',
-                                padding: '4px 0',
-                              }}
-                            >
-                              <CDropdownItem
-                                onClick={() => openEditModal(index)}
-                                style={{
-                                  padding: '6px 12px',
-                                  fontSize: '0.875rem',
-                                  color: '#333',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                <CIcon icon={cilPencil} className="me-2" /> Edit
-                              </CDropdownItem>
-                              <CDropdownItem
-                                onClick={() => openDeleteModal(index)}
-                                style={{
-                                  padding: '6px 12px',
-                                  fontSize: '0.875rem',
-                                  color: '#dc3545',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                <CIcon icon={cilTrash} className="me-2" /> Delete
-                              </CDropdownItem>
-                              <CDropdownItem
-                                onClick={() => duplicateVersion(index)}
-                                style={{
-                                  padding: '6px 12px',
-                                  fontSize: '0.875rem',
-                                  color: '#333',
-                                  transition: 'all 0.2s ease',
-                                }}
-                              >
-                                <CIcon icon={cilCopy} className="me-2" /> Duplicate
-                              </CDropdownItem>
-                            </CDropdownMenu>
-                          </CDropdown>
+                              onBlur={handleBlur}
+                            />
+                            {errors.designer && touched.designer && (
+                              <div className="text-danger small mt-1">{errors.designer}</div>
+                            )}
+                          </CCol>
                         )}
-                      </CBadge>
-                    );
-                  })}
-                </div>
-                )}
-
-                <hr />
-
-                <CTabs>
-                  <CNav variant="tabs" className="border-0">
-                    <CNavItem>
-                      <CNavLink
-                        active={activeTab === 'item'}
-                        onClick={() => handleTabSelect('item')}
-                        style={{
-                          cursor: 'pointer',
-                          border: 'none',
-                          padding: '10px 20px',
-                          fontWeight: 600,
-                          color: activeTab === 'item' ? '#084298' : '#6c757d',
-                          backgroundColor: activeTab === 'item' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
-                          borderBottom: activeTab === 'item' ? '3px solid #084298' : 'none',
-                          transition: 'all 0.3s ease',
-                          borderRadius: '4px 4px 0 0',
-                          marginRight: '4px',
-                        }}
-                      >
-                        <span className="d-flex align-items-center">
-                          <CIcon icon={cilList} className="me-2" />
-                          Items
-                        </span>
-                      </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                      {/* <CNavLink
-                        active={activeTab === 'file'}
-                        onClick={() => handleTabSelect('file')}
-                        style={{
-                          cursor: 'pointer',
-                          border: 'none',
-                          padding: '10px 20px',
-                          fontWeight: 600,
-                          color: activeTab === 'file' ? '#084298' : '#6c757d',
-                          backgroundColor: activeTab === 'file' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
-                          borderBottom: activeTab === 'file' ? '3px solid #084298' : 'none',
-                          transition: 'all 0.3s ease',
-                          borderRadius: '4px 4px 0 0',
-                        }}
-                      >
-                        <span className="d-flex align-items-center">
-                          <CIcon icon={cilFile} className="me-2" />
-                          Files
-                        </span>
-                      </CNavLink> */}
-                    </CNavItem>
-                  </CNav>
-                </CTabs>
-
-                {activeTab === 'item' && (
-                  <div className="tab-content mt-5">
-                    <ItemSelectionContentEdit
-                      selectedVersion={selectedVersion}
-                      formData={formData}
-                      setFormData={setFormDataWithEdits}
-                      setSelectedVersion={setSelectedVersion}
-                      selectVersion={selectVersion}
-                      readOnly={isViewOnly}
-                    />
-                  </div>
-                )}
-
-                {activeTab === 'file' && (
-                  <div className="tab-content mt-5">
-                    <h5>File Upload Section</h5>
-                    <p>This section allows users to upload or manage files.</p>
-                    <FileUploadSection
-                      proposalId={formData.id}
-                      onFilesChange={(files) => updateFormData({ files })}
-                    />
-                  </div>
-                )}
-
-                <hr />
-                <div
-                  className="d-flex justify-content-center align-items-center flex-wrap gap-3 p-3"
-                  style={{ maxWidth: '600px', margin: '0 auto' }}
-                >
-                  {isViewOnly ? (
-                    <div className="w-100">
-                      <CAlert color="success" className="text-center">
-                        <h5 className="alert-heading mb-3">
-                          <FaCheckCircle className="me-2" />
-                          {t('proposals.lockedStatus.title')}
-                        </h5>
-                        <p className="mb-2">
-                          {t('proposals.lockedStatus.description')}
-                        </p>
-                        <small className="text-muted">
-                          {t('proposals.lockedStatus.processingNote')}
-                        </small>
-                      </CAlert>
+                        <CCol xs={12} sm={6} lg={4}>
+                          <CFormLabel htmlFor="description">Description *</CFormLabel>
+                          <CFormInput
+                            type="text"
+                            id="description"
+                            name="description"
+                            value={values.description}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            placeholder="Description"
+                          />
+                          {errors.description && touched.description && (
+                            <div className="text-danger small mt-1">{errors.description}</div>
+                          )}
+                        </CCol>
+                        <CCol xs={12} sm={6} lg={4}>
+                          <CFormLabel htmlFor="status">Status</CFormLabel>
+                          <CreatableSelect
+                            isClearable
+                            options={statusOptions}
+                            value={statusOptions.find((opt) => opt.value === (values.status || 'Draft'))}
+                            onChange={(selectedOption) => {
+                              setFieldValue('status', selectedOption?.value || 'Draft');
+                            }}
+                            onBlur={handleBlur}
+                            inputId="status"
+                          />
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="date">Date</CFormLabel>
+                            <DatePicker
+                              id="date"
+                              selected={values.date ? new Date(values.date) : new Date()}
+                              onChange={(date) => setFieldValue('date', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              placeholderText="Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
+                            <DatePicker
+                              id="designDate"
+                              selected={values.designDate ? new Date(values.designDate) : null}
+                              onChange={(date) => setFieldValue('designDate', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              placeholderText="Design Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
+                            <DatePicker
+                              id="measurementDate"
+                              selected={values.measurementDate ? new Date(values.measurementDate) : null}
+                              onChange={(date) => setFieldValue('measurementDate', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              placeholderText="Measurement Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp1Date"
+                              selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
+                              onChange={(date) => setFieldValue('followUp1Date', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="Follow up 1 Date"
+                              wrapperClassName="w-100"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp2Date"
+                              selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
+                              onChange={(date) => setFieldValue('followUp2Date', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="Follow up 2 Date"
+                              wrapperClassName="w-100"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4}>
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp3Date"
+                              selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
+                              onChange={(date) => setFieldValue('followUp3Date', date)}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="Follow up 3 Date"
+                              wrapperClassName="w-100"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                      </CRow>
                     </div>
-                  ) : (
-                    <>
-                      <CButton
-                        color="secondary"
-                        variant="outline"
-                        onClick={handleSaveOrder}
-                        style={{ minWidth: '140px' }}
-                      >
-                        Save
-                      </CButton>
-                      <CButton
-                        color="success"
-                        onClick={handleAcceptOrder}
-                        style={{ minWidth: '140px' }}
-                        disabled={isAccepted}
-                        title={isAccepted ? 'Already accepted' : undefined}
-                      >
-                        Accept and Order
-                      </CButton>
-                      <CButton
-                        color="danger"
-                        variant="outline"
-                        onClick={handleRejectOrder}
-                        style={{ minWidth: '140px' }}
-                      >
-                        Reject and Archive
-                      </CButton>
-                    </>
+                  </div>
+
+                  {!isUserContractor && (
+                    <div className="proposal-version-badges">
+                      {versionDetails.map((version, index) => {
+                        const isSelected = index === selectedVersionIndex;
+                        return (
+                          <CBadge
+                            key={index}
+                            className="proposal-version-badge p-3 d-flex"
+                            style={{
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              justifyContent: 'space-between',
+                              backgroundColor: isSelected ? '#084298' : '#d0e7ff',
+                              color: isSelected ? '#d0e7ff' : '#084298',
+                              boxShadow: isSelected
+                                ? '0 0 8px 2px rgba(8, 66, 152, 0.6)'
+                                : '0 1px 3px rgba(0, 0, 0, 0.1)',
+                              borderRadius: '8px',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onClick={() => handleBadgeClick(index, version)}
+                          >
+                            <div>
+                              {!isUserContractor && (
+                                <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                              )}
+                              <small
+                                style={{
+                                  fontSize: '0.7rem',
+                                  color: isSelected ? '#a9c7ff' : '#4a6fa5',
+                                }}
+                              >
+                                $ {version.manufacturerData?.costMultiplier || 'N/A'}
+                              </small>
+                            </div>
+                            {!isUserContractor && (
+                              <CDropdown onClick={(e) => e.stopPropagation()}>
+                                <CDropdownToggle
+                                  color="transparent"
+                                  size="sm"
+                                  style={{
+                                    padding: '0 4px',
+                                    color: isSelected ? '#d0e7ff' : '#084298',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 0,
+                                    borderStyle: 'none',
+                                    outline: 'none',
+                                    boxShadow: 'none',
+                                    transition: 'all 0.2s ease',
+                                  }}
+                                >
+                                  <CIcon icon={cilOptions} />
+                                </CDropdownToggle>
+                                <CDropdownMenu
+                                  style={{
+                                    minWidth: '120px',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: '#e0e0e0',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    borderRadius: '4px',
+                                    padding: '4px 0',
+                                  }}
+                                >
+                                  <CDropdownItem
+                                    onClick={() => openEditModal(index)}
+                                    style={{
+                                      padding: '6px 12px',
+                                      fontSize: '0.875rem',
+                                      color: '#333',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <CIcon icon={cilPencil} className="me-2" /> Edit
+                                  </CDropdownItem>
+                                  <CDropdownItem
+                                    onClick={() => openDeleteModal(index)}
+                                    style={{
+                                      padding: '6px 12px',
+                                      fontSize: '0.875rem',
+                                      color: '#dc3545',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <CIcon icon={cilTrash} className="me-2" /> Delete
+                                  </CDropdownItem>
+                                  <CDropdownItem
+                                    onClick={() => duplicateVersion(index)}
+                                    style={{
+                                      padding: '6px 12px',
+                                      fontSize: '0.875rem',
+                                      color: '#333',
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <CIcon icon={cilCopy} className="me-2" /> Duplicate
+                                  </CDropdownItem>
+                                </CDropdownMenu>
+                              </CDropdown>
+                            )}
+                          </CBadge>
+                        );
+                      })}
+                    </div>
                   )}
-                </div>
-              </CForm>
-            );
-          }}
-        </Formik>
-      </div>
+                  {/* Tabs Section */}
+                  <hr />
+                  <CTabs>
+                    <CNav variant="tabs" className="proposal-tabs border-0">
+                      <CNavItem>
+                        <CNavLink
+                          active={activeTab === 'item'}
+                          onClick={() => handleTabSelect('item')}
+                          style={{
+                            cursor: 'pointer',
+                            borderWidth: 0,
+                            borderStyle: 'none',
+                            padding: '10px 20px',
+                            fontWeight: 600,
+                            color: activeTab === 'item' ? '#084298' : '#6c757d',
+                            backgroundColor: activeTab === 'item' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
+                            borderBottom: activeTab === 'item' ? '3px solid #084298' : 'none',
+                            transition: 'all 0.3s ease',
+                            borderRadius: '4px 4px 0 0',
+                            marginRight: '4px',
+                          }}
+                        >
+                          <span className="d-flex align-items-center">
+                            <CIcon icon={cilList} className="me-2" />
+                            Items
+                          </span>
+                        </CNavLink>
+                      </CNavItem>
+                    </CNav>
+                  </CTabs>
 
-      <PrintProposalModal show={showPrintModal} onClose={() => setShowPrintModal(false)} formData={formData} />
-      <EmailProposalModal show={showEmailModal} onClose={() => setShowEmailModal(false)} formData={formData} />
-      <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+                  {activeTab === 'item' && (
+                    <div className="tab-content mt-4">
+                      <ItemSelectionContentEdit
+                        selectedVersion={selectedVersion}
+                        formData={formData}
+                        setFormData={setFormDataWithEdits}
+                        setSelectedVersion={setSelectedVersion}
+                        selectVersion={selectVersion}
+                        readOnly={isViewOnly}
+                      />
+                    </div>
+                  )}
 
-      <CModal
-        visible={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        alignment="center"
-        backdrop="static"
-        className="modal-lg"
-      >
-        <CModalHeader closeButton>
-          <CModalTitle>Edit Version Name</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CFormInput
-            className="mb-3"
-            value={editedVersionName}
-            onChange={(e) => setEditedVersionName(e.target.value)}
-            placeholder="Version Name"
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditModalOpen(false)}>
-            Cancel
-          </CButton>
-          <CButton color="primary" onClick={saveEditVersionName}>
-            Save
-          </CButton>
-        </CModalFooter>
-      </CModal>
+                  {/* Action Buttons */}
+                  <div className="proposal-actions">
+                    <div className="d-flex justify-content-center align-items-center flex-wrap gap-3">
+                      {isViewOnly ? (
+                        <div className="w-100">
+                          <CAlert color="success" className="text-center">
+                            <h5 className="alert-heading mb-3">
+                              <FaCheckCircle className="me-2" />
+                              {t('proposals.lockedStatus.title')}
+                            </h5>
+                            <p className="mb-2">
+                              {t('proposals.lockedStatus.description')}
+                            </p>
+                            <small className="text-muted">
+                              {t('proposals.lockedStatus.processingNote')}
+                            </small>
+                          </CAlert>
+                        </div>
+                      ) : (
+                        <>
+                          <CButton
+                            color="secondary"
+                            variant="outline"
+                            onClick={handleSaveOrder}
+                            className="btn mobile-form-btn"
+                          >
+                            Save
+                          </CButton>
+                          <CButton
+                            color="success"
+                            onClick={handleAcceptOrder}
+                            className="btn mobile-form-btn"
+                            disabled={isAccepted}
+                            title={isAccepted ? 'Already accepted' : undefined}
+                          >
+                            Accept and Order
+                          </CButton>
+                          <CButton
+                            color="danger"
+                            variant="outline"
+                            onClick={handleRejectOrder}
+                            className="btn mobile-form-btn"
+                          >
+                            Reject and Archive
+                          </CButton>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </CForm>
+              );
+            }}
+          </Formik>
+        </div>
 
-      <CModal
-        visible={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        alignment="center"
-        backdrop="static"
-        className="modal-sm"
-      >
-        <CModalHeader closeButton>
-          <CModalTitle>Confirm Delete</CModalTitle>
-        </CModalHeader>
-        <CModalBody>Are you sure you want to delete this version?</CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setDeleteModalOpen(false)}>
-            Cancel
-          </CButton>
-          <CButton color="danger" onClick={confirmDelete}>
-            Delete
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </>
+        {/* Modals */}
+        <PrintProposalModal show={showPrintModal} onClose={() => setShowPrintModal(false)} formData={formData} />
+        <EmailProposalModal show={showEmailModal} onClose={() => setShowEmailModal(false)} formData={formData} />
+        <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+
+        <CModal
+          visible={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          alignment="center"
+          backdrop="static"
+          className="modal-lg"
+        >
+          <CModalHeader closeButton>
+            <CModalTitle>Edit Version Name</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <CFormInput
+              className="mb-3"
+              value={editedVersionName}
+              onChange={(e) => setEditedVersionName(e.target.value)}
+              placeholder="Version Name"
+            />
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={() => setEditModalOpen(false)}>
+              Cancel
+            </CButton>
+            <CButton color="primary" onClick={saveEditVersionName}>
+              Save
+            </CButton>
+          </CModalFooter>
+        </CModal>
+
+        <CModal
+          visible={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          alignment="center"
+          backdrop="static"
+          className="modal-sm"
+        >
+          <CModalHeader closeButton>
+            <CModalTitle>Confirm Delete</CModalTitle>
+          </CModalHeader>
+          <CModalBody>Are you sure you want to delete this version?</CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={() => setDeleteModalOpen(false)}>
+              Cancel
+            </CButton>
+            <CButton color="danger" onClick={confirmDelete}>
+              Delete
+            </CButton>
+          </CModalFooter>
+        </CModal>
+      </CContainer>
   );
 };
 

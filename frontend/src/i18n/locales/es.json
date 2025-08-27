@@ -66,7 +66,14 @@
     "summary": {
       "discountPct": "Descuento (%):",
       "taxRate": "Tasa de impuesto:"
-    }
+    },
+    "styleComparison": {
+      "currentTotal": "Total Actual",
+      "totalIfSelected": "Total si se selecciona",
+      "selectItemsMessage": "Seleccione un artículo para verificar la diferencia de precio"
+    },
+    "expandImages": "Expandir Imágenes",
+    "compactView": "Vista Compacta"
   },
   "auth": {
     "signIn": "Iniciar sesión",

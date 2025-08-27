@@ -10,9 +10,10 @@ const storage = multer.diskStorage({
         const uploadRoot = path.resolve(base, env.UPLOAD_PATH);
         
         let uploadDir;
-        if (['logoImage', 'manufacturerImage', 'styleImage', 'logo'].includes(file.fieldname)) {
+        if (['logoImage', 'manufacturerImage', 'styleImage'].includes(file.fieldname)) {
             uploadDir = path.join(uploadRoot, 'images');
-        } else if (file.fieldname === 'catalogFiles') {
+        } else if (file.fieldname === 'logo' || file.fieldname === 'catalogFiles') {
+            // PDF customization logos and catalog files go to manufacturer_catalogs
             uploadDir = path.join(uploadRoot, 'manufacturer_catalogs');
         } else {
             uploadDir = uploadRoot; // fallback

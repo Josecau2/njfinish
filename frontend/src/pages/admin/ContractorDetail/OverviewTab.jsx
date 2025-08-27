@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../../helpers/dateUtils';
 import {
   CRow,
   CCol,
@@ -24,10 +25,6 @@ import {
 
 const OverviewTab = ({ contractor }) => {
   const { t } = useTranslation();
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   const getModuleBadges = (modules) => {
     if (!modules || typeof modules !== 'object') return [];

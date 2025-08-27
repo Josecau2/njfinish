@@ -12,6 +12,8 @@ const ManufacturerHingesDetails = require('../models/ManufacturerHingesDetails')
 const ManufacturerModificationDetails = require('../models/ManufacturerModificationDetails');
 const imageLogger = require('../utils/imageLogger');
 const { v4: uuidv4 } = require('uuid');
+const Sequelize = require('sequelize');
+const { Op } = Sequelize;
 
 
 const fetchManufacturer = async (req, res) => {
@@ -1032,6 +1034,137 @@ const fetchManufacturerStylesWithCatalog = async (req, res) => {
     }
 };
 
+// Lightweight list of unique styles with a representative catalog id and optional thumbnail (first variant image)
+const fetchManufacturerStylesMeta = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Get manufacturer info to include costMultiplier
+        const manufacturer = await Manufacturer.findByPk(id, {
+            attributes: ['id', 'name', 'costMultiplier']
+        });
+        
+        if (!manufacturer) {
+            return res.status(404).json({ error: 'Manufacturer not found' });
+        }
+
+        // Get a representative catalog row id per style for this manufacturer
+        const reps = await ManufacturerCatalogData.findAll({
+            where: {
+                manufacturerId: id,
+                style: { [Op.ne]: null },
+            },
+            attributes: [
+                [Sequelize.fn('MIN', Sequelize.col('id')), 'id'],
+                'style',
+                [Sequelize.fn('MIN', Sequelize.col('price')), 'price'],
+            ],
+            group: ['style'],
+            order: [[Sequelize.literal('style'), 'ASC']],
+            raw: true,
+        });
+
+        if (!reps?.length) {
+            return res.json({
+                styles: [],
+                manufacturerCostMultiplier: manufacturer.costMultiplier
+            });
+        }
+
+        const repIds = reps.map(r => r.id);
+        const variants = await ManufacturerStyleCollection.findAll({
+            where: { catalogId: { [Op.in]: repIds } },
+            attributes: ['catalogId', 'shortName', 'image'],
+            order: [['createdAt', 'DESC']],
+            raw: true,
+        });
+
+        const variantsByCatalog = variants.reduce((acc, v) => {
+            if (!acc[v.catalogId]) acc[v.catalogId] = [];
+            acc[v.catalogId].push({ shortName: v.shortName, image: v.image });
+            return acc;
+        }, {});
+
+        const payload = reps.map(r => ({
+            id: Number(r.id),
+            style: r.style,
+            price: r.price,
+            styleVariants: (variantsByCatalog[r.id] || []),
+        }));
+
+        return res.json({
+            styles: payload,
+            manufacturerCostMultiplier: manufacturer.costMultiplier
+        });
+    } catch (error) {
+        console.error('Error fetching styles meta:', error);
+        return res.status(500).json({ error: 'Failed to fetch styles' });
+    }
+};
+
+// Paginated items for a given style, identified by a representative catalog id
+const getItemsByStyleCatalogId = async (req, res) => {
+    try {
+        const { manufacturerId, catalogId } = req.params;
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.min(parseInt(req.query.limit, 10) || 300, 1000);
+        const includeDetails = req.query.includeDetails === '1';
+
+        // Get manufacturer info to include costMultiplier
+        const manufacturer = await Manufacturer.findByPk(manufacturerId, {
+            attributes: ['id', 'name', 'costMultiplier']
+        });
+        
+        if (!manufacturer) {
+            return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+        }
+
+        const rep = await ManufacturerCatalogData.findOne({
+            where: { id: catalogId, manufacturerId },
+            attributes: ['style'],
+        });
+        if (!rep || !rep.style) {
+            return res.status(404).json({ success: false, message: 'Style not found for catalog id' });
+        }
+
+        const where = {
+            manufacturerId,
+            style: rep.style,
+        };
+
+        const include = includeDetails ? [
+            { model: ManufacturerStyleCollection, as: 'styleVariants', attributes: ['catalog_id', 'shortName', 'image'], required: false },
+            { model: ManufacturerAssemblyCost, as: 'styleVariantsAssemblyCost', attributes: ['catalog_data_id', 'type', 'price'], required: false },
+            { model: ManufacturerModificationDetails, as: 'styleVariantsModification', attributes: ['catalog_data_id', 'description', 'price', 'modification_name'], required: false },
+        ] : [];
+
+        const offset = (page - 1) * limit;
+        const { rows, count } = await ManufacturerCatalogData.findAndCountAll({
+            where,
+            offset,
+            limit,
+            order: [['code', 'ASC']],
+            include,
+        });
+
+        return res.json({
+            success: true,
+            style: rep.style,
+            catalogData: rows,
+            manufacturerCostMultiplier: manufacturer.costMultiplier, // Include manufacturer cost multiplier
+            pagination: {
+                total: count,
+                page,
+                limit,
+                totalPages: Math.ceil(count / limit),
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching items by style catalog id:', error);
+        return res.status(500).json({ success: false, message: 'Failed to fetch items for style' });
+    }
+};
+
 
 
 
@@ -1452,7 +1585,7 @@ const getManufacturerCatalog = async (req, res) => {
         const page = Math.max(parseInt(req.query.page || '1', 10), 1);
         const limit = Math.min(Math.max(parseInt(req.query.limit || '50', 10), 1), 500);
         const offset = (page - 1) * limit;
-        const { typeFilter = '', styleFilter = '' } = req.query;
+        const { typeFilter = '', styleFilter = '', sortBy = 'code', sortOrder = 'ASC' } = req.query;
 
         // Validate manufacturer exists (optional but useful)
         const manufacturer = await Manufacturer.findByPk(manufacturerId);
@@ -1460,7 +1593,13 @@ const getManufacturerCatalog = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Manufacturer not found' });
         }
 
-        const Sequelize = require('sequelize');
+        // Validate sort parameters
+        const allowedSortFields = ['code', 'description', 'style', 'price', 'type', 'createdAt'];
+        const allowedSortOrders = ['ASC', 'DESC'];
+        const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'code';
+        const validSortOrder = allowedSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
+
+        // keep Sequelize import above for pagination and distinct helpers
         const where = {
             manufacturerId,
             ...(typeFilter ? { type: { [Sequelize.Op.eq]: typeFilter } } : {}),
@@ -1469,7 +1608,7 @@ const getManufacturerCatalog = async (req, res) => {
 
         const { rows, count } = await ManufacturerCatalogData.findAndCountAll({
             where,
-            order: [['createdAt', 'DESC']],
+            order: [[validSortBy, validSortOrder]],
             offset,
             limit,
         });
@@ -1504,6 +1643,10 @@ const getManufacturerCatalog = async (req, res) => {
                 uniqueTypes,
                 uniqueStyles,
             },
+            sorting: {
+                sortBy: validSortBy,
+                sortOrder: validSortOrder,
+            },
         });
     } catch (error) {
         console.error('Error fetching paginated catalog:', error);
@@ -1524,6 +1667,8 @@ module.exports = {
     fetchManufacturerStyleById,
     fetchManufacturerAllStyleById,
     fetchManufacturerStylesWithCatalog,
+    fetchManufacturerStylesMeta,
+    getItemsByStyleCatalogId,
     fetchManufacturerAssemblyCostDetails,
     fetchManufacturerHingesDetails,
     fetchManufacturerItemsModification,

@@ -15,6 +15,7 @@ import axiosInstance from '../../helpers/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaUsers, FaChartLine } from "react-icons/fa";
 import './CalendarView.css';
+import PageHeader from '../../components/PageHeader';
 
 const CalendarView = () => {
     const [events, setEvents] = useState([]);
@@ -158,47 +159,26 @@ const CalendarView = () => {
     return (
         <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
             {/* Header Section */}
-            <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <CCardBody className="py-4">
-                    <CRow className="align-items-center">
-                        <CCol>
-                            <div className="d-flex align-items-center gap-3">
-                                <div 
-                                    className="d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: '48px',
-                                        height: '48px',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        borderRadius: '12px'
-                                    }}
-                                >
-                                    <FaCalendarAlt className="text-white" style={{ fontSize: '24px' }} />
-                                </div>
-                                <div>
-                                    <h3 className="text-white mb-1 fw-bold">Event Calendar</h3>
-                                    <p className="text-white-50 mb-0">Manage your scheduled events and appointments</p>
-                                </div>
-                            </div>
-                        </CCol>
-                        <CCol xs="auto">
-                            <CButton 
-                                color="light" 
-                                className="shadow-sm px-4 fw-semibold"
-                                onClick={handleRefresh}
-                                disabled={loading}
-                                style={{ 
-                                    borderRadius: '5px',
-                                    border: 'none',
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                                <CIcon icon={cilReload} className="me-2" />
-                                Refresh
-                            </CButton>
-                        </CCol>
-                    </CRow>
-                </CCardBody>
-            </CCard>
+            <PageHeader
+                title="Event Calendar"
+                subtitle="Manage your scheduled events and appointments"
+                icon={FaCalendarAlt}
+            >
+                <CButton 
+                    color="light" 
+                    className="shadow-sm px-4 fw-semibold"
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    style={{ 
+                        borderRadius: '5px',
+                        border: 'none',
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    <CIcon icon={cilReload} className="me-2" />
+                    Refresh
+                </CButton>
+            </PageHeader>
 
             {/* Stats Row */}
             <CRow className="mb-2">

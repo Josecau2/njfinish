@@ -69,10 +69,11 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
   }
 
   useEffect(() => {
-    if (selectedVersion) {
+    // Mirror the currently selected version into Redux only when it changes meaningfully
+    if (selectedVersion && typeof selectedVersion === 'object') {
       dispatch(setSelectVersionNew(selectedVersion));
     }
-  }, [selectedVersion, dispatch]);
+  }, [selectedVersion?.versionName, selectedVersion?.manufacturer, dispatch]);
 
   useEffect(() => {
     formData.manufacturersData?.forEach((item) => {
@@ -91,7 +92,8 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
   useEffect(() => {
     if (versionDetails?.length > 0 && selectedVersionIndex === null) {
       setSelectedVersionIndex(0);
-      setSelectedVersion(versionDetails);
+      // Initialize with the first version object, not the whole array
+      setSelectedVersion(versionDetails[0]);
     }
   }, [versionDetails, selectedVersionIndex]);
 
@@ -266,8 +268,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       <CFormLabel htmlFor="date">{t('proposals.headers.date')}</CFormLabel>
                       <DatePicker
                         id="date"
-                        selected={formData.date ? new Date(formData.date) : new Date()}
-                        onChange={(date) => updateFormData({ ...formData, date: date })}
+                        selected={values.date ? new Date(values.date) : null}
+                        onChange={(date) => {
+                          const current = values.date ? new Date(values.date) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'date', value: date } });
+                            updateFormData({ ...formData, date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -291,8 +300,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       <CFormLabel htmlFor="designDate">{t('proposals.create.customerInfo.designDoneDate')}</CFormLabel>
                       <DatePicker
                         id="designDate"
-                        selected={formData.designDate ? new Date(formData.designDate) : null}
-                        onChange={(date) => updateFormData({ ...formData, designDate: date })}
+                        selected={values.designDate ? new Date(values.designDate) : null}
+                        onChange={(date) => {
+                          const current = values.designDate ? new Date(values.designDate) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'designDate', value: date } });
+                            updateFormData({ ...formData, designDate: date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -317,8 +333,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         {t('proposals.create.customerInfo.measurementDoneDate')}</CFormLabel>
                       <DatePicker
                         id="measurementDate"
-                        selected={formData.measurementDate ? new Date(formData.measurementDate) : null}
-                        onChange={(date) => updateFormData({ ...formData, measurementDate: date })}
+                        selected={values.measurementDate ? new Date(values.measurementDate) : null}
+                        onChange={(date) => {
+                          const current = values.measurementDate ? new Date(values.measurementDate) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'measurementDate', value: date } });
+                            updateFormData({ ...formData, measurementDate: date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         wrapperClassName="w-100"
@@ -342,8 +365,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       <CFormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</CFormLabel>
                       <DatePicker
                         id="followUp1Date"
-                        selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
-                        onChange={(date) => updateFormData({ ...formData, followUp1Date: date })}
+                        selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
+                        onChange={(date) => {
+                          const current = values.followUp1Date ? new Date(values.followUp1Date) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'followUp1Date', value: date } });
+                            updateFormData({ ...formData, followUp1Date: date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp1')} ${t('proposals.headers.date')}`}
@@ -367,8 +397,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       <CFormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2')} {t('proposals.headers.date')}</CFormLabel>
                       <DatePicker
                         id="followUp2Date"
-                        selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
-                        onChange={(date) => updateFormData({ ...formData, followUp2Date: date })}
+                        selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
+                        onChange={(date) => {
+                          const current = values.followUp2Date ? new Date(values.followUp2Date) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'followUp2Date', value: date } });
+                            updateFormData({ ...formData, followUp2Date: date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp2')} ${t('proposals.headers.date')}`}
@@ -392,8 +429,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       <CFormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3')} {t('proposals.headers.date')}</CFormLabel>
                       <DatePicker
                         id="followUp3Date"
-                        selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
-                        onChange={(date) => updateFormData({ ...formData, followUp3Date: date })}
+                        selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
+                        onChange={(date) => {
+                          const current = values.followUp3Date ? new Date(values.followUp3Date) : null;
+                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
+                          if (changed) {
+                            handleChange({ target: { name: 'followUp3Date', value: date } });
+                            updateFormData({ ...formData, followUp3Date: date });
+                          }
+                        }}
                         className="form-control"
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp3')} ${t('proposals.headers.date')}`}

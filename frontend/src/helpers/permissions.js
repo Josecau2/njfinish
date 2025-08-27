@@ -72,6 +72,11 @@ export const PERMISSIONS = {
 export const hasPermission = (user, permission) => {
   if (!user) return false;
   
+  // ADMIN USERS HAVE ACCESS TO EVERYTHING - NO RESTRICTIONS
+  if (isAdmin(user)) {
+    return true;
+  }
+  
   // First check if user is a contractor by group_type (most reliable)
   const isContractorByGroup = user.group && user.group.group_type === 'contractor';
   const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role;
@@ -188,7 +193,9 @@ export const getContractorModules = (user) => {
  * @returns {boolean}
  */
 export const hasModuleAccess = (user, module) => {
+  // ADMIN USERS HAVE ACCESS TO ALL MODULES
   if (isAdmin(user)) return true;
+  
   if (!isContractor(user)) return false;
   return getContractorModules(user).includes(module);
 };

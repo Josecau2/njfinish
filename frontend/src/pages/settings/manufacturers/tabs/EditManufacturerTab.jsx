@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { getContrastColor } from '../../../../utils/colorUtils';
 import {
   CAlert,
   CButton,
@@ -27,6 +29,11 @@ const getAuthHeaders = () => {
 const EditManufacturerTab = ({ manufacturer, id }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -255,7 +262,15 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </CCard>
 
             <div className="text-end">
-              <CButton type="submit" color="primary" disabled={loading}>
+              <CButton 
+                type="submit" 
+                disabled={loading}
+                style={{
+                  background: headerBg,
+                  color: textColor,
+                  border: 'none'
+                }}
+              >
                 {loading ? t('settings.manufacturers.edit.saving') : t('settings.manufacturers.edit.saveChanges')}
               </CButton>
             </div>

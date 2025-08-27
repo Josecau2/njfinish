@@ -37,6 +37,8 @@ import PermissionGate from '../../components/PermissionGate';
 import CIcon from '@coreui/icons-react';
 import { cilPencil, cilTrash, cilSearch, cilPlus, cilPaperPlane, cilCheck, cilX, cilLockLocked, cilChart, cilBriefcase, cilSend, cilCheckCircle } from '@coreui/icons';
 import PaginationComponent from '../../components/common/PaginationComponent';
+import PageHeader from '../../components/PageHeader';
+import { FaBriefcase } from 'react-icons/fa';
 
 const Proposals = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const { t } = useTranslation();
@@ -373,36 +375,30 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   return (
     <CContainer fluid className="dashboard-container">
       {/* Header Section */}
-      <div className="page-header">
-        <CRow className="align-items-center">
-          <CCol>
-            <h3 className="page-header-title">{t('proposals.header')}</h3>
-            <p className="page-header-subtitle">{t('proposals.subtitle')}</p>
-          </CCol>
-          <CCol xs="auto">
-            <div className="d-flex gap-2">
-              <PermissionGate permission="proposals:create">
-                <CButton
-                  color="light"
-                  onClick={handleCreateProposal}
-                >
-                  <CIcon icon={cilPlus} className="me-2" />
-                  {t('proposals.new')}
-                </CButton>
-              </PermissionGate>
-              <PermissionGate permission="proposals:create">
-                <CButton
-                  color="success"
-                  className="btn-gradient-green"
-                  onClick={handleCreateQuickProposal}
-                >
-                  {t('proposals.quick')}
-                </CButton>
-              </PermissionGate>
-            </div>
-          </CCol>
-        </CRow>
-      </div>
+      <PageHeader
+        title={t('proposals.header')}
+        subtitle={t('proposals.subtitle')}
+        icon={FaBriefcase}
+      >
+        <PermissionGate permission="proposals:create">
+          <CButton
+            color="light"
+            onClick={handleCreateProposal}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            {t('proposals.new')}
+          </CButton>
+        </PermissionGate>
+        <PermissionGate permission="proposals:create">
+          <CButton
+            color="success"
+            className="btn-gradient-green"
+            onClick={handleCreateQuickProposal}
+          >
+            {t('proposals.quick')}
+          </CButton>
+        </PermissionGate>
+      </PageHeader>
 
       {/* Status Tabs */}
       <div className="tabs-container">
@@ -537,8 +533,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         </CCard>
       </div>
 
-      {/* Mobile Card Layout */}
-      <div className="mobile-card-view">
+  {/* Mobile Card Layout (hidden on desktop; shown via responsive.css on mobile) */}
+  <div className="mobile-card-view d-none">
         {paginatedItems?.length === 0 ? (
           <CCard>
             <CCardBody className="text-center py-5">

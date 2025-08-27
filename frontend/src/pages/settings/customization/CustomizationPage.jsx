@@ -10,6 +10,8 @@ import axiosInstance from '../../../helpers/axiosInstance'
 import CIcon from '@coreui/icons-react'
 import { cilSettings, cilImage, cilColorPalette, cilSave, cilTrash } from '@coreui/icons'
 import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
+import { FaCog } from 'react-icons/fa'
 
 const CustomizationPage = () => {
     const { t } = useTranslation()
@@ -105,51 +107,35 @@ const CustomizationPage = () => {
     return (
         <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
             {/* Header Section */}
-            <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <CCardBody className="py-4">
-                    <CRow className="align-items-center">
-                        <CCol>
-                            <div className="d-flex align-items-center gap-3">
-                                <div 
-                                    className="d-flex align-items-center justify-content-center setting-icon-div"
-                                    
-                                >
-                                    <CIcon icon={cilSettings} style={{ color: 'white', fontSize: '20px' }} />
-                                </div>
-                                <div>
-                                    <h3 className="text-white mb-1 fw-bold">{t('settings.customization.ui.headerTitle')}</h3>
-                                    <p className="text-white-50 mb-0">{t('settings.customization.ui.headerSubtitle')}</p>
-                                </div>
-                            </div>
-                        </CCol>
-                        <CCol xs="auto">
-                            <CButton 
-                                color="light" 
-                                className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-                                onClick={handleSave}
-                                disabled={loading}
-                                style={{ 
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                {loading ? (
-                                    <>
-                                        <CSpinner size="sm" className="me-2" />
-                    {t('settings.customization.ui.buttons.saving')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CIcon icon={cilSave} className="me-2" />
-                    {t('settings.customization.ui.buttons.saveChanges')}
-                                    </>
-                                )}
-                            </CButton>
-                        </CCol>
-                    </CRow>
-                </CCardBody>
-            </CCard>
+            <PageHeader
+                title={t('settings.customization.ui.headerTitle')}
+                subtitle={t('settings.customization.ui.headerSubtitle')}
+                icon={FaCog}
+            >
+                <CButton 
+                    color="light" 
+                    className="shadow-sm px-4 fw-semibold d-flex align-items-center"
+                    onClick={handleSave}
+                    disabled={loading}
+                    style={{ 
+                        borderRadius: '8px',
+                        border: 'none',
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    {loading ? (
+                        <>
+                            <CSpinner size="sm" className="me-2" />
+                            {t('settings.customization.ui.buttons.saving')}
+                        </>
+                    ) : (
+                        <>
+                            <CIcon icon={cilSave} className="me-2" />
+                            {t('settings.customization.ui.buttons.saveChanges')}
+                        </>
+                    )}
+                </CButton>
+            </PageHeader>
 
             {/* Alert Messages */}
             {message.text && (

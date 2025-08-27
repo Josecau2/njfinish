@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../helpers/axiosInstance';
 import ContractorDashboard from '../contractor/ContractorDashboard';
+import PageHeader from '../../components/PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -56,8 +57,11 @@ const gradientOverlay = {
 };
 
 const Dashboard = () => {
-  // Check if user is a contractor
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  // Check if user is a contractor - stabilize user object
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem('user') || '{}');
+  }, []);
+  
   const isContractor = user.group && user.group.group_type === 'contractor';
 
   // If contractor, show contractor dashboard
@@ -234,26 +238,27 @@ const Dashboard = () => {
 
   return (
     <CContainer fluid className="dashboard-container">
-      {/* Modern Navigation Header */}
-      <div className="dashboard-header">
-        <h4 className="mb-0">{t('dashboard.title', 'Dashboard')}</h4>
-        <div className="d-flex gap-2">
-          <CButton
-            color="primary"
-            className="btn-gradient-cyan"
-            onClick={handleCreateProposal}
-          >
-            {t('dashboard.newProposal')}
-          </CButton>
-          <CButton
-            color="success"
-            className="btn-gradient-green"
-            onClick={handleCreateQuickProposal}
-          >
-            {t('dashboard.quickProposal')}
-          </CButton>
-        </div>
-      </div>
+      <PageHeader 
+        title={t('dashboard.title', 'Dashboard')}
+        rightContent={
+          <div className="d-flex gap-2">
+            <CButton
+              color="primary"
+              className="btn-gradient-cyan"
+              onClick={handleCreateProposal}
+            >
+              {t('dashboard.newProposal')}
+            </CButton>
+            <CButton
+              color="success"
+              className="btn-gradient-green"
+              onClick={handleCreateQuickProposal}
+            >
+              {t('dashboard.quickProposal')}
+            </CButton>
+          </div>
+        }
+      />
 
       {/* Stats Cards Row */}
       <CRow className="mb-4">

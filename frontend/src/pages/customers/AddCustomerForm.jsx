@@ -15,6 +15,7 @@ import {
   CInputGroupText
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
+import PageHeader from '../../components/PageHeader';
 import { 
   cilUser, 
   cilEnvelopeClosed, 
@@ -27,6 +28,7 @@ import {
 } from '@coreui/icons';
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useSelector } from 'react-redux';
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useNavigate } from "react-router-dom";
@@ -188,6 +190,10 @@ const CustomFormSelect = ({
 
 const AddCustomerForm = () => {
   const { t } = useTranslation();
+  const customization = useSelector((state) => state.customization);
+  const headerBg = customization?.headerBg || '#321fdb';
+  const textColor = customization?.headerTextColor || '#ffffff';
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -302,46 +308,40 @@ const AddCustomerForm = () => {
   return (
     <CContainer fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center">
-                <div 
-                  className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <CIcon icon={cilUserPlus} size="lg" className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('customers.form.titles.add')}</h3>
-                  <p className="text-white-50 mb-0">Create a new customer profile with detailed information</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <CButton
-                color="light"
-                className="shadow-sm px-4 fw-semibold"
-                onClick={() => navigate("/customers")}
-                style={{
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                {t('form.actions.backToCustomers')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilUserPlus} style={{ fontSize: '24px', color: 'white' }} />
+            </div>
+            {t('customers.form.titles.add')}
+          </div>
+        }
+        subtitle="Create a new customer profile with detailed information"
+        rightContent={
+          <CButton
+            color="light"
+            className="shadow-sm px-4 fw-semibold"
+            onClick={() => navigate("/customers")}
+            style={{
+              borderRadius: '5px',
+              border: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <CIcon icon={cilArrowLeft} className="me-2" />
+            {t('form.actions.backToCustomers')}
+          </CButton>
+        }
+      />
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
@@ -639,14 +639,14 @@ const AddCustomerForm = () => {
               </CButton>
               <CButton
                 type="submit"
-                color="primary"
                 size="lg"
                 disabled={isSubmitting}
                 className="px-5 fw-semibold"
                 style={{
                   borderRadius: '5px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  backgroundColor: headerBg,
+                  color: textColor,
                   transition: 'all 0.3s ease'
                 }}
               >

@@ -9,8 +9,9 @@ import CIcon from '@coreui/icons-react';
 import { cilTrash, cilPlus, cilSave, cilX, cilCheckAlt } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTax, fetchTaxes, deleteTax, setDefaultTax } from '../../../store/slices/taxSlice';
-import { CiCircleQuestion } from "react-icons/ci";
-import { FaCoins, FaPercentage } from "react-icons/fa";
+import { CiCircleQuestion } from 'react-icons/ci';
+import { FaCoins } from 'react-icons/fa6';
+import PageHeader from '../../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 
 const TaxesPage = () => {
@@ -69,51 +70,31 @@ const TaxesPage = () => {
   return (
     <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <div 
-                  className="d-flex align-items-center justify-content-center"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '12px'
-                  }}
-                >
-                  <FaCoins className="text-white" style={{ fontSize: '24px' }} />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('settings.taxes.header')}</h3>
-                  <p className="text-white-50 mb-0">{t('settings.taxes.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <CButton 
-                color="light" 
-                className="shadow-sm px-4 fw-semibold"
-                onClick={handleAddTaxRow}
-                disabled={
-                  newTaxes.length > 0 &&
-                  (!newTaxes[newTaxes.length - 1].label.trim() ||
-                    !newTaxes[newTaxes.length - 1].value.trim())
-                }
-                style={{ 
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <CIcon icon={cilPlus} className="me-2" />
-                {t('settings.taxes.addTax')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        icon={FaCoins}
+        title={t('settings.taxes.header')}
+        subtitle={t('settings.taxes.subtitle')}
+        rightContent={
+          <CButton 
+            color="light" 
+            className="shadow-sm px-4 fw-semibold"
+            onClick={handleAddTaxRow}
+            disabled={
+              newTaxes.length > 0 &&
+              (!newTaxes[newTaxes.length - 1].label.trim() ||
+                !newTaxes[newTaxes.length - 1].value.trim())
+            }
+            style={{ 
+              borderRadius: '5px',
+              border: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            {t('settings.taxes.addTax')}
+          </CButton>
+        }
+      />
 
       {/* Stats Card */}
       <CCard className="border-0 shadow-sm mb-1">

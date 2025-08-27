@@ -14,6 +14,7 @@ import { deleteLocation, fetchLocations } from '../../../store/slices/locationSl
 import Swal from 'sweetalert2';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 const LocationPage = () => {
   const { t } = useTranslation();
@@ -88,47 +89,40 @@ const LocationPage = () => {
 
   return (
     <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <div 
-                  className="d-flex align-items-center justify-content-center"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '12px'
-                  }}
-                >
-                  <FaMapMarkerAlt className="text-white" style={{ fontSize: '24px' }} />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('settings.locations.header')}</h3>
-                  <p className="text-white-50 mb-0">{t('settings.locations.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <CButton 
-                color="light" 
-                className="shadow-sm px-4 fw-semibold"
-                onClick={handleCreateUser}
-                style={{ 
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <CIcon icon={cilPlus} className="me-2" />
-                {t('settings.locations.add')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader 
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <FaMapMarkerAlt className="text-white" style={{ fontSize: '24px' }} />
+            </div>
+            {t('settings.locations.header')}
+          </div>
+        }
+        subtitle={t('settings.locations.subtitle')}
+        rightContent={
+          <CButton 
+            color="light" 
+            className="shadow-sm px-4 fw-semibold"
+            onClick={handleCreateUser}
+            style={{ 
+              borderRadius: '5px',
+              border: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            {t('settings.locations.add')}
+          </CButton>
+        }
+      />
 
       {/* Search and Stats */}
       <CCard className="border-0 shadow-sm mb-1">

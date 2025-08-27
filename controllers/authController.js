@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
     // Determine user role - for contractors, use group_type as role
     let userRole = user.role;
     if (user.group && user.group.group_type === 'contractor' && (!userRole || userRole.trim() === '')) {
-      userRole = 'contractor';
+      userRole = 'Contractor';
     }
 
     const token = jwt.sign({ 
@@ -86,6 +86,20 @@ exports.login = async (req, res) => {
       group_id: user.group_id 
     }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+    // Parse modules if they exist and are stored as string
+    let groupData = user.group;
+    if (groupData && groupData.modules && typeof groupData.modules === 'string') {
+      try {
+        groupData = {
+          ...groupData.toJSON(),
+          modules: JSON.parse(groupData.modules)
+        };
+      } catch (err) {
+        console.error('Error parsing group modules:', err);
+        // Keep original if parsing fails
+      }
+    }
+
     res.json({ 
       token, 
       userId: user.id, 
@@ -93,7 +107,7 @@ exports.login = async (req, res) => {
       role: userRole, 
       role_id: user.role_id,
       group_id: user.group_id,
-      group: user.group
+      group: groupData
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
@@ -111,7 +125,19 @@ exports.getCurrentUser = async (req, res) => {
       include: [{ model: UserGroup, as: 'group', attributes: ['id', 'name', 'group_type', 'modules'], required: false }]
     });
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
+    
+    // Parse modules if they exist and are stored as string
+    let userData = user.toJSON();
+    if (userData.group && userData.group.modules && typeof userData.group.modules === 'string') {
+      try {
+        userData.group.modules = JSON.parse(userData.group.modules);
+      } catch (err) {
+        console.error('Error parsing group modules in getCurrentUser:', err);
+        // Keep original if parsing fails
+      }
+    }
+    
+    res.json(userData);
   } catch (err) {
     console.error('getCurrentUser error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -280,12 +306,31 @@ exports.addUser = async (req, res) => {
     }
 
     if (deletedUser && force) {
+      // Determine user role based on group type for restoration
+      let userRole = 'User'; // Default role
+      let roleId = 0; // Default role_id
+      
+      if (userGroup) {
+        const group = await UserGroup.findByPk(userGroup);
+        if (group) {
+          if (group.group_type === 'contractor') {
+            userRole = 'Contractor'; // Set role to Contractor for contractor groups
+            roleId = parseInt(userGroup); // Set role_id to group_id for contractors
+          } else if (group.name.toLowerCase() === 'admin' || group.group_type === 'admin') {
+            userRole = 'Admin'; // Set role to Admin for admin groups
+            roleId = 2; // Set role_id to 2 for admin users
+            // Note: Admin users don't need group modules - they have access to everything by role
+          }
+        }
+      }
+      
       deletedUser.name = name;
       deletedUser.password = await bcrypt.hash(password, 10);
       deletedUser.isSalesRep = !!isSalesRep;
       deletedUser.location = location;
+      deletedUser.role = userRole; // Set the role field properly
       deletedUser.group_id = userGroup;
-      deletedUser.role_id = userGroup; // Also set role_id for contractor access
+      deletedUser.role_id = roleId; // Set role_id properly based on group type
       deletedUser.isDeleted = false;
       await deletedUser.save();
 
@@ -310,14 +355,31 @@ exports.addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    // Determine user role based on group type
+    let userRole = 'User'; // Default role
+    let roleId = 0; // Default role_id
+    
+    if (userGroup) {
+      const group = await UserGroup.findByPk(userGroup);
+      if (group) {
+        if (group.group_type === 'contractor') {
+          userRole = 'Contractor'; // Set role to Contractor for contractor groups
+          roleId = parseInt(userGroup); // Set role_id to group_id for contractors
+        } else if (group.name.toLowerCase() === 'admin' || group.group_type === 'admin') {
+          userRole = 'Admin'; // Set role to Admin for admin groups
+          roleId = 2; // Set role_id to 2 for admin users (standard admin role_id)
+          // Note: Admin users don't need group modules - they have access to everything by role
+        }
+      }
+    }    const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
       isSalesRep: !!isSalesRep,
       location,
+      role: userRole, // Set the role field properly
       group_id: parseInt(userGroup) || null,
-      role_id: 0 // Default role_id as integer
+      role_id: roleId // Set role_id properly based on group type
     });
 
     // await UserRole.create({
@@ -363,8 +425,25 @@ exports.updateUser = async (req, res) => {
     if (name) user.name = name;
     if (location) user.location = location;
     if (userGroup) {
+      // Determine user role based on group type for updates
+      let userRole = 'User'; // Default role
+      let roleId = 0; // Default role_id
+      
+      const group = await UserGroup.findByPk(userGroup);
+      if (group) {
+        if (group.group_type === 'contractor') {
+          userRole = 'Contractor'; // Set role to Contractor for contractor groups
+          roleId = parseInt(userGroup); // Set role_id to group_id for contractors
+        } else if (group.name.toLowerCase() === 'admin' || group.group_type === 'admin') {
+          userRole = 'Admin'; // Set role to Admin for admin groups
+          roleId = 2; // Set role_id to 2 for admin users
+          // Note: Admin users don't need group modules - they have access to everything by role
+        }
+      }
+      
+      user.role = userRole; // Set the role field properly
       user.group_id = parseInt(userGroup) || null;
-      user.role_id = 0; // Set default role_id as integer
+      user.role_id = roleId; // Set role_id properly based on group type
     }
     if (typeof isSalesRep === 'boolean') user.isSalesRep = isSalesRep;
     if (role_id !== undefined) user.role_id = parseInt(role_id) || 0;

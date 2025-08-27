@@ -21,6 +21,7 @@ import {
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice';
+import { getContrastColor } from '../../../utils/colorUtils';
 import CIcon from '@coreui/icons-react';
 import { cilPencil, cilSearch, cilSettings, cilUser } from '@coreui/icons';
 import EditGroupModal from '../../../components/model/EditGroupModal';
@@ -31,6 +32,7 @@ import {
 } from '../../../store/slices/manufacturersMultiplierSlice';
 import Swal from 'sweetalert2';
 import PaginationComponent from '../../../components/common/PaginationComponent';
+import PageHeader from '../../../components/PageHeader';
 
 import { fetchUserMultipliers, fetchUsers } from '../../../store/slices/userGroupSlice';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +42,7 @@ const ManuMultipliers = () => {
   const dispatch = useDispatch();
   const { list: usersGroup = [], allGroups = [] } = useSelector((state) => state.usersGroup || {});
   const { list: multiManufacturers = [] } = useSelector((state) => state.multiManufacturer || {});
+  const customization = useSelector((state) => state.customization);
 
   const [filterText, setFilterText] = useState('');
   const [sortBy, setSortBy] = useState('name');
@@ -220,33 +223,40 @@ const ManuMultipliers = () => {
   return (
     <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <h3 className="text-white mb-1 fw-bold">{t('settings.userGroups.multipliers.header')}</h3>
-              <p className="text-white-50 mb-0">{t('settings.userGroups.multipliers.subtitle')}</p>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex gap-2 align-items-center">
-                <CBadge 
-                  color="light" 
-                  className="px-3 py-2"
-                  style={{ 
-                    borderRadius: '5px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#6c757d'
-                  }}
-                >
-                  <CIcon icon={cilUser} className="me-1" size="sm" />
-                  {mergedGroups.length} {t('settings.userGroups.multipliers.groups')}
-                </CBadge>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilUser} style={{ fontSize: '24px', color: 'white' }} />
+            </div>
+            {t('settings.userGroups.multipliers.header')}
+          </div>
+        }
+        subtitle={t('settings.userGroups.multipliers.subtitle')}
+        rightContent={
+          <CBadge 
+            color="light" 
+            className="px-3 py-2"
+            style={{ 
+              borderRadius: '5px',
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#6c757d'
+            }}
+          >
+            <CIcon icon={cilUser} className="me-1" size="sm" />
+            {mergedGroups.length} {t('settings.userGroups.multipliers.groups')}
+          </CBadge>
+        }
+      />
 
       {/* Stats Cards */}
       <CRow className="mb-2">
@@ -305,8 +315,8 @@ const ManuMultipliers = () => {
                   style={{ 
                     width: '50px', 
                     height: '50px', 
-                    backgroundColor: '#e7f3ff',
-                    color: '#0d6efd'
+                    backgroundColor: `${customization.headerBg || '#667eea'}20`,
+                    color: customization.headerBg || '#667eea'
                   }}
                 >
                   <CIcon icon={cilUser} size="lg" />
@@ -450,8 +460,8 @@ const ManuMultipliers = () => {
                             transition: 'all 0.2s ease'
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#e7f3ff';
-                            e.currentTarget.style.borderColor = '#0d6efd';
+                            e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
+                            e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = '';
@@ -461,7 +471,7 @@ const ManuMultipliers = () => {
                           <CIcon
                             icon={cilPencil}
                             size="sm"
-                            style={{ color: '#0d6efd' }}
+                            style={{ color: customization.headerBg || '#667eea' }}
                           />
                         </CButton>
                       </CTableDataCell>

@@ -23,6 +23,9 @@ import {
   CModalBody,
   CModalFooter,
   CAlert,
+  CContainer,
+  CCard,
+  CCardBody,
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice';
@@ -89,7 +92,8 @@ const EditProposal = () => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [designerOptions, setDesignerOptions] = useState([]);
-  const [manufacturersById, setManufacturersById] = useState([]);
+  // Use manufacturers map from Redux so we can attach full manufacturer data
+  const manufacturersByIdMap = useSelector((state) => state.manufacturers.byId);
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
@@ -133,7 +137,6 @@ const EditProposal = () => {
       .then((res) => {
         setInitialData(res.data);
         setFormData(res.data || defaultFormData);
-        setManufacturersById(res.data.manufacturersData || [])
         setLoading(false);
       })
       .catch((err) => {
@@ -168,41 +171,46 @@ const EditProposal = () => {
 
   // Fetch manufacturers data
   useEffect(() => {
-
     if (formData?.manufacturersData?.length > 0) {
-      setSelectedVersionIndex(0);
-      setSelectedVersion(formData?.manufacturersData);
-      dispatch(setSelectVersionNewEdit(formData?.manufacturersData));
+      // Initialize index; actual selectedVersion will be set when details are ready
+      if (selectedVersionIndex === null) setSelectedVersionIndex(0);
 
       formData.manufacturersData.forEach((item) => {
-        if (item.manufacturer && !manufacturersById[item.manufacturer]) {
+        if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
           dispatch(fetchManufacturerById(item.manufacturer));
         }
       });
     }
-  }, [formData?.manufacturersData, dispatch, manufacturersById]);
+  }, [formData?.manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex]);
 
   useEffect(() => {
-    if (!formData.manufacturersData || formData.manufacturersData.length === 0) {
+    if (!Array.isArray(formData.manufacturersData) || formData.manufacturersData.length === 0) return;
+
+    const details = formData.manufacturersData.map((item) => ({
+      ...item,
+      manufacturerData: manufacturersByIdMap[item.manufacturer],
+    }));
+
+    if (details.length === 0) return;
+
+    // First-time init
+    if (selectedVersionIndex === null && !hasSetInitialVersion.current) {
+      setSelectedVersionIndex(0);
+      setSelectedVersion(details[0]);
+      hasSetInitialVersion.current = true;
+      dispatch(setSelectVersionNewEdit(details[0]));
       return;
     }
 
-    const versionDetails = formData.manufacturersData.map((item) => ({
-      ...item,
-      manufacturerData: manufacturersById[item.manufacturer],
-    }));
-
-    if (
-      versionDetails.length > 0 &&
-      selectedVersionIndex === null &&
-      !hasSetInitialVersion.current
-    ) {
-      setSelectedVersionIndex(0);
-      setSelectedVersion(versionDetails[0]);
-      hasSetInitialVersion.current = true;
-      dispatch(setSelectVersionNewEdit(versionDetails[0]));
+    // Keep selectedVersion in sync when manufacturer data loads or index changes
+    if (selectedVersionIndex !== null) {
+      const next = details[selectedVersionIndex] || details[0];
+      if (!selectedVersion || selectedVersion.versionName !== next.versionName || (!selectedVersion.manufacturerData && next.manufacturerData)) {
+        setSelectedVersion(next);
+        dispatch(setSelectVersionNewEdit(next));
+      }
     }
-  }, [formData.manufacturersData, manufacturersById, selectedVersionIndex, dispatch]);
+  }, [formData.manufacturersData, manufacturersByIdMap, selectedVersionIndex]);
 
   // Update selected version in Redux
   useEffect(() => {
@@ -219,9 +227,9 @@ const EditProposal = () => {
   };
 
   const handleBadgeClick = (index, version) => {
-    // setSelectedVersionIndex(index);
-    // setSelectedVersion(version);
-    // dispatch(setSelectVersionNewEdit(version));
+    setSelectedVersionIndex(index);
+    setSelectedVersion(version);
+    dispatch(setSelectVersionNewEdit(version));
   };
 
   const handleTabSelect = (tabName) => {
@@ -281,7 +289,7 @@ const EditProposal = () => {
 
   const versionDetails = formData?.manufacturersData?.map((item) => ({
     ...item,
-    manufacturerData: manufacturersById[item.manufacturer],
+    manufacturerData: manufacturersByIdMap[item.manufacturer],
   })) || [];
 
   const selectVersion = versionDetails[selectedVersionIndex] || null;
@@ -376,7 +384,7 @@ const EditProposal = () => {
 
   return (
     <>
-      <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
+  <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
         <div className="d-flex align-items-center gap-3">
           <h4 className="text-muted m-0">Edit Proposal</h4>
           {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
@@ -386,7 +394,7 @@ const EditProposal = () => {
             <CBadge color="dark" className="px-2 py-1">Locked</CBadge>
           )}
         </div>
-        <div className="d-flex gap-2 flex-wrap">
+  <div className="d-flex gap-2 flex-wrap mobile-action-buttons">
           <div
             className="px-3 py-2 rounded d-flex align-items-center"
             style={{
@@ -439,7 +447,7 @@ const EditProposal = () => {
         </div>
       </div>
 
-      <div>
+      <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
         <Formik
           initialValues={formData}
           enableReinitialize
@@ -454,234 +462,237 @@ const EditProposal = () => {
 
             return (
               <CForm onSubmit={handleSubmit}>
-                <CRow>
-                  {/* <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="customerName">Customer Name *</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="customerName"
-                      name="customerName"
-                      value={values.customerName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Customer Name"
-                      disabled={isFormDisabled}
-                    />
-                    {errors.customerName && touched.customerName && (
-                      <div className="text-danger small mt-1">{errors.customerName}</div>
-                    )}
-                  </CCol> */}
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="designer">Designer *</CFormLabel>
-                    <CreatableSelect
-                      isClearable
-                      id="designer"
-                      name="designer"
-                      options={designerOptions}
-                      value={designerOptions.find((opt) => opt.value === values.designer) || null}
-                      onChange={(selectedOption) => {
-                        updateFormData({ designer: selectedOption?.value || '' });
-                      }}
-                      onBlur={handleBlur}
-                    />
-                    {errors.designer && touched.designer && (
-                      <div className="text-danger small mt-1">{errors.designer}</div>
-                    )}
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="description">Description *</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={values.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Description"
-                      disabled={isFormDisabled}
-                    />
-                    {errors.description && touched.description && (
-                      <div className="text-danger small mt-1">{errors.description}</div>
-                    )}
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="status">Status</CFormLabel>
-                    <CreatableSelect
-                      isClearable
-                      options={statusOptions}
-                      value={statusOptions.find((opt) => opt.value === (values.status || 'Draft'))}
-                      onChange={(selectedOption) => {
-                        updateFormData({ status: selectedOption?.value || 'Draft' });
-                      }}
-                      onBlur={handleBlur}
-                      inputId="status"
-                      isDisabled={isFormDisabled}
-                    />
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="date">Date</CFormLabel>
-                      <DatePicker
-                        id="date"
-                        selected={formData.date ? new Date(formData.date) : new Date()}
-                        onChange={(date) => updateFormData({ date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        disabled={isFormDisabled}
-                        placeholderText="Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
-                      <DatePicker
-                        id="designDate"
-                        selected={formData.designDate ? new Date(formData.designDate) : null}
-                        onChange={(date) => updateFormData({ designDate: date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText="Design Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
-                      <DatePicker
-                        id="measurementDate"
-                        selected={formData.measurementDate ? new Date(formData.measurementDate) : null}
-                        onChange={(date) => updateFormData({ measurementDate: date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText="Measurement Date"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp1Date"
-                        selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
-                        onChange={(date) => updateFormData({ followUp1Date: date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 1 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp2Date"
-                        selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
-                        onChange={(date) => updateFormData({ followUp2Date: date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 2 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
-                      <DatePicker
-                        id="followUp3Date"
-                        selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
-                        onChange={(date) => updateFormData({ followUp3Date: date })}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText="Follow up 3 Date"
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                </CRow>
+                {/* Basic Information Card */}
+                <CCard className="mb-4">
+                  <CCardBody>
+                    <h5 className="mb-4">Basic Information</h5>
+                    <CRow>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <CFormLabel htmlFor="designer">Designer *</CFormLabel>
+                        <CreatableSelect
+                          isClearable
+                          id="designer"
+                          name="designer"
+                          options={designerOptions}
+                          value={designerOptions.find((opt) => opt.value === values.designer) || null}
+                          onChange={(selectedOption) => {
+                            updateFormData({ designer: selectedOption?.value || '' });
+                          }}
+                          onBlur={handleBlur}
+                        />
+                        {errors.designer && touched.designer && (
+                          <div className="text-danger small mt-1">{errors.designer}</div>
+                        )}
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <CFormLabel htmlFor="description">Description *</CFormLabel>
+                        <CFormInput
+                          type="text"
+                          id="description"
+                          name="description"
+                          value={values.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="Description"
+                          disabled={isFormDisabled}
+                        />
+                        {errors.description && touched.description && (
+                          <div className="text-danger small mt-1">{errors.description}</div>
+                        )}
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <CFormLabel htmlFor="status">Status</CFormLabel>
+                        <CreatableSelect
+                          isClearable
+                          options={statusOptions}
+                          value={statusOptions.find((opt) => opt.value === (values.status || 'Draft'))}
+                          onChange={(selectedOption) => {
+                            updateFormData({ status: selectedOption?.value || 'Draft' });
+                          }}
+                          onBlur={handleBlur}
+                          inputId="status"
+                          isDisabled={isFormDisabled}
+                        />
+                      </CCol>
+                    </CRow>
+                  </CCardBody>
+                </CCard>
 
-                <div className="mb-4 mt-5 d-flex flex-wrap gap-4">
+                {/* Dates Card */}
+                <CCard className="mb-4">
+                  <CCardBody>
+                    <h5 className="mb-4">Important Dates</h5>
+                    <CRow>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="date">Date</CFormLabel>
+                          <DatePicker
+                            id="date"
+                            selected={formData.date ? new Date(formData.date) : new Date()}
+                            onChange={(date) => updateFormData({ date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
+                          <DatePicker
+                            id="designDate"
+                            selected={formData.designDate ? new Date(formData.designDate) : null}
+                            onChange={(date) => updateFormData({ designDate: date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Design Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
+                          <DatePicker
+                            id="measurementDate"
+                            selected={formData.measurementDate ? new Date(formData.measurementDate) : null}
+                            onChange={(date) => updateFormData({ measurementDate: date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Measurement Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                    </CRow>
+                    <CRow>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
+                          <DatePicker
+                            id="followUp1Date"
+                            selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
+                            onChange={(date) => updateFormData({ followUp1Date: date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Follow up 1 Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
+                          <DatePicker
+                            id="followUp2Date"
+                            selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
+                            onChange={(date) => updateFormData({ followUp2Date: date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Follow up 2 Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                      <CCol xs={12} md={6} lg={4} className="mb-3">
+                        <div style={{ position: 'relative' }}>
+                          <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
+                          <DatePicker
+                            id="followUp3Date"
+                            selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
+                            onChange={(date) => updateFormData({ followUp3Date: date })}
+                            className="form-control"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="w-100"
+                            disabled={isFormDisabled}
+                            placeholderText="Follow up 3 Date"
+                          />
+                          <FaCalendarAlt
+                            style={{
+                              position: 'absolute',
+                              top: '70%',
+                              right: '12px',
+                              transform: 'translateY(-50%)',
+                              color: '#6c757d',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                      </CCol>
+                    </CRow>
+                  </CCardBody>
+                </CCard>
+
+                {/* Tabs section for manufacturers */}
+
+                {/* Version badges - reuse create mobile styles */}
+                <div className="proposal-version-badges">
                   {versionDetails.map((version, index) => {
                     const isSelected = index === selectedVersionIndex;
                     return (
                       <CBadge
                         key={index}
-                        className="p-2 d-flex"
+                        className={`proposal-version-badge p-2 d-flex ${isSelected ? 'selected' : ''}`}
                         style={{
                           fontSize: '0.8rem',
-                          cursor: 'pointer',
-                          minWidth: '190px',
-                          justifyContent: 'space-between',
                           backgroundColor: isSelected ? '#084298' : '#d0e7ff',
                           color: isSelected ? '#d0e7ff' : '#084298',
-                          boxShadow: isSelected
-                            ? '0 0 8px 2px rgba(8, 66, 152, 0.6)'
-                            : '0 1px 3px rgba(0, 0, 0, 0.1)',
                           borderRadius: '5px',
                           transition: 'all 0.3s ease',
                         }}
@@ -709,7 +720,8 @@ const EditProposal = () => {
                                 padding: '0 4px',
                                 color: isSelected ? '#d0e7ff' : '#084298',
                                 backgroundColor: 'transparent',
-                                border: 'none',
+                                borderWidth: 0,
+                                borderStyle: 'none',
                                 outline: 'none',
                                 boxShadow: 'none',
                                 transition: 'all 0.2s ease',
@@ -720,7 +732,9 @@ const EditProposal = () => {
                             <CDropdownMenu
                               style={{
                                 minWidth: '120px',
-                                border: '1px solid #e0e0e0',
+                                borderWidth: '1px',
+                                borderStyle: 'solid',
+                                borderColor: '#e0e0e0',
                                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                                 borderRadius: '4px',
                                 padding: '4px 0',
@@ -769,8 +783,8 @@ const EditProposal = () => {
 
                 <hr />
 
-                <CTabs>
-                  <CNav variant="tabs" className="border-0">
+                <CTabs className="proposal-tabs">
+                  <CNav variant="tabs" className="proposal-tabs border-0">
                     <CNavItem>
                       <CNavLink
                         active={activeTab === 'item'}
@@ -901,7 +915,7 @@ const EditProposal = () => {
             );
           }}
         </Formik>
-      </div>
+      </CContainer>
 
       <PrintProposalModal show={showPrintModal} onClose={() => setShowPrintModal(false)} formData={formData} />
       <EmailProposalModal show={showEmailModal} onClose={() => setShowEmailModal(false)} formData={formData} />

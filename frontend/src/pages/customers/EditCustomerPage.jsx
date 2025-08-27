@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSelector } from 'react-redux';
+import { getContrastColor } from '../../utils/colorUtils';
 import {
   CForm,
   CFormInput,
@@ -16,6 +18,7 @@ import {
   CFormFeedback,
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
+import PageHeader from '../../components/PageHeader';
 import { 
   cilUser, 
   cilEnvelopeClosed, 
@@ -191,6 +194,11 @@ const CustomFormSelect = ({
 
 const EditCustomerPage = () => {
   const { t } = useTranslation();
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -298,46 +306,40 @@ const EditCustomerPage = () => {
   return (
     <CContainer fluid className="p-2 m-2 edit-customer-page bg-body" style={{ minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center">
-                <div 
-                  className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <CIcon icon={cilPencil} size="lg" className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('customers.form.titles.edit')}</h3>
-                  <p className="text-white-50 mb-0">Update customer profile with detailed information</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <CButton
-                color="light"
-                className="shadow-sm px-4 fw-semibold"
-                onClick={() => navigate("/customers")}
-                style={{
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                {t('customers.form.actions.backToCustomers')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilPencil} style={{ fontSize: '24px', color: 'white' }} />
+            </div>
+            {t('customers.form.titles.edit')}
+          </div>
+        }
+        subtitle="Update customer profile with detailed information"
+        rightContent={
+          <CButton 
+            color="light" 
+            variant="outline"
+            className="me-2"
+            onClick={() => window.history.back()}
+            style={{
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+              color: 'rgba(255, 255, 255, 0.9)',
+            }}
+          >
+            <CIcon icon={cilArrowLeft} className="me-1" size="sm" />
+            {t('common.back')}
+          </CButton>
+        }
+      />
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
@@ -640,14 +642,14 @@ const EditCustomerPage = () => {
               </CButton>
               <CButton
                 type="submit"
-                color="primary"
                 size="lg"
                 disabled={isSubmitting}
                 className="px-5 fw-semibold"
                 style={{
                   borderRadius: '5px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: headerBg,
+                  color: textColor,
                   transition: 'all 0.3s ease'
                 }}
               >

@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   sidebarShow: true,
-  sidebarUnfoldable: false,
+  sidebarUnfoldable: true,
 }
 
 const sidebarSlice = createSlice({

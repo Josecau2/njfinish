@@ -22,6 +22,7 @@ import moment from 'moment-timezone';
 import { addLocation } from '../../../store/slices/locationSlice';
 import { useDispatch } from 'react-redux';
 import CIcon from '@coreui/icons-react';
+import PageHeader from '../../../components/PageHeader';
 import { 
   cilLocationPin, 
   cilEnvelopeClosed, 
@@ -171,40 +172,41 @@ const LocationForm = () => {
   return (
     <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <CButton
-                  color="light"
-                  variant="ghost"
-                  className="p-2"
-                  onClick={() => navigate('/settings/locations')}
-                  style={{
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    color: 'white'
-                  }}
-                >
-                  <CIcon icon={cilArrowLeft} />
-                </CButton>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{t('settings.locations.create.title')}</h3>
-                  <p className="text-white-50 mb-0">{t('settings.locations.create.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex align-items-center gap-2 text-white-50">
-                <CIcon icon={cilLocationPin} />
-                <span className="small">{t('settings.locations.management')}</span>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div 
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px'
+              }}
+            >
+              <CIcon icon={cilLocationPin} style={{ fontSize: '24px', color: 'white' }} />
+            </div>
+            {t('settings.locations.create.title')}
+          </div>
+        }
+        subtitle={t('settings.locations.create.subtitle')}
+        rightContent={
+          <CButton
+            color="light"
+            variant="ghost"
+            className="p-2"
+            onClick={() => navigate('/settings/locations')}
+            style={{
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white'
+            }}
+          >
+            <CIcon icon={cilArrowLeft} />
+          </CButton>
+        }
+      />
 
       {/* Form Section */}
       <CCard className="border-0 shadow-sm">

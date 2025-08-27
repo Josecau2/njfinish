@@ -358,8 +358,9 @@ const AddUserForm = () => {
     <option value="">{t('settings.users.form.select.group')}</option>
                 {(usersGroup || []).map((group) => {
                   const name = group?.user_group?.name ?? group?.name ?? `Group #${group?.id ?? ''}`;
+                  const id = group?.user_group?.id ?? group?.id;
                   return (
-                    <option key={group?.id ?? name} value={name}>
+                    <option key={id ?? name} value={id}>
                       {name}
                     </option>
                   );

@@ -22,12 +22,13 @@ import {
     cilUserFollow,
     cilGroup
 } from '@coreui/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateUser, fetchSingleUser } from '../../../store/slices/userGroupSlice';
 import Swal from 'sweetalert2';
 import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -45,8 +46,8 @@ const FormSection = ({ title, icon, children, className = "" }) => (
                     style={{
                         width: '32px',
                         height: '32px',
-                        backgroundColor: '#e7f3ff',
-                        color: '#0d6efd'
+                        backgroundColor: `${customization.headerBg || '#667eea'}20`,
+                        color: customization.headerBg || '#667eea'
                     }}
                 >
                     <CIcon icon={icon} size="sm" />
@@ -133,6 +134,23 @@ const EditUserGroupForm = () => {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
+    const customization = useSelector((state) => state.customization);
+
+    // Function to get optimal text color for contrast
+    const getContrastColor = (backgroundColor) => {
+        if (!backgroundColor) return '#ffffff';
+        // Convert hex to RGB
+        const hex = backgroundColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Calculate luminance
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Return dark color for light backgrounds, light color for dark backgrounds
+        return luminance > 0.5 ? '#2d3748' : '#ffffff';
+    };
 
     useEffect(() => {
         const fetchUserGroup = async () => {
@@ -222,47 +240,27 @@ const EditUserGroupForm = () => {
     return (
         <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
             {/* Header Section */}
-            <CCard className="border-0 shadow-sm mb-2 mb-md-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <CCardBody className="py-3 py-md-4 px-3 px-md-4">
-                    <CRow className="align-items-center">
-                        <CCol>
-                            <div className="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
-                                <div 
-                                    className="rounded-circle d-flex align-items-center justify-content-center me-md-3 mb-2 mb-md-0"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        backdropFilter: 'blur(10px)'
-                                    }}
-                                >
-                                    <CIcon icon={cilUserFollow} size="sm" className="text-white" />
-                                </div>
-                                <div>
-                                    <h5 className="text-white mb-1 fw-bold">{t('settings.userGroups.edit.title')}</h5>
-                                    <p className="text-white-50 mb-0 small d-none d-md-block">{t('settings.userGroups.edit.subtitle')}</p>
-                                </div>
-                            </div>
-                        </CCol>
-                        <CCol xs="12" className="mt-3 mt-md-0" md="auto">
-                            <CButton
-                                color="light"
-                                className="shadow-sm px-3 px-md-4 fw-semibold w-100 w-md-auto"
-                                size="sm"
-                                onClick={() => navigate('/settings/users')}
-                                style={{
-                                    borderRadius: '25px',
-                                    border: 'none',
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                                <CIcon icon={cilArrowLeft} className="me-2" />
-                                {t('common.back')}
-                            </CButton>
-                        </CCol>
-                    </CRow>
-                </CCardBody>
-            </CCard>
+            <PageHeader
+                title={t('settings.userGroups.edit.title')}
+                subtitle={t('settings.userGroups.edit.subtitle')}
+                icon={cilUserFollow}
+                rightContent={
+                    <CButton
+                        color="light"
+                        className="shadow-sm px-3 px-md-4 fw-semibold w-100 w-md-auto"
+                        size="sm"
+                        onClick={() => navigate('/settings/users')}
+                        style={{
+                            borderRadius: '25px',
+                            border: 'none',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <CIcon icon={cilArrowLeft} className="me-2" />
+                        {t('common.back')}
+                    </CButton>
+                }
+            />
 
             <CForm onSubmit={handleSubmit}>
                 {/* Group Information Section */}
@@ -318,8 +316,8 @@ const EditUserGroupForm = () => {
                                     style={{
                                         width: '32px',
                                         height: '32px',
-                                        backgroundColor: '#0d6efd',
-                                        color: 'white'
+                                        backgroundColor: customization.headerBg || '#667eea',
+                                        color: getContrastColor(customization.headerBg || '#667eea')
                                     }}
                                 >
                                     <CIcon icon={cilSettings} size="sm" />
@@ -420,7 +418,8 @@ const EditUserGroupForm = () => {
                                 style={{
                                     borderRadius: '25px',
                                     border: 'none',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    background: customization.headerBg || '#667eea',
+                                    color: getContrastColor(customization.headerBg || '#667eea'),
                                     transition: 'all 0.3s ease'
                                 }}
                             >

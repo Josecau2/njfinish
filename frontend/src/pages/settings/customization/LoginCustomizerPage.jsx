@@ -26,6 +26,7 @@ import LoginPreview from "../../../components/LoginPreview";
 import { FaCog, FaPalette, FaEye } from "react-icons/fa";
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -116,68 +117,50 @@ const LoginCustomizerPage = () => {
 
   return (
     <CContainer fluid className="p-2 m-2 main-div-custom-login" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-  {/* Header Section */}
-      <CCard className="border-0 shadow-sm mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <div 
-                  className="d-flex align-items-center justify-content-center setting-icon-div"
-                  
-                >
-                  <FaCog className="text-white" style={{ fontSize: '24px' }} />
-                </div>
-                <div>
-          <h3 className="text-white mb-1 fw-bold">{t('settings.customization.login.headerTitle')}</h3>
-          <p className="text-white-50 mb-0">{t('settings.customization.login.headerSubtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              <div className="d-flex gap-2 preview-save-button">
-                <CButton 
-                  color="light" 
-                  className="shadow-sm px-4 fw-semibold"
-                  onClick={() => setShowPreview(true)}
-                  disabled={loading}
-                  style={{ 
-                    borderRadius: '8px',
-                    border: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <CIcon icon={cilSave} className="me-2" />
+      {/* Header Section */}
+      <PageHeader
+        title={t('settings.customization.login.headerTitle')}
+        subtitle={t('settings.customization.login.headerSubtitle')}
+        icon={FaCog}
+      >
+        <CButton 
+          color="light" 
+          className="shadow-sm px-4 fw-semibold"
+          onClick={() => setShowPreview(true)}
+          disabled={loading}
+          style={{ 
+            borderRadius: '8px',
+            border: 'none',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <CIcon icon={cilSave} className="me-2" />
           {t('settings.customization.login.buttons.preview')}
-                </CButton>
-                <CButton 
-                  color="success" 
-                  className="shadow-sm px-4 fw-semibold"
-                  onClick={handleSave}
-                  disabled={loading || saving}
-                  style={{ 
-                    borderRadius: '8px',
-                    border: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {saving ? (
-                    <>
-                      <CSpinner size="sm" className="me-2" />
-            {t('settings.customization.login.buttons.saving')}
-                    </>
-                  ) : (
-                    <>
-                      <CIcon icon={cilSave} className="me-2" />
-            {t('settings.customization.login.buttons.saveSettings')}
-                    </>
-                  )}
-                </CButton>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+        </CButton>
+        <CButton 
+          color="success" 
+          className="shadow-sm px-4 fw-semibold"
+          onClick={handleSave}
+          disabled={loading || saving}
+          style={{ 
+            borderRadius: '8px',
+            border: 'none',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {saving ? (
+            <>
+              <CSpinner size="sm" className="me-2" />
+              {t('settings.customization.login.buttons.saving')}
+            </>
+          ) : (
+            <>
+              <CIcon icon={cilSave} className="me-2" />
+              {t('settings.customization.login.buttons.saveSettings')}
+            </>
+          )}
+        </CButton>
+      </PageHeader>
 
       {/* Loading State */}
       {loading && (

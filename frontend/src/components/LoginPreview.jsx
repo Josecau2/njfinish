@@ -1,9 +1,15 @@
 import React, { useState } from "react";
+import { useSelector } from 'react-redux';
+import { getContrastColor } from '../utils/colorUtils';
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const LoginPreview = ({ config }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
 
   return (
     <div className="d-flex flex-column flex-md-row min-vh-100 border rounded shadow overflow-hidden">
@@ -58,7 +64,16 @@ const LoginPreview = ({ config }) => {
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100" disabled>
+            <button 
+              type="submit" 
+              className="btn w-100" 
+              disabled
+              style={{
+                background: headerBg,
+                color: textColor,
+                border: 'none'
+              }}
+            >
               Sign in
             </button>
           </form>

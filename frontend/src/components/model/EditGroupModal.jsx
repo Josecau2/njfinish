@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import PageHeader from '../PageHeader'
 import {
     CModal,
-    CModalHeader,
-    CModalTitle,
     CModalBody,
     CModalFooter,
     CButton,
@@ -18,6 +18,8 @@ import {
 
 const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
     const { t } = useTranslation()
+    const customization = useSelector((state) => state.customization)
+    
     const [formData, setFormData] = useState({
         name: '',
         multiplier: '',
@@ -68,11 +70,13 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
     return (
         <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center" scrollable>
             <CForm onSubmit={handleSubmit}>
-                <CModalHeader>
-                    <CModalTitle>{t('settings.userGroups.multipliers.modal.title')}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    {error && <CAlert color="danger">{error}</CAlert>}
+                <CModalBody className="p-0">
+                    <PageHeader 
+                        title={t('settings.userGroups.multipliers.modal.title')}
+                        cardClassName="mb-0 rounded-top-3"
+                    />
+                    <div className="p-4">
+                        {error && <CAlert color="danger">{error}</CAlert>}
 
                     <CContainer fluid>
                         <CRow className="mb-3">
@@ -138,6 +142,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                             </CCol>
                         </CRow>
                     </CContainer>
+                    </div>
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" variant="outline" onClick={onClose}>

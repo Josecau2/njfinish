@@ -47,10 +47,9 @@ const AppSidebar = () => {
         }}
       >
         <CSidebarBrand to="/" className="d-flex flex-column align-items-center justify-content-center w-100 text-decoration-none">
+          {/* Full sidebar logo */}
           <div className="sidebar-brand-full fw-bold fs-5" style={{ color: '#fff', cursor: 'pointer' }}>
-
-            {customization.logoImage ? (<>
-              
+            {customization.logoImage ? (
               <img
                 src={`${api_url}${customization.logoImage}`}
                 alt="Logo"
@@ -61,14 +60,27 @@ const AppSidebar = () => {
                   marginBottom: 5,
                 }}
               />
-            </>
             ) : (
               customization.logoText
             )}
-
-
           </div>
-          <CIcon icon={sygnet} height={32} customClassName="sidebar-brand-narrow" className="mt-1" />
+          
+          {/* Collapsed sidebar logo */}
+          {customization.logoImage ? (
+            <img
+              src={`${api_url}${customization.logoImage}`}
+              alt="Logo"
+              className="sidebar-brand-narrow"
+              style={{
+                maxHeight: 32,
+                maxWidth: 32,
+                objectFit: 'contain',
+                marginTop: 4,
+              }}
+            />
+          ) : (
+            <CIcon icon={sygnet} height={32} className="sidebar-brand-narrow mt-1" />
+          )}
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
@@ -88,11 +100,11 @@ const AppSidebar = () => {
         </div>
       )}
 
-      {/* <CSidebarFooter className="border-top d-none d-lg-flex">
+      <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch(setSidebarUnfoldable(!unfoldable))}
         />
-      </CSidebarFooter> */}
+      </CSidebarFooter>
     </CSidebar>
   )
 }

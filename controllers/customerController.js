@@ -14,14 +14,15 @@ const fetchCustomer = async (req, res) => {
     // Build where clause
     let whereClause = { status: 1 };
     
-    // Apply group scoping
+    // Apply user/group scoping
     if (user.group_id && user.group && user.group.group_type === 'contractor') {
-      // Contractors can only see their own group's customers
-      whereClause.group_id = user.group_id;
+      // Contractors can only see their own customers (user-specific)
+      whereClause.created_by_user_id = user.id;
     } else if (group_id) {
       // Admins can filter by specific group
       whereClause.group_id = group_id;
     }
+    // If no group_id specified and user is admin, show all customers
 
     const { count, rows } = await Customer.findAndCountAll({
       where: whereClause,
@@ -73,9 +74,9 @@ const fetchSingleCustomer = async (req, res) => {
     // Build where clause with contractor scoping
     let whereClause = { id: customerId };
     
-    // Apply group scoping for contractors
+    // Apply user scoping for contractors
     if (user.group_id && user.group && user.group.group_type === 'contractor') {
-      whereClause.group_id = user.group_id;
+      whereClause.created_by_user_id = user.id;
     }
     
     const customer = await Customer.findOne({ where: whereClause });
@@ -181,10 +182,10 @@ const updateCustomer = async (req, res) => {
     const userId = req.user?.id;
     const userGroupId = req.user?.group_id;
 
-    // Build where clause for security - contractors can only update their own group's customers
+    // Build where clause for security - contractors can only update their own customers
     let whereClause = { id };
-    if (userGroupId) {
-      whereClause.group_id = userGroupId;
+    if (req.user?.group_id && req.user?.group && req.user.group.group_type === 'contractor') {
+      whereClause.created_by_user_id = userId;
     }
 
     const customer = await Customer.findOne({ where: whereClause });
@@ -240,7 +241,7 @@ const deleteCustomer = async (req, res) => {
     // Build where clause with contractor scoping
     let whereClause = { id };
     if (user.group_id && user.group && user.group.group_type === 'contractor') {
-      whereClause.group_id = user.group_id;
+      whereClause.created_by_user_id = user.id;
     }
 
     // Update the status of the customer to 0 where the customer ID matches and group matches

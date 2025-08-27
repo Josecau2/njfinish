@@ -18,6 +18,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
 import axiosInstance from '../../helpers/axiosInstance'
 import { useSelector } from 'react-redux';
 

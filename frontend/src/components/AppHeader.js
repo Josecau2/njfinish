@@ -42,7 +42,35 @@ const AppHeader = () => {
   const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserName = loggedInUser?.name;
+  
+  // Get first name for mobile display
+  const getDisplayName = (fullName, isMobile = false) => {
+    if (!fullName) return '';
+    if (!isMobile) return fullName;
+    // For mobile, show only first name or first 12 characters
+    const firstName = fullName.split(' ')[0];
+    return firstName.length > 12 ? firstName.substring(0, 12) + '...' : firstName;
+  };
+  
   const customization = useSelector((state) => state.customization)
+
+  // Function to calculate luminance and determine contrast color
+  const getContrastColor = (backgroundColor) => {
+    // Convert hex to RGB
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return dark color for light backgrounds, light color for dark backgrounds
+    return luminance > 0.5 ? '#2d3748' : '#ffffff';
+  };
+
+  // Get the optimal text color for contrast
+  const optimalTextColor = getContrastColor(customization.headerBg || '#ffffff');
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -58,7 +86,7 @@ const AppHeader = () => {
       ref={headerRef}
       style={{
         backgroundColor: customization.headerBg,
-        color: customization.headerFontColor,
+        color: optimalTextColor,
       }}
     >
       <CContainer fluid className="d-flex align-items-center">
@@ -72,19 +100,20 @@ const AppHeader = () => {
             background: 'transparent',
             padding: '8px 12px',
             marginLeft: '-12px',
+            color: optimalTextColor,
           }}
         >
-          <CIcon icon={cilMenu} size="lg" />
+          <CIcon icon={cilMenu} size="lg" style={{ color: optimalTextColor }} />
           <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(204, 204, 204, 0.6)' }} />
           <span
             style={{
               fontSize: '1.1rem',
               fontWeight: '600',
-              color: customization.headerFontColor,
+              color: optimalTextColor,
               whiteSpace: 'nowrap',
             }}
           >
-            {loggedInUserName}
+            {getDisplayName(loggedInUserName, false)}
           </span>
         </CHeaderToggler>
 
@@ -98,19 +127,20 @@ const AppHeader = () => {
             background: 'transparent',
             padding: '8px 12px',
             marginLeft: '-12px',
+            color: optimalTextColor,
           }}
         >
-          <CIcon icon={cilMenu} size="lg" />
+          <CIcon icon={cilMenu} size="lg" style={{ color: optimalTextColor }} />
           <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(204, 204, 204, 0.6)' }} />
           <span
             style={{
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               fontWeight: '600',
-              color: customization.headerFontColor,
+              color: optimalTextColor,
               whiteSpace: 'nowrap',
             }}
           >
-            {loggedInUserName}
+            {getDisplayName(loggedInUserName, true)}
           </span>
         </CHeaderToggler>
 
@@ -122,14 +152,14 @@ const AppHeader = () => {
             <CDropdownToggle 
               caret={false}
               className="nav-link border-0 bg-transparent d-flex align-items-center"
-              style={{ padding: '8px 12px', height: '100%' }}
+              style={{ padding: '8px 12px', height: '100%', color: optimalTextColor }}
             >
               {colorMode === 'dark' ? (
-                <CIcon icon={cilMoon} size="lg" />
+                <CIcon icon={cilMoon} size="lg" style={{ color: optimalTextColor }} />
               ) : colorMode === 'auto' ? (
-                <CIcon icon={cilContrast} size="lg" />
+                <CIcon icon={cilContrast} size="lg" style={{ color: optimalTextColor }} />
               ) : (
-                <CIcon icon={cilSun} size="lg" />
+                <CIcon icon={cilSun} size="lg" style={{ color: optimalTextColor }} />
               )}
             </CDropdownToggle>
             <CDropdownMenu>

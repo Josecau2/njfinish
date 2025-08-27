@@ -26,9 +26,18 @@ const ContractorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  // Stabilize user object to prevent re-renders
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem('user') || '{}');
+  }, []);
+  
   const groupName = user.group?.name || 'Unknown Group';
-  const groupId = user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null;
+  
+  // Stabilize groupId to prevent re-renders
+  const groupId = useMemo(() => {
+    return user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null;
+  }, [user.group?.id, user.group_id, user.groupId, user.group?.group_id]);
+  
   const modulesList = useMemo(() => {
     const raw = user.group?.modules;
     try {
@@ -54,7 +63,7 @@ const ContractorDashboard = () => {
       console.warn('Failed to parse modules JSON; defaulting to []', e);
       return [];
     }
-  }, [user.group?.modules]);
+  }, [JSON.stringify(user.group?.modules)]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -126,7 +135,7 @@ const ContractorDashboard = () => {
     };
 
     fetchStats();
-  }, [modulesList, groupId]);
+  }, [groupId]); // Simplified dependencies - removed modulesList since it's used inside the effect
 
   if (loading) {
     return (

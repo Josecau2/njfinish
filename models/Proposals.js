@@ -106,6 +106,15 @@ const Proposal = sequelize.define('proposal', {
         },
         comment: 'Owning contractor group or admin group'
     },
+    created_by_user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        },
+        comment: 'User who created this proposal for individual user data isolation'
+    },
     accepted_at: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -138,6 +147,10 @@ const Proposal = sequelize.define('proposal', {
         {
             name: 'idx_proposals_owner_status', 
             fields: ['owner_group_id', 'status']
+        },
+        {
+            name: 'idx_proposals_created_by_user',
+            fields: ['created_by_user_id']
         }
     ]
 });

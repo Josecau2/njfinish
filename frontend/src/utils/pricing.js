@@ -1,19 +1,28 @@
 // Pure pricing helpers to mirror ItemSelectionContentEdit logic
 
 /**
- * Apply user group multiplier to items and compute per-line totals.
+ * Apply manufacturer and user group multipliers to items and compute per-line totals.
  * Item shape: { basePrice?: number, price?: number, qty: number, assemblyFee?: number, includeAssemblyFee?: boolean }
  * Returns new array with price and total set.
+ * @param {Array} items - Array of items to apply multipliers to
+ * @param {number} manufacturerMultiplier - Manufacturer cost multiplier (applied first)
+ * @param {number} userGroupMultiplier - User group multiplier (applied second)
  */
-export function applyMultiplierToItems(items, multiplier) {
-  const m = Number(multiplier || 1);
+export function applyMultiplierToItems(items, manufacturerMultiplier = 1, userGroupMultiplier = 1) {
+  const manufacturerM = Number(manufacturerMultiplier || 1);
+  const userGroupM = Number(userGroupMultiplier || 1);
+  
   return (items || []).map((it) => {
     const base = it.basePrice != null ? Number(it.basePrice) : Number(it.price || 0);
     const qty = Number(it.qty || 1);
     const unitAssembly = it.includeAssemblyFee ? Number(it.assemblyFee || 0) : 0;
-    const price = Number(base) * m;
-    const total = qty * price + unitAssembly * qty;
-    return { ...it, price, total };
+    
+    // Apply manufacturer multiplier first, then user group multiplier
+    const manufacturerAdjustedPrice = base * manufacturerM;
+    const finalPrice = manufacturerAdjustedPrice * userGroupM;
+    
+    const total = qty * finalPrice + unitAssembly * qty;
+    return { ...it, price: finalPrice, total };
   });
 }
 

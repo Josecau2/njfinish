@@ -37,7 +37,24 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   const error = useSelector((state) => state.customers.error);
   const totalPages = useSelector((state) => state.customers.totalPages);
   const total = useSelector((state) => state.customers.total);
+  const customization = useSelector((state) => state.customization);
   const navigate = useNavigate();
+
+  // Function to get optimal text color for contrast
+  const getContrastColor = (backgroundColor) => {
+    if (!backgroundColor) return '#ffffff';
+    // Convert hex to RGB
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return dark color for light backgrounds, light color for dark backgrounds
+    return luminance > 0.5 ? '#2d3748' : '#ffffff';
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -130,7 +147,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   return (
     <CContainer fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm  mb-2" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <CCard className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || '#321fdb', color: customization.headerTextColor || '#ffffff' }}>
         <CCardBody className="py-4">
           <CRow className="align-items-center">
             <CCol>

@@ -16,17 +16,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice';
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 const ManufacturersList = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { list: allManufacturers, loading, error } = useSelector(state => state.manufacturers);
+  const customization = useSelector((state) => state.customization);
   const [manufacturers, setManufacturers] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [sortBy, setSortBy] = useState('id');
   const [sortDirection, setSortDirection] = useState('desc');
   const navigate = useNavigate();
   const api_url = import.meta.env.VITE_API_URL;
+
+  // Function to get optimal text color for contrast
+  const getContrastColor = (backgroundColor) => {
+    if (!backgroundColor) return '#ffffff';
+    // Convert hex to RGB
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return dark color for light backgrounds, light color for dark backgrounds
+    return luminance > 0.5 ? '#2d3748' : '#ffffff';
+  };
 
   useEffect(() => {
     dispatch(fetchManufacturers());
@@ -123,7 +141,7 @@ const ManufacturersList = () => {
       minHeight: '100vh'
     },
     headerCard: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: customization.headerBg || '#667eea',
       border: 'none',
       borderRadius: '8px',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
@@ -195,34 +213,29 @@ const ManufacturersList = () => {
 
   return (
     <div style={cardStyles.container}>
-      {/* Header Section */}
-      <div className="card" style={cardStyles.headerCard}>
-        <div className="card-body py-4">
-          <div className="row align-items-center">
-            <div className="col">
-              <h3 className="text-white mb-1 fw-bold d-flex align-items-center">
-                <Factory className="me-2" size={24} />
-                {t('settings.manufacturers.header')}
-              </h3>
-              <p className="text-white-50 mb-0">{t('settings.manufacturers.subtitle')}</p>
-            </div>
-            <div className="col-auto">
-              <button
-                className="btn btn-light shadow-sm px-4 fw-semibold"
-                onClick={handleManuCreate}
-                style={{ 
-                  borderRadius: '5px',
-                  border: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <Plus className="me-2" size={16} />
-                {t('settings.manufacturers.add')}
-              </button>
-            </div>
+      <PageHeader 
+        title={
+          <div className="d-flex align-items-center">
+            <Factory className="me-2" size={24} />
+            {t('settings.manufacturers.header')}
           </div>
-        </div>
-      </div>
+        }
+        subtitle={t('settings.manufacturers.subtitle')}
+        rightContent={
+          <button
+            className="btn btn-light shadow-sm px-4 fw-semibold"
+            onClick={handleManuCreate}
+            style={{ 
+              borderRadius: '5px',
+              border: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Plus className="me-2" size={16} />
+            {t('settings.manufacturers.add')}
+          </button>
+        }
+      />
 
       {/* Search and Controls */}
       <div className="card" style={cardStyles.controlsCard}>
@@ -364,15 +377,15 @@ const ManufacturersList = () => {
                     style={cardStyles.editButton}
                     onClick={() => handleEdit(manufacturer.id)}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e7f3ff';
-                      e.currentTarget.style.borderColor = '#0d6efd';
+                      e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
+                      e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#ffffff';
                       e.currentTarget.style.borderColor = '#e3e6f0';
                     }}
                   >
-                    <Edit3 size={16} style={{ color: '#0d6efd' }} />
+                    <Edit3 size={16} style={{ color: customization.headerBg || '#667eea' }} />
                   </button>
 
                   <div className="d-flex">

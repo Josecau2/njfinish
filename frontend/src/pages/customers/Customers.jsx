@@ -30,6 +30,8 @@ import { cilSearch, cilPencil, cilTrash, cilPlus, cilUser, cilEnvelopeClosed, ci
 import PaginationComponent from '../../components/common/PaginationComponent';
 import withContractorScope from '../../components/withContractorScope';
 import PermissionGate from '../../components/PermissionGate';
+import PageHeader from '../../components/PageHeader';
+import { FaUsers } from 'react-icons/fa';
 
 const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const { t } = useTranslation();
@@ -154,25 +156,21 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   return (
     <CContainer fluid className="dashboard-container">
       {/* Header Section */}
-      <div className="page-header">
-        <CRow className="align-items-center">
-          <CCol>
-            <h3 className="page-header-title">{t('customers.header')}</h3>
-            <p className="page-header-subtitle">{t('customers.subtitle')}</p>
-          </CCol>
-          <CCol xs="auto">
-            <PermissionGate permission="customers:create">
-              <CButton
-                color="light"
-                onClick={handleNewCustomer}
-              >
-                <CIcon icon={cilPlus} className="me-2" />
-                {t('nav.addCustomer')}
-              </CButton>
-            </PermissionGate>
-          </CCol>
-        </CRow>
-      </div>
+      <PageHeader
+        title={t('customers.header')}
+        subtitle={t('customers.subtitle')}
+        icon={FaUsers}
+      >
+        <PermissionGate permission="customers:create">
+          <CButton
+            color="light"
+            onClick={handleNewCustomer}
+          >
+            <CIcon icon={cilPlus} className="me-2" />
+            {t('nav.addCustomer')}
+          </CButton>
+        </PermissionGate>
+      </PageHeader>
 
       {/* Stats Cards */}
       <CRow className="mb-4 g-3">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import axiosInstance from '../../helpers/axiosInstance';
 import {
     CContainer,
@@ -26,6 +27,7 @@ import {
     CInputGroupText,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
+import PageHeader from '../../components/PageHeader';
 import { 
     cilLink,
     cilFolder,
@@ -144,8 +146,25 @@ const CustomFormSelect = ({
 
 const Resources = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
     const { t } = useTranslation();
+    const customization = useSelector((state) => state.customization);
     const [links, setLinks] = useState([]);
     const [files, setFiles] = useState([]);
+
+    // Function to get optimal text color for contrast
+    const getContrastColor = (backgroundColor) => {
+        if (!backgroundColor) return '#ffffff';
+        // Convert hex to RGB
+        const hex = backgroundColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Calculate luminance
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Return dark color for light backgrounds, light color for dark backgrounds
+        return luminance > 0.5 ? '#2d3748' : '#ffffff';
+    };
     const [filteredLinks, setFilteredLinks] = useState([]);
     const [filteredFiles, setFilteredFiles] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -552,7 +571,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
             <CModalHeader 
                 style={{ 
                     borderRadius: '16px 16px 0 0', 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: customization.headerBg || '#667eea',
+                    color: getContrastColor(customization.headerBg || '#667eea'),
                     border: 'none'
                 }}
             >
@@ -585,13 +605,13 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                 </CButton>
                 <CButton
                     style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        background: customization.headerBg || '#667eea',
+                        color: getContrastColor(customization.headerBg || '#667eea'),
                         border: 'none',
                         borderRadius: '12px',
                         fontWeight: '600',
                         padding: '8px 24px'
                     }}
-                    className="text-white"
                     onClick={onSave}
                     disabled={isLoading}
                 >
@@ -658,27 +678,25 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
             </style>
 
             {/* Header Section */}
-            <CCard className="border-0 shadow-sm mb-4" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '5px' }}>
-                <CCardBody className="py-4 ">
-                    <div className="d-flex align-items-center">
+            <PageHeader
+                title={
+                    <div className="d-flex align-items-center gap-3">
                         <div 
-                            className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                            className="d-flex align-items-center justify-content-center"
                             style={{
-                                width: '60px',
-                                height: '60px',
+                                width: '48px',
+                                height: '48px',
                                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                backdropFilter: 'blur(10px)'
+                                borderRadius: '12px'
                             }}
                         >
-                            <CIcon icon={cilFolder} size="xl" className="text-white" />
+                            <CIcon icon={cilFolder} style={{ fontSize: '32px', color: 'white' }} />
                         </div>
-                        <div>
-                            <h2 className="text-white mb-1 fw-bold">{t('nav.resources')}</h2>
-                            <p className="text-white-50 mb-0">{isContractor ? t('resources.headerContractor') : t('resources.headerAdmin')}</p>
-                        </div>
+                        {t('nav.resources')}
                     </div>
-                </CCardBody>
-            </CCard>
+                }
+                subtitle={isContractor ? t('resources.headerContractor') : t('resources.headerAdmin')}
+            />
 
             {/* Search and Filter Section */}
             <CCard className="border-0 shadow-sm mb-4">

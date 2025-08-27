@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { getContrastColor } from '../utils/colorUtils'
 import {
   CFormCheck,
   CInputGroup,
@@ -42,10 +44,24 @@ const CatalogTable = ({
   toggleRowAssembly,
   updateHingeSide,
   updateExposedSide,
+  // New optional prop: explicitly provided items to render
+  items,
 }) => {
+  const displayItems = Array.isArray(items) ? items : (Array.isArray(selectVersion?.items) ? selectVersion.items : []);
   const { t } = useTranslation();
+  const customization = useSelector((state) => state.customization);
+  
+  const headerBg = customization.headerBg || '#667eea';
+  const textColor = getContrastColor(headerBg);
+  
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // When the selected style changes, clear the search box and suggestions
+  useEffect(() => {
+    setPartQuery('');
+    setShowSuggestions(false);
+  }, [selectedStyleData && selectedStyleData.id]);
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -62,12 +78,9 @@ const CatalogTable = ({
   }
 
   const filteredOptions = useMemo(() => {
+    // Restrict options strictly to the currently selected style (no debug logging)
     const byStyle = Array.isArray(catalogData)
-      ? catalogData.filter((item) =>
-          Array.isArray(item.styleVariants) &&
-          item.styleVariants.length > 0 &&
-          item.style === selectedStyleData?.style
-        )
+      ? catalogData.filter((item) => item?.style === selectedStyleData?.style)
       : [];
     const q = (partQuery || '').toLowerCase().trim();
     if (!q) return [];
@@ -169,13 +182,14 @@ const CatalogTable = ({
           </CTableHead>
 
           <CTableBody>
-            {selectVersion?.items?.map((item, idx) => {
+            {displayItems.map((item, idx) => {
               // Use global assembled toggle only; assembly fee applies automatically when on
               const assembled = !!isAssembled
               const qty = Number(item.qty || 1)
+              const isUnavailable = !!item.unavailable
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
-              const assemblyFee = unitAssembly * qty
-              const total = Number(item.price || 0) * qty + assemblyFee
+              const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
+              const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee
 
               return (
                 <React.Fragment key={idx}>
@@ -191,7 +205,7 @@ const CatalogTable = ({
                       />
                     </CTableDataCell>
 
-                    <CTableDataCell>{item.code}</CTableDataCell>
+                    <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>{item.code}</CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
@@ -199,7 +213,12 @@ const CatalogTable = ({
               {hingeOptions.map((opt) => (
                             <button
                               key={opt}
-                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-light'}`}
+                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-light' : 'btn-light'}`}
+                              style={item.hingeSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
                               onClick={() => updateHingeSide(idx, opt)}
                             >
                 {codeToLabel(opt)}
@@ -217,7 +236,12 @@ const CatalogTable = ({
               {exposedOptions.map((opt) => (
                             <button
                               key={opt}
-                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-light'}`}
+                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-light' : 'btn-light'}`}
+                              style={item.exposedSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
                               onClick={() => updateExposedSide(idx, opt)}
                             >
                 {codeToLabel(opt)}
@@ -229,7 +253,9 @@ const CatalogTable = ({
                       )}
                     </CTableDataCell>
 
-                    <CTableDataCell>{formatPrice(item.price)}</CTableDataCell>
+                    <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>
+                      {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
+                    </CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
@@ -239,7 +265,7 @@ const CatalogTable = ({
                       )}
                     </CTableDataCell>
 
-                    <CTableDataCell>{formatPrice(total)}</CTableDataCell>
+                    <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>{formatPrice(total)}</CTableDataCell>
 
                     <CTableDataCell>
                       <div className="d-flex align-items-center">
@@ -302,12 +328,13 @@ const CatalogTable = ({
 
       {/* Mobile Card View */}
       <div className="mobile-card-view d-none">
-        {selectVersion?.items?.map((item, idx) => {
+        {displayItems.map((item, idx) => {
           const assembled = !!isAssembled
           const qty = Number(item.qty || 1)
+          const isUnavailable = !!item.unavailable
           const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
-          const assemblyFee = unitAssembly * qty
-          const total = Number(item.price || 0) * qty + assemblyFee
+          const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
+          const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
@@ -330,7 +357,7 @@ const CatalogTable = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <span className="item-value item-code">{item.code}</span>
+                  <span className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{item.code}</span>
                 </div>
 
                 <div className="item-detail-row">
@@ -346,7 +373,7 @@ const CatalogTable = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.price')}</span>
-                  <span className="item-value">{formatPrice(item.price)}</span>
+                  <span className={`item-value ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{isUnavailable ? formatPrice(0) : formatPrice(item.price)}</span>
                 </div>
 
                 {assembled && (
@@ -357,7 +384,12 @@ const CatalogTable = ({
                         {hingeOptions.map((opt) => (
                           <button
                             key={opt}
-                            className={`btn ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            className={`btn ${item.hingeSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
+                            style={item.hingeSide === opt ? {
+                              background: headerBg,
+                              color: textColor,
+                              border: `1px solid ${headerBg}`
+                            } : {}}
                             onClick={() => updateHingeSide(idx, opt)}
                           >
                             {codeToLabel(opt)}
@@ -372,7 +404,12 @@ const CatalogTable = ({
                         {exposedOptions.map((opt) => (
                           <button
                             key={opt}
-                            className={`btn ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            className={`btn ${item.exposedSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
+                            style={item.exposedSide === opt ? {
+                              background: headerBg,
+                              color: textColor,
+                              border: `1px solid ${headerBg}`
+                            } : {}}
                             onClick={() => updateExposedSide(idx, opt)}
                           >
                             {codeToLabel(opt)}
@@ -383,12 +420,12 @@ const CatalogTable = ({
 
                     <div className="item-detail-row">
                       <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
-                      <span className="item-value">{formatPrice(assemblyFee)}</span>
+                      <span className={`item-value ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{formatPrice(assemblyFee)}</span>
                     </div>
                   </>
                 )}
 
-                <div className="total-highlight">
+                <div className={`total-highlight ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>
                   <strong>{t('proposalColumns.total')}: {formatPrice(total)}</strong>
                 </div>
               </div>

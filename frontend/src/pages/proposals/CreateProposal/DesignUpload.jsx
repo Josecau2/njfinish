@@ -22,10 +22,10 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
   const { t } = useTranslation();
 
   const api_url = import.meta.env.VITE_API_URL;
-  const [activeTab, setActiveTab] = useState('import')
+  const [activeTab, setActiveTab] = useState('manual')
   const [searchTerm, setSearchTerm] = useState("")
   const [hoveredId, setHoveredId] = useState(null)
-  const [manufacturerCollections, setManufacturerCollections] = useState([]);
+  const [stylesMeta, setStylesMeta] = useState([]);
 
   const handleTabSelect = (tab) => {
     setActiveTab(tab)
@@ -40,26 +40,13 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
   //   c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
   //   c.short_name.toLowerCase().includes(searchTerm.toLowerCase())
   // )
- const filteredCollections = manufacturerCollections?.length
-  ? Array.from(
-      new Map(
-        manufacturerCollections
-          .flatMap(catalog =>
-            catalog.styleVariants?.map(style => ({
-              ...style,
-              catalogName: catalog.style,
-              catalogId: catalog.id,
-            })) || []
-          )
-          .map(item => [
-            // Use composite key to deduplicate
-            `${item.catalogName}_${item.shortName}`,
-            item
-          ])
-      ).values()
-    ).filter(style =>
-      style.shortName?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+ const filteredCollections = stylesMeta?.length
+  ? stylesMeta.filter(s => {
+      const q = searchTerm.toLowerCase();
+      const matchStyle = (s.style || '').toLowerCase().includes(q);
+      const matchVariant = Array.isArray(s.styleVariants) && s.styleVariants.some(v => (v.shortName || '').toLowerCase().includes(q));
+      return !q || matchStyle || matchVariant;
+    })
   : [];
 
   useEffect(() => {
@@ -67,18 +54,28 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
     const selectedManufacturerId = formData.manufacturersData?.[0]?.manufacturer;
     if (selectedManufacturerId) {
-      fetchManufacturerCollection(selectedManufacturerId);
+      fetchManufacturerStylesMeta(selectedManufacturerId);
     }
   }, [formData]);
 
-  const fetchManufacturerCollection = async (manufacturerId) => {
+  const fetchManufacturerStylesMeta = async (manufacturerId) => {
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
-        headers: getAuthHeaders()
+      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`, {
+        headers: getAuthHeaders(),
       });
-      setManufacturerCollections(response.data); // assuming array
+      
+      // Handle both old array format and new object format
+      if (response.data && response.data.styles && Array.isArray(response.data.styles)) {
+        setStylesMeta(response.data.styles);
+      } else if (Array.isArray(response.data)) {
+        // Fallback for old format
+        setStylesMeta(response.data);
+      } else {
+        setStylesMeta([]);
+      }
     } catch (error) {
-      console.error('Error fetching manufacturer collection', error);
+      console.error('Error fetching styles meta', error);
+      setStylesMeta([]);
     }
   };
 
@@ -105,20 +102,20 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
           <CNav variant="tabs" role="tablist" className="mb-4 tabs-container">
             <CNavItem>
               <CNavLink
-                active={activeTab === 'import'}
-                onClick={() => handleTabSelect('import')}
-                style={{ cursor: 'pointer' }}
-              >
-                {t('proposals.create.design.tabs.import2020')}
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink
                 active={activeTab === 'manual'}
                 onClick={() => handleTabSelect('manual')}
                 style={{ cursor: 'pointer' }}
               >
                 {t('proposals.create.design.tabs.manualEntry')}
+              </CNavLink>
+            </CNavItem>
+            <CNavItem>
+              <CNavLink
+                active={activeTab === 'import'}
+                onClick={() => handleTabSelect('import')}
+                style={{ cursor: 'pointer' }}
+              >
+                {t('proposals.create.design.tabs.import2020')}
               </CNavLink>
             </CNavItem>
           </CNav>
@@ -180,12 +177,12 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                   <div className="d-flex flex-wrap justify-content-center gap-4">
                     {filteredCollections?.map((style) => (
                       <div
-                        key={style.catalog_id}
+                        key={style.id}
                         className="position-relative text-center"
                         style={{ width: 100, cursor: 'pointer' }}
-                        onMouseEnter={() => setHoveredId(style.catalog_id)}
+                        onMouseEnter={() => setHoveredId(style.id)}
                         onMouseLeave={() => setHoveredId(null)}
-                        onClick={() => onStyleSelect(style.catalog_id)}
+                        onClick={() => onStyleSelect(style.id)}
                       >
                         <div
                           className="collection-hover border rounded shadow-sm position-relative"
@@ -196,39 +193,47 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                           }}
                         >
                           <img
-                            // src={style.image}
                             src={
-                              style.image
-                                ? `${api_url}/uploads/manufacturer_catalogs/${style.image}`
+                              style.styleVariants?.[0]?.image
+                                ? `${api_url}/uploads/images/${style.styleVariants[0].image}`
                                 : "/images/nologo.png"
                             }
-                            alt={style.shortName}
+                            alt={style.styleVariants?.[0]?.shortName || style.style}
                             style={{
                               width: '100%',
                               height: 210,
                               objectFit: 'cover',
                               borderRadius: '8px',
                               transition: 'transform 0.3s ease',
-                              transform: hoveredId === style.catalog_id ? 'scale(1.05)' : 'scale(1)',
+                              transform: hoveredId === style.id ? 'scale(1.05)' : 'scale(1)',
                             }}
                             className="img-fluid"
+                            onError={(e) => {
+                              const fname = style.styleVariants?.[0]?.image;
+                              if (fname && !e.target.dataset.fallbackTried) {
+                                e.target.dataset.fallbackTried = '1';
+                                e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
+                              } else {
+                                e.target.src = '/images/nologo.png';
+                              }
+                            }}
                           />
                           <div
                             className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                             style={{
                               backgroundColor: 'rgba(0, 0, 0, 0.6)',
                               color: '#fff',
-                              opacity: hoveredId === style.catalog_id ? 1 : 0,
+                              opacity: hoveredId === style.id ? 1 : 0,
                               transition: 'opacity 0.3s ease',
                               fontSize: '0.85rem',
                               fontWeight: '500',
                               borderRadius: '8px',
                             }}
                           >
-              {style.catalogName || t('common.na')}
+              {style.style || t('common.na')}
                           </div>
                         </div>
-            <div className="mt-2 text-muted fw-semibold">{style.shortName}</div>
+            <div className="mt-2 text-muted fw-semibold">{style.styleVariants?.[0]?.shortName || style.style}</div>
                       </div>
                     ))}
                   </div>

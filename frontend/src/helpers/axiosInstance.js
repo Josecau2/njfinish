@@ -76,3 +76,25 @@ if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV
 }
 
 export default axiosInstance;
+
+// Automatically store refreshed tokens sent by the server
+axiosInstance.interceptors.response.use(
+  (response) => {
+    try {
+      const refreshed = response?.headers?.['x-refresh-token'] || response?.headers?.get?.('x-refresh-token');
+      if (refreshed && typeof window !== 'undefined') {
+        localStorage.setItem('token', refreshed);
+      }
+    } catch (_) {}
+    return response;
+  },
+  (error) => {
+    try {
+      const refreshed = error?.response?.headers?.['x-refresh-token'] || error?.response?.headers?.get?.('x-refresh-token');
+      if (refreshed && typeof window !== 'undefined') {
+        localStorage.setItem('token', refreshed);
+      }
+    } catch (_) {}
+    return Promise.reject(error);
+  }
+);
