@@ -27,6 +27,7 @@
   --cui-gray-300: #d1d5db;
   --cui-gray-200: #e5e7eb;
   --cui-gray-100: #f3f4f6;
+  --cui-gray-50: #f9fafb;
   --cui-white: #ffffff;
 
   /* Body & Text */
@@ -200,9 +201,13 @@ html, body {
     margin-left: -8px !important;
   }
 
-  /* Hide long username text on mobile to avoid wrapping */
+  /* Make username responsive on mobile - show but constrain width */
   .header .header-toggler span {
-    display: none !important;
+    max-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.95rem !important;
   }
 
   /* Reduce spacing on mobile */
@@ -257,6 +262,21 @@ html, body {
 
 .btn:focus, .btn:focus-visible {
   box-shadow: 0 0 0 3px var(--cui-primary-rgb, 0.3);
+}
+
+/* Light buttons - improved contrast */
+.btn-light {
+  background-color: var(--cui-white);
+  border-color: var(--cui-gray-300);
+  color: var(--cui-gray-700);
+  box-shadow: var(--cui-box-shadow-sm);
+}
+
+.btn-light:hover, .btn-light:focus {
+  background-color: var(--cui-gray-50);
+  border-color: var(--cui-gray-400);
+  color: var(--cui-gray-900);
+  box-shadow: var(--cui-box-shadow);
 }
 
 /* Forms */
@@ -580,36 +600,91 @@ html, body {
   font-weight: 500;
 }
 
-/* Customer Page Styles */
+/* Customer Page Styles - Enhanced Dynamic Headers */
 .page-header {
-  background: linear-gradient(135deg, var(--cui-primary-dark, #667eea) 0%, var(--cui-primary-darker, #764ba2) 100%);
   border-radius: var(--cui-border-radius-xl);
   color: white;
   padding: 2rem;
   margin-bottom: 1.5rem;
   box-shadow: var(--cui-box-shadow);
+  transition: all 0.3s ease;
 }
 
 .page-header-title {
   font-weight: 700;
   margin-bottom: 0.25rem;
+  font-size: 1.75rem;
 }
 
 .page-header-subtitle {
-  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 0;
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
-.page-header .btn {
-  background-color: rgba(255, 255, 255, 0.9);
-  color: var(--cui-primary-dark);
+/* Dynamic page header styles are applied by PageHeader component */
+.page-header-dynamic .page-header-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.page-header-dynamic .page-header-subtitle {
+  font-size: 1rem;
+  margin-bottom: 0;
+  opacity: 0.8;
+}
+
+/* Enhanced button hover effects for headers */
+.page-header-dynamic .btn {
   font-weight: 600;
-  border: none;
+  border-radius: var(--cui-border-radius);
+  transition: all 0.3s ease;
+  box-shadow: var(--cui-box-shadow-sm);
 }
 
-.page-header .btn:hover {
-  background-color: white;
+.page-header-dynamic .btn:hover {
   transform: translateY(-2px);
+  box-shadow: var(--cui-box-shadow);
+}
+
+/* Icon container styling */
+.page-header-dynamic .header-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Mobile responsive adjustments for page headers */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .page-header-dynamic .page-header-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-header-dynamic .page-header-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .page-header-dynamic .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .page-header-dynamic .header-icon-container {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .page-header-dynamic .header-icon-container > * {
+    font-size: 20px !important;
+  }
 }
 
 .stat-card-sm {
@@ -738,9 +813,16 @@ html, body {
   border-radius: var(--cui-border-radius-pill);
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  border: 1px solid var(--cui-border-color-translucent);
+  border: 1px solid var(--cui-gray-300);
   background-color: var(--cui-white);
   color: var(--cui-gray-700);
+  box-shadow: var(--cui-box-shadow-sm);
+}
+
+.tab-button:hover {
+  background-color: var(--cui-gray-50);
+  border-color: var(--cui-gray-400);
+  color: var(--cui-gray-900);
 }
 
 .tab-button.active {
@@ -1603,9 +1685,10 @@ html, body {
 
 /* Proposal Form Styles */
 .proposal-form-header {
-  background: linear-gradient(135deg, var(--cui-primary-dark, #667eea) 0%, var(--cui-primary-darker, #764ba2) 100%);
+  /* Use app header colors driven by customization (fallbacks defined in header-override.css) */
+  background: var(--header-bg-gradient, linear-gradient(135deg, var(--app-header-bg, #1f2937) 0%, color-mix(in srgb, var(--app-header-bg, #1f2937) 80%, #000 20%) 100%));
   border-radius: var(--cui-border-radius-xl);
-  color: white;
+  color: var(--header-text-primary, #fff);
   padding: 1.5rem;
   margin-bottom: 1rem;
   box-shadow: var(--cui-box-shadow);
@@ -1728,6 +1811,11 @@ html, body {
    ITEM SELECTION / CATALOG TABLE MOBILE STYLES
    ========================================== */
 
+/* Hide mobile card layouts by default (desktop/tablet) */
+.mobile-card-view {
+  display: none;
+}
+
 @media (max-width: 767.98px) {
   /* Hide desktop table on mobile */
   .table-responsive-md {
@@ -1767,62 +1855,126 @@ html, body {
   /* Style section controls mobile layout */
   .style-selection-mobile {
     flex-direction: column !important;
-    gap: 1rem !important;
-  }
-
-  .style-selection-mobile .d-flex.gap-5 {
-    flex-direction: column !important;
-    gap: 1rem !important;
-  }
-
-  .style-selection-mobile > div[style*="minWidth"] {
-    min-width: 0 !important;
-  }
-
-  .style-selection-mobile .d-flex.gap-4.align-items-start {
-    flex-direction: column !important;
-    gap: 1rem !important;
+    gap: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    /* Center children (cards) on mobile */
     align-items: center !important;
   }
 
-  .style-selection-mobile .d-flex.gap-4.align-items-start > div:first-child {
-    width: 150px !important;
+  /* Hide the separator line on mobile */
+  .style-selection-mobile .style-separator {
+    display: none !important;
   }
 
-  .style-selection-mobile .d-flex.gap-4.align-items-start img {
+  /* Current style section */
+  .style-selection-mobile .current-style-section {
+    min-width: 0 !important;
+    padding: 1.5rem !important;
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    margin-bottom: 1.5rem !important;
     width: 100% !important;
-    height: 250px !important;
+    /* Constrain and center the main style card for nicer mobile look */
+    max-width: 480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .style-selection-mobile .current-style-content {
+    flex-direction: row !important;
+    gap: 1.25rem !important;
+    align-items: flex-start !important;
+  }
+
+  .style-selection-mobile .current-style-image {
+    width: 110px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .style-selection-mobile .current-style-image img {
+    width: 100% !important;
+    height: 150px !important;
     object-fit: contain !important;
     background-color: #f8f9fa !important;
+    border-radius: 10px !important;
   }
 
-  .style-selection-mobile .d-flex.flex-column[style*="gap"] {
-    gap: 1rem !important;
-    align-items: center !important;
-    text-align: center !important;
+  .style-selection-mobile .current-style-info {
+    gap: 0.75rem !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    padding-top: 0.25rem !important;
+  }
+
+  .style-selection-mobile h5 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 600 !important;
+  }
+
+  .style-selection-mobile .d-flex.align-items-center {
+    font-size: 0.9rem !important;
+    gap: 0.6rem !important;
+    margin-bottom: 0.25rem !important;
   }
 
   /* Other styles mobile layout */
-  .other-styles-mobile {
-    margin-top: 1rem !important;
+  .style-selection-mobile .other-styles-section {
+    padding: 1.5rem !important;
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    width: 100% !important;
+    min-height: 300px !important;
+    /* Center the other styles section consistently with main style card */
+    max-width: 480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
-  .other-styles-mobile div[style*="maxHeight"] {
-    max-height: 300px !important;
+  .style-selection-mobile .other-styles-section h5 {
+    font-size: 1rem !important;
+    margin-bottom: 1rem !important;
   }
 
-  .other-styles-mobile .d-flex.flex-wrap.gap-3 {
+  .style-selection-mobile .other-styles-header {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .style-selection-mobile .carousel-controls {
+    gap: 0.75rem !important;
+  }
+
+  .style-selection-mobile .carousel-controls .btn-sm {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
     justify-content: center !important;
   }
 
-  .other-styles-mobile .text-center[style*="width: 100px"] {
-    width: 120px !important;
+  /* Override the carousel container on mobile */
+  .style-selection-mobile .other-styles-carousel-container {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
   }
 
-  .other-styles-mobile img[style*="height: 220px"] {
-    height: 180px !important;
-    object-fit: contain !important;
-    background-color: #f8f9fa !important;
+  /* When collapsed on mobile, ensure proper spacing */
+  .style-selection-mobile .other-styles-carousel-container.collapsed-view {
+    max-height: 300px !important;
+    overflow-y: auto !important;
   }
 }
 
@@ -1830,6 +1982,12 @@ html, body {
 .styles-carousel-container {
   overflow: hidden;
   position: relative;
+}
+
+.other-styles-carousel-container {
+  max-height: 300px;
+  overflow-y: hidden;
+  padding-right: 8px;
 }
 
 .styles-carousel-track {
@@ -1841,29 +1999,315 @@ html, body {
 .style-carousel-item {
   transition: transform 0.2s ease;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .style-carousel-item:hover {
   transform: scale(1.02);
 }
 
-/* Responsive carousel adjustments */
-@media (max-width: 767.98px) {
+/* Desktop styles - default carousel behavior */
+@media (min-width: 768px) {
+  .other-styles-carousel-container {
+    /* Remove restrictive max-height and overflow */
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .other-styles-carousel-container.collapsed-view {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+
+  .styles-carousel-container {
+    overflow: visible !important;
+  }
+
   .styles-carousel-track {
-    gap: 0.5rem !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    transform: none !important;
+    gap: 1rem !important;
+  }
+  
+  .style-carousel-item {
+    min-width: 180px !important;
+    max-width: 180px !important;
+    margin-bottom: 1rem !important;
   }
   
   .style-carousel-item img {
     height: 160px !important;
+    width: 100% !important;
+    object-fit: contain !important;
+    border-radius: 10px !important;
+    background-color: #f8f9fa !important;
   }
   
-  .other-styles-mobile .d-flex.justify-content-between {
+  .style-carousel-item .mt-2.p-2.rounded {
+    padding: 0.75rem !important;
+    margin-top: 0.75rem !important;
+    font-size: 0.875rem !important;
+    min-height: 80px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+  
+  .style-carousel-item .mt-2.p-2.rounded div {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .style-carousel-item .mt-2.p-2.rounded strong {
+    font-size: 1rem !important;
+  }
+
+  /* Hide carousel controls on desktop since we're showing all items */
+  .other-styles-header .carousel-controls {
+    display: none !important;
+  }
+
+  /* Compact/Collapsed View Styles */
+  .styles-compact-list {
+    display: flex !important;
     flex-direction: column !important;
     gap: 0.5rem !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    padding: 0.5rem !important;
+    background-color: #f8f9fa !important;
+    border-radius: 8px !important;
+  }
+
+  .compact-style-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    background-color: #ffffff !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: #e9ecef !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .compact-style-item:hover {
+    border-color: #1a73e8 !important;
+    box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1) !important;
+  }
+
+  .compact-style-item.current-style {
+    background-color: #d0e6ff !important;
+    border-color: #1a73e8 !important;
+    font-weight: 600 !important;
+  }
+
+  .compact-style-item .style-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .compact-style-item .style-name {
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .compact-style-item.current-style .style-name {
+    color: #1a73e8 !important;
+    font-weight: 600 !important;
+  }
+
+  .compact-style-item .price-label {
+    font-size: 0.8rem !important;
+    color: #666 !important;
+  }
+
+  .compact-style-item .style-price {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 4px !important;
+  }
+
+  .compact-style-item .style-price.current {
+    background-color: #1a73e8 !important;
+    color: white !important;
+  }
+
+  .compact-style-item .style-price.alternate {
+    background-color: #28a745 !important;
+    color: white !important;
+  }
+}
+
+/* Mobile styles for compact view */
+@media (max-width: 767.98px) {
+  /* Toggle button touch-friendly on mobile */
+  .other-styles-header .btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  .styles-compact-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    padding: 0.5rem !important;
+    background-color: #f8f9fa !important;
+    border-radius: 8px !important;
+  }
+
+  .compact-style-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.75rem !important;
+    background-color: #ffffff !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: #e9ecef !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .compact-style-item:hover,
+  .compact-style-item:active {
+    border-color: #1a73e8 !important;
+    background-color: #f0f7ff !important;
+  }
+
+  .compact-style-item.current-style {
+    background-color: #d0e6ff !important;
+    border-color: #1a73e8 !important;
+    font-weight: 600 !important;
+  }
+
+  .compact-style-item .style-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .compact-style-item .style-name {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    margin-bottom: 0.25rem !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .compact-style-item.current-style .style-name {
+    color: #1a73e8 !important;
+    font-weight: 600 !important;
+  }
+
+  .compact-style-item .price-label {
+    font-size: 0.75rem !important;
+    color: #666 !important;
+    line-height: 1.2 !important;
+  }
+
+  .compact-style-item .style-price {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    padding: 0.4rem 0.6rem !important;
+    border-radius: 4px !important;
+    flex-shrink: 0 !important;
+    margin-left: 0.5rem !important;
+  }
+
+  .compact-style-item .style-price.current {
+    background-color: #1a73e8 !important;
+    color: white !important;
+  }
+
+  .compact-style-item .style-price.alternate {
+    background-color: #28a745 !important;
+    color: white !important;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .style-carousel-item {
+    min-width: 160px !important;
+    max-width: 160px !important;
   }
   
-  .other-styles-mobile .d-flex.gap-2 {
-    align-self: center !important;
+  .style-carousel-item img {
+    height: 140px !important;
+  }
+}
+
+/* Responsive carousel adjustments */
+@media (max-width: 767.98px) {
+  .styles-carousel-track {
+    gap: 0.5rem !important;
+    width: auto !important; /* Override the calculated width */
+    flex-wrap: nowrap !important;
+  }
+  
+  .style-carousel-item {
+    min-width: calc(48% - 0.25rem) !important; /* Show 2 items per row on mobile, slightly smaller */
+    max-width: calc(48% - 0.25rem) !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    flex-basis: calc(48% - 0.25rem) !important;
+  }
+  
+  .style-carousel-item img {
+    height: 100px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+  }
+
+  /* Make carousel container properly sized for mobile */
+  .styles-carousel-container {
+    padding: 0.5rem 0 !important;
+    min-height: 180px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+
+  /* Improve mobile style item cards */
+  .style-carousel-item .mt-2.p-2.rounded {
+    padding: 0.4rem !important;
+    margin-top: 0.4rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
+    min-height: 60px !important;
+  }
+
+  .style-carousel-item .mt-2.p-2.rounded strong {
+    font-size: 0.8rem !important;
+    display: block !important;
+    font-weight: 600 !important;
+  }
+
+  .style-carousel-item .mt-2.p-2.rounded div {
+    font-size: 0.7rem !important;
+    margin-bottom: 0.2rem !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
   /* Custom items mobile layout */
@@ -2039,4 +2483,77 @@ html, body {
 
 .modification-card-mobile .mod-detail:last-child {
   margin-bottom: 0;
+}
+
+/* Mobile Action Buttons for Edit Proposal */
+@media (max-width: 576px) {
+  .mobile-action-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .mobile-form-btn {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .d-flex.gap-2.flex-wrap.justify-content-center.justify-content-sm-end {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  
+  .proposal-form-header .row {
+    flex-direction: column;
+  }
+  
+  .proposal-form-header .col-auto {
+    margin-top: 1rem;
+  }
+  
+  /* Form button container */
+  .proposal-summary-form .d-flex {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  
+  /* Edit Proposal header action buttons */
+  .mobile-action-buttons {
+    flex-direction: column !important;
+    width: 100%;
+    gap: 8px !important;
+  }
+  
+  .mobile-action-buttons > div {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+    text-align: center;
+  }
+  
+  /* Edit proposal header responsiveness */
+  .header {
+    padding: 1rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  
+  .header .d-flex:first-child {
+    justify-content: center !important;
+    text-align: center;
+  }
+  
+  .header h4 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Make form cards stack better on mobile */
+  .dashboard-container .card {
+    margin-bottom: 1rem !important;
+  }
+  
+  .dashboard-container .card-body h5 {
+    font-size: 1.1rem !important;
+    margin-bottom: 1rem !important;
+  }
 }

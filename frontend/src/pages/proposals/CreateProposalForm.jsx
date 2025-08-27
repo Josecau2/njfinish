@@ -14,6 +14,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withContractorScope from '../../components/withContractorScope';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../components/PageHeader';
 import {
   CContainer,
   CCard,
@@ -291,55 +292,16 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   return (
     <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="proposal-form-header">
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center gap-3">
-                <div 
-                  className="d-flex align-items-center justify-content-center"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '12px',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <currentStepInfo.icon 
-                    style={{ 
-                      color: 'white', 
-                      fontSize: '20px' 
-                    }} 
-                  />
-                </div>
-                <div>
-                  <h3 className="text-white mb-1 fw-bold">{currentStepInfo.title}</h3>
-                  <div className="d-flex align-items-center gap-3">
-                    <p className="text-white-50 mb-0">{t('proposals.create.stepOf', { current: currentStep, total: 4 })}</p>
-                    <CBadge 
-                      color="light" 
-                      className="px-3 py-2"
-                      style={{ 
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        color: '#667eea'
-                      }}
-                    >
-                      {isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode')}
-                    </CBadge>
-                  </div>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="auto">
-              {renderActionButtons()}
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={currentStepInfo.title}
+        icon={currentStepInfo.icon}
+        subtitle={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
+        badge={{
+          text: isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode'),
+          variant: 'light'
+        }}
+        rightContent={renderActionButtons()}
+      />
 
       {/* Progress Bar */}
       <CCard className="proposal-progress-bar">
@@ -353,8 +315,8 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    backgroundColor: step <= currentStep ? '#667eea' : '#e9ecef',
-                    color: step <= currentStep ? 'white' : '#6c757d',
+                    backgroundColor: step <= currentStep ? 'var(--app-header-bg)' : '#e9ecef',
+                    color: step <= currentStep ? 'var(--header-text-primary, #fff)' : '#6c757d',
                     fontSize: '14px',
                     transition: 'all 0.3s ease'
                   }}
@@ -366,7 +328,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                     className="flex-grow-1 mx-2"
                     style={{
                       height: '2px',
-                      backgroundColor: step < currentStep ? '#667eea' : '#e9ecef',
+                      backgroundColor: step < currentStep ? 'var(--app-header-bg)' : '#e9ecef',
                       transition: 'all 0.3s ease'
                     }}
                   />
