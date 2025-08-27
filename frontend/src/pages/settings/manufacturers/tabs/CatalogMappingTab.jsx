@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import PageHeader from '../../../../components/PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -26,6 +28,8 @@ import {
   CFormSelect,
   CFormLabel
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilSortAscending, cilSortDescending } from '@coreui/icons';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
@@ -35,6 +39,9 @@ import CreatableSelect from 'react-select/creatable';
 const CatalogMappingTab = ({ manufacturer, id }) => {
   const { t } = useTranslation();
   const api_url = import.meta.env.VITE_API_URL;
+  const customization = useSelector((state) => state.customization);
+  const headerBg = customization?.headerBg || '#321fdb';
+  const textColor = customization?.headerTextColor || '#ffffff';
 
   // Server-side paginated catalog data (avoid loading all items at once)
   const [catalogData, setCatalogData] = useState([]);
@@ -43,6 +50,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
+  // Sorting state - default to alphabetical by code
+  const [sortBy, setSortBy] = useState('code');
+  const [sortOrder, setSortOrder] = useState('ASC');
+
   const getInitialItemsPerPage = () => {
     const saved = localStorage.getItem('catalogItemsPerPage');
     return saved ? parseInt(saved, 10) : 50;
@@ -50,6 +61,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const [typeFilter, setTypeFilter] = useState('');
   const [styleFilter, setStyleFilter] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
 
 
   const uniqueTypes = filterMeta.uniqueTypes || [];
@@ -127,12 +139,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [manualForm, setManualForm] = useState(initialManualForm);
 
   // Fetch paginated catalog data from backend
-  const fetchCatalogData = async (page = currentPage, limit = itemsPerPage, type = typeFilter, style = styleFilter) => {
+  const fetchCatalogData = async (page = currentPage, limit = itemsPerPage, type = typeFilter, style = styleFilter, sort = sortBy, order = sortOrder) => {
     if (!id) return;
     setLoading(true);
     setLoadError(null);
     try {
-      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      const params = new URLSearchParams({ 
+        page: String(page), 
+        limit: String(limit),
+        sortBy: sort,
+        sortOrder: order 
+      });
       if (type) params.append('typeFilter', type);
       if (style) params.append('styleFilter', style);
       const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog?${params.toString()}`, {
@@ -147,6 +164,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : []);
       setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 });
       if (page === 1 && data.filters) setFilterMeta(data.filters);
+      if (data.sorting) {
+        setSortBy(data.sorting.sortBy);
+        setSortOrder(data.sorting.sortOrder);
+      }
       setCurrentPage(page);
       setItemsPerPage(limit);
     } catch (e) {
@@ -160,14 +181,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   // Keep filters in sync and refetch when they change
   useEffect(() => {
-    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeFilter, styleFilter, id]);
+  }, [typeFilter, styleFilter, id, sortBy, sortOrder]);
 
   // Initial load
   useEffect(() => {
     if (id) {
-      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -217,9 +238,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [file, setFile] = useState(null);
   const dispatch = useDispatch();
 
-
-
-
+  // Sort handler function
+  const handleSort = (field) => {
+    let newSortOrder = 'ASC';
+    if (sortBy === field && sortOrder === 'ASC') {
+      newSortOrder = 'DESC';
+    }
+    setSortBy(field);
+    setSortOrder(newSortOrder);
+    // Fetch data with new sorting
+    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, field, newSortOrder);
+    setCurrentPage(1);
+  };
 
   const [errors, setErrors] = useState({});
   const handleManualChange = (e) => {
@@ -276,7 +306,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Reset and close modal
       setManualForm({ style: '', color: '', code: '', type: '', description: '', price: '' });
   // Refresh list (keep filters, reset to page 1 to show newest)
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
 
       setErrors({});
       resetManualForm();
@@ -346,7 +376,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
 
       setEditModalVisible(false);
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -436,7 +466,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setItemToDelete(null);
       
       // Refresh data
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
       
     } catch (err) {
       console.error('Error:', err);
@@ -510,7 +540,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setIsSelectAll(false);
       
       // Refresh data
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
       
     } catch (err) {
       console.error('Error:', err);
@@ -569,7 +599,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       // Refresh data if duplicates were removed
       if (result.duplicatesRemoved > 0) {
-        fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+        fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
         setCurrentPage(1);
       }
       
@@ -674,7 +704,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setAvailableBackups([]);
       
       // Refresh data
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
       setCurrentPage(1);
       
     } catch (err) {
@@ -746,7 +776,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setMergeToStyle('');
       
       // Refresh data
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter);
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
       
       // Reset current page if we're beyond the new total pages
       setCurrentPage(1);
@@ -827,7 +857,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       
       setFileModalVisible(false);
       setFile(null);
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter); // Reload updated data
+  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder); // Reload updated data
     } catch (err) {
       console.error(err);
       Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.file.uploadFailed'), "error");
@@ -1040,59 +1070,32 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   //   }
   // };
 
-
-  const handleModificationDetailsClick = async (item) => {
-    try {
-      setSelectedCatalogItem(item);
-
-      const res = await axiosInstance.get(`/api/manufacturers/items/modifications/${item.id}`, {
-        headers: getAuthHeaders()
-      });
-      const { modificationName, description, notes, price } = res.data.data || {};
-
-      setModificationData({
-        modificationName: modificationName || '',
-        description: description || '',
-        notes: notes || '',
-        price: price || '',
-      });
-    } catch (error) {
-      console.error('Error fetching modification details:', error);
-      setModificationData({
-        modificationName: '',
-        description: '',
-        notes: '',
-        price: '',
-      });
-    } finally {
-      setShowModificationModal(true);
-    }
-  };
-
-
-
-
   const saveAssemblyCost = async () => {
     try {
       const payload = {
-        catalogDataId: selectedCatalogItem.id, // you need to pass this from the item you clicked on
+        catalogDataId: selectedCatalogItem.id,
         type: assemblyData.type,
-        price: parseFloat(assemblyData.price),
-        applyTo: assemblyData.applyTo,
-        manufacturerId: selectedCatalogItem.manufacturerId
+        price: parseFloat(assemblyData.price) || 0,
+        applyTo: assemblyData.applyTo || 'item',
+        manufacturerId: selectedCatalogItem.manufacturerId,
       };
-
-      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload, {
-        headers: getAuthHeaders()
-      });
+      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload, { headers: getAuthHeaders() });
       setShowAssemblyModal(false);
-      // Optionally refetch the catalog data to update the UI
     } catch (error) {
       console.error('Failed to save assembly cost:', error);
     }
   };
 
-
+  const handleModificationDetailsClick = async (item) => {
+    setSelectedCatalogItem(item);
+    setModificationData({
+      modificationName: '',
+      description: '',
+      notes: '',
+      price: ''
+    });
+    setShowModificationModal(true);
+  };
   const saveHingesDetails = async () => {
     try {
       const payload = {
@@ -1102,10 +1105,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         bothHingesPrice: parseFloat(hingesData.bothHingePrice) || 0,
         exposedSidePrice: parseFloat(hingesData.exposedSidePrice) || 0,
       };
-
-      await axiosInstance.post('/api/manufacturers/items/hinges', payload, {
-        headers: getAuthHeaders()
-      });
+      await axiosInstance.post('/api/manufacturers/items/hinges', payload, { headers: getAuthHeaders() });
       setShowHingesModal(false);
     } catch (error) {
       console.error('Failed to save hinges details:', error);
@@ -1192,139 +1192,327 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         `}
       </style>
       
-      {/* Heading with Buttons aligned right */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-        <h5 className="mb-0">{t('settings.manufacturers.catalogMapping.title')}</h5>
-        <div className="d-flex flex-wrap gap-2">
-          <CButton
-            color="primary"
-            size="sm"
-            className="flex-shrink-0"
-            onClick={() => setFileModalVisible(true)}
-          >
-            {t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
-          </CButton>
-          <CButton 
-            color="success" 
-            size="sm"
-            className="flex-shrink-0"
-            onClick={() => setManualModalVisible(true)}
-          >
-            {t('settings.manufacturers.catalogMapping.buttons.addItem')}
-          </CButton>
-          <CButton
-            color="warning"
-            size="sm"
-            className="flex-shrink-0"
-            onClick={handleCleanupDuplicates}
-            disabled={isCleaningDuplicates}
-            title={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
-          >
-            {isCleaningDuplicates ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                {t('settings.manufacturers.catalogMapping.cleanupDuplicates.cleaning')}
-              </>
-            ) : (
-              <>{t('settings.manufacturers.catalogMapping.cleanupDuplicates.buttonText')}</>
-            )}
-          </CButton>
-          <CButton
-            color="info"
-            size="sm"
-            className="flex-shrink-0"
-            onClick={handleRollbackClick}
-            disabled={(pagination.total || 0) === 0}
-            title="Rollback recent catalog upload"
-          >
-            {t('settings.manufacturers.catalogMapping.rollback.buttonText')}
-          </CButton>
-        </div>
-      </div>
+      {/* Page Header with Mobile-Optimized Layout */}
+      <PageHeader
+        title={t('settings.manufacturers.catalogMapping.title')}
+        mobileLayout="compact"
+        rightContent={
+          <div className="d-flex flex-wrap gap-2 catalog-actions">
+            <CButton
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              size="sm"
+              className="flex-shrink-0"
+              onClick={() => setFileModalVisible(true)}
+            >
+              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}</span>
+              <span className="d-sm-none">📁 CSV</span>
+            </CButton>
+            <CButton 
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              size="sm"
+              className="flex-shrink-0"
+              onClick={() => setManualModalVisible(true)}
+            >
+              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.addItem')}</span>
+              <span className="d-sm-none">➕ Add</span>
+            </CButton>
+            <CButton
+              color="warning"
+              size="sm"
+              className="flex-shrink-0"
+              onClick={handleCleanupDuplicates}
+              disabled={isCleaningDuplicates}
+              title={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
+            >
+              {isCleaningDuplicates ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status"></span>
+                  <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.cleanupDuplicates.cleaning')}</span>
+                  <span className="d-sm-none">...</span>
+                </>
+              ) : (
+                <>
+                  <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.cleanupDuplicates.buttonText')}</span>
+                  <span className="d-sm-none">🧹</span>
+                </>
+              )}
+            </CButton>
+            <CButton
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              size="sm"
+              className="flex-shrink-0"
+              onClick={handleRollbackClick}
+              disabled={(pagination.total || 0) === 0}
+              title="Rollback recent catalog upload"
+            >
+              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.rollback.buttonText')}</span>
+              <span className="d-sm-none">↶</span>
+            </CButton>
+          </div>
+        }
+      />
       
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mb-3 gap-2">
-        <div className="d-flex flex-wrap align-items-center gap-2">
-          <select
-            className="form-select form-select-sm"
-            style={{ width: 'auto', minWidth: '60px' }}
-            value={itemsPerPage}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setItemsPerPage(value);
-              localStorage.setItem('catalogItemsPerPage', value);
-              setCurrentPage(1);
-            }}
-          >
-            {[10, 25, 50, 100, 200].map((num) => (
-              <option key={num} value={num}>{num}</option>
-            ))}
-          </select>
-          <span className="text-muted small">{t('settings.manufacturers.catalogMapping.pagination.perPage')}</span>
+      <style jsx>{`
+        .catalog-actions {
+          width: 100%;
+        }
+        
+        /* Mobile card styles */
+        .mobile-catalog-card {
+          border: 1px solid #dee2e6;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          transition: box-shadow 0.2s ease;
+        }
+        
+        .mobile-catalog-card:hover {
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .mobile-cards-container {
+          max-height: 70vh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Improved touch targets for mobile */
+        .mobile-catalog-card .btn {
+          min-height: 36px;
+          font-size: 12px;
+          white-space: nowrap;
+        }
+        
+        .mobile-catalog-card .form-check-input {
+          width: 18px;
+          height: 18px;
+        }
+        
+        @media (max-width: 767px) {
+          .catalog-actions {
+            justify-content: stretch;
+          }
+          
+          .catalog-actions .btn {
+            flex: 1;
+            min-width: 0;
+            min-height: 32px; /* Reduced from 44px */
+            font-size: 0.75rem !important;
+            padding: 0.25rem 0.5rem !important;
+          }
+          
+          /* Better mobile table */
+          .table-responsive {
+            -webkit-overflow-scrolling: touch;
+          }
+          
+          .table td, .table th {
+            min-width: 100px;
+            white-space: nowrap;
+          }
+          
+          /* Mobile-optimized filters */
+          .form-select, .form-control {
+            min-height: 36px; /* Reduced from 44px */
+            font-size: 0.875rem;
+          }
+          
+          /* Mobile card specific improvements */
+          .mobile-catalog-card .card-body {
+            padding: 0.75rem !important; /* Reduced padding */
+          }
+          
+          .mobile-catalog-card .btn {
+            padding: 6px 10px;
+            font-size: 11px;
+          }
+          
+          .mobile-catalog-card .row.g-2 > .col-6 {
+            margin-bottom: 0.5rem;
+          }
+          
+          /* Compact header for mobile */
+          .page-header-dynamic {
+            margin-bottom: 0.75rem !important;
+          }
+        }
+        
+        @media (max-width: 575px) {
+          .catalog-actions {
+            flex-direction: row; /* Keep inline on small screens */
+            gap: 0.25rem;
+          }
+          
+          .catalog-actions .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 0.7rem !important;
+            padding: 0.2rem 0.3rem !important;
+            min-height: 28px;
+          }
+          
+          /* Stack filters vertically on very small screens */
+          .row.g-2 > .col-12 {
+            margin-bottom: 0.5rem; /* Reduced spacing */
+          }
+          
+          .row.g-2 > .col-12:last-child {
+            margin-bottom: 0;
+          }
+          
+          /* Mobile card actions more compact */
+          .mobile-catalog-card .d-flex.flex-wrap .btn {
+            padding: 4px 8px;
+            font-size: 10px;
+            margin-bottom: 0.15rem;
+          }
+          
+          .mobile-catalog-card .card-body {
+            padding: 0.5rem !important;
+          }
+          
+          .mobile-catalog-card .card-title {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+          }
+          
+          .mobile-catalog-card small {
+            font-size: 0.75rem;
+          }
+        }
+        
+        /* Better touch scrolling for table */
+        .table-container {
+          -webkit-overflow-scrolling: touch;
+          overflow-x: auto;
+        }
+        
+        /* Better mobile pagination */
+        @media (max-width: 767px) {
+          .pagination {
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+          
+          .page-item .page-link {
+            min-width: 36px; /* Reduced from 44px */
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+          }
+        }
+        
+        /* Hide unnecessary elements on mobile */
+        @media (max-width: 576px) {
+          .mobile-catalog-card .card-title {
+            font-size: 14px;
+          }
+          
+          .mobile-catalog-card small {
+            font-size: 11px;
+          }
+        }
+      `}</style>
+      
+      {/* Mobile-Optimized Filters and Pagination */}
+      <div className="row g-2 mb-3">
+        {/* Items per page - Full width on mobile */}
+        <div className="col-12 col-sm-6 col-lg-auto">
+          <div className="d-flex align-items-center gap-2">
+            <select
+              className="form-select form-select-sm"
+              style={{ width: 'auto', minWidth: '60px' }}
+              value={itemsPerPage}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setItemsPerPage(value);
+                localStorage.setItem('catalogItemsPerPage', value);
+                setCurrentPage(1);
+                fetchCatalogData(1, value, typeFilter, styleFilter, sortBy, sortOrder);
+              }}
+            >
+              {[10, 25, 50, 100, 200].map((num) => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+            <span className="text-muted small d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.pagination.perPage')}</span>
+            <span className="text-muted small d-sm-none">per page</span>
+          </div>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center gap-2">
+        {/* Search Filter - Prominent on mobile */}
+        <div className="col-12 col-sm-12 col-lg-4 order-first order-lg-3">
+          <div className="position-relative">
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="🔍 Search styles..."
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              style={{ paddingRight: searchFilter ? '35px' : '12px' }}
+            />
+            {searchFilter && (
+              <button
+                type="button"
+                className="btn btn-sm btn-link position-absolute top-0 end-0 p-1"
+                onClick={() => setSearchFilter('')}
+                style={{ color: '#6c757d', textDecoration: 'none', zIndex: 5 }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Type Filter */}
+        <div className="col-6 col-sm-6 col-lg-auto">
           <select
             className="form-select form-select-sm"
-            style={{ minWidth: '120px' }}
             value={typeFilter}
             onChange={(e) => {
               setCurrentPage(1);
               setTypeFilter(e.target.value);
             }}
           >
-            <option value="">{t('settings.manufacturers.catalogMapping.filters.allTypes')}</option>
+            <option value="">All Types</option>
             {uniqueTypes.map((type, idx) => (
               <option key={idx} value={type}>
                 {type}
               </option>
             ))}
           </select>
-
-          <div className="d-flex align-items-center flex-wrap gap-2">
-            <select
-              className="form-select form-select-sm"
-              style={{ minWidth: '120px' }}
-              value={styleFilter}
-              onChange={(e) => {
-                setCurrentPage(1);
-                setStyleFilter(e.target.value);
-              }}
-            >
-              <option value="">{t('settings.manufacturers.catalogMapping.filters.allStyles')}</option>
-              {sortedUniqueStyles.map((style, idx) => (
-                <option key={idx} value={style}>
-                  {style}
-                </option>
-              ))}
-            </select>
-            
-            {styleFilter && (
-              <CButton
-                size="sm"
-                color="danger"
-                onClick={() => handleDeleteStyleClick(styleFilter)}
-                title={`Delete style "${styleFilter}"`}
-                style={{ 
-                  display: 'inline-block',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {t('settings.manufacturers.catalogMapping.buttons.deleteStyle')}
-              </CButton>
-            )}
-          </div>
         </div>
-        
+
+        {/* Style Filter */}
+        <div className="col-6 col-sm-6 col-lg-auto">
+          <select
+            className="form-select form-select-sm"
+            value={styleFilter}
+            onChange={(e) => {
+              setCurrentPage(1);
+              setStyleFilter(e.target.value);
+            }}
+          >
+            <option value="">All Styles</option>
+            {sortedUniqueStyles.map((style, idx) => (
+              <option key={idx} value={style}>
+                {style}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <>
         {/* Debug info - remove this later */}
         {process.env.NODE_ENV === 'development' && (
           <small className="text-muted">
             Style Filter: "{styleFilter}" | Styles Count: {sortedUniqueStyles.length}
           </small>
         )}
-      </div>
 
-      {/* Bulk Actions */}
-      {selectedItems.length > 0 && (
+        {/* Bulk Actions */}
+        {selectedItems.length > 0 && (
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
           <span className="fw-bold">
             {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', { count: selectedItems.length })}
@@ -1347,41 +1535,55 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </CButton>
         </div>
       )}
+      </>
 
-      {/* Table */}
-  {catalogData.length === 0 ? (
-    <p>{t('settings.manufacturers.catalogMapping.empty')}</p>
+      {/* Table - Desktop and Mobile Views */}
+      {catalogData.length === 0 ? (
+        <p>{t('settings.manufacturers.catalogMapping.empty')}</p>
       ) : (
-        <div className="table-responsive">
-          <CTable hover responsive className="mb-0">
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell style={{ width: '35px', minWidth: '35px' }}>
-                  <input
-                    type="checkbox"
-                    checked={isSelectAll}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="form-check-input"
-                    style={{ 
-                      borderColor: '#6c757d', 
-                      borderWidth: '2px',
-                      transform: 'scale(1.1)'
-                    }}
-                  />
-                </CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '80px' }}>{t('settings.manufacturers.catalogMapping.table.code')}</CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '120px', maxWidth: '180px' }}>
-                  {t('settings.manufacturers.catalogMapping.table.description')}
-                </CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '80px' }}>{t('settings.manufacturers.catalogMapping.table.style')}</CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.price')}</CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
-                <CTableHeaderCell style={{ minWidth: '120px' }} className="actions-column">{t('settings.manufacturers.catalogMapping.table.actions')}</CTableHeaderCell>
-
-                {/* Add more if needed */}
-              </CTableRow>
-            </CTableHead>
-          <CTableBody>
+        <>
+          {/* Desktop Table View - Hidden on mobile */}
+          <div className="table-responsive table-container d-none d-md-block">
+            <CTable hover responsive className="mb-0">
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell style={{ width: '35px', minWidth: '35px' }}>
+                    <input
+                      type="checkbox"
+                      checked={isSelectAll}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="form-check-input"
+                      style={{ 
+                        borderColor: '#6c757d', 
+                        borderWidth: '2px',
+                        transform: 'scale(1.1)'
+                      }}
+                    />
+                  </CTableHeaderCell>
+                  <CTableHeaderCell 
+                    style={{ minWidth: '80px', cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => handleSort('code')}
+                    className="d-flex align-items-center"
+                  >
+                    {t('settings.manufacturers.catalogMapping.table.code')}
+                    {sortBy === 'code' && (
+                      <CIcon 
+                        icon={sortOrder === 'ASC' ? cilSortAscending : cilSortDescending} 
+                        size="sm" 
+                        className="ms-1"
+                      />
+                    )}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell style={{ minWidth: '120px', maxWidth: '180px' }}>
+                    {t('settings.manufacturers.catalogMapping.table.description')}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell style={{ minWidth: '80px' }}>{t('settings.manufacturers.catalogMapping.table.style')}</CTableHeaderCell>
+                  <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.price')}</CTableHeaderCell>
+                  <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
+                  <CTableHeaderCell style={{ minWidth: '120px' }} className="actions-column">{t('settings.manufacturers.catalogMapping.table.actions')}</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>
             {currentItems.map((item, index) => (
               <CTableRow key={index}>
                 <CTableDataCell>
@@ -1442,13 +1644,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     <CButton
                       size="sm"
-                      color="info"
                       onClick={() => handleManageStyleClick(item)}
                       style={{ 
                         fontSize: '11px',
                         padding: '2px 6px',
-                        backgroundColor: '#6c757d',
-                        borderColor: '#6c757d',
+                        backgroundColor: headerBg,
+                        borderColor: headerBg,
+                        color: textColor,
                         minWidth: 'auto'
                       }}
                       title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
@@ -1458,13 +1660,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     <CButton
                       size="sm"
-                      color="warning"
                       onClick={() => handleAssemblyCostClick(item)}
                       style={{ 
                         fontSize: '11px',
                         padding: '2px 6px',
-                        backgroundColor: '#fd7e14',
-                        borderColor: '#fd7e14',
+                        backgroundColor: headerBg,
+                        borderColor: headerBg,
+                        color: textColor,
                         minWidth: 'auto'
                       }}
                       title={t('settings.manufacturers.catalogMapping.actions.assemblyCost')}
@@ -1474,13 +1676,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     <CButton
                       size="sm"
-                      color="success"
                       onClick={() => handleModificationDetailsClick(item)}
                       style={{ 
                         fontSize: '11px',
                         padding: '2px 6px',
-                        backgroundColor: '#198754',
-                        borderColor: '#198754',
+                        backgroundColor: headerBg,
+                        borderColor: headerBg,
+                        color: textColor,
                         minWidth: 'auto'
                       }}
                       title={t('settings.manufacturers.catalogMapping.actions.modification')}
@@ -1507,10 +1709,128 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </CTableRow>
             ))}
           </CTableBody>
-
         </CTable>
+      </div>
+
+      {/* Mobile Card View - Visible only on mobile */}
+      <div className="d-block d-md-none">
+        {/* Mobile Select All */}
+        <div className="d-flex align-items-center mb-3 p-3 bg-light rounded">
+          <input
+            type="checkbox"
+            checked={isSelectAll}
+            onChange={(e) => handleSelectAll(e.target.checked)}
+            className="form-check-input me-2"
+            id="mobile-select-all"
+          />
+          <label htmlFor="mobile-select-all" className="form-check-label mb-0">
+            Select All ({currentItems.length} items)
+          </label>
         </div>
-      )}
+
+        {/* Mobile Cards */}
+        <div className="mobile-cards-container">
+          {currentItems.map((item, index) => (
+            <div key={index} className="card mb-3 mobile-catalog-card">
+              <div className="card-body p-3">
+                {/* Card Header with checkbox and style */}
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <div className="d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(item.id)}
+                      onChange={(e) => handleSelectItem(item.id, e.target.checked)}
+                      className="form-check-input me-2"
+                    />
+                    <div>
+                      <h6 className="card-title mb-1 fw-bold">{item.code}</h6>
+                      <small className="text-muted">{item.description}</small>
+                    </div>
+                  </div>
+                  <CButton
+                    size="sm"
+                    style={{ 
+                      backgroundColor: '#6c757d', 
+                      borderColor: '#6c757d',
+                      color: 'white',
+                      fontSize: '11px',
+                      padding: '2px 8px'
+                    }}
+                  >
+                    {item.style}
+                  </CButton>
+                </div>
+
+                {/* Card Content */}
+                <div className="row g-2 mb-3">
+                  <div className="col-6">
+                    <small className="text-muted d-block">Price</small>
+                    <span className="fw-bold">${item.price}</span>
+                  </div>
+                  <div className="col-6">
+                    <small className="text-muted d-block">Type</small>
+                    <span>{item.type || 'N/A'}</span>
+                  </div>
+                </div>
+
+                {/* Card Actions */}
+                <div className="d-flex flex-wrap gap-2">
+                  <CButton
+                    size="sm"
+                    color="secondary"
+                    onClick={() => handleEditClick(item)}
+                    className="flex-fill"
+                  >
+                    ✏️ Edit
+                  </CButton>
+                  
+                  <CButton
+                    size="sm"
+                    onClick={() => handleManageStyleClick(item)}
+                    style={{ 
+                      backgroundColor: headerBg,
+                      borderColor: headerBg,
+                      color: textColor
+                    }}
+                    className="flex-fill"
+                    title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
+                  >
+                    🎨 Style
+                  </CButton>
+                  
+                  <CButton
+                    size="sm"
+                    onClick={() => handleModificationDetailsClick(item)}
+                    style={{ 
+                      backgroundColor: headerBg,
+                      borderColor: headerBg,
+                      color: textColor
+                    }}
+                    className="flex-fill"
+                    title={t('settings.manufacturers.catalogMapping.actions.modificationDetails')}
+                  >
+                    🔧 Modify
+                  </CButton>
+                  
+                  <CButton
+                    size="sm"
+                    color="danger"
+                    onClick={() => handleDeleteClick(item.id)}
+                    style={{ 
+                      fontSize: '11px',
+                      padding: '4px 8px'
+                    }}
+                  >
+                    🗑️
+                  </CButton>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )}
       {catalogData.length > 0 ? (
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
@@ -1523,7 +1843,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               color="secondary"
               disabled={loading || (pagination.page || 1) === 1}
-              onClick={() => fetchCatalogData((pagination.page || 1) - 1, itemsPerPage, typeFilter, styleFilter)}
+              onClick={() => fetchCatalogData((pagination.page || 1) - 1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)}
               className="me-2"
             >
               {t('pagination.prevPageTitle')}
@@ -1532,7 +1852,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               color="secondary"
               disabled={loading || (pagination.page || 1) >= (pagination.totalPages || 1)}
-              onClick={() => fetchCatalogData((pagination.page || 1) + 1, itemsPerPage, typeFilter, styleFilter)}
+              onClick={() => fetchCatalogData((pagination.page || 1) + 1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)}
             >
               {t('pagination.nextPageTitle')}
             </CButton>
@@ -1545,9 +1865,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         visible={fileModalVisible}
         onClose={() => setFileModalVisible(false)}
       >
-        <CModalHeader onClose={() => setFileModalVisible(false)}>
-          <CModalTitle>{t('settings.manufacturers.catalogMapping.file.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
         <CModalBody>
           <CForm>
             <CFormInput type="file" name="catalogFiles" label={t('settings.manufacturers.catalogMapping.file.selectLabel')} onChange={handleFileChange} />
@@ -1558,7 +1876,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <CButton color="secondary" onClick={() => setFileModalVisible(false)}>
             {t('common.cancel')}
           </CButton>
-          <CButton color="primary" onClick={handleUpload}>{t('settings.manufacturers.catalogMapping.file.uploadBtn')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleUpload}>{t('settings.manufacturers.catalogMapping.file.uploadBtn')}</CButton>
 
         </CModalFooter>
       </CModal>
@@ -1568,9 +1886,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         visible={manualModalVisible}
         onClose={() => setManualModalVisible(false)}
       >
-        <CModalHeader onClose={() => setManualModalVisible(false)}>
-      <CModalTitle>{t('settings.manufacturers.catalogMapping.manual.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
         <CModalBody>
           <CForm>
 
@@ -1633,14 +1949,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <CButton color="secondary" onClick={() => setManualModalVisible(false)}>
             {t('common.cancel')}
           </CButton>
-          <CButton color="success" onClick={handleSaveManualItem}>{t('common.save')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleSaveManualItem}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 
       <CModal visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-        <CModalHeader>
-      <CModalTitle>{t('settings.manufacturers.catalogMapping.edit.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
         <CModalBody>
           <CForm>
             <CreatableSelect
@@ -1702,7 +2016,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setEditModalVisible(false)}>{t('common.cancel')}</CButton>
-          <CButton color="primary" onClick={handleUpdateItem} disabled={isUpdating}>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleUpdateItem} disabled={isUpdating}>
             {isUpdating ? t('settings.manufacturers.catalogMapping.edit.updating') : t('settings.manufacturers.catalogMapping.edit.update')}
           </CButton>
         </CModalFooter>
@@ -1710,9 +2024,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Style Modal */}
       <CModal visible={showStyleModal} onClose={() => setShowStyleModal(false)}>
-        <CModalHeader>
-          <CModalTitle>{t('settings.manufacturers.catalogMapping.style.manageTitle', { style: selectedStyle })}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.style.manageTitle', { style: selectedStyle })} />
 
         <CModalBody>
           <CForm>
@@ -1751,10 +2063,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <div className="mt-3">
                 <p className="mb-1"><strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong></p>
                 <img
-                  // src={`/uploads/manufacturer_catalogs/${styleForm.image}`}
                   src={
                     styleForm.image
-                      ? `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`
+                      ? `${api_url}/uploads/images/${styleForm.image}`
                       : "/images/nologo.png"
                   }
                   alt="Style Preview"
@@ -1766,7 +2077,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     display: 'block',
                     margin: '0 auto'
                   }}
-                  onError={(e) => { e.target.style.display = 'none'; }}
+                  onError={(e) => {
+                    if (styleForm.image && !e.target.dataset.fallbackTried) {
+                      e.target.dataset.fallbackTried = '1';
+                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`;
+                    } else {
+                      e.target.src = '/images/nologo.png';
+                    }
+                  }}
                 />
               </div>
             ) : null}
@@ -1774,7 +2092,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
 
         <CModalFooter>
-          <CButton color="primary" onClick={handleSaveStyle}>{t('common.save')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleSaveStyle}>{t('common.save')}</CButton>
           <CButton color="secondary" onClick={() => setShowStyleModal(false)}>{t('common.cancel')}</CButton>
         </CModalFooter>
       </CModal>
@@ -1782,9 +2100,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Style View Modal */}
       <CModal visible={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size="lg">
-        <CModalHeader>
-          <CModalTitle>📝 {t('settings.manufacturers.catalogMapping.style.detailsTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={`📝 ${t('settings.manufacturers.catalogMapping.style.detailsTitle')}`} />
         <CModalBody>
           {styleDetails ? (
             <div style={{ padding: '10px 5px' }}>
@@ -1797,10 +2113,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {styleDetails.image ? (
                 <div style={{ marginTop: '20px' }}>
                   <img
-                    // src={`./uploads/manufacturer_catalogs/${styleDetails.image}`}
                     src={
                       styleDetails.image
-                        ? `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`
+                        ? `${api_url}/uploads/images/${styleDetails.image}`
                         : "/images/nologo.png"
                     }
                     alt="Style"
@@ -1809,6 +2124,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       maxHeight: '300px',
                       borderRadius: '8px',
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+                    }}
+                    onError={(e) => {
+                      if (styleDetails.image && !e.target.dataset.fallbackTried) {
+                        e.target.dataset.fallbackTried = '1';
+                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`;
+                      } else {
+                        e.target.src = '/images/nologo.png';
+                      }
                     }}
                   />
                 </div>
@@ -1831,9 +2154,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
       <CModal visible={showAssemblyModal} onClose={() => setShowAssemblyModal(false)}>
-        <CModalHeader>
-          <CModalTitle>{t('settings.manufacturers.catalogMapping.assembly.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
         <CModalBody>
           <CFormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</CFormLabel>
           <CFormSelect
@@ -1869,7 +2190,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <CButton color="secondary" onClick={() => setShowAssemblyModal(false)}>
             {t('common.cancel')}
           </CButton>
-          <CButton color="primary" onClick={saveAssemblyCost}>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveAssemblyCost}>
             {t('common.save')}
           </CButton>
         </CModalFooter>
@@ -1877,9 +2198,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
       <CModal visible={showHingesModal} onClose={() => setShowHingesModal(false)}>
-        <CModalHeader>
-          <CModalTitle>{t('settings.manufacturers.catalogMapping.hinges.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
         <CModalBody>
           <CFormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</CFormLabel>
           <CFormInput
@@ -1915,13 +2234,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowHingesModal(false)}>{t('common.cancel')}</CButton>
-          <CButton color="primary" onClick={saveHingesDetails}>{t('common.save')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveHingesDetails}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 
 
       <CModal visible={showModificationModal} onClose={() => setShowModificationModal(false)}>
-        <CModalHeader><CModalTitle>{t('settings.manufacturers.catalogMapping.mod.modalTitle')}</CModalTitle></CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
         <CModalBody>
           <CFormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</CFormLabel>
           <CFormInput
@@ -1952,15 +2271,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowModificationModal(false)}>{t('common.cancel')}</CButton>
-          <CButton color="primary" onClick={saveModificationDetails}>{t('common.save')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveModificationDetails}>{t('common.save')}</CButton>
         </CModalFooter>
       </CModal>
 
       {/* Delete Style Modal */}
       <CModal visible={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>Delete Style: "{styleToDelete}"</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={`Delete Style: "${styleToDelete}"`} />
         <CModalBody>
           <div className="mb-3">
             <p>
@@ -2067,9 +2384,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Individual Delete Item Modal */}
       <CModal visible={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>Delete Catalog Item</CModalTitle>
-        </CModalHeader>
+        <PageHeader title="Delete Catalog Item" />
         <CModalBody>
           {itemToDelete && (
             <div>
@@ -2113,9 +2428,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Bulk Delete Modal */}
       <CModal visible={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>Delete Multiple Items</CModalTitle>
-        </CModalHeader>
+        <PageHeader title="Delete Multiple Items" />
         <CModalBody>
           <div>
             <p>Are you sure you want to delete <strong>{selectedItems.length}</strong> selected catalog items?</p>
@@ -2169,9 +2482,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Rollback Modal */}
       <CModal visible={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>{t('settings.manufacturers.catalogMapping.rollback.modalTitle')}</CModalTitle>
-        </CModalHeader>
+        <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
         <CModalBody>
           <div className="mb-3">
             <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>

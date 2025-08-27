@@ -1,7 +1,9 @@
-// ModificationModal.jsx
+// ModificationModalEdit.jsx
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { isAdmin } from '../../helpers/permissions'
+import { getContrastColor } from '../../utils/colorUtils'
+import PageHeader from '../PageHeader'
 import {
     CModal,
     CModalHeader,
@@ -46,6 +48,9 @@ const ModificationModalEdit = ({
     // console.log('catalogData itemModificationID: ', itemModificationID);
     const authUser = useSelector((state) => state.auth?.user);
     const isUserAdmin = isAdmin(authUser);
+    const customization = useSelector((state) => state.customization);
+    const headerBg = customization?.headerBg || '#007bff';
+    const textColor = getContrastColor(headerBg);
 
     return (
         <CModal
@@ -54,9 +59,7 @@ const ModificationModalEdit = ({
             alignment="center"
             size="lg"
         >
-            <CModalHeader className="bg-primary text-white">
-                <CModalTitle>Modification</CModalTitle>
-            </CModalHeader>
+            <PageHeader title="Modification" />
 
             <CModalBody style={{ padding: '2rem', borderRadius: '0 0 8px 8px' }}>
                 <div className="mb-4 d-flex gap-4 align-items-center">
@@ -194,7 +197,7 @@ const ModificationModalEdit = ({
 
             <CModalFooter>
                 <CButton color="secondary" onClick={onClose}>Cancel</CButton>
-                <CButton color="primary" onClick={onSave}>Save</CButton>
+                <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={onSave}>Save</CButton>
             </CModalFooter>
         </CModal>
     )

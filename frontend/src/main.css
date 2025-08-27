@@ -59,6 +59,7 @@
   transition: box-shadow 0.2s ease;
 }
 
+/* COMMENTED OUT - Now using dynamic header customization instead of hardcoded colors
 .btn-success,
 .btn-primary,
 .btn-secondary {
@@ -94,13 +95,16 @@
   --cui-btn-disabled-border-color: #0dcaf0 !important;
   --cui-gradient: none;
 }
+*/
 
+/* COMMENTED OUT - Now using dynamic header customization
 .page-link.active,
 .active>.page-link {
 
   background-color: #0dcaf0 !important;
   border-color: #0dcaf0 !important;
 }
+*/
 
 .sidebar-dark {
   --cui-body-color: rgba(255, 255, 255, .87);
@@ -113,11 +117,13 @@
   --cui-border-color: transparent !important;
 }
 
+/* COMMENTED OUT - Now using dynamic header customization
 .sidebar-nav .nav-link:hover {
   color: var(--cui-sidebar-nav-link-hover-color);
   text-decoration: none;
   background: #0dcaf0 !important;
 }
+*/
 
 /* Modern PDF Customization Styles */
 
