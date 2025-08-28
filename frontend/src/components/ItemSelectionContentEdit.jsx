@@ -645,8 +645,26 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             ];
             const basePrice = Number(item.price) || 0;
             const price = basePrice * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1); // Apply both multipliers
-            const baseAssemblyFee = parseFloat(item?.styleVariantsAssemblyCost?.price) || 0;
-            const assemblyFee = baseAssemblyFee; // Don't multiply assembly fee
+            
+            // Calculate assembly fee properly based on type and after all multipliers
+            const assemblyCost = item?.styleVariantsAssemblyCost;
+            let assemblyFee = 0;
+            
+            if (assemblyCost) {
+                const feePrice = parseFloat(assemblyCost.price || 0);
+                const feeType = assemblyCost.type;
+
+                if (feeType === 'flat' || feeType === 'fixed') {
+                    assemblyFee = feePrice;
+                } else if (feeType === 'percentage') {
+                    // percentage based on final price after all multipliers
+                    assemblyFee = (price * feePrice) / 100;
+                } else {
+                    // Fallback for legacy data without type
+                    assemblyFee = feePrice;
+                }
+            }
+            
             const includeAssemblyFee = isAssembled; // Default to assembled state
             const totalAssemblyFee = includeAssemblyFee ? assemblyFee : 0;
             const total = price + totalAssemblyFee;

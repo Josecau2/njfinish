@@ -39,7 +39,14 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Export configured multer instance (without invoking .fields yet)
-const uploadCatalogOnly = multer({ storage, fileFilter });
+// Export configured multer instance with file size limits
+const uploadCatalogOnly = multer({ 
+    storage, 
+    fileFilter,
+    limits: {
+        fileSize: 50 * 1024 * 1024, // 50MB limit
+        files: 1 // Only allow one file at a time
+    }
+});
 
 module.exports = uploadCatalogOnly;

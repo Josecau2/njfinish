@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const { parseCatalogFile } = require('../utils/parseCatalogFile');
+const { ChunkedCatalogParser } = require('../utils/parseCatalogFileChunked');
 const upload = require('../middleware/upload'); // Your multer setup
 const uploadCatalogOnly = require('../middleware/uploadCatalogOnly'); // Your multer setup
-const { Manufacturer, ManufacturerCatalogData, Collection, CatalogUploadBackup } = require('../models');
+const { Manufacturer, ManufacturerCatalogData, Collection, CatalogUploadBackup, sequelize } = require('../models');
 const { ManufacturerCatalogFile } = require('../models/ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('../models/ManufacturerStyleCollection');
 const ManufacturerAssemblyCost = require('../models/ManufacturerAssemblyCost');
@@ -432,6 +433,10 @@ const uploadCatalogFile = async (req, res) => {
     
     uploadCatalogOnly.single('catalogFiles')(req, res, async function (err) {
         if (err) {
+            console.error('Multer error:', err);
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ message: 'File too large. Maximum size is 50MB.' });
+            }
             return res.status(400).json({ message: err.message });
         }
 
@@ -441,19 +446,24 @@ const uploadCatalogFile = async (req, res) => {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
+        // Check file size
+        const fileSizeInMB = file.size / (1024 * 1024);
+        const isLargeFile = fileSizeInMB > 10; // Consider files >10MB as large
+
+        console.log(`📁 Processing ${isLargeFile ? 'large' : 'regular'} catalog file: ${file.originalname} (${fileSizeInMB.toFixed(2)}MB)`);
+
         // Generate unique session ID for this upload
         const uploadSessionId = uuidv4();
         let backupData = [];
 
         try {
-            const parsedData = await parseCatalogFile(file.path, file.mimetype);
-
-            if (!Array.isArray(parsedData) || parsedData.length === 0) {
-                return res.status(400).json({ message: 'No valid data in the uploaded file' });
-            }
+            let parsedData;
+            let totalProcessed = 0;
+            let updatedCount = 0;
+            let createdCount = 0;
 
             // Create backup of existing data that will be affected
-            console.log('Creating backup of existing catalog data...');
+            console.log('📦 Creating backup of existing catalog data...');
             
             // Get all existing items for this manufacturer to backup
             const existingItems = await ManufacturerCatalogData.findAll({
@@ -475,6 +485,123 @@ const uploadCatalogFile = async (req, res) => {
                 updatedAt: item.updatedAt
             }));
 
+            if (isLargeFile) {
+                console.log('🔄 Processing large file in chunks...');
+                
+                // Use chunked processing for large files
+                const parser = new ChunkedCatalogParser({
+                    chunkSize: 500, // Smaller chunks for better memory management
+                    maxFileSize: 50 * 1024 * 1024, // 50MB limit
+                    onChunk: async (chunk, processedSoFar, total) => {
+                        console.log(`📊 Processing chunk: ${processedSoFar + chunk.length}/${total} rows`);
+                        
+                        // Process chunk in database transaction
+                        const transaction = await sequelize.transaction();
+                        try {
+                            for (const row of chunk) {
+                                const cleanStyle = row.style?.replace(/\+AC0-/g, '-').trim() || '';
+                                const [item, created] = await ManufacturerCatalogData.findOrCreate({
+                                    where: {
+                                        manufacturerId: manufacturerId,
+                                        code: row.code,
+                                        style: cleanStyle
+                                    },
+                                    defaults: {
+                                        ...row,
+                                        manufacturerId: manufacturerId,
+                                        style: cleanStyle
+                                    },
+                                    transaction
+                                });
+
+                                if (!created) {
+                                    await item.update({
+                                        description: row.description,
+                                        price: row.price,
+                                        discontinued: row.discontinued,
+                                        code: row.code,
+                                        type: row.type
+                                    }, { transaction });
+                                    updatedCount++;
+                                } else {
+                                    createdCount++;
+                                }
+                            }
+                            
+                            await transaction.commit();
+                            totalProcessed += chunk.length;
+                            
+                        } catch (chunkError) {
+                            await transaction.rollback();
+                            throw chunkError;
+                        }
+                    },
+                    onProgress: (processed, total) => {
+                        const percentage = ((processed / total) * 100).toFixed(1);
+                        console.log(`⏳ Progress: ${percentage}% (${processed}/${total} rows)`);
+                    }
+                });
+
+                parsedData = await parser.parse(file.path, file.mimetype);
+                
+            } else {
+                console.log('📝 Processing regular file...');
+                // Use regular processing for smaller files
+                parsedData = await parseCatalogFile(file.path, file.mimetype);
+
+                if (!Array.isArray(parsedData) || parsedData.length === 0) {
+                    return res.status(400).json({ message: 'No valid data in the uploaded file' });
+                }
+
+                console.log(`Processing ${parsedData.length} catalog items...`);
+
+                // Process uploaded data in batches for better performance
+                const batchSize = 100;
+                for (let i = 0; i < parsedData.length; i += batchSize) {
+                    const batch = parsedData.slice(i, i + batchSize);
+                    
+                    const transaction = await sequelize.transaction();
+                    try {
+                        for (const row of batch) {
+                            const cleanStyle = row.style?.replace(/\+AC0-/g, '-').trim() || '';
+                            const [item, created] = await ManufacturerCatalogData.findOrCreate({
+                                where: {
+                                    manufacturerId: manufacturerId,
+                                    code: row.code,
+                                    style: cleanStyle
+                                },
+                                defaults: {
+                                    ...row,
+                                    manufacturerId: manufacturerId,
+                                    style: cleanStyle
+                                },
+                                transaction
+                            });
+
+                            if (!created) {
+                                await item.update({
+                                    description: row.description,
+                                    price: row.price,
+                                    discontinued: row.discontinued,
+                                    code: row.code,
+                                    type: row.type
+                                }, { transaction });
+                                updatedCount++;
+                            } else {
+                                createdCount++;
+                            }
+                        }
+                        
+                        await transaction.commit();
+                        totalProcessed += batch.length;
+                        
+                    } catch (batchError) {
+                        await transaction.rollback();
+                        throw batchError;
+                    }
+                }
+            }
+
             // Create backup record
             await CatalogUploadBackup.create({
                 manufacturerId: manufacturerId,
@@ -486,46 +613,6 @@ const uploadCatalogFile = async (req, res) => {
                 uploadedBy: userId
             });
 
-            console.log(`Backup created with session ID: ${uploadSessionId}`);
-            console.log(`Processing ${parsedData.length} catalog items...`);
-
-            // Process uploaded data
-            let processedCount = 0;
-            let updatedCount = 0;
-            let createdCount = 0;
-
-            for (const row of parsedData) {
-                const cleanStyle = row.style?.replace(/\+AC0-/g, '-').trim() || '';
-                const [item, created] = await ManufacturerCatalogData.findOrCreate({
-                    where: {
-                        manufacturerId: manufacturerId,
-                        code: row.code,
-                        style: cleanStyle
-                    },
-                    defaults: {
-                        ...row,
-                        manufacturerId: manufacturerId,
-                        style: cleanStyle
-                    }
-                });
-
-                if (!created) {
-                    // If it already exists, update the rest of the fields
-                    await item.update({
-                        description: row.description,
-                        price: row.price,
-                        discontinued: row.discontinued,
-                        code: row.code,
-                        type: row.type
-                    });
-                    updatedCount++;
-                } else {
-                    createdCount++;
-                }
-                
-                processedCount++;
-            }
-
             // Store file metadata
             await ManufacturerCatalogFile.create({
                 manufacturer_id: manufacturerId,
@@ -536,22 +623,24 @@ const uploadCatalogFile = async (req, res) => {
                 mimetype: file.mimetype
             });
 
-            console.log(`Upload completed: ${createdCount} created, ${updatedCount} updated`);
+            console.log(`✅ Upload completed: ${createdCount} created, ${updatedCount} updated`);
 
             return res.status(201).json({
                 success: true,
-                message: 'Catalog file uploaded and data saved successfully',
+                message: `Catalog file uploaded and data saved successfully. Processed ${totalProcessed} items.`,
                 uploadSessionId: uploadSessionId,
                 stats: {
-                    totalProcessed: processedCount,
+                    totalProcessed: totalProcessed,
                     created: createdCount,
                     updated: updatedCount,
-                    backupCreated: true
+                    backupCreated: true,
+                    fileSize: fileSizeInMB.toFixed(2) + 'MB',
+                    processingMethod: isLargeFile ? 'chunked' : 'regular'
                 }
             });
 
         } catch (parseError) {
-            console.error('Error during catalog upload:', parseError);
+            console.error('❌ Error during catalog upload:', parseError);
             
             // If backup was created but upload failed, we should clean up the backup
             if (uploadSessionId) {
@@ -566,7 +655,8 @@ const uploadCatalogFile = async (req, res) => {
             
             return res.status(500).json({ 
                 message: 'Error processing catalog file', 
-                error: parseError.message 
+                error: parseError.message,
+                details: isLargeFile ? 'Large file processing failed. Try splitting the file into smaller chunks.' : 'File processing failed.'
             });
         }
     });

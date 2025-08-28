@@ -408,6 +408,12 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         // Additional safety check: ensure the item belongs to the selected style
         if (item && item.style === selectedStyleData?.style) {
             const basePrice = Number(item.price) || 0;
+            
+            // Apply manufacturer cost multiplier first, then user group multiplier
+            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+            
+            // Calculate assembly fee AFTER all multipliers are applied
             const assemblyCost = item.styleVariantsAssemblyCost;
             let assemblyFee = 0;
 
@@ -418,14 +424,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 if (feeType === 'flat' || feeType === 'fixed') {
                     assemblyFee = feePrice;
                 } else if (feeType === 'percentage') {
-                    // percentage based on base price, not multiplied price
-                    assemblyFee = (basePrice * feePrice) / 100;
+                    // percentage based on final price after all multipliers
+                    assemblyFee = (finalPrice * feePrice) / 100;
+                } else {
+                    // Fallback for legacy data without type - treat as fixed fee
+                    assemblyFee = feePrice;
                 }
             }
-            
-            // Apply manufacturer cost multiplier first, then user group multiplier
-            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
-            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
             
             // (debug logs removed)
             
@@ -728,16 +733,19 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                     // Compute new price and assembly based on new style
                     const basePrice = Number(match.price) || 0;
+                    const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+                    const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                    
+                    // Calculate assembly fee after all multipliers are applied
                     const assemblyCost = match.styleVariantsAssemblyCost;
                     let newAssemblyUnit = 0;
                     if (assemblyCost) {
                         const feePrice = parseFloat(assemblyCost.price || 0);
                         const feeType = assemblyCost.type;
                         if (feeType === 'flat' || feeType === 'fixed') newAssemblyUnit = feePrice;
-                        else if (feeType === 'percentage') newAssemblyUnit = (basePrice * feePrice) / 100;
+                        else if (feeType === 'percentage') newAssemblyUnit = (finalPrice * feePrice) / 100;
+                        else newAssemblyUnit = feePrice; // Fallback for legacy data without type
                     }
-                    const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
-                    const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
                     const qty = Number(item.qty || 1);
                     return {
                         ...item,

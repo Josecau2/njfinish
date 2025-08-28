@@ -824,9 +824,61 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const handleUpload = async () => {
     if (!file) return;
 
+    // Check file size and show appropriate warning
+    const fileSizeInMB = file.size / (1024 * 1024);
+    const isLargeFile = fileSizeInMB > 10;
+
+    if (fileSizeInMB > 50) {
+      Swal.fire({
+        title: t('common.error'),
+        text: `File too large (${fileSizeInMB.toFixed(2)}MB). Maximum size is 50MB. Please split your file into smaller chunks.`,
+        icon: "error"
+      });
+      return;
+    }
+
+    if (isLargeFile) {
+      const result = await Swal.fire({
+        title: 'Large File Detected',
+        text: `This file is ${fileSizeInMB.toFixed(2)}MB. Large files may take several minutes to process. Continue?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, upload',
+        cancelButtonText: 'Cancel'
+      });
+      
+      if (!result.isConfirmed) return;
+    }
+
     const formData = new FormData();
-    formData.append('catalogFiles', file); // 'catalogFiles' matches backend Multer field name
+    formData.append('catalogFiles', file);
+
+    // Show loading with progress for large files
+    let progressSwal;
+    if (isLargeFile) {
+      progressSwal = Swal.fire({
+        title: 'Processing Large File',
+        html: `
+          <div class="mb-3">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                   role="progressbar" style="width: 0%" id="upload-progress"></div>
+            </div>
+          </div>
+          <p class="text-muted">Processing ${fileSizeInMB.toFixed(2)}MB file in chunks...</p>
+          <p class="text-sm">This may take a few minutes. Please don't close this window.</p>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    }
+
     try {
+      const startTime = Date.now();
+      
       const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog/upload`, {
         method: 'POST',
         headers: {
@@ -835,14 +887,39 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         body: formData
       });
 
-      if (!response.ok) throw new Error('Upload failed');
-
-      const result = await response.json();
+      const responseText = await response.text();
       
-      // Enhanced success message with rollback info
+      if (!response.ok) {
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorMessage;
+          if (errorData.details) {
+            errorMessage += `\n\n${errorData.details}`;
+          }
+        } catch (e) {
+          console.error('Error parsing response:', responseText);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = JSON.parse(responseText);
+      const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
+      
+      // Close progress modal if it was shown
+      if (progressSwal) {
+        Swal.close();
+      }
+      
+      // Enhanced success message with detailed stats
       let successMessage = t('settings.manufacturers.catalogMapping.file.uploadSuccess');
       if (result.stats) {
-        successMessage += `\n\nProcessed: ${result.stats.totalProcessed} items\nCreated: ${result.stats.created} | Updated: ${result.stats.updated}`;
+        successMessage += `\n\nFile: ${fileSizeInMB.toFixed(2)}MB`;
+        successMessage += `\nProcessing: ${result.stats.processingMethod || 'regular'}`;
+        successMessage += `\nTime: ${processingTime}s`;
+        successMessage += `\n\nItems processed: ${result.stats.totalProcessed}`;
+        successMessage += `\nCreated: ${result.stats.created} | Updated: ${result.stats.updated}`;
+        
         if (result.stats.backupCreated) {
           successMessage += `\n\n✅ Backup created - you can rollback this upload if needed.`;
         }
@@ -857,10 +934,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       
       setFileModalVisible(false);
       setFile(null);
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder); // Reload updated data
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder); // Reload updated data
+      
     } catch (err) {
-      console.error(err);
-      Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.file.uploadFailed'), "error");
+      console.error('Upload error:', err);
+      
+      // Close progress modal if it was shown
+      if (progressSwal) {
+        Swal.close();
+      }
+      
+      let errorMessage = err.message || t('settings.manufacturers.catalogMapping.file.uploadFailed');
+      
+      Swal.fire({
+        title: t('common.error'),
+        text: errorMessage,
+        icon: "error",
+        footer: isLargeFile ? 
+          'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.' : 
+          undefined
+      });
     }
   };
 
