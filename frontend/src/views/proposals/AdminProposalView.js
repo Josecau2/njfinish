@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axiosInstance from '../../helpers/axiosInstance';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -77,25 +78,10 @@ const AdminProposalView = () => {
   const fetchProposalDetails = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
       if (!proposalId) {
         throw new Error('No proposal ID provided');
       }
-      
-      const response = await fetch(`${api_url}/api/proposals/proposalByID/${proposalId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to fetch proposal details: ${response.status}`);
-      }
-
-      const data = await response.json();
+  const { data } = await axiosInstance.get(`/api/proposals/proposalByID/${proposalId}`);
       setProposal(data);
       setError(null);
     } catch (err) {

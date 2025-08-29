@@ -11,6 +11,8 @@ import {
 import EditManufacturerTab from './tabs/EditManufacturerTab';
 import SettingsTab from './tabs/SettingsTab';
 import CatalogMappingTab from './tabs/CatalogMappingTab';
+import StylePicturesTab from './tabs/StylePicturesTab';
+import TypesTab from './tabs/TypesTab';
 import FilesHistoryTab from './tabs/FilesHistoryTab';
 import { useParams } from 'react-router-dom';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
@@ -33,41 +35,65 @@ const EditManufacturer = () => {
 
   return (
     <div className="">
-      <CNav variant="tabs" role="tablist">
+      <CNav variant="tabs" role="tablist" className="border-bottom-0 mb-0">
         <CNavItem>
           <CNavLink
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
             active={activeKey === 0}
             onClick={() => setActiveKey(0)}
-          >
-              {t('settings.manufacturers.tabs.editDetails')}
+            className={activeKey === 0 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.editDetails', 'Edit Manufacturer Details')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
           <CNavLink
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
             active={activeKey === 1}
             onClick={() => setActiveKey(1)}
-          >
-              {t('settings.manufacturers.tabs.settings')}
+            className={activeKey === 1 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.settings', 'Settings')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
           <CNavLink
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
             active={activeKey === 2}
             onClick={() => setActiveKey(2)}
-          >
-              {t('settings.manufacturers.tabs.catalogMapping')}
+            className={activeKey === 2 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.catalogMapping', 'Catalog Mapping')}
           </CNavLink>
         </CNavItem>
         <CNavItem>
           <CNavLink
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
             active={activeKey === 3}
             onClick={() => setActiveKey(3)}
-          >
-              {t('settings.manufacturers.tabs.filesHistory')}
+            className={activeKey === 3 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.stylePictures', 'Style Pictures')}
+          </CNavLink>
+        </CNavItem>
+        <CNavItem>
+          <CNavLink
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
+            active={activeKey === 4}
+            onClick={() => setActiveKey(4)}
+            className={activeKey === 4 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.typePictures', 'Type Pictures')}
+          </CNavLink>
+        </CNavItem>
+        <CNavItem>
+          <CNavLink
+            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
+            active={activeKey === 5}
+            onClick={() => setActiveKey(5)}
+            className={activeKey === 5 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
+      >
+        {t('settings.manufacturers.tabs.filesHistory', 'Files & History')}
           </CNavLink>
         </CNavItem>
       </CNav>
@@ -83,6 +109,12 @@ const EditManufacturer = () => {
           <CatalogMappingTab manufacturer={manufacturer} id={id} />
         </CTabPane>
         <CTabPane visible={activeKey === 3}>
+          <StylePicturesTab manufacturer={manufacturer} />
+        </CTabPane>
+        <CTabPane visible={activeKey === 4}>
+          <TypesTab manufacturer={manufacturer} />
+        </CTabPane>
+        <CTabPane visible={activeKey === 5}>
           <FilesHistoryTab manufacturer={manufacturer} />
         </CTabPane>
       </CTabContent>

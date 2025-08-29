@@ -6,6 +6,7 @@ import axios from 'axios';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
+import { getOptimalColors } from '../../utils/colorUtils';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -78,6 +79,9 @@ const LoginPage = () => {
   rightDescription: t('auth.rightDescription'),
   };
 
+  // Compute optimal text colors for the right panel based on background
+  const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446');
+
   return (
     <div className="login-page-wrapper">
       {/* Left Panel - Illustration and Branding */}
@@ -86,9 +90,9 @@ const LoginPage = () => {
         style={{ backgroundColor: settings.backgroundColor }}
       >
         <div className="login-left-content">
-          <h1 className="mb-3">{settings.rightTitle}</h1>
-          <p className="lead mb-4">{settings.rightSubtitle}</p>
-          <p>{settings.rightDescription}</p>
+          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>{settings.rightTitle}</h1>
+          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>{settings.rightSubtitle}</p>
+          <p style={{ color: rightPanelColors.subtitle }}>{settings.rightDescription}</p>
         </div>
       </div>
 

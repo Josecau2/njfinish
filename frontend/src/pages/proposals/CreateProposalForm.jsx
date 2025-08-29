@@ -127,6 +127,11 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   };
 
   const prevStep = () => {
+    // From step 1, go back to proposals list
+    if (currentStep <= 1) {
+      navigate('/proposals');
+      return;
+    }
     let step = backStep ? 4 : currentStep - 1;
     if (step < 1) step = 1;
     setCurrentStep(step);
@@ -171,7 +176,6 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
           className="shadow-sm px-4 fw-semibold d-flex align-items-center"
           style={{
             backgroundColor: hovered === 'print' ? '#218838' : '#28a745',
-            borderColor: hovered === 'print' ? '#218838' : '#28a745',
             color: '#fff',
             borderRadius: '8px',
             border: 'none',
@@ -190,7 +194,6 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               style={{
                 backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-                borderColor: hovered === 'email' ? '#138496' : '#17a2b8',
                 color: '#fff',
                 borderRadius: '8px',
                 border: 'none',
@@ -208,7 +211,6 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               style={{
                 backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-                borderColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
                 color: '#212529',
                 borderRadius: '8px',
                 border: 'none',
@@ -235,21 +237,23 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             formData={formData}
             updateFormData={updateFormData}
             nextStep={nextStep}
+            prevStep={prevStep}
+            hideBack={false}
             isContractor={isContractor}
             contractorGroupId={contractorGroupId}
           />
         );
-      case 2:
+  case 2:
         return (
           <ManufacturerStep
             formData={formData}
             updateFormData={updateFormData}
             nextStep={nextStep}
             prevStep={prevStep}
-            hideBack={isQuick}
+    hideBack={false}
           />
         );
-      case 3:
+  case 3:
         if (!manufacturerData || Object.keys(manufacturerData).length === 0) {
           return (
             <CCard className="border-0 shadow-sm">
@@ -268,10 +272,10 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             prevStep={prevStep}
             manufacturerData={manufacturerData}
             onStyleSelect={handleStyleSelect}
-            hideBack={isQuick}
+            hideBack={false}
           />
         );
-      case 4:
+  case 4:
         return (
           <ItemSelectionStep
             setFormData={setFormData}
@@ -282,7 +286,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             setCurrentStep={setCurrentStep}
             setBackStep={setBackStep}
             sendToBackend={sendToBackend}
-            hideBack={isQuick}
+    hideBack={false}
           />
         );
       default:

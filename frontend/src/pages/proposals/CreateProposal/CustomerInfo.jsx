@@ -24,7 +24,7 @@ import { fetchLocations } from '../../../store/slices/locationSlice';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
-const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, contractorGroupId }) => {
+const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBack, isContractor, contractorGroupId }) => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [isCreatingDesigner, setIsCreatingDesigner] = useState(false);
   const { t } = useTranslation();
@@ -170,7 +170,19 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, isContractor, co
     <div className="w-100 my-4 proposal-form-mobile">
       <CCard>
         <CCardBody className="p-4">
-          <h4 className="mb-4 fw-semibold">{t('proposals.create.customerInfo.title')}</h4>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="fw-semibold mb-0">{t('proposals.create.customerInfo.title')}</h4>
+            {!hideBack && (
+              <CButton
+                color="secondary"
+                variant="outline"
+                onClick={prevStep}
+                style={{ borderRadius: '6px', minWidth: '90px' }}
+              >
+                {t('common.back')}
+              </CButton>
+            )}
+          </div>
 
           <Formik
             initialValues={formData}

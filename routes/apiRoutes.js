@@ -77,6 +77,12 @@ router.delete('/manufacturers/:manufacturerId/catalog/cleanup-backups', verifyTo
 // Delete/merge style
 router.delete('/manufacturers/:manufacturerId/style/:styleName', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.deleteStyle);
 
+// Bulk edit catalog items
+router.put('/manufacturers/catalog/bulk-edit', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.bulkEditCatalogItems);
+
+// Edit style name globally
+router.put('/manufacturers/:id/style-name', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), manufacturerController.editStyleName);
+
 // Cleanup duplicates
 router.post('/manufacturers/:manufacturerId/cleanup-duplicates', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), manufacturerController.cleanupDuplicates);
 
@@ -90,8 +96,22 @@ router.get('/manufacturers/:id/styles-meta', verifyTokenWithGroup, validateIdPar
 // Items for a given style by representative catalog id, with pagination and optional includeDetails
 router.get('/manufacturers/:manufacturerId/styles/:catalogId/items', verifyTokenWithGroup, validateIdParam('manufacturerId'), validateIdParam('catalogId'), manufacturerController.getItemsByStyleCatalogId);
 
+// Type management routes
+router.get('/manufacturers/:id/types-meta', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerTypesMeta);
+router.post('/manufacturers/type/create', verifyTokenWithGroup, requirePermission('admin:manufacturers'), manufacturerController.createTypeImage);
+router.post('/manufacturers/type/update-meta', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.updateTypeMeta);
+router.delete('/manufacturers/:manufacturerId/type/:typeName', verifyTokenWithGroup, requirePermission('admin:manufacturers'), manufacturerController.deleteType);
+router.post('/manufacturers/bulk-edit-types', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.bulkEditTypes);
+router.post('/manufacturers/bulk-change-type', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.bulkChangeType);
+router.post('/manufacturers/edit-type-name', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.editTypeName);
+router.post('/manufacturers/assign-items-to-type', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.assignItemsToType);
+
 router.get('/manufacturers/catalogs/modificationsItems/:id', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerCatalogModificationItems);
 router.post('/manufacturers/catalogs/modificationsItems/add', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.addModificationItem);
+
+// Simple style add/delete from pictures tab
+router.post('/manufacturers/:manufacturerId/styles', verifyTokenWithGroup, requirePermission('admin:manufacturers'), manufacturerController.addSimpleStyle);
+router.delete('/manufacturers/:manufacturerId/styles/:styleName', verifyTokenWithGroup, requirePermission('admin:manufacturers'), manufacturerController.deleteSimpleStyle);
 
 
 

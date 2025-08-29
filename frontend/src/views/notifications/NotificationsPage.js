@@ -19,13 +19,13 @@ import CIcon from '@coreui/icons-react'
 import { cilCheckAlt, cilReload } from '@coreui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotifications, setLoading, setError, markNotificationAsRead, markAllAsRead } from '../../store/notificationSlice'
+import axiosInstance from '../../helpers/axiosInstance'
 import EmptyState from '../../components/common/EmptyState'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 
 const NotificationsPage = () => {
   const dispatch = useDispatch()
   const { notifications, loading, error } = useSelector((state) => state.notification)
-  const API_BASE = (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '')
   
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -45,58 +45,28 @@ const NotificationsPage = () => {
     }
     
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        throw new Error('No authentication token found')
-      }
-
-      const params = new URLSearchParams({
+      const params = {
         page: currentPage,
         limit: itemsPerPage,
         ...(filter === 'unread' && { unread_only: 'true' }),
         ...(filter === 'read' && { read_only: 'true' }),
         ...(typeFilter && { type: typeFilter })
-      })
-
-      const response = await fetch(`${API_BASE}/api/notifications?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // Auth expired/invalid; clear and redirect
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-          window.location.href = '/login'
-          return
-        }
-        // Try to extract error message safely
-        let message = 'Failed to fetch notifications'
-        try {
-          const text = await response.text()
-          message = text?.slice(0, 200) || message
-        } catch (_) {}
-        throw new Error(message)
       }
 
-      let data
-      try {
-        data = await response.json()
-      } catch (e) {
-        // Handle cases where HTML is returned instead of JSON
-        const preview = await response.text()
-        throw new Error(preview?.startsWith('<!DOCTYPE') ? 'Server returned HTML instead of JSON. Check API base URL (VITE_API_URL) and CORS.' : 'Invalid JSON response')
-      }
+      const { data } = await axiosInstance.get('/api/notifications', { params })
       dispatch(setNotifications(data.data))
-      setTotalPages(data.pagination.totalPages)
+      setTotalPages(data?.pagination?.totalPages || 1)
       dispatch(setError(null))
 
     } catch (error) {
-      console.error('Error fetching notifications:', error)
-      dispatch(setError(error.message))
+      // Do not force logout on notifications auth errors
+      const status = error?.response?.status
+      if (status === 401 || status === 403) {
+        dispatch(setError('Not authorized to view notifications.'))
+      } else {
+        console.error('Error fetching notifications:', error)
+        dispatch(setError(error.message))
+      }
     } finally {
       dispatch(setLoading(false))
       setRefreshing(false)
@@ -115,25 +85,8 @@ const NotificationsPage = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${API_BASE}/api/notifications/${notificationId}/read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
-        return
-      }
-
-      if (response.ok) {
-        dispatch(markNotificationAsRead(notificationId))
-      }
+      await axiosInstance.post(`/api/notifications/${notificationId}/read`)
+      dispatch(markNotificationAsRead(notificationId))
     } catch (error) {
       console.error('Error marking notification as read:', error)
       notifyError('Failed to mark as read', error.message)
@@ -142,28 +95,11 @@ const NotificationsPage = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${API_BASE}/api/notifications/mark-all-read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
-        return
-      }
-
-      if (response.ok) {
-        dispatch(markAllAsRead())
-        // Refresh to update the list
-        fetchNotifications(false)
-        notifySuccess('All caught up', 'All notifications marked as read')
-      }
+      await axiosInstance.post('/api/notifications/mark-all-read')
+      dispatch(markAllAsRead())
+      // Refresh to update the list
+      fetchNotifications(false)
+      notifySuccess('All caught up', 'All notifications marked as read')
     } catch (error) {
       console.error('Error marking all notifications as read:', error)
       notifyError('Failed to mark all as read', error.message)

@@ -12,6 +12,7 @@ const Customer = require('./Customer');
 const UserGroupMultiplier = require('./UserGroupMultiplier');
 const {ManufacturerCatalogFile} = require('./ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('./ManufacturerStyleCollection');
+const ManufacturerTypeCollection = require('./ManufacturerTypeCollection');
 const CatalogUploadBackup = require('./CatalogUploadBackup');
 const Notification = require('./Notification');
 const ActivityLog = require('./ActivityLog');
@@ -157,6 +158,7 @@ module.exports = {
     UserGroup,
     UserGroupMultiplier,
     ManufacturerStyleCollection,
+    ManufacturerTypeCollection,
     CatalogUploadBackup,
     Notification,
     ActivityLog,

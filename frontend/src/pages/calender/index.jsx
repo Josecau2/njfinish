@@ -369,7 +369,7 @@ const CalendarView = () => {
             )}
 
             {/* Custom CSS for FullCalendar styling */}
-            <style jsx>{`
+            <style>{`
                 .fc {
                     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                 }

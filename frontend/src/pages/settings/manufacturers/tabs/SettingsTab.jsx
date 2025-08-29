@@ -18,6 +18,8 @@ import axiosInstance from '../../../../helpers/axiosInstance';
 const SettingsTab = ({ manufacturer }) => {
   const { t } = useTranslation();
   const [styleCollection, setStyleCollection] = useState([]);
+  const [catalogData, setCatalogData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [searchCode1, setSearchCode1] = useState('');
   const [page1, setPage1] = useState(1);
@@ -33,14 +35,63 @@ const SettingsTab = ({ manufacturer }) => {
   const [selectedFields2, setSelectedFields2] = useState([]);
   const [multiplier2Error, setMultiplier2Error] = useState('');
 
-  // Create allFields from baseColumns and dynamicColumns
+  // Create allFields from baseColumns and limited dynamicColumns
   const allFields = useMemo(() => {
     const baseColumns = ['code', 'description'];
-    const dynamicColumns = Array.isArray(styleCollection)
-      ? styleCollection.map(style => style.style)
-      : [];
+  const dynamicColumns = Array.isArray(styleCollection)
+    ? styleCollection
+      .slice(0, 3)
+      .map(style => style?.style)
+      .filter(v => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
+    : [];
     return [...baseColumns, ...dynamicColumns];
   }, [styleCollection]);
+
+  // Set default selected fields when allFields is ready (only base columns + 2 styles max)
+  useEffect(() => {
+    if (allFields.length > 0) {
+      // Limit default selection to CODE, DESCRIPTION and first 2 styles
+      const defaultFields = allFields.slice(0, 4); // code, description, style1, style2
+      setSelectedFields1(defaultFields);
+      setSelectedFields2(defaultFields);
+    }
+  }, [allFields]);
+
+  // Fetch catalog data for the manufacturer
+  useEffect(() => {
+    const fetchCatalogData = async () => {
+      if (!manufacturer?.id) {
+        setCatalogData([]);
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
+          headers: getAuthHeaders(),
+          params: {
+            page: 1,
+            limit: 100, // Get first 100 items for the sample table
+            sortBy: 'code',
+            sortOrder: 'ASC'
+          }
+        });
+        
+        if (response.data && Array.isArray(response.data.catalogData)) {
+          setCatalogData(response.data.catalogData);
+        } else {
+          setCatalogData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching catalog data:', error);
+        setCatalogData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCatalogData();
+  }, [manufacturer?.id]);
 
   // Fetch styleCollection
   useEffect(() => {
@@ -59,14 +110,6 @@ const SettingsTab = ({ manufacturer }) => {
     fetchStyles();
   }, [manufacturer?.id]);
 
-  // Set default selected fields when allFields is ready
-  useEffect(() => {
-    if (allFields.length > 0) {
-      setSelectedFields1(allFields);
-      setSelectedFields2(allFields);
-    }
-  }, [allFields]);
-
   // Set multipliers initially
   useEffect(() => {
     if (manufacturer?.costMultiplier) {
@@ -76,6 +119,7 @@ const SettingsTab = ({ manufacturer }) => {
   }, [manufacturer]);
 
   const toggleField = (field, selectedFieldsSetter, selectedFields) => {
+    if (typeof field !== 'string' || field.trim() === '') return; // ignore invalid fields
     selectedFieldsSetter(prev => {
       let updated;
 
@@ -83,8 +127,20 @@ const SettingsTab = ({ manufacturer }) => {
         // Remove field if already selected
         updated = prev.filter(f => f !== field);
       } else {
-        // Add new field (except code/description, which we fix anyway)
-        updated = [...prev, field];
+        // Add new field, but limit to maximum 6 columns total to prevent horizontal overflow
+        if (prev.length >= 6) {
+          // Replace the last non-essential column with the new one
+          const baseColumns = ['code', 'description'];
+          const nonBaseColumns = prev.filter(f => !baseColumns.includes(f));
+          if (nonBaseColumns.length > 0) {
+            // Remove the last style column and add the new one
+            updated = [...baseColumns, ...nonBaseColumns.slice(0, -1), field];
+          } else {
+            updated = prev; // Don't add if already at limit with base columns
+          }
+        } else {
+          updated = [...prev, field];
+        }
       }
 
       // Ensure CODE and DESCRIPTION are always first and in order
@@ -96,7 +152,7 @@ const SettingsTab = ({ manufacturer }) => {
 
   // Filter and paginate data
   const filterData = (searchCode) =>
-    manufacturer?.catalogData?.filter(item =>
+    catalogData?.filter(item =>
       typeof item.code === 'string' &&
       item.code.toLowerCase().includes(searchCode.toLowerCase())
     ) || [];
@@ -115,65 +171,93 @@ const SettingsTab = ({ manufacturer }) => {
 
   // Shared render functions
   const renderDropdown = (selectedFields, toggleHandler, prefix) => (
-    <CDropdown className="ms-2">
-      <CDropdownToggle color="secondary" variant="outline">
+    <div className="d-flex align-items-center">
+      <CDropdown className="ms-2">
+        <CDropdownToggle color="secondary" variant="outline" size="sm">
           {selectedFields.length > 0
-          ? selectedFields.slice(0, 4).map(f => f.toUpperCase()).join(', ')
-          : t('common.displayedColumns', 'Displayed Columns')}
-        {selectedFields.length > 4 && '...'}
-      </CDropdownToggle>
-      <CDropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
-        {allFields.map(field => (
-          <CDropdownItem key={field} component="div" className="form-check">
-            <CFormCheck
-              type="checkbox"
-              id={`checkbox-${prefix}-${field}`}
-              checked={selectedFields.includes(field)}
-              onChange={() => toggleHandler(field)}
-              label={field.toUpperCase()}
-            />
+            ? selectedFields
+                .slice(0, 3)
+                .map(f => (typeof f === 'string' && f ? f.toUpperCase() : t('common.na', 'N/A')))
+                .join(', ')
+            : t('common.displayedColumns', 'Displayed Columns')}
+          {selectedFields.length > 3 && '...'}
+        </CDropdownToggle>
+        <CDropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          <CDropdownItem component="div" className="small text-muted px-3 py-1">
+            CODE and DESCRIPTION are always shown. Max 6 columns total.
           </CDropdownItem>
-        ))}
-      </CDropdownMenu>
-    </CDropdown>
+          <hr className="dropdown-divider" />
+          {allFields.map(field => {
+            const isBaseColumn = ['code', 'description'].includes(field);
+            return (
+              <CDropdownItem key={field} component="div" className="form-check">
+                <CFormCheck
+                  type="checkbox"
+                  id={`checkbox-${prefix}-${field}`}
+                  checked={selectedFields.includes(field)}
+                  onChange={() => toggleHandler(field)}
+                  disabled={isBaseColumn} // Disable base columns since they're always shown
+                  label={
+                    <span className={isBaseColumn ? "text-muted" : ""}>
+                      {(typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A'))} {isBaseColumn ? "(always shown)" : ""}
+                    </span>
+                  }
+                />
+              </CDropdownItem>
+            );
+          })}
+        </CDropdownMenu>
+      </CDropdown>
+    </div>
   );
 
   const renderTable = (data, selectedFields, multiplierCalc) => (
-    <CTable striped hover responsive>
-      <CTableHead>
-        <CTableRow>
-          {selectedFields.map((field, fieldIndex) => (
-            <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
-              {field.toUpperCase()}
-            </CTableDataCell>
-          ))}
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        {data.length > 0 ? (
-          data.map(item => (
-            <CTableRow key={item.id}>
-              {selectedFields.map((field, fieldIndex) => (
-                <CTableDataCell key={`${item.id}-${fieldIndex}`}>
-                  {['code', 'description'].includes(field)
-                    ? item[field]
-                    : (item.style?.toLowerCase() === field.toLowerCase()
-                      ? `$${multiplierCalc(item.price)}`
-                      : '--')}
-                </CTableDataCell>
-
-              ))}
-            </CTableRow>
-          ))
-        ) : (
+    <div>
+      <div className="mb-2 small text-muted">
+        Showing {Math.min(data.length, 5)} sample items with price comparison across different styles
+      </div>
+      <CTable striped hover responsive>
+        <CTableHead>
           <CTableRow>
-            <CTableDataCell colSpan={selectedFields.length} className="text-center">
-              {t('common.noData', 'No data found.')}
-            </CTableDataCell>
+      {selectedFields.map((field, fieldIndex) => (
+              <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
+        {typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A')}
+              </CTableDataCell>
+            ))}
           </CTableRow>
-        )}
-      </CTableBody>
-    </CTable>
+        </CTableHead>
+        <CTableBody>
+          {loading ? (
+            <CTableRow>
+              <CTableDataCell colSpan={selectedFields.length} className="text-center">
+                {t('common.loading', 'Loading...')}
+              </CTableDataCell>
+            </CTableRow>
+          ) : data.length > 0 ? (
+            data.map(item => (
+              <CTableRow key={item.id}>
+                {selectedFields.map((field, fieldIndex) => (
+                  <CTableDataCell key={`${item.id}-${fieldIndex}`}>
+                    {typeof field === 'string' && ['code', 'description'].includes(field)
+                      ? item[field]
+                      : (typeof field === 'string' && item.style?.toLowerCase() === field.toLowerCase()
+                        ? `$${multiplierCalc(item.price)}`
+                        : '--')}
+                  </CTableDataCell>
+
+                ))}
+              </CTableRow>
+            ))
+          ) : (
+            <CTableRow>
+              <CTableDataCell colSpan={selectedFields.length} className="text-center">
+                {t('common.noData', 'No data found.')}
+              </CTableDataCell>
+            </CTableRow>
+          )}
+        </CTableBody>
+      </CTable>
+    </div>
   );
 
   return (
@@ -205,7 +289,7 @@ const SettingsTab = ({ manufacturer }) => {
               placeholder={t('common.search') + '...'}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
-            {/* {renderDropdown(selectedFields1, field => toggleField(field, setSelectedFields1, selectedFields1), '1')} */}
+            {renderDropdown(selectedFields1, field => toggleField(field, setSelectedFields1, selectedFields1), '1')}
           </CInputGroup>
 
           {renderTable(paginatedData1, selectedFields1, value =>
@@ -264,7 +348,7 @@ const SettingsTab = ({ manufacturer }) => {
               placeholder={t('common.search') + '...'}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
-            {/* {renderDropdown(selectedFields2, field => toggleField(field, setSelectedFields2, selectedFields2), '2')} */}
+            {renderDropdown(selectedFields2, field => toggleField(field, setSelectedFields2, selectedFields2), '2')}
           </CInputGroup>
 
           {renderTable(paginatedData2, selectedFields2, value =>

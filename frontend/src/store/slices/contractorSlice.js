@@ -1,24 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../../helpers/axiosInstance';
 
 export const fetchContractors = createAsyncThunk(
   'contractors/fetchContractors',
   async ({ page = 1, limit = 10 } = {}, { rejectWithValue }) => {
     try {
-      const api_url = import.meta.env.VITE_API_URL;
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${api_url}/api/contractors?page=${page}&limit=${limit}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      return data;
+  const { data } = await axiosInstance.get('/api/contractors', { params: { page, limit } });
+  return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -29,21 +17,8 @@ export const fetchContractor = createAsyncThunk(
   'contractors/fetchContractor',
   async (groupId, { rejectWithValue }) => {
     try {
-      const api_url = import.meta.env.VITE_API_URL;
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${api_url}/api/contractors/${groupId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      return data;
+  const { data } = await axiosInstance.get(`/api/contractors/${groupId}`);
+  return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -53,21 +28,13 @@ export const fetchContractor = createAsyncThunk(
 export const fetchContractorProposals = createAsyncThunk(
   'contractors/fetchContractorProposals',
   async ({ groupId, page = 1, limit = 10, status = 'all', search = '' }) => {
-    const api_url = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem('token');
-    const params = new URLSearchParams({
+    const params = {
       page: page.toString(),
       limit: limit.toString(),
       ...(status !== 'all' && { status }),
       ...(search && { search })
-    });
-    const response = await fetch(`${api_url}/api/contractors/${groupId}/proposals?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    const data = await response.json();
+    };
+    const { data } = await axiosInstance.get(`/api/contractors/${groupId}/proposals`, { params });
     return data;
   }
 );
@@ -75,20 +42,12 @@ export const fetchContractorProposals = createAsyncThunk(
 export const fetchContractorCustomers = createAsyncThunk(
   'contractors/fetchContractorCustomers',
   async ({ groupId, page = 1, limit = 10, search = '' }) => {
-    const api_url = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem('token');
-    const params = new URLSearchParams({
+    const params = {
       page: page.toString(),
       limit: limit.toString(),
       ...(search && { search })
-    });
-    const response = await fetch(`${api_url}/api/contractors/${groupId}/customers?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    const data = await response.json();
+    };
+    const { data } = await axiosInstance.get(`/api/contractors/${groupId}/customers`, { params });
     return data;
   }
 );
@@ -96,16 +55,8 @@ export const fetchContractorCustomers = createAsyncThunk(
 export const fetchProposalDetails = createAsyncThunk(
   'contractors/fetchProposalDetails',
   async (proposalId) => {
-    const api_url = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${api_url}/api/proposals/${proposalId}/details`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    const data = await response.json();
-    return data;
+  const { data } = await axiosInstance.get(`/api/proposals/${proposalId}/details`);
+  return data;
   }
 );
 

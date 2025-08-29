@@ -8,14 +8,16 @@ import {
     CModalFooter,
     CButton,
 } from '@coreui/react';
+import PageHeader from '../PageHeader';
 
 const EmailContractModal = ({ show, onClose }) => {
     const { t } = useTranslation();
     return (
         <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
-            <CModalHeader closeButton>
-                <CModalTitle>{t('contracts.sendTitle', 'Send contract')}</CModalTitle>
-            </CModalHeader>
+            <PageHeader 
+                title={t('contracts.sendTitle', 'Send contract')} 
+                onClose={onClose}
+            />
             <CModalBody>
                 <p className="text-center">{t('contracts.noContractsMsg', 'No contracts available for selection. Please go to contract settings to add one.')}</p>
             </CModalBody>

@@ -9,6 +9,7 @@ const { Manufacturer, ManufacturerCatalogData, Collection, CatalogUploadBackup }
 const sequelize = require('../config/db');
 const { ManufacturerCatalogFile } = require('../models/ManufacturerCatalogFile');
 const ManufacturerStyleCollection = require('../models/ManufacturerStyleCollection');
+const ManufacturerTypeCollection = require('../models/ManufacturerTypeCollection');
 const ManufacturerAssemblyCost = require('../models/ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('../models/ManufacturerHingesDetails');
 const ManufacturerModificationDetails = require('../models/ManufacturerModificationDetails');
@@ -1713,7 +1714,14 @@ const getManufacturerCatalog = async (req, res) => {
         const page = Math.max(parseInt(req.query.page || '1', 10), 1);
         const limit = Math.min(Math.max(parseInt(req.query.limit || '50', 10), 1), 500);
         const offset = (page - 1) * limit;
-        const { typeFilter = '', styleFilter = '', sortBy = 'code', sortOrder = 'ASC' } = req.query;
+        const {
+            typeFilter = '',
+            styleFilter = '',
+            search = '',
+            excludeType = '',
+            sortBy = 'code',
+            sortOrder = 'ASC',
+        } = req.query;
 
         // Validate manufacturer exists (optional but useful)
         const manufacturer = await Manufacturer.findByPk(manufacturerId);
@@ -1728,11 +1736,34 @@ const getManufacturerCatalog = async (req, res) => {
         const validSortOrder = allowedSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
 
         // keep Sequelize import above for pagination and distinct helpers
+        // Build where clause
         const where = {
             manufacturerId,
             ...(typeFilter ? { type: { [Sequelize.Op.eq]: typeFilter } } : {}),
             ...(styleFilter ? { style: { [Sequelize.Op.eq]: styleFilter } } : {}),
         };
+
+        // Exclude current type if provided (assignable items only)
+        if (excludeType) {
+            where[Op.or] = [
+                { type: { [Op.ne]: excludeType } },
+                { type: { [Op.is]: null } },
+            ];
+        }
+
+        // Text search across code/description/style
+        if (search && String(search).trim().length > 0) {
+            const like = `%${search}%`;
+            where[Op.and] = (where[Op.and] || []).concat([
+                {
+                    [Op.or]: [
+                        { code: { [Op.like]: like } },
+                        { description: { [Op.like]: like } },
+                        { style: { [Op.like]: like } },
+                    ],
+                },
+            ]);
+        }
 
         const { rows, count } = await ManufacturerCatalogData.findAndCountAll({
             where,
@@ -1742,9 +1773,18 @@ const getManufacturerCatalog = async (req, res) => {
         });
 
         // Build filter metadata (distinct types/styles) for this manufacturer
+        // Build where for distinct queries (mirror exclusions, but don't apply search/typeFilter/styleFilter to show a complete set)
+        const distinctWhere = { manufacturerId };
+        if (excludeType) {
+            distinctWhere[Op.or] = [
+                { type: { [Op.ne]: excludeType } },
+                { type: { [Op.is]: null } },
+            ];
+        }
+
         const [typeRows, styleRows] = await Promise.all([
             ManufacturerCatalogData.findAll({
-                where: { manufacturerId },
+                where: distinctWhere,
                 attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('type')), 'type']],
                 raw: true,
             }),
@@ -1781,6 +1821,470 @@ const getManufacturerCatalog = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to fetch catalog', error: error.message });
     }
 };
+
+// Bulk edit catalog items
+const bulkEditCatalogItems = async (req, res) => {
+    try {
+        const { itemIds, updates } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ error: 'Item IDs array is required' });
+        }
+
+        if (!updates || typeof updates !== 'object') {
+            return res.status(400).json({ error: 'Updates object is required' });
+        }
+
+        // Validate that we have at least one field to update
+        const allowedFields = ['style', 'type', 'description', 'price'];
+        const fieldsToUpdate = {};
+        
+        for (const field of allowedFields) {
+            if (updates[field] !== undefined && updates[field] !== null && updates[field] !== '') {
+                fieldsToUpdate[field] = updates[field];
+            }
+        }
+
+        if (Object.keys(fieldsToUpdate).length === 0) {
+            return res.status(400).json({ error: 'At least one field to update is required' });
+        }
+
+        // Add timestamp for tracking
+        fieldsToUpdate.updatedAt = new Date();
+
+        // Perform bulk update
+        const [affectedCount] = await ManufacturerCatalogData.update(
+            fieldsToUpdate,
+            {
+                where: {
+                    id: itemIds
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            message: `Successfully updated ${affectedCount} items`,
+            affectedCount
+        });
+
+    } catch (error) {
+        console.error('Error in bulk edit:', error);
+        res.status(500).json({ error: 'Failed to bulk edit items' });
+    }
+};
+
+// Edit style name globally for a manufacturer
+const editStyleName = async (req, res) => {
+    try {
+        const { id: manufacturerId } = req.params;
+        const { oldStyleName, newStyleName } = req.body;
+
+        if (!oldStyleName || !newStyleName) {
+            return res.status(400).json({ error: 'Both old and new style names are required' });
+        }
+
+        if (oldStyleName.trim() === newStyleName.trim()) {
+            return res.status(400).json({ error: 'New style name must be different from the old one' });
+        }
+
+        // Check if new style name already exists for this manufacturer
+        const existingItems = await ManufacturerCatalogData.findOne({
+            where: {
+                manufacturerId: manufacturerId,
+                style: newStyleName.trim()
+            }
+        });
+
+        if (existingItems) {
+            return res.status(400).json({ 
+                error: `Style "${newStyleName.trim()}" already exists for this manufacturer` 
+            });
+        }
+
+        // Update all items with the old style name to the new style name
+        const [affectedCount] = await ManufacturerCatalogData.update(
+            { 
+                style: newStyleName.trim(),
+                updatedAt: new Date()
+            },
+            {
+                where: {
+                    manufacturerId: manufacturerId,
+                    style: oldStyleName.trim()
+                }
+            }
+        );
+
+        if (affectedCount === 0) {
+            return res.status(404).json({ 
+                error: `No items found with style "${oldStyleName}" for this manufacturer` 
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Successfully updated style name from "${oldStyleName}" to "${newStyleName}" for ${affectedCount} items`,
+            affectedCount,
+            oldStyleName: oldStyleName.trim(),
+            newStyleName: newStyleName.trim()
+        });
+
+    } catch (error) {
+        console.error('Error editing style name:', error);
+        res.status(500).json({ error: 'Failed to edit style name' });
+    }
+};
+
+// Fetch types metadata for a manufacturer
+const fetchManufacturerTypesMeta = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: 'Manufacturer ID is required' });
+        }
+
+        // Representative catalog rows per type (short description/price)
+        const reps = await ManufacturerCatalogData.findAll({
+            where: { manufacturerId: id, type: { [Op.ne]: null } },
+            attributes: [
+                [Sequelize.fn('MIN', Sequelize.col('id')), 'id'],
+                'type',
+                [Sequelize.fn('MIN', Sequelize.col('description')), 'description'],
+                [Sequelize.fn('MIN', Sequelize.col('price')), 'price'],
+            ],
+            group: ['type'],
+            order: [[Sequelize.literal('type'), 'ASC']],
+            raw: true,
+        });
+
+        // All type metadata rows (names/images/longDescription)
+        const allTypeCollections = await ManufacturerTypeCollection.findAll({
+            where: { manufacturerId: id },
+            raw: true,
+        });
+
+        const repMap = new Map((reps || []).map(r => [r.type, r]));
+        const tcMap = new Map((allTypeCollections || []).map(tc => [tc.type, tc]));
+        const allTypes = Array.from(new Set([
+            ...(reps || []).map(r => r.type),
+            ...(allTypeCollections || []).map(tc => tc.type),
+        ])).filter(Boolean);
+
+        const unified = allTypes.map(typeName => {
+            const rep = repMap.get(typeName);
+            const tc = tcMap.get(typeName);
+            return {
+                id: rep?.id || tc?.catalogId || null,
+                type: typeName,
+                description: rep?.description || null,
+                longDescription: tc?.description || null,
+                price: rep?.price || null,
+                image: tc?.image || null,
+                name: tc?.name || null,
+                shortName: tc?.shortName || null,
+                code: tc?.code || null,
+            };
+        }).sort((a, b) => String(a.type).localeCompare(String(b.type)));
+
+        return res.json(unified);
+    } catch (error) {
+        console.error('Error fetching types metadata:', error);
+        return res.status(500).json({ error: 'Failed to fetch types metadata' });
+    }
+};
+
+// Create/update type image
+const createTypeImage = async (req, res) => {
+    try {
+        upload.fields([{ name: 'typeImage', maxCount: 1 }])(req, res, async function (err) {
+            if (err) {
+                console.error('Multer error:', err);
+                return res.status(400).json({ message: err.message });
+            }
+
+            const { type, manufacturerId, catalogId, longDescription, description } = req.body;
+            const typeImageFile = req.files?.typeImage?.[0];
+
+            if (!typeImageFile) {
+                return res.status(400).json({ message: 'Type image file is required' });
+            }
+            if (!type || !manufacturerId) {
+                return res.status(400).json({ message: 'Type name and manufacturer ID are required' });
+            }
+
+            // Resolve a representative catalog id for this manufacturer/type (or any item for the manufacturer)
+            let repCatalog = null;
+            try {
+                repCatalog = await ManufacturerCatalogData.findOne({
+                    where: { manufacturerId, type },
+                    attributes: ['id'],
+                    order: [['id', 'ASC']],
+                });
+                if (!repCatalog) {
+                    repCatalog = await ManufacturerCatalogData.findOne({
+                        where: { manufacturerId },
+                        attributes: ['id'],
+                        order: [['id', 'ASC']],
+                    });
+                }
+            } catch (e) {
+                // ignore
+            }
+
+            // Find or create type collection entry
+            const [typeCollection, created] = await ManufacturerTypeCollection.findOrCreate({
+                where: { manufacturerId: manufacturerId, type: type },
+                defaults: {
+                    catalogId: catalogId || repCatalog?.id || null,
+                    manufacturerId: manufacturerId,
+                    type: type,
+                    image: typeImageFile.filename,
+                    description: typeof longDescription === 'string' ? longDescription : (typeof description === 'string' ? description : null),
+                },
+            });
+
+            if (!created) {
+                const updatePayload = { image: typeImageFile.filename };
+                if (typeof longDescription === 'string') updatePayload.description = longDescription;
+                else if (typeof description === 'string') updatePayload.description = description;
+                if (!typeCollection.catalogId && (catalogId || repCatalog?.id)) {
+                    updatePayload.catalogId = catalogId || repCatalog.id;
+                }
+                await typeCollection.update(updatePayload);
+            }
+
+            return res.json({ success: true, message: 'Type image uploaded successfully', filename: typeImageFile.filename });
+        });
+    } catch (error) {
+        console.error('Error uploading type image:', error);
+        return res.status(500).json({ error: 'Failed to upload type image' });
+    }
+};
+
+// Bulk edit types
+const bulkEditTypes = async (req, res) => {
+    try {
+        const { manufacturerId, itemIds, updates } = req.body;
+
+        if (!manufacturerId || !itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ error: 'Manufacturer ID and item IDs are required' });
+        }
+
+        // Build update object, only including non-empty values
+        const updateFields = {};
+        if (updates.type && updates.type.trim()) {
+            updateFields.type = updates.type.trim();
+        }
+        if (updates.description && updates.description.trim()) {
+            updateFields.description = updates.description.trim();
+        }
+
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ error: 'At least one field must be provided for update' });
+        }
+
+        // Update the items
+        const [updatedCount] = await ManufacturerCatalogData.update(
+            updateFields,
+            {
+                where: {
+                    id: { [Op.in]: itemIds },
+                    manufacturerId: manufacturerId
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            message: `Updated ${updatedCount} catalog items`,
+            updatedCount
+        });
+
+    } catch (error) {
+        console.error('Error in bulk edit types:', error);
+        res.status(500).json({ error: 'Failed to update catalog items' });
+    }
+};
+
+// Edit type name globally
+const editTypeName = async (req, res) => {
+    try {
+        const { manufacturerId, oldTypeName, newTypeName } = req.body;
+
+        if (!manufacturerId || !oldTypeName || !newTypeName) {
+            return res.status(400).json({ error: 'Manufacturer ID, old type name, and new type name are required' });
+        }
+
+        // Update all items with the old type name
+        const [updatedCount] = await ManufacturerCatalogData.update(
+            { type: newTypeName.trim() },
+            {
+                where: {
+                    manufacturerId: manufacturerId,
+                    type: oldTypeName
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            message: `Updated ${updatedCount} items from type "${oldTypeName}" to "${newTypeName}"`,
+            updatedCount
+        });
+
+    } catch (error) {
+        console.error('Error editing type name:', error);
+        res.status(500).json({ error: 'Failed to update type name' });
+    }
+};
+
+// Bulk change type category
+const bulkChangeType = async (req, res) => {
+    try {
+        const { manufacturerId, itemIds, newType } = req.body;
+
+        if (!manufacturerId || !itemIds || !Array.isArray(itemIds) || itemIds.length === 0 || !newType) {
+            return res.status(400).json({ error: 'Manufacturer ID, item IDs, and new type are required' });
+        }
+
+        // Update all specified items to the new type
+        const [updatedCount] = await ManufacturerCatalogData.update(
+            { type: newType.trim() },
+            {
+                where: {
+                    manufacturerId: manufacturerId,
+                    id: { [Op.in]: itemIds }
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            message: `Updated ${updatedCount} items to type "${newType}"`,
+            updatedCount
+        });
+
+    } catch (error) {
+        console.error('Error in bulk change type:', error);
+        res.status(500).json({ error: 'Failed to change type category' });
+    }
+};
+
+const assignItemsToType = async (req, res) => {
+  try {
+    const { manufacturerId, itemIds, newType } = req.body;
+
+    if (!manufacturerId || !itemIds || !Array.isArray(itemIds) || itemIds.length === 0 || !newType) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Manufacturer ID, item IDs array, and new type are required' 
+      });
+    }
+
+    // Update all specified items to the new type
+    const updateResult = await ManufacturerCatalogData.update(
+      { type: newType },
+      {
+        where: {
+          id: { [Op.in]: itemIds },
+          manufacturerId: manufacturerId
+        }
+      }
+    );
+
+    if (updateResult[0] > 0) {
+      res.json({ 
+        success: true, 
+        message: `Successfully assigned ${updateResult[0]} items to type "${newType}"`,
+        updatedCount: updateResult[0]
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: 'No items were updated. Please check the item IDs and manufacturer ID.' 
+      });
+    }
+
+  } catch (error) {
+    console.error('Error assigning items to type:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to assign items to type',
+      error: error.message 
+    });
+  }
+};
+
+// Update type metadata (e.g., description) for a given manufacturer and type
+const updateTypeMeta = async (req, res) => {
+    try {
+        const { manufacturerId, type, longDescription, description, name, shortName, code } = req.body;
+        if (!manufacturerId || !type) {
+            return res.status(400).json({ success: false, message: 'Manufacturer ID and type are required' });
+        }
+
+        // Ensure we set a representative catalogId when creating a new type meta row
+        // This avoids validation errors if catalogId is required by the model/DB.
+        let repCatalog = await ManufacturerCatalogData.findOne({
+            where: { manufacturerId, type },
+            attributes: ['id'],
+            order: [['id', 'ASC']]
+        });
+        // If there is no catalog item for this specific type yet, fall back to any
+        // catalog item for the same manufacturer so we can persist metadata.
+        if (!repCatalog) {
+            repCatalog = await ManufacturerCatalogData.findOne({
+                where: { manufacturerId },
+                attributes: ['id'],
+                order: [['id', 'ASC']]
+            });
+        }
+        // If the manufacturer has no catalog items at all, return a clear 400 error
+        if (!repCatalog) {
+            return res.status(400).json({
+                success: false,
+                message: 'No catalog items found for this manufacturer to associate metadata with. Upload a catalog or create at least one item first.'
+            });
+        }
+
+    const [typeCollection] = await ManufacturerTypeCollection.findOrCreate({
+            where: { manufacturerId, type },
+            defaults: {
+                catalogId: repCatalog.id,
+                manufacturerId,
+                type,
+                // Store longDescription in description column
+                description: typeof longDescription === 'string' ? longDescription : (typeof description === 'string' ? description : null),
+                name: typeof name === 'string' ? name : null,
+                shortName: typeof shortName === 'string' ? shortName : null,
+                code: typeof code === 'string' ? code : null,
+            }
+        });
+
+        const updatePayload = {};
+        if (typeof longDescription === 'string') updatePayload.description = longDescription;
+        else if (typeof description === 'string') updatePayload.description = description;
+        if (typeof name === 'string') updatePayload.name = name;
+        if (typeof shortName === 'string') updatePayload.shortName = shortName;
+        if (typeof code === 'string') updatePayload.code = code;
+
+        // If an existing row somehow lacks catalogId, repair it
+        if (!typeCollection.catalogId && repCatalog?.id) {
+            updatePayload.catalogId = repCatalog.id;
+        }
+        if (Object.keys(updatePayload).length > 0) {
+            await typeCollection.update(updatePayload);
+        }
+
+        return res.json({ success: true, message: 'Type metadata updated', data: { manufacturerId, type, ...updatePayload } });
+    } catch (error) {
+        console.error('Error updating type metadata:', error?.message || error);
+        return res.status(500).json({ success: false, message: 'Failed to update type metadata' });
+    }
+};
+
 module.exports = {
     addManufacturer,
     fetchManufacturer,
@@ -1797,6 +2301,7 @@ module.exports = {
     fetchManufacturerStylesWithCatalog,
     fetchManufacturerStylesMeta,
     getItemsByStyleCatalogId,
+    // new endpoints will be appended below exports update
     fetchManufacturerAssemblyCostDetails,
     fetchManufacturerHingesDetails,
     fetchManufacturerItemsModification,
@@ -1810,5 +2315,127 @@ module.exports = {
     getCatalogUploadBackups,
     rollbackCatalogUpload,
     cleanupOldBackups,
-    getManufacturerCatalog
+    getManufacturerCatalog,
+    bulkEditCatalogItems,
+    editStyleName,
+    fetchManufacturerTypesMeta,
+    createTypeImage,
+    bulkEditTypes,
+    bulkChangeType,
+    editTypeName,
+    assignItemsToType,
+    updateTypeMeta,
+    deleteType,
+    addSimpleStyle,
+    deleteSimpleStyle
 };
+
+// Delete a type: options to reassign item types to another type or null, and remove metadata/image
+async function deleteType(req, res) {
+    try {
+        const { manufacturerId, typeName } = req.params;
+        const { reassignTo } = req.body || {};
+
+        if (!manufacturerId || !typeName) {
+            return res.status(400).json({ success: false, message: 'Manufacturer ID and type name are required' });
+        }
+
+        // Update catalog items
+        const itemUpdate = {};
+        if (typeof reassignTo === 'string' && reassignTo.trim()) {
+            itemUpdate.type = reassignTo.trim();
+        } else {
+            itemUpdate.type = null; // clear
+        }
+        const [updatedCount] = await ManufacturerCatalogData.update(itemUpdate, {
+            where: { manufacturerId, type: typeName }
+        });
+
+        // Remove type metadata entries
+        const deletedMeta = await ManufacturerTypeCollection.destroy({ where: { manufacturerId, type: typeName } });
+
+        return res.json({ success: true, message: 'Type deleted', updatedItems: updatedCount, deletedMeta });
+    } catch (error) {
+        console.error('Error deleting type:', error);
+        return res.status(500).json({ success: false, message: 'Failed to delete type' });
+    }
+}
+
+// Simple add style (by name + optional shortName/description/code/image) without requiring mapping screen
+async function addSimpleStyle(req, res) {
+    try {
+        upload.fields([{ name: 'styleImage', maxCount: 1 }])(req, res, async function (err) {
+            if (err) return res.status(400).json({ message: err.message });
+            const { manufacturerId, name, shortName, description, code } = req.body;
+            if (!manufacturerId || !name) return res.status(400).json({ message: 'manufacturerId and name are required' });
+            const imagePath = req.files?.styleImage?.[0]?.filename || null;
+
+            // Resolve a representative catalog item id to satisfy the NOT NULL constraint on catalogId
+            let repCatalog = null;
+            try {
+                repCatalog = await ManufacturerCatalogData.findOne({
+                    where: { manufacturerId, style: name },
+                    attributes: ['id'],
+                    order: [['id', 'ASC']],
+                });
+                if (!repCatalog) {
+                    repCatalog = await ManufacturerCatalogData.findOne({
+                        where: { manufacturerId },
+                        attributes: ['id'],
+                        order: [['id', 'ASC']],
+                    });
+                }
+            } catch (_) {
+                // ignore lookup errors, handled below
+            }
+
+            if (!repCatalog?.id) {
+                return res.status(400).json({
+                    message: 'No catalog items found for this manufacturer; add at least one item before creating styles.',
+                });
+            }
+
+            // Upsert central row with a valid catalogId
+            const [row, created] = await ManufacturerStyleCollection.findOrCreate({
+                where: { manufacturerId, name },
+                defaults: { manufacturerId, name, shortName, description, code, image: imagePath, catalogId: repCatalog.id },
+            });
+            if (!created) {
+                const update = { shortName, description, code };
+                if (imagePath) update.image = imagePath;
+                if (!row.catalogId) update.catalogId = repCatalog.id;
+                await row.update(update);
+            }
+            return res.json({ success: true, style: row });
+        });
+    } catch (e) {
+        console.error('addSimpleStyle error:', e);
+        return res.status(500).json({ message: 'Failed to add style' });
+    }
+}
+
+// Delete a style: optionally reassign affected catalog items to another style or delete them
+async function deleteSimpleStyle(req, res) {
+    try {
+        const { manufacturerId, styleName } = req.params;
+        const { reassignTo, deleteItems } = req.body || {};
+        if (!manufacturerId || !styleName) return res.status(400).json({ message: 'manufacturerId and styleName are required' });
+
+        if (deleteItems) {
+            await ManufacturerCatalogData.destroy({ where: { manufacturerId, style: styleName } });
+        } else if (typeof reassignTo === 'string' && reassignTo.trim()) {
+            await ManufacturerCatalogData.update({ style: reassignTo.trim() }, { where: { manufacturerId, style: styleName } });
+        } else {
+            await ManufacturerCatalogData.update({ style: null }, { where: { manufacturerId, style: styleName } });
+        }
+
+        // Remove central metadata rows (both central and per-catalog if any)
+        await ManufacturerStyleCollection.destroy({ where: { manufacturerId, name: styleName } });
+        await ManufacturerStyleCollection.destroy({ where: { manufacturerId, shortName: styleName } });
+
+        return res.json({ success: true, message: 'Style deleted' });
+    } catch (e) {
+        console.error('deleteSimpleStyle error:', e);
+        return res.status(500).json({ message: 'Failed to delete style' });
+    }
+}

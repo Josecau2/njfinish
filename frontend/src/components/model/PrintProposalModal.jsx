@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -15,6 +15,7 @@ import {
 import Select from 'react-select';
 import axiosInstance from '../../helpers/axiosInstance';
 import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
+import PageHeader from '../PageHeader';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -48,6 +49,59 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const [pdfCustomization, setPdfCustomization] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
     const [previewHtml, setPreviewHtml] = useState('');
+
+    // Preview scaling state/refs for mobile-friendly rendering
+    const previewContainerRef = useRef(null);
+    const previewContentRef = useRef(null);
+    const [previewScale, setPreviewScale] = useState(1);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [containerPadding, setContainerPadding] = useState(20);
+    const BASE_PAGE_WIDTH_PX = 794; // ~210mm @96dpi
+
+    const recomputePreviewScale = () => {
+        try {
+            const container = previewContainerRef.current;
+            const content = previewContentRef.current;
+            if (!container || !content) return;
+            // Dynamic padding based on viewport width (min 12px, max 32px)
+            const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+            const dynamicPadding = Math.max(12, Math.min(32, Math.round(vw * 0.04)));
+            if (dynamicPadding !== containerPadding) setContainerPadding(dynamicPadding);
+
+            // Compute available width excluding padding
+            const styles = window.getComputedStyle(container);
+            const padLeft = parseFloat(styles.paddingLeft || '0');
+            const padRight = parseFloat(styles.paddingRight || '0');
+            const availableWidth = (container.clientWidth || 0) - padLeft - padRight;
+            if (!availableWidth || availableWidth <= 0) return;
+            const scale = Math.min(1, availableWidth / BASE_PAGE_WIDTH_PX);
+            setPreviewScale(scale);
+            // Measure full content height to compute scaled wrapper height
+            const naturalHeight = content.scrollHeight || content.offsetHeight || 0;
+            setContentHeight(naturalHeight);
+        } catch (_) {
+            // no-op
+        }
+    };
+
+    // Recompute scale when preview opens, html changes, or on resize
+    useEffect(() => {
+        if (!showPreview) return;
+        const r = () => recomputePreviewScale();
+        r();
+        window.addEventListener('resize', r);
+        return () => window.removeEventListener('resize', r);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showPreview, previewHtml]);
+
+    // Also observe DOM mutations inside the preview to keep height in sync
+    useEffect(() => {
+        if (!showPreview || !previewContentRef.current) return;
+        const observer = new MutationObserver(() => recomputePreviewScale());
+        observer.observe(previewContentRef.current, { childList: true, subtree: true });
+        return () => observer.disconnect();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showPreview, previewContentRef.current]);
 
     // Determine if current user is a contractor (hide internal-only controls)
     const loggedInUser = (() => {
@@ -823,9 +877,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     return (
         <>
             <CModal visible={show} onClose={onClose} size="lg" alignment="center" scrollable>
-                <CModalHeader closeButton className="border-bottom-0 pb-0">
-                    <CModalTitle className="h4">{t('proposalCommon.printTitle')}</CModalTitle>
-                </CModalHeader>
+                <PageHeader 
+                    title={t('proposalCommon.printTitle')} 
+                    onClose={onClose}
+                />
                 <form onSubmit={formik.handleSubmit}>
                     <CModalBody className="pt-0">
                         {/* Same form content as before */}
@@ -948,29 +1003,45 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 alignment="center" 
                 scrollable
             >
-                <CModalHeader closeButton>
-                    <CModalTitle>
-                        <i className="cil-description me-2"></i>
-                        {t('proposalCommon.previewTitle', 'Proposal Preview')}
-                    </CModalTitle>
-                </CModalHeader>
-                <CModalBody style={{ padding: '0' }}>
-                    <div style={{ 
-                        maxHeight: '80vh', 
-                        overflow: 'auto',
-                        background: '#f8f9fa',
-                        padding: '20px'
-                    }}>
-                        <div 
-                            style={{ 
-                                background: 'white',
-                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                <PageHeader 
+                    title={t('proposalCommon.previewTitle', 'Proposal Preview')} 
+                    onClose={() => setShowPreview(false)}
+                />
+                <CModalBody style={{ padding: 0 }}>
+                    <div
+                        ref={previewContainerRef}
+                        style={{
+                            maxHeight: '80vh',
+                            overflow: 'auto',
+                            background: '#f8f9fa',
+                            padding: containerPadding,
+                        }}
+                    >
+                        {/* Scaled stage wrapper keeps scroll height correct */}
+                        <div
+                            style={{
+                                width: Math.floor(BASE_PAGE_WIDTH_PX * previewScale),
+                                height: Math.round((contentHeight || 0) * previewScale),
+                                position: 'relative',
                                 margin: '0 auto',
-                                maxWidth: '210mm', // A4 width
-                                minHeight: '297mm' // A4 height
                             }}
-                            dangerouslySetInnerHTML={{ __html: previewHtml }}
-                        />
+                        >
+                            {/* Natural-size content scaled to fit container width */}
+                            <div
+                                ref={previewContentRef}
+                                style={{
+                                    width: BASE_PAGE_WIDTH_PX,
+                                    transform: `scale(${previewScale})`,
+                                    transformOrigin: 'top left',
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
+                                    background: 'white',
+                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                                }}
+                                dangerouslySetInnerHTML={{ __html: previewHtml }}
+                            />
+                        </div>
                     </div>
                 </CModalBody>
                 <CModalFooter>

@@ -182,6 +182,41 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         }
     };
 
+    // Helper function to update existing table items with type information
+    const updateExistingItemsWithTypes = (catalogData) => {
+        if (!Array.isArray(catalogData) || catalogData.length === 0) return;
+        
+        const codeToTypeMap = new Map();
+        catalogData.forEach(item => {
+            if (item.code && item.type) {
+                codeToTypeMap.set(String(item.code).trim(), item.type);
+            }
+        });
+
+        setTableItems(prevItems => {
+            const updated = prevItems.map(item => {
+                // If item already has type, keep it
+                if (item.type) return item;
+                
+                // Look up type by code
+                const itemType = codeToTypeMap.get(String(item.code).trim());
+                if (itemType) {
+                    return { ...item, type: itemType };
+                }
+                
+                return item;
+            });
+            
+            // Only update Redux if there were actual changes
+            const hasChanges = updated.some((item, index) => item.type !== prevItems[index]?.type);
+            if (hasChanges) {
+                dispatch(setTableItemsRedux(updated));
+            }
+            
+            return updated;
+        });
+    };
+
     useEffect(() => {
         updateManufacturerData();
     }, [tableItems, customItems, discountPercent, isAssembled]);
@@ -222,7 +257,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         fetchStyles();
     }, [selectVersion?.manufacturerData?.id]);
 
-    // Load items for selected style lazily (by representative catalog id), with cache
+    // Fetch items for selected style lazily (by representative catalog id), with cache
     useEffect(() => {
         const fetchItemsForStyle = async () => {
             const manufacturerId = selectVersion?.manufacturerData?.id;
@@ -237,6 +272,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 if (styleItemsCacheRef.current.has(cacheKey)) {
                     const cached = styleItemsCacheRef.current.get(cacheKey) || [];
                     setFetchedCollections(cached);
+                    
+                    // Update existing table items with type information from cache
+                    updateExistingItemsWithTypes(cached);
                     return;
                 }
                 const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${catalogId}/items`, {
@@ -252,7 +290,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     setManufacturerCostMultiplier(Number(res.data.manufacturerCostMultiplier || 1.0));
                 }
                 
-                // (debug logs removed)
+                // Update existing table items with type information
+                updateExistingItemsWithTypes(catalogData);
                 
                 setFetchedCollections(catalogData);
             } catch (e) {
@@ -440,6 +479,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 id: item.id,
                 code: item.code,
                 description: item.description,
+                type: item.type, // Add the type field so Specs badges can work
                 qty,
                 originalPrice: basePrice,
                 manufacturerAdjustedPrice: manufacturerAdjustedPrice,
@@ -750,6 +790,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     return {
                         ...item,
                         unavailable: false,
+                        type: match.type, // Update type from the new style's catalog item
                         originalPrice: basePrice,
                         manufacturerAdjustedPrice,
                         appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),

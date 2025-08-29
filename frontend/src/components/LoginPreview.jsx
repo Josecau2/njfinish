@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from 'react-redux';
-import { getContrastColor } from '../utils/colorUtils';
+import { getContrastColor, getOptimalColors } from '../utils/colorUtils';
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -82,15 +82,20 @@ const LoginPreview = ({ config }) => {
 
       {/* Right Panel */}
       <div
-        className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5 text-white"
+        className="d-flex align-items-center justify-content-center w-100 w-md-50 px-4 py-5"
         style={{ backgroundColor: config.backgroundColor }}
       >
-        <div className="text-center px-4">
-          <h2>{config.rightTitle}</h2>
-          <p className="text-light mb-1">{config.rightSubtitle}</p>
-          <p className="text-light mb-2">{config.rightTagline}</p>
-          <p className="text-light">{config.rightDescription}</p>
-        </div>
+        {(() => {
+          const colors = getOptimalColors(config.backgroundColor || '#0e1446');
+          return (
+            <div className="text-center px-4">
+              <h2 style={{ color: colors.text }}>{config.rightTitle}</h2>
+              <p className="mb-1" style={{ color: colors.subtitle }}>{config.rightSubtitle}</p>
+              <p className="mb-2" style={{ color: colors.subtitle }}>{config.rightTagline}</p>
+              <p style={{ color: colors.subtitle }}>{config.rightDescription}</p>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

@@ -29,8 +29,103 @@
     "left": "L",
     "right": "R",
     "both": "B"
-  }
   },
+  "items": "items",
+  "none": "None",
+  "style": "Style",
+  "loadMore": "Load more",
+  "uploading": "Uploading...",
+  "saving": "Saving...",
+  "description": "Description",
+  "code": "Code",
+  "image": "Image"
+  },
+  "styles": {
+    "create": "Add Style",
+    "createHeader": "Add Style",
+    "name": "Style Name",
+    "short": "Short Name",
+    "deleteHeader": "Delete Style",
+    "deleteConfirm": "Delete style",
+    "reassign": "Reassign items to (leave empty to clear)",
+    "reassignPh": "New style name or blank",
+    "loading": "Loading style pictures...",
+    "loadFailed": "Failed to load style pictures. Please try again.",
+    "selectManufacturerInfo": "Please select a manufacturer to view style pictures.",
+    "noStylesInfo": "No styles with pictures found for this manufacturer. Upload style images in the catalog mapping section to see them here.",
+    "header": "Style Pictures for {{name}}",
+    "searchPlaceholder": "Search styles...",
+    "helperText": "View all styles with their associated pictures. Images are used in proposal creation to help customers visualize their selections.",
+    "noneMatch": "No styles found matching \"{{term}}\".",
+    "tryAdjust": "Try adjusting your search terms or clear the search to see all styles.",
+    "noneAvailable": "No styles with pictures found for this manufacturer.",
+  "count": "{{count}} Styles",
+  "filtered": "(filtered from {{total}})",
+  "variants": "variants",
+  "previewNewImage": "New Image Preview:",
+  "editImage": "Edit Style Image",
+  "uploadNewImage": "Upload New Image:",
+  "selected": "Selected"
+  },
+  "types": {
+    "ui": {
+      "header": "Type Pictures & Management",
+  "createType": "Create Type",
+      "tableView": "Table View",
+      "gridView": "Grid View",
+      "actions": "Actions",
+      "searchLabel": "Search Types",
+      "searchPlaceholder": "Search types...",
+      "filterByStyle": "Filter by Style",
+      "filterByType": "Filter by Type",
+      "clearFilters": "Clear Filters",
+      "noTypesFound": "No types found",
+      "tryAdjust": "Try adjusting your search criteria",
+      "typesWillAppear": "Types will appear here when available",
+      "image": "Image",
+      "type": "Type",
+      "description": "Description",
+      "noDescription": "No description",
+      "currentImage": "Current Image:",
+      "selected": "Selected",
+      "current": "Current",
+      "noImage": "No image uploaded"
+    },
+    "create": {
+      "header": "Create New Type",
+      "typeName": "Type Name",
+      "typeNamePh": "e.g., Base Drawer Cabinet",
+      "description": "Description",
+      "image": "Image (optional)",
+      "note": "Note: If this manufacturer has no catalog items yet, you will need to upload a catalog before creating type metadata.",
+      "createCta": "Create Type"
+    },
+    "meta": {
+      "editType": "Edit Type",
+      "type": "Type",
+      "descriptionLabel": "Type Description",
+      "descriptionPlaceholder": "Add a description for this type",
+      "saveSuccess": "Description saved",
+      "saveFailed": "Failed to save description"
+    },
+    "assign": {
+      "header": "Assign Catalog Items to This Type",
+      "help": "Select catalog items from this manufacturer to assign them to the \"{{type}}\" type.",
+      "filterByCurrentType": "Filter by current type...",
+      "filterByType": "Filter by type:",
+      "loading": "Loading catalog items...",
+      "startHint": "Type a search term or click a type badge to load items.",
+      "noMatch": "No items match your search criteria",
+      "noneAvailable": "No items available to assign (all items already belong to \"{{type}}\" or other types)",
+      "noCatalog": "No catalog items found for this manufacturer",
+      "currentType": "Current Type",
+      "uploadImage": "Upload Image",
+  "assignCTA": "Assign {{count}} item(s) to \"{{type}}\"",
+  "assignedSuccess": "Successfully assigned {{count}} items to {{type}}"
+    }
+  },
+  
+  
   "proposalUI": {
     "currentStyle": "Current Style",
     "otherStyles": "Other Styles & Price Comparison",
@@ -975,6 +1070,13 @@
           "sidebarTitle": "Sidebar"
         }
       },
+      "users": {
+        "form": {
+          "validation": {
+            "required": "This field is required"
+          }
+        }
+      },
       "pdf": {
         "headerTitle": "PDF Layout Customization",
         "headerSubtitle": "Configure your PDF documents appearance and company branding",
@@ -1559,10 +1661,12 @@
         "updateFailed": "Could not update manufacturer data"
       },
       "tabs": {
-        "editDetails": "Edit Manufacturer Details",
-        "settings": "Settings",
-        "catalogMapping": "Catalog Mapping",
-        "filesHistory": "Files & History"
+  "editDetails": "Edit Manufacturer Details",
+  "settings": "Settings",
+  "catalogMapping": "Catalog Mapping",
+  "stylePictures": "Style Pictures",
+  "typePictures": "Type Pictures",
+  "filesHistory": "Files & History"
       },
       "catalogMapping": {
         "title": "Catalog Data",
@@ -1732,6 +1836,13 @@
         }
       },
       "settings": {
+        "users": {
+          "form": {
+            "validation": {
+              "required": "This field is required"
+            }
+          }
+        },
         "costMultiplierTitle": "Your cost multiplier",
         "costMultiplierHelp": "Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.",
         "customerMultiplierTitle": "Customer price multiplier",
@@ -1752,3 +1863,4 @@
     }
   }
 }
+  

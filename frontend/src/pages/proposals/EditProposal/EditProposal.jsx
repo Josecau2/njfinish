@@ -406,7 +406,6 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
           className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
           style={{
             backgroundColor: hovered === 'print' ? '#218838' : '#28a745',
-            borderColor: hovered === 'print' ? '#218838' : '#28a745',
             color: '#fff',
             borderRadius: '8px',
             borderWidth: 0,
@@ -426,7 +425,6 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
               className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
               style={{
                 backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-                borderColor: hovered === 'email' ? '#138496' : '#17a2b8',
                 color: '#fff',
                 borderRadius: '8px',
                 borderWidth: 0,
@@ -444,7 +442,6 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
               className="shadow-sm px-4 fw-semibold d-flex align-items-center mobile-action-btn"
               style={{
                 backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-                borderColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
                 color: '#212529',
                 borderRadius: '8px',
                 borderWidth: 0,

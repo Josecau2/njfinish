@@ -21,6 +21,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
 import axiosInstance from '../../helpers/axiosInstance'
 import { useSelector } from 'react-redux';
+import PageHeader from '../PageHeader';
 
 
 
@@ -626,9 +627,10 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     return (
         <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
-            <CModalHeader closeButton>
-                <CModalTitle>{t('proposalCommon.emailTitle')}</CModalTitle>
-            </CModalHeader>
+            <PageHeader 
+                title={t('proposalCommon.emailTitle')} 
+                onClose={onClose}
+            />
 
             <form onSubmit={formik.handleSubmit}>
                 <CModalBody className="px-4 pb-4">

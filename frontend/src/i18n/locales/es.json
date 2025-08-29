@@ -29,7 +29,100 @@
     "left": "Izq.",
     "right": "Der.",
     "both": "Ambos"
-  }
+  },
+  "items": "ítems",
+  "none": "Ninguno",
+  "style": "Estilo",
+  "loadMore": "Cargar más",
+    "uploading": "Subiendo...",
+    "saving": "Guardando...",
+    "description": "Descripción",
+    "code": "Código",
+    "image": "Imagen"
+  },
+  "styles": {
+    "create": "Agregar estilo",
+    "createHeader": "Agregar estilo",
+    "name": "Nombre del estilo",
+    "short": "Nombre corto",
+    "deleteHeader": "Eliminar estilo",
+    "deleteConfirm": "Eliminar estilo",
+    "reassign": "Reasignar ítems a (dejar vacío para limpiar)",
+    "reassignPh": "Nuevo nombre de estilo o en blanco",
+    "loading": "Cargando imágenes de estilos...",
+    "loadFailed": "No se pudieron cargar las imágenes de estilo. Inténtelo de nuevo.",
+    "selectManufacturerInfo": "Seleccione un fabricante para ver las imágenes de estilo.",
+    "noStylesInfo": "No se encontraron estilos con imágenes para este fabricante. Suba imágenes en la sección de mapeo de catálogo para verlos aquí.",
+    "header": "Imágenes de estilos para {{name}}",
+    "searchPlaceholder": "Buscar estilos...",
+    "helperText": "Vea todos los estilos con sus imágenes asociadas. Las imágenes se usan en la creación de propuestas para ayudar a visualizar las selecciones.",
+    "noneMatch": "No se encontraron estilos que coincidan con \"{{term}}\".",
+    "tryAdjust": "Intente ajustar su búsqueda o limpie el filtro para ver todos los estilos.",
+    "noneAvailable": "No hay estilos con imágenes para este fabricante.",
+  "count": "{{count}} estilos",
+  "filtered": "(filtrado de {{total}})",
+  "variants": "variantes",
+  "previewNewImage": "Vista previa de la nueva imagen:",
+  "editImage": "Editar imagen de estilo",
+  "uploadNewImage": "Subir nueva imagen:",
+  "selected": "Seleccionado"
+  },
+  "types": {
+    "ui": {
+      "header": "Imágenes y Gestión de Tipos",
+  "createType": "Crear tipo",
+      "tableView": "Vista de tabla",
+      "gridView": "Vista de cuadrícula",
+      "actions": "Acciones",
+      "searchLabel": "Buscar tipos",
+      "searchPlaceholder": "Buscar tipos...",
+      "filterByStyle": "Filtrar por estilo",
+      "filterByType": "Filtrar por tipo",
+      "clearFilters": "Limpiar filtros",
+      "noTypesFound": "No se encontraron tipos",
+      "tryAdjust": "Intente ajustar sus criterios de búsqueda",
+      "typesWillAppear": "Los tipos aparecerán aquí cuando estén disponibles",
+      "image": "Imagen",
+      "type": "Tipo",
+      "description": "Descripción",
+      "noDescription": "Sin descripción",
+      "currentImage": "Imagen actual:",
+      "selected": "Seleccionado",
+      "current": "Actual",
+      "noImage": "No se ha subido imagen"
+    },
+    "create": {
+      "header": "Crear nuevo tipo",
+      "typeName": "Nombre del tipo",
+      "typeNamePh": "p. ej., Gabinete de cajón base",
+      "description": "Descripción",
+      "image": "Imagen (opcional)",
+      "note": "Nota: Si este fabricante aún no tiene ítems de catálogo, deberá subir un catálogo antes de crear metadatos de tipos.",
+      "createCta": "Crear tipo"
+    },
+    "meta": {
+      "editType": "Editar Tipo",
+      "type": "Tipo",
+      "descriptionLabel": "Descripción del Tipo",
+      "descriptionPlaceholder": "Agrega una descripción para este tipo",
+      "saveSuccess": "Descripción guardada",
+      "saveFailed": "No se pudo guardar la descripción"
+    },
+    "assign": {
+      "header": "Asignar artículos del catálogo a este tipo",
+      "help": "Seleccione artículos del catálogo de este fabricante para asignarlos al tipo \"{{type}}\".",
+      "filterByCurrentType": "Filtrar por tipo actual...",
+      "filterByType": "Filtrar por tipo:",
+      "loading": "Cargando artículos del catálogo...",
+      "startHint": "Escriba un término de búsqueda o haga clic en una etiqueta de tipo para cargar artículos.",
+      "noMatch": "Ningún artículo coincide con su búsqueda",
+      "noneAvailable": "No hay artículos disponibles para asignar (todos ya pertenecen a \"{{type}}\" u otros tipos)",
+      "noCatalog": "No se encontraron artículos del catálogo para este fabricante",
+      "currentType": "Tipo actual",
+      "uploadImage": "Subir imagen",
+  "assignCTA": "Asignar {{count}} artículo(s) a \"{{type}}\"",
+  "assignedSuccess": "Se asignaron correctamente {{count}} artículos a {{type}}"
+    }
   },
   "proposalUI": {
     "currentStyle": "Estilo actual",
@@ -117,6 +210,7 @@
   "loginPage": "Página de inicio de sesión",
   "uiCustomization": "Personalización de UI"
   },
+  
   "customers": {
     "header": "Clientes",
     "subtitle": "Administre su base de datos de clientes",
@@ -1558,10 +1652,12 @@
         "updateFailed": "No se pudo actualizar el fabricante"
       },
       "tabs": {
-        "editDetails": "Editar detalles del fabricante",
-        "settings": "Ajustes",
-        "catalogMapping": "Mapeo de catálogo",
-        "filesHistory": "Archivos e historial"
+  "editDetails": "Editar detalles del fabricante",
+  "settings": "Ajustes",
+  "catalogMapping": "Mapeo de catálogo",
+  "stylePictures": "Imágenes de estilos",
+  "typePictures": "Imágenes de tipos",
+  "filesHistory": "Archivos e historial"
       },
       "catalogMapping": {
         "title": "Datos de catálogo",
@@ -1746,6 +1842,13 @@
           "sizeKb": "Tamaño (KB)",
           "uploadedOn": "Subido el",
           "download": "Descargar"
+        }
+      },
+      "users": {
+        "form": {
+          "validation": {
+            "required": "Este campo es obligatorio"
+          }
         }
       }
     }

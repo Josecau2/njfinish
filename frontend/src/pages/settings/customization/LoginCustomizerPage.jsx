@@ -453,7 +453,7 @@ const LoginCustomizerPage = () => {
       </CModal>
 
       {/* Custom Styles */}
-      <style jsx>{`
+  <style>{`
         .login-preview-modal .modal-content {
           border: none;
           border-radius: 0;
@@ -473,7 +473,7 @@ const LoginCustomizerPage = () => {
           outline: 0;
           box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
-      `}</style>
+  `}</style>
     </CContainer>
   );
 };

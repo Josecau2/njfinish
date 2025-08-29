@@ -64,16 +64,33 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   const handleManufacturerSelect = useCallback((manufacturer, setFieldValue) => {
     setSelectedManufacturer(manufacturer);
+
+    // Prefer existing versionName; otherwise default to the manufacturer name
+    const versionName = (formData.versionName && formData.versionName.trim())
+      ? formData.versionName
+      : (manufacturer.name || '');
+
+    // Keep Formik fields in sync so validation/UI stays consistent
+    setFieldValue('manufacturer', manufacturer.id);
+    setFieldValue('versionName', versionName);
+
+    // Persist selection in our proposal form data and prepare manufacturersData entry
+    const newEntry = {
+      manufacturer: manufacturer.id,
+      versionName: versionName || '',
+    };
+
     updateFormData({
       ...formData,
       manufacturer: manufacturer.id,
       manufacturerId: manufacturer.id,
+      versionName,
+      manufacturersData: [newEntry],
     });
-    setFieldValue('manufacturer', manufacturer.id);
-    if (!formData.versionName) {
-      setFieldValue('versionName', manufacturer.name);
-    }
-  }, [formData, updateFormData]);
+
+    // Immediately advance to Step 3
+    nextStep();
+  }, [formData, updateFormData, nextStep]);
 
   const ManufacturerCard = React.memo(({ manufacturer, isSelected, onClick }) => {
     const [imageError, setImageError] = useState(false);

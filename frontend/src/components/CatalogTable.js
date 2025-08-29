@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
@@ -6,6 +6,8 @@ import {
   CFormCheck,
   CInputGroup,
   CFormInput,
+  CModal,
+  CModalBody,
   CTable,
   CTableHead,
   CTableRow,
@@ -16,6 +18,8 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilCopy, cilSettings, cilTrash } from '@coreui/icons'
 import { BsTools } from 'react-icons/bs'
+import axiosInstance from '../helpers/axiosInstance'
+import PageHeader from './PageHeader'
 
 const hingeOptions = ['L', 'R', '-']
 const exposedOptions = ['L', 'R', 'B', '-']
@@ -56,12 +60,60 @@ const CatalogTable = ({
   
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [typesMeta, setTypesMeta] = useState([]);
+  const [showTypeModal, setShowTypeModal] = useState(false);
+  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
+  const hoverTimerRef = useRef(null);
+  const searchContainerRef = useRef(null);
+  const api_url = import.meta.env.VITE_API_URL;
+
+  // Local helper for auth header
+  const getAuthHeaders = () => {
+    try {
+      const token = localStorage.getItem('token');
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    } catch {
+      return {};
+    }
+  };
 
   // When the selected style changes, clear the search box and suggestions
   useEffect(() => {
     setPartQuery('');
     setShowSuggestions(false);
   }, [selectedStyleData && selectedStyleData.id]);
+
+  // Handle click outside to close search suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    if (showSuggestions) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showSuggestions]);
+
+  // Fetch types metadata once per manufacturer
+  useEffect(() => {
+    const manufacturerId = selectVersion?.manufacturerData?.id;
+    if (!manufacturerId) { setTypesMeta([]); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`, { headers: getAuthHeaders() });
+        const data = Array.isArray(res?.data) ? res.data : [];
+        if (!cancelled) setTypesMeta(data);
+      } catch (err) {
+        console.error('Failed to fetch types metadata:', err);
+        if (!cancelled) setTypesMeta([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectVersion?.manufacturerData?.id]);
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -92,7 +144,28 @@ const CatalogTable = ({
       .slice(0, 20);
   }, [catalogData, selectedStyleData?.style, partQuery]);
 
-  const pickItem = (item) => {
+  // Build quick map for type metadata
+  const typeMap = useMemo(() => {
+    const m = new Map();
+    (typesMeta || []).forEach(t => { if (t?.type) m.set(String(t.type), t); });
+    return m;
+  }, [typesMeta]);
+
+  // Helper to check if a type has meaningful metadata (image or description)
+  const hasTypeMetadata = (type) => {
+    if (!type) return false;
+    const meta = typeMap.get(String(type));
+    return meta && (meta.image || (meta.longDescription || meta.description || '').trim());
+  };
+
+  // Helper to open type modal for a specific type
+  const openTypeModal = (type) => {
+    const meta = typeMap.get(String(type));
+    if (meta) {
+      setSelectedTypeInfo(meta);
+      setShowTypeModal(true);
+    }
+  };  const pickItem = (item) => {
     if (!item) return;
     // Reuse existing handler contract
     handleCatalogSelect({ target: { value: `${item.code} -- ${item.description}` } });
@@ -102,7 +175,7 @@ const CatalogTable = ({
   return (
     <div className="mt-5 mb-5">
       <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
-        <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }}>
+        <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }} ref={searchContainerRef}>
           <CInputGroup>
             <CFormInput
               placeholder={t('proposalUI.enterPartCode')}
@@ -115,15 +188,35 @@ const CatalogTable = ({
           {showSuggestions && filteredOptions.length > 0 && (
             <div className="dropdown-menu show w-100" style={{ maxHeight: '260px', overflowY: 'auto' }}>
               {filteredOptions.map((item) => (
-                <button
-                  type="button"
+                <div
                   key={item.id}
-                  className="dropdown-item text-wrap"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => pickItem(item)}
+                  className="dropdown-item-wrapper d-flex justify-content-between align-items-center"
+                  style={{ padding: '0.25rem' }}
                 >
-                  <strong>{item.code}</strong> — {item.description}
-                </button>
+                  <button
+                    type="button"
+                    className="dropdown-item text-wrap flex-grow-1 border-0 bg-transparent text-start"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => pickItem(item)}
+                    style={{ padding: '0.25rem 0.75rem' }}
+                  >
+                    <strong>{item.code}</strong> — {item.description}
+                  </button>
+                  {hasTypeMetadata(item.type) && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-info ms-2"
+                      style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openTypeModal(item.type);
+                      }}
+                      title={`View ${item.type} specifications`}
+                    >
+                      Specs
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           )}
@@ -163,6 +256,81 @@ const CatalogTable = ({
           </CInputGroup>
         </div>
       </div>
+
+      {/* Detailed type info modal */}
+      <CModal visible={showTypeModal} onClose={() => setShowTypeModal(false)} size="lg">
+        <PageHeader 
+          title={selectedTypeInfo?.type || 'Type Specifications'}
+          onClose={() => setShowTypeModal(false)}
+        />
+        <CModalBody className="p-3 p-md-4">
+          {selectedTypeInfo ? (
+            <div className="d-flex flex-column flex-md-row gap-4">
+              <div className="text-center text-md-start border rounded p-3 bg-light" style={{ width: '100%', maxWidth: '220px', margin: '0 auto' }}>
+                <img
+                  src={selectedTypeInfo.image ? `${api_url}/uploads/types/${selectedTypeInfo.image}` : '/images/nologo.png'}
+                  alt={selectedTypeInfo.type}
+                  className="img-fluid"
+                  style={{ 
+                    maxWidth: '100%', 
+                    height: 'auto', 
+                    maxHeight: '200px', 
+                    objectFit: 'contain', 
+                    background: '#ffffff', 
+                    borderRadius: '6px',
+                    border: '1px solid #dee2e6'
+                  }}
+                  onError={(e) => {
+                    if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
+                      e.target.dataset.fallbackTried = '1';
+                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`;
+                    } else {
+                      e.target.src = '/images/nologo.png';
+                    }
+                  }}
+                />
+              </div>
+              <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
+                <div className="mb-3">
+                  <span className="badge text-bg-secondary me-2">{t('Type')}</span>
+                  <strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>
+                </div>
+                {selectedTypeInfo.code && (
+                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Code:</span> <strong>{selectedTypeInfo.code}</strong></div>
+                )}
+                {selectedTypeInfo.name && (
+                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Name:</span> <strong>{selectedTypeInfo.name}</strong></div>
+                )}
+                {selectedTypeInfo.shortName && (
+                  <div className="mb-3 border-bottom pb-2"><span className="text-muted fw-medium">Short:</span> <strong>{selectedTypeInfo.shortName}</strong></div>
+                )}
+                <div className="mt-3" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  <strong className="text-muted d-block mb-2">Description:</strong>
+                  {selectedTypeInfo.longDescription || selectedTypeInfo.description || t('No description available for this type.')}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-muted text-center p-4 border rounded bg-light">{t('No type information available.')}</div>
+          )}
+          
+          {/* Mobile Close Button */}
+          <div className="d-block d-md-none mt-4 text-center">
+            <button 
+              type="button" 
+              className="btn btn-dark btn-lg shadow-sm"
+              onClick={() => setShowTypeModal(false)}
+              style={{ 
+                minWidth: '140px',
+                borderRadius: '8px',
+                fontWeight: '500'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </CModalBody>
+      </CModal>
 
       {/* Desktop Table View */}
       <div className="table-responsive table-responsive-md">
@@ -205,7 +373,22 @@ const CatalogTable = ({
                       />
                     </CTableDataCell>
 
-                    <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>{item.code}</CTableDataCell>
+                    <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>
+                      <div className="d-flex align-items-center gap-2">
+                        <span>{item.code}</span>
+                        {hasTypeMetadata(item.type) && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-info"
+                            style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+                            onClick={() => openTypeModal(item.type)}
+                            title={`View ${item.type} specifications`}
+                          >
+                            Specs
+                          </button>
+                        )}
+                      </div>
+                    </CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
@@ -357,7 +540,20 @@ const CatalogTable = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <span className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{item.code}</span>
+                  <div className="d-flex align-items-center gap-2">
+                    <span className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{item.code}</span>
+                    {hasTypeMetadata(item.type) && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-info"
+                        style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+                        onClick={() => openTypeModal(item.type)}
+                        title={`View ${item.type} specifications`}
+                      >
+                        Specs
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="item-detail-row">

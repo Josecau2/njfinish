@@ -12,6 +12,8 @@ const storage = multer.diskStorage({
         let uploadDir;
         if (['logoImage', 'manufacturerImage', 'styleImage'].includes(file.fieldname)) {
             uploadDir = path.join(uploadRoot, 'images');
+        } else if (file.fieldname === 'typeImage') {
+            uploadDir = path.join(uploadRoot, 'types');
         } else if (file.fieldname === 'logo' || file.fieldname === 'catalogFiles') {
             // PDF customization logos and catalog files go to manufacturer_catalogs
             uploadDir = path.join(uploadRoot, 'manufacturer_catalogs');
@@ -44,7 +46,7 @@ const fileFilter = (req, file, cb) => {
     const imageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
     if (
-        ['manufacturerImage', 'styleImage', 'logoImage','logo'].includes(file.fieldname) &&
+        ['manufacturerImage', 'styleImage', 'logoImage','logo', 'typeImage'].includes(file.fieldname) &&
         imageTypes.includes(file.mimetype)
     ) {
         cb(null, true);

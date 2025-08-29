@@ -177,14 +177,14 @@ const PageHeader = ({
     .modal .btn-primary,
     .btn-primary.use-header-color {
       background-color: ${backgroundColor} !important;
-      border: 1px solid ${backgroundColor} !important;
+      border-color: ${backgroundColor} !important;
       color: ${optimalColors.text} !important;
     }
     
     .modal .btn-primary:hover,
     .btn-primary.use-header-color:hover {
       background-color: ${backgroundColor} !important;
-      border: 1px solid ${backgroundColor} !important;
+      border-color: ${backgroundColor} !important;
       color: ${optimalColors.text} !important;
       opacity: 0.9 !important;
     }
@@ -192,7 +192,7 @@ const PageHeader = ({
     .modal .btn-primary:focus,
     .btn-primary.use-header-color:focus {
       background-color: ${backgroundColor} !important;
-      border: 1px solid ${backgroundColor} !important;
+      border-color: ${backgroundColor} !important;
       color: ${optimalColors.text} !important;
       box-shadow: 0 0 0 0.2rem ${backgroundColor}40 !important;
     }

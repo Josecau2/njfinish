@@ -25,15 +25,19 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [fetching, setFetching] = useState(false)
   const intervalRef = useRef(null)
+  const disabledRef = useRef(false)
 
   // Fetch unread count periodically
   useEffect(() => {
-    fetchUnreadCount()
+  if (disabledRef.current) return
+  fetchUnreadCount()
     
     // Poll for new notifications (configurable via VITE_NOTIFICATIONS_POLL_INTERVAL_MS)
     const pollMs = Number(import.meta.env.VITE_NOTIFICATIONS_POLL_INTERVAL_MS) || 15000
     intervalRef.current = setInterval(() => {
-      fetchUnreadCount()
+      if (!disabledRef.current) {
+        fetchUnreadCount()
+      }
     }, pollMs)
 
     return () => {
@@ -55,9 +59,9 @@ const NotificationBell = () => {
     } catch (error) {
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+        // Do not force logout on notifications auth errors; disable polling silently
+        disabledRef.current = true
+        if (intervalRef.current) clearInterval(intervalRef.current)
         return
       }
       console.error('Error fetching unread count:', error?.message || error)
@@ -82,9 +86,9 @@ const NotificationBell = () => {
     } catch (error) {
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+        // Do not logout on notifications auth errors
+        disabledRef.current = true
+        if (intervalRef.current) clearInterval(intervalRef.current)
         return
       }
       console.error('Error fetching notifications:', error?.message || error)
@@ -111,9 +115,7 @@ const NotificationBell = () => {
     } catch (error) {
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+        // Ignore auth errors here
         return
       }
       console.error('Error marking notification as read:', error?.message || error)
@@ -131,9 +133,7 @@ const NotificationBell = () => {
     } catch (error) {
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+        // Ignore auth errors here
         return
       }
       console.error('Error marking all notifications as read:', error?.message || error)

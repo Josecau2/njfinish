@@ -144,23 +144,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setLoading(true);
     setLoadError(null);
     try {
-      const params = new URLSearchParams({ 
-        page: String(page), 
+      const params = {
+        page: String(page),
         limit: String(limit),
         sortBy: sort,
-        sortOrder: order 
+        sortOrder: order,
+        ...(type ? { typeFilter: type } : {}),
+        ...(style ? { styleFilter: style } : {}),
+      };
+      const { data } = await axiosInstance.get(`/api/manufacturers/${id}/catalog`, {
+        params,
+        headers: getAuthHeaders(),
       });
-      if (type) params.append('typeFilter', type);
-      if (style) params.append('styleFilter', style);
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
       setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : []);
       setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 });
       if (page === 1 && data.filters) setFilterMeta(data.filters);
@@ -235,6 +230,24 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [isLoadingBackups, setIsLoadingBackups] = useState(false);
   const [isRollingBack, setIsRollingBack] = useState(false);
 
+  // Bulk edit states
+  const [bulkEditModalVisible, setBulkEditModalVisible] = useState(false);
+  const [isBulkEditing, setIsBulkEditing] = useState(false);
+  const [bulkEditForm, setBulkEditForm] = useState({
+    style: '',
+    type: '',
+    description: '',
+    price: ''
+  });
+
+  // Style name edit states
+  const [editStyleNameModalVisible, setEditStyleNameModalVisible] = useState(false);
+  const [isEditingStyleName, setIsEditingStyleName] = useState(false);
+  const [styleNameEditForm, setStyleNameEditForm] = useState({
+    oldStyleName: '',
+    newStyleName: ''
+  });
+
   const [file, setFile] = useState(null);
   const dispatch = useDispatch();
 
@@ -278,17 +291,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setIsSaving(true);
 
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/catalog/${manufacturer.id}`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify(manualForm),
+      await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm, {
+        headers: getAuthHeaders(),
       });
-
-
-  if (!response.ok) throw new Error('Failed to save');
       Swal.fire({
         toast: true,
         position: "top",
@@ -354,16 +359,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     // if (!validateManualForm()) return;
     setIsUpdating(true); // Start loading
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/catalog/edit/${editForm.id}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify(editForm),
+      await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm, {
+        headers: getAuthHeaders(),
       });
-
-      if (!response.ok) throw new Error('Failed to update');
 
       Swal.fire({
         toast: true,
@@ -436,15 +434,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setIsDeletingItem(true);
     
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/catalog/edit/${itemToDelete.id}`, {
-        method: 'DELETE',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
+      await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`, {
+        headers: getAuthHeaders(),
       });
-
-      if (!response.ok) throw new Error('Failed to delete item');
 
       Swal.fire({
         toast: true,
@@ -503,21 +495,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       // Delete items one by one (could be optimized with a bulk endpoint)
       const deletePromises = selectedItems.map(itemId => 
-        fetch(`${api_url}/api/manufacturers/catalog/edit/${itemId}`, {
-          method: 'DELETE',
-          headers: { 
-            'Content-Type': 'application/json',
-            ...getAuthHeaders()
-          },
+        axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemId}`, {
+          headers: getAuthHeaders(),
         })
       );
-
-      const responses = await Promise.all(deletePromises);
-      const failedDeletes = responses.filter(response => !response.ok);
-
-      if (failedDeletes.length > 0) {
-        throw new Error(`Failed to delete ${failedDeletes.length} items`);
-      }
+      await Promise.all(deletePromises);
 
       Swal.fire({
         toast: true,
@@ -570,17 +552,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setIsCleaningDuplicates(true);
     
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/cleanup-duplicates`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
+      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/cleanup-duplicates`, null, {
+        headers: getAuthHeaders(),
       });
-
-      if (!response.ok) throw new Error('Failed to cleanup duplicates');
-
-      const result = await response.json();
 
       Swal.fire({
         toast: true,
@@ -630,17 +604,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setRollbackModalVisible(true);
     
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog/backups`, {
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
+      const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`, {
+        headers: getAuthHeaders(),
       });
-
-      if (!response.ok) throw new Error('Failed to fetch backups');
-
-      const result = await response.json();
       setAvailableBackups(result.backups || []);
       
     } catch (err) {
@@ -670,18 +636,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setIsRollingBack(true);
     
     try {
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog/rollback`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify({ uploadSessionId: selectedBackup }),
+      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/rollback`, { uploadSessionId: selectedBackup }, {
+        headers: getAuthHeaders(),
       });
-
-      if (!response.ok) throw new Error('Failed to rollback catalog');
-
-      const result = await response.json();
 
       Swal.fire({
         toast: true,
@@ -742,18 +699,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const requestBody = mergeToStyle ? { mergeToStyle } : {};
       
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/style/${encodeURIComponent(styleToDelete)}`, {
-        method: 'DELETE',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify(requestBody),
+      const { data: result } = await axiosInstance.delete(`/api/manufacturers/${id}/style/${encodeURIComponent(styleToDelete)}`, {
+        headers: getAuthHeaders(),
+        data: requestBody,
       });
-
-      if (!response.ok) throw new Error('Failed to delete/merge style');
-
-      const result = await response.json();
 
       Swal.fire({
         toast: true,
@@ -799,6 +748,185 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Bulk edit handlers
+  const handleBulkEditClick = () => {
+    if (selectedItems.length === 0) return;
+    setBulkEditForm({
+      style: '',
+      type: '',
+      description: '',
+      price: ''
+    });
+    setBulkEditModalVisible(true);
+  };
+
+  const handleBulkEdit = async () => {
+    if (selectedItems.length === 0 || isBulkEditing) return;
+    
+    // Check if at least one field is filled
+    const hasUpdates = Object.values(bulkEditForm).some(value => value && value.trim() !== '');
+    if (!hasUpdates) {
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "warning",
+        title: "Please fill at least one field to update",
+        showConfirmButton: false,
+        timer: 2000,
+        width: '350px'
+      });
+      return;
+    }
+    
+    setIsBulkEditing(true);
+    
+    try {
+      // Prepare updates object (only include non-empty fields)
+      const updates = {};
+      Object.keys(bulkEditForm).forEach(key => {
+        if (bulkEditForm[key] && bulkEditForm[key].trim() !== '') {
+          updates[key] = bulkEditForm[key].trim();
+        }
+      });
+
+      const { data: result } = await axiosInstance.put(`/api/manufacturers/catalog/bulk-edit`, {
+        itemIds: selectedItems,
+        updates
+      }, {
+        headers: getAuthHeaders(),
+      });
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "success",
+        title: result.message || `Successfully updated ${selectedItems.length} items`,
+        showConfirmButton: false,
+        timer: 2000,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+
+      // Reset states
+      setBulkEditModalVisible(false);
+      setSelectedItems([]);
+      setIsSelectAll(false);
+      setBulkEditForm({
+        style: '',
+        type: '',
+        description: '',
+        price: ''
+      });
+      
+      // Refresh data
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      
+    } catch (err) {
+      console.error('Error:', err);
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: "Failed to bulk edit items",
+        showConfirmButton: false,
+        timer: 1500,
+        width: '330px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    } finally {
+      setIsBulkEditing(false);
+    }
+  };
+
+  // Style name edit handlers
+  const handleEditStyleNameClick = (styleName) => {
+    setStyleNameEditForm({
+      oldStyleName: styleName,
+      newStyleName: ''
+    });
+    setEditStyleNameModalVisible(true);
+  };
+
+  const handleEditStyleName = async () => {
+    if (!styleNameEditForm.oldStyleName || !styleNameEditForm.newStyleName || isEditingStyleName) return;
+    
+    if (styleNameEditForm.oldStyleName.trim() === styleNameEditForm.newStyleName.trim()) {
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "warning",
+        title: "New style name must be different from the old one",
+        showConfirmButton: false,
+        timer: 2000,
+        width: '350px'
+      });
+      return;
+    }
+    
+    setIsEditingStyleName(true);
+    
+    try {
+      const { data: result } = await axiosInstance.put(`/api/manufacturers/${id}/style-name`, {
+        oldStyleName: styleNameEditForm.oldStyleName.trim(),
+        newStyleName: styleNameEditForm.newStyleName.trim()
+      }, {
+        headers: getAuthHeaders(),
+      });
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "success",
+        title: result.message || "Style name updated successfully",
+        showConfirmButton: false,
+        timer: 2500,
+        width: '450px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+
+      // Reset modal state
+      setEditStyleNameModalVisible(false);
+      setStyleNameEditForm({
+        oldStyleName: '',
+        newStyleName: ''
+      });
+      
+      // Refresh data
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      
+    } catch (err) {
+      console.error('Error:', err);
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: err.message || "Failed to edit style name",
+        showConfirmButton: false,
+        timer: 2000,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    } finally {
+      setIsEditingStyleName(false);
     }
   };
 
@@ -879,31 +1007,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const startTime = Date.now();
       
-      const response = await fetch(`${api_url}/api/manufacturers/${id}/catalog/upload`, {
-        method: 'POST',
-        headers: {
-          ...getAuthHeaders()
-        },
-        body: formData
+      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/upload`, formData, {
+        headers: getAuthHeaders(),
       });
-
-      const responseText = await response.text();
-      
-      if (!response.ok) {
-        let errorMessage = 'Upload failed';
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.message || errorMessage;
-          if (errorData.details) {
-            errorMessage += `\n\n${errorData.details}`;
-          }
-        } catch (e) {
-          console.error('Error parsing response:', responseText);
-        }
-        throw new Error(errorMessage);
-      }
-
-      const result = JSON.parse(responseText);
       const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
       
       // Close progress modal if it was shown
@@ -1345,7 +1451,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         }
       />
       
-      <style jsx>{`
+  <style>{`
         .catalog-actions {
           width: 100%;
         }
@@ -1505,7 +1611,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             font-size: 11px;
           }
         }
-      `}</style>
+  `}</style>
       
       {/* Mobile-Optimized Filters and Pagination */}
       <div className="row g-2 mb-3">
@@ -1604,28 +1710,91 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </small>
         )}
 
+        {/* Style Management Section */}
+        {styleFilter && (
+          <div className="mb-3 p-3 border rounded bg-light">
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+              <div>
+                <strong>Managing Style: "{styleFilter}"</strong>
+                <br />
+                <small className="text-muted">
+                  {catalogData.filter(item => item.style === styleFilter).length} items with this style
+                </small>
+              </div>
+              <div className="d-flex gap-2 flex-shrink-0">
+                <CButton
+                  color="info"
+                  size="sm"
+                  onClick={() => handleEditStyleNameClick(styleFilter)}
+                  disabled={isEditingStyleName}
+                >
+                  {isEditingStyleName ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    <>✏️ Rename Style</>
+                  )}
+                </CButton>
+                <CButton
+                  color="warning"
+                  size="sm"
+                  onClick={() => handleDeleteStyleClick(styleFilter)}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    <>🗑️ Delete/Merge Style</>
+                  )}
+                </CButton>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
           <span className="fw-bold">
             {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', { count: selectedItems.length })}
           </span>
-          <CButton
-            color="danger"
-            size="sm"
-            onClick={handleBulkDeleteClick}
-            disabled={isBulkDeleting}
-            className="flex-shrink-0"
-          >
-            {isBulkDeleting ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                {t('settings.manufacturers.catalogMapping.bulk.deleting')}
-              </>
-            ) : (
-              <>{t('settings.manufacturers.catalogMapping.buttons.deleteSelected')}</>
-            )}
-          </CButton>
+          <div className="d-flex gap-2 flex-shrink-0">
+            <CButton
+              color="primary"
+              size="sm"
+              onClick={handleBulkEditClick}
+              disabled={isBulkEditing}
+            >
+              {isBulkEditing ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Editing...
+                </>
+              ) : (
+                <>✏️ Edit Selected</>
+              )}
+            </CButton>
+            <CButton
+              color="danger"
+              size="sm"
+              onClick={handleBulkDeleteClick}
+              disabled={isBulkDeleting}
+            >
+              {isBulkDeleting ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  {t('settings.manufacturers.catalogMapping.bulk.deleting')}
+                </>
+              ) : (
+                <>{t('settings.manufacturers.catalogMapping.buttons.deleteSelected')}</>
+              )}
+            </CButton>
+          </div>
         </div>
       )}
       </>
@@ -2648,6 +2817,149 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </>
             ) : (
               t('settings.manufacturers.catalogMapping.rollback.rollbackButton')
+            )}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Bulk Edit Modal */}
+      <CModal visible={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size="lg">
+        <PageHeader title={`Bulk Edit ${selectedItems.length} Items`} />
+        <CModalBody>
+          <div>
+            <p>Edit the following fields for the selected {selectedItems.length} catalog items. Leave fields empty to keep existing values.</p>
+            
+            <div className="row g-3">
+              <div className="col-md-6">
+                <CFormLabel>Style</CFormLabel>
+                <CFormInput
+                  type="text"
+                  value={bulkEditForm.style}
+                  onChange={(e) => setBulkEditForm({...bulkEditForm, style: e.target.value})}
+                  placeholder="Leave empty to keep existing"
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <CFormLabel>Type</CFormLabel>
+                <CFormInput
+                  type="text"
+                  value={bulkEditForm.type}
+                  onChange={(e) => setBulkEditForm({...bulkEditForm, type: e.target.value})}
+                  placeholder="Leave empty to keep existing"
+                />
+              </div>
+              
+              <div className="col-12">
+                <CFormLabel>Description</CFormLabel>
+                <CFormTextarea
+                  value={bulkEditForm.description}
+                  onChange={(e) => setBulkEditForm({...bulkEditForm, description: e.target.value})}
+                  placeholder="Leave empty to keep existing"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <CFormLabel>Price</CFormLabel>
+                <CFormInput
+                  type="number"
+                  step="0.01"
+                  value={bulkEditForm.price}
+                  onChange={(e) => setBulkEditForm({...bulkEditForm, price: e.target.value})}
+                  placeholder="Leave empty to keep existing"
+                />
+              </div>
+            </div>
+            
+            <div className="mt-3 p-3 bg-light rounded">
+              <small className="text-muted">
+                <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will preserve the existing values for each item.
+              </small>
+            </div>
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton 
+            color="secondary" 
+            onClick={() => setBulkEditModalVisible(false)}
+            disabled={isBulkEditing}
+          >
+            Cancel
+          </CButton>
+          <CButton 
+            color="primary"
+            onClick={handleBulkEdit}
+            disabled={isBulkEditing}
+          >
+            {isBulkEditing ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Updating {selectedItems.length} Items...
+              </>
+            ) : (
+              `Update ${selectedItems.length} Items`
+            )}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Edit Style Name Modal */}
+      <CModal visible={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)}>
+        <PageHeader title="Edit Style Name" />
+        <CModalBody>
+          <div>
+            <p>Rename the style for all items of this manufacturer. This will affect all catalog items currently using this style.</p>
+            
+            <div className="mb-3">
+              <CFormLabel>Current Style Name</CFormLabel>
+              <CFormInput
+                type="text"
+                value={styleNameEditForm.oldStyleName}
+                disabled
+                className="bg-light"
+              />
+            </div>
+            
+            <div className="mb-3">
+              <CFormLabel>New Style Name</CFormLabel>
+              <CFormInput
+                type="text"
+                value={styleNameEditForm.newStyleName}
+                onChange={(e) => setStyleNameEditForm({...styleNameEditForm, newStyleName: e.target.value})}
+                placeholder="Enter new style name"
+                autoFocus
+              />
+            </div>
+            
+            <div className="p-3 bg-warning bg-opacity-10 rounded">
+              <small className="text-muted">
+                <strong>Warning:</strong> This will rename the style for all items currently using "{styleNameEditForm.oldStyleName}". 
+                The change applies to all {catalogData.filter(item => item.style === styleNameEditForm.oldStyleName).length} items with this style.
+              </small>
+            </div>
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton 
+            color="secondary" 
+            onClick={() => setEditStyleNameModalVisible(false)}
+            disabled={isEditingStyleName}
+          >
+            Cancel
+          </CButton>
+          <CButton 
+            color="primary"
+            onClick={handleEditStyleName}
+            disabled={isEditingStyleName || !styleNameEditForm.newStyleName.trim()}
+          >
+            {isEditingStyleName ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Renaming Style...
+              </>
+            ) : (
+              "Rename Style"
             )}
           </CButton>
         </CModalFooter>
