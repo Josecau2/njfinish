@@ -75,16 +75,17 @@ app.use('/uploads/images', express.static(path.resolve(__dirname, env.UPLOAD_PAT
 app.use('/uploads/logos', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'logos')));
 app.use('/uploads/manufacturer_catalogs', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'manufacturer_catalogs')));
 
-const buildPath = path.join(__dirname, 'frontend', 'build');
-app.use(express.static(buildPath));
+// Serve SPA static assets from configurable directory (defaults to /app/build)
+const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, 'build');
+app.use(express.static(STATIC_DIR));
 
 // Fallback route to serve index.html for non-API requests (React Router)
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(buildPath, 'index.html'));
+  res.sendFile(path.resolve(STATIC_DIR, 'index.html'));
 });
 
 app.get(/^(?!\/api).*$/, (req, res) => {
-  res.sendFile(path.resolve(buildPath, 'index.html'));
+  res.sendFile(path.resolve(STATIC_DIR, 'index.html'));
 });
 
 // Guarded sync: default none in production. 'create' creates missing tables; 'alter' only in dev.

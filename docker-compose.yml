@@ -11,7 +11,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -25,9 +25,12 @@ services:
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       PORT: 8080
+      STATIC_DIR: /app/build
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: ${DB_NAME}
@@ -45,5 +48,5 @@ services:
       - uploads:/app/uploads
       - ./build:/app/build:ro # optional: serve local static build if present
 volumes:
-  mysql_data:
+  db_data:
   uploads:
