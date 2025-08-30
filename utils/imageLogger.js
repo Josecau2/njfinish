@@ -5,10 +5,17 @@ class ImageLogger {
     constructor() {
         this.logDir = path.join(__dirname, 'logs');
         this.logFile = path.join(this.logDir, 'image-operations.log');
+        this.logFileAvailable = false;
         
         // Create logs directory if it doesn't exist
-        if (!fs.existsSync(this.logDir)) {
-            fs.mkdirSync(this.logDir, { recursive: true });
+        try {
+            if (!fs.existsSync(this.logDir)) {
+                fs.mkdirSync(this.logDir, { recursive: true });
+            }
+            this.logFileAvailable = true;
+        } catch (error) {
+            console.warn('Unable to create logs directory, logging to console only:', error.message);
+            this.logFileAvailable = false;
         }
     }
 
@@ -23,17 +30,18 @@ class ImageLogger {
 
         const logLine = JSON.stringify(logEntry) + '\n';
         
-        // In production, always log to file
-        if (process.env.NODE_ENV === 'production') {
+        // In production, always log to file if available
+        if (process.env.NODE_ENV === 'production' && this.logFileAvailable) {
             try {
                 fs.appendFileSync(this.logFile, logLine);
             } catch (error) {
                 console.error('Failed to write to image log file:', error);
+                this.logFileAvailable = false; // Disable file logging if it fails
             }
         }
         
-        // Also log to console in development or if file logging fails
-        if (process.env.NODE_ENV !== 'production') {
+        // Also log to console in development or if file logging is not available
+        if (process.env.NODE_ENV !== 'production' || !this.logFileAvailable) {
             console.log(`[IMAGE] ${operation}:`, details);
         }
     }

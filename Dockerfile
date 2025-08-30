@@ -16,9 +16,9 @@ COPY --from=builder /app/package-lock.json* ./
 RUN npm ci --omit=dev
 COPY --from=builder /app .
 
-# Ensure uploads dir exists and is writable
-RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs && \
-    chown -R node:node /app/uploads
+# Ensure uploads and logs dirs exist and are writable
+RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs && \
+    chown -R node:node /app/uploads /app/utils/logs
 
 USER node
 EXPOSE 8080
