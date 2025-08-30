@@ -145,11 +145,11 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   };
 
   const handleCreateProposal = () => {
-    navigate('/proposals/create');
+    navigate('/quotes/create');
   };
 
   const handleCreateQuickProposal = () => {
-    navigate('/proposals/create?quick=yes');
+    navigate('/quotes/create?quick=yes');
   };
 
   const getAvailableActions = (proposal) => {
@@ -313,7 +313,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   // Defense-in-depth: contractors should not create share links
   if (isContractor) return;
     try {
-      const res = await axiosInstance.post(`/api/proposals/${proposal.id}/sessions`);
+      const res = await axiosInstance.post(`/api/quotes/${proposal.id}/sessions`);
       const payload = res.data;
       if (!payload?.success) throw new Error(payload?.message || 'Failed to create share link');
       const { token, expires_at } = payload.data || {};
@@ -348,7 +348,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   };
 
   const handleNavigate = (id) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/edit/:id', { id });
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/edit/:id', { id });
   navigate(noisy);
   };
 

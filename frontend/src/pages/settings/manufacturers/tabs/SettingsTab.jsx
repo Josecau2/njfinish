@@ -288,7 +288,7 @@ const SettingsTab = ({ manufacturer }) => {
         <CCardBody>
           <p><strong>{t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}</strong></p>
           <div className="border rounded p-2 mb-3 small" style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}>
-            {t('settings.manufacturers.settings.costMultiplierHelp', 'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.')}
+            {t('settings.manufacturers.settings.costMultiplierHelp', 'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.')}
           </div>
           <CFormInput
             value={multiplier1}

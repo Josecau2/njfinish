@@ -83,7 +83,7 @@ const AdminProposalView = () => {
       if (!proposalId) {
         throw new Error('No proposal ID provided');
       }
-  const { data } = await axiosInstance.get(`/api/proposals/proposalByID/${proposalId}`);
+  const { data } = await axiosInstance.get(`/api/quotes/proposalByID/${proposalId}`);
       setProposal(data);
       setError(null);
     } catch (err) {

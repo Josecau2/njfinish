@@ -89,9 +89,9 @@ const Contracts = () => {
     date: null,
     designDate: null,
     measurementDate: null,
-    followUp1Date: null,
-    followUp2Date: null,
-    followUp3Date: null,
+    // followUp1Date: null,
+    // followUp2Date: null,
+    // followUp3Date: null,
     status: 'Draft',
     files: [],
     customerName: '',
@@ -142,7 +142,7 @@ const Contracts = () => {
 
   const handleNavigate = (id) => {
     axiosInstance
-      .get(`/api/proposals/proposalByID/${id}`)
+      .get(`/api/quotes/proposalByID/${id}`)
       .then((res) => {
         setFormData(res.data || defaultFormData);
         setLoadings(false);

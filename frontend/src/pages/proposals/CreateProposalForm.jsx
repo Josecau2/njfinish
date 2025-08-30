@@ -52,9 +52,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
     assembled: true,
     totalPrice: 0,
     status: '',
-    followUp1Date: '',
-    followUp2Date: '',
-    followUp3Date: '',
+    // followUp1Date: '',
+    // followUp2Date: '',
+    // followUp3Date: '',
     manufacturersData: [],
   });
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -127,9 +127,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   };
 
   const prevStep = () => {
-    // From step 1, go back to proposals list
+    // From step 1, go back to quotes list
     if (currentStep <= 1) {
-      navigate('/proposals');
+      navigate('/quotes');
       return;
     }
     let step = backStep ? 4 : currentStep - 1;
@@ -148,7 +148,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       if (response.payload.success == true) {
         Swal.fire('Success!', 'Proposal saved successfully!', 'success');
         setIsFormDirty(false);
-        navigate('/proposals');
+        navigate('/quotes');
       }
     } catch (error) {
       console.error('Error sending data to backend:', error);

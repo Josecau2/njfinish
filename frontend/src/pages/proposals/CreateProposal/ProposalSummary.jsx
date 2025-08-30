@@ -361,6 +361,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                     </div>
                   </CCol>
 
+                  {/* Follow up dates commented out
                   <CCol xs={12} md={2} className="mt-4">
                     <div style={{ position: 'relative' }}>
                       <CFormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</CFormLabel>
@@ -456,6 +457,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       />
                     </div>
                   </CCol>
+                  */}
                 </CRow>
                 </div>
               </CForm>

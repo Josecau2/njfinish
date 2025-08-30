@@ -108,9 +108,9 @@ const EditProposal = () => {
     date: null,
     designDate: null,
     measurementDate: null,
-    followUp1Date: null,
-    followUp2Date: null,
-    followUp3Date: null,
+    // followUp1Date: null,
+    // followUp2Date: null,
+    // followUp3Date: null,
     status: 'Draft',
     files: [],
     customerName: '', // Added to match validationSchema
@@ -133,7 +133,7 @@ const EditProposal = () => {
   // Fetch initial data
   useEffect(() => {
     axiosInstance
-      .get(`/api/proposals/proposalByID/${id}`)
+      .get(`/api/quotes/proposalByID/${id}`)
       .then((res) => {
         setInitialData(res.data);
         setFormData(res.data || defaultFormData);
@@ -337,7 +337,7 @@ const EditProposal = () => {
       
       if (response.payload.success === true) {
         Swal.fire('Success!', 'Proposal saved successfully!', 'success');
-        navigate('/proposals');
+        navigate('/quotes');
       } else if (response.error) {
         // Handle Redux Toolkit's error format
         const errorMessage = response.error.message || response.payload?.message || 'Failed to save proposal';
@@ -600,83 +600,87 @@ const EditProposal = () => {
                         </div>
                       </CCol>
                     </CRow>
-                    <CRow>
-                      <CCol xs={12} md={6} lg={4} className="mb-3">
-                        <div style={{ position: 'relative' }}>
-                          <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
-                          <DatePicker
-                            id="followUp1Date"
-                            selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
-                            onChange={(date) => updateFormData({ followUp1Date: date })}
-                            className="form-control"
-                            dateFormat="MM/dd/yyyy"
-                            wrapperClassName="w-100"
-                            disabled={isFormDisabled}
-                            placeholderText="Follow up 1 Date"
-                          />
-                          <FaCalendarAlt
-                            style={{
-                              position: 'absolute',
-                              top: '70%',
-                              right: '12px',
-                              transform: 'translateY(-50%)',
-                              color: '#6c757d',
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        </div>
-                      </CCol>
-                      <CCol xs={12} md={6} lg={4} className="mb-3">
-                        <div style={{ position: 'relative' }}>
-                          <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
-                          <DatePicker
-                            id="followUp2Date"
-                            selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
-                            onChange={(date) => updateFormData({ followUp2Date: date })}
-                            className="form-control"
-                            dateFormat="MM/dd/yyyy"
-                            wrapperClassName="w-100"
-                            disabled={isFormDisabled}
-                            placeholderText="Follow up 2 Date"
-                          />
-                          <FaCalendarAlt
-                            style={{
-                              position: 'absolute',
-                              top: '70%',
-                              right: '12px',
-                              transform: 'translateY(-50%)',
-                              color: '#6c757d',
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        </div>
-                      </CCol>
-                      <CCol xs={12} md={6} lg={4} className="mb-3">
-                        <div style={{ position: 'relative' }}>
-                          <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
-                          <DatePicker
-                            id="followUp3Date"
-                            selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
-                            onChange={(date) => updateFormData({ followUp3Date: date })}
-                            className="form-control"
-                            dateFormat="MM/dd/yyyy"
-                            wrapperClassName="w-100"
-                            disabled={isFormDisabled}
-                            placeholderText="Follow up 3 Date"
-                          />
-                          <FaCalendarAlt
-                            style={{
-                              position: 'absolute',
-                              top: '70%',
-                              right: '12px',
-                              transform: 'translateY(-50%)',
-                              color: '#6c757d',
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        </div>
-                      </CCol>
-                    </CRow>
+                    {/* Follow up dates commented out
+                    {!isContractor && (
+                      <CRow>
+                        <CCol xs={12} md={6} lg={4} className="mb-3">
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp1Date">Follow up 1 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp1Date"
+                              selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
+                              onChange={(date) => updateFormData({ followUp1Date: date })}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              disabled={isFormDisabled}
+                              placeholderText="Follow up 1 Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4} className="mb-3">
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp2Date">Follow up 2 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp2Date"
+                              selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
+                              onChange={(date) => updateFormData({ followUp2Date: date })}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              disabled={isFormDisabled}
+                              placeholderText="Follow up 2 Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                        <CCol xs={12} md={6} lg={4} className="mb-3">
+                          <div style={{ position: 'relative' }}>
+                            <CFormLabel htmlFor="followUp3Date">Follow up 3 Date</CFormLabel>
+                            <DatePicker
+                              id="followUp3Date"
+                              selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
+                              onChange={(date) => updateFormData({ followUp3Date: date })}
+                              className="form-control"
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
+                              disabled={isFormDisabled}
+                              placeholderText="Follow up 3 Date"
+                            />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: '#6c757d',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
+                        </CCol>
+                      </CRow>
+                    )}
+                    */}
                   </CCardBody>
                 </CCard>
 

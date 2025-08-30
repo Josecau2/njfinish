@@ -54,11 +54,11 @@ const useNavItems = () => {
       // Proposals section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
-          { component: CNavItem, name: 'View Proposals', to: '/proposals' }
+          { component: CNavItem, name: 'View Proposals', to: '/quotes' }
         ];
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: 'Create Proposal', to: '/proposals/create' });
+          proposalItems.push({ component: CNavItem, name: 'Create Proposal', to: '/quotes/create' });
         }
 
   // Contracts: visible only to non-contractors
@@ -279,8 +279,8 @@ export default useNavItems;
             name: 'Proposals',
             icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
             items: [
-              { component: CNavItem, name: 'View Proposals', to: '/proposals' },
-              { component: CNavItem, name: 'Create Proposal', to: '/proposals/create' },
+              { component: CNavItem, name: 'View Proposals', to: '/quotes' },
+              { component: CNavItem, name: 'Create Proposal', to: '/quotes/create' },
             ],
           });
         }
@@ -318,7 +318,7 @@ export default useNavItems;
             name: 'Proposals',
             icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
             items: [
-              { component: CNavItem, name: 'New Proposal', to: '/proposals' },
+              { component: CNavItem, name: 'New Proposal', to: '/quotes' },
               { component: CNavItem, name: 'Contracts', to: '/contracts' },
             ],
           },
@@ -362,7 +362,7 @@ export default useNavItems;
           name: 'Proposals',
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
           items: [
-            { component: CNavItem, name: 'New Proposal', to: '/proposals' },
+            { component: CNavItem, name: 'New Proposal', to: '/quotes' },
             { component: CNavItem, name: 'Contracts', to: '/contracts' },
           ],
         })

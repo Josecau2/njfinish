@@ -60,13 +60,13 @@ const routes = [
   { path: '/:noise1/:noise2/customers/edit/:id', name: 'Edit Customer (noisy)', element: CustomerForm, permission: 'customers:update' },
   { path: '/customers/add', name: 'Add Customer', element: CustomerForm, permission: 'customers:create' },
   
-  // Proposal routes
-  { path: '/proposals', name: 'Proposal', element: Proposals, permission: 'proposals:read' },
-  { path: '/proposals/create', name: 'CreateProposalForm', element: CreateProposalForm, permission: 'proposals:create' },
-  { path: '/proposals/edit/:id', name: 'EditProposal (redirect)', element: RedirectToNoisyEditProposal, permission: 'proposals:update' },
-  { path: '/:noise1/:noise2/proposals/edit/:id', name: 'EditProposal (noisy)', element: EditProposal, permission: 'proposals:update' },
+  // Quote routes
+  { path: '/quotes', name: 'Quote', element: Proposals, permission: 'proposals:read' },
+  { path: '/quotes/create', name: 'CreateQuoteForm', element: CreateProposalForm, permission: 'proposals:create' },
+  { path: '/quotes/edit/:id', name: 'EditQuote (redirect)', element: RedirectToNoisyEditProposal, permission: 'proposals:update' },
+  { path: '/:noise1/:noise2/quotes/edit/:id', name: 'EditQuote (noisy)', element: EditProposal, permission: 'proposals:update' },
   
-  // Contracts (related to proposals) - blocked for contractors
+  // Contracts (related to quotes) - blocked for contractors
   { path: '/contracts', name: 'Contracts', element: Contracts, permission: 'proposals:read', contractorBlock: true },
   
   // Resources
@@ -113,8 +113,8 @@ const routes = [
   { path: '/admin/notifications', name: 'Notifications', element: NotificationsPage, permission: 'admin:notifications' },
   // General notifications page for all authenticated users (contractors included)
   { path: '/notifications', name: 'Notifications', element: NotificationsPage },
-  { path: '/proposals/:proposalId/admin-view', name: 'Admin Proposal View (redirect)', element: RedirectToNoisyAdminProposalView, permission: 'admin:proposals_view' },
-  { path: '/:noise1/:noise2/proposals/:proposalId/admin-view', name: 'Admin Proposal View (noisy)', element: AdminProposalView, permission: 'admin:proposals_view' },
+  { path: '/quotes/:proposalId/admin-view', name: 'Admin Quote View (redirect)', element: RedirectToNoisyAdminProposalView, permission: 'admin:proposals_view' },
+  { path: '/:noise1/:noise2/quotes/:proposalId/admin-view', name: 'Admin Quote View (noisy)', element: AdminProposalView, permission: 'admin:proposals_view' },
 
   // Fallback
   { path: '*', name: '404', element: Page404 },

@@ -219,7 +219,7 @@ export const filterRoutesByPermission = (routes, user) => {
     if (route.path.startsWith('/customers')) {
       return hasPermission(user, 'customers:read');
     }
-    if (route.path.startsWith('/proposals')) {
+    if (route.path.startsWith('/quotes')) {
       return hasPermission(user, 'proposals:read');
     }
     if (route.path.startsWith('/resources')) {

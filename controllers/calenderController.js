@@ -8,7 +8,7 @@ const fetchEvents = async (req, res) => {
             where: { isDeleted: false },
             attributes: [
                 'id', 'measurementDate', 'designDate',
-                'followUp1Date', 'followUp2Date', 'followUp3Date',
+                // 'followUp1Date', 'followUp2Date', 'followUp3Date',
                 'description', 'salesRep'
             ]
         });
@@ -30,9 +30,9 @@ const fetchEvents = async (req, res) => {
 
             pushEvent(p.measurementDate, 'Measurement Scheduled');
             pushEvent(p.designDate, 'Design Scheduled');
-            pushEvent(p.followUp1Date, 'Follow Up 1');
-            pushEvent(p.followUp2Date, 'Follow Up 2');
-            pushEvent(p.followUp3Date, 'Follow Up 3');
+            // pushEvent(p.followUp1Date, 'Follow Up 1');
+            // pushEvent(p.followUp2Date, 'Follow Up 2');
+            // pushEvent(p.followUp3Date, 'Follow Up 3');
         });
 
         res.json({ success: true, events });

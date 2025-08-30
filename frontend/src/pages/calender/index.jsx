@@ -10,7 +10,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilCalendar, cilFilter, cilReload, cilClock } from '@coreui/icons';
-import moment from 'moment';
+import { formatDate, formatDisplayDate, parseDate, moment, getTodayFormatted, getStartOfWeek, getEndOfWeek, isBetween } from '../../utils/dateHelpers';
 import axiosInstance from '../../helpers/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
@@ -68,7 +68,7 @@ const CalendarView = () => {
                 id: e.id,
                 title: `${e.title}${e.salesRep ? ' - ' + e.salesRep : ''}`,
                 baseTitle: e.title, // For filtering
-                date: moment(e.date).format('YYYY-MM-DD'),
+                date: formatDate(e.date, 'yyyy-MM-dd'),
                 allDay: true,
                 backgroundColor: eventColors[e.title] || '#6c757d',
                 borderColor: eventColors[e.title] || '#6c757d',
@@ -91,7 +91,7 @@ const CalendarView = () => {
 
     const handleEventClick = (info) => {
         const proposalId = info.event.id;
-    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/edit/:id', { id: proposalId });
+    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/edit/:id', { id: proposalId });
     navigate(noisy);
     };
 
@@ -142,17 +142,20 @@ const CalendarView = () => {
 
     // Get today's events
     const getTodaysEvents = () => {
-        const today = moment().format('YYYY-MM-DD');
+        const today = getTodayFormatted();
         return filteredEvents.filter(event => event.date === today);
     };
 
     // Get this week's events
     const getThisWeeksEvents = () => {
-        const startOfWeek = moment().startOf('week').format('YYYY-MM-DD');
-        const endOfWeek = moment().endOf('week').format('YYYY-MM-DD');
-        return filteredEvents.filter(event => 
-            moment(event.date).isBetween(startOfWeek, endOfWeek, null, '[]')
-        );
+        const startOfWeekDate = getStartOfWeek();
+        const endOfWeekDate = getEndOfWeek();
+        const startOfWeekStr = formatDate(startOfWeekDate, 'yyyy-MM-dd');
+        const endOfWeekStr = formatDate(endOfWeekDate, 'yyyy-MM-dd');
+        return filteredEvents.filter(event => {
+            const eventDate = parseDate(event.date);
+            return eventDate && isBetween(eventDate, startOfWeekDate, endOfWeekDate);
+        });
     };
 
     const todaysEvents = getTodaysEvents();

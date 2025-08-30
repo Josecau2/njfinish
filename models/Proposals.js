@@ -72,19 +72,19 @@ const Proposal = sequelize.define('proposal', {
         ),
         allowNull: true,
         comment: 'Extended status enum with new values while preserving existing ones'
-    },      
-    followUp1Date: {
-        type: DataTypes.DATE,
-        allowNull: true,
     },
-    followUp2Date: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
-    followUp3Date: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
+    // followUp1Date: {
+    //     type: DataTypes.DATE,
+    //     allowNull: true,
+    // },
+    // followUp2Date: {
+    //     type: DataTypes.DATE,
+    //     allowNull: true,
+    // },
+    // followUp3Date: {
+    //     type: DataTypes.DATE,
+    //     allowNull: true,
+    // },
     manufacturersData: {
         type: DataTypes.JSON,
         allowNull: true,

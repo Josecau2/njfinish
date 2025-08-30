@@ -163,7 +163,8 @@ const saveProposal = async (req, res) => {
             formData.type = 0;
         }
 
-        ['followUp1Date', 'followUp2Date', 'followUp3Date', 'location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
+        // ['followUp1Date', 'followUp2Date', 'followUp3Date', 'location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
+        ['location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
             const dateVal = formData[field];
             if (!dateVal || isNaN(new Date(dateVal))) {
                 formData[field] = null;
@@ -482,7 +483,8 @@ const updateProposal = async (req, res) => {
         }
 
         // Clear invalid date or nullable fields (exclude type from this processing)
-        ['followUp1Date', 'followUp2Date', 'followUp3Date', 'location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
+        // ['followUp1Date', 'followUp2Date', 'followUp3Date', 'location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
+        ['location', 'salesRep', 'leadSource', 'designer', 'manufacturerId'].forEach((field) => {
             const val = formData[field];
             if (!val || isNaN(new Date(val))) {
                 formData[field] = null;

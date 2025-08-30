@@ -274,7 +274,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                 </div>
               </div>
               <small className="text-muted">
-                {t('styles.helperText','View all styles with their associated pictures. Images are used in proposal creation to help customers visualize their selections.')}
+                {t('styles.helperText','View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.')}
               </small>
             </div>
             

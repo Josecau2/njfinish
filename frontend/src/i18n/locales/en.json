@@ -56,7 +56,7 @@
     "noStylesInfo": "No styles with pictures found for this manufacturer. Upload style images in the catalog mapping section to see them here.",
     "header": "Style Pictures for {{name}}",
     "searchPlaceholder": "Search styles...",
-    "helperText": "View all styles with their associated pictures. Images are used in proposal creation to help customers visualize their selections.",
+    "helperText": "View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.",
     "noneMatch": "No styles found matching \"{{term}}\".",
     "tryAdjust": "Try adjusting your search terms or clear the search to see all styles.",
     "noneAvailable": "No styles with pictures found for this manufacturer.",
@@ -187,9 +187,9 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "proposals": "Proposals",
-    "viewProposals": "View Proposals",
-    "createProposal": "Create Proposal",
+    "proposals": "Quotes",
+    "viewProposals": "View Quotes",
+    "createProposal": "Create Quote",
     "contracts": "Contracts",
     "customers": "Customers",
   "viewCustomers": "View Customers",
@@ -333,7 +333,7 @@
     "active": "Active",
     "withEmail": "With Email",
     "filtered": "Filtered Results",
-    "proposalsCount": "{{count}} Proposals",
+    "proposalsCount": "{{count}} Quotes",
   "ordersCount": "{{count}} Orders",
   "perPage": "per page",
   "showing": "Showing",
@@ -343,7 +343,7 @@
   "location": "Location",
   "name": "Name",
   "email": "Email",
-  "proposalsHeader": "Proposals",
+  "proposalsHeader": "Quotes",
   "ordersHeader": "Orders",
   "actions": "Actions",
   "main": "Main",
@@ -457,19 +457,19 @@
     "welcome": "Welcome to {{group}} Dashboard",
     "portal": "Contractor Portal",
     "quickActions": "Quick Actions",
-    "createProposal": "Create New Proposal",
+    "createProposal": "Create New Quote",
     "viewProfile": "View Profile",
     "loadError": "Failed to load dashboard data",
-    "activeProposals": "Active Proposals",
+    "activeProposals": "Active Quotes",
     "activeOrders": "Active Orders",
     "latestProductUpdates": "Latest Product Updates",
     "noProductUpdates": "No product updates available.",
     "quickLinks": "Quick Links",
     "recentFiles": "Recent Files",
-    "myLatestProposals": "My Latest Proposals",
-    "viewAllProposals": "View All Proposals",
-    "newProposal": "New Proposal",
-    "quickProposal": "Quick Proposal"
+    "myLatestProposals": "My Latest Quotes",
+    "viewAllProposals": "View All Quotes",
+    "newProposal": "New Quote",
+    "quickProposal": "Quick Quote"
   }
   ,
   "resources": {
@@ -532,12 +532,12 @@
     "leaveEmpty": "Leave empty to keep current file"
   },
   "proposals": {
-    "header": "Proposals",
-    "subtitle": "Manage and track all your proposals",
-    "new": "New Proposal",
-    "quick": "Quick Proposal",
+    "header": "Quotes",
+    "subtitle": "Manage and track all your quotes",
+    "new": "New Quote",
+    "quick": "Quick Quote",
     "searchPlaceholder": "Search by customer name...",
-    "showingCount": "Showing {{count}} of {{total}} proposals",
+    "showingCount": "Showing {{count}} of {{total}} quotes",
     "headers": {
       "date": "Date",
       "customer": "Customer",
@@ -547,7 +547,7 @@
       "actions": "Actions"
     },
     "empty": {
-      "title": "No proposals found",
+      "title": "No quotes found",
       "subtitle": "Try adjusting your search or filters"
     },
     "labels": {
@@ -570,9 +570,9 @@
       "followUp1": "Follow up 1",
       "followUp2": "Follow up 2",
       "followUp3": "Follow up 3",
-      "proposalAccepted": "Proposal accepted",
-      "proposalRejected": "Proposal rejected",
-      "proposalDone": "Proposal done"
+      "proposalAccepted": "Quote accepted",
+      "proposalRejected": "Quote rejected",
+      "proposalDone": "Quote done"
     },
     "actions": {
       "send": "Send",
@@ -580,16 +580,16 @@
       "reject": "Reject",
       "resend": "Resend",
       "share": "Create share link",
-      "view": "View proposal",
-      "edit": "Edit proposal",
-      "delete": "Delete proposal"
+      "view": "View quote",
+      "edit": "Edit quote",
+      "delete": "Delete quote"
     },
     "confirm": {
-      "sendTitle": "Send Proposal?",
-      "sendText": "This will mark the proposal as sent to the customer.",
+      "sendTitle": "Send Quote?",
+      "sendText": "This will mark the quote as sent to the customer.",
       "sendConfirm": "Yes, send it!",
-      "rejectTitle": "Reject Proposal?",
-      "rejectText": "This will mark the proposal as rejected.",
+      "rejectTitle": "Reject Quote?",
+      "rejectText": "This will mark the quote as rejected.",
       "rejectConfirm": "Yes, reject it!",
       "deleteTitle": "Are you sure?",
       "deleteText": "You won't be able to revert this!",
@@ -597,16 +597,16 @@
       "cancel": "Cancel"
     },
     "toast": {
-      "successSend": "Proposal sent successfully",
-      "successAccept": "Proposal accepted successfully",
-      "successReject": "Proposal rejected successfully",
-      "deleted": "Your proposal has been deleted.",
-      "deleteFailed": "Failed to delete the proposal.",
+      "successSend": "Quote sent successfully",
+      "successAccept": "Quote accepted successfully",
+      "successReject": "Quote rejected successfully",
+      "deleted": "Your quote has been deleted.",
+      "deleteFailed": "Failed to delete the quote.",
       "errorGeneric": "An error occurred"
     },
     "lockedStatus": {
-      "title": "Proposal Accepted",
-      "description": "This proposal has been accepted and is now being processed for delivery. No further changes are allowed.",
+      "title": "Quote Accepted",
+      "description": "This quote has been accepted and is now being processed for delivery. No further changes are allowed.",
       "processingNote": "Your order is currently being prepared for manufacturing and delivery."
     },
     "share": {
@@ -615,21 +615,21 @@
       "copy": "Copy link",
       "error": "Could not create share link"
     },
-    "lockedTooltip": "Proposal is locked",
+    "lockedTooltip": "Quote is locked",
     "create": {
       "steps": {
         "1": "Customer Information",
         "2": "Manufacturer Selection",
         "3": "Design & Style",
-        "4": "Proposal Summary"
+        "4": "Quote Summary"
       },
       "quickMode": "Quick Mode",
       "standardMode": "Standard Mode",
       "stepOf": "Step {{current}} of {{total}}",
       "loadingManufacturer": "Loading manufacturer data...",
       "actions": {
-        "print": "Print Proposal",
-        "email": "Email Proposal",
+        "print": "Print Quote",
+        "email": "Email Quote",
         "contract": "Email Contract"
   },
       "customerInfo": {
@@ -774,10 +774,10 @@
   "pageInfo": "Page {{current}} of {{total}}"
   },
   "proposalAcceptance": {
-  "title": "Accept Proposal",
-  "details": "Proposal Details:",
+  "title": "Accept Quote",
+  "details": "Quote Details:",
   "warningTitle": "Warning:",
-  "warningText": "Accepting this proposal will permanently lock it and prevent any further edits.",
+  "warningText": "Accepting this quote will permanently lock it and prevent any further edits.",
   "externalCheck": "Accept on behalf of external customer",
   "externalInfo": "External Signer Information",
   "signerName": "Signer Name",
@@ -785,11 +785,11 @@
   "signerNamePlaceholder": "Enter signer's full name",
   "signerEmailPlaceholder": "Enter signer's email",
   "externalHint": "Provide at least one form of identification for the external signer.",
-  "acceptButton": "Accept Proposal",
+  "acceptButton": "Accept Quote",
   "errors": {
     "needNameOrEmail": "Please provide either signer name or email for external acceptance",
     "invalidEmail": "Please provide a valid email address",
-    "failedAccept": "Failed to accept proposal"
+    "failedAccept": "Failed to accept quote"
   },
   "labels": {
     "customer": "Customer",
@@ -811,7 +811,7 @@
   "items": "Items"
   },
   "proposalDoc": {
-  "title": "Proposal",
+  "title": "Quote",
   "altCompanyLogo": "Company Logo",
   "fallbackCompanyName": "Company Name",
   "greeting": "Dear {{name}}:",
@@ -821,7 +821,7 @@
     "date": "Date"
   },
   "sections": {
-    "proposalItems": "Proposal Items",
+    "proposalItems": "Quote Items",
     "catalogItems": "Catalog Items"
   },
   "modifications": "Modifications:",
@@ -842,11 +842,11 @@
   }
   },
   "proposalCommon": {
-  "emailTitle": "Email Proposal",
+  "emailTitle": "Email Quote",
   "emailAddress": "Email Address *",
   "emailPlaceholder": "Enter customer email",
   "emailBody": "Email Body *",
-  "includeItems": "Include proposal items",
+  "includeItems": "Include quote items",
   "selectVersion": "Select Version *",
   "selectVersionsPlaceholder": "Select versions...",
   "selectColumns": "Select Columns",
@@ -854,8 +854,8 @@
   "updateCustomerEmail": "Update customer email",
   "sendEmail": "Send Email",
   "sending": "Sending...",
-  "printTitle": "Print Proposal",
-  "showProposalItems": "Show Proposal Items",
+  "printTitle": "Print Quote",
+  "showProposalItems": "Show Quote Items",
   "showGroupItems": "Show Group Items",
   "downloadPdf": "Download PDF",
   "downloading": "Downloading...",
@@ -898,7 +898,7 @@
       "followUp1": "Follow up 1",
       "followUp2": "Follow up 2",
       "followUp3": "Follow up 3",
-      "proposalAccepted": "Proposal accepted"
+      "proposalAccepted": "Quote accepted"
     },
     "modal": {
       "title": "Contract Details"
@@ -944,13 +944,13 @@
       "totalContractors": "Total Contractors",
       "totalUsers": "Total Users",
       "totalCustomers": "Total Customers",
-      "totalProposals": "Total Proposals"
+      "totalProposals": "Total Quotes"
     },
     "table": {
       "contractorName": "Contractor Name",
       "users": "Users",
       "customers": "Customers",
-      "proposals": "Proposals",
+      "proposals": "Quotes",
       "modules": "Modules",
       "created": "Created",
       "actions": "Actions"
@@ -962,7 +962,7 @@
     "noModules": "No modules",
     "modules": {
       "dashboard": "Dashboard",
-      "proposals": "Proposals",
+      "proposals": "Quotes",
       "customers": "Customers",
       "resources": "Resources"
     },
@@ -972,7 +972,7 @@
     "detail": {
       "tabs": {
         "overview": "Overview",
-        "proposals": "Proposals",
+        "proposals": "Quotes",
         "customers": "Customers",
         "settings": "Settings"
       },
@@ -1002,8 +1002,8 @@
         "totalUsersHint": "Active contractors and staff",
         "totalCustomers": "Total Customers",
         "totalCustomersHint": "Managed customer accounts",
-        "totalProposals": "Total Proposals",
-        "totalProposalsHint": "Created project proposals"
+        "totalProposals": "Total Quotes",
+        "totalProposalsHint": "Created project quotes"
       },
       "customers": {
         "header": "Customers ({{count}})",
@@ -1032,16 +1032,16 @@
         "inactive": "Inactive"
       },
       "proposals": {
-        "header": "Proposals ({{count}})",
-        "searchPlaceholder": "Search proposals by title, customer...",
+        "header": "Quotes ({{count}})",
+        "searchPlaceholder": "Search quotes by title, customer...",
         "quickFilters": "Quick Filters:",
-        "loadFailed": "Failed to load proposals",
+        "loadFailed": "Failed to load quotes",
         "empty": {
-          "title": "No proposals found",
+          "title": "No quotes found",
           "subtitle": "Try adjusting your search criteria or status filters."
         },
         "table": {
-          "title": "Proposal Title",
+          "title": "Quote Title",
           "amount": "Amount",
           "updated": "Last Updated"
         },
@@ -1052,27 +1052,27 @@
           "completed": "Completed"
         },
         "modal": {
-          "title": "Proposal Details",
-          "loading": "Loading proposal details...",
+          "title": "Quote Details",
+          "loading": "Loading quote details...",
           "group": "Group",
           "totalAmount": "Total Amount",
-          "goToProposal": "Go to Proposal",
+          "goToProposal": "Go to Quote",
           "basicInfo": "Basic Information",
-          "proposalId": "Proposal ID",
+          "proposalId": "Quote ID",
           "created": "Created Date",
           "updated": "Last Updated",
           "sent": "Sent Date",
           "contractorGroup": "Contractor Group",
           "accepted": "Accepted Date",
-          "failed": "Failed to load proposal details. Please try again.",
-          "openFull": "Open Full Proposal"
+          "failed": "Failed to load quote details. Please try again.",
+          "openFull": "Open Full Quote"
         },
         "timeline": {
           "title": "Status Timeline",
-          "created": "Proposal was created and added to the system",
-          "sent": "Proposal was sent to the customer for review",
-          "accepted": "Proposal has been accepted by the contractor",
-          "approved": "Proposal has been accepted by the contractor"
+          "created": "Quote was created and added to the system",
+          "sent": "Quote was sent to the customer for review",
+          "accepted": "Quote has been accepted by the contractor",
+          "approved": "Quote has been accepted by the contractor"
         },
         "itemsTitle": "Proposal Items ({{count}})",
         "totals": {
@@ -1107,7 +1107,7 @@
         },
         "moduleDescriptions": {
           "dashboard": "Access to main dashboard and analytics",
-          "proposals": "Create and manage project proposals",
+          "proposals": "Create and manage project quotes",
           "customers": "Manage customer database",
           "resources": "Access to shared resources and files"
         },
@@ -1444,7 +1444,7 @@
       },
       "moduleDescriptions": {
         "dashboard": "Main dashboard and overview",
-        "proposals": "Create and manage proposals",
+        "proposals": "Create and manage quotes",
         "customers": "Customer management",
         "resources": "Resource library access"
       },

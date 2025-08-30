@@ -189,6 +189,20 @@ router.get('/public/proposals/by-token/:token', proposalsController.getProposalP
 router.post('/public/proposals/:id/accept', validateIdParam('id'), proposalsController.acceptProposal);
 // router.put('/update-proposals/:id', proposalsController.setDefaultTax);
 
+// Quote routes (aliases for proposals with new naming)
+router.get('/get-quotes', verifyTokenWithGroup, proposalsController.getProposal);
+router.get('/quotes', verifyTokenWithGroup, proposalsController.getProposal);
+router.post('/create-quotes', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), proposalsController.saveProposal);
+router.delete('/delete-quotes/:id', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), proposalsController.deleteProposals);
+router.get('/quotes/proposalByID/:id', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalsController.getProposalById);
+router.post('/update-quotes', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals', idParam: 'id', allowCreate: false, idFromBody: true }), sanitizeBodyStrings(), proposalsController.updateProposal);
+router.put('/quotes/:id/status', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalsController.updateProposalStatus);
+router.post('/quotes/:id/accept', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), rateLimitAccept, proposalsController.acceptProposal);
+router.get('/quotes/:id/admin-details', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalsController.getProposalAdminDetails);
+router.post('/quotes/:id/sessions', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalSessionController.createSession);
+router.get('/public/quotes/by-token/:token', proposalsController.getProposalPublicByToken);
+router.post('/public/quotes/:id/accept', validateIdParam('id'), proposalsController.acceptProposal);
+
 // Contracts route - block contractors entirely
 router.get(
 	'/get-contracts',

@@ -28,7 +28,7 @@ export function decodeId(str) {
 }
 
 // Build an encoded path by replacing :id-like segments with their encoded value
-// Example: buildEncodedPath('/proposals/edit/:id', { id: 123 }) -> '/proposals/edit/jR...'
+// Example: buildEncodedPath('/quotes/edit/:id', { id: 123 }) -> '/quotes/edit/jR...'
 export function buildEncodedPath(template, params = {}) {
   return template.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, (m, key) => {
     const val = params[key];

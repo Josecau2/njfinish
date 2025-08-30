@@ -139,7 +139,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const handleGoToProposal = (proposalId) => {
     // Navigate to admin read-only proposal view
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/:proposalId/admin-view', { proposalId });
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/:proposalId/admin-view', { proposalId });
   navigate(noisy);
   };
 

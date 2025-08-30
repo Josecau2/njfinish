@@ -49,7 +49,7 @@ const useNavItems = () => {
       // Proposals section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
-          { component: CNavItem, name: 'View Proposals', to: '/proposals' }
+          { component: CNavItem, name: 'View Proposals', to: '/quotes' }
         ];
 
         if (hasPermission(user, 'proposals:create')) {

@@ -17,7 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { decodeParam } from '../../../utils/obfuscate';
 import Swal from 'sweetalert2';
 import ct from 'countries-and-timezones';
-import moment from 'moment-timezone';
+import { formatDate, formatDateTime, getCurrentDate } from '../../../utils/dateHelpers';
 import { fetchLocationById, updateLocation } from '../../../store/slices/locationSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,7 @@ const LocationForm = () => {
   useEffect(() => {
     if (formData.timezone) {
       const interval = setInterval(() => {
-        setCurrentTime(moment().tz(formData.timezone).format('YYYY-MM-DD HH:mm:ss'));
+        setCurrentTime(formatDateTime(getCurrentDate(), formData.timezone));
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -100,7 +100,7 @@ const LocationForm = () => {
         country: value,
         timezone: firstTimezone,
       }));
-      setCurrentTime(firstTimezone ? moment().tz(firstTimezone).format('YYYY-MM-DD HH:mm:ss') : '');
+      setCurrentTime(firstTimezone ? formatDateTime(getCurrentDate(), firstTimezone) : '');
       return;
     }
     setFormData((prev) => ({

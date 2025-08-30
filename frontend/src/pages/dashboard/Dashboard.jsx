@@ -166,11 +166,11 @@ const Dashboard = () => {
   }, [activeOrders]);
 
   const handleCreateProposal = () => {
-    navigate('/proposals/create');
+    navigate('/quotes/create');
   };
 
   const handleCreateQuickProposal = () => {
-    navigate('/proposals/create?quick=yes');
+    navigate('/quotes/create?quick=yes');
   };
 
   const getStatusColor = (status) => {
@@ -232,7 +232,7 @@ const Dashboard = () => {
   };
 
   const handleViewAllProposals = () => {
-    navigate('/proposals');
+    navigate('/quotes');
   };
 
 

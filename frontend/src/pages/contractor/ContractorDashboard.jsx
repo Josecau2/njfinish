@@ -80,7 +80,7 @@ const ContractorDashboard = () => {
         // Fetch proposals count if module is enabled
         if (modulesList.includes('proposals')) {
           try {
-            const proposalsResponse = await axiosInstance.get('/api/proposals');
+            const proposalsResponse = await axiosInstance.get('/api/quotes');
             const proposalsData = proposalsResponse.data;
             const allProposals = Array.isArray(proposalsData)
               ? proposalsData
@@ -211,7 +211,7 @@ const ContractorDashboard = () => {
                           <CButton 
                             color="primary" 
                             variant="outline"
-                            onClick={() => navigate('/proposals/create')}
+                            onClick={() => navigate('/quotes/create')}
                           >
                             {t('dashboard.createProposal')}
                           </CButton>

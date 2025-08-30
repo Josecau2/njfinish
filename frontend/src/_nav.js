@@ -58,11 +58,11 @@ const useNavItems = () => {
       // Proposals section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
-          { component: CNavItem, name: t('nav.viewProposals'), to: '/proposals' }
+          { component: CNavItem, name: t('nav.viewProposals'), to: '/quotes' }
         ];
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: t('nav.createProposal'), to: '/proposals/create' });
+          proposalItems.push({ component: CNavItem, name: t('nav.createProposal'), to: '/quotes/create' });
         }
 
   // Contracts: visible only to non-contractors

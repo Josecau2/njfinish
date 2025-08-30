@@ -52,7 +52,7 @@ export const getProposalById = createAsyncThunk(
     'proposal/getProposalById',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/api/proposals/proposalByID/${id}`, {
+            const response = await axiosInstance.get(`/api/quotes/proposalByID/${id}`, {
                 headers: getAuthHeaders()
             });
             return response.data;
@@ -96,7 +96,7 @@ export const updateProposalStatus = createAsyncThunk(
     'proposal/updateProposalStatus',
     async ({ id, action, status }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/api/proposals/${id}/status`, { action, status }, {
+            const response = await axiosInstance.put(`/api/quotes/${id}/status`, { action, status }, {
                 headers: getAuthHeaders()
             });
             return response.data;
@@ -114,7 +114,7 @@ export const acceptProposal = createAsyncThunk(
             if (externalSignerName) requestBody.external_signer_name = externalSignerName;
             if (externalSignerEmail) requestBody.external_signer_email = externalSignerEmail;
             
-            const response = await axiosInstance.post(`/api/proposals/${id}/accept`, requestBody, {
+            const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody, {
                 headers: getAuthHeaders()
             });
             return response.data;
