@@ -1,10 +1,17 @@
 # Build stage for frontend
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Copy package files for dependency installation
 COPY package.json package-lock.json* ./
-COPY frontend/package.json frontend/package-lock.json* ./frontend/
-RUN npm ci && cd frontend && npm ci
+
+# Install all dependencies (frontend + backend)
+RUN npm ci --include=dev
+
+# Copy source code
 COPY . .
+
+# Build frontend with optimizations
 RUN npm run build:frontend
 
 # Runtime stage

@@ -6,8 +6,10 @@ import autoprefixer from 'autoprefixer'
 export default defineConfig(() => {
   return {
     base: '/',
+    root: 'frontend', // Set frontend as root for Vite
     build: {
-      outDir: 'build',
+      outDir: '../build', // Output to root/build directory
+      emptyOutDir: true, // Clean output directory
       sourcemap: false, // Disable source maps for production
       minify: 'terser', // Use terser for better minification
       target: 'es2020', // Modern browsers for better optimization
