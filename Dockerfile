@@ -21,7 +21,10 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json* ./
 RUN npm ci --omit=dev
-COPY --from=builder /app .
+# copy your backend source from the build context (not the builder's node_modules)
+COPY . .
+# copy only the built frontend from the builder
+COPY --from=builder /app/build ./build
 
 # Ensure uploads and logs dirs exist and are writable
 RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs && \
