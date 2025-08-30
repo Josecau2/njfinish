@@ -18,7 +18,12 @@ services:
       timeout: 5s
       retries: 10
   app:
-    build: .
+    build:
+      context: .
+      args:
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -38,7 +43,7 @@ services:
       - "8080:8080"
     volumes:
       - uploads:/app/uploads
-      - ./frontend/build:/app/frontend/build:ro
+      - ./build:/app/build:ro # optional: serve local static build if present
 volumes:
   mysql_data:
   uploads:

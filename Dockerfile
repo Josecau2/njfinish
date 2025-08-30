@@ -1,27 +1,49 @@
+# syntax=docker/dockerfile:1.4
 # Build stage for frontend
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Optional proxy args (passed from docker-compose.yml or CLI)
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG NPM_REGISTRY=https://registry.npmjs.org/
+ARG NPM_REGISTRY_FALLBACK=https://registry.npmmirror.com
 
 # Improve network reliability inside the builder
 # - Ensure CA certificates exist (TLS)
 # - Prefer IPv4 DNS resolution (often more reliable in DCs)
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 ENV NODE_OPTIONS=--dns-result-order=ipv4first \
-    npm_config_registry=https://registry.npmjs.org/ \
+    npm_config_registry=${NPM_REGISTRY} \
     npm_config_fetch_timeout=600000 \
     npm_config_fetch_retries=5 \
     npm_config_fetch_retry_mintimeout=20000 \
     npm_config_fetch_retry_maxtimeout=120000 \
     NPM_CONFIG_LOGLEVEL=warn \
     NPM_CONFIG_FUND=false \
-    NPM_CONFIG_AUDIT=false
+    NPM_CONFIG_AUDIT=false \
+    HTTP_PROXY=${HTTP_PROXY:-} \
+    HTTPS_PROXY=${HTTPS_PROXY:-} \
+    NO_PROXY=${NO_PROXY:-}
 
 # Copy package files for dependency installation
 COPY package.json package-lock.json* ./
 
 # Install ALL dependencies (including dev) for building
-# Use BuildKit cache mount to reuse the npm cache across builds
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci
+# - Set npm proxy if provided
+# - Prefer configured registry; fallback to mirror if ping fails
+# - Use BuildKit cache mount to reuse the npm cache across builds
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
+        if [ -n "${HTTP_PROXY}" ]; then npm config set proxy "$HTTP_PROXY"; fi; \
+        if [ -n "${HTTPS_PROXY}" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi; \
+        npm config set registry "${NPM_REGISTRY}"; \
+        (npm ping || npm config set registry "${NPM_REGISTRY_FALLBACK}"); \
+        for i in 1 2 3; do \
+            npm --version && node -v; \
+            npm ci --no-optional && break || (echo "npm ci failed, retry $i/3" && sleep 25); \
+        done
+
 
 # Copy source code
 COPY . .
@@ -34,7 +56,7 @@ FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production \
     NODE_OPTIONS=--dns-result-order=ipv4first \
-    npm_config_registry=https://registry.npmjs.org/ \
+    npm_config_registry=${NPM_REGISTRY} \
     npm_config_fetch_timeout=600000 \
     npm_config_fetch_retries=5 \
     npm_config_fetch_retry_mintimeout=20000 \
