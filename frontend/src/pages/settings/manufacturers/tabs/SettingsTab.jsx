@@ -35,27 +35,27 @@ const SettingsTab = ({ manufacturer }) => {
   const [selectedFields2, setSelectedFields2] = useState([]);
   const [multiplier2Error, setMultiplier2Error] = useState('');
 
-  // Create allFields from baseColumns and limited dynamicColumns
+  // Create allFields from code and style columns (no description)
   const allFields = useMemo(() => {
-    const baseColumns = ['code', 'description'];
-  const dynamicColumns = Array.isArray(styleCollection)
-    ? styleCollection
-      .slice(0, 3)
-      .map(style => style?.style)
-      .filter(v => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
-    : [];
+    const baseColumns = ['code'];
+    const dynamicColumns = Array.isArray(styleCollection)
+      ? styleCollection
+        .slice(0, 5) // Show up to 5 styles instead of 3
+        .map(style => style?.style)
+        .filter(v => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
+      : [];
     return [...baseColumns, ...dynamicColumns];
   }, [styleCollection]);
 
-  // Set default selected fields when allFields is ready (only base columns + 2 styles max)
+  // Set default selected fields when allFields is ready (code + up to 4 styles)
   useEffect(() => {
     if (allFields.length > 0) {
-      // Limit default selection to CODE, DESCRIPTION and first 2 styles
-      const defaultFields = allFields.slice(0, 4); // code, description, style1, style2
+      // Limit default selection to CODE and first 4 styles
+      const defaultFields = allFields.slice(0, 5); // code + 4 styles max
       setSelectedFields1(defaultFields);
       setSelectedFields2(defaultFields);
     }
-  }, [allFields]);
+  }, [allFields, catalogData]);
 
   // Fetch catalog data for the manufacturer
   useEffect(() => {
@@ -71,7 +71,7 @@ const SettingsTab = ({ manufacturer }) => {
           headers: getAuthHeaders(),
           params: {
             page: 1,
-            limit: 100, // Get first 100 items for the sample table
+            limit: 1000, // Get more items to show proper style comparison
             sortBy: 'code',
             sortOrder: 'ASC'
           }
@@ -143,19 +143,30 @@ const SettingsTab = ({ manufacturer }) => {
         }
       }
 
-      // Ensure CODE and DESCRIPTION are always first and in order
-      const final = ['code', 'description', ...updated.filter(f => f !== 'code' && f !== 'description')];
+      // Ensure CODE is always first, remove description, keep only style fields
+      const final = ['code', ...updated.filter(f => f !== 'code' && f !== 'description')];
       return final;
     });
   };
 
 
-  // Filter and paginate data
-  const filterData = (searchCode) =>
-    catalogData?.filter(item =>
+  // Filter and paginate data - group by code to avoid duplicates
+  const filterData = (searchCode) => {
+    const filtered = catalogData?.filter(item =>
       typeof item.code === 'string' &&
       item.code.toLowerCase().includes(searchCode.toLowerCase())
     ) || [];
+    
+    // Group by code to show unique codes only
+    const groupedByCode = filtered.reduce((acc, item) => {
+      if (!acc[item.code]) {
+        acc[item.code] = item; // Keep the first occurrence of each code
+      }
+      return acc;
+    }, {});
+    
+    return Object.values(groupedByCode);
+  };
 
   const filteredData1 = filterData(searchCode1);
   const totalPages1 = Math.ceil(filteredData1.length / itemsPerPage1);
@@ -184,11 +195,11 @@ const SettingsTab = ({ manufacturer }) => {
         </CDropdownToggle>
         <CDropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
           <CDropdownItem component="div" className="small text-muted px-3 py-1">
-            CODE and DESCRIPTION are always shown. Max 6 columns total.
+            CODE is always shown. Select styles to see multiplied prices. Max 6 columns total.
           </CDropdownItem>
           <hr className="dropdown-divider" />
           {allFields.map(field => {
-            const isBaseColumn = ['code', 'description'].includes(field);
+            const isBaseColumn = ['code'].includes(field);
             return (
               <CDropdownItem key={field} component="div" className="form-check">
                 <CFormCheck
@@ -214,14 +225,17 @@ const SettingsTab = ({ manufacturer }) => {
   const renderTable = (data, selectedFields, multiplierCalc) => (
     <div>
       <div className="mb-2 small text-muted">
-        Showing {Math.min(data.length, 5)} sample items with price comparison across different styles
+        Showing {Math.min(data.length, 5)} sample items with code and multiplied prices for selected styles
       </div>
       <CTable striped hover responsive>
         <CTableHead>
           <CTableRow>
       {selectedFields.map((field, fieldIndex) => (
               <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
-        {typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A')}
+        {field === 'code' 
+          ? 'CODE' 
+          : (typeof field === 'string' && field ? `${field.toUpperCase()} PRICE` : t('common.na', 'N/A'))
+        }
               </CTableDataCell>
             ))}
           </CTableRow>
@@ -238,13 +252,20 @@ const SettingsTab = ({ manufacturer }) => {
               <CTableRow key={item.id}>
                 {selectedFields.map((field, fieldIndex) => (
                   <CTableDataCell key={`${item.id}-${fieldIndex}`}>
-                    {typeof field === 'string' && ['code', 'description'].includes(field)
+                    {field === 'code'
                       ? item[field]
-                      : (typeof field === 'string' && item.style?.toLowerCase() === field.toLowerCase()
-                        ? `$${multiplierCalc(item.price)}`
-                        : '--')}
+                      : (() => {
+                          // Find the price for this code in the specified style
+                          const styleVariant = data.find(d => 
+                            d.code === item.code && 
+                            d.style?.toLowerCase() === field.toLowerCase()
+                          );
+                          
+                          return styleVariant?.price 
+                            ? `$${multiplierCalc(styleVariant.price)}`
+                            : '--';
+                        })()}
                   </CTableDataCell>
-
                 ))}
               </CTableRow>
             ))

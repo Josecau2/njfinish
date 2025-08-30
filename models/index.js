@@ -17,6 +17,11 @@ const CatalogUploadBackup = require('./CatalogUploadBackup');
 const Notification = require('./Notification');
 const ActivityLog = require('./ActivityLog');
 const ResourceLink = require('./ResourceLink');
+const ContactInfo = require('./ContactInfo');
+const ContactThread = require('./ContactThread');
+const ContactMessage = require('./ContactMessage');
+const Terms = require('./Terms');
+const TermsAcceptance = require('./TermsAcceptance');
 
 const ManufacturerAssemblyCost = require('./ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('./ManufacturerHingesDetails');
@@ -143,6 +148,18 @@ ManufacturerCatalogData.hasMany(ManufacturerModificationDetails, {
 Proposals.hasMany(ProposalSession, { foreignKey: 'proposal_id', as: 'sessions' });
 ProposalSession.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
 
+// Contact messaging associations
+ContactThread.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
+User.hasMany(ContactThread, { foreignKey: 'user_id', as: 'contactThreads' });
+
+ContactMessage.belongsTo(ContactThread, { foreignKey: 'thread_id', as: 'thread' });
+ContactThread.hasMany(ContactMessage, { foreignKey: 'thread_id', as: 'messages' });
+
+ContactMessage.belongsTo(User, { foreignKey: 'author_user_id', as: 'author' });
+
+// Terms associations
+TermsAcceptance.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(TermsAcceptance, { foreignKey: 'user_id', as: 'termsAcceptances' });
 
 
 module.exports = {
@@ -163,5 +180,10 @@ module.exports = {
     Notification,
     ActivityLog,
     ResourceLink,
-    ProposalSession
+  ProposalSession,
+  ContactInfo,
+  ContactThread,
+  ContactMessage,
+  Terms,
+  TermsAcceptance
 };

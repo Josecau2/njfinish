@@ -119,7 +119,24 @@ const PageHeader = ({
     };
   };
 
-  const backgroundColor = customization.headerBg || '#ffffff';
+  // Normalize background color to a safe string to avoid runtime errors when state contains non-string values
+  const resolveBackground = (value) => {
+    try {
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        // Basic hex or css color string support; fallback if empty
+        return trimmed || '#ffffff';
+      }
+      // Support common object shapes e.g. { hex: '#rrggbb' } or { value: '#rrggbb' }
+      if (value && typeof value === 'object') {
+        if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim();
+        if (typeof value.value === 'string' && value.value.trim()) return value.value.trim();
+      }
+    } catch (_) { /* ignore and fallback */ }
+    return '#ffffff';
+  };
+
+  const backgroundColor = resolveBackground(customization?.headerBg);
   const optimalColors = getOptimalColors(backgroundColor);
 
   // Generate dynamic CSS for the component

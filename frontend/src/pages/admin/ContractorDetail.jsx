@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { decodeParam } from '../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   CContainer,
@@ -37,7 +38,8 @@ import SettingsTab from './ContractorDetail/SettingsTab';
 
 const ContractorDetail = () => {
   const { t } = useTranslation();
-  const { groupId } = useParams();
+  const { groupId: rawGroupId } = useParams();
+  const groupId = decodeParam(rawGroupId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   

@@ -1,6 +1,6 @@
 {
-  "name": "Njcabinets",
-  "version": "5.4.0",
+  "name": "AI-CONNECT",
+  "version": "8.2.3",
   "private": true,
   "scripts": {
     "build": "npm run build:frontend && npm run setup:production",
@@ -12,13 +12,18 @@
     "dev": "node index.js",
     "seed:dev": "node scripts/seed-dev.js",
     "db:sync": "node scripts/sync-db.js",
+  "db:sync:terms": "node scripts/sync-terms.js",
+  "db:wait": "node scripts/wait-for-db.js",
+  "db:migrate": "node scripts/migrate.js up",
+  "db:migrate:down": "node scripts/migrate.js down",
+  "db:migrate:status": "node scripts/migrate.js status",
     "setup:production": "npm run build:backend && node check-production-setup.js && node setup-production.js && node verify-production-images.js",
     "verify:production": "node verify-production-images.js",
-    "check:production": "node check-production-setup.js"
+  "check:production": "node check-production-setup.js"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
-    "@ckeditor/ckeditor5-react": "^9.5.0",
+  "@ckeditor/ckeditor5-build-classic": "^44.3.0",
+  "@ckeditor/ckeditor5-react": "^11.0.0",
     "@coreui/chartjs": "^4.1.0",
     "@coreui/coreui": "^5.3.1",
     "@coreui/icons": "^3.0.1",
@@ -56,9 +61,9 @@
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.5",
     "pdf-parse": "^1.1.1",
-    "pdfmake": "^0.2.20",
-    "prop-types": "^15.8.1",
-    "puppeteer": "^24.16.2",
+  "pdfmake": "^0.2.20",
+  "prop-types": "^15.8.1",
+  "puppeteer-core": "^24.16.2",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
@@ -71,7 +76,8 @@
     "sequelize": "^6.37.7",
     "simplebar-react": "^3.3.0",
     "sweetalert2": "^11.22.0",
-    "xlsx": "^0.18.5",
+  "exceljs": "^4.4.0",
+  "umzug": "^3.8.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {

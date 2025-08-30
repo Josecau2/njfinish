@@ -9,6 +9,7 @@ import CIcon from '@coreui/icons-react';
 import { cilPencil, cilTrash, cilPlus, cilSearch, cilLocationPin, cilEnvelopeClosed, cilGlobeAlt } from '@coreui/icons';
 import PaginationControls from '../../../components/PaginationControls';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice';
 import Swal from 'sweetalert2';
@@ -84,7 +85,8 @@ const LocationPage = () => {
   };
 
   const handleUpdateLocation = (id) => {
-    navigate(`/settings/locations/edit/${id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/locations/edit/:id', { id });
+  navigate(noisy);
   }
 
   return (

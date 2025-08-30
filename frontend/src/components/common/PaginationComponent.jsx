@@ -69,7 +69,8 @@ const PaginationComponent = ({
       alignItems: 'center',
       padding: isMobile ? '16px 12px' : '20px 24px',
       gap: isMobile ? '16px' : '0',
-      background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+      backgroundColor: '#f8f9fa',
+      backgroundImage: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
       borderTop: '1px solid #dee2e6',
       borderRadius: '0 0 8px 8px',
       boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
@@ -89,7 +90,7 @@ const PaginationComponent = ({
       whiteSpace: 'nowrap'
     },
     itemsPerPageBadge: {
-      background: '#fff',
+      backgroundColor: '#fff',
   borderWidth: '1px',
   borderStyle: 'solid',
   borderColor: '#ced4da',
@@ -130,7 +131,8 @@ const PaginationComponent = ({
       minWidth: 'auto'
     },
     activePageButton: {
-      background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+      backgroundColor: '#007bff',
+      backgroundImage: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
       borderColor: '#007bff',
       color: '#fff',
       fontWeight: '600',

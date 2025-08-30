@@ -34,6 +34,7 @@ import { fetchLocations } from '../../../store/slices/locationSlice';
 import Swal from 'sweetalert2';
 import { fetchUsers } from '../../../store/slices/userGroupSlice';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, className = "" }) => (
@@ -233,34 +234,13 @@ const AddUserForm = () => {
   return (
     <CContainer fluid className="settings-form-container">
       {/* Header Section */}
-      <CCard className="settings-form-header">
-        <CCardBody className="py-3 py-md-4 px-3 px-md-4">
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
-                <div className="settings-form-icon">
-                  <CIcon icon={cilUserPlus} size="sm" className="text-white" />
-                </div>
-                <div>
-                  <h5 className="settings-form-title">{t('settings.users.create.title')}</h5>
-                  <p className="settings-form-subtitle d-none d-md-block">{t('settings.users.create.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="12" className="mt-3 mt-md-0" md="auto">
-              <CButton
-                color="light"
-                className="settings-back-button w-100 w-md-auto"
-                size="sm"
-                onClick={() => navigate('/settings/users')}
-              >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                {t('common.back')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader 
+        title={t('settings.users.create.title')}
+        subtitle={t('settings.users.create.subtitle')}
+        icon={cilUserPlus}
+        showBackButton={true}
+        onBackClick={() => navigate('/settings/users')}
+      />
 
       {/* Error Alert */}
       {error && (

@@ -12,6 +12,7 @@ import {
   Factory
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice';
 import Swal from 'sweetalert2';
@@ -131,7 +132,8 @@ const ManufacturersList = () => {
   }
 
   const handleEdit = (id) => {
-    navigate(`/settings/manufacturers/edit/${id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/manufacturers/edit/:id', { id });
+  navigate(noisy);
   }
 
   const cardStyles = {

@@ -97,10 +97,10 @@ exports.getCustomizationdeletelogo = async (req, res) => {
 
 
 exports.generatepdf = async (req, res) => {
-  const puppeteer = require('puppeteer');
+  const { getPuppeteer } = require('../utils/puppeteerLauncher');
   const { html, options } = req.body;
-  
-  const browser = await puppeteer.launch();
+  const { puppeteer, launchOptions } = getPuppeteer();
+  const browser = await puppeteer.launch(launchOptions);
   const page = await browser.newPage();
   await page.setContent(html);
   

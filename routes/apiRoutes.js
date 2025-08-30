@@ -17,6 +17,8 @@ const calenderController = require('../controllers/calenderController');
 const contractorController = require('../controllers/contractorController');
 const notificationController = require('../controllers/notificationController');
 const resourceUpload = require('../middleware/resourceUpload');
+const contactController = require('../controllers/contactController');
+const termsController = require('../controllers/termsController');
 const { fullAccessControl, requirePermission } = require('../middleware/accessControl');
 const { verifyTokenWithGroup, enforceGroupScoping } = require('../middleware/auth');
 const { rateLimitAccept } = require('../middleware/rateLimiter');
@@ -248,6 +250,17 @@ router.get('/resources/files/download/:id', resourcesController.downloadFile);
 
 router.get('/calendar-events', calenderController.fetchEvents);
 
+// Contact Info & Messaging
+router.get('/contact/info', verifyTokenWithGroup, contactController.getContactInfo);
+router.put('/contact/info', verifyTokenWithGroup, requirePermission('admin:settings'), sanitizeBodyStrings(), contactController.saveContactInfo);
+
+router.post('/contact/threads', verifyTokenWithGroup, sanitizeBodyStrings(), contactController.createThread);
+router.get('/contact/threads', verifyTokenWithGroup, contactController.listThreads);
+router.get('/contact/threads/:id', verifyTokenWithGroup, validateIdParam('id'), contactController.getThread);
+router.post('/contact/threads/:id/messages', verifyTokenWithGroup, validateIdParam('id'), sanitizeBodyStrings(), contactController.postMessage);
+router.post('/contact/threads/:id/read', verifyTokenWithGroup, validateIdParam('id'), contactController.markRead);
+router.post('/contact/threads/:id/close', verifyTokenWithGroup, validateIdParam('id'), contactController.closeThread);
+
 // Contractor routes (admin only)
 router.get('/contractors', ...fullAccessControl, requirePermission('contractors:read'), contractorController.fetchContractors);
 router.get('/contractors/:groupId', ...fullAccessControl, requirePermission('contractors:read'), validateIdParam('groupId'), contractorController.fetchContractor);
@@ -260,6 +273,12 @@ router.get('/notifications', verifyTokenWithGroup, notificationController.getNot
 router.get('/notifications/unread-count', verifyTokenWithGroup, notificationController.getUnreadCount);
 router.post('/notifications/:id/read', verifyTokenWithGroup, validateIdParam('id'), notificationController.markAsRead);
 router.post('/notifications/mark-all-read', verifyTokenWithGroup, notificationController.markAllAsRead);
+
+// Terms & Conditions
+router.get('/terms/latest', verifyTokenWithGroup, termsController.getLatestTerms);
+router.post('/terms', verifyTokenWithGroup, requirePermission('admin:settings'), sanitizeBodyStrings(), termsController.saveTerms);
+router.get('/terms/acceptance', verifyTokenWithGroup, requirePermission('admin:users'), termsController.getAcceptanceStatus);
+router.post('/terms/accept', verifyTokenWithGroup, termsController.acceptLatest);
 
 
 module.exports = router;

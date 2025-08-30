@@ -43,6 +43,8 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     isPriceMSRP: true,
     costMultiplier: '',
     instructions: '',
+    assembledEtaDays: '',
+    unassembledEtaDays: '',
   });
   const [files, setFiles] = useState([]);
   const [logoImage, setLogoImage] = useState(null);
@@ -60,6 +62,8 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         isPriceMSRP: manufacturer.isPriceMSRP ?? true,
         costMultiplier: manufacturer.costMultiplier || '',
         instructions: manufacturer.instructions || '',
+        assembledEtaDays: manufacturer.assembledEtaDays || '',
+        unassembledEtaDays: manufacturer.unassembledEtaDays || '',
       });
     }
   }, [manufacturer]);
@@ -92,16 +96,26 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    console.log('Form data before submit:', formData);
+    
     try {
       const formDataToSend = new FormData();
-      Object.keys(formData).forEach((key) => formDataToSend.append(key, formData[key]));
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key] || '';
+        console.log(`Appending ${key}:`, value);
+        formDataToSend.append(key, value);
+      });
+      
       if (logoImage) formDataToSend.append('manufacturerImage', logoImage);
       files.forEach((file) => formDataToSend.append('catalogFiles', file));
 
+      console.log('Sending update request...');
       const res = await axiosInstance.put(`/api/manufacturers/${id}/update`, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() },
       });
 
+      console.log('Server response:', res.data);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (res.data.status === 200) {
         setMessage({ text: t('settings.manufacturers.edit.updated'), type: 'success' });
@@ -111,6 +125,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
       }
     } catch (error) {
       console.error('Update error:', error);
+      console.error('Error details:', error.response?.data);
       setMessage({ text: `Error: ${error.response?.data?.message || t('settings.manufacturers.edit.updateFailed')}`, type: 'danger' });
     } finally {
       setLoading(false);
@@ -170,6 +185,45 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   <CFormLabel htmlFor="address">{t('settings.manufacturers.fields.address')} *</CFormLabel>
                   <CFormInput id="address" name="address" value={formData.address} onChange={handleChange} required />
                 </div>
+
+                <CRow>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="assembledEtaDays">
+                        {t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
+                      </CFormLabel>
+                      <CFormInput 
+                        type="text" 
+                        id="assembledEtaDays" 
+                        name="assembledEtaDays" 
+                        value={formData.assembledEtaDays} 
+                        onChange={handleChange}
+                        placeholder="e.g., 7-14 days"
+                      />
+                      <CFormText className="text-muted">
+                        {t('settings.manufacturers.help.assembledEta', 'Estimated delivery time for assembled cabinets')}
+                      </CFormText>
+                    </div>
+                  </CCol>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="unassembledEtaDays">
+                        {t('settings.manufacturers.fields.unassembledEtaDays', 'Unassembled Items ETA')}
+                      </CFormLabel>
+                      <CFormInput 
+                        type="text" 
+                        id="unassembledEtaDays" 
+                        name="unassembledEtaDays" 
+                        value={formData.unassembledEtaDays} 
+                        onChange={handleChange}
+                        placeholder="e.g., 3-7 days"
+                      />
+                      <CFormText className="text-muted">
+                        {t('settings.manufacturers.help.unassembledEta', 'Estimated delivery time for unassembled cabinets')}
+                      </CFormText>
+                    </div>
+                  </CCol>
+                </CRow>
 
                 <div className="mb-3">
                   <CFormLabel htmlFor="manufacturerImage">{t('settings.manufacturers.edit.updateImage')}</CFormLabel>

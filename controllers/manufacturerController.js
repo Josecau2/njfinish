@@ -49,7 +49,9 @@ const addManufacturer = async (req, res) => {
                 website,
                 isPriceMSRP,
                 costMultiplier,
-                instructions
+                instructions,
+                assembledEtaDays,
+                unassembledEtaDays
             } = req.body;
 
             if (!name || !email || !phone || !address || !website || !costMultiplier) {
@@ -79,6 +81,8 @@ const addManufacturer = async (req, res) => {
                     isPriceMSRP: isPriceMSRP === 'true',
                     costMultiplier: parseFloat(costMultiplier),
                     instructions: instructions || '',
+                    assembledEtaDays: assembledEtaDays || null,
+                    unassembledEtaDays: unassembledEtaDays || null,
                     image: imagePath
                 });
 
@@ -247,8 +251,19 @@ const updateManufacturer = async (req, res) => {
             website,
             isPriceMSRP,
             costMultiplier,
-            instructions
+            instructions,
+            assembledEtaDays,
+            unassembledEtaDays
         } = req.body;
+
+        console.log('Received ETA fields:', {
+            assembledEtaDays: assembledEtaDays,
+            unassembledEtaDays: unassembledEtaDays,
+            assembledType: typeof assembledEtaDays,
+            unassembledType: typeof unassembledEtaDays,
+            assembledLength: assembledEtaDays?.length,
+            unassembledLength: unassembledEtaDays?.length
+        });
 
         const manufacturerImage = req.files?.['manufacturerImage']?.[0];
         const catalogFiles = req.files?.['catalogFiles'] || [];
@@ -285,7 +300,7 @@ const updateManufacturer = async (req, res) => {
             }
 
             // Update manufacturer fields
-            await manufacturer.update({
+            const updateData = {
                 name,
                 email,
                 phone,
@@ -294,8 +309,19 @@ const updateManufacturer = async (req, res) => {
                 isPriceMSRP: isPriceMSRP === 'true',
                 costMultiplier: parseFloat(costMultiplier),
                 instructions: instructions || '',
+                assembledEtaDays: assembledEtaDays || null,
+                unassembledEtaDays: unassembledEtaDays || null,
                 image: imagePath || manufacturer.image
+            };
+
+            console.log('Updating manufacturer with data:', updateData);
+            console.log('ETA data details:', {
+                assembledEtaDays: updateData.assembledEtaDays,
+                unassembledEtaDays: updateData.unassembledEtaDays,
+                assembledType: typeof updateData.assembledEtaDays,
+                unassembledType: typeof updateData.unassembledEtaDays
             });
+            await manufacturer.update(updateData);
 
             // If new catalog file uploaded, parse and replace old data
             if (catalogFiles.length > 0) {

@@ -208,7 +208,58 @@
   "general": "General",
   "pdfLayout": "Diseño de PDF",
   "loginPage": "Página de inicio de sesión",
-  "uiCustomization": "Personalización de UI"
+  "uiCustomization": "Personalización de UI",
+  "contactUs": "Contáctenos"
+  },
+  "contact": {
+    "header": "Contáctenos",
+    "subtitle": "Envíe un mensaje o encuentre cómo comunicarse con nosotros",
+    "adminView": "Admin",
+    "userView": "Usuario",
+    "inbox": "Bandeja",
+    "infoTab": "Información",
+    "info": {
+      "title": "Información de contacto",
+      "subtitle": "Detalles de la empresa",
+      "companyName": "Nombre de la empresa",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "website": "Sitio web",
+      "hours": "Horario",
+      "notes": "Notas"
+    },
+    "editor": {
+      "title": "Editar información",
+      "subtitle": "Actualice los datos de contacto visibles para todos",
+      "save": "Guardar"
+    },
+    "compose": {
+      "title": "Enviar mensaje",
+      "subtitle": "Háganos saber cómo podemos ayudarle",
+      "subject": "Asunto",
+      "subjectPh": "Por ejemplo: Comentarios, Soporte, Facturación",
+      "message": "Mensaje",
+      "messagePh": "Escriba su mensaje...",
+      "send": "Enviar",
+      "sending": "Enviando..."
+    },
+    "history": {
+      "title": "Tus mensajes",
+      "subtitle": "Historial de conversaciones",
+      "empty": "Aún no has enviado mensajes"
+    },
+    "thread": {
+      "title": "Conversación",
+      "subtitle": "Mensajes recientes",
+      "empty": "Seleccione una conversación",
+      "noMessages": "Sin mensajes",
+      "reply": "Responder",
+      "close": "Cerrar hilo",
+      "admin": "Administrador",
+      "user": "Usuario"
+    },
+    "status": { "open": "Abierto", "closed": "Cerrado" }
   },
   
   "customers": {

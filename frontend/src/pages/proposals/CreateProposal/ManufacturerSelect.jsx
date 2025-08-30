@@ -202,6 +202,25 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
             >
               {manufacturer.name}
             </h6>
+            
+            {/* ETA Information */}
+            {(manufacturer.assembledEtaDays || manufacturer.unassembledEtaDays) && (
+              <div className="mt-2">
+                <small className="text-muted d-block mb-1">
+                  <strong>{t('proposals.create.manufacturer.eta.title', 'Estimated Delivery Time')}</strong>
+                </small>
+                {manufacturer.assembledEtaDays && (
+                  <small className="text-success d-block">
+                    📦 {t('proposals.create.manufacturer.eta.assembled', 'Assembled')}: {manufacturer.assembledEtaDays} {t('proposals.create.manufacturer.eta.days', 'days')}
+                  </small>
+                )}
+                {manufacturer.unassembledEtaDays && (
+                  <small className="text-info d-block">
+                    📋 {t('proposals.create.manufacturer.eta.unassembled', 'Unassembled')}: {manufacturer.unassembledEtaDays} {t('proposals.create.manufacturer.eta.days', 'days')}
+                  </small>
+                )}
+              </div>
+            )}
           </CCardBody>
         </CCard>
       </motion.div>

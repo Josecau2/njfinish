@@ -24,6 +24,7 @@ import {
 } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { decodeParam } from '../../../utils/obfuscate';
 import { updateUser, fetchSingleUser } from '../../../store/slices/userGroupSlice';
 import Swal from 'sweetalert2';
 import axiosInstance from '../../../helpers/axiosInstance';
@@ -37,7 +38,7 @@ const getAuthHeaders = () => {
 };
 
 // External components to avoid re-creation on each render
-const FormSection = ({ title, icon, children, className = "" }) => (
+const FormSection = ({ title, icon, children, className = "", customization = {} }) => (
     <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
         <CCardBody className="p-3 p-md-4">
             <div className="d-flex align-items-center mb-3">
@@ -128,7 +129,8 @@ const EditUserGroupForm = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { id: rawId } = useParams();
+    const id = decodeParam(rawId);
     const [formData, setFormData] = useState(initialForm);
     const initialFormRef = useRef(initialForm);
     const [errors, setErrors] = useState({});
@@ -264,7 +266,7 @@ const EditUserGroupForm = () => {
 
             <CForm onSubmit={handleSubmit}>
                 {/* Group Information Section */}
-                <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={cilGroup}>
+                <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={cilGroup} customization={customization}>
                     <CRow>
                         <CCol xs={12} md={8} lg={6}>
                             <CustomFormInput
@@ -307,7 +309,7 @@ const EditUserGroupForm = () => {
 
                 {/* Module Permissions Section - Only for Contractor Groups */}
                 {formData.group_type === 'contractor' && (
-                    <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} icon={cilSettings}>
+                    <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} icon={cilSettings} customization={customization}>
                         <div className="mb-4">
                             <div className="d-flex align-items-start p-3 rounded-3" 
                                  style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>

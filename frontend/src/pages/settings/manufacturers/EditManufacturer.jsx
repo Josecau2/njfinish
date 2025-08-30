@@ -15,12 +15,14 @@ import StylePicturesTab from './tabs/StylePicturesTab';
 import TypesTab from './tabs/TypesTab';
 import FilesHistoryTab from './tabs/FilesHistoryTab';
 import { useParams } from 'react-router-dom';
+import { decodeParam } from '../../../utils/obfuscate';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 const EditManufacturer = () => {
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  const id = decodeParam(rawId);
   const dispatch = useDispatch();
   const [activeKey, setActiveKey] = useState(0);
   const manufacturer = useSelector((state) => state.manufacturers.selected);

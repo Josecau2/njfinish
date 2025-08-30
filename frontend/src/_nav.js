@@ -18,7 +18,8 @@ import {
   cilLocationPin,
   cilCalculator,
   cilBrush,
-  cilIndustry
+  cilIndustry,
+  cilChatBubble
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
@@ -102,6 +103,24 @@ const useNavItems = () => {
           name: t('nav.resources'),
           to: '/resources',
           icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
+        });
+      }
+
+      // Contact Us - visible to all authenticated users
+      navigationItems.push({
+        component: CNavItem,
+        name: t('nav.contactUs'),
+        to: '/contact',
+        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+      });
+
+      // Notifications - show as a direct link for non-admin users
+      if (!isAdmin(user)) {
+        navigationItems.push({
+          component: CNavItem,
+          name: t('nav.notifications'),
+          to: '/notifications',
+          icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
         });
       }
 
@@ -207,6 +226,7 @@ const useNavItems = () => {
               { component: CNavItem, name: t('nav.pdfLayout'), to: '/settings/pdflayoutcustomization' },
               { component: CNavItem, name: t('nav.loginPage'), to: '/settings/loginlayoutcustomization' },
               { component: CNavItem, name: t('nav.uiCustomization'), to: '/settings/ui-customization' },
+              { component: CNavItem, name: t('nav.terms', 'Terms & Conditions'), to: '/settings/terms' },
             ],
           });
         }

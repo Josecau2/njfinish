@@ -23,6 +23,7 @@ import CIcon from '@coreui/icons-react';
 import { cilPencil, cilTrash, cilSearch, cilUser, cilUserPlus, cilSettings } from '@coreui/icons';
 import PaginationControls from '../../../components/PaginationControls';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteUser, fetchUsers } from '../../../store/slices/userSlice';
 import Swal from 'sweetalert2';
@@ -82,7 +83,8 @@ const UsersPage = () => {
   }
 
   const handleUpdateUser = (id) => {
-    navigate(`/settings/users/edit/${id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/users/edit/:id', { id });
+  navigate(noisy);
   }
 
   const handleDelete = (id) => {

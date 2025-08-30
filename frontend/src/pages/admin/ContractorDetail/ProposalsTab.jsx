@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import {
   CRow,
   CCol,
@@ -138,7 +139,8 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const handleGoToProposal = (proposalId) => {
     // Navigate to admin read-only proposal view
-    navigate(`/proposals/${proposalId}/admin-view`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/:proposalId/admin-view', { proposalId });
+  navigate(noisy);
   };
 
   const handlePageChange = (page) => {

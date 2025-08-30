@@ -23,6 +23,7 @@ import CIcon from '@coreui/icons-react';
 import { cilPlus, cilPencil } from '@coreui/icons';
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useTranslation } from 'react-i18next';
 
 const UserGroupList = () => {
@@ -90,7 +91,8 @@ const UserGroupList = () => {
   };
 
   const handleEditGroup = (groupId) => {
-    navigate(`/settings/users/group/edit/${groupId}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/users/group/edit/:id', { id: groupId });
+  navigate(noisy);
   };
 
   const getModuleToggle = (group, module) => {
@@ -224,11 +226,12 @@ const UserGroupList = () => {
                       </CTableDataCell>
                       <CTableDataCell>
                         <CButton
-                          color="light"
-                          variant="ghost"
+                          color="primary"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleEditGroup(group.id)}
                           className="me-2"
+                          title="Edit Group"
                         >
                           <CIcon icon={cilPencil} size="sm" />
                         </CButton>
@@ -279,8 +282,15 @@ const UserGroupList = () => {
                     </div>
 
                     <div className="d-flex justify-content-end mt-2">
-                      <CButton color="light" size="sm" onClick={() => handleEditGroup(group.id)}>
-                        <CIcon icon={cilPencil} size="sm" />
+                      <CButton 
+                        color="primary" 
+                        variant="outline"
+                        size="sm" 
+                        onClick={() => handleEditGroup(group.id)}
+                        title="Edit Group"
+                      >
+                        <CIcon icon={cilPencil} size="sm" className="me-1" />
+                        Edit
                       </CButton>
                     </div>
                   </div>

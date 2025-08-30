@@ -26,6 +26,11 @@ import { notifyError, notifySuccess } from '../../helpers/notify'
 const NotificationsPage = () => {
   const dispatch = useDispatch()
   const { notifications, loading, error } = useSelector((state) => state.notification)
+  const authUser = useSelector((state) => state.auth?.user)
+  const isAdmin = (() => {
+    const role = String(authUser?.role || '').toLowerCase()
+    return role === 'admin' || role === 'super_admin'
+  })()
   
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -38,6 +43,20 @@ const NotificationsPage = () => {
   useEffect(() => {
     fetchNotifications()
   }, [currentPage, filter, typeFilter])
+
+  // Contractors: auto mark all read when landing on the page
+  useEffect(() => {
+    if (!isAdmin && notifications && notifications.some(n => !n.is_read)) {
+      (async () => {
+        try {
+          await axiosInstance.post('/api/notifications/mark-all-read')
+          dispatch(markAllAsRead())
+        } catch (err) {
+          // Non-fatal; ignore
+        }
+      })()
+    }
+  }, [isAdmin, notifications?.length])
 
   const fetchNotifications = async (showSpinner = true) => {
     if (showSpinner) {
@@ -303,7 +322,7 @@ const NotificationsPage = () => {
                               )}
                             </small>
                             <div>
-                              {!notification.is_read && (
+                              {isAdmin && !notification.is_read && (
                                 <CButton
                                   size="sm"
                                   variant="ghost"

@@ -14,6 +14,7 @@ import {
   CFormFeedback,
 } from '@coreui/react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { decodeParam } from '../../../utils/obfuscate';
 import Swal from 'sweetalert2';
 import ct from 'countries-and-timezones';
 import moment from 'moment-timezone';
@@ -33,7 +34,8 @@ const initialForm = {
 
 const LocationForm = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  const id = decodeParam(rawId);
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);
   const initialFormRef = useRef(initialForm);

@@ -27,6 +27,7 @@ import {
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
 import { deleteFormData, getProposal, updateProposalStatus, acceptProposal } from '../../store/slices/proposalSlice';
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import axiosInstance from '../../helpers/axiosInstance';
 import { hasPermission } from '../../helpers/permissions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -347,7 +348,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   };
 
   const handleNavigate = (id) => {
-    navigate(`/proposals/edit/${id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/edit/:id', { id });
+  navigate(noisy);
   };
 
   const getStatusColor = (status) => {

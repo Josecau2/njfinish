@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { decodeId } from '../utils/obfuscate';
 
 // Normalize a base URL so we don't end up with /api/api/... when endpoints already include /api
 const normalizeBaseUrl = (url) => {
@@ -46,6 +47,33 @@ axiosInstance.interceptors.request.use((config) => {
       // Only set if not already provided explicitly by the caller
       if (!config.headers.Authorization) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
+    // Transparently decode encoded IDs in path params for known API routes
+    if (config.url) {
+      const original = config.url;
+      // Only touch our API calls that start with /api/
+      if (/^\s*\/api\//.test(original)) {
+        const [pathPart, queryPart] = original.split('?');
+        const decodedPath = pathPart
+          .split('/')
+          .map((seg, idx) => {
+            if (!seg) return seg; // keep empty
+            try {
+              const raw = decodeURIComponent(seg);
+              const maybe = decodeId(raw);
+              // Replace only if we got a finite number (successful decode)
+              if (typeof maybe === 'number' && Number.isFinite(maybe)) {
+                return String(maybe);
+              }
+              return seg;
+            } catch {
+              return seg;
+            }
+          })
+          .join('/');
+        config.url = queryPart ? `${decodedPath}?${queryPart}` : decodedPath;
       }
     }
   } catch (_) {

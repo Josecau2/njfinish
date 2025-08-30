@@ -10,7 +10,7 @@ import { cilTrash, cilPlus, cilSave, cilX, cilCheckAlt } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTax, fetchTaxes, deleteTax, setDefaultTax } from '../../../store/slices/taxSlice';
 import { CiCircleQuestion } from 'react-icons/ci';
-import { FaCoins } from 'react-icons/fa6';
+import { FaCoins, FaPercent } from 'react-icons/fa6';
 import PageHeader from '../../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 
@@ -215,14 +215,14 @@ const TaxesPage = () => {
                                 fontSize: '14px'
                               }} 
                             />
-                            <CInputGroupText 
-                              style={{ 
+                            <CInputGroupText
+                              style={{
                                 backgroundColor: '#e9ecef',
                                 border: '1px solid #dee2e6',
                                 borderLeft: 'none'
                               }}
                             >
-                              <FaPercentage size="12" />
+                              <FaPercent size="12" />
                             </CInputGroupText>
                           </CInputGroup>
                         </CCol>
@@ -359,8 +359,8 @@ const TaxesPage = () => {
                                 fontSize: '14px'
                               }}
                             />
-                            <CInputGroupText 
-                              style={{ 
+                            <CInputGroupText
+                              style={{
                                 backgroundColor: '#ffc107',
                                 border: '1px solid #ffc107',
                                 borderRadius: '0 8px 8px 0',
@@ -368,7 +368,7 @@ const TaxesPage = () => {
                                 fontWeight: '600'
                               }}
                             >
-                              <FaPercentage size="12" />
+                              <FaPercent size="12" />
                             </CInputGroupText>
                           </CInputGroup>
                         </CCol>

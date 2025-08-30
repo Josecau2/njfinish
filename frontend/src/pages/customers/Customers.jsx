@@ -23,6 +23,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import CIcon from '@coreui/icons-react';
@@ -92,7 +93,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   };
 
   const handleEdit = (customer) => {
-    navigate(`/customers/edit/${customer.id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/customers/edit/:id', { id: customer.id });
+  navigate(noisy);
   };
 
   const handleDelete = async (id) => {

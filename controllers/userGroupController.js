@@ -82,8 +82,35 @@ exports.fetchSingleUser = async (req, res) => {
       return res.status(404).json({ message: 'User Group not found' });
     }
     
-    // Add computed permissions
+    // Add computed permissions and ensure modules is properly parsed
     const userJson = user.toJSON();
+    
+    // Ensure modules is always a proper object
+    let modules;
+    if (typeof userJson.modules === 'string') {
+      try {
+        modules = JSON.parse(userJson.modules);
+      } catch (e) {
+        console.error('Failed to parse modules for user:', userJson.name, userJson.modules);
+        modules = {
+          dashboard: false,
+          proposals: false,
+          customers: false,
+          resources: false
+        };
+      }
+    } else if (userJson.modules && typeof userJson.modules === 'object') {
+      modules = userJson.modules;
+    } else {
+      modules = {
+        dashboard: false,
+        proposals: false,
+        customers: false,
+        resources: false
+      };
+    }
+    
+    userJson.modules = modules;
     userJson.permissions = getGroupPermissions(userJson.group_type, userJson.modules);
     
     return res.status(200).json({ message: 'User Group found', user: userJson });

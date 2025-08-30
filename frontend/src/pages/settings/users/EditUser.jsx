@@ -24,6 +24,7 @@ import {
 } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { decodeParam } from '../../../utils/obfuscate';
 import { fetchUserById, updateUser } from '../../../store/slices/userSlice';
 import { fetchUsers as fetchUserGroups } from '../../../store/slices/userGroupSlice';
 import Swal from 'sweetalert2';
@@ -42,7 +43,8 @@ const initialForm = {
 
 const EditUserForm = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  const id = decodeParam(rawId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialForm);

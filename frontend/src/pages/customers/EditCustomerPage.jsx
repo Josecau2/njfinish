@@ -34,6 +34,7 @@ import Swal from "sweetalert2";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useParams, useNavigate } from "react-router-dom";
+import { decodeParam } from '../../utils/obfuscate';
 import { useTranslation } from 'react-i18next';
 
 // External components to avoid re-creation on each render
@@ -220,7 +221,8 @@ const EditCustomerPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRefs = useRef({});
-  const { customerId } = useParams();
+  const { customerId: rawCustomerId } = useParams();
+  const customerId = decodeParam(rawCustomerId);
   const navigate = useNavigate();
   const api_url = import.meta.env.VITE_API_URL;
 

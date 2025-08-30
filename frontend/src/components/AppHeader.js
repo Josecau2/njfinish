@@ -28,7 +28,6 @@ import {
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import NotificationBell from './NotificationBell'
-import { isAdmin } from '../helpers/permissions'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
 import { setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -198,10 +197,8 @@ const AppHeader = () => {
           <CNavItem className="d-flex align-items-center" style={{ height: '100%' }}>
             <LanguageSwitcher />
           </CNavItem>
-          {isAdmin(loggedInUser) && (
-            // NotificationBell renders a <li> via CDropdown variant="nav-item"; do not wrap in CNavItem
-            <NotificationBell />
-          )}
+          {/* Show notifications for any authenticated user */}
+          <NotificationBell />
           <CNavItem>
             <div className="vr mx-3 text-body text-opacity-50" style={{ height: '20px' }}></div>
           </CNavItem>

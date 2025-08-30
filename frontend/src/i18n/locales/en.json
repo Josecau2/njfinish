@@ -40,6 +40,7 @@
   "code": "Code",
   "image": "Image"
   },
+  "new": "New",
   "styles": {
     "create": "Add Style",
     "createHeader": "Add Style",
@@ -210,8 +211,118 @@
   "general": "General",
   "pdfLayout": "PDF Layout",
   "loginPage": "Login Page",
-  "uiCustomization": "UI Customization"
+  "uiCustomization": "UI Customization",
+  "contactUs": "Contact Us",
+  "terms": "Terms & Conditions"
   },
+  "contact": {
+    "header": "Contact Us",
+    "subtitle": "Send us a message or find ways to reach us",
+    "adminView": "Admin",
+    "userView": "User",
+    "inbox": "Inbox",
+    "infoTab": "Info",
+    "info": {
+      "title": "Contact Information",
+      "subtitle": "Company details",
+      "companyName": "Company Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "website": "Website",
+      "hours": "Hours",
+      "notes": "Notes"
+    },
+    "editor": {
+      "title": "Edit information",
+      "subtitle": "Update contact details visible to everyone",
+      "save": "Save",
+      "visibilitySettings": "Field Visibility",
+      "contentSettings": "Contact Information"
+    },
+    "compose": {
+      "title": "Send a message",
+      "subtitle": "Let us know how we can help",
+      "subject": "Subject",
+      "subjectPh": "e.g., Feedback, Support, Billing",
+      "message": "Message",
+      "messagePh": "Type your message...",
+      "send": "Send",
+      "sending": "Sending..."
+    },
+    "history": {
+      "title": "Your messages",
+      "subtitle": "Conversation history",
+  "empty": "You haven't sent any messages yet",
+  "unknownUser": "Unknown user"
+    },
+    "thread": {
+      "title": "Conversation",
+      "subtitle": "Recent messages",
+      "empty": "Select a conversation",
+      "noMessages": "No messages",
+      "reply": "Reply",
+      "close": "Close thread",
+      "admin": "Admin",
+      "user": "User"
+    },
+    "status": { "open": "Open", "closed": "Closed" }
+  },
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   "customers": {
     "header": "Customers",
     "subtitle": "Manage your customer database",
@@ -1863,4 +1974,3 @@
     }
   }
 }
-  

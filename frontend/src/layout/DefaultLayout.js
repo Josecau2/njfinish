@@ -1,7 +1,97 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
+import TermsModal from '../components/TermsModal'
+import { useSelector, useDispatch } from 'react-redux'
+import { getLatestTerms } from '../helpers/termsApi'
+import { isAdmin as isAdminCheck } from '../helpers/permissions'
+import { logout } from '../store/slices/authSlice'
 
 const DefaultLayout = () => {
+  const user = useSelector((s) => s.auth.user)
+  const isAdmin = useMemo(() => isAdminCheck(user), [user])
+  const [forceTerms, setForceTerms] = useState(false)
+  const [latestVersion, setLatestVersion] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    // Don't check terms until we have user data
+    if (!user) {
+      setLoading(true)
+      return
+    }
+
+    (async () => {
+      try {
+        // If user is admin, never show terms
+        if (isAdmin) {
+          setForceTerms(false)
+          setLoading(false)
+          return
+        }
+
+        const res = await getLatestTerms()
+        const v = res?.data?.data?.version
+        setLatestVersion(v || null)
+        
+        if (v) {
+          const key = `terms.accepted.v${v}`
+          const accepted = localStorage.getItem(key)
+          setForceTerms(!accepted)
+        } else {
+          setForceTerms(false)
+        }
+        setLoading(false)
+      } catch {
+        setForceTerms(false)
+        setLoading(false)
+      }
+    })()
+  }, [user, isAdmin])
+
+  const handleAccepted = () => {
+    if (latestVersion) {
+      localStorage.setItem(`terms.accepted.v${latestVersion}`, '1')
+    }
+    setForceTerms(false)
+  }
+
+  const handleRejected = () => {
+    dispatch(logout())
+  }
+
+  // Show loading while checking user status
+  if (loading || !user) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // If non-admin user must accept terms, block the entire app
+  if (!isAdmin && forceTerms) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div className="text-center">
+          <h4 className="mb-4">Terms & Conditions Required</h4>
+          <p className="text-muted mb-4">You must review and accept the terms and conditions to continue.</p>
+          <TermsModal 
+            visible={true} 
+            onClose={handleAccepted} 
+            onReject={handleRejected}
+            isForced={true}
+            requireScroll={true}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <AppSidebar />

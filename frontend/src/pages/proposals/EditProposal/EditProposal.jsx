@@ -27,6 +27,7 @@ import {
   CCardBody,
 } from '@coreui/react';
 import { useDispatch, useSelector } from 'react-redux';
+import { decodeParam, buildEncodedPath } from '../../../utils/obfuscate';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
 import { setSelectVersionNewEdit } from '../../../store/slices/selectVersionNewEditSlice';
 import { sendFormDataToBackend } from '../../../store/slices/proposalSlice';
@@ -71,7 +72,8 @@ const statusOptions = [
 ];
 
 const EditProposal = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  const id = decodeParam(rawId);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [initialData, setInitialData] = useState(null);

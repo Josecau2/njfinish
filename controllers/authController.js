@@ -423,14 +423,15 @@ exports.updateUser = async (req, res) => {
     const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    // Declare userRole at function scope
+    let userRole = 'User'; // Default role
+    let roleId = 0; // Default role_id
+
     // Conditionally update fields
     if (name) user.name = name;
     if (location) user.location = location;
     if (userGroup) {
       // Determine user role based on group type for updates
-      let userRole = 'User'; // Default role
-      let roleId = 0; // Default role_id
-      
       const group = await UserGroup.findByPk(userGroup);
       if (group) {
         if (group.group_type === 'contractor') {
@@ -460,14 +461,14 @@ exports.updateUser = async (req, res) => {
       const roleEntry = await UserRole.findOne({ where: { userId: user.id } });
 
       if (roleEntry) {
-        if (roleEntry.role !== userGroup) {
-          roleEntry.role = userGroup;
+        if (roleEntry.role !== userRole) {
+          roleEntry.role = userRole;
           await roleEntry.save();
         }
       } else {
         await UserRole.create({
           userId: user.id,
-          role: userGroup
+          role: userRole
         });
       }
     }

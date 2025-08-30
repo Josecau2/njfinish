@@ -145,11 +145,7 @@ async function getUserPermissions(user) {
         }
       }
       
-      console.log(`Permission debug for user ${user.id}:`, {
-        groupType: userGroup.group_type,
-        modules: modules,
-        rawModules: userGroup.modules
-      });
+  // Debug log removed to reduce noise
       
       return getGroupPermissions(userGroup.group_type, modules);
     }

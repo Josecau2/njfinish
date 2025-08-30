@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import {
   CContainer,
   CCard,
@@ -66,7 +67,8 @@ const Contractors = () => {
   };
 
   const handleView = (contractor) => {
-    navigate(`/admin/contractors/${contractor.id}`);
+  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/admin/contractors/:id', { id: contractor.id });
+  navigate(noisy);
   };
 
   const sortedFilteredContractors = useMemo(() => {

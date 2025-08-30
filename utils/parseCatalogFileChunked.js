@@ -1,6 +1,6 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const xlsx = require('xlsx');
+const ExcelJS = require('exceljs');
 const { Transform } = require('stream');
 
 /**
@@ -107,16 +107,32 @@ class ChunkedCatalogParser {
     }
 
     try {
-      const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const rows = xlsx.utils.sheet_to_json(sheet);
-      
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) return [];
+
+      // Build array of row objects based on header row
+      const headers = [];
+      worksheet.getRow(1).eachCell((cell, colNumber) => {
+        headers[colNumber] = String(cell.value || '').trim();
+      });
+
+      const rows = [];
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return;
+        const obj = {};
+        row.eachCell((cell, colNumber) => {
+          const key = headers[colNumber] || `COL_${colNumber}`;
+          obj[key] = (cell.value && cell.value.text) ? String(cell.value.text) : String(cell.value ?? '');
+        });
+        rows.push(obj);
+      });
+
       const allData = [];
       let totalProcessed = 0;
       const totalRows = rows.length;
 
-      // Process Excel data in chunks
       for (let i = 0; i < rows.length; i += this.chunkSize) {
         const chunk = rows.slice(i, i + this.chunkSize)
           .map(row => this.parseRow(row))

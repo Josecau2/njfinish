@@ -210,6 +210,8 @@ const ManufacturerForm = () => {
     isPriceMSRP: true,
     costMultiplier: '',
     instructions: '',
+    assembledEtaDays: '',
+    unassembledEtaDays: '',
   });
 
   const [files, setFiles] = useState([]);
@@ -299,6 +301,8 @@ const ManufacturerForm = () => {
       formDataToSend.append('isPriceMSRP', formData.isPriceMSRP);
       formDataToSend.append('costMultiplier', formData.costMultiplier);
       formDataToSend.append('instructions', formData.instructions);
+      formDataToSend.append('assembledEtaDays', formData.assembledEtaDays || '');
+      formDataToSend.append('unassembledEtaDays', formData.unassembledEtaDays || '');
       
       // Append logo image if selected
       if (logoImage) {
@@ -521,6 +525,38 @@ const ManufacturerForm = () => {
             isInvalid={!!validationErrors.address}
             feedback={validationErrors.address}
           />
+
+          {/* ETA Information */}
+          <CRow>
+            <CCol md={6}>
+              <CustomFormInput
+                label={t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
+                name="assembledEtaDays"
+                type="text"
+                icon={cilBuilding}
+                placeholder="e.g., 7-14 days"
+                value={formData.assembledEtaDays}
+                onChange={handleChange}
+              />
+              <CFormText className="text-muted ms-3">
+                {t('settings.manufacturers.help.assembledEta', 'Estimated delivery time for assembled cabinets')}
+              </CFormText>
+            </CCol>
+            <CCol md={6}>
+              <CustomFormInput
+                label={t('settings.manufacturers.fields.unassembledEtaDays', 'Unassembled Items ETA')}
+                name="unassembledEtaDays"
+                type="text"
+                icon={cilDescription}
+                placeholder="e.g., 3-7 days"
+                value={formData.unassembledEtaDays}
+                onChange={handleChange}
+              />
+              <CFormText className="text-muted ms-3">
+                {t('settings.manufacturers.help.unassembledEta', 'Estimated delivery time for unassembled cabinets')}
+              </CFormText>
+            </CCol>
+          </CRow>
         </FormSection>
 
         {/* Logo Upload */}

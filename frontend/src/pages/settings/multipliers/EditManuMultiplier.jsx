@@ -11,6 +11,7 @@ import {
     CAlert,
 } from '@coreui/react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { decodeParam } from '../../../utils/obfuscate'
 
 // Mock data — replace this with your API call
 const mockManufacturers = [
@@ -19,7 +20,8 @@ const mockManufacturers = [
 ]
 
 const EditManufacturer = () => {
-    const { id } = useParams()
+    const { id: rawId } = useParams()
+    const id = decodeParam(rawId)
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)

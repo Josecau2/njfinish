@@ -13,6 +13,7 @@ import { cilCalendar, cilFilter, cilReload, cilClock } from '@coreui/icons';
 import moment from 'moment';
 import axiosInstance from '../../helpers/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import { FaCalendarAlt, FaUsers, FaChartLine } from "react-icons/fa";
 import './CalendarView.css';
 import PageHeader from '../../components/PageHeader';
@@ -90,7 +91,8 @@ const CalendarView = () => {
 
     const handleEventClick = (info) => {
         const proposalId = info.event.id;
-        navigate(`/proposals/edit/${proposalId}`);
+    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/proposals/edit/:id', { id: proposalId });
+    navigate(noisy);
     };
 
     const handleFilterChange = (e) => {

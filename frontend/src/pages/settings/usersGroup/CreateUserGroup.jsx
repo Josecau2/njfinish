@@ -30,7 +30,7 @@ import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 
 // External components to avoid re-creation on each render
-const FormSection = ({ title, icon, children, className = "" }) => (
+const FormSection = ({ title, icon, children, className = "", customization = {} }) => (
     <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
         <CCardBody className="p-3 p-md-4">
             <div className="d-flex align-items-center mb-3">
@@ -162,6 +162,10 @@ const AddUserGroupForm = () => {
         }
     };
 
+    const handleBackClick = () => {
+        navigate('/settings/users/groups');
+    };
+
     const handleSubmit = async (e, force = false) => {
         e.preventDefault();
         if (!validate()) return;
@@ -233,7 +237,11 @@ const AddUserGroupForm = () => {
 
             <CForm onSubmit={handleSubmit}>
                 {/* Group Information Section */}
-                <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={cilGroup}>
+                <FormSection 
+                    title={t('settings.userGroups.form.titles.groupInfo')} 
+                    icon={cilGroup}
+                    customization={customization}
+                >
                     {/* Info Card */}
                     <div className="mb-4">
                         <div className="d-flex align-items-start p-3 rounded-3" 
@@ -345,7 +353,11 @@ const AddUserGroupForm = () => {
 
                 {/* Module Permissions Section - Only for Contractor Groups */}
                 {formData.group_type === 'contractor' && (
-                    <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} icon={cilSettings}>
+                    <FormSection 
+                        title={t('settings.userGroups.form.titles.modulePermissions')} 
+                        icon={cilSettings}
+                        customization={customization}
+                    >
                         <div className="mb-4">
                             <div className="d-flex align-items-start p-3 rounded-3" 
                                  style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>

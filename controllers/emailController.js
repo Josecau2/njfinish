@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const puppeteer = require('puppeteer');
+const { getPuppeteer } = require('../utils/puppeteerLauncher');
 
 const PdfPrinter = require('pdfmake');
 require('dotenv').config();
@@ -159,11 +159,9 @@ exports.sendProposalEmail = async (req, res) => {
             htmlContent, // New field for HTML content
         } = req.body;
 
-        // Initialize Puppeteer
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        });
+    // Initialize Puppeteer (prefers system Chromium / puppeteer-core if available)
+    const { puppeteer, launchOptions } = getPuppeteer();
+    const browser = await puppeteer.launch(launchOptions);
         const page = await browser.newPage();
 
         // Set the HTML content

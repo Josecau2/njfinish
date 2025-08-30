@@ -15,11 +15,19 @@ import { cilBell, cilBellExclamation } from '@coreui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotifications, setUnreadCount, markNotificationAsRead } from '../store/notificationSlice'
 import axiosInstance from '../helpers/axiosInstance'
+import { getContrastColor } from '../utils/colorUtils'
 
 const NotificationBell = () => {
   const user = (() => { try { return JSON.parse(localStorage.getItem('user')) } catch { return null } })()
+  const token = localStorage.getItem('token')
+  // Show bell for any authenticated user (admins and contractors)
+  if (!user || !token) return null
   const isAdmin = user && (String(user.role).toLowerCase() === 'admin' || String(user.role).toLowerCase() === 'super_admin')
-  if (!isAdmin) return null
+  
+  // Get customization for proper contrast
+  const customization = useSelector((state) => state.customization) || {}
+  const optimalTextColor = getContrastColor(customization.headerBg || '#ffffff')
+  
   const dispatch = useDispatch()
   const { notifications, unreadCount, loading } = useSelector((state) => state.notification)
   const [isOpen, setIsOpen] = useState(false)
@@ -97,10 +105,35 @@ const NotificationBell = () => {
     }
   }
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen)
-    if (!isOpen && notifications.length === 0) {
-      fetchNotifications()
+  const markAllReadSilently = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) return
+      await axiosInstance.post('/api/notifications/mark-all-read')
+      // Optimistically zero the badge and mark local items as read
+      dispatch(setUnreadCount(0))
+      const nowIso = new Date().toISOString()
+      if (Array.isArray(notifications) && notifications.length > 0) {
+        const updated = notifications.map(n => n.is_read ? n : { ...n, is_read: true, read_at: nowIso })
+        dispatch(setNotifications(updated))
+      }
+    } catch (error) {
+      // Non-fatal; leave as-is if API fails
+      const status = error?.response?.status
+      if (status !== 401 && status !== 403) {
+        console.error('Error marking all read on open:', error?.message || error)
+      }
+    }
+  }
+
+  const handleToggle = async () => {
+    const nextOpen = !isOpen
+    setIsOpen(nextOpen)
+    if (nextOpen) {
+      // Always load a fresh preview
+      await fetchNotifications()
+      // Zero the counter upon opening and mark as read
+      await markAllReadSilently()
     }
   }
 
@@ -208,7 +241,9 @@ const NotificationBell = () => {
         <CIcon 
           icon={unreadCount > 0 ? cilBellExclamation : cilBell} 
           size="lg"
-          className={unreadCount > 0 ? 'text-warning' : 'text-muted'}
+          style={{ 
+            color: unreadCount > 0 ? '#ffc107' : optimalTextColor
+          }}
         />
         {unreadCount > 0 && (
           <CBadge 
@@ -256,78 +291,16 @@ const NotificationBell = () => {
           </div>
         )}
 
-        {!fetching && notifications.length === 0 && (
+        {!fetching && (
           <CDropdownItem disabled className="text-center py-3">
-            No notifications
+            No new notifications
           </CDropdownItem>
-        )}
-
-        {!fetching && notifications.map((notification) => (
-          <CDropdownItem
-            key={notification.id}
-            className={`notification-item ${!notification.is_read ? 'notification-unread' : ''}`}
-            onClick={() => {
-              if (!notification.is_read) {
-                handleMarkAsRead(notification.id)
-              }
-              if (notification.action_url) {
-                window.location.href = notification.action_url
-              }
-            }}
-            style={{ 
-              borderLeft: !notification.is_read ? '4px solid #007bff' : 'none',
-              backgroundColor: !notification.is_read ? '#f8f9fa' : 'transparent',
-              cursor: 'pointer'
-            }}
-          >
-            <div className="d-flex align-items-start">
-              <div className="me-2 mt-1">
-                <span style={{ fontSize: '1.2rem' }}>
-                  {getNotificationIcon(notification.type)}
-                </span>
-              </div>
-              <div className="flex-grow-1 min-width-0">
-                <div className="d-flex justify-content-between align-items-start">
-                  <strong className="text-truncate" style={{ fontSize: '0.875rem' }}>
-                    {notification.title}
-                  </strong>
-                  <CBadge 
-                    color={getPriorityColor(notification.priority)} 
-                    size="sm"
-                    className="ms-1"
-                  >
-                    {notification.priority}
-                  </CBadge>
-                </div>
-                <div 
-                  className="text-muted small text-truncate"
-                  style={{ fontSize: '0.8rem' }}
-                >
-                  {notification.message}
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-1">
-                  <small className="text-muted">
-                    {formatTimeAgo(notification.createdAt)}
-                  </small>
-                  {!notification.is_read && (
-                    <div 
-                      className="bg-primary rounded-circle"
-                      style={{ width: '6px', height: '6px' }}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </CDropdownItem>
-        ))}
-
-        {notifications.length > 0 && (
-          <div className="dropdown-divider" />
         )}
         
         <CDropdownItem 
           className="text-center"
-          onClick={() => window.location.href = '/admin/notifications'}
+          style={{ cursor: 'pointer' }}
+          onClick={() => window.location.href = isAdmin ? '/admin/notifications' : '/notifications'}
         >
           View all notifications
         </CDropdownItem>

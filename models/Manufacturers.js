@@ -40,6 +40,18 @@ const Manufacturer = sequelize.define('Manufacturer', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  assembledEtaDays: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'assembled_eta_days',
+    comment: 'Estimated delivery time for assembled items'
+  },
+  unassembledEtaDays: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'unassembled_eta_days',
+    comment: 'Estimated delivery time for unassembled items'
+  },
   status: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

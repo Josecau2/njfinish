@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../helpers/axiosInstance';
 import { useParams, useNavigate } from 'react-router-dom';
+import { decodeParam } from '../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   CContainer,
@@ -48,7 +49,8 @@ import {
 
 const AdminProposalView = () => {
   const api_url = import.meta.env.VITE_API_URL;
-  const { proposalId } = useParams();
+  const { proposalId: rawProposalId } = useParams();
+  const proposalId = decodeParam(rawProposalId);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   

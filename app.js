@@ -61,7 +61,13 @@ app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.resolve(buildPath, 'index.html'));
 });
 
-sequelize.sync().then(async () => {
+// Guarded sync: default none in production. 'create' creates missing tables; 'alter' only in dev.
+const syncMode = env.DB_SYNC_MODE; // none|create|alter
+const syncOptions = syncMode === 'alter' ? { alter: true } : syncMode === 'create' ? {} : null;
+
+const syncPromise = syncOptions ? sequelize.sync(syncOptions) : Promise.resolve();
+
+syncPromise.then(async () => {
   console.log('Database synced');
   
   // Run production setup automatically if needed
