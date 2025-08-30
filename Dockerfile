@@ -39,10 +39,10 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
         if [ -n "${HTTPS_PROXY}" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi; \
         npm config set registry "${NPM_REGISTRY}"; \
         (npm ping || npm config set registry "${NPM_REGISTRY_FALLBACK}"); \
-        for i in 1 2 3; do \
-            npm --version && node -v; \
-            npm ci --no-optional && break || (echo "npm ci failed, retry $i/3" && sleep 25); \
-        done
+            for i in 1 2 3; do \
+                npm --version && node -v; \
+                npm ci && break || (echo "npm ci failed, retry $i/3" && sleep 25); \
+            done
 
 
 # Copy source code
