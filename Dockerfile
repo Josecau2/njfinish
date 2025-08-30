@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 # Build stage for frontend
-FROM node:20-alpine AS builder
+FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 
 # Optional proxy args (passed from docker-compose.yml or CLI)
@@ -13,7 +13,7 @@ ARG NPM_REGISTRY_FALLBACK=https://registry.npmmirror.com
 # Improve network reliability inside the builder
 # - Ensure CA certificates exist (TLS)
 # - Prefer IPv4 DNS resolution (often more reliable in DCs)
-RUN apk add --no-cache ca-certificates && update-ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 ENV NODE_OPTIONS=--dns-result-order=ipv4first \
     npm_config_registry=${NPM_REGISTRY} \
     npm_config_fetch_timeout=600000 \
@@ -52,7 +52,7 @@ COPY . .
 RUN npm run build:frontend
 
 # Runtime stage
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production \
     NODE_OPTIONS=--dns-result-order=ipv4first \
