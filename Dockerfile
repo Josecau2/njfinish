@@ -5,8 +5,12 @@ WORKDIR /app
 # Copy package files for dependency installation
 COPY package.json package-lock.json* ./
 
-# Install all dependencies (frontend + backend)
-RUN npm ci --include=dev
+# Install ALL dependencies (including dev) for building
+RUN npm config set registry https://registry.npmjs.org/ && \
+    npm config set fetch-timeout 600000 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm ci
 
 # Copy source code
 COPY . .
