@@ -11,12 +11,41 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /var/lib/docker/volumes/njcabinets_db_data/_data:/var/lib/mysql
+      - /var/lib/docker/volumes/njcabinets_db_data/_data:/var/lib/mysql   # keep this
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
+
+  # one-shot deployer that copies the built SPA into Nginx's docroot
+  frontend-deploy:
+    build:
+      context: .
+      args:
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    # run as root so it can write to /srv/njcabinets/www
+    user: "0:0"
+    volumes:
+      - /srv/njcabinets/www:/srv/njcabinets/www
+    # copy from /app/build (fallback to /app/frontend/build if you later change Dockerfile)
+    command: >
+      sh -lc '
+        set -e;
+        SRC="/app/build";
+        [ -d /app/frontend/build ] && SRC="/app/frontend/build";
+        mkdir -p /srv/njcabinets/www;
+        rm -rf /srv/njcabinets/www/*;
+        cp -a "$SRC"/. /srv/njcabinets/www/;
+        chown -R www-data:www-data /srv/njcabinets/www;
+        find /srv/njcabinets/www -type d -exec chmod 755 {} \;;
+        find /srv/njcabinets/www -type f -exec chmod 644 {} \;;
+        echo "Frontend deployed to /srv/njcabinets/www from $SRC"
+      '
+    restart: "no"
+
   app:
     build:
       context: .
@@ -40,9 +69,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      frontend-deploy:
+        condition: service_completed_successfully
     ports:
       - "8080:8080"
     volumes:
       - uploads:/app/uploads
+
 volumes:
   uploads:

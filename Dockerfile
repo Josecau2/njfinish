@@ -71,7 +71,7 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci --omit=dev
 # copy your backend source from the build context (not the builder's node_modules)
 COPY . .
 # copy only the built frontend from the builder
-COPY --from=builder /app/build ./build
+COPY --from=builder /app/build ./frontend/build
 
 # Ensure uploads and logs dirs exist and are writable
 RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs && \
