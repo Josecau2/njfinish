@@ -20,6 +20,7 @@ import { fetchUserById, updateUser } from '../../store/slices/userSlice';
 import Swal from 'sweetalert2';
 import { fetchLocations } from '../../store/slices/locationSlice';
 import axiosInstance from '../../helpers/axiosInstance';
+import { getContrastColor } from '../../utils/colorUtils';
 
 const ProfilePage = () => {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ const ProfilePage = () => {
   const isContractor = loggedInUser?.group?.group_type === 'contractor';
   const { selected, loading: userLoading } = useSelector((state) => state.users);
   const { list: locations, loading: locationsLoading } = useSelector((state) => state.locations);
+  const customization = useSelector((state) => state.customization);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -237,7 +239,17 @@ const ProfilePage = () => {
             </CRow>
 
             <div className="d-flex justify-content-center justify-content-md-end mt-4">
-              <CButton type="submit" color="primary" className="px-4" disabled={submitting}>
+              <CButton 
+                type="submit" 
+                className="px-4" 
+                disabled={submitting}
+                style={{
+                  backgroundColor: customization?.headerBg || '#321fdb',
+                  borderColor: customization?.headerBg || '#321fdb',
+                  color: getContrastColor(customization?.headerBg || '#321fdb'),
+                  border: 'none'
+                }}
+              >
                 {submitting ? (
                   <>
                     <CSpinner size="sm" className="me-2" /> {t('profile.saving')}

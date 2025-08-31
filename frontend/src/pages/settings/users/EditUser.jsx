@@ -30,6 +30,8 @@ import { fetchUsers as fetchUserGroups } from '../../../store/slices/userGroupSl
 import Swal from 'sweetalert2';
 import { fetchLocations } from '../../../store/slices/locationSlice';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../components/PageHeader';
+import { getContrastColor } from '../../../utils/colorUtils';
 
 const initialForm = {
   name: '',
@@ -54,6 +56,7 @@ const EditUserForm = () => {
   const { selected } = useSelector(state => state.users);
   const { list: locations } = useSelector((state) => state.locations);
   const { list: userGroups = [] } = useSelector((state) => state.usersGroup || {});
+  const customization = useSelector((state) => state.customization);
 
   useEffect(() => {
     if (id) {
@@ -132,33 +135,13 @@ const EditUserForm = () => {
   return (
     <CContainer fluid className="settings-form-container">
       {/* Header Section */}
-      <CCard className="settings-form-header">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol>
-              <div className="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
-                <div className="settings-form-icon">
-                  <CIcon icon={cilUser} size="sm" className="text-white" />
-                </div>
-                <div>
-                  <h5 className="settings-form-title">{t('settings.users.edit.title')}</h5>
-                  <p className="settings-form-subtitle d-none d-md-block">{t('settings.users.edit.subtitle')}</p>
-                </div>
-              </div>
-            </CCol>
-            <CCol xs="12" className="mt-3 mt-md-0" md="auto">
-              <CButton
-                color="light"
-                className="settings-back-button w-100 w-md-auto"
-                onClick={() => navigate('/settings/users')}
-              >
-                <CIcon icon={cilArrowLeft} className="me-2" />
-                {t('common.back')}
-              </CButton>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <PageHeader
+        title={t('settings.users.edit.title')}
+        subtitle={t('settings.users.edit.subtitle')}
+        icon={cilUser}
+        showBackButton={true}
+        onBackClick={() => navigate('/settings/users')}
+      />
 
       <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
@@ -375,9 +358,14 @@ const EditUserForm = () => {
               </CButton>
               <CButton
                 type="submit"
-                color="success"
                 disabled={loading}
                 className="settings-form-submit-btn order-1 order-md-2"
+                style={{
+                  backgroundColor: customization?.headerBg || '#28a745',
+                  borderColor: customization?.headerBg || '#28a745',
+                  color: getContrastColor(customization?.headerBg || '#28a745'),
+                  border: 'none'
+                }}
               >
                 {loading ? (
                   <>
