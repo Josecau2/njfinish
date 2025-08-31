@@ -31,7 +31,10 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   // Memoize enabled manufacturers to prevent unnecessary filtering and re-renders
   const enabledManufacturers = useMemo(() => {
-    return allManufacturers.filter(manufacturer => manufacturer.enabled !== false);
+    // Check both 'status' field (from backend) and 'enabled' field (legacy) for active manufacturers
+    return allManufacturers.filter(manufacturer => 
+      manufacturer.status !== false && manufacturer.enabled !== false
+    );
   }, [allManufacturers]);
 
   useEffect(() => {

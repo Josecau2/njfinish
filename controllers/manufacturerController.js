@@ -21,7 +21,14 @@ const { Op } = Sequelize;
 
 const fetchManufacturer = async (req, res) => {
     try {
-        const manufacturers = await Manufacturer.findAll();
+        // Check if user is admin - admins see all manufacturers, contractors only see active ones
+        const isAdmin = req.user?.role === 'Admin' || req.user?.role_id === 2;
+        
+        const whereClause = isAdmin ? {} : { status: true };
+        
+        const manufacturers = await Manufacturer.findAll({
+            where: whereClause
+        });
         res.json(manufacturers);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch manufacturers' });
