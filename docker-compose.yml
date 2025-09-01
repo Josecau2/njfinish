@@ -49,8 +49,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /srv/odin/njcabinets/uploads:/app/uploads
-      - /srv/odin/njcabinets/backups:/app/backups
+      - /srv/njcabinets/uploads:/app/uploads
+      - /srv/njcabinets/backups:/app/backups
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8080', r=>process.exit(r.statusCode<500?0:1)).on('error', ()=>process.exit(1))\""]
       interval: 15s
@@ -105,7 +105,7 @@ services:
     volumes:
       - ./docker/nginx/app.conf:/etc/nginx/conf.d/app.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /srv/odin/njcabinets/uploads:/srv/odin/njcabinets/uploads:ro
+      - /srv/njcabinets/uploads:/srv/njcabinets/uploads:ro
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost || exit 1"]
       interval: 15s
@@ -118,8 +118,8 @@ services:
     image: busybox:1.36
     user: "0:0"  # run as root to change ownership on host bind mounts
     volumes:
-      - /srv/odin/njcabinets/uploads:/host/uploads
-      - /srv/odin/njcabinets/backups:/host/backups
+      - /srv/njcabinets/uploads:/host/uploads
+      - /srv/njcabinets/backups:/host/backups
     entrypoint: ["/bin/sh", "-lc"]
     command: >
       set -e;
