@@ -82,9 +82,10 @@ COPY *.js ./
 # copy the built frontend from the builder (Vite outDir -> /app/build). App serves from /app/build
 COPY --from=builder /app/build ./build
 
-# Ensure uploads/backups/logs exist and app tree writable by node user
+# Ensure uploads/backups/logs exist and are writable by node user
+# Avoid slow recursive chown of the whole /app; only chown the writable dirs
 RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs /app/backups && \
-    chown -R node:node /app
+    chown -R node:node /app/uploads /app/backups /app/utils/logs
 
 USER node
 EXPOSE 8080
