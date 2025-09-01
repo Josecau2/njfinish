@@ -100,9 +100,16 @@ services:
       set -e;
       echo "==> Ensuring host directories exist...";
       mkdir -p /host/uploads /host/backups;
-      echo "==> Setting ownership to uid 1000:1000 (node user)";
-      chown -R 1000:1000 /host/uploads /host/backups || true;
-      echo "==> Done.";
+      echo "==> Before:";
+      ls -ld /host/uploads /host/backups || true;
+      echo "==> Attempt chown to 1000:1000 (node user)...";
+      if chown -R 1000:1000 /host/uploads /host/backups 2>/dev/null; then
+        echo "chown succeeded";
+      else
+        echo "chown failed (likely FS limitation). Falling back to chmod 0777";
+        chmod -R 0777 /host/uploads /host/backups || true;
+      fi;
+      echo "==> After:";
       ls -ld /host/uploads /host/backups;
     restart: "no"
 
