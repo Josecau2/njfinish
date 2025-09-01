@@ -45,13 +45,8 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
             done
 
 
-# Copy source code
-COPY frontend/package*.json ./frontend/
-COPY frontend/vite.config.js ./frontend/
-COPY frontend/src ./frontend/src
-COPY frontend/public ./frontend/public
-COPY frontend/index.html ./frontend/
-COPY vite.config.js* ./
+# Copy frontend source (entire folder to support .js/.mjs/.ts configs)
+COPY frontend/ ./frontend/
 
 # Build frontend with optimizations
 RUN npm run build:frontend
@@ -82,16 +77,14 @@ COPY config ./config
 COPY middleware ./middleware
 COPY utils ./utils
 COPY scripts ./scripts
-COPY migrations ./migrations
-COPY seeders ./seeders
 COPY *.js ./
 
 # copy only the built frontend from the builder (Vite outputs to frontend/build)
 COPY --from=builder /app/frontend/build ./frontend/build
 
-# Ensure uploads and logs dirs exist and are writable
-RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs && \
-    chown -R node:node /app/uploads /app/utils/logs
+# Ensure uploads/backups/logs exist and app tree writable by node user
+RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs /app/backups && \
+    chown -R node:node /app
 
 USER node
 EXPOSE 8080

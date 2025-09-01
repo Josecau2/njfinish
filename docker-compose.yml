@@ -46,7 +46,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - uploads:/app/uploads
+      - /srv/odin/njcabinets/uploads:/app/uploads
+      - /srv/odin/njcabinets/backups:/app/backups
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8080', r=>process.exit(r.statusCode<500?0:1)).on('error', ()=>process.exit(1))\""]
       interval: 15s
