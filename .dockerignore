@@ -1,13 +1,57 @@
-node_modules
-frontend/node_modules
-npm-debug.log
-yarn-error.log
+# VCS
 .git
 .gitignore
-Dockerfile
-.dockerignore
+
+# Node caches and dependencies  
+node_modules
+frontend/node_modules
+npm-debug.log*
+yarn.lock
+.pnpm-store
+**/node_modules
+
+# Runtime data (DO NOT send to build)
+uploads
+backups
+www
+www_backup_*
+*.sql
+*.sql.gz
+*.csv
+*.log
+logs
+tmp
+*.tar
+*.tgz
+*.zip
+
+# Build output created at runtime or by builder stage
+build
+frontend/build
+dist
+__build_out
 frontend/.vite
 frontend/dist
-frontend/build
-uploads
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+.cache
+
+# Tests/docs/tools not needed in image
+tests
+__tests__
+*.md
+docs
+
+# Environment files
 .env
+.env.local
+.env.development
+.env.production
+
+# Docker files themselves
+Dockerfile
+.dockerignore

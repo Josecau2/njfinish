@@ -46,7 +46,12 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
 
 
 # Copy source code
-COPY . .
+COPY frontend/package*.json ./frontend/
+COPY frontend/vite.config.js ./frontend/
+COPY frontend/src ./frontend/src
+COPY frontend/public ./frontend/public
+COPY frontend/index.html ./frontend/
+COPY vite.config.js* ./
 
 # Build frontend with optimizations
 RUN npm run build:frontend
@@ -68,8 +73,19 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json* ./
 # Prod-only deps; cache npm downloads across builds
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci --omit=dev
-# copy your backend source from the build context (not the builder's node_modules)
-COPY . .
+
+# Copy only the backend source files we need (avoid COPY . .)
+COPY controllers ./controllers
+COPY models ./models
+COPY routes ./routes
+COPY config ./config
+COPY middleware ./middleware
+COPY utils ./utils
+COPY scripts ./scripts
+COPY migrations ./migrations
+COPY seeders ./seeders
+COPY *.js ./
+
 # copy only the built frontend from the builder
 COPY --from=builder /app/build ./frontend/build
 
