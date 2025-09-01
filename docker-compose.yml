@@ -18,22 +18,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-<<<<<<< HEAD
 
-  # one-shot deployer that copies the built SPA into Nginx's docroot
-  frontend-deploy:
+  app:
     build:
       context: .
-            - /var/lib/docker/volumes/njcabinets_db_data/_data:/var/lib/mysql   # keep this
-        HTTP_PROXY: ${HTTP_PROXY}
-        HTTPS_PROXY: ${HTTPS_PROXY}
-        NO_PROXY: ${NO_PROXY}
-    # run as root so it can write to /srv/njcabinets/www
-    user: "0:0"
-          logging:
-        HTTP_PROXY: ${HTTP_PROXY}
-        HTTPS_PROXY: ${HTTPS_PROXY}
-        NO_PROXY: ${NO_PROXY}
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-}
+    image: njcabinets-app
     restart: unless-stopped
     init: true
     stop_grace_period: 30s
@@ -49,81 +42,49 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
       db:
-      healthcheck:
-        test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8080', r=>process.exit(r.statusCode<500?0:1)).on('error', ()=>process.exit(1))\""]
-        interval: 15s
-        timeout: 5s
-        retries: 10
-        start_period: 20s
-      logging:
-        driver: json-file
-        options:
-          max-size: "10m"
-          max-file: "3"
-    # Frontend deployment service - copies SPA to Nginx docroot
-    frontend-deploy:
-      build:
-        context: .
-        args:
-          HTTP_PROXY: ${HTTP_PROXY}
-          HTTPS_PROXY: ${HTTPS_PROXY}
-          NO_PROXY: ${NO_PROXY}
-      user: "0:0"  # Run as root to write to system directories
-      profiles:
-        - deploy
-      volumes:
-        - /srv/njcabinets/www:/srv/njcabinets/www
-      depends_on:
-        app:
-          condition: service_started
-      command: |
-        sh -c '
-          set -e
-          echo "==> Waiting for app to be ready..."
-          sleep 10
-        
-          echo "==> Detecting build directory..."
-          if [ -d /app/build ]; then
-            SRC="/app/build"
-          elif [ -d /app/frontend/build ]; then
-            SRC="/app/frontend/build"
-          else
-            echo "ERROR: No build directory found"
-            exit 1
-          fi
-        
-          echo "==> Deploying frontend from $SRC to /srv/njcabinets/www..."
-          mkdir -p /srv/njcabinets/www
-          rm -rf /srv/njcabinets/www/*
-          cp -a "$SRC"/. /srv/njcabinets/www/
-          chown -R www-data:www-data /srv/njcabinets/www
-          find /srv/njcabinets/www -type d -exec chmod 755 {} \;
-          find /srv/njcabinets/www -type f -exec chmod 644 {} \;
-          echo "==> Frontend deployment completed successfully!"
-          echo "Files deployed: $(find /srv/njcabinets/www -type f | wc -l)"
-        '
-      restart: "no"
-        if [ -d /app/build ]; then
-          SRC="/app/build"
-        elif [ -d /app/frontend/build ]; then
-          SRC="/app/frontend/build"
-        else
-          echo "ERROR: No build directory found"
-          exit 1
-        fi
-        
-        echo "==> Deploying frontend from $SRC to /srv/njcabinets/www..."
-        mkdir -p /srv/njcabinets/www
-        rm -rf /srv/njcabinets/www/*
-        cp -a "$SRC"/. /srv/njcabinets/www/
-        chown -R www-data:www-data /srv/njcabinets/www
-        find /srv/njcabinets/www -type d -exec chmod 755 {} \;
-        find /srv/njcabinets/www -type f -exec chmod 644 {} \;
-        echo "==> Frontend deployment completed successfully!"
-        echo "Files deployed: $(find /srv/njcabinets/www -type f | wc -l)"
-      '
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8080', r=>process.exit(r.statusCode<500?0:1)).on('error', ()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Frontend deployment service - copies SPA to Nginx docroot
+  frontend-deploy:
+    profiles:
+      - deploy
+    image: njcabinets-app
+    user: "0:0"  # Run as root to write to system directories
+    volumes:
+      - /srv/njcabinets/www:/srv/njcabinets/www
+    depends_on:
+      app:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-lc"]
+    command: >
+      set -e;
+      echo "==> Waiting for app to be ready..."; sleep 10;
+      echo "==> Detecting build directory...";
+      if [ -d /app/build ]; then SRC="/app/build"; elif [ -d /app/frontend/build ]; then SRC="/app/frontend/build"; else echo "ERROR: No build directory found" && exit 1; fi;
+      echo "==> Deploying frontend from $$SRC to /srv/njcabinets/www...";
+      mkdir -p /srv/njcabinets/www; rm -rf /srv/njcabinets/www/*;
+      cp -a "$$SRC"/. /srv/njcabinets/www/;
+      chown -R www-data:www-data /srv/njcabinets/www;
+      find /srv/njcabinets/www -type d -exec chmod 755 {} \; ;
+      find /srv/njcabinets/www -type f -exec chmod 644 {} \; ;
+      echo "==> Frontend deployment completed successfully!";
+      echo "Files deployed: $(find /srv/njcabinets/www -type f | wc -l)";
     restart: "no"
->>>>>>> 4bec353 (docker-compose: add healthchecks, graceful stops, log rotation; optional deploy profile for SPA copy)
 
 volumes:
   uploads:

@@ -86,8 +86,8 @@ COPY migrations ./migrations
 COPY seeders ./seeders
 COPY *.js ./
 
-# copy only the built frontend from the builder
-COPY --from=builder /app/build ./frontend/build
+# copy only the built frontend from the builder (Vite outputs to frontend/build)
+COPY --from=builder /app/frontend/build ./frontend/build
 
 # Ensure uploads and logs dirs exist and are writable
 RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs && \
