@@ -23,7 +23,8 @@ async function run() {
   if (env.DB_BACKUP_ON_MIGRATE && process.env.NODE_ENV === 'production' && cmd === 'up') {
     try {
       const ts = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
-      const file = `backup-${process.env.DB_NAME || 'db'}-${ts}.sql`;
+      const backupDir = process.env.BACKUP_DIR || '/app/backups';
+      const file = `${backupDir}/backup-${process.env.DB_NAME || 'db'}-${ts}.sql`;
       console.log(`Backing up database to ${file} ...`);
       await new Promise((resolve, reject) => {
         const proc = spawn('sh', ['-lc', `mysqldump -h ${process.env.DB_HOST} -P ${process.env.DB_PORT || 3306} -u${process.env.DB_USER} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${file}`], { stdio: 'inherit' });

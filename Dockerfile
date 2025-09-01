@@ -79,8 +79,8 @@ COPY utils ./utils
 COPY scripts ./scripts
 COPY *.js ./
 
-# copy only the built frontend from the builder (Vite outputs to frontend/build)
-COPY --from=builder /app/frontend/build ./frontend/build
+# copy the built frontend from the builder (Vite outDir -> /app/build). App serves from /app/build
+COPY --from=builder /app/build ./build
 
 # Ensure uploads/backups/logs exist and app tree writable by node user
 RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs /app/backups && \
