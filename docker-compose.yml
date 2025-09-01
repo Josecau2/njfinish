@@ -40,7 +40,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_RUNTIME_ALTER: "false"
       JWT_SECRET: ${JWT_SECRET}
-  BACKUP_DIR: /app/backups
+      BACKUP_DIR: /app/backups
     depends_on:
       db:
         condition: service_healthy
