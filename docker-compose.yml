@@ -44,6 +44,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      init-perms:
+        condition: service_completed_successfully
     ports:
       - "8080:8080"
     volumes:
@@ -87,6 +89,29 @@ services:
       echo "==> Frontend deployment completed successfully!";
       echo "Files deployed: $(find /srv/njcabinets/www -type f | wc -l)";
     restart: "no"
+
+  # Optional containerized Nginx reverse proxy (use instead of host Nginx)
+  nginx:
+    profiles:
+      - nginx
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/app.conf:/etc/nginx/conf.d/app.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /srv/odin/njcabinets/uploads:/srv/odin/njcabinets/uploads:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   # One-shot service to fix host directory permissions for bind mounts
   init-perms:
