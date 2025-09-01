@@ -211,6 +211,72 @@
   "uiCustomization": "Personalización de UI",
   "contactUs": "Contáctenos"
   },
+  "orders": {
+    "searchPlaceholder": "Buscar por cliente",
+    "showingCount": "Mostrando {{count}} de {{total}}",
+    "headers": {
+      "date": "Fecha",
+      "customer": "Cliente",
+      "description": "Descripción",
+      "manufacturer": "Fabricante",
+      "status": "Estado"
+    },
+    "empty": {
+      "title": "No se encontraron pedidos",
+      "subtitle": "Las cotizaciones aceptadas y bloqueadas aparecerán aquí"
+    },
+    "common": {
+      "manufacturer": "Fabricante"
+    },
+    "details": {
+      "title": "Detalles del pedido",
+      "subtitle": "Resumen de pedido aceptado",
+      "customerLabel": "Cliente",
+      "manufacturerDetails": "Detalles del fabricante",
+      "styleColor": "Estilo (Color)",
+      "order": "Pedido",
+      "id": "ID",
+      "date": "Fecha",
+      "status": "Estado",
+      "acceptedAt": "Aceptado el",
+      "customer": "Cliente",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "totals": "Totales",
+      "subtotalStyles": "Subtotal (Estilos)",
+      "assemblyFee": "Costo de ensamblaje",
+      "modifications": "Modificaciones",
+      "discount": "Descuento",
+      "tax": "Impuesto",
+      "grandTotal": "Total general",
+      "items": "Ítems",
+      "specs": "Especificaciones",
+      "item": "Ítem",
+      "qty": "Cant.",
+      "unitPrice": "Precio unitario",
+      "total": "Total",
+      "noItems": "Sin artículos",
+      "manufacturers": "Fabricantes",
+      "noManufacturers": "No se encontraron fabricantes",
+      "selectedStyle": "Estilo seleccionado",
+      "styleTotal": "Total del estilo",
+      "preview": "Vista previa"
+    }
+    ,
+    "page": {
+      "all": {
+        "title": "Pedidos",
+        "subtitle": "Todas las cotizaciones aceptadas y bloqueadas"
+      },
+      "my": {
+        "title": "Mis Pedidos",
+        "subtitleDefault": "Tus cotizaciones aceptadas y bloqueadas",
+        "subtitleForGroup": "Cotizaciones aceptadas y bloqueadas para {{group}}"
+      }
+    }
+  },
   "contact": {
     "header": "Contáctenos",
     "subtitle": "Envíe un mensaje o encuentre cómo comunicarse con nosotros",

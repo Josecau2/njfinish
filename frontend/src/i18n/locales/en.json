@@ -215,6 +215,72 @@
   "contactUs": "Contact Us",
   "terms": "Terms & Conditions"
   },
+  "orders": {
+    "searchPlaceholder": "Search by customer",
+    "showingCount": "Showing {{count}} of {{total}}",
+    "headers": {
+      "date": "Date",
+      "customer": "Customer",
+      "description": "Description",
+      "manufacturer": "Manufacturer",
+      "status": "Status"
+    },
+    "empty": {
+      "title": "No orders found",
+      "subtitle": "Accepted & locked quotes will appear here"
+    },
+    "common": {
+      "manufacturer": "Manufacturer"
+    },
+    "details": {
+      "title": "Order Details",
+      "subtitle": "Accepted order overview",
+      "customerLabel": "Customer",
+      "manufacturerDetails": "Manufacturer Details",
+      "styleColor": "Style (Color)",
+      "order": "Order",
+      "id": "ID",
+      "date": "Date",
+      "status": "Status",
+      "acceptedAt": "Accepted at",
+      "customer": "Customer",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "totals": "Totals",
+      "subtotalStyles": "Subtotal (Styles)",
+      "assemblyFee": "Assembly Fee",
+      "modifications": "Modifications",
+      "discount": "Discount",
+      "tax": "Tax",
+      "grandTotal": "Grand Total",
+      "items": "Items",
+      "specs": "Specs",
+      "item": "Item",
+      "qty": "Qty",
+      "unitPrice": "Unit Price",
+      "total": "Total",
+      "noItems": "No items",
+      "manufacturers": "Manufacturers",
+      "noManufacturers": "No manufacturers found",
+      "selectedStyle": "Selected Style",
+      "styleTotal": "Style Total",
+      "preview": "Preview"
+    }
+    ,
+    "page": {
+      "all": {
+        "title": "Orders",
+        "subtitle": "All accepted and locked quotes"
+      },
+      "my": {
+        "title": "My Orders",
+        "subtitleDefault": "Your accepted and locked quotes",
+        "subtitleForGroup": "Accepted & locked quotes for {{group}}"
+      }
+    }
+  },
   "contact": {
     "header": "Contact Us",
     "subtitle": "Send us a message or find ways to reach us",

@@ -48,6 +48,25 @@ export const getProposal = createAsyncThunk(
     }
 );
 
+// Fetch orders: accepted and/or locked proposals
+export const getOrders = createAsyncThunk(
+    'proposal/getOrders',
+    async ({ groupId = null, mineOnly = false } = {}, { rejectWithValue }) => {
+        try {
+            const params = new URLSearchParams()
+            if (groupId) params.append('group_id', groupId)
+            // Show only accepted orders; backend expands to include legacy 'Proposal accepted'
+            params.append('status', 'accepted')
+            if (mineOnly) params.append('mine', 'true')
+            const url = `/api/get-proposals?${params.toString()}`
+            const response = await axiosInstance.get(url, { headers: getAuthHeaders() })
+            return response.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message)
+        }
+    }
+)
+
 export const getProposalById = createAsyncThunk(
     'proposal/getProposalById',
     async (id, { rejectWithValue }) => {
@@ -190,6 +209,21 @@ const formDataSlice = createSlice({
                 state.data = action.payload.data;
             })
             .addCase(getProposal.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        // GET ORDERS
+        builder
+            .addCase(getOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload.data;
+            })
+            .addCase(getOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

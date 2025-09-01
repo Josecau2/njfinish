@@ -39,6 +39,9 @@ const LoginCustomizerPage = React.lazy(() => import('./pages/settings/customizat
 const Contracts = React.lazy(() => import('./pages/contracts'))
 const UiCustomization = React.lazy(() => import('./pages/settings/customization'))
 const TermsPage = React.lazy(() => import('./pages/settings/terms/TermsPage'))
+const AdminOrders = React.lazy(() => import('./pages/orders/AdminOrders'))
+const MyOrders = React.lazy(() => import('./pages/orders/MyOrders'))
+const OrderDetails = React.lazy(() => import('./pages/orders/OrderDetails'))
 
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Resources = React.lazy(() => import('../src/pages/Resources'))
@@ -68,6 +71,12 @@ const routes = [
   
   // Contracts (related to quotes) - blocked for contractors
   { path: '/contracts', name: 'Contracts', element: Contracts, permission: 'proposals:read', contractorBlock: true },
+
+  // Orders routes
+  { path: '/orders', name: 'Orders', element: AdminOrders, permission: 'proposals:read', contractorBlock: true },
+  { path: '/my-orders', name: 'My Orders', element: MyOrders, permission: 'proposals:read' },
+  { path: '/orders/:id', name: 'Order Details', element: OrderDetails, permission: 'proposals:read', contractorBlock: true },
+  { path: '/my-orders/:id', name: 'My Order Details', element: OrderDetails, permission: 'proposals:read' },
   
   // Resources
   { path: '/resources', name: 'Resources', element: Resources, permission: 'resources:read' },

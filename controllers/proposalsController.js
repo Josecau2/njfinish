@@ -208,6 +208,10 @@ const saveProposal = async (req, res) => {
 const getProposal = async (req, res) => {
     try {
     const { group_id } = req.query;
+    const mineFlag = (req.query.mine || '').toString().toLowerCase() === 'true';
+    // Additional optional filters
+    const lockedFilter = (req.query.locked || '').toString().toLowerCase();
+    const statusFilter = (req.query.status || '').toString();
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
@@ -219,7 +223,17 @@ const getProposal = async (req, res) => {
         };
         
         // Apply user/group scoping
-        if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
+        if (mineFlag) {
+            const isContractor = user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')
+            if (isContractor) {
+                // Contractors: proposals created by the current user
+                whereClause.created_by_user_id = user.id;
+            } else {
+                // Admins/standard users: proposals accepted by the current user
+                // (avoids migration artifacts where created_by_user_id was backfilled to an admin)
+                whereClause.accepted_by = { [Op.in]: [user.id, String(user.id)] }
+            }
+        } else if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             // Contractors can only see their own proposals (user-specific)
             whereClause.created_by_user_id = user.id;
         } else if (group_id) {
@@ -227,6 +241,23 @@ const getProposal = async (req, res) => {
             whereClause.owner_group_id = group_id;
         }
         // If no group_id specified and user is admin, show all proposals
+
+        // Apply locked filter if requested
+        if (lockedFilter === 'true') {
+            whereClause.is_locked = true;
+        } else if (lockedFilter === 'false') {
+            whereClause.is_locked = { [Op.not]: true };
+        }
+
+        // Apply status filter if provided (supports comma-separated list)
+        if (statusFilter) {
+            let statuses = statusFilter.split(',').map(s => decodeURIComponent(s.trim())).filter(Boolean);
+            // Backward compatibility: if 'accepted' requested, also include legacy 'Proposal accepted'
+            if (statuses.includes('accepted') && !statuses.includes('Proposal accepted')) {
+                statuses.push('Proposal accepted');
+            }
+            whereClause.status = { [Op.in]: statuses };
+        }
 
         const { count, rows } = await Proposals.findAndCountAll({
             where: whereClause,
@@ -245,6 +276,25 @@ const getProposal = async (req, res) => {
                     model: Location,
                     as: 'locationData',
                     attributes: ['id', 'locationName', 'email', 'phone']
+                },
+                // Include contractor (owner) minimal info for admin list display
+                {
+                    model: User,
+                    as: 'Owner',
+                    attributes: ['id', 'name', 'email'],
+                    include: [
+                        {
+                            model: UserGroup,
+                            as: 'group',
+                            attributes: ['id', 'name']
+                        }
+                    ]
+                },
+                // Also include ownerGroup directly (contractor group) for legacy rows where created_by_user_id is null
+                {
+                    model: UserGroup,
+                    as: 'ownerGroup',
+                    attributes: ['id', 'name']
                 }
             ],
             order: [['createdAt', 'DESC']],
@@ -252,9 +302,12 @@ const getProposal = async (req, res) => {
             offset
         });
 
+        // Convert Sequelize instances to plain JSON objects to ensure associations are serialized
+        const plainRows = rows.map(row => row.toJSON());
+
         res.status(200).json({ 
             success: true, 
-            data: rows,
+            data: plainRows,
             pagination: {
                 page,
                 limit,

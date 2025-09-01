@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import SimpleBar from 'simplebar-react'
@@ -16,16 +16,14 @@ export const AppSidebarNav = ({ items, fontColor }) => {
   const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
   const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
   const isMobile = () => window.innerWidth < 768
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const navLink = (name, icon, badge, indent = false) => {
     return (
       <span
         style={{ color: fontColor, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        onClick={() => {
-          if (window.innerWidth < 768) {
-            dispatch(setSidebarShow(false))
-          }
-        }}
+        // Note: do not auto-close sidebar here; the wrapper CNavLink (actual link) will close on mobile.
       >
 
         {icon
@@ -47,17 +45,47 @@ export const AppSidebarNav = ({ items, fontColor }) => {
 
 
   const navItem = (item, index, indent = false) => {
-    const { component, name, badge, icon, ...rest } = item
+    const { component, name, badge, icon, to, href, ...rest } = item
     const Component = component
 
     return (
       <Component as="div" key={index}>
-        {rest.to || rest.href ? (
+        {to ? (
+          // Internal navigation: render without href to avoid browser URL preview in the status bar
           <CNavLink
-            {...(rest.to && { as: NavLink })}
-            {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
-            {...rest}
+            as="div"
+            role="button"
+            tabIndex={0}
+            className={
+              location.pathname === to || location.pathname.startsWith(`${to}/`) ? 'active' : undefined
+            }
             style={{ color: fontColor }}
+            onClick={() => {
+              navigate(to)
+              if (window.innerWidth < 768) {
+                dispatch(setSidebarShow(false))
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                navigate(to)
+                if (window.innerWidth < 768) {
+                  dispatch(setSidebarShow(false))
+                }
+              }
+            }}
+          >
+            {navLink(name, icon, badge, indent)}
+          </CNavLink>
+        ) : href ? (
+          // External links still use href
+          <CNavLink
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: fontColor }}
+            {...rest}
           >
             {navLink(name, icon, badge, indent)}
           </CNavLink>
@@ -72,7 +100,15 @@ export const AppSidebarNav = ({ items, fontColor }) => {
     const { component, name, icon, items, to, ...rest } = item
     const Component = component
     return (
-      <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest} style={{ color: fontColor }} >
+      <Component 
+        compact 
+        as="div" 
+        key={index} 
+        toggler={navLink(name, icon)} 
+        {...rest} 
+        style={{ color: fontColor }}
+        // Do not auto-close when expanding/collapsing groups; users may want to explore submenus.
+      >
         {items?.map((item, index) =>
           item.items ? navGroup(item, index) : navItem(item, index, true),
         )}

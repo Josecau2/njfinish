@@ -55,7 +55,7 @@ const useNavItems = () => {
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       });
 
-      // Proposals section
+  // Proposals section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
           { component: CNavItem, name: t('nav.viewProposals'), to: '/quotes' }
@@ -76,6 +76,31 @@ const useNavItems = () => {
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
           items: proposalItems,
         });
+      }
+
+  // Orders section - visible when user can read proposals
+      if (hasPermission(user, 'proposals:read')) {
+        if (isContractor(user)) {
+          // Contractors: single link to My Orders (no dropdown)
+          navigationItems.push({
+            component: CNavItem,
+            name: t('nav.myOrders', 'My Orders'),
+            to: '/my-orders',
+            icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+          })
+        } else {
+          // Admins/standard users: dropdown with Orders (all) and My Orders
+          const ordersItems = [
+            { component: CNavItem, name: t('nav.orders', 'Orders'), to: '/orders' },
+            { component: CNavItem, name: t('nav.myOrders', 'My Orders'), to: '/my-orders' },
+          ]
+          navigationItems.push({
+            component: CNavGroup,
+            name: t('nav.orders', 'Orders'),
+            icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+            items: ordersItems,
+          })
+        }
       }
 
       // Customers section

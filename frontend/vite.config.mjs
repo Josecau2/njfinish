@@ -1,14 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import autoprefixer from 'autoprefixer'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig(() => {
   return {
     base: '/',
-    root: 'frontend', // Set frontend as root for Vite
+  // Ensure Vite uses the frontend folder as root (so index.html is resolved correctly)
+  root: __dirname,
     build: {
-      outDir: '../build', // Output to root/build directory
+      outDir: 'build', // Output to build directory
       emptyOutDir: true, // Clean output directory
       sourcemap: false, // Disable source maps for production
       minify: 'terser', // Use terser for better minification

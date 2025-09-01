@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CCloseButton,
@@ -25,8 +25,30 @@ const AppSidebar = () => {
   const navItems = useNavItems()
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL;
+  const sidebarRef = useRef(null)
+
+  // Close sidebar on outside click for mobile screens
+  useEffect(() => {
+    if (!sidebarShow) return
+    const isMobile = () => (typeof window !== 'undefined' && window.innerWidth < 768)
+    if (!isMobile()) return
+    const handleOutside = (e) => {
+      const el = sidebarRef.current
+      if (!el) return
+      if (!el.contains(e.target)) {
+        dispatch(setSidebarShow(false))
+      }
+    }
+    document.addEventListener('mousedown', handleOutside, true)
+    document.addEventListener('touchstart', handleOutside, true)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside, true)
+      document.removeEventListener('touchstart', handleOutside, true)
+    }
+  }, [sidebarShow, dispatch])
   return (
     <CSidebar
+      ref={sidebarRef}
       className={`border-end ${sidebarShow ? 'show' : ''}`}
       colorScheme="dark"
       position="fixed"
@@ -46,7 +68,13 @@ const AppSidebar = () => {
           backgroundColor: customization.logoBg,
         }}
       >
-        <CSidebarBrand to="/" className="d-flex align-items-center justify-content-center w-100 text-decoration-none">
+        <CSidebarBrand to="/" className="d-flex align-items-center justify-content-center w-100 text-decoration-none"
+          onClick={() => {
+            if (window.innerWidth < 768) {
+              dispatch(setSidebarShow(false))
+            }
+          }}
+        >
           {customization.logoImage ? (
             <>
               {/* Full sidebar logo - visible when expanded */}

@@ -93,6 +93,10 @@ Customer.belongsTo(User, { foreignKey: 'created_by_user_id', as: 'createdBy' });
 UserGroup.hasMany(Proposals, { foreignKey: 'owner_group_id', as: 'proposals' });
 Proposals.belongsTo(UserGroup, { foreignKey: 'owner_group_id', as: 'ownerGroup' });
 
+// Track creator of proposals as Owner for admin displays
+User.hasMany(Proposals, { foreignKey: 'created_by_user_id', as: 'createdProposals' });
+Proposals.belongsTo(User, { foreignKey: 'created_by_user_id', as: 'Owner' });
+
 User.hasMany(Notification, { foreignKey: 'recipient_user_id', as: 'notifications' });
 Notification.belongsTo(User, { foreignKey: 'recipient_user_id', as: 'recipient' });
 

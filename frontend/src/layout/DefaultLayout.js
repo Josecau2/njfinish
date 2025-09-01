@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { getLatestTerms } from '../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../helpers/permissions'
 import { logout } from '../store/slices/authSlice'
+import { useLocation } from 'react-router-dom'
+import { setSidebarShow } from '../store/slices/sidebarSlice'
 
 const DefaultLayout = () => {
   const user = useSelector((s) => s.auth.user)
@@ -13,6 +15,7 @@ const DefaultLayout = () => {
   const [latestVersion, setLatestVersion] = useState(null)
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
+  const location = useLocation()
 
   useEffect(() => {
     // Don't check terms until we have user data
@@ -59,6 +62,14 @@ const DefaultLayout = () => {
   const handleRejected = () => {
     dispatch(logout())
   }
+
+  // Auto-close sidebar on route changes for small screens
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      dispatch(setSidebarShow(false))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
 
   // Show loading while checking user status
   if (loading || !user) {
