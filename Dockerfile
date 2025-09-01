@@ -80,8 +80,8 @@ COPY utils ./utils
 COPY scripts ./scripts
 COPY *.js ./
 
-# copy the built frontend from the builder (Vite outDir -> /app/build). App serves from /app/build
-COPY --from=builder /app/build ./build
+# copy the built frontend from the builder (Vite outDir -> /app/frontend/build). App serves from /app/build
+COPY --from=builder /app/frontend/build ./build
 
 # Ensure uploads/backups/logs exist and are writable by node user
 # Avoid slow recursive chown of the whole /app; only chown the writable dirs
