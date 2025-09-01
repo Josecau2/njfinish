@@ -113,8 +113,14 @@ const ensureFreshToken = async () => {
             if (refreshed && typeof window !== 'undefined') {
               localStorage.setItem('token', refreshed);
             }
-          } catch {
-            // ignore; caller will proceed and hit normal auth handling
+          } catch (refreshError) {
+            // If refresh fails with 401/403, clear token to prevent cascade
+            const status = refreshError?.response?.status;
+            if (status === 401 || status === 403) {
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('token');
+              }
+            }
           } finally {
             const p = refreshPromise; // allow awaiters to resolve before clearing
             refreshPromise = null;
