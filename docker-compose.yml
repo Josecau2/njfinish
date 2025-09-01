@@ -124,7 +124,11 @@ services:
     command: >
       set -e;
       echo "==> Ensuring host directories exist...";
-      mkdir -p /host/uploads /host/backups;
+      mkdir -p /host/uploads /host/backups \
+        /host/uploads/images \
+        /host/uploads/logos \
+        /host/uploads/manufacturer_catalogs \
+        /host/uploads/types;
       echo "==> Before:";
       ls -ld /host/uploads /host/backups || true;
       echo "==> Attempt chown to 1000:1000 (node user)...";

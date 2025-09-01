@@ -43,7 +43,8 @@ const fileFilter = (req, file, cb) => {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'text/csv'
     ];
-    const imageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    // Allowed image mime types for general uploads
+    const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
     if (
         ['manufacturerImage', 'styleImage', 'logoImage','logo', 'typeImage'].includes(file.fieldname) &&
@@ -55,7 +56,7 @@ const fileFilter = (req, file, cb) => {
     ) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file type.'));
+    cb(new Error('Invalid file type. Only images (jpeg, png, webp, gif) or catalog files (csv, xls, xlsx, pdf) are allowed.'));
     }
 };
 

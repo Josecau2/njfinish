@@ -1021,7 +1021,8 @@ const addManufacturerStyle = async (req, res) => {
     try {
         upload.fields([{ name: 'styleImage', maxCount: 1 }])(req, res, async function (err) {
             if (err) {
-                return res.status(400).json({ message: err.message });
+                console.error('Multer error (style/create):', err && err.message ? err.message : err);
+                return res.status(400).json({ message: err.message || 'Upload failed' });
             }
 
             const {
@@ -1041,6 +1042,11 @@ const addManufacturerStyle = async (req, res) => {
 
             const styleImageFile = req.files?.['styleImage']?.[0];
             const imagePath = styleImageFile?.filename || null;
+
+            // If the client intended to upload an image but it was filtered out, surface a clearer hint
+            if (!imagePath && req.headers['content-type']?.includes('multipart/form-data')) {
+                console.warn('Style image missing after upload. Check field name "styleImage" and mime type. Received fields:', Object.keys(req.files || {}));
+            }
 
             // Update or Create one central style metadata row
             let centralStyle = await ManufacturerStyleCollection.findOne({
