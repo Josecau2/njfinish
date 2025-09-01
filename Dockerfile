@@ -75,6 +75,7 @@ COPY models ./models
 COPY routes ./routes
 COPY config ./config
 COPY middleware ./middleware
+COPY constants ./constants
 COPY utils ./utils
 COPY scripts ./scripts
 COPY *.js ./
