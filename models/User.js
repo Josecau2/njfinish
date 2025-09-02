@@ -36,6 +36,52 @@ const   User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  // Personal address fields
+  street_address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  city: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  state: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  zip_code: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  // Company information
+  company_name: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company_street_address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company_city: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company_state: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company_zip_code: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company_country: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   isSalesRep: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

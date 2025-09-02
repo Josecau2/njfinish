@@ -20,7 +20,9 @@ import {
   cilLockLocked,
   cilArrowLeft,
   cilSave,
-  cilSettings
+  cilSettings,
+  cilHome,
+  cilBuilding
 } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -41,6 +43,19 @@ const initialForm = {
   userGroup: '',
   location: '',
   isSalesRep: false,
+  // Personal address fields
+  street_address: '',
+  city: '',
+  state: '',
+  zip_code: '',
+  country: '',
+  // Company information
+  company_name: '',
+  company_street_address: '',
+  company_city: '',
+  company_state: '',
+  company_zip_code: '',
+  company_country: '',
 };
 
 const EditUserForm = () => {
@@ -75,7 +90,20 @@ const EditUserForm = () => {
         confirmPassword: '',
         userGroup: selected.group_id || '',
         location: selected.location || '',
-        isSalesRep: selected.isSalesRep || false
+        isSalesRep: selected.isSalesRep || false,
+        // Personal address fields
+        street_address: selected.street_address || '',
+        city: selected.city || '',
+        state: selected.state || '',
+        zip_code: selected.zip_code || '',
+        country: selected.country || '',
+        // Company information
+        company_name: selected.company_name || '',
+        company_street_address: selected.company_street_address || '',
+        company_city: selected.company_city || '',
+        company_state: selected.company_state || '',
+        company_zip_code: selected.company_zip_code || '',
+        company_country: selected.company_country || '',
       });
       initialFormRef.current = {
         ...initialFormRef.current,
@@ -83,7 +111,20 @@ const EditUserForm = () => {
         email: selected.email || '',
         userGroup: selected.group_id || '',
         location: selected.location || '',
-        isSalesRep: selected.isSalesRep || false
+        isSalesRep: selected.isSalesRep || false,
+        // Personal address fields
+        street_address: selected.street_address || '',
+        city: selected.city || '',
+        state: selected.state || '',
+        zip_code: selected.zip_code || '',
+        country: selected.country || '',
+        // Company information
+        company_name: selected.company_name || '',
+        company_street_address: selected.company_street_address || '',
+        company_city: selected.company_city || '',
+        company_state: selected.company_state || '',
+        company_zip_code: selected.company_zip_code || '',
+        company_country: selected.company_country || ''
       };
     }
   }, [selected, id]);
@@ -321,6 +362,220 @@ const EditUserForm = () => {
                 }}
               />
             </div>
+          </CCardBody>
+        </CCard>
+
+        {/* Personal Address Section */}
+        <CCard className="settings-section-card">
+          <CCardBody className="p-3 p-md-4">
+            <div className="settings-section-header">
+              <div className="settings-section-icon">
+                <CIcon icon={cilHome} size="sm" />
+              </div>
+              <h6 className="settings-section-title">{t('settings.users.form.titles.personalAddress', 'Personal Address')}</h6>
+            </div>
+            <CRow>
+              <CCol xs={12}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="street_address" className="settings-form-label">
+                    {t('settings.users.form.labels.streetAddress', 'Street Address')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="street_address"
+                    name="street_address"
+                    value={formData.street_address}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.streetAddress', 'Enter street address')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs={12} md={6}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="city" className="settings-form-label">
+                    {t('settings.users.form.labels.city', 'City')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.city', 'Enter city')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+              <CCol xs={12} md={3}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="state" className="settings-form-label">
+                    {t('settings.users.form.labels.state', 'State/Province')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.state', 'State')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+              <CCol xs={12} md={3}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="zip_code" className="settings-form-label">
+                    {t('settings.users.form.labels.zipCode', 'ZIP/Postal Code')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="zip_code"
+                    name="zip_code"
+                    value={formData.zip_code}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.zipCode', 'ZIP Code')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs={12} md={6}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="country" className="settings-form-label">
+                    {t('settings.users.form.labels.country', 'Country')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.country', 'Enter country')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+          </CCardBody>
+        </CCard>
+
+        {/* Company Information Section */}
+        <CCard className="settings-section-card">
+          <CCardBody className="p-3 p-md-4">
+            <div className="settings-section-header">
+              <div className="settings-section-icon">
+                <CIcon icon={cilBuilding} size="sm" />
+              </div>
+              <h6 className="settings-section-title">{t('settings.users.form.titles.companyInfo', 'Company Information')}</h6>
+            </div>
+            <CRow>
+              <CCol xs={12} md={6}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_name" className="settings-form-label">
+                    {t('settings.users.form.labels.companyName', 'Company Name')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_name"
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyName', 'Enter company name')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs={12}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_street_address" className="settings-form-label">
+                    {t('settings.users.form.labels.companyStreetAddress', 'Company Address')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_street_address"
+                    name="company_street_address"
+                    value={formData.company_street_address}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyStreetAddress', 'Enter company street address')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs={12} md={6}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_city" className="settings-form-label">
+                    {t('settings.users.form.labels.companyCity', 'Company City')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_city"
+                    name="company_city"
+                    value={formData.company_city}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyCity', 'Enter company city')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+              <CCol xs={12} md={3}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_state" className="settings-form-label">
+                    {t('settings.users.form.labels.companyState', 'Company State/Province')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_state"
+                    name="company_state"
+                    value={formData.company_state}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyState', 'State')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+              <CCol xs={12} md={3}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_zip_code" className="settings-form-label">
+                    {t('settings.users.form.labels.companyZipCode', 'Company ZIP/Postal Code')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_zip_code"
+                    name="company_zip_code"
+                    value={formData.company_zip_code}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyZipCode', 'ZIP Code')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs={12} md={6}>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="company_country" className="settings-form-label">
+                    {t('settings.users.form.labels.companyCountry', 'Company Country')}
+                  </CFormLabel>
+                  <CFormInput
+                    type="text"
+                    id="company_country"
+                    name="company_country"
+                    value={formData.company_country}
+                    onChange={handleChange}
+                    placeholder={t('settings.users.form.placeholders.companyCountry', 'Enter company country')}
+                    className="settings-form-input"
+                  />
+                </div>
+              </CCol>
+            </CRow>
           </CCardBody>
         </CCard>
 

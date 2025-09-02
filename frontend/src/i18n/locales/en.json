@@ -125,8 +125,8 @@
   "assignedSuccess": "Successfully assigned {{count}} items to {{type}}"
     }
   },
-  
-  
+
+
   "proposalUI": {
     "currentStyle": "Current Style",
     "otherStyles": "Other Styles & Price Comparison",
@@ -334,61 +334,61 @@
     },
     "status": { "open": "Open", "closed": "Closed" }
   },
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   "customers": {
     "header": "Customers",
     "subtitle": "Manage your customer database",
@@ -660,6 +660,11 @@
       "deleteTitle": "Are you sure?",
       "deleteText": "You won't be able to revert this!",
       "deleteConfirm": "Yes, delete it!",
+      "submitTitle": "Confirm Quote Submission",
+      "submitText": "Once you submit this quote, it will be sent to production and cannot be changed.",
+      "submitWarning": "By continuing, you confirm that all details are correct and you accept the Terms & Conditions.",
+      "submitConfirm": "Accept and Submit",
+      "goBack": "Go Back",
       "cancel": "Cancel"
     },
     "toast": {
@@ -1414,7 +1419,9 @@
         "titles": {
           "basicInfo": "Basic Information",
           "security": "Security Settings",
-          "roleAccess": "Role & Access"
+          "roleAccess": "Role & Access",
+          "personalAddress": "Personal Address",
+          "companyInfo": "Company Information"
         },
         "labels": {
           "fullName": "Full Name",
@@ -1423,13 +1430,35 @@
           "confirmPassword": "Confirm Password",
           "userGroup": "User Group",
           "location": "Location",
-          "salesRep": "Sales Representative"
+          "salesRep": "Sales Representative",
+          "streetAddress": "Street Address",
+          "city": "City",
+          "state": "State/Province",
+          "zipCode": "ZIP/Postal Code",
+          "country": "Country",
+          "companyName": "Company Name",
+          "companyStreetAddress": "Company Address",
+          "companyCity": "Company City",
+          "companyState": "Company State/Province",
+          "companyZipCode": "Company ZIP/Postal Code",
+          "companyCountry": "Company Country"
         },
         "placeholders": {
           "fullName": "Enter user's full name",
           "email": "user@example.com",
           "password": "Enter secure password",
-          "confirmPassword": "Confirm password"
+          "confirmPassword": "Confirm password",
+          "streetAddress": "Enter street address",
+          "city": "Enter city",
+          "state": "State",
+          "zipCode": "ZIP Code",
+          "country": "Enter country",
+          "companyName": "Enter company name",
+          "companyStreetAddress": "Enter company street address",
+          "companyCity": "Enter company city",
+          "companyState": "State",
+          "companyZipCode": "ZIP Code",
+          "companyCountry": "Enter company country"
         },
         "select": {
           "group": "-- Select Group --",

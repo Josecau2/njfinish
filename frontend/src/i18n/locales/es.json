@@ -55,7 +55,7 @@
     "noStylesInfo": "No se encontraron estilos con imágenes para este fabricante. Suba imágenes en la sección de mapeo de catálogo para verlos aquí.",
     "header": "Imágenes de estilos para {{name}}",
     "searchPlaceholder": "Buscar estilos...",
-    "helperText": "Vea todos los estilos con sus imágenes asociadas. Las imágenes se usan en la creación de propuestas para ayudar a visualizar las selecciones.",
+    "helperText": "Vea todos los estilos con sus imágenes asociadas. Las imágenes se usan en la creación de cotizaciones para ayudar a visualizar las selecciones.",
     "noneMatch": "No se encontraron estilos que coincidan con \"{{term}}\".",
     "tryAdjust": "Intente ajustar su búsqueda o limpie el filtro para ver todos los estilos.",
     "noneAvailable": "No hay estilos con imágenes para este fabricante.",
@@ -184,9 +184,12 @@
   },
   "nav": {
     "dashboard": "Panel",
-    "proposals": "Propuestas",
-    "viewProposals": "Ver propuestas",
-    "createProposal": "Crear propuesta",
+    "proposals": "Cotizaciones",
+    "quotes": "Cotizaciones",
+    "viewProposals": "Ver cotizaciones",
+    "viewQuotes": "Ver cotizaciones",
+    "createProposal": "Crear cotización",
+    "createQuote": "Crear cotización",
     "contracts": "Contratos",
     "customers": "Clientes",
   "viewCustomers": "Ver clientes",
@@ -327,7 +330,7 @@
     },
     "status": { "open": "Abierto", "closed": "Cerrado" }
   },
-  
+
   "customers": {
     "header": "Clientes",
     "subtitle": "Administre su base de datos de clientes",
@@ -338,7 +341,7 @@
     "active": "Activos",
     "withEmail": "Con correo",
     "filtered": "Resultados filtrados",
-    "proposalsCount": "{{count}} propuestas",
+    "proposalsCount": "{{count}} cotizaciones",
   "ordersCount": "{{count}} pedidos",
   "perPage": "por página",
   "showing": "Mostrando",
@@ -348,7 +351,7 @@
   "location": "Ubicación",
   "name": "Nombre",
   "email": "Correo electrónico",
-  "proposalsHeader": "Propuestas",
+  "proposalsHeader": "Cotizaciones",
   "ordersHeader": "Pedidos",
   "actions": "Acciones",
   "main": "Principal",
@@ -462,19 +465,19 @@
     "welcome": "Bienvenido al panel de {{group}}",
     "portal": "Portal de contratistas",
     "quickActions": "Acciones rápidas",
-    "createProposal": "Crear nueva propuesta",
+    "createProposal": "Crear nueva cotización",
     "viewProfile": "Ver perfil",
     "loadError": "Error al cargar los datos del panel",
-    "activeProposals": "Propuestas Activas",
+    "activeProposals": "Cotizaciones Activas",
     "activeOrders": "Órdenes Activas",
     "latestProductUpdates": "Últimas Actualizaciones de Productos",
     "noProductUpdates": "No hay actualizaciones de productos disponibles.",
     "quickLinks": "Enlaces Rápidos",
     "recentFiles": "Archivos Recientes",
-    "myLatestProposals": "Mis Últimas Propuestas",
-    "viewAllProposals": "Ver Todas las Propuestas",
-    "newProposal": "Nueva Propuesta",
-    "quickProposal": "Propuesta Rápida"
+    "myLatestProposals": "Mis Últimas Cotizaciones",
+    "viewAllProposals": "Ver Todas las Cotizaciones",
+    "newProposal": "Nueva Cotización",
+    "quickProposal": "Cotización Rápida"
   },
   "resources": {
     "manage": "Administra tus {{title}}",
@@ -536,12 +539,12 @@
     "leaveEmpty": "Déjalo vacío para mantener el archivo actual"
   },
   "proposals": {
-    "header": "Propuestas",
-    "subtitle": "Administra y haz seguimiento de todas tus propuestas",
-    "new": "Nueva propuesta",
-    "quick": "Propuesta rápida",
+    "header": "Cotizaciones",
+    "subtitle": "Administra y haz seguimiento de todas tus cotizaciones",
+    "new": "Nueva cotización",
+    "quick": "Cotización rápida",
     "searchPlaceholder": "Buscar por nombre del cliente...",
-    "showingCount": "Mostrando {{count}} de {{total}} propuestas",
+    "showingCount": "Mostrando {{count}} de {{total}} cotizaciones",
     "headers": {
       "date": "Fecha",
       "customer": "Cliente",
@@ -551,7 +554,7 @@
       "actions": "Acciones"
     },
     "empty": {
-      "title": "No se encontraron propuestas",
+      "title": "No se encontraron cotizaciones",
       "subtitle": "Intenta ajustar tu búsqueda o filtros"
     },
     "labels": {
@@ -574,9 +577,9 @@
       "followUp1": "Seguimiento 1",
       "followUp2": "Seguimiento 2",
       "followUp3": "Seguimiento 3",
-      "proposalAccepted": "Propuesta aceptada",
-      "proposalRejected": "Propuesta rechazada",
-      "proposalDone": "Propuesta completada"
+      "proposalAccepted": "Cotización aceptada",
+      "proposalRejected": "Cotización rechazada",
+      "proposalDone": "Cotización completada"
     },
     "actions": {
       "send": "Enviar",
@@ -584,33 +587,38 @@
       "reject": "Rechazar",
       "resend": "Reenviar",
       "share": "Crear enlace para compartir",
-      "view": "Ver propuesta",
-      "edit": "Editar propuesta",
-      "delete": "Eliminar propuesta"
+      "view": "Ver cotización",
+      "edit": "Editar cotización",
+      "delete": "Eliminar cotización"
     },
     "confirm": {
-      "sendTitle": "¿Enviar propuesta?",
-      "sendText": "Esto marcará la propuesta como enviada al cliente.",
+      "sendTitle": "¿Enviar cotización?",
+      "sendText": "Esto marcará la cotización como enviada al cliente.",
       "sendConfirm": "Sí, enviar",
-      "rejectTitle": "¿Rechazar propuesta?",
-      "rejectText": "Esto marcará la propuesta como rechazada.",
+      "rejectTitle": "¿Rechazar cotización?",
+      "rejectText": "Esto marcará la cotización como rechazada.",
       "rejectConfirm": "Sí, rechazar",
       "deleteTitle": "¿Estás seguro?",
       "deleteText": "¡No podrás deshacer esta acción!",
       "deleteConfirm": "Sí, eliminar",
+      "submitTitle": "Confirmar envío de cotización",
+      "submitText": "Una vez que envíe esta cotización, será enviada a producción y no se podrá cambiar.",
+      "submitWarning": "Al continuar, confirma que todos los detalles son correctos y acepta los Términos y Condiciones.",
+      "submitConfirm": "Aceptar y enviar",
+      "goBack": "Regresar",
       "cancel": "Cancelar"
     },
     "toast": {
-      "successSend": "Propuesta enviada correctamente",
-      "successAccept": "Propuesta aceptada correctamente",
-      "successReject": "Propuesta rechazada correctamente",
-      "deleted": "Tu propuesta ha sido eliminada.",
-      "deleteFailed": "No se pudo eliminar la propuesta.",
+      "successSend": "Cotización enviada correctamente",
+      "successAccept": "Cotización aceptada correctamente",
+      "successReject": "Cotización rechazada correctamente",
+      "deleted": "Tu cotización ha sido eliminada.",
+      "deleteFailed": "No se pudo eliminar la cotización.",
       "errorGeneric": "Ocurrió un error"
     },
     "lockedStatus": {
-      "title": "Propuesta Aceptada",
-      "description": "Esta propuesta ha sido aceptada y ahora está siendo procesada para entrega. No se permiten más cambios.",
+      "title": "Cotización Aceptada",
+      "description": "Esta cotización ha sido aceptada y ahora está siendo procesada para entrega. No se permiten más cambios.",
       "processingNote": "Su pedido está siendo preparado para fabricación y entrega."
     },
     "share": {
@@ -619,21 +627,24 @@
       "copy": "Copiar enlace",
       "error": "No se pudo crear el enlace para compartir"
     },
-    "lockedTooltip": "La propuesta está bloqueada",
+    "lockedTooltip": "La cotización está bloqueada",
+    "edit": {
+      "title": "Editar Cotización"
+    },
     "create": {
       "steps": {
         "1": "Información del cliente",
         "2": "Selección del fabricante",
         "3": "Diseño y estilo",
-        "4": "Resumen de la propuesta"
+        "4": "Resumen de la cotización"
       },
       "quickMode": "Modo rápido",
       "standardMode": "Modo estándar",
       "stepOf": "Paso {{current}} de {{total}}",
       "loadingManufacturer": "Cargando datos del fabricante...",
       "actions": {
-        "print": "Imprimir propuesta",
-        "email": "Enviar propuesta por correo",
+        "print": "Imprimir cotización",
+        "email": "Enviar cotización por correo",
         "contract": "Enviar contrato"
   },
       "customerInfo": {
@@ -778,10 +789,10 @@
   "pageInfo": "Página {{current}} de {{total}}"
   },
   "proposalAcceptance": {
-  "title": "Aceptar propuesta",
-  "details": "Detalles de la propuesta:",
+  "title": "Aceptar cotización",
+  "details": "Detalles de la cotización:",
   "warningTitle": "Advertencia:",
-  "warningText": "Aceptar esta propuesta la bloqueará permanentemente e impedirá más ediciones.",
+  "warningText": "Aceptar esta cotización la bloqueará permanentemente e impedirá más ediciones.",
   "externalCheck": "Aceptar en nombre de un cliente externo",
   "externalInfo": "Información del firmante externo",
   "signerName": "Nombre del firmante",
@@ -789,11 +800,11 @@
   "signerNamePlaceholder": "Ingrese el nombre completo del firmante",
   "signerEmailPlaceholder": "Ingrese el correo del firmante",
   "externalHint": "Proporcione al menos una forma de identificación del firmante externo.",
-  "acceptButton": "Aceptar propuesta",
+  "acceptButton": "Aceptar cotización",
   "errors": {
     "needNameOrEmail": "Proporcione nombre o correo del firmante para la aceptación externa",
     "invalidEmail": "Proporcione un correo electrónico válido",
-    "failedAccept": "No se pudo aceptar la propuesta"
+    "failedAccept": "No se pudo aceptar la cotización"
   },
   "labels": {
     "customer": "Cliente",
@@ -815,7 +826,7 @@
   "items": "Ítems"
   },
   "proposalDoc": {
-  "title": "Propuesta",
+  "title": "Cotización",
   "altCompanyLogo": "Logo de la empresa",
   "fallbackCompanyName": "Nombre de la empresa",
   "greeting": "Estimado(a) {{name}}:",
@@ -825,7 +836,7 @@
     "date": "Fecha"
   },
   "sections": {
-    "proposalItems": "Ítems de la propuesta",
+    "proposalItems": "Ítems de la cotización",
     "catalogItems": "Ítems del catálogo"
   },
   "modifications": "Modificaciones:",
@@ -846,11 +857,11 @@
   }
   },
   "proposalCommon": {
-  "emailTitle": "Enviar propuesta por correo",
+  "emailTitle": "Enviar cotización por correo",
   "emailAddress": "Dirección de correo *",
   "emailPlaceholder": "Ingrese el correo del cliente",
   "emailBody": "Cuerpo del correo *",
-  "includeItems": "Incluir ítems de la propuesta",
+  "includeItems": "Incluir ítems de la cotización",
   "selectVersion": "Seleccionar versión *",
   "selectVersionsPlaceholder": "Seleccione versiones...",
   "selectColumns": "Seleccionar columnas",
@@ -858,11 +869,12 @@
   "updateCustomerEmail": "Actualizar correo del cliente",
   "sendEmail": "Enviar correo",
   "sending": "Enviando...",
-  "printTitle": "Imprimir propuesta",
-  "showProposalItems": "Mostrar ítems de la propuesta",
+  "printTitle": "Imprimir cotización",
+  "showProposalItems": "Mostrar ítems de la cotización",
   "showGroupItems": "Mostrar ítems del grupo",
   "downloadPdf": "Descargar PDF",
   "downloading": "Descargando...",
+  "previewTitle": "Vista Previa de Cotización",
   "validation": {
     "invalidEmail": "Correo inválido",
     "emailRequired": "El correo es obligatorio",
@@ -902,7 +914,7 @@
       "followUp1": "Seguimiento 1",
       "followUp2": "Seguimiento 2",
       "followUp3": "Seguimiento 3",
-      "proposalAccepted": "Propuesta aceptada"
+      "proposalAccepted": "Cotización aceptada"
     },
     "modal": {
       "title": "Detalles del contrato"
@@ -948,13 +960,13 @@
       "totalContractors": "Contratistas totales",
       "totalUsers": "Usuarios totales",
       "totalCustomers": "Clientes totales",
-      "totalProposals": "Propuestas totales"
+      "totalProposals": "Cotizaciones totales"
     },
     "table": {
       "contractorName": "Nombre del contratista",
       "users": "Usuarios",
       "customers": "Clientes",
-      "proposals": "Propuestas",
+      "proposals": "Cotizaciones",
       "modules": "Módulos",
       "created": "Creado",
       "actions": "Acciones"
@@ -966,7 +978,7 @@
     "noModules": "Sin módulos",
     "modules": {
       "dashboard": "Panel",
-      "proposals": "Propuestas",
+      "proposals": "Cotizaciones",
       "customers": "Clientes",
       "resources": "Recursos"
     },
@@ -976,7 +988,7 @@
     "detail": {
       "tabs": {
         "overview": "Resumen",
-        "proposals": "Propuestas",
+        "proposals": "Cotizaciones",
         "customers": "Clientes",
         "settings": "Ajustes"
       },
@@ -1006,8 +1018,8 @@
         "totalUsersHint": "Contratistas y personal activos",
         "totalCustomers": "Clientes totales",
         "totalCustomersHint": "Cuentas de clientes gestionadas",
-        "totalProposals": "Propuestas totales",
-        "totalProposalsHint": "Propuestas de proyecto creadas"
+        "totalProposals": "Cotizaciones totales",
+        "totalProposalsHint": "Cotizaciones de proyecto creadas"
       },
       "customers": {
         "header": "Clientes ({{count}})",
@@ -1036,16 +1048,16 @@
         "inactive": "Inactivo"
       },
       "proposals": {
-        "header": "Propuestas ({{count}})",
-        "searchPlaceholder": "Buscar propuestas por título, cliente...",
+        "header": "Cotizaciones ({{count}})",
+        "searchPlaceholder": "Buscar cotizaciones por título, cliente...",
         "quickFilters": "Filtros rápidos:",
-        "loadFailed": "Error al cargar las propuestas",
+        "loadFailed": "Error al cargar las cotizaciones",
         "empty": {
-          "title": "No se encontraron propuestas",
+          "title": "No se encontraron cotizaciones",
           "subtitle": "Intente ajustar su búsqueda o filtros de estado."
         },
         "table": {
-          "title": "Título de la propuesta",
+          "title": "Título de la cotización",
           "amount": "Monto",
           "updated": "Última actualización"
         },
@@ -1056,29 +1068,29 @@
           "completed": "Completada"
         },
         "modal": {
-          "title": "Detalles de la propuesta",
-          "loading": "Cargando detalles de la propuesta...",
+          "title": "Detalles de la cotización",
+          "loading": "Cargando detalles de la cotización...",
           "group": "Grupo",
           "totalAmount": "Monto total",
-          "goToProposal": "Ir a la propuesta",
+          "goToProposal": "Ir a la cotización",
           "basicInfo": "Información básica",
-          "proposalId": "ID de la propuesta",
+          "proposalId": "ID de la cotización",
           "created": "Fecha de creación",
           "updated": "Última actualización",
           "sent": "Fecha de envío",
           "contractorGroup": "Grupo del contratista",
           "accepted": "Fecha de aceptación",
-          "failed": "No se pudieron cargar los detalles de la propuesta. Inténtelo de nuevo.",
-          "openFull": "Abrir propuesta completa"
+          "failed": "No se pudieron cargar los detalles de la cotización. Inténtelo de nuevo.",
+          "openFull": "Abrir cotización completa"
         },
         "timeline": {
           "title": "Línea de estado",
-          "created": "La propuesta fue creada y agregada al sistema",
-          "sent": "La propuesta fue enviada al cliente para revisión",
-          "accepted": "La propuesta ha sido aceptada por el contratista",
-          "approved": "La propuesta ha sido aceptada por el contratista"
+          "created": "La cotización fue creada y agregada al sistema",
+          "sent": "La cotización fue enviada al cliente para revisión",
+          "accepted": "La cotización ha sido aceptada por el contratista",
+          "approved": "La cotización ha sido aceptada por el contratista"
         },
-        "itemsTitle": "Ítems de la propuesta ({{count}})",
+        "itemsTitle": "Ítems de la cotización ({{count}})",
         "totals": {
           "subtotal": "Subtotal",
           "tax": "Impuesto",
@@ -1111,7 +1123,7 @@
         },
         "moduleDescriptions": {
           "dashboard": "Acceso al panel principal y analíticas",
-          "proposals": "Crear y gestionar propuestas de proyectos",
+          "proposals": "Crear y gestionar cotizaciones de proyectos",
           "customers": "Gestionar base de datos de clientes",
           "resources": "Acceso a recursos y archivos compartidos"
         },
@@ -1345,7 +1357,9 @@
         "titles": {
           "basicInfo": "Información básica",
           "security": "Ajustes de seguridad",
-          "roleAccess": "Rol y acceso"
+          "roleAccess": "Rol y acceso",
+          "personalAddress": "Dirección personal",
+          "companyInfo": "Información de la empresa"
         },
         "labels": {
           "fullName": "Nombre completo",
@@ -1354,13 +1368,35 @@
           "confirmPassword": "Confirmar contraseña",
           "userGroup": "Grupo de usuarios",
           "location": "Ubicación",
-          "salesRep": "Representante de ventas"
+          "salesRep": "Representante de ventas",
+          "streetAddress": "Dirección",
+          "city": "Ciudad",
+          "state": "Estado/Provincia",
+          "zipCode": "Código postal",
+          "country": "País",
+          "companyName": "Nombre de la empresa",
+          "companyStreetAddress": "Dirección de la empresa",
+          "companyCity": "Ciudad de la empresa",
+          "companyState": "Estado/Provincia de la empresa",
+          "companyZipCode": "Código postal de la empresa",
+          "companyCountry": "País de la empresa"
         },
         "placeholders": {
           "fullName": "Ingrese el nombre completo del usuario",
           "email": "usuario@ejemplo.com",
           "password": "Ingrese una contraseña segura",
-          "confirmPassword": "Confirmar contraseña"
+          "confirmPassword": "Confirmar contraseña",
+          "streetAddress": "Ingrese la dirección",
+          "city": "Ingrese la ciudad",
+          "state": "Estado",
+          "zipCode": "Código postal",
+          "country": "Ingrese el país",
+          "companyName": "Ingrese el nombre de la empresa",
+          "companyStreetAddress": "Ingrese la dirección de la empresa",
+          "companyCity": "Ingrese la ciudad de la empresa",
+          "companyState": "Estado",
+          "companyZipCode": "Código postal",
+          "companyCountry": "Ingrese el país de la empresa"
         },
         "select": {
           "group": "-- Seleccione grupo --",
@@ -1441,7 +1477,7 @@
       },
       "moduleDescriptions": {
         "dashboard": "Panel principal y resumen",
-        "proposals": "Crear y gestionar propuestas",
+        "proposals": "Crear y gestionar cotizaciones",
         "customers": "Gestión de clientes",
         "resources": "Acceso a la biblioteca de recursos"
       },
@@ -1622,10 +1658,10 @@
     },
     "taxes": {
       "header": "Gestión de impuestos",
-      "subtitle": "Configure tasas de impuestos para sus propuestas",
+      "subtitle": "Configure tasas de impuestos para sus cotizaciones",
       "addTax": "Agregar impuesto",
       "help": {
-        "tooltip": "Los impuestos definidos aquí estarán disponibles al crear propuestas",
+        "tooltip": "Los impuestos definidos aquí estarán disponibles al crear cotizaciones",
         "hover": "Pase el mouse para ayuda"
       },
       "stats": {
@@ -1945,7 +1981,7 @@
       },
       "settings": {
         "costMultiplierTitle": "Su multiplicador de costo",
-        "costMultiplierHelp": "El multiplicador de costo controla el precio que paga al fabricante. Puede ver su costo en la Propuesta cuando desactiva el multiplicador del cliente.",
+        "costMultiplierHelp": "El multiplicador de costo controla el precio que paga al fabricante. Puede ver su costo en la Cotización cuando desactiva el multiplicador del cliente.",
         "customerMultiplierTitle": "Multiplicador de precio al cliente",
         "customerMultiplierHelp": "El multiplicador de precio al cliente controla el precio al que vende a sus clientes. Esto es lo que determina su ganancia."
       },

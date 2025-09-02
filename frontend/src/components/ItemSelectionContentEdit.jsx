@@ -77,7 +77,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
     // Cache style items per manufacturer/style to avoid refetching and re-render churn
     const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
-    
+
     // Extract manufacturerId early for use in functions
     const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
 
@@ -143,7 +143,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         try {
             // Start with current custom items total (unchanged by style switch)
             const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
-            
+
             // Calculate modifications total (unchanged by style switch)
             const modificationsTotal = filteredItems.reduce((sum, item) => {
                 if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
@@ -160,11 +160,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             if (currentManufacturerId && styleId) {
                 const cacheKey = `${currentManufacturerId}:${styleId}`;
                 const catalogData = styleItemsCacheRef.current.get(cacheKey);
-                
+
                 if (catalogData && catalogData.length > 0) {
                     // Build lookup map by item code
                     const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
-                    
+
                     // Calculate totals based on actual catalog prices for this style
                     filteredItems.forEach(item => {
                         const match = byCode.get(String(item.code).trim());
@@ -173,10 +173,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             const basePrice = Number(match.price) || 0;
                             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
                             const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
-                            
+
                             const qty = Number(item.qty || 1);
                             cabinetPartsTotal += finalPrice * qty;
-                            
+
                             // Calculate assembly fee if assembled
                             if (isAssembled && item?.includeAssemblyFee) {
                                 const assemblyCost = match.styleVariantsAssemblyCost;
@@ -204,7 +204,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
                     const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
                     cabinetPartsTotal = finalStylePrice * totalItemCount;
-                    
+
                     // Assembly fees proportional to price change
                     const currentStylePrice = Number(selectedStyleData?.price || 0);
                     const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);
@@ -223,12 +223,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
             // Calculate totals following the same flow as the main calculation
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
-            
+
             // Access current discount and tax values dynamically
             const currentDiscountPercent = Number(discountPercent || 0);
             const defaultTax = taxes?.find(tax => tax.is_default === true);
             const currentDefaultTaxValue = parseFloat(defaultTax?.value || '0');
-            
+
             const discountAmount = (styleTotal * currentDiscountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
             const taxAmount = (totalAfterDiscount * currentDefaultTaxValue) / 100;
@@ -629,7 +629,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             // Preload catalog data for all styles in parallel
             const preloadPromises = stylesMeta.map(async (style) => {
                 const cacheKey = `${manufacturerId}:${style.id}`;
-                
+
                 // Skip if already cached
                 if (styleItemsCacheRef.current.has(cacheKey)) {
                     return;

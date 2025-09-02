@@ -233,7 +233,7 @@ axiosInstance.interceptors.response.use(
       const status = error?.response?.status;
       const original = error?.config;
       const shouldRetry = (status === 401 || status === 403) && original && !original.__isRetryRequest;
-      
+
       if (shouldRetry) {
         // Use the refreshed token if we just got one, otherwise use stored token
         const retryToken = refreshed || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);

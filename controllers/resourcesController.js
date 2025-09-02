@@ -7,18 +7,18 @@ const fs = require('fs');
 const getLinks = async (req, res) => {
     try {
         const user = req.user;
-        
+
         // Check if user exists
         if (!user) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'User not authenticated' 
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
             });
         }
-        
+
         // Build where clause with group visibility
         let whereClause = {};
-        
+
         // Apply group visibility filtering
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
             // Contractors can only see links visible to 'contractor' type or their specific group
@@ -182,22 +182,22 @@ const deleteLink = async (req, res) => {
     }
 };
 
-// 
+//
 const getFiles = async (req, res) => {
     try {
         const user = req.user;
-        
+
         // Check if user exists
         if (!user) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'User not authenticated' 
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
             });
         }
-        
+
         // Build where clause with group visibility
         let whereClause = { is_deleted: false };
-        
+
         // Apply group visibility filtering
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
             // Contractors can only see files visible to 'contractor' type or their specific group
@@ -371,7 +371,7 @@ const updateFile = async (req, res) => {
         // Fetch updated file
         const [updatedFile] = await db.execute(
             `SELECT id, name, original_name, file_path, file_size, file_type, mime_type,
-              created_at as uploadedAt, updated_at as updatedAt 
+              created_at as uploadedAt, updated_at as updatedAt
        FROM resource_files WHERE id = ?`,
             [id]
         );
@@ -461,15 +461,15 @@ const downloadFile = async (req, res) => {
 
         // Check if user exists
         if (!user) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'User not authenticated' 
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
             });
         }
 
         // Build where clause with group visibility
         let whereClause = { id: id, is_deleted: false };
-        
+
         // Apply group visibility filtering for contractors
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
             // Use MySQL-compatible JSON_CONTAINS for visibility checks

@@ -193,24 +193,26 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             }
             if (versionName) summaryHashRef.current[versionName] = nextHash;
 
-            setFormData(prev => {
-                const updatedManufacturersData = prev.manufacturersData.map(manufacturer => {
-                    if (manufacturer.versionName === versionName) {
-                        return {
-                            ...manufacturer,
-                            selectedStyle: selectVersion?.selectedStyle,
-                            items: matchedItems,
-                            customItems: matchedCustomItems,
-                            summary: newSummary
-                        };
-                    }
-                    return manufacturer;
-                });
+            startTransition(() => {
+                setFormData(prev => {
+                    const updatedManufacturersData = prev.manufacturersData.map(manufacturer => {
+                        if (manufacturer.versionName === versionName) {
+                            return {
+                                ...manufacturer,
+                                selectedStyle: selectVersion?.selectedStyle,
+                                items: matchedItems,
+                                customItems: matchedCustomItems,
+                                summary: newSummary
+                            };
+                        }
+                        return manufacturer;
+                    });
 
-                return {
-                    ...prev,
-                    manufacturersData: updatedManufacturersData
-                };
+                    return {
+                        ...prev,
+                        manufacturersData: updatedManufacturersData
+                    };
+                });
             });
         } catch (error) {
             console.log("err::::::", error)
@@ -301,7 +303,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             // Preload catalog data for all styles in parallel
             const preloadPromises = stylesMeta.map(async (style) => {
                 const cacheKey = `${manufacturerId}:${style.id}`;
-                
+
                 // Skip if already cached
                 if (styleItemsCacheRef.current.has(cacheKey)) {
                     return;
@@ -440,7 +442,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         try {
             // Start with current custom items total (unchanged by style switch)
             const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
-            
+
             // Calculate modifications total (unchanged by style switch)
             const modificationsTotal = filteredItems.reduce((sum, item) => {
                 if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
@@ -457,11 +459,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             if (manufacturerId && styleId) {
                 const cacheKey = `${manufacturerId}:${styleId}`;
                 const catalogData = styleItemsCacheRef.current.get(cacheKey);
-                
+
                 if (catalogData && catalogData.length > 0) {
                     // Build lookup map by item code
                     const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
-                    
+
                     // Calculate totals based on actual catalog prices for this style
                     filteredItems.forEach(item => {
                         const match = byCode.get(String(item.code).trim());
@@ -470,10 +472,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             const basePrice = Number(match.price) || 0;
                             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
                             const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
-                            
+
                             const qty = Number(item.qty || 1);
                             cabinetPartsTotal += finalPrice * qty;
-                            
+
                             // Calculate assembly fee if assembled
                             if (isAssembled && item?.includeAssemblyFee) {
                                 const assemblyCost = match.styleVariantsAssemblyCost;
@@ -501,7 +503,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
                     const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
                     cabinetPartsTotal = finalStylePrice * totalItemCount;
-                    
+
                     // Assembly fees proportional to price change
                     const currentStylePrice = Number(selectedStyleData?.price || 0);
                     const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);

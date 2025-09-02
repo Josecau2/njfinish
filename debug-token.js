@@ -5,17 +5,17 @@ function validateToken(token) {
   console.log('Token to validate:');
   console.log(token.substring(0, 50) + '...');
   console.log('Token length:', token.length);
-  
+
   try {
     // Try to decode without verification first
     const parts = token.split('.');
     console.log('Token parts:', parts.length);
-    
+
     if (parts.length !== 3) {
       console.log('❌ Invalid JWT format - should have 3 parts');
       return false;
     }
-    
+
     // Try to decode header
     try {
       const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
@@ -23,7 +23,7 @@ function validateToken(token) {
     } catch (e) {
       console.log('❌ Failed to decode header:', e.message);
     }
-    
+
     // Try to decode payload
     try {
       let payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -36,7 +36,7 @@ function validateToken(token) {
     } catch (e) {
       console.log('❌ Failed to decode payload:', e.message);
     }
-    
+
     // Try to verify with JWT_SECRET
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,7 +46,7 @@ function validateToken(token) {
       console.log('❌ Token verification failed:', e.message);
       return false;
     }
-    
+
   } catch (error) {
     console.log('❌ General token validation error:', error.message);
     return false;

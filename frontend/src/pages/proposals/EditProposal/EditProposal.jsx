@@ -60,9 +60,9 @@ const statusOptions = [
   { label: 'Measurement Scheduled', value: 'Measurement Scheduled' },
   { label: 'Measurement done', value: 'Measurement done' },
   { label: 'Design done', value: 'Design done' },
-  { label: 'Proposal done', value: 'Proposal done' },
-  { label: 'Proposal accepted', value: 'Proposal accepted' },
-  { label: 'Proposal rejected', value: 'Proposal rejected' },
+  { label: 'Quote done', value: 'Proposal done' },
+  { label: 'Quote accepted', value: 'Proposal accepted' },
+  { label: 'Quote rejected', value: 'Proposal rejected' },
 ];
 
 const EditProposal = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
@@ -351,7 +351,32 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   };
 
   const handleSaveOrder = () => sendToBackend({ ...formData }, 'update');
-  const handleAcceptOrder = () => sendToBackend({ ...formData, status: 'Proposal accepted' }, 'accept');
+
+  const handleAcceptOrder = async () => {
+    try {
+      const result = await Swal.fire({
+        title: t('proposals.confirm.submitTitle', 'Confirm Quote Submission'),
+        html: `
+          <div style="text-align:left">
+            <p>${t('proposals.confirm.submitText', 'Once you submit this quote, it will be sent to production and cannot be changed.')}</p>
+            <p>${t('proposals.confirm.submitWarning', 'By continuing, you confirm that all details are correct and you accept the Terms & Conditions.')}</p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('proposals.confirm.submitConfirm', 'Accept and Submit'),
+        cancelButtonText: t('proposals.confirm.goBack', 'Go Back'),
+        reverseButtons: true,
+        focusCancel: true,
+      });
+      if (result.isConfirmed) {
+        sendToBackend({ ...formData, status: 'Proposal accepted', is_locked: true }, 'accept');
+      }
+    } catch (_) {
+      // no-op
+    }
+  };
+
   const handleRejectOrder = () => sendToBackend({ ...formData, status: 'Proposal rejected' }, 'reject');
 
   const sendToBackend = async (finalData, action = 'update') => {
@@ -369,10 +394,10 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
       const payload = { action, formData: finalData };
       const response = await dispatch(sendFormDataToBackend(payload));
       if (response.payload?.success === true) {
-        Swal.fire('Success!', 'Proposal saved successfully!', 'success');
+        Swal.fire('Success!', 'Quote saved successfully!', 'success');
         navigate('/quotes');
       } else if (response.error) {
-        const msg = response.error.message || response.payload?.message || 'Failed to save proposal';
+        const msg = response.error.message || response.payload?.message || 'Failed to save quote';
         if (/locked/i.test(msg)) {
           Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
         } else {
@@ -382,7 +407,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     } catch (error) {
       console.error('Error sending data to backend:', error);
       const status = error?.response?.status;
-      const message = error?.response?.data?.message || error?.message || 'Failed to save proposal';
+      const message = error?.response?.data?.message || error?.message || 'Failed to save quote';
       if (status === 403 && /locked/i.test(message)) {
         Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
       } else {
@@ -460,7 +485,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
       <PageHeader
-        title={t('proposals.edit.title', 'Edit Proposal')}
+        title={t('proposals.edit.title', 'Edit Quote')}
         icon={FaCheckCircle}
         badges={[
           ...(isAccepted ? [{ text: t('proposals.lockedStatus.title'), variant: 'success' }] : []),
@@ -806,7 +831,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                   {/* Tabs Section */}
                   <hr />
                   <CTabs>
-                    <CNav variant="tabs" className="proposal-tabs border-0">
+                    <CNav variant="tabs" className="quote-tabs border-0">
                       <CNavItem>
                         <CNavLink
                           active={activeTab === 'item'}

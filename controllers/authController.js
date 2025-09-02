@@ -279,7 +279,29 @@ exports.fetchSingleUser = async (req, res) => {
 // Add user
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, isSalesRep, location, userGroup, force, role } = req.body;
+    const { 
+      name, 
+      email, 
+      password, 
+      isSalesRep, 
+      location, 
+      userGroup, 
+      force, 
+      role,
+      // Personal address fields
+      street_address,
+      city,
+      state,
+      zip_code,
+      country,
+      // Company information
+      company_name,
+      company_street_address,
+      company_city,
+      company_state,
+      company_zip_code,
+      company_country
+    } = req.body;
 
     const existingUser = await User.findOne({
       where: {
@@ -329,6 +351,19 @@ exports.addUser = async (req, res) => {
       deletedUser.password = await bcrypt.hash(password, 10);
       deletedUser.isSalesRep = !!isSalesRep;
       deletedUser.location = location;
+      // Update personal address fields
+      deletedUser.street_address = street_address;
+      deletedUser.city = city;
+      deletedUser.state = state;
+      deletedUser.zip_code = zip_code;
+      deletedUser.country = country;
+      // Update company information
+      deletedUser.company_name = company_name;
+      deletedUser.company_street_address = company_street_address;
+      deletedUser.company_city = company_city;
+      deletedUser.company_state = company_state;
+      deletedUser.company_zip_code = company_zip_code;
+      deletedUser.company_country = company_country;
       deletedUser.role = userRole; // Set the role field properly
       deletedUser.group_id = userGroup;
       deletedUser.role_id = roleId; // Set role_id properly based on group type
@@ -379,6 +414,19 @@ exports.addUser = async (req, res) => {
       password: hashedPassword,
       isSalesRep: !!isSalesRep,
       location,
+      // Personal address fields
+      street_address,
+      city,
+      state,
+      zip_code,
+      country,
+      // Company information
+      company_name,
+      company_street_address,
+      company_city,
+      company_state,
+      company_zip_code,
+      company_country,
       role: userRole, // Set the role field properly
       group_id: parseInt(userGroup) || null,
       role_id: roleId // Set role_id properly based on group type
@@ -417,7 +465,20 @@ exports.updateUser = async (req, res) => {
       location,
       userGroup,
       isSalesRep,
-      role_id
+      role_id,
+      // Personal address fields
+      street_address,
+      city,
+      state,
+      zip_code,
+      country,
+      // Company information
+      company_name,
+      company_street_address,
+      company_city,
+      company_state,
+      company_zip_code,
+      company_country
     } = req.body;
 
     const user = await User.findByPk(id);
@@ -430,6 +491,22 @@ exports.updateUser = async (req, res) => {
     // Conditionally update fields
     if (name) user.name = name;
     if (location) user.location = location;
+    
+    // Update personal address fields if provided
+    if (street_address !== undefined) user.street_address = street_address;
+    if (city !== undefined) user.city = city;
+    if (state !== undefined) user.state = state;
+    if (zip_code !== undefined) user.zip_code = zip_code;
+    if (country !== undefined) user.country = country;
+    
+    // Update company information if provided
+    if (company_name !== undefined) user.company_name = company_name;
+    if (company_street_address !== undefined) user.company_street_address = company_street_address;
+    if (company_city !== undefined) user.company_city = company_city;
+    if (company_state !== undefined) user.company_state = company_state;
+    if (company_zip_code !== undefined) user.company_zip_code = company_zip_code;
+    if (company_country !== undefined) user.company_country = company_country;
+    
     if (userGroup) {
       // Determine user role based on group type for updates
       const group = await UserGroup.findByPk(userGroup);

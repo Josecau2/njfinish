@@ -55,14 +55,14 @@ const useNavItems = () => {
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       });
 
-  // Proposals section
+  // Quotes section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
-          { component: CNavItem, name: t('nav.viewProposals'), to: '/quotes' }
+          { component: CNavItem, name: t('nav.viewQuotes', 'View Quotes'), to: '/quotes' }
         ];
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: t('nav.createProposal'), to: '/quotes/create' });
+          proposalItems.push({ component: CNavItem, name: t('nav.createQuote', 'Create Quote'), to: '/quotes/create' });
         }
 
   // Contracts: visible only to non-contractors
@@ -72,7 +72,7 @@ const useNavItems = () => {
 
         navigationItems.push({
           component: CNavGroup,
-          name: t('nav.proposals'),
+          name: t('nav.quotes', 'Quotes'),
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
           items: proposalItems,
         });
@@ -188,17 +188,17 @@ const useNavItems = () => {
         // User Management
         if (hasPermission(user, 'settings:users') || hasPermission(user, 'settings:groups')) {
           const userManagementItems = [];
-          
+
           // Add Users if user has permission
           if (hasPermission(user, 'settings:users')) {
             userManagementItems.push({ component: CNavItem, name: t('nav.users'), to: '/settings/users' });
           }
-          
+
           // Add User Groups if user has permission
           if (hasPermission(user, 'settings:groups')) {
             userManagementItems.push({ component: CNavItem, name: t('nav.userGroups'), to: '/settings/users/groups' });
           }
-          
+
           settingsItems.push({
             component: CNavGroup,
             name: t('nav.userManagement'),

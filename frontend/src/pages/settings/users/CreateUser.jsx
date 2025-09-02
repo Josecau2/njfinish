@@ -25,7 +25,9 @@ import {
   cilSave,
   cilUserPlus,
   cilEyedropper,
-  cilSettings
+  cilSettings,
+  cilHome,
+  cilBuilding
 } from '@coreui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -138,6 +140,19 @@ const initialForm = {
   userGroup: '',
   location: '',
   isSalesRep: false,
+  // Personal address fields
+  street_address: '',
+  city: '',
+  state: '',
+  zip_code: '',
+  country: '',
+  // Company information
+  company_name: '',
+  company_street_address: '',
+  company_city: '',
+  company_state: '',
+  company_zip_code: '',
+  company_country: '',
 };
 
 const AddUserForm = () => {
@@ -402,6 +417,152 @@ const AddUserForm = () => {
               />
             </div>
           </div>
+        </FormSection>
+
+        {/* Personal Address Section */}
+        <FormSection title={t('settings.users.form.titles.personalAddress', 'Personal Address')} icon={cilHome}>
+          <CRow>
+            <CCol xs={12}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.streetAddress', 'Street Address')}
+                name="street_address"
+                icon={cilHome}
+                placeholder={t('settings.users.form.placeholders.streetAddress', 'Enter street address')}
+                value={formData.street_address}
+                onChange={handleChange}
+                isInvalid={!!errors.street_address}
+                feedback={errors.street_address}
+              />
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={12} md={6}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.city', 'City')}
+                name="city"
+                placeholder={t('settings.users.form.placeholders.city', 'Enter city')}
+                value={formData.city}
+                onChange={handleChange}
+                isInvalid={!!errors.city}
+                feedback={errors.city}
+              />
+            </CCol>
+            <CCol xs={12} md={3}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.state', 'State/Province')}
+                name="state"
+                placeholder={t('settings.users.form.placeholders.state', 'State')}
+                value={formData.state}
+                onChange={handleChange}
+                isInvalid={!!errors.state}
+                feedback={errors.state}
+              />
+            </CCol>
+            <CCol xs={12} md={3}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.zipCode', 'ZIP/Postal Code')}
+                name="zip_code"
+                placeholder={t('settings.users.form.placeholders.zipCode', 'ZIP Code')}
+                value={formData.zip_code}
+                onChange={handleChange}
+                isInvalid={!!errors.zip_code}
+                feedback={errors.zip_code}
+              />
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={12} md={6}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.country', 'Country')}
+                name="country"
+                placeholder={t('settings.users.form.placeholders.country', 'Enter country')}
+                value={formData.country}
+                onChange={handleChange}
+                isInvalid={!!errors.country}
+                feedback={errors.country}
+              />
+            </CCol>
+          </CRow>
+        </FormSection>
+
+        {/* Company Information Section */}
+        <FormSection title={t('settings.users.form.titles.companyInfo', 'Company Information')} icon={cilBuilding}>
+          <CRow>
+            <CCol xs={12} md={6}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyName', 'Company Name')}
+                name="company_name"
+                icon={cilBuilding}
+                placeholder={t('settings.users.form.placeholders.companyName', 'Enter company name')}
+                value={formData.company_name}
+                onChange={handleChange}
+                isInvalid={!!errors.company_name}
+                feedback={errors.company_name}
+              />
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={12}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyStreetAddress', 'Company Address')}
+                name="company_street_address"
+                icon={cilHome}
+                placeholder={t('settings.users.form.placeholders.companyStreetAddress', 'Enter company street address')}
+                value={formData.company_street_address}
+                onChange={handleChange}
+                isInvalid={!!errors.company_street_address}
+                feedback={errors.company_street_address}
+              />
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={12} md={6}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyCity', 'Company City')}
+                name="company_city"
+                placeholder={t('settings.users.form.placeholders.companyCity', 'Enter company city')}
+                value={formData.company_city}
+                onChange={handleChange}
+                isInvalid={!!errors.company_city}
+                feedback={errors.company_city}
+              />
+            </CCol>
+            <CCol xs={12} md={3}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyState', 'Company State/Province')}
+                name="company_state"
+                placeholder={t('settings.users.form.placeholders.companyState', 'State')}
+                value={formData.company_state}
+                onChange={handleChange}
+                isInvalid={!!errors.company_state}
+                feedback={errors.company_state}
+              />
+            </CCol>
+            <CCol xs={12} md={3}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyZipCode', 'Company ZIP/Postal Code')}
+                name="company_zip_code"
+                placeholder={t('settings.users.form.placeholders.companyZipCode', 'ZIP Code')}
+                value={formData.company_zip_code}
+                onChange={handleChange}
+                isInvalid={!!errors.company_zip_code}
+                feedback={errors.company_zip_code}
+              />
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={12} md={6}>
+              <CustomFormInput
+                label={t('settings.users.form.labels.companyCountry', 'Company Country')}
+                name="company_country"
+                placeholder={t('settings.users.form.placeholders.companyCountry', 'Enter company country')}
+                value={formData.company_country}
+                onChange={handleChange}
+                isInvalid={!!errors.company_country}
+                feedback={errors.company_country}
+              />
+            </CCol>
+          </CRow>
         </FormSection>
 
         {/* Action Buttons */}

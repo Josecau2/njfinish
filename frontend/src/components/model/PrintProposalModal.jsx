@@ -1000,7 +1000,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 scrollable
             >
                 <PageHeader
-                    title={t('proposalCommon.previewTitle', 'Proposal Preview')}
+                    title={t('proposalCommon.previewTitle', 'Quote Preview')}
                     onClose={() => setShowPreview(false)}
                 />
                 <CModalBody style={{ padding: 0 }}>

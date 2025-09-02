@@ -66,7 +66,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   const navigate = useNavigate();
 
   const [isFormDirty, setIsFormDirty] = useState(true);
-  
+
   useEffect(() => {
     if (!isFormDirty) return;
 
@@ -313,7 +313,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
         <CCardBody className="py-3">
           <div className="d-flex align-items-center justify-content-between position-relative w-100">
             {/* Progress line - full width background */}
-            <div 
+            <div
               className="position-absolute w-100"
               style={{
                 height: '2px',
@@ -323,9 +323,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 zIndex: 1
               }}
             />
-            
+
             {/* Active progress line */}
-            <div 
+            <div
               className="position-absolute"
               style={{
                 height: '2px',
@@ -337,7 +337,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 zIndex: 2
               }}
             />
-            
+
             {/* Step numbers - equally distributed */}
             {[1, 2, 3, 4].map((step, index) => (
               <div

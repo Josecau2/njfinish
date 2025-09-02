@@ -16,7 +16,7 @@
   --cui-warning-rgb: 249, 115, 22;
   --cui-info: #3b82f6; /* Blue */
   --cui-info-rgb: 59, 130, 246;
-  
+
   /* Grays */
   --cui-gray-900: #111827;
   --cui-gray-800: #1f2937;
@@ -184,7 +184,7 @@ html, body {
 
 /* 3. Responsive Adjustments
 -------------------------------------------------- */
-@media (max-width: 767.98px) {
+@media (max-width: 575.98px) {
   /* Increase padding on mobile for safe areas and easier touch */
   .header {
     padding: 0 0.75rem;
@@ -239,6 +239,28 @@ html, body {
     height: 100%;
     border-radius: 0;
     border: none;
+  }
+}
+
+/* Tablet-specific styles for better modal experience */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  /* Ensure modals don't become full-screen on tablets */
+  .modal-xl {
+    max-width: 90vw; /* Use most of the viewport width on tablets */
+  }
+
+  .modal-lg {
+    max-width: 80vw;
+  }
+
+  .modal-content {
+    max-height: 90vh; /* Prevent modal from being too tall */
+  }
+
+  /* Adjust modal body to be scrollable on tablets */
+  .modal-body {
+    max-height: calc(90vh - 120px); /* Account for header and footer */
+    overflow-y: auto;
   }
 }
 
@@ -663,25 +685,25 @@ html, body {
     padding: 1.5rem 1rem;
     margin-bottom: 1rem;
   }
-  
+
   .page-header-dynamic .page-header-title {
     font-size: 1.5rem;
   }
-  
+
   .page-header-dynamic .page-header-subtitle {
     font-size: 0.9rem;
   }
-  
+
   .page-header-dynamic .btn {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
   }
-  
+
   .page-header-dynamic .header-icon-container {
     width: 40px !important;
     height: 40px !important;
   }
-  
+
   .page-header-dynamic .header-icon-container > * {
     font-size: 20px !important;
   }
@@ -939,12 +961,12 @@ html, body {
   .profile-container {
     padding: 1rem;
   }
-  
+
   .profile-card .card-header {
     padding: 1rem;
     text-align: center;
   }
-  
+
   .profile-card .card-body {
     padding: 1rem;
   }
@@ -1761,45 +1783,45 @@ html, body {
   .proposal-form-header {
     padding: 1rem;
   }
-  
+
   .proposal-form-header .col-auto {
     width: 100%;
     margin-top: 1rem;
   }
-  
+
   .proposal-form-header .d-flex.gap-2 {
     flex-direction: column;
     gap: 0.5rem !important;
   }
-  
+
   .proposal-version-badges {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .proposal-version-badge {
     min-width: 100%;
   }
-  
+
   .proposal-summary-form .row > [class*="col-"] {
     margin-bottom: 1rem;
   }
-  
+
   .proposal-actions .btn {
     width: 100%;
     margin: 0.25rem 0;
   }
-  
+
   .tab-content {
     padding: 0 !important;
   }
-  
+
   /* Make date pickers more mobile friendly */
   .react-datepicker-wrapper,
   .react-datepicker__input-container {
     width: 100% !important;
   }
-  
+
   .react-datepicker__input-container input {
     width: 100% !important;
     padding: 0.75rem !important;
@@ -2029,13 +2051,13 @@ html, body {
     transform: none !important;
     gap: 1rem !important;
   }
-  
+
   .style-carousel-item {
     min-width: 180px !important;
     max-width: 180px !important;
     margin-bottom: 1rem !important;
   }
-  
+
   .style-carousel-item img {
     height: 160px !important;
     width: 100% !important;
@@ -2043,7 +2065,7 @@ html, body {
     border-radius: 10px !important;
     background-color: #f8f9fa !important;
   }
-  
+
   .style-carousel-item .mt-2.p-2.rounded {
     padding: 0.75rem !important;
     margin-top: 0.75rem !important;
@@ -2053,12 +2075,12 @@ html, body {
     flex-direction: column !important;
     justify-content: center !important;
   }
-  
+
   .style-carousel-item .mt-2.p-2.rounded div {
     font-size: 0.875rem !important;
     margin-bottom: 0.25rem !important;
   }
-  
+
   .style-carousel-item .mt-2.p-2.rounded strong {
     font-size: 1rem !important;
   }
@@ -2245,7 +2267,7 @@ html, body {
     min-width: 160px !important;
     max-width: 160px !important;
   }
-  
+
   .style-carousel-item img {
     height: 140px !important;
   }
@@ -2258,7 +2280,7 @@ html, body {
     width: auto !important; /* Override the calculated width */
     flex-wrap: nowrap !important;
   }
-  
+
   .style-carousel-item {
     min-width: calc(48% - 0.25rem) !important; /* Show 2 items per row on mobile, slightly smaller */
     max-width: calc(48% - 0.25rem) !important;
@@ -2266,7 +2288,7 @@ html, body {
     flex-grow: 0 !important;
     flex-basis: calc(48% - 0.25rem) !important;
   }
-  
+
   .style-carousel-item img {
     height: 100px !important;
     border-radius: 8px !important;
@@ -2492,44 +2514,44 @@ html, body {
     justify-content: center !important;
     margin-bottom: 8px !important;
   }
-  
+
   .mobile-form-btn {
     width: 100% !important;
     margin-bottom: 8px !important;
   }
-  
+
   .d-flex.gap-2.flex-wrap.justify-content-center.justify-content-sm-end {
     flex-direction: column !important;
     gap: 0 !important;
   }
-  
+
   .proposal-form-header .row {
     flex-direction: column;
   }
-  
+
   .proposal-form-header .col-auto {
     margin-top: 1rem;
   }
-  
+
   /* Form button container */
   .proposal-summary-form .d-flex {
     flex-direction: column !important;
     gap: 0 !important;
   }
-  
+
   /* Edit Proposal header action buttons */
   .mobile-action-buttons {
     flex-direction: column !important;
     width: 100%;
     gap: 8px !important;
   }
-  
+
   .mobile-action-buttons > div {
     width: 100% !important;
     margin-bottom: 0 !important;
     text-align: center;
   }
-  
+
   /* Edit proposal header responsiveness */
   .header {
     padding: 1rem !important;
@@ -2537,21 +2559,21 @@ html, body {
     align-items: stretch !important;
     gap: 1rem !important;
   }
-  
+
   .header .d-flex:first-child {
     justify-content: center !important;
     text-align: center;
   }
-  
+
   .header h4 {
     font-size: 1.25rem !important;
   }
-  
+
   /* Make form cards stack better on mobile */
   .dashboard-container .card {
     margin-bottom: 1rem !important;
   }
-  
+
   .dashboard-container .card-body h5 {
     font-size: 1.1rem !important;
     margin-bottom: 1rem !important;
@@ -2618,7 +2640,7 @@ html, body {
   .proposal-progress-bar .card-body {
     padding: 0.75rem 1rem !important;
   }
-  
+
   .proposal-step-number {
     width: 32px !important;
     height: 32px !important;

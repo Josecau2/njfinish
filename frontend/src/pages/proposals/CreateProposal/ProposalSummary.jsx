@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import {
   CButton, CCol, CForm, CFormInput, CRow,
   CTabs, CNav, CNavItem, CNavLink, CBadge,
@@ -10,6 +11,7 @@ import {
 } from '@coreui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
+import { sendFormDataToBackend } from '../../../store/slices/proposalSlice';
 import CreatableSelect from 'react-select/creatable';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -26,6 +28,8 @@ import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice
 
 const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentStep, setBackStep, sendToBackend, prevStep, hideBack }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validationSchema = Yup.object().shape({
     customerName: Yup.string().required(t('proposals.create.customerInfo.validation.customerName')),
@@ -44,16 +48,15 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     { label: t('proposals.status.proposalAccepted'), value: 'Proposal accepted' },
     { label: t('proposals.status.proposalRejected'), value: 'Proposal rejected' },
   ];
-  
+
   const [activeTab, setActiveTab] = useState("item");
-  const dispatch = useDispatch();
   const { list: users } = useSelector((state) => state.users);
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser.userId;
-  
+
   // Check if user is a contractor (should not see manufacturer version names)
   const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
-  
+
   const manufacturersById = useSelector((state) => state.manufacturers.byId);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -62,6 +65,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
   const [editedVersionName, setEditedVersionName] = useState('');
   const [selectedVersionIndex, setSelectedVersionIndex] = useState(null);
   const [selectedVersion, setSelectedVersion] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBadgeClick = (index, version) => {
     setSelectedVersionIndex(index);
@@ -102,8 +106,61 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     sendToBackend('0');
   };
 
-  const handleAcceptOrder = () => {
-    sendToBackend('1');
+  const handleAcceptOrder = async () => {
+    if (isSubmitting) return; // Prevent duplicate submissions
+
+    try {
+      const result = await Swal.fire({
+        title: t('proposals.confirm.submitTitle', 'Confirm Quote Submission'),
+        html: `
+          <div style="text-align:left">
+            <p>${t('proposals.confirm.submitText', 'Once you submit this quote, it will be sent to production and cannot be changed.')}</p>
+            <p>${t('proposals.confirm.submitWarning', 'By continuing, you confirm that all details are correct and you accept the Terms & Conditions.')}</p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('proposals.confirm.submitConfirm', 'Accept and Submit'),
+        cancelButtonText: t('proposals.confirm.goBack', 'Go Back'),
+        reverseButtons: true,
+        focusCancel: true,
+      });
+
+      if (result.isConfirmed) {
+        setIsSubmitting(true);
+
+        // Update status to accepted and lock the quote before sending
+        const updatedFormData = {
+          ...formData,
+          status: 'Proposal accepted',
+          is_locked: true
+        };
+        updateFormData(updatedFormData);
+
+        // Send with the updated data including status and lock
+        const payload = {
+          action: '1',
+          formData: { ...updatedFormData, type: '1' },
+        };
+
+        try {
+          const response = await dispatch(sendFormDataToBackend(payload));
+          if (response.payload.success == true) {
+            Swal.fire('Success!', 'Quote accepted and sent to production!', 'success');
+            // Navigate away to prevent duplicate submissions
+            navigate('/quotes');
+          } else {
+            throw new Error(response.payload.message || 'Failed to accept order');
+          }
+        } catch (error) {
+          console.error('Error accepting order:', error);
+          Swal.fire('Error!', 'Failed to accept order. Please try again.', 'error');
+          setIsSubmitting(false);
+        }
+      }
+    } catch (_) {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRejectOrder = () => {
@@ -169,7 +226,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
 
   return (
     <>
-      <div className="proposal-form-mobile">
+      <div className="quote-form-mobile">
         <div className="button-group">
           {!hideBack && (
             <CButton
@@ -556,7 +613,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
 
               <hr />
 
-              <CTabs className="proposal-tabs">
+              <CTabs className="quote-tabs">
                 <CNav variant="tabs" className="border-0">
                   <CNavItem>
                     <CNavLink
@@ -606,7 +663,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                       }}
                     >
                       <span className="d-flex align-items-center">
-                        <CIcon icon={cilFile} className="me-2" /> 
+                        <CIcon icon={cilFile} className="me-2" />
                         Files
                       </span>
                     </CNavLink> */}
@@ -650,9 +707,10 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                 <CButton
                   color="success"
                   onClick={handleAcceptOrder}
+                  disabled={isSubmitting}
                   style={{ minWidth: '140px' }}
                 >
-                  {t('proposals.create.summary.acceptAndOrder')}
+                  {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
                 </CButton>
                 <CButton
                   color="danger"

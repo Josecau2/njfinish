@@ -73,7 +73,7 @@ const EditProposal = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  
+
   // Get user info from store/localStorage
   const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
   const isAdmin = userInfo.role === 'Admin' || userInfo.role === 'admin';
@@ -97,7 +97,7 @@ const EditProposal = () => {
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
-  
+
   // Check if user is a contractor (should not see manufacturer version names)
   const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
 
@@ -120,7 +120,7 @@ const EditProposal = () => {
   // Determine if form should be disabled (locked proposal OR contractor viewing accepted proposal)
   const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted';
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin);
-  
+
   // Debug logging to see current state
   console.log('🔍 EditProposal Debug:', {
     'formData.is_locked': formData?.is_locked,
@@ -306,43 +306,43 @@ const EditProposal = () => {
   const sendToBackend = async (finalData, action = 'update') => {
     try {
       const payload = { action, formData: finalData };
-      
+
       // Add validation checks
       if (!finalData.id) {
         Swal.fire('Error!', 'Proposal ID is missing. Cannot update proposal.', 'error');
         return;
       }
-      
+
       // Check if proposal is already locked
       if (finalData.is_locked && (action === 'accept' || action === 'reject')) {
         Swal.fire('Cannot Modify', 'This proposal is already accepted and locked. It cannot be modified.', 'warning');
         return;
       }
-      
+
       // Check if trying to accept an already accepted proposal
       if (action === 'accept' && (finalData.status === 'Proposal accepted' || finalData.status === 'accepted')) {
         Swal.fire('Already Accepted', 'This proposal has already been accepted.', 'info');
         return;
       }
-      
-      console.log('🔄 Sending proposal update:', { 
-        id: finalData.id, 
-        action, 
+
+      console.log('🔄 Sending proposal update:', {
+        id: finalData.id,
+        action,
         currentStatus: finalData.status,
         isLocked: finalData.is_locked,
         newStatus: action === 'accept' ? 'Proposal accepted' : finalData.status
       });
-      
+
       const response = await dispatch(sendFormDataToBackend(payload));
-      
+
       if (response.payload.success === true) {
         Swal.fire('Success!', 'Proposal saved successfully!', 'success');
         navigate('/quotes');
       } else if (response.error) {
         // Handle Redux Toolkit's error format
-        const errorMessage = response.error.message || response.payload?.message || 'Failed to save proposal';
+        const errorMessage = response.error.message || response.payload?.message || 'Failed to save quote';
         console.error('❌ Update failed:', response.error);
-        
+
         if (errorMessage.includes('locked')) {
           Swal.fire('Cannot Edit', 'This proposal is locked and cannot be edited.', 'warning');
         } else if (errorMessage.includes('permission') || errorMessage.includes('access')) {
@@ -355,7 +355,7 @@ const EditProposal = () => {
       }
     } catch (error) {
       console.error('Error sending data to backend:', error);
-      
+
       // More specific error handling
       if (error.response?.status === 403) {
         const message = error.response.data?.message || 'Access denied';
@@ -372,7 +372,7 @@ const EditProposal = () => {
           Swal.fire('Validation Error', message, 'error');
         }
       } else {
-        Swal.fire('Error!', 'Failed to save proposal. Please try again.', 'error');
+        Swal.fire('Error!', 'Failed to save quote. Please try again.', 'error');
       }
     }
   };
@@ -788,8 +788,8 @@ const EditProposal = () => {
 
                 <hr />
 
-                <CTabs className="proposal-tabs">
-                  <CNav variant="tabs" className="proposal-tabs border-0">
+                <CTabs className="quote-tabs">
+                  <CNav variant="tabs" className="quote-tabs border-0">
                     <CNavItem>
                       <CNavLink
                         active={activeTab === 'item'}
