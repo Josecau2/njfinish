@@ -142,28 +142,11 @@ axiosInstance.interceptors.request.use(
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       if (token) {
-        // Attach Authorization unless the token is explicitly expired
-        try {
-          const { exp } = decodeJwt(token);
-          const nowSec = Math.floor(Date.now() / 1000);
-          if (exp && nowSec >= exp) {
-            // Expired: clear, don't send
-            if (typeof window !== 'undefined') {
-              localStorage.removeItem('token');
-            }
-          } else {
-            // Unknown exp or valid future exp -> attach header
-            config.headers = config.headers || {};
-            if (!config.headers.Authorization) {
-              config.headers.Authorization = `Bearer ${token}`;
-            }
-          }
-        } catch (_) {
-          // If decoding fails, still attach the token (server will validate)
-          config.headers = config.headers || {};
-          if (!config.headers.Authorization) {
-            config.headers.Authorization = `Bearer ${token}`;
-          }
+        // Always attach the token - let the server handle expiration validation
+        // This prevents timing issues where the token gets removed during concurrent requests
+        config.headers = config.headers || {};
+        if (!config.headers.Authorization) {
+          config.headers.Authorization = `Bearer ${token}`;
         }
       }
 
