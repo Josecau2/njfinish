@@ -101,26 +101,28 @@ const forceLogout = (reason) => {
 const ensureFreshToken = async () => {
   try {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (!token) return;
+    if (!token) return;
 
-  const { exp } = decodeJwt(token);
-  if (!exp) return;
+    const { exp } = decodeJwt(token);
+    if (!exp) return;
     const nowSec = Math.floor(Date.now() / 1000);
     const timeLeft = exp - nowSec;
 
-    // If token expires within 60s, attempt a refresh ping
+    // If token expires within 60s, attempt a refresh ping using the current token
     if (timeLeft <= 60) {
       if (!refreshPromise) {
         refreshPromise = (async () => {
           try {
-      // Try to refresh without sending Authorization to avoid jwt expired responses
-      const res = await bareClient.get('/api/me');
+            // Call a lightweight authed endpoint to trigger rolling refresh header
+            const res = await bareClient.get('/api/me', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
             const refreshed = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token');
             if (refreshed && typeof window !== 'undefined') {
               localStorage.setItem('token', refreshed);
             }
           } catch (refreshError) {
-      // Do not auto-logout or clear token; allow calling code to handle UI/state
+            // Do not auto-logout or clear token; allow calling code to handle UI/state
           } finally {
             const p = refreshPromise; // allow awaiters to resolve before clearing
             refreshPromise = null;
@@ -140,6 +142,9 @@ const ensureFreshToken = async () => {
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
+  // Proactively refresh if token is close to expiring to avoid 401/403 during navigation bursts
+  await ensureFreshToken();
+
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       if (token) {
         // Always attach the token - let the server handle expiration validation
