@@ -52,12 +52,6 @@ import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 const statusOptions = [
   { label: 'Draft', value: 'Draft' },
   { label: 'Follow up 1', value: 'Follow up 1' },
@@ -96,15 +90,15 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
   const { t } = useTranslation();
-  
+
   // Check if user can assign designers (admin only)
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
-  
+
   // Check if user is a contractor (should not see manufacturer version names)
   const isUserContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
   const isAdmin = !!(loggedInUser?.role && String(loggedInUser.role).toLowerCase() === 'admin');
   const effectiveIsContractor = typeof isContractor === 'boolean' ? isContractor : !!isUserContractor;
-  
+
   // Dynamic validation schema based on user permissions
   const validationSchema = Yup.object().shape({
     description: Yup.string().required('Description is required'),
@@ -145,16 +139,14 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     setHasLocalEdits(true);
     setFormData(updater);
   };
-  
+
   // Debug log for formData changes
   useEffect(() => {
   }, [formData]);
   // Fetch initial data
   useEffect(() => {
     axiosInstance
-      .get(`/api/quotes/proposalByID/${id}`, {
-        headers: getAuthHeaders()
-      })
+      .get(`/api/quotes/proposalByID/${id}`)
       .then((res) => {
         // Parse manufacturersData if it's a string
         let parsedManufacturersData = res.data.manufacturersData;
@@ -166,17 +158,17 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
             parsedManufacturersData = [];
           }
         }
-        
+
         // Ensure it's an array
         if (!Array.isArray(parsedManufacturersData)) {
           parsedManufacturersData = [];
         }
-        
+
         const processedData = {
           ...res.data,
           manufacturersData: parsedManufacturersData
         };
-        
+
         setInitialData(processedData);
         setFormData(processedData || defaultFormData);
         setHasLocalEdits(false); // Reset local edits flag on initial load
@@ -194,9 +186,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   useEffect(() => {
     const fetchDesigners = async () => {
       try {
-        const response = await axiosInstance.get('/api/designers', {
-          headers: getAuthHeaders()
-        });
+  const response = await axiosInstance.get('/api/designers');
         const designerData = response.data.users.map((designer) => ({
           value: designer.id,
           label: designer.name,
@@ -206,7 +196,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
         console.error('Error fetching designers:', error);
       }
     };
-    
+
     // Only fetch designers if user can assign them (admin only)
     if (canAssignDesigner) {
       fetchDesigners();
@@ -235,7 +225,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
 
   useEffect(() => {
     const manufacturersData = getManufacturersData();
-    
+
     if (manufacturersData.length === 0) {
       return;
     }
@@ -290,7 +280,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
 
   const saveEditVersionName = () => {
     const manufacturersData = getManufacturersData();
-    
+
     const existingEntry = manufacturersData.find(
       (entry, idx) => entry.versionName === editedVersionName && idx !== currentEditIndex
     );
@@ -302,7 +292,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
       });
       return;
     }
-    
+
     const updatedManufacturersData = [...getManufacturersData()];
     if (updatedManufacturersData[currentEditIndex]) {
       updatedManufacturersData[currentEditIndex].versionName = editedVersionName;
@@ -320,7 +310,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   const confirmDelete = () => {
   if (isContractor) return;
     const manufacturersData = getManufacturersData();
-    
+
     const updatedManufacturersData = manufacturersData.filter(
       (_, i) => i !== currentDeleteIndex
     );
@@ -339,11 +329,11 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   const duplicateVersion = (index) => {
   if (isContractor) return;
     const manufacturersData = getManufacturersData();
-    
+
     if (!manufacturersData[index]) {
       return;
     }
-    
+
     const copy = { ...manufacturersData[index] };
     copy.versionName = `Copy of ${copy.versionName}`;
     updateFormData({ manufacturersData: [...formData.manufacturersData, copy] });

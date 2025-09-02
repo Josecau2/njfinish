@@ -15,7 +15,32 @@ exports.getLatestTerms = async (req, res) => {
   await ensureModels();
   try {
     const latest = await Terms.findOne({ order: [['version', 'DESC']] });
-    return res.json({ success: true, data: latest });
+    if (!latest) return res.json({ success: true, data: null });
+
+    // Include whether the current user has already accepted this version
+    let accepted = false;
+    try {
+      const userId = req.user?.id;
+      if (userId) {
+        const row = await TermsAcceptance.findOne({ where: { user_id: userId, terms_version: latest.version } });
+        accepted = !!row;
+      }
+    } catch (_) {
+      // ignore acceptance check errors – still return latest terms
+      accepted = false;
+    }
+
+    // Return a stable, explicit payload (don't leak internal fields)
+    return res.json({
+      success: true,
+      data: {
+        id: latest.id,
+        version: latest.version,
+        content: latest.content,
+        createdAt: latest.createdAt,
+        accepted,
+      },
+    });
   } catch (e) {
     return res.status(200).json({ success: true, data: null });
   }

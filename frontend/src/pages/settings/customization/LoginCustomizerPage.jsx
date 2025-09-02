@@ -20,7 +20,6 @@ import {
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
 import { cilSettings, cilPaintBucket, cilText, cilColorPalette, cilSave, cilImage } from '@coreui/icons';
-import axios from "axios";
 import axiosInstance from "../../../helpers/axiosInstance";
 import LoginPreview from "../../../components/LoginPreview";
 import { FaCog, FaPalette, FaEye } from "react-icons/fa";
@@ -28,11 +27,7 @@ import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
+// Authorization headers are handled centrally by axiosInstance
 
 const LoginCustomizerPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
@@ -48,8 +43,8 @@ const LoginCustomizerPage = () => {
     backgroundColor: "#0e1446",
     showForgotPassword: true,
     showKeepLoggedIn: true,
-    rightTitle: "NJ Cabinets",
-    rightSubtitle: "Configure - Price - Quote",
+  rightTitle: "See Your Cabinet Price in Seconds!",
+  rightSubtitle: "CABINET PORTAL",
     rightTagline: "Dealer Portal",
     rightDescription:
       "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.",
@@ -59,9 +54,7 @@ const LoginCustomizerPage = () => {
     const fetchCustomization = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get('/api/login-customization', {
-          headers: getAuthHeaders()
-        });
+  const res = await axiosInstance.get('/api/login-customization');
         if (res.data.customization) {
           setSettings(res.data.customization);
         }
@@ -93,9 +86,7 @@ const LoginCustomizerPage = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-  await axiosInstance.post('/api/login-customization', settings, {
-        headers: getAuthHeaders()
-      });
+  await axiosInstance.post('/api/login-customization', settings);
   await Swal.fire(t('common.success'), t('settings.customization.login.alerts.saveSuccess'), 'success');
     } catch (err) {
       console.error("Failed to save customization:", err);

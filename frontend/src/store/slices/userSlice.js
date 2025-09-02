@@ -1,20 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 // Fetch all users
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/api/users', {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get('/api/users');
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -27,9 +19,7 @@ export const fetchUserById = createAsyncThunk(
   'users/fetchUserById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/users/${id}`, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get(`/api/users/${id}`);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -42,9 +32,7 @@ export const addUser = createAsyncThunk(
   'users/addUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/api/users', userData, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.post('/api/users', userData);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -57,9 +45,7 @@ export const updateUser = createAsyncThunk(
   'users/updateUser',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/users/${id}`, data, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.put(`/api/users/${id}`, data);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -72,9 +58,7 @@ export const deleteUser = createAsyncThunk(
   'users/deleteUser',
   async (id, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/api/users/${id}`, {
-        headers: getAuthHeaders()
-      });
+  await axiosInstance.delete(`/api/users/${id}`);
       return id
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)

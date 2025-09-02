@@ -245,10 +245,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
     const fetchResources = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await axiosInstance.get('/api/resources?scope=contractor', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await axiosInstance.get('/api/resources?scope=contractor');
             
             if (response.data.success) {
                 setLinks(response.data.data.links);

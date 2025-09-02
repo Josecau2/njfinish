@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import PageHeader from '../../../../components/PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
+// Authorization is handled centrally by axios interceptors
 
 import {
   CButton,
@@ -154,7 +150,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       };
       const { data } = await axiosInstance.get(`/api/manufacturers/${id}/catalog`, {
         params,
-        headers: getAuthHeaders(),
       });
       setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : []);
       setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 });
@@ -291,9 +286,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     setIsSaving(true);
 
     try {
-      await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm, {
-        headers: getAuthHeaders(),
-      });
+  await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm);
       Swal.fire({
         toast: true,
         position: "top",
@@ -359,9 +352,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     // if (!validateManualForm()) return;
     setIsUpdating(true); // Start loading
     try {
-      await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm, {
-        headers: getAuthHeaders(),
-      });
+  await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm);
 
       Swal.fire({
         toast: true,
@@ -404,7 +395,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     if (checked) {
       const newSelectedItems = [...selectedItems, itemId];
       setSelectedItems(newSelectedItems);
-      
+
       // Check if all current page items are selected
       const currentPageIds = currentItems.map(item => item.id);
       const allCurrentPageSelected = currentPageIds.every(id => newSelectedItems.includes(id));
@@ -430,13 +421,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleDeleteItem = async () => {
     if (!itemToDelete || isDeletingItem) return;
-    
+
     setIsDeletingItem(true);
-    
+
     try {
-      await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`, {
-        headers: getAuthHeaders(),
-      });
+  await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`);
 
       Swal.fire({
         toast: true,
@@ -456,10 +445,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Reset modal state
       setDeleteItemModalVisible(false);
       setItemToDelete(null);
-      
+
       // Refresh data
   fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -489,15 +478,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleBulkDelete = async () => {
     if (selectedItems.length === 0 || isBulkDeleting) return;
-    
+
     setIsBulkDeleting(true);
-    
+
     try {
       // Delete items one by one (could be optimized with a bulk endpoint)
-      const deletePromises = selectedItems.map(itemId => 
-        axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemId}`, {
-          headers: getAuthHeaders(),
-        })
+      const deletePromises = selectedItems.map(itemId =>
+        axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemId}`)
       );
       await Promise.all(deletePromises);
 
@@ -520,10 +507,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setBulkDeleteModalVisible(false);
       setSelectedItems([]);
       setIsSelectAll(false);
-      
+
       // Refresh data
   fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -548,13 +535,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   // Cleanup duplicates handler
   const handleCleanupDuplicates = async () => {
     if (isCleaningDuplicates) return;
-    
+
     setIsCleaningDuplicates(true);
-    
+
     try {
-      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/cleanup-duplicates`, null, {
-        headers: getAuthHeaders(),
-      });
+  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/cleanup-duplicates`, null);
 
       Swal.fire({
         toast: true,
@@ -576,7 +561,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
         setCurrentPage(1);
       }
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -602,13 +587,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const handleRollbackClick = async () => {
     setIsLoadingBackups(true);
     setRollbackModalVisible(true);
-    
+
     try {
-      const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`, {
-        headers: getAuthHeaders(),
-      });
+  const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`);
       setAvailableBackups(result.backups || []);
-      
+
     } catch (err) {
       console.error('Error fetching backups:', err);
       Swal.fire({
@@ -632,13 +615,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleRollback = async () => {
     if (!selectedBackup || isRollingBack) return;
-    
+
     setIsRollingBack(true);
-    
+
     try {
-      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/rollback`, { uploadSessionId: selectedBackup }, {
-        headers: getAuthHeaders(),
-      });
+  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/rollback`, { uploadSessionId: selectedBackup });
 
       Swal.fire({
         toast: true,
@@ -659,11 +640,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setRollbackModalVisible(false);
       setSelectedBackup('');
       setAvailableBackups([]);
-      
+
       // Refresh data
   fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
       setCurrentPage(1);
-      
+
     } catch (err) {
       console.error('Error during rollback:', err);
       Swal.fire({
@@ -693,14 +674,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleDeleteStyle = async () => {
     if (!styleToDelete || isDeleting) return;
-    
+
     setIsDeleting(true);
-    
+
     try {
       const requestBody = mergeToStyle ? { mergeToStyle } : {};
-      
+
       const { data: result } = await axiosInstance.delete(`/api/manufacturers/${id}/style/${encodeURIComponent(styleToDelete)}`, {
-        headers: getAuthHeaders(),
         data: requestBody,
       });
 
@@ -723,13 +703,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setDeleteStyleModalVisible(false);
       setStyleToDelete('');
       setMergeToStyle('');
-      
+
       // Refresh data
   fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      
+
       // Reset current page if we're beyond the new total pages
       setCurrentPage(1);
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -765,7 +745,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleBulkEdit = async () => {
     if (selectedItems.length === 0 || isBulkEditing) return;
-    
+
     // Check if at least one field is filled
     const hasUpdates = Object.values(bulkEditForm).some(value => value && value.trim() !== '');
     if (!hasUpdates) {
@@ -780,9 +760,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
       return;
     }
-    
+
     setIsBulkEditing(true);
-    
+
     try {
       // Prepare updates object (only include non-empty fields)
       const updates = {};
@@ -792,12 +772,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         }
       });
 
-      const { data: result } = await axiosInstance.put(`/api/manufacturers/catalog/bulk-edit`, {
+  const { data: result } = await axiosInstance.put(`/api/manufacturers/catalog/bulk-edit`, {
         itemIds: selectedItems,
         updates
-      }, {
-        headers: getAuthHeaders(),
-      });
+  });
 
       Swal.fire({
         toast: true,
@@ -824,10 +802,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         description: '',
         price: ''
       });
-      
+
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -860,7 +838,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const handleEditStyleName = async () => {
     if (!styleNameEditForm.oldStyleName || !styleNameEditForm.newStyleName || isEditingStyleName) return;
-    
+
     if (styleNameEditForm.oldStyleName.trim() === styleNameEditForm.newStyleName.trim()) {
       Swal.fire({
         toast: true,
@@ -873,16 +851,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       });
       return;
     }
-    
+
     setIsEditingStyleName(true);
-    
+
     try {
-      const { data: result } = await axiosInstance.put(`/api/manufacturers/${id}/style-name`, {
+  const { data: result } = await axiosInstance.put(`/api/manufacturers/${id}/style-name`, {
         oldStyleName: styleNameEditForm.oldStyleName.trim(),
         newStyleName: styleNameEditForm.newStyleName.trim()
-      }, {
-        headers: getAuthHeaders(),
-      });
+  });
 
       Swal.fire({
         toast: true,
@@ -905,10 +881,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         oldStyleName: '',
         newStyleName: ''
       });
-      
+
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      
+
     } catch (err) {
       console.error('Error:', err);
       Swal.fire({
@@ -974,7 +950,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         confirmButtonText: 'Yes, upload',
         cancelButtonText: 'Cancel'
       });
-      
+
       if (!result.isConfirmed) return;
     }
 
@@ -989,7 +965,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         html: `
           <div class="mb-3">
             <div class="progress">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" 
+              <div class="progress-bar progress-bar-striped progress-bar-animated"
                    role="progressbar" style="width: 0%" id="upload-progress"></div>
             </div>
           </div>
@@ -1006,17 +982,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
     try {
       const startTime = Date.now();
-      
-      const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/upload`, formData, {
-        headers: getAuthHeaders(),
-      });
+
+  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/upload`, formData);
       const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
-      
+
       // Close progress modal if it was shown
       if (progressSwal) {
         Swal.close();
       }
-      
+
       // Enhanced success message with detailed stats
       let successMessage = t('settings.manufacturers.catalogMapping.file.uploadSuccess');
       if (result.stats) {
@@ -1025,7 +999,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         successMessage += `\nTime: ${processingTime}s`;
         successMessage += `\n\nItems processed: ${result.stats.totalProcessed}`;
         successMessage += `\nCreated: ${result.stats.created} | Updated: ${result.stats.updated}`;
-        
+
         if (result.stats.backupCreated) {
           successMessage += `\n\n✅ Backup created - you can rollback this upload if needed.`;
         }
@@ -1037,27 +1011,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         icon: "success",
         confirmButtonText: "OK"
       });
-      
+
       setFileModalVisible(false);
       setFile(null);
       fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder); // Reload updated data
-      
+
     } catch (err) {
       console.error('Upload error:', err);
-      
+
       // Close progress modal if it was shown
       if (progressSwal) {
         Swal.close();
       }
-      
+
       let errorMessage = err.message || t('settings.manufacturers.catalogMapping.file.uploadFailed');
-      
+
       Swal.fire({
         title: t('common.error'),
         text: errorMessage,
         icon: "error",
-        footer: isLargeFile ? 
-          'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.' : 
+        footer: isLargeFile ?
+          'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.' :
           undefined
       });
     }
@@ -1079,9 +1053,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     const { id: catalogId, manufacturerId, style, code } = item;
 
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`);
       const data = response.data;
 
       if (data) {
@@ -1156,8 +1128,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       }
       const response = await axiosInstance.post('/api/manufacturers/style/create', formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          ...getAuthHeaders()
+          'Content-Type': 'multipart/form-data'
         }
       });
       if (response.data.status == 200) {
@@ -1202,9 +1173,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const handleShowStyleOnClick = async (item) => {
     try {
       const { id } = item
-      const res = await axiosInstance.get(`/api/manufacturers/style/${id}`, {
-        headers: getAuthHeaders()
-      });
+  const res = await axiosInstance.get(`/api/manufacturers/style/${id}`);
 
       if (res.data) {
         setStyleDetails(res.data);
@@ -1224,9 +1193,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       const { id } = item
 
-      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`, {
-        headers: getAuthHeaders()
-      });
+  const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`);
 
       const { type, price } = res.data || {};
       setSelectedCatalogItem(item);
@@ -1278,7 +1245,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         applyTo: assemblyData.applyTo || 'item',
         manufacturerId: selectedCatalogItem.manufacturerId,
       };
-      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload, { headers: getAuthHeaders() });
+  await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
       setShowAssemblyModal(false);
     } catch (error) {
       console.error('Failed to save assembly cost:', error);
@@ -1304,7 +1271,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         bothHingesPrice: parseFloat(hingesData.bothHingePrice) || 0,
         exposedSidePrice: parseFloat(hingesData.exposedSidePrice) || 0,
       };
-      await axiosInstance.post('/api/manufacturers/items/hinges', payload, { headers: getAuthHeaders() });
+  await axiosInstance.post('/api/manufacturers/items/hinges', payload);
       setShowHingesModal(false);
     } catch (error) {
       console.error('Failed to save hinges details:', error);
@@ -1321,9 +1288,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         price: parseFloat(modificationData.price) || 0,
       };
 
-      await axiosInstance.post('/api/manufacturers/items/modifications', payload, {
-        headers: getAuthHeaders()
-      });
+  await axiosInstance.post('/api/manufacturers/items/modifications', payload);
       setShowModificationModal(false);
     } catch (error) {
       console.error('Failed to save modification details:', error);
@@ -1354,7 +1319,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             border-color: #198754 !important;
             box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
           }
-          
+
           /* Mobile responsive styles */
           @media (max-width: 768px) {
             .table-responsive {
@@ -1379,7 +1344,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               gap: 4px;
             }
           }
-          
+
           @media (max-width: 576px) {
             .table td, .table th {
               padding: 6px 2px !important;
@@ -1390,7 +1355,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           }
         `}
       </style>
-      
+
       {/* Page Header with Mobile-Optimized Layout */}
       <PageHeader
         title={t('settings.manufacturers.catalogMapping.title')}
@@ -1406,7 +1371,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}</span>
               <span className="d-sm-none">📁 CSV</span>
             </CButton>
-            <CButton 
+            <CButton
               style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
               size="sm"
               className="flex-shrink-0"
@@ -1450,46 +1415,46 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </div>
         }
       />
-      
+
   <style>{`
         .catalog-actions {
           width: 100%;
         }
-        
+
         /* Mobile card styles */
         .mobile-catalog-card {
           border: 1px solid #dee2e6;
           box-shadow: 0 1px 3px rgba(0,0,0,0.1);
           transition: box-shadow 0.2s ease;
         }
-        
+
         .mobile-catalog-card:hover {
           box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        
+
         .mobile-cards-container {
           max-height: 70vh;
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
         }
-        
+
         /* Improved touch targets for mobile */
         .mobile-catalog-card .btn {
           min-height: 36px;
           font-size: 12px;
           white-space: nowrap;
         }
-        
+
         .mobile-catalog-card .form-check-input {
           width: 18px;
           height: 18px;
         }
-        
+
         @media (max-width: 767px) {
           .catalog-actions {
             justify-content: stretch;
           }
-          
+
           .catalog-actions .btn {
             flex: 1;
             min-width: 0;
@@ -1497,49 +1462,49 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             font-size: 0.75rem !important;
             padding: 0.25rem 0.5rem !important;
           }
-          
+
           /* Better mobile table */
           .table-responsive {
             -webkit-overflow-scrolling: touch;
           }
-          
+
           .table td, .table th {
             min-width: 100px;
             white-space: nowrap;
           }
-          
+
           /* Mobile-optimized filters */
           .form-select, .form-control {
             min-height: 36px; /* Reduced from 44px */
             font-size: 0.875rem;
           }
-          
+
           /* Mobile card specific improvements */
           .mobile-catalog-card .card-body {
             padding: 0.75rem !important; /* Reduced padding */
           }
-          
+
           .mobile-catalog-card .btn {
             padding: 6px 10px;
             font-size: 11px;
           }
-          
+
           .mobile-catalog-card .row.g-2 > .col-6 {
             margin-bottom: 0.5rem;
           }
-          
+
           /* Compact header for mobile */
           .page-header-dynamic {
             margin-bottom: 0.75rem !important;
           }
         }
-        
+
         @media (max-width: 575px) {
           .catalog-actions {
             flex-direction: row; /* Keep inline on small screens */
             gap: 0.25rem;
           }
-          
+
           .catalog-actions .btn {
             flex: 1;
             min-width: 0;
@@ -1547,50 +1512,50 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             padding: 0.2rem 0.3rem !important;
             min-height: 28px;
           }
-          
+
           /* Stack filters vertically on very small screens */
           .row.g-2 > .col-12 {
             margin-bottom: 0.5rem; /* Reduced spacing */
           }
-          
+
           .row.g-2 > .col-12:last-child {
             margin-bottom: 0;
           }
-          
+
           /* Mobile card actions more compact */
           .mobile-catalog-card .d-flex.flex-wrap .btn {
             padding: 4px 8px;
             font-size: 10px;
             margin-bottom: 0.15rem;
           }
-          
+
           .mobile-catalog-card .card-body {
             padding: 0.5rem !important;
           }
-          
+
           .mobile-catalog-card .card-title {
             font-size: 0.9rem;
             margin-bottom: 0.25rem;
           }
-          
+
           .mobile-catalog-card small {
             font-size: 0.75rem;
           }
         }
-        
+
         /* Better touch scrolling for table */
         .table-container {
           -webkit-overflow-scrolling: touch;
           overflow-x: auto;
         }
-        
+
         /* Better mobile pagination */
         @media (max-width: 767px) {
           .pagination {
             flex-wrap: wrap;
             justify-content: center;
           }
-          
+
           .page-item .page-link {
             min-width: 36px; /* Reduced from 44px */
             min-height: 36px;
@@ -1600,19 +1565,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             font-size: 0.875rem;
           }
         }
-        
+
         /* Hide unnecessary elements on mobile */
         @media (max-width: 576px) {
           .mobile-catalog-card .card-title {
             font-size: 14px;
           }
-          
+
           .mobile-catalog-card small {
             font-size: 11px;
           }
         }
   `}</style>
-      
+
       {/* Mobile-Optimized Filters and Pagination */}
       <div className="row g-2 mb-3">
         {/* Items per page - Full width on mobile */}
@@ -1815,23 +1780,23 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       checked={isSelectAll}
                       onChange={(e) => handleSelectAll(e.target.checked)}
                       className="form-check-input"
-                      style={{ 
-                        borderColor: '#6c757d', 
+                      style={{
+                        borderColor: '#6c757d',
                         borderWidth: '2px',
                         transform: 'scale(1.1)'
                       }}
                     />
                   </CTableHeaderCell>
-                  <CTableHeaderCell 
+                  <CTableHeaderCell
                     style={{ minWidth: '80px', cursor: 'pointer', userSelect: 'none' }}
                     onClick={() => handleSort('code')}
                     className="d-flex align-items-center"
                   >
                     {t('settings.manufacturers.catalogMapping.table.code')}
                     {sortBy === 'code' && (
-                      <CIcon 
-                        icon={sortOrder === 'ASC' ? cilSortAscending : cilSortDescending} 
-                        size="sm" 
+                      <CIcon
+                        icon={sortOrder === 'ASC' ? cilSortAscending : cilSortDescending}
+                        size="sm"
                         className="ms-1"
                       />
                     )}
@@ -1854,18 +1819,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     checked={selectedItems.includes(item.id)}
                     onChange={(e) => handleSelectItem(item.id, e.target.checked)}
                     className="form-check-input"
-                    style={{ 
-                      borderColor: '#6c757d', 
+                    style={{
+                      borderColor: '#6c757d',
                       borderWidth: '2px',
                       transform: 'scale(1.1)'
                     }}
                   />
                 </CTableDataCell>
                 <CTableDataCell>{item.code}</CTableDataCell>
-                <CTableDataCell style={{ 
-                  maxWidth: '200px', 
-                  wordWrap: 'break-word', 
-                  whiteSpace: 'normal' 
+                <CTableDataCell style={{
+                  maxWidth: '200px',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal'
                 }}>
                   {item.description ? item.description : t('common.na')}
                 </CTableDataCell>
@@ -1875,8 +1840,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     color="dark"
                     onClick={() => handleShowStyleOnClick(item)}
                     className="me-2"
-                    style={{ 
-                      backgroundColor: '#6c757d', 
+                    style={{
+                      backgroundColor: '#6c757d',
                       borderColor: '#6c757d',
                       color: 'white',
                       fontSize: '12px',
@@ -1895,7 +1860,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       size="sm"
                       color="secondary"
                       onClick={() => handleEditClick(item)}
-                      style={{ 
+                      style={{
                         fontSize: '11px',
                         padding: '2px 6px',
                         minWidth: 'auto'
@@ -1907,7 +1872,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <CButton
                       size="sm"
                       onClick={() => handleManageStyleClick(item)}
-                      style={{ 
+                      style={{
                         fontSize: '11px',
                         padding: '2px 6px',
                         backgroundColor: headerBg,
@@ -1923,7 +1888,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <CButton
                       size="sm"
                       onClick={() => handleAssemblyCostClick(item)}
-                      style={{ 
+                      style={{
                         fontSize: '11px',
                         padding: '2px 6px',
                         backgroundColor: headerBg,
@@ -1939,7 +1904,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <CButton
                       size="sm"
                       onClick={() => handleModificationDetailsClick(item)}
-                      style={{ 
+                      style={{
                         fontSize: '11px',
                         padding: '2px 6px',
                         backgroundColor: headerBg,
@@ -1956,7 +1921,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       size="sm"
                       color="danger"
                       onClick={() => handleDeleteItemClick(item)}
-                      style={{ 
+                      style={{
                         fontSize: '11px',
                         padding: '2px 6px',
                         minWidth: 'auto'
@@ -2011,8 +1976,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </div>
                   <CButton
                     size="sm"
-                    style={{ 
-                      backgroundColor: '#6c757d', 
+                    style={{
+                      backgroundColor: '#6c757d',
                       borderColor: '#6c757d',
                       color: 'white',
                       fontSize: '11px',
@@ -2045,11 +2010,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   >
                     ✏️ Edit
                   </CButton>
-                  
+
                   <CButton
                     size="sm"
                     onClick={() => handleManageStyleClick(item)}
-                    style={{ 
+                    style={{
                       backgroundColor: headerBg,
                       borderColor: headerBg,
                       color: textColor
@@ -2059,11 +2024,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   >
                     🎨 Style
                   </CButton>
-                  
+
                   <CButton
                     size="sm"
                     onClick={() => handleModificationDetailsClick(item)}
-                    style={{ 
+                    style={{
                       backgroundColor: headerBg,
                       borderColor: headerBg,
                       color: textColor
@@ -2073,12 +2038,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   >
                     🔧 Modify
                   </CButton>
-                  
+
                   <CButton
                     size="sm"
                     color="danger"
                     onClick={() => handleDeleteClick(item.id)}
-                    style={{ 
+                    style={{
                       fontSize: '11px',
                       padding: '4px 8px'
                     }}
@@ -2543,12 +2508,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <CModalBody>
           <div className="mb-3">
             <p>
-              You are about to delete the style "<strong>{styleToDelete}</strong>". 
+              You are about to delete the style "<strong>{styleToDelete}</strong>".
               This will affect <strong>{catalogData.filter(item => item.style === styleToDelete).length}</strong> catalog items.
             </p>
-            
+
             <p>What would you like to do with the items that currently have this style?</p>
-            
+
             <div className="mt-3">
               <div className="form-check mb-2">
                 <input
@@ -2563,7 +2528,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <strong>Delete all items</strong> with this style permanently
                 </label>
               </div>
-              
+
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -2602,7 +2567,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <small className="text-muted">
                 {mergeToStyle ? (
                   <>
-                    <strong>Smart Merge Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items 
+                    <strong>Smart Merge Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items
                     with style "{styleToDelete}" will be processed:
                     <ul className="mt-1 mb-0">
                       <li>Items with unique codes will be merged to style "{mergeToStyle}"</li>
@@ -2611,7 +2576,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </>
                 ) : (
                   <>
-                    <strong>Delete Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items 
+                    <strong>Delete Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items
                     with style "{styleToDelete}" will be permanently deleted. This action cannot be undone.
                   </>
                 )}
@@ -2620,14 +2585,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setDeleteStyleModalVisible(false)}
             disabled={isDeleting}
           >
             {t('common.cancel')}
           </CButton>
-          <CButton 
+          <CButton
             color={mergeToStyle ? "primary" : "danger"}
             onClick={handleDeleteStyle}
             disabled={isDeleting || (mergeToStyle !== '' && !mergeToStyle)}
@@ -2664,14 +2629,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           )}
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setDeleteItemModalVisible(false)}
             disabled={isDeletingItem}
           >
             {t('common.cancel')}
           </CButton>
-          <CButton 
+          <CButton
             color="danger"
             onClick={handleDeleteItem}
             disabled={isDeletingItem}
@@ -2694,7 +2659,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <CModalBody>
           <div>
             <p>Are you sure you want to delete <strong>{selectedItems.length}</strong> selected catalog items?</p>
-            
+
             <div className="p-3 bg-light rounded">
               <strong>Items to be deleted:</strong>
               <ul className="mt-2 mb-0">
@@ -2711,21 +2676,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               </ul>
             </div>
-            
+
             <p className="text-danger mt-3">
               <small>⚠️ This action cannot be undone. All selected items will be permanently deleted.</small>
             </p>
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setBulkDeleteModalVisible(false)}
             disabled={isBulkDeleting}
           >
             {t('common.cancel')}
           </CButton>
-          <CButton 
+          <CButton
             color="danger"
             onClick={handleBulkDelete}
             disabled={isBulkDeleting}
@@ -2748,7 +2713,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <CModalBody>
           <div className="mb-3">
             <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>
-            
+
             {isLoadingBackups ? (
               <div className="text-center py-3">
                 <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -2785,7 +2750,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             )}
           </div>
-          
+
           {selectedBackup && (
             <div className="alert alert-warning">
               <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
@@ -2795,8 +2760,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           )}
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => {
               setRollbackModalVisible(false);
               setSelectedBackup('');
@@ -2805,7 +2770,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           >
             {t('common.cancel')}
           </CButton>
-          <CButton 
+          <CButton
             color="warning"
             onClick={handleRollback}
             disabled={!selectedBackup || isRollingBack}
@@ -2828,7 +2793,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <CModalBody>
           <div>
             <p>Edit the following fields for the selected {selectedItems.length} catalog items. Leave fields empty to keep existing values.</p>
-            
+
             <div className="row g-3">
               <div className="col-md-6">
                 <CFormLabel>Style</CFormLabel>
@@ -2839,7 +2804,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   placeholder="Leave empty to keep existing"
                 />
               </div>
-              
+
               <div className="col-md-6">
                 <CFormLabel>Type</CFormLabel>
                 <CFormInput
@@ -2849,7 +2814,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   placeholder="Leave empty to keep existing"
                 />
               </div>
-              
+
               <div className="col-12">
                 <CFormLabel>Description</CFormLabel>
                 <CFormTextarea
@@ -2859,7 +2824,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   rows={3}
                 />
               </div>
-              
+
               <div className="col-md-6">
                 <CFormLabel>Price</CFormLabel>
                 <CFormInput
@@ -2871,7 +2836,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 />
               </div>
             </div>
-            
+
             <div className="mt-3 p-3 bg-light rounded">
               <small className="text-muted">
                 <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will preserve the existing values for each item.
@@ -2880,14 +2845,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setBulkEditModalVisible(false)}
             disabled={isBulkEditing}
           >
             Cancel
           </CButton>
-          <CButton 
+          <CButton
             color="primary"
             onClick={handleBulkEdit}
             disabled={isBulkEditing}
@@ -2910,7 +2875,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <CModalBody>
           <div>
             <p>Rename the style for all items of this manufacturer. This will affect all catalog items currently using this style.</p>
-            
+
             <div className="mb-3">
               <CFormLabel>Current Style Name</CFormLabel>
               <CFormInput
@@ -2920,7 +2885,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 className="bg-light"
               />
             </div>
-            
+
             <div className="mb-3">
               <CFormLabel>New Style Name</CFormLabel>
               <CFormInput
@@ -2931,24 +2896,24 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 autoFocus
               />
             </div>
-            
+
             <div className="p-3 bg-warning bg-opacity-10 rounded">
               <small className="text-muted">
-                <strong>Warning:</strong> This will rename the style for all items currently using "{styleNameEditForm.oldStyleName}". 
+                <strong>Warning:</strong> This will rename the style for all items currently using "{styleNameEditForm.oldStyleName}".
                 The change applies to all {catalogData.filter(item => item.style === styleNameEditForm.oldStyleName).length} items with this style.
               </small>
             </div>
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setEditStyleNameModalVisible(false)}
             disabled={isEditingStyleName}
           >
             Cancel
           </CButton>
-          <CButton 
+          <CButton
             color="primary"
             onClick={handleEditStyleName}
             disabled={isEditingStyleName || !styleNameEditForm.newStyleName.trim()}

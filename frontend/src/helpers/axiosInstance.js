@@ -94,10 +94,10 @@ const forceLogout = (reason) => {
 const ensureFreshToken = async () => {
   try {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!token) return;
+  if (!token) return;
 
-    const { exp } = decodeJwt(token);
-    if (!exp) return;
+  const { exp } = decodeJwt(token);
+  if (!exp) return;
     const nowSec = Math.floor(Date.now() / 1000);
     const timeLeft = exp - nowSec;
 
@@ -106,21 +106,14 @@ const ensureFreshToken = async () => {
       if (!refreshPromise) {
         refreshPromise = (async () => {
           try {
-            const res = await bareClient.get('/api/me', {
-              headers: { Authorization: `Bearer ${token}` },
-            });
+      // Try to refresh without sending Authorization to avoid jwt expired responses
+      const res = await bareClient.get('/api/me');
             const refreshed = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token');
             if (refreshed && typeof window !== 'undefined') {
               localStorage.setItem('token', refreshed);
             }
           } catch (refreshError) {
-            // If refresh fails with 401/403, clear token to prevent cascade
-            const status = refreshError?.response?.status;
-            if (status === 401 || status === 403) {
-              if (typeof window !== 'undefined') {
-                localStorage.removeItem('token');
-              }
-            }
+      // Do not auto-logout or clear token; allow calling code to handle UI/state
           } finally {
             const p = refreshPromise; // allow awaiters to resolve before clearing
             refreshPromise = null;
@@ -145,10 +138,30 @@ axiosInstance.interceptors.request.use(
 
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       if (token) {
-        config.headers = config.headers || {};
-        // Only set if not already provided explicitly by the caller
-        if (!config.headers.Authorization) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // Validate token format before using it
+        try {
+          const decoded = decodeJwt(token);
+          const exp = decoded.exp;
+          const nowSec = Math.floor(Date.now() / 1000);
+
+          // Only attach valid, non-expired tokens
+          if (exp && exp > nowSec) {
+            config.headers = config.headers || {};
+            // Only set if not already provided explicitly by the caller
+            if (!config.headers.Authorization) {
+              config.headers.Authorization = `Bearer ${token}`;
+            }
+          } else {
+            // Remove expired/invalid token to prevent malformed JWT errors
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('token');
+            }
+          }
+        } catch (tokenError) {
+          // Remove malformed token
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+          }
         }
       }
 
@@ -240,14 +253,7 @@ axiosInstance.interceptors.response.use(
         original.__isRetryRequest = true;
         return axiosInstance(original);
       }
-
-      // If still unauthorized/forbidden after retry (or we didn't retry), and it looks like an auth problem, log out
-      const dataMsg = (error?.response?.data?.message || '').toLowerCase();
-      const isAuthProblem = status === 401
-        || (status === 403 && (dataMsg.includes('invalid token') || dataMsg.includes('user not found') || dataMsg.includes('no token')));
-      if (isAuthProblem) {
-        forceLogout('expired');
-      }
+  // Do not auto-logout on auth errors; surface error to callers for UI handling
     } catch (_) {
       // fallthrough
     }

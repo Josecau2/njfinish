@@ -22,10 +22,6 @@ import axiosInstance from '../../../../helpers/axiosInstance';
 import PageHeader from '../../../../components/PageHeader';
 
 // Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
 
 const StylePicturesTab = ({ manufacturer }) => {
   const { t } = useTranslation();
@@ -35,7 +31,7 @@ const StylePicturesTab = ({ manufacturer }) => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [hoveredId, setHoveredId] = useState(null);
-  
+
   // Edit modal states
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -67,26 +63,26 @@ const StylePicturesTab = ({ manufacturer }) => {
       .collection-hover {
         transition: all 0.3s ease;
       }
-      
+
       .collection-hover:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
-      
+
       @media (max-width: 576px) {
         .collection-hover {
           margin-bottom: 1rem;
         }
-        
+
         .collection-hover:hover {
           transform: none;
         }
-        
+
         .collection-hover:active {
           transform: scale(0.98);
         }
       }
-      
+
       @media (hover: none) and (pointer: coarse) {
         .collection-hover:hover {
           transform: none;
@@ -95,7 +91,7 @@ const StylePicturesTab = ({ manufacturer }) => {
       }
     `;
     document.head.appendChild(styleSheet);
-    
+
     return () => {
       document.head.removeChild(styleSheet);
     };
@@ -110,15 +106,15 @@ const StylePicturesTab = ({ manufacturer }) => {
 
   const fetchStylesMeta = async () => {
     if (!manufacturer?.id) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles-meta`, {
-        headers: getAuthHeaders(),
+  // Authorization handled by axios interceptors
       });
-      
+
       if (response.data && response.data.styles && Array.isArray(response.data.styles)) {
         setStylesMeta(response.data.styles);
       } else if (Array.isArray(response.data)) {
@@ -137,7 +133,7 @@ const StylePicturesTab = ({ manufacturer }) => {
   };
 
   // Filter styles based on search term
-  const filteredStyles = stylesMeta.filter(styleMeta => 
+  const filteredStyles = stylesMeta.filter(styleMeta =>
     styleMeta.style?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     styleMeta.styleVariants?.[0]?.shortName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -160,7 +156,7 @@ const StylePicturesTab = ({ manufacturer }) => {
     if (!selectedStyle || !selectedFile) return;
 
     setUploadingImage(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('styleImage', selectedFile);
@@ -172,9 +168,9 @@ const StylePicturesTab = ({ manufacturer }) => {
       formData.append('code', selectedStyle.styleVariants?.[0]?.code || '');
 
       const response = await axiosInstance.post('/api/manufacturers/style/create', formData, {
-        headers: { 
+        headers: {
           'Content-Type': 'multipart/form-data',
-          ...getAuthHeaders()
+          // Authorization handled by axios interceptors
         }
       });
 
@@ -184,7 +180,7 @@ const StylePicturesTab = ({ manufacturer }) => {
         setEditModalVisible(false);
         setSelectedStyle(null);
         setSelectedFile(null);
-        
+
         // Show success message (you can add a toast notification here)
         console.log('Image updated successfully');
       }
@@ -277,7 +273,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                 {t('styles.helperText','View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.')}
               </small>
             </div>
-            
+
             {/* Search Bar */}
             <div style={{ minWidth: '250px' }}>
               <CInputGroup size="sm">
@@ -420,7 +416,7 @@ const StylePicturesTab = ({ manufacturer }) => {
               fd.append('shortName', createForm.shortName||'');
               fd.append('description', createForm.description||'');
               fd.append('code', createForm.code||'');
-              await axiosInstance.post(`/api/manufacturers/${manufacturer.id}/styles`, fd, { headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }});
+              await axiosInstance.post(`/api/manufacturers/${manufacturer.id}/styles`, fd, { headers: { 'Content-Type': 'multipart/form-data' }});
               await fetchStylesMeta();
               setCreateModal(false);
             }catch(e){ console.error(e); }
@@ -442,7 +438,7 @@ const StylePicturesTab = ({ manufacturer }) => {
           <CButton color="secondary" onClick={()=>setDeleteAsk({open:false,styleName:''})}>Cancel</CButton>
           <CButton color="danger" onClick={async()=>{
             try{
-              await axiosInstance.delete(`/api/manufacturers/${manufacturer.id}/styles/${encodeURIComponent(deleteAsk.styleName)}`, { data: { reassignTo } , headers: getAuthHeaders()});
+              await axiosInstance.delete(`/api/manufacturers/${manufacturer.id}/styles/${encodeURIComponent(deleteAsk.styleName)}`, { data: { reassignTo }});
               await fetchStylesMeta();
             }catch(e){ console.error(e); }
             finally{ setDeleteAsk({open:false,styleName:''}); setReassignTo(''); }
@@ -451,21 +447,21 @@ const StylePicturesTab = ({ manufacturer }) => {
           </CButton>
         </CModalFooter>
       </CModal>
-                    
+
                     {/* Style Info */}
                     <div className="mt-2" style={{ maxWidth: '120px' }}>
-                      <div 
-                        className="text-muted fw-semibold text-truncate" 
+                      <div
+                        className="text-muted fw-semibold text-truncate"
                         title={style.styleVariants?.[0]?.shortName || style.style}
                         style={{ fontSize: '0.8rem', lineHeight: '1.2' }}
                       >
                         {style.styleVariants?.[0]?.shortName || style.style}
                       </div>
-                      
+
                       {style.styleVariants?.length > 0 && (
                         <div className="text-center mt-1">
-                          <CBadge 
-                            color="secondary" 
+                          <CBadge
+                            color="secondary"
                             style={{ fontSize: '0.6rem' }}
                           >
                             {style.styleVariants.length} {t('styles.variants','variants')}
@@ -492,8 +488,8 @@ const StylePicturesTab = ({ manufacturer }) => {
           color: #212529 !important;
         }
       `}</style>
-      <CModal 
-        visible={editModalVisible} 
+      <CModal
+        visible={editModalVisible}
         onClose={() => {
           setEditModalVisible(false);
           setSelectedStyle(null);
@@ -509,11 +505,11 @@ const StylePicturesTab = ({ manufacturer }) => {
               <div className="mb-3">
     <strong>{t('common.style','Style')}:</strong> {selectedStyle.style}
               </div>
-              
+
               {/* Current Image Preview */}
               <div className="mb-4">
     <h6>{t('types.ui.currentImage','Current Image:')}</h6>
-                <div 
+                <div
                   className="d-flex justify-content-center p-3 border rounded"
                   style={{ backgroundColor: '#f8f9fa' }}
                 >
@@ -561,7 +557,7 @@ const StylePicturesTab = ({ manufacturer }) => {
               {selectedFile && (
                 <div className="mb-3">
                   <h6>{t('styles.previewNewImage','New Image Preview:')}</h6>
-                  <div 
+                  <div
                     className="d-flex justify-content-center p-3 border rounded"
                     style={{ backgroundColor: '#f8f9fa' }}
                   >
@@ -583,8 +579,8 @@ const StylePicturesTab = ({ manufacturer }) => {
           )}
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => {
               setEditModalVisible(false);
               setSelectedStyle(null);
@@ -593,8 +589,8 @@ const StylePicturesTab = ({ manufacturer }) => {
           >
             {t('common.cancel','Cancel')}
           </CButton>
-          <CButton 
-            color="primary" 
+          <CButton
+            color="primary"
             onClick={handleImageUpload}
             disabled={!selectedFile || uploadingImage}
           >

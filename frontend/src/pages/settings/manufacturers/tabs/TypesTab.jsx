@@ -34,10 +34,6 @@ import axiosInstance from '../../../../helpers/axiosInstance';
 import PageHeader from '../../../../components/PageHeader';
 
 // Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
 
 const TypesTab = ({ manufacturer }) => {
   const { t } = useTranslation();
@@ -58,17 +54,17 @@ const TypesTab = ({ manufacturer }) => {
     longDescription: '',
     imageFile: null,
   });
-  
+
   // Filter states
   const [styleFilter, setStyleFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [catalogItems, setCatalogItems] = useState([]);
-  
+
   // Bulk type change modal states
   const [bulkTypeChangeModalVisible, setBulkTypeChangeModalVisible] = useState(false);
   const [newTypeCategory, setNewTypeCategory] = useState('');
   const [isChangingType, setIsChangingType] = useState(false);
-  
+
   // Edit modal states
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
@@ -125,15 +121,15 @@ const TypesTab = ({ manufacturer }) => {
 
   const fetchTypes = useCallback(async () => {
     if (!manufacturer?.id) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/types-meta`, {
-        headers: getAuthHeaders(),
+  // Authorization handled by axios interceptors
       });
-      
+
       if (response.data && Array.isArray(response.data)) {
         setTypes(response.data);
       } else {
@@ -150,12 +146,12 @@ const TypesTab = ({ manufacturer }) => {
 
   const fetchCatalogItems = useCallback(async () => {
     if (!manufacturer?.id) return;
-    
+
     try {
       const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
-        headers: getAuthHeaders(),
+  // Authorization handled by axios interceptors
       });
-      
+
       if (response.data && Array.isArray(response.data)) {
         setCatalogItems(response.data);
       } else {
@@ -177,16 +173,16 @@ const TypesTab = ({ manufacturer }) => {
     return types.filter(type => {
       const matchesSearch = type.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         type.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStyleFilter = !styleFilter || 
-        catalogItems.some(item => 
-          item.type === type.type && 
+
+      const matchesStyleFilter = !styleFilter ||
+        catalogItems.some(item =>
+          item.type === type.type &&
           item.style?.toLowerCase().includes(styleFilter.toLowerCase())
         );
-      
-      const matchesTypeFilter = !typeFilter || 
+
+      const matchesTypeFilter = !typeFilter ||
         type.type?.toLowerCase().includes(typeFilter.toLowerCase());
-      
+
       return matchesSearch && matchesStyleFilter && matchesTypeFilter;
     });
   }, [types, searchTerm, styleFilter, typeFilter, catalogItems]);
@@ -226,7 +222,7 @@ const TypesTab = ({ manufacturer }) => {
     if (!manufacturer?.id) {
       return;
     }
-    
+
     const pageToLoad = reset ? 1 : modalPage;
   // Fetch modal catalog items
     if (reset) {
@@ -236,7 +232,7 @@ const TypesTab = ({ manufacturer }) => {
     }
     try {
       const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
-        headers: getAuthHeaders(),
+  // Authorization handled by axios interceptors
         params: {
           page: pageToLoad,
           limit: modalLimit,
@@ -248,7 +244,7 @@ const TypesTab = ({ manufacturer }) => {
         },
       });
   // Modal catalog response received
-      
+
       // Normalize and store response so the UI can access catalogData, filters, etc.
       const payload = response.data;
       if (payload && Array.isArray(payload.catalogData)) {
@@ -334,7 +330,7 @@ const TypesTab = ({ manufacturer }) => {
     if (!selectedType || !selectedFile || !manufacturer?.id) return;
 
     setUploadingImage(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('typeImage', selectedFile);
@@ -346,9 +342,9 @@ const TypesTab = ({ manufacturer }) => {
       formData.append('catalogId', selectedType.id);
 
       const response = await axiosInstance.post('/api/manufacturers/type/create', formData, {
-        headers: { 
+        headers: {
           'Content-Type': 'multipart/form-data',
-          ...getAuthHeaders()
+          // Authorization handled by axios interceptors
         }
       });
 
@@ -373,14 +369,14 @@ const TypesTab = ({ manufacturer }) => {
     if (selectedItems.length === 0 || !manufacturer?.id) return;
 
     setIsBulkEditing(true);
-    
+
     try {
       const response = await axiosInstance.post('/api/manufacturers/bulk-edit-types', {
         manufacturerId: manufacturer.id,
         itemIds: selectedItems,
         updates: bulkEditForm
       }, {
-        headers: getAuthHeaders()
+  // Authorization handled by axios interceptors
       });
 
       if (response.data.success) {
@@ -404,14 +400,14 @@ const TypesTab = ({ manufacturer }) => {
     if (!typeNameEditForm.oldTypeName || !typeNameEditForm.newTypeName || !manufacturer?.id) return;
 
     setIsRenamingType(true);
-    
+
     try {
       const response = await axiosInstance.post('/api/manufacturers/edit-type-name', {
         manufacturerId: manufacturer.id,
         oldTypeName: typeNameEditForm.oldTypeName,
         newTypeName: typeNameEditForm.newTypeName
       }, {
-        headers: getAuthHeaders()
+  // Authorization handled by axios interceptors
       });
 
       if (response.data.success) {
@@ -434,14 +430,14 @@ const TypesTab = ({ manufacturer }) => {
     if (selectedItems.length === 0 || !manufacturer?.id || !newTypeCategory) return;
 
     setIsChangingType(true);
-    
+
     try {
       const response = await axiosInstance.post('/api/manufacturers/bulk-change-type', {
         manufacturerId: manufacturer.id,
         itemIds: selectedItems,
         newType: newTypeCategory
       }, {
-        headers: getAuthHeaders()
+  // Authorization handled by axios interceptors
       });
 
       if (response.data.success) {
@@ -463,8 +459,8 @@ const TypesTab = ({ manufacturer }) => {
 
   // Handle modal catalog item selection
   const handleModalItemSelection = useCallback((itemId, isSelected) => {
-    setSelectedModalItems(prev => 
-      isSelected 
+    setSelectedModalItems(prev =>
+      isSelected
         ? [...prev, itemId]
         : prev.filter(id => id !== itemId)
     );
@@ -490,7 +486,7 @@ const TypesTab = ({ manufacturer }) => {
         itemIds: selectedModalItems,
         newType: selectedType.type
       }, {
-        headers: getAuthHeaders()
+  // Authorization handled by axios interceptors
       });
 
       if (response.data.success) {
@@ -515,12 +511,12 @@ const TypesTab = ({ manufacturer }) => {
   // Filter modal catalog items
   const filteredModalItems = useMemo(() => {
   // Compute filtered modal items
-    
+
     // Extract the actual catalog data from the API response (supports multiple shapes)
     const catalogData = (modalCatalogItems && Array.isArray(modalCatalogItems.catalogData))
       ? modalCatalogItems.catalogData
       : (Array.isArray(modalCatalogItems) ? modalCatalogItems : []);
-    
+
     if (!Array.isArray(catalogData)) {
   // catalogData not in expected array format
       return [];
@@ -544,7 +540,7 @@ const TypesTab = ({ manufacturer }) => {
 
       return doesNotHaveCurrentType && matchesSearch && matchesTypeFilter;
     });
-    
+
     return filtered;
   }, [modalCatalogItems, modalSearchTerm, modalTypeFilter, selectedType]);
 
@@ -581,7 +577,7 @@ const TypesTab = ({ manufacturer }) => {
         manufacturerId: manufacturer.id,
         type: typeName,
         longDescription: newDesc
-      }, { headers: getAuthHeaders() });
+  });
       if (res.data?.success) {
         await fetchTypes();
       }
@@ -634,7 +630,7 @@ const TypesTab = ({ manufacturer }) => {
               >
                 {viewMode === 'grid' ? t('types.ui.tableView', 'Table View') : t('types.ui.gridView', 'Grid View')}
               </CButton>
-              
+
               {selectedItems.length > 0 && (
                 <CDropdown>
                   <CDropdownToggle color="secondary" size="sm">
@@ -644,7 +640,7 @@ const TypesTab = ({ manufacturer }) => {
                     <CDropdownItem onClick={() => setBulkEditModalVisible(true)}>
                       Bulk Edit
                     </CDropdownItem>
-                    <CDropdownItem 
+                    <CDropdownItem
                       onClick={() => {
                         const firstType = types.find(t => selectedItems.includes(t.id));
                         if (firstType) {
@@ -810,7 +806,7 @@ const TypesTab = ({ manufacturer }) => {
                         {typeItems.map((type) => (
                           <div key={type.id} className="col-4 col-md-3 col-lg-2 col-xl-2">
                             <div className="card h-100 border-0" style={{ backgroundColor: '#f8f9fa', aspectRatio: '1', minHeight: '220px' }}>
-                              <div 
+                              <div
                                 className="position-relative flex-grow-1 d-flex align-items-center justify-content-center p-2"
                                 style={{ cursor: 'pointer' }}
                                 onMouseEnter={() => setHoveredId(type.id)}
@@ -959,8 +955,8 @@ const TypesTab = ({ manufacturer }) => {
           color: #212529 !important;
         }
       `}</style>
-      <CModal 
-        visible={editModalVisible} 
+      <CModal
+        visible={editModalVisible}
         onClose={() => {
           setEditModalVisible(false);
           setSelectedType(null);
@@ -978,11 +974,11 @@ const TypesTab = ({ manufacturer }) => {
                 <div className="mb-3">
                   <strong>{t('types.meta.type', 'Type')}:</strong> {selectedType.type}
                 </div>
-                
+
                 {/* Current Image Preview */}
                 <div className="mb-4">
                   <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
-                  <div 
+                  <div
                     className="d-flex justify-content-center p-3 border rounded"
                     style={{ backgroundColor: '#f8f9fa' }}
                   >
@@ -1026,7 +1022,7 @@ const TypesTab = ({ manufacturer }) => {
                 {selectedFile && (
                   <div className="mb-3">
                     <h6>{t('types.meta.newImagePreview', 'New Image Preview')}:</h6>
-                    <div 
+                    <div
                       className="d-flex justify-content-center p-3 border rounded"
                       style={{ backgroundColor: '#f8f9fa' }}
                     >
@@ -1070,7 +1066,7 @@ const TypesTab = ({ manufacturer }) => {
                   <p className="text-muted small mb-3">
                     {t('types.assign.help', 'Select catalog items from this manufacturer to assign them to the "{{type}}" type.', { type: selectedType.type })}
                   </p>
-                  
+
                   {/* Search and Filter */}
                   <CInputGroup className="mb-3" size="sm">
                     <CInputGroupText>
@@ -1100,7 +1096,7 @@ const TypesTab = ({ manufacturer }) => {
                         .filter(tn => tn && tn !== selectedType?.type)
                         .slice(0, 40)
                         .map((type, index) => (
-                          <span 
+                          <span
                             key={index}
                             className="badge bg-secondary"
                             style={{ cursor: 'pointer' }}
@@ -1137,11 +1133,11 @@ const TypesTab = ({ manufacturer }) => {
                       </div>
                     ) : filteredModalItems.length === 0 ? (
                       <div className="text-center py-3 text-muted">
-                        {modalCatalogItems?.catalogData?.length > 0 ? 
-                          (modalSearchTerm || modalTypeFilter ? 
-                            t('types.assign.noMatch', 'No items match your search criteria') : 
+                        {modalCatalogItems?.catalogData?.length > 0 ?
+                          (modalSearchTerm || modalTypeFilter ?
+                            t('types.assign.noMatch', 'No items match your search criteria') :
                             t('types.assign.noneAvailable', 'No items available to assign (all items already belong to "{{type}}" or other types)', { type: selectedType?.type })
-                          ) : 
+                          ) :
                           t('types.assign.noCatalog', 'No catalog items found for this manufacturer')
                         }
                       </div>
@@ -1214,8 +1210,8 @@ const TypesTab = ({ manufacturer }) => {
             </CAlert>
           )}
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => {
               setEditModalVisible(false);
               setSelectedType(null);
@@ -1227,8 +1223,8 @@ const TypesTab = ({ manufacturer }) => {
           >
             {t('common.cancel', 'Cancel')}
           </CButton>
-          <CButton 
-            color="primary" 
+          <CButton
+            color="primary"
             onClick={handleImageUpload}
             disabled={!selectedFile || uploadingImage}
           >
@@ -1256,7 +1252,7 @@ const TypesTab = ({ manufacturer }) => {
           <CButton color="secondary" onClick={()=>setDeleteTypeAsk({open:false,typeName:''})}>{t('common.cancel','Cancel')}</CButton>
           <CButton color="danger" onClick={async()=>{
             try{
-              await axiosInstance.delete(`/api/manufacturers/${manufacturer.id}/type/${encodeURIComponent(deleteTypeAsk.typeName)}`, { data: { reassignTo: reassignTypeTo }, headers: getAuthHeaders() });
+              await axiosInstance.delete(`/api/manufacturers/${manufacturer.id}/type/${encodeURIComponent(deleteTypeAsk.typeName)}`, { data: { reassignTo: reassignTypeTo } });
               await fetchTypes();
               await fetchCatalogItems();
             }catch(e){ console.error(e); }
@@ -1328,7 +1324,7 @@ const TypesTab = ({ manufacturer }) => {
                   manufacturerId: manufacturer.id,
                   type: createForm.typeName.trim(),
                   longDescription: createForm.longDescription || ''
-                }, { headers: getAuthHeaders() });
+                });
 
                 if (!metaRes.data?.success) {
                   throw new Error(metaRes.data?.message || 'Failed to save type metadata');
@@ -1342,7 +1338,7 @@ const TypesTab = ({ manufacturer }) => {
                   fd.append('manufacturerId', manufacturer.id);
                   fd.append('longDescription', createForm.longDescription || '');
                   await axiosInstance.post('/api/manufacturers/type/create', fd, {
-                    headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
+                    headers: { 'Content-Type': 'multipart/form-data' }
                   });
                 }
 
@@ -1369,7 +1365,7 @@ const TypesTab = ({ manufacturer }) => {
         <CModalBody>
           <div>
             <p>Edit the following fields for the selected {selectedItems.length} types. Leave fields empty to keep existing values.</p>
-            
+
             <div className="row g-3">
               <div className="col-md-6">
                 <CFormLabel>Type</CFormLabel>
@@ -1380,7 +1376,7 @@ const TypesTab = ({ manufacturer }) => {
                   placeholder="Leave empty to keep existing"
                 />
               </div>
-              
+
               <div className="col-12">
                 <CFormLabel>Description</CFormLabel>
                 <CFormTextarea
@@ -1391,7 +1387,7 @@ const TypesTab = ({ manufacturer }) => {
                 />
               </div>
             </div>
-            
+
             <div className="mt-3 p-3 bg-light rounded">
               <small className="text-muted">
                 <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will preserve the existing values for each item.
@@ -1400,14 +1396,14 @@ const TypesTab = ({ manufacturer }) => {
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setBulkEditModalVisible(false)}
             disabled={isBulkEditing}
           >
             Cancel
           </CButton>
-          <CButton 
+          <CButton
             color="primary"
             onClick={handleBulkEdit}
             disabled={isBulkEditing}
@@ -1430,7 +1426,7 @@ const TypesTab = ({ manufacturer }) => {
         <CModalBody>
           <div>
             <p>Rename the type for all items of this manufacturer. This will affect all catalog items currently using this type.</p>
-            
+
             <div className="mb-3">
               <CFormLabel>Current Type Name</CFormLabel>
               <CFormInput
@@ -1440,7 +1436,7 @@ const TypesTab = ({ manufacturer }) => {
                 className="bg-light"
               />
             </div>
-            
+
             <div className="mb-3">
               <CFormLabel>New Type Name</CFormLabel>
               <CFormInput
@@ -1450,21 +1446,21 @@ const TypesTab = ({ manufacturer }) => {
                 placeholder="Enter new type name"
               />
             </div>
-            
+
             <div className="alert alert-warning">
               <strong>Warning:</strong> This will rename the type globally for all items in this manufacturer's catalog.
             </div>
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => setRenameModalVisible(false)}
             disabled={isRenamingType}
           >
             Cancel
           </CButton>
-          <CButton 
+          <CButton
             color="primary"
             onClick={handleTypeRename}
             disabled={isRenamingType || !typeNameEditForm.newTypeName.trim()}
@@ -1482,18 +1478,18 @@ const TypesTab = ({ manufacturer }) => {
       </CModal>
 
       {/* Bulk Type Change Modal */}
-      <CModal 
-        visible={bulkTypeChangeModalVisible} 
+      <CModal
+        visible={bulkTypeChangeModalVisible}
         onClose={() => {
           setBulkTypeChangeModalVisible(false);
           setNewTypeCategory('');
-        }} 
+        }}
         className="no-gradient-modal"
       >
         <PageHeader title="Change Type Category" />
         <CModalBody>
           <p>Change the type category for {selectedItems.length} selected item(s).</p>
-          
+
           <CFormLabel>New Type Category</CFormLabel>
           <CFormInput
             placeholder="Enter new type category..."
@@ -1511,8 +1507,8 @@ const TypesTab = ({ manufacturer }) => {
           </small>
         </CModalBody>
         <CModalFooter>
-          <CButton 
-            color="secondary" 
+          <CButton
+            color="secondary"
             onClick={() => {
               setBulkTypeChangeModalVisible(false);
               setNewTypeCategory('');
@@ -1521,7 +1517,7 @@ const TypesTab = ({ manufacturer }) => {
           >
             Cancel
           </CButton>
-          <CButton 
+          <CButton
             color="primary"
             onClick={handleBulkTypeChange}
             disabled={isChangingType || !newTypeCategory.trim()}

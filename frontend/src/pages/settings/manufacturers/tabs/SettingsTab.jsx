@@ -2,10 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
 import {
   CCard, CCardBody, CFormInput, CInputGroup, CInputGroupText,
   CTable, CTableHead, CTableBody, CTableRow, CTableDataCell,
@@ -64,11 +60,12 @@ const SettingsTab = ({ manufacturer }) => {
         setCatalogData([]);
         return;
       }
-      
+
       setLoading(true);
       try {
         const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
-          headers: getAuthHeaders(),
+          // Authorization handled by axios interceptors
+
           params: {
             page: 1,
             limit: 1000, // Get more items to show proper style comparison
@@ -76,7 +73,7 @@ const SettingsTab = ({ manufacturer }) => {
             sortOrder: 'ASC'
           }
         });
-        
+
         if (response.data && Array.isArray(response.data.catalogData)) {
           setCatalogData(response.data.catalogData);
         } else {
@@ -99,7 +96,8 @@ const SettingsTab = ({ manufacturer }) => {
       if (!manufacturer?.id) return;
       try {
         const res = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`, {
-          headers: getAuthHeaders()
+          // Authorization handled by axios interceptors
+
         });
         setStyleCollection(res.data);
       } catch (error) {
@@ -156,7 +154,7 @@ const SettingsTab = ({ manufacturer }) => {
       typeof item.code === 'string' &&
       item.code.toLowerCase().includes(searchCode.toLowerCase())
     ) || [];
-    
+
     // Group by code to show unique codes only
     const groupedByCode = filtered.reduce((acc, item) => {
       if (!acc[item.code]) {
@@ -164,7 +162,7 @@ const SettingsTab = ({ manufacturer }) => {
       }
       return acc;
     }, {});
-    
+
     return Object.values(groupedByCode);
   };
 
@@ -232,8 +230,8 @@ const SettingsTab = ({ manufacturer }) => {
           <CTableRow>
       {selectedFields.map((field, fieldIndex) => (
               <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
-        {field === 'code' 
-          ? 'CODE' 
+        {field === 'code'
+          ? 'CODE'
           : (typeof field === 'string' && field ? `${field.toUpperCase()} PRICE` : t('common.na', 'N/A'))
         }
               </CTableDataCell>
@@ -256,12 +254,12 @@ const SettingsTab = ({ manufacturer }) => {
                       ? item[field]
                       : (() => {
                           // Find the price for this code in the specified style
-                          const styleVariant = data.find(d => 
-                            d.code === item.code && 
+                          const styleVariant = data.find(d =>
+                            d.code === item.code &&
                             d.style?.toLowerCase() === field.toLowerCase()
                           );
-                          
-                          return styleVariant?.price 
+
+                          return styleVariant?.price
                             ? `$${multiplierCalc(styleVariant.price)}`
                             : '--';
                         })()}

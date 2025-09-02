@@ -67,15 +67,7 @@ const CatalogTable = ({
   const searchContainerRef = useRef(null);
   const api_url = import.meta.env.VITE_API_URL;
 
-  // Local helper for auth header
-  const getAuthHeaders = () => {
-    try {
-      const token = localStorage.getItem('token');
-      return token ? { Authorization: `Bearer ${token}` } : {};
-    } catch {
-      return {};
-    }
-  };
+  // Auth headers are handled by axiosInstance interceptors
 
   // When the selected style changes, clear the search box and suggestions
   useEffect(() => {
@@ -104,7 +96,7 @@ const CatalogTable = ({
     let cancelled = false;
     (async () => {
       try {
-        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`, { headers: getAuthHeaders() });
+        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`);
         const data = Array.isArray(res?.data) ? res.data : [];
         if (!cancelled) setTypesMeta(data);
       } catch (err) {

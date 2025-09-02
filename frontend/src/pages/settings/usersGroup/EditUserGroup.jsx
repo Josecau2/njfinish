@@ -31,18 +31,12 @@ import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 // External components to avoid re-creation on each render
 const FormSection = ({ title, icon, children, className = "", customization = {} }) => (
     <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
         <CCardBody className="p-3 p-md-4">
             <div className="d-flex align-items-center mb-3">
-                <div 
+                <div
                     className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
                     style={{
                         width: '32px',
@@ -60,18 +54,18 @@ const FormSection = ({ title, icon, children, className = "", customization = {}
     </CCard>
 );
 
-const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
+const CustomFormInput = ({
+    label,
+    name,
+    type = "text",
+    required = false,
     icon = null,
     placeholder = "",
     value,
     onChange,
     isInvalid,
     feedback,
-    ...props 
+    ...props
 }) => (
     <div className="mb-3">
         <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
@@ -80,9 +74,9 @@ const CustomFormInput = ({
         </CFormLabel>
         <CInputGroup>
             {icon && (
-                <CInputGroupText 
+                <CInputGroupText
                     className="d-none d-md-flex"
-                    style={{ 
+                    style={{
                         background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                         border: '1px solid #e3e6f0',
                         borderRight: 'none'
@@ -146,10 +140,10 @@ const EditUserGroupForm = () => {
         const r = parseInt(hex.substr(0, 2), 16);
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
-        
+
         // Calculate luminance
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        
+
         // Return dark color for light backgrounds, light color for dark backgrounds
         return luminance > 0.5 ? '#2d3748' : '#ffffff';
     };
@@ -157,9 +151,7 @@ const EditUserGroupForm = () => {
     useEffect(() => {
         const fetchUserGroup = async () => {
             try {
-                const response = await axiosInstance.get(`/api/usersgroups/${id}`, {
-                    headers: getAuthHeaders()
-                });
+                const response = await axiosInstance.get(`/api/usersgroups/${id}`);
                 if (response.data.user) {
                     const userData = {
                         name: response.data.user.name || '',
@@ -205,7 +197,7 @@ const EditUserGroupForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-        
+
         setLoading(true);
         try {
             const response = await axiosInstance.put(`/api/usersgroups/${id}`, formData);
@@ -311,9 +303,9 @@ const EditUserGroupForm = () => {
                 {formData.group_type === 'contractor' && (
                     <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} icon={cilSettings} customization={customization}>
                         <div className="mb-4">
-                            <div className="d-flex align-items-start p-3 rounded-3" 
+                            <div className="d-flex align-items-start p-3 rounded-3"
                                  style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>
-                                <div 
+                                <div
                                     className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
                                     style={{
                                         width: '32px',

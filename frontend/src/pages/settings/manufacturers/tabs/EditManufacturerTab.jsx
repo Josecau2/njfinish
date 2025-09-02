@@ -21,11 +21,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../../helpers/axiosInstance';
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 const EditManufacturerTab = ({ manufacturer, id }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -112,7 +107,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
       console.log('Sending update request...');
       const res = await axiosInstance.put(`/api/manufacturers/${id}/update`, formDataToSend, {
-        headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       console.log('Server response:', res.data);

@@ -12,12 +12,6 @@ import {
 } from '@coreui/react'
 import axiosInstance from '../../../helpers/axiosInstance';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, formData, hideBack, prevStep }) => {
   const { t } = useTranslation();
 
@@ -60,10 +54,8 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
   const fetchManufacturerStylesMeta = async (manufacturerId) => {
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`, {
-        headers: getAuthHeaders(),
-      });
-      
+  const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`);
+
       // Handle both old array format and new object format
       if (response.data && response.data.styles && Array.isArray(response.data.styles)) {
         setStylesMeta(response.data.styles);
@@ -246,7 +238,7 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
         </CCardBody>
       </CCard>
-      
+
       {/* Mobile action buttons - fixed at bottom */}
       <div className="d-md-none design-upload-mobile-actions">
         <div className="container-fluid p-3">

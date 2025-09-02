@@ -10,12 +10,7 @@ export const fetchCustomers = createAsyncThunk(
         url += `&group_id=${groupId}`;
       }
       
-      const token = localStorage.getItem('token');
-      const response = await axiosInstance.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const response = await axiosInstance.get(url);
       
       return response.data;
     } catch (error) {
@@ -28,12 +23,7 @@ export const createCustomer = createAsyncThunk(
   'customers/createCustomer',
   async (customerData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axiosInstance.post('/api/customers/add', customerData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const response = await axiosInstance.post('/api/customers/add', customerData);
       
       return response.data;
     } catch (error) {
@@ -46,12 +36,7 @@ export const updateCustomer = createAsyncThunk(
   'customers/updateCustomer',
   async ({ id, customerData }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axiosInstance.put(`/api/customers/update/${id}`, customerData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const response = await axiosInstance.put(`/api/customers/update/${id}`, customerData);
       
       return response.data;
     } catch (error) {
@@ -64,12 +49,7 @@ export const deleteCustomer = createAsyncThunk(
   'customers/deleteCustomer',
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axiosInstance.delete(`/api/customers/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const response = await axiosInstance.delete(`/api/customers/delete/${id}`);
       
       return { id, message: response.data.message };
     } catch (error) {

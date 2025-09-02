@@ -24,15 +24,21 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   
-  // Content Security Policy
-  res.setHeader('Content-Security-Policy', 
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-    "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: blob:; " +
-    "font-src 'self' data:; " +
-    "connect-src 'self'; " +
-    "frame-ancestors 'none'"
+  // Content Security Policy (allow listed origins for images and API/connect)
+  const originList = (env.CORS_ALLOWED_ORIGINS || []).join(' ');
+  const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
+  const connectSrc = `connect-src 'self' ${originList} ws: wss:`.trim();
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      imgSrc,
+      "font-src 'self' data:",
+      connectSrc,
+      "frame-ancestors 'none'",
+    ].join('; ') + ';'
   );
   
   next();

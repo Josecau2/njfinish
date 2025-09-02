@@ -1,0 +1,6 @@
+{
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/frontend/src/pages/proposals/CreateProposal/FileUploadSection .jsx": true
+  }
+}

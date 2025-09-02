@@ -34,10 +34,10 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   const { list: locations } = useSelector((state) => state.locations);
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser.userId;
-  
+
   // Check if user can assign designers (admin only)
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
-  
+
   // Dynamic validation schema based on user permissions
   const validationSchema = Yup.object().shape({
     customerName: Yup.string().required(t('proposals.create.customerInfo.validation.customerName')),
@@ -56,17 +56,15 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   }, [dispatch, canAssignDesigner]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    
+
     // For contractors, pass the group_id to get scoped customers
     let url = '/api/customers';
     if (isContractor && contractorGroupId) {
       url += `?group_id=${contractorGroupId}`;
     }
-    
+
     axiosInstance
-      .get(url, { headers })
+  .get(url)
       .then((res) => {
         const options = res.data.data.map((data) => ({
           label: data.name,
@@ -97,7 +95,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       const currentUser = users.find(user => user.id === loggedInUserId);
       const availableDesigners = users.filter(user => user.role === 'Manufacturers');
       const isCurrentDesignerValid = availableDesigners.some(designer => designer.id == formData.designer);
-      
+
       // Auto-populate if designer field is empty OR if current value is invalid
       if (!formData.designer || formData.designer === '' || !isCurrentDesignerValid) {
         if (currentUser && currentUser.role === 'Manufacturers') {
@@ -125,12 +123,10 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   const createNewDesigner = async (designerName) => {
     try {
       setIsCreatingDesigner(true);
-      const token = localStorage.getItem('token');
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
+
       // Generate a temporary email for the designer
       const tempEmail = `${designerName.toLowerCase().replace(/\s+/g, '.')}@designer.local`;
-      
+
       const response = await axiosInstance.post('/api/users', {
         name: designerName,
         email: tempEmail,
@@ -139,7 +135,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
         isSalesRep: false,
         location: null,
         userGroup: null
-      }, { headers });
+  });
 
       if (response.status === 200 || response.status === 201) {
         // Refresh the users list to include the new designer
@@ -549,7 +545,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                     </motion.div>
                   )}
                 </AnimatePresence>
-                
+
                 </div> {/* End form-section */}
 
                 <div className="button-group">

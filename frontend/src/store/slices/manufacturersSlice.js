@@ -1,19 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../helpers/axiosInstance';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 export const fetchManufacturers = createAsyncThunk(
   'manufacturers/fetchManufacturers',
   async () => {
     try {
-      const response = await axiosInstance.get('/api/manufacturers', {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get('/api/manufacturers');
       return response.data;
     } catch (error) {
       console.error('Error fetching manufacturers:', error);
@@ -28,11 +20,10 @@ export const addManufacturer = createAsyncThunk(
     try {
       const response = await axiosInstance.post('/api/manufacturers/create', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          ...getAuthHeaders()
+          'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       return response.data;
     } catch (error) {
       console.error('Manufacturer creation error:', error);
@@ -46,9 +37,7 @@ export const updateManufacturerStatus = createAsyncThunk(
   'manufacturers/updateManufacturerStatus',
   async ({ id, enabled }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/manufacturers/status/${id}`, { enabled }, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.put(`/api/manufacturers/status/${id}`, { enabled });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -60,9 +49,7 @@ export const updateManufacturer = createAsyncThunk(
   'manufacturers/updateManufacturer',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/manufacturers/${id}`, data, {
-        headers: getAuthHeaders()
-      })
+  const response = await axiosInstance.put(`/api/manufacturers/${id}`, data)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -76,7 +63,7 @@ export const fetchManufacturerById = createAsyncThunk(
     try {
       // Handle backward compatibility - if just a string/number is passed, use old format
       let id, page, limit, includeCatalog;
-      
+
       if (typeof idOrParams === 'object' && idOrParams !== null) {
         ({ id, page = 1, limit = 100, includeCatalog = true } = idOrParams);
       } else {
@@ -86,16 +73,14 @@ export const fetchManufacturerById = createAsyncThunk(
         limit = 100;
         includeCatalog = true;
       }
-      
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
         includeCatalog: includeCatalog.toString()
       });
-      
-      const response = await axiosInstance.get(`/api/manufacturers/${id}?${params}`, {
-        headers: getAuthHeaders()
-      });
+
+  const response = await axiosInstance.get(`/api/manufacturers/${id}?${params}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

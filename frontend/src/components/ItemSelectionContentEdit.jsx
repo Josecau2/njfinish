@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, startTransition } from 'react';
+import { useEffect, useState, useCallback, useMemo, startTransition, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CFormCheck, CFormSwitch,
@@ -13,12 +13,6 @@ import axiosInstance from '../helpers/axiosInstance';
 import { setTableItemsEdit as setTableItemsRedux } from '../store/slices/selectedVersionEditSlice';
 import { setSelectVersionNewEdit } from '../store/slices/selectVersionNewEditSlice';
 import { isAdmin } from '../helpers/permissions';
-
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
 
 
 
@@ -36,6 +30,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [selectedStyleData, setSelectedStyleData] = useState(null);
     // Base-priced styles list for style comparison (mirror Create)
     const [stylesMeta, setStylesMeta] = useState([]);
+    const [preloadingComplete, setPreloadingComplete] = useState(false);
     const [tableItems, setTableItemsEdit] = useState([]);
     const [addOnTop, setAddOnTop] = useState(false);
     const [groupEnabled, setGroupEnabled] = useState(false);
@@ -68,8 +63,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [userMultiplierFetched, setUserMultiplierFetched] = useState(false);
     const [manuMultiplierFetched, setManuMultiplierFetched] = useState(false);
     const [pricingReady, setPricingReady] = useState(false);
-    // Stable baseline used for style comparisons so numbers don't change when selection changes
-    const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
+    // Stable baseline used for style comparisons so numbers don't change when selection changes (no longer used)
+    // const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
     const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
@@ -80,6 +75,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const customization = useSelector((state) => state.customization);
     const isUserAdmin = isAdmin(authUser);
     const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
+    // Cache style items per manufacturer/style to avoid refetching and re-render churn
+    const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
+    
+    // Extract manufacturerId early for use in functions
+    const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
 
     // Items to use for calculations (do NOT depend on search filter)
     const versionItems = useMemo(() => (
@@ -137,48 +137,109 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
-    // Calculate what the total proposal price would be if a different style was selected (match Create flow)
-    // Calculate what the total proposal price would be if a different style was selected — match Create exactly
-    const calculateTotalForStyle = (stylePrice) => {
+    // Calculate what the total proposal price would be if a different style was selected
+    // This simulates the full pricing flow by looking up actual catalog prices for each item in the new style
+    const calculateTotalForStyle = useCallback((stylePrice, styleId) => {
         try {
-            // Use a stable baseline style price so comparisons are consistent across selections
-            const baselineStylePrice = Number(
-                (comparisonBaseline?.stylePrice != null ? comparisonBaseline.stylePrice : selectedStyleData?.price) || 0
-            );
-            const styleDifference = Number(stylePrice || 0) - baselineStylePrice;
-
-            const manufacturerAdjustedDifference = styleDifference * Number(manufacturerCostMultiplier || 1);
-            const finalStyleDifference = manufacturerAdjustedDifference * Number(userGroupMultiplier || 1);
-
-            // ALWAYS use fallback prices so all style comparisons are based on the full user list,
-            // regardless of which items are currently available in the selected style
-            const cabinetPartsTotal = filteredItems.reduce((sum, item) => {
-                const unit = Number(item.comparisonPriceFallback ?? item.price ?? 0);
-                return sum + unit * Number(item.qty || 1);
-            }, 0);
+            // Start with current custom items total (unchanged by style switch)
             const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
-            const modificationsTotal = totalModificationsCost;
+            
+            // Calculate modifications total (unchanged by style switch)
+            const modificationsTotal = filteredItems.reduce((sum, item) => {
+                if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
+                const mods = item.modifications.reduce((modSum, mod) => modSum + Number(mod.price || 0) * Number(mod.qty || 1), 0);
+                return sum + mods;
+            }, 0);
 
-            const assemblyFeeTotal = isAssembled
-                ? filteredItems.reduce((sum, item) => {
-                    const unitFee = Number(item?.comparisonAssemblyUnitFallback ?? (item?.includeAssemblyFee ? item?.assemblyFee ?? 0 : 0));
-                    const qty = Number(item?.qty || 1);
-                    return sum + unitFee * qty;
-                }, 0)
-                : 0;
+            // For cabinet items, we need to look up actual prices in the new style
+            let cabinetPartsTotal = 0;
+            let assemblyFeeTotal = 0;
 
-            const newStyleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal + finalStyleDifference;
-            const discountAmount = (newStyleTotal * Number(discountPercent || 0)) / 100;
-            const totalAfterDiscount = newStyleTotal - discountAmount;
-            const taxAmount = (totalAfterDiscount * Number(defaultTaxValue || 0)) / 100;
+            // Try to get catalog data for the comparison style from cache
+            const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
+            if (currentManufacturerId && styleId) {
+                const cacheKey = `${currentManufacturerId}:${styleId}`;
+                const catalogData = styleItemsCacheRef.current.get(cacheKey);
+                
+                if (catalogData && catalogData.length > 0) {
+                    // Build lookup map by item code
+                    const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
+                    
+                    // Calculate totals based on actual catalog prices for this style
+                    filteredItems.forEach(item => {
+                        const match = byCode.get(String(item.code).trim());
+                        if (match) {
+                            // Apply the full pricing flow: catalog → manufacturer multiplier → user group multiplier
+                            const basePrice = Number(match.price) || 0;
+                            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+                            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                            
+                            const qty = Number(item.qty || 1);
+                            cabinetPartsTotal += finalPrice * qty;
+                            
+                            // Calculate assembly fee if assembled
+                            if (isAssembled && item?.includeAssemblyFee) {
+                                const assemblyCost = match.styleVariantsAssemblyCost;
+                                let assemblyFee = 0;
+                                if (assemblyCost) {
+                                    const feePrice = parseFloat(assemblyCost.price || 0);
+                                    const feeType = assemblyCost.type;
+                                    if (feeType === 'flat' || feeType === 'fixed') {
+                                        assemblyFee = feePrice;
+                                    } else if (feeType === 'percentage') {
+                                        assemblyFee = (finalPrice * feePrice) / 100;
+                                    } else {
+                                        assemblyFee = feePrice;
+                                    }
+                                }
+                                assemblyFeeTotal += assemblyFee * qty;
+                            }
+                        }
+                        // If item not found in new style, it contributes $0 (unavailable)
+                    });
+                } else {
+                    // Fallback: use style price as approximation when catalog data not available
+                    const newStylePrice = Number(stylePrice || 0);
+                    const manufacturerAdjustedStylePrice = newStylePrice * Number(manufacturerCostMultiplier || 1);
+                    const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
+                    cabinetPartsTotal = finalStylePrice * totalItemCount;
+                    
+                    // Assembly fees proportional to price change
+                    const currentStylePrice = Number(selectedStyleData?.price || 0);
+                    const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);
+                    const currentFinalStylePrice = currentManufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const priceRatio = currentFinalStylePrice > 0 ? finalStylePrice / currentFinalStylePrice : 1;
+                    const currentAssemblyTotal = isAssembled
+                        ? filteredItems.reduce((sum, item) => {
+                            const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                            const qty = Number(item?.qty || 1);
+                            return sum + unitFee * qty;
+                        }, 0)
+                        : 0;
+                    assemblyFeeTotal = currentAssemblyTotal * priceRatio;
+                }
+            }
+
+            // Calculate totals following the same flow as the main calculation
+            const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
+            
+            // Access current discount and tax values dynamically
+            const currentDiscountPercent = Number(discountPercent || 0);
+            const defaultTax = taxes?.find(tax => tax.is_default === true);
+            const currentDefaultTaxValue = parseFloat(defaultTax?.value || '0');
+            
+            const discountAmount = (styleTotal * currentDiscountPercent) / 100;
+            const totalAfterDiscount = styleTotal - discountAmount;
+            const taxAmount = (totalAfterDiscount * currentDefaultTaxValue) / 100;
             const grandTotal = totalAfterDiscount + taxAmount;
 
             return grandTotal;
         } catch (error) {
-            // swallow calculation error to avoid noisy console
+            console.error('Error calculating total for style:', error);
             return 0;
         }
-    };
+    }, [customItems, filteredItems, manufacturerCostMultiplier, userGroupMultiplier, isAssembled, selectedStyleData, preloadingComplete, formData, taxes, discountPercent]);
 
 
 
@@ -279,9 +340,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     useEffect(() => {
         const fetchUserMultiplier = async () => {
             try {
-                const response = await axiosInstance.get('/api/user/multiplier', {
-                    headers: getAuthHeaders()
-                });
+                const response = await axiosInstance.get('/api/user/multiplier');
                 if (response.data && response.data.multiplier) {
                     setUserGroupMultiplier(Number(response.data.multiplier));
                 }
@@ -497,7 +556,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
                             }
                         };
-                        
+
                         // Also update selectVersion if setSelectedVersion is available
                         if (setSelectedVersion && selectVersion) {
                             setSelectedVersion({
@@ -505,7 +564,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 summary: updatedManufacturer.summary
                             });
                         }
-                        
+
                         return updatedManufacturer;
                     }
                     return manufacturer;
@@ -530,15 +589,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     }, [dispatch]);
 
 
-    const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
     // Fetch manufacturer styles meta (base prices) and cost multiplier
     useEffect(() => {
         const fetchMeta = async () => {
             if (!manufacturerId) return;
             try {
-                const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`, {
-                    headers: getAuthHeaders()
-                });
+                const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`);
                 if (res?.data?.manufacturerCostMultiplier !== undefined) {
                     setManufacturerCostMultiplier(Number(res.data.manufacturerCostMultiplier || 1));
                 }
@@ -561,14 +617,50 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         fetchMeta();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [manufacturerId]);
+
+    // Preload catalog data for all styles to enable immediate price comparisons
+    useEffect(() => {
+        const preloadStylesCatalogData = async () => {
+            if (!manufacturerId || !stylesMeta.length) {
+                setPreloadingComplete(false);
+                return;
+            }
+
+            // Preload catalog data for all styles in parallel
+            const preloadPromises = stylesMeta.map(async (style) => {
+                const cacheKey = `${manufacturerId}:${style.id}`;
+                
+                // Skip if already cached
+                if (styleItemsCacheRef.current.has(cacheKey)) {
+                    return;
+                }
+
+                try {
+                    const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${style.id}/items`, {
+                        params: { includeDetails: '1', limit: 1000 }
+                    });
+                    const catalogData = res?.data?.catalogData || [];
+                    styleItemsCacheRef.current.set(cacheKey, catalogData);
+                } catch (error) {
+                    // Silently fail for individual style preloads
+                    console.warn(`Failed to preload catalog for style ${style.id}:`, error.message);
+                }
+            });
+
+            // Wait for all preloads to complete
+            await Promise.allSettled(preloadPromises);
+            setPreloadingComplete(true);
+        };
+
+        preloadStylesCatalogData();
+    }, [manufacturerId, stylesMeta]);
+
     useEffect(() => {
         const fetchCollections = async () => {
             if (!manufacturerId) return;
             setCollectionsLoading(true);
             try {
-                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`, {
-                    headers: getAuthHeaders()
-                });
+                const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
                 const incoming = response.data || [];
                 const same = JSON.stringify(incoming) === JSON.stringify(fetchedCollections);
                 if (!same) setFetchedCollections(incoming); // Avoid redundant state updates
@@ -589,10 +681,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const match = stylesMeta.find(col => col.id === selectVersion.selectedStyle) || null;
             const same = JSON.stringify(match) === JSON.stringify(selectedStyleData);
             if (!same) setSelectedStyleData(match);
-            // Initialize comparison baseline once when we have styles and selected style
-            if (!comparisonBaseline.styleId && match) {
-                setComparisonBaseline({ styleId: match.id, stylePrice: Number(match.price || 0) });
-            }
+            // Initialize comparison baseline once when we have styles and selected style (no longer used)
         }
     }, [selectVersion?.selectedStyle, stylesMeta]);
 
@@ -600,15 +689,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         // Update the formData.manufacturersData through the parent component
         if (selectVersion && selectVersion.items) {
             const updatedItems = selectVersion.items.filter((_, i) => i !== index);
-            
+
             // Update formData.manufacturersData
             setFormData(prev => {
                 const manufacturersData = Array.isArray(prev.manufacturersData) ? [...prev.manufacturersData] : [];
-                
+
                 // Find the manufacturer index that corresponds to selectVersion
                 // Use versionName as stable identifier in this flow
                 const manufacturerIndex = manufacturersData.findIndex(m => m.versionName === selectVersion.versionName);
-                
+
                 if (manufacturerIndex !== -1) {
                     // Update the items array for this manufacturer
                     manufacturersData[manufacturerIndex] = {
@@ -616,7 +705,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         items: updatedItems
                     };
                 }
-                
+
                 const newFormData = {
                     ...prev,
                     manufacturersData
@@ -627,7 +716,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             // Also update Redux store
             dispatch(setSelectVersionNewEdit(updatedItems));
         }
-        
+
         // Update local state as well for consistency
         setTableItemsEdit(prev => prev.filter((_, i) => i !== index));
     };
@@ -645,11 +734,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             ];
             const basePrice = Number(item.price) || 0;
             const price = basePrice * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1); // Apply both multipliers
-            
+
             // Calculate assembly fee properly based on type and after all multipliers
             const assemblyCost = item?.styleVariantsAssemblyCost;
             let assemblyFee = 0;
-            
+
             if (assemblyCost) {
                 const feePrice = parseFloat(assemblyCost.price || 0);
                 const feeType = assemblyCost.type;
@@ -664,7 +753,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     assemblyFee = feePrice;
                 }
             }
-            
+
             const includeAssemblyFee = isAssembled; // Default to assembled state
             const totalAssemblyFee = includeAssemblyFee ? assemblyFee : 0;
             const total = price + totalAssemblyFee;
@@ -804,9 +893,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const fetchCatalogItems = async (id) => {
         try {
             if (id) {
-                const response = await axiosInstance.get(`${api_url}/api/manufacturers/catalogs/modificationsItems/${id}`, {
-                    headers: getAuthHeaders()
-                });
+                const response = await axiosInstance.get(`/api/manufacturers/catalogs/modificationsItems/${id}`);
                 setModificationItems(response.data);
                 // setExistingModifications(response.data); // <--- Add this
             }
@@ -825,9 +912,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 description: customData.note, // optional or use customData.description
             };
 
-            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload, {
-                headers: getAuthHeaders()
-            });
+            await axiosInstance.post('/api/manufacturers/catalogs/modificationsItems/add', payload);
         } catch (err) {
             // silent
         }
@@ -927,12 +1012,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
 
             setSelectedVersion(updatedVersion);
-            // dispatch(setTableItemsRedux(updatedVersion)); 
+            // dispatch(setTableItemsRedux(updatedVersion));
 
             // Use base-priced stylesMeta to update selection (keep parity with Create)
             const styleData = stylesMeta.find(c => c.id === newStyleId);
             setSelectedStyleData(styleData || null);
-            // Do NOT modify comparisonBaseline here; keep comparisons stable across selections
+            // Do NOT modify comparison baseline here; keep comparisons stable across selections (no longer used)
 
             // Re-map all existing items to the newly selected style.
             // If an item code doesn't exist in the new style, mark it unavailable with $0 and keep it visible.
@@ -949,7 +1034,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
                     if (manufacturerId && newStyleId) {
                         const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${newStyleId}/items`, {
-                            headers: getAuthHeaders(),
                             params: { includeDetails: '1', limit: 2000 }
                         });
                         const catalogData = res?.data?.catalogData || [];
@@ -1261,9 +1345,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     /* Collapsed/Compact View - List format */
                                                     <div className="styles-compact-list">
                                                         {stylesMeta.map((styleItem, index) => {
-                                                            const totalPrice = calculateTotalForStyle(styleItem.price);
+                                                            const totalPrice = calculateTotalForStyle(styleItem.price, styleItem.id);
                                                             const isCurrentStyle = styleItem.id === selectedStyleData?.id;
-                                                            
+
                                                             return (
                                                                 <div
                                                                     key={`compact-style-${styleItem.id}-${index}`}
@@ -1274,8 +1358,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                     <div className="style-info">
                                                                         <span className="style-name">{styleItem.style}</span>
                                                                         <span className="price-label">
-                                                                            {isCurrentStyle 
-                                                                                ? t('proposalUI.styleComparison.currentTotal') 
+                                                                            {isCurrentStyle
+                                                                                ? t('proposalUI.styleComparison.currentTotal')
                                                                                 : t('proposalUI.styleComparison.totalIfSelected')
                                                                             }
                                                                         </span>
@@ -1304,8 +1388,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                 <div
                                                                     key={`style-${styleItem.id}-${index}`}
                                                                     className="style-carousel-item text-center"
-                                                                    style={{ 
-                                                                        cursor: readOnly ? 'default' : 'pointer', 
+                                                                    style={{
+                                                                        cursor: readOnly ? 'default' : 'pointer',
                                                                         transition: 'transform 0.2s ease',
                                                                         flexShrink: 0
                                                                     }}
@@ -1344,13 +1428,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                     }}>
                                                                         <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>{styleItem.style}</div>
                                                                         <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
-                                                                            {styleItem.id === selectedStyleData?.id 
-                                                                                ? t('proposalUI.styleComparison.currentTotal') 
+                                                                            {styleItem.id === selectedStyleData?.id
+                                                                                ? t('proposalUI.styleComparison.currentTotal')
                                                                                 : t('proposalUI.styleComparison.totalIfSelected')
                                                                             }
                                                                         </div>
                                                                         <strong style={{ color: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#28a745' }}>
-                                                                            ${calculateTotalForStyle(styleItem.price).toFixed(2)}
+                                                                            ${calculateTotalForStyle(styleItem.price, styleItem.id).toFixed(2)}
                                                                         </strong>
                                                                     </div>
                                                                 </div>
@@ -1506,7 +1590,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         </tbody>
                     </table>
                 </div>
-                
+
                 {/* Mobile List View */}
                 <div className="d-block d-md-none">
                     {/* Mobile header - only show if there are items */}
@@ -1519,7 +1603,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             <div className="col-2">{t('proposalUI.custom.table.actions')}</div>
                         </div>
                     )}
-                    
+
                     {/* Mobile items list */}
                     {customItems?.map((item, idx) => (
                         <div key={idx} className="row mb-2 py-2 border-bottom align-items-center">
@@ -1540,7 +1624,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             </div>
                         </div>
                     ))}
-                    
+
                     {/* Show message if no custom items */}
                     {(!customItems || customItems.length === 0) && (
                         <div className="text-muted text-center py-3" style={{ fontSize: '0.9rem' }}>

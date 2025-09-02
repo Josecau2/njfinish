@@ -1,23 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 export const sendFormDataToBackend = createAsyncThunk(
     'proposal/sendFormDataToBackend',
     async (payload, { rejectWithValue }) => {
         try {
             const { formData } = payload;
             const endpoint = formData.id ? '/api/update-proposals' : '/api/create-proposals';
-            
-            const response = await axiosInstance.post(endpoint, payload, {
-                headers: getAuthHeaders()
-            });
-            
+
+            const response = await axiosInstance.post(endpoint, payload);
+
             return response.data;
         } catch (error) {
             console.error('❌ Proposal request failed:', {
@@ -38,9 +30,7 @@ export const getProposal = createAsyncThunk(
             if (groupId) {
                 url += `?group_id=${groupId}`;
             }
-            const response = await axiosInstance.get(url, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.get(url);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -59,7 +49,7 @@ export const getOrders = createAsyncThunk(
             params.append('status', 'accepted')
             if (mineOnly) params.append('mine', 'true')
             const url = `/api/get-proposals?${params.toString()}`
-            const response = await axiosInstance.get(url, { headers: getAuthHeaders() })
+            const response = await axiosInstance.get(url)
             return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message)
@@ -71,9 +61,7 @@ export const getProposalById = createAsyncThunk(
     'proposal/getProposalById',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/api/quotes/proposalByID/${id}`, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.get(`/api/quotes/proposalByID/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -85,9 +73,7 @@ export const updateFormData = createAsyncThunk(
     'proposal/updateFormData',
     async ({ id, updatedData }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/api/form/${id}`, updatedData, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.put(`/api/form/${id}`, updatedData);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -99,9 +85,7 @@ export const deleteFormData = createAsyncThunk(
     'proposal/deleteFormData',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.delete(`/api/delete-proposals/${id}`, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.delete(`/api/delete-proposals/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -115,9 +99,7 @@ export const updateProposalStatus = createAsyncThunk(
     'proposal/updateProposalStatus',
     async ({ id, action, status }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/api/quotes/${id}/status`, { action, status }, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.put(`/api/quotes/${id}/status`, { action, status });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -132,10 +114,8 @@ export const acceptProposal = createAsyncThunk(
             const requestBody = {};
             if (externalSignerName) requestBody.external_signer_name = externalSignerName;
             if (externalSignerEmail) requestBody.external_signer_email = externalSignerEmail;
-            
-            const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody, {
-                headers: getAuthHeaders()
-            });
+
+            const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -147,9 +127,7 @@ export const getContracts = createAsyncThunk(
     'contracts/getContracts',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/api/get-contracts`, {
-                headers: getAuthHeaders()
-            });
+            const response = await axiosInstance.get(`/api/get-contracts`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);

@@ -1,20 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 // Fetch all user groups
 export const fetchUsers = createAsyncThunk(
   'usersgroups/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/api/usersgroups', {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get('/api/usersgroups');
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -27,9 +19,7 @@ export const fetchUserMultipliers = createAsyncThunk(
   'usersgroups/fetchUserMultipliers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/api/usersgroupsmultiplier', {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get('/api/usersgroupsmultiplier');
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -42,9 +32,7 @@ export const fetchUserById = createAsyncThunk(
   'usersgroups/fetchUserById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/usersgroups/${id}`, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get(`/api/usersgroups/${id}`);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -57,9 +45,7 @@ export const fetchSingleUser = createAsyncThunk(
   'usersgroups/fetchSingleUser',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/usersgroups/${id}`, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get(`/api/usersgroups/${id}`);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -72,9 +58,7 @@ export const  addUser = createAsyncThunk(
   'usersgroups/addUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/api/usersgroups', userData, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.post('/api/usersgroups', userData);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -87,9 +71,7 @@ export const updateUser = createAsyncThunk(
   'usersgroups/updateUser',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/usersgroups/${id}`, data, {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.put(`/api/usersgroups/${id}`, data);
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
@@ -102,9 +84,7 @@ export const deleteUser = createAsyncThunk(
   'usersgroups/deleteUser',
   async (id, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/api/usersgroups/${id}`, {
-        headers: getAuthHeaders()
-      });
+  await axiosInstance.delete(`/api/usersgroups/${id}`);
       return id
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)

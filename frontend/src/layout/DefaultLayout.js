@@ -35,12 +35,19 @@ const DefaultLayout = () => {
 
         const res = await getLatestTerms()
         const v = res?.data?.data?.version
+        const alreadyAccepted = !!res?.data?.data?.accepted
         setLatestVersion(v || null)
         
         if (v) {
           const key = `terms.accepted.v${v}`
-          const accepted = localStorage.getItem(key)
-          setForceTerms(!accepted)
+          // Prefer server truth; fall back to cached localStorage if server couldn’t say
+          if (alreadyAccepted) {
+            localStorage.setItem(key, '1')
+            setForceTerms(false)
+          } else {
+            const cached = localStorage.getItem(key)
+            setForceTerms(!cached)
+          }
         } else {
           setForceTerms(false)
         }

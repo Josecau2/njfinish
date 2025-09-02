@@ -24,11 +24,7 @@ import axiosInstance from '../../helpers/axiosInstance';
 import ContractorDashboard from '../contractor/ContractorDashboard';
 import PageHeader from '../../components/PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
+// Authorization is handled centrally by axiosInstance interceptors
 
 
 const modernCardStyle = {
@@ -104,10 +100,7 @@ const Dashboard = () => {
 
   const fetchLinks = async () => {
     try {
-
-      const response = await axiosInstance.get('/api/resources/links', {
-        headers: getAuthHeaders()
-      });
+  const response = await axiosInstance.get('/api/resources/links');
       if (response.data.success) {
         setDummyLinks(response.data.data);
       }
@@ -118,9 +111,7 @@ const Dashboard = () => {
 
   const fetchFiles = async () => {
     try {
-            const response = await axiosInstance.get('/api/resources/files', {
-              headers: getAuthHeaders()
-            });
+    const response = await axiosInstance.get('/api/resources/files');
             if (response.data.success) {
                 setDummyFiles(response.data.data);
             }

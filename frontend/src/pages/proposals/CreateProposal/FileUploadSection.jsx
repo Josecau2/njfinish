@@ -12,6 +12,7 @@ import {
   cilTrash, cilSettings
 } from '@coreui/icons'
 import Swal from 'sweetalert2'
+import axiosInstance from '../../../helpers/axiosInstance'
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -74,19 +75,10 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     formData.append('fileType', getFileType(file.type))
 
     try {
-      const response = await fetch(`${api_url}/api/proposals/upload-file`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const { data } = await axiosInstance.post('/api/proposals/upload-file', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
-
-      if (!response.ok) {
-  throw new Error('Upload failed')
-      }
-
-      return await response.json()
+      return data
     } catch (error) {
       console.error('Upload error:', error)
       throw error
@@ -171,7 +163,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFiles(e.dataTransfer.files)
     }
@@ -185,17 +177,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const deleteFile = async (fileId) => {
     try {
-      const response = await fetch(`${api_url}/api/proposals/files/${fileId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-  throw new Error('Delete failed')
-      }
+      await axiosInstance.delete(`/api/proposals/files/${fileId}`)
 
       const updatedFiles = files.filter(file => file.id !== fileId)
       setFiles(updatedFiles)
@@ -317,7 +299,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               onChange={handleInputChange}
               style={{ display: 'none' }}
             />
-            
+
             {uploading ? (
               <div>
                 <CSpinner color="primary" className="mb-3" />
@@ -380,7 +362,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                             </CDropdownMenu>
                           </CDropdown>
                         </div>
-                        
+
                         <div className="text-center mb-2">
                           <CIcon
                             icon={getFileIcon(file.type)}
@@ -388,10 +370,10 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                             className="text-primary"
                           />
                         </div>
-                        
+
                         <h6 className="small mb-1" title={file.name}>
-                          {file.name.length > 20 
-                            ? `${file.name.substring(0, 20)}...` 
+                          {file.name.length > 20
+                            ? `${file.name.substring(0, 20)}...`
                             : file.name
                           }
                         </h6>

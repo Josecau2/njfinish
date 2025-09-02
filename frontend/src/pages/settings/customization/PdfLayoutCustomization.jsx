@@ -138,9 +138,9 @@ const PdfLayoutCustomization = () => {
       return logoPreview
     }
 
-    // If it's a relative path (existing logo), prepend API URL
-    // Handle both undefined api_url and ensure no double slashes
-    const baseUrl = api_url || 'http://localhost:8080'
+  // If it's a relative path (existing logo), prepend API URL
+  // Handle both undefined api_url and ensure no double slashes
+  const baseUrl = api_url || (typeof window !== 'undefined' ? window.location.origin : '')
     const cleanPath = logoPreview.startsWith('/') ? logoPreview : `/${logoPreview}`
     return `${baseUrl}${cleanPath}`
   }

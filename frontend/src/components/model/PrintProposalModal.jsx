@@ -17,12 +17,6 @@ import axiosInstance from '../../helpers/axiosInstance';
 import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
 import PageHeader from '../PageHeader';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
 const PrintProposalModal = ({ show, onClose, formData }) => {
     const { t, i18n } = useTranslation();
          // helper to localize short codes for hinge/exposed side
@@ -41,7 +35,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const api_url = import.meta.env.VITE_API_URL;
     const selectedVersion = useSelector((state) => state.selectedVersion.data);
     const selectVersionNew = useSelector(state => state.selectVersionNew.data);
-    
+
     // Add state for style metadata if we need to fetch it
     const [styleData, setStyleData] = useState(null);
     const [manufacturerNameData, setManufacturerNameData] = useState(null);
@@ -127,9 +121,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     const fetchStyleData = async (manufacturerId, styleId) => {
         try {
-            const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`, {
-                headers: getAuthHeaders()
-            });
+            const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`);
             const styles = res.data?.styles || [];
             const foundStyle = styles.find(style => style.id === styleId);
             setStyleData(foundStyle || null);
@@ -140,9 +132,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     const fetchManufacturerName = async (manufacturerId) => {
         try {
-            const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}`, {
-                headers: getAuthHeaders()
-            });
+            const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}`);
             setManufacturerNameData(res.data || null);
         } catch (error) {
             console.error('Error fetching manufacturer data:', error);
@@ -150,15 +140,21 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     };
 
     useEffect(() => {
+        if (!show) return; // Don't fetch if modal is not shown
+
         fetchPdfCustomization();
-        
+    }, [show]); // Only refetch when modal is shown
+
+    useEffect(() => {
+        if (!show) return; // Don't fetch if modal is not shown
+
         // Fetch style data and manufacturer data if we have manufacturer and style IDs
         const manufacturerData = formData?.manufacturersData?.[0];
         if (manufacturerData?.manufacturer && manufacturerData?.selectedStyle) {
             fetchStyleData(manufacturerData.manufacturer, manufacturerData.selectedStyle);
             fetchManufacturerName(manufacturerData.manufacturer);
         }
-    }, [formData]); // Add formData as dependency
+    }, [show, formData?.manufacturersData?.[0]?.manufacturer, formData?.manufacturersData?.[0]?.selectedStyle]); // More specific dependencies
 
     const {
         companyName,
@@ -223,13 +219,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         const customerName = formData?.customerName || formData?.customer?.name || '';
         const designerName = formData?.designerData?.name || '';
         const docDate = (formData?.date ? new Date(formData.date) : new Date()).toLocaleDateString(i18n.language || 'en-US');
-        
+
         // Get style and manufacturer information
         const manufacturerData = formData?.manufacturersData?.[0] || {};
-        
+
         // Debug: Log the manufacturer data structure to understand what's available
         console.log('PrintProposal manufacturerData:', manufacturerData);
-        
+
         // Get the manufacturer name - try multiple possible paths
         let manufacturerName = '';
         if (manufacturerData?.manufacturerData?.name) {
@@ -246,14 +242,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         } else if (selectVersionNew?.manufacturerData?.name) {
             manufacturerName = selectVersionNew.manufacturerData.name;
         }
-        
+
         // For style name, we need to check multiple possible sources
         let styleName = '';
-        
-        // First, check if style name is directly stored 
+
+        // First, check if style name is directly stored
         if (manufacturerData?.styleName) {
             styleName = manufacturerData.styleName;
-        } 
+        }
         // Check if selectedStyleData exists (from EditProposal context)
         else if (manufacturerData?.selectedStyleData?.style) {
             styleName = manufacturerData.selectedStyleData.style;
@@ -266,7 +262,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         else if (manufacturerData?.styleData?.style) {
             styleName = manufacturerData.styleData.style;
         }
-        
+
     console.log('PrintProposal extracted names:', { manufacturerName, styleName });
     const selectedCols = values.selectedColumns;
         const columnHeaders = selectedCols.map(col => {
@@ -312,13 +308,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             margin: 20mm;
             size: A4;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 12px;
@@ -537,19 +533,19 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             gap: 2rem;
             flex-wrap: wrap;
         }
-        
+
         .style-detail-item {
             flex: 1;
             min-width: 200px;
         }
-        
+
         .style-detail-label {
             font-weight: 600;
             color: #495057;
             margin-bottom: 0.25rem;
             font-size: 0.875rem;
         }
-        
+
         .style-detail-value {
             font-size: 1rem;
             color: #212529;
@@ -585,7 +581,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
+
             .page-break {
                 page-break-before: always;
             }
@@ -877,8 +873,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     return (
         <>
             <CModal visible={show} onClose={onClose} size="lg" alignment="center" scrollable>
-                <PageHeader 
-                    title={t('proposalCommon.printTitle')} 
+                <PageHeader
+                    title={t('proposalCommon.printTitle')}
                     onClose={onClose}
                 />
                 <form onSubmit={formik.handleSubmit}>
@@ -996,15 +992,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             </CModal>
 
             {/* Preview Modal */}
-            <CModal 
-                visible={showPreview} 
-                onClose={() => setShowPreview(false)} 
-                size="xl" 
-                alignment="center" 
+            <CModal
+                visible={showPreview}
+                onClose={() => setShowPreview(false)}
+                size="xl"
+                alignment="center"
                 scrollable
             >
-                <PageHeader 
-                    title={t('proposalCommon.previewTitle', 'Proposal Preview')} 
+                <PageHeader
+                    title={t('proposalCommon.previewTitle', 'Proposal Preview')}
                     onClose={() => setShowPreview(false)}
                 />
                 <CModalBody style={{ padding: 0 }}>
