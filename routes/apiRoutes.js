@@ -296,4 +296,3 @@ router.post('/terms/accept', verifyTokenWithGroup, termsController.acceptLatest)
 
 
 module.exports = router;
-    

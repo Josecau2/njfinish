@@ -8,7 +8,14 @@ import { logout } from '../store/slices/authSlice';
 const decodeJwt = (token) => {
   try {
     const [, payload] = token.split('.');
-    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    // Base64url -> base64 with padding
+    let b64 = (payload || '').replace(/-/g, '+').replace(/_/g, '/');
+    if (b64.length % 4 === 1) {
+      // invalid length; bail to avoid atob error
+      return {};
+    }
+    while (b64.length % 4 !== 0) b64 += '=';
+    const json = JSON.parse(atob(b64));
     return json || {};
   } catch {
     return {};
@@ -133,34 +140,29 @@ const ensureFreshToken = async () => {
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      // Proactively refresh if token is about to expire
-      await ensureFreshToken();
-
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       if (token) {
-        // Validate token format before using it
+        // Attach Authorization unless the token is explicitly expired
         try {
-          const decoded = decodeJwt(token);
-          const exp = decoded.exp;
+          const { exp } = decodeJwt(token);
           const nowSec = Math.floor(Date.now() / 1000);
-
-          // Only attach valid, non-expired tokens
-          if (exp && exp > nowSec) {
-            config.headers = config.headers || {};
-            // Only set if not already provided explicitly by the caller
-            if (!config.headers.Authorization) {
-              config.headers.Authorization = `Bearer ${token}`;
-            }
-          } else {
-            // Remove expired/invalid token to prevent malformed JWT errors
+          if (exp && nowSec >= exp) {
+            // Expired: clear, don't send
             if (typeof window !== 'undefined') {
               localStorage.removeItem('token');
             }
+          } else {
+            // Unknown exp or valid future exp -> attach header
+            config.headers = config.headers || {};
+            if (!config.headers.Authorization) {
+              config.headers.Authorization = `Bearer ${token}`;
+            }
           }
-        } catch (tokenError) {
-          // Remove malformed token
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
+        } catch (_) {
+          // If decoding fails, still attach the token (server will validate)
+          config.headers = config.headers || {};
+          if (!config.headers.Authorization) {
+            config.headers.Authorization = `Bearer ${token}`;
           }
         }
       }
@@ -243,15 +245,14 @@ axiosInstance.interceptors.response.use(
       const original = error?.config;
       const shouldRetry = (status === 401 || status === 403) && original && !original.__isRetryRequest;
       if (shouldRetry) {
-        // Attempt a proactive refresh, then retry once
-        await ensureFreshToken();
+        // Simple retry once using whatever token we currently have stored
         const newToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         if (newToken) {
           original.headers = original.headers || {};
           original.headers.Authorization = `Bearer ${newToken}`;
+          original.__isRetryRequest = true;
+          return axiosInstance(original);
         }
-        original.__isRetryRequest = true;
-        return axiosInstance(original);
       }
   // Do not auto-logout on auth errors; surface error to callers for UI handling
     } catch (_) {

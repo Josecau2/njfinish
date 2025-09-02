@@ -52,7 +52,7 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
     } catch (e) {
       // Non-fatal; proceed without refresh header
     }
-    
+
     // Load user with group information
     req.user = await User.findByPk(decoded.id, {
       include: [{
@@ -68,7 +68,7 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
 
     // Ensure group_id is properly set (convert to integer if needed)
     req.user.group_id = req.user.group_id ? parseInt(req.user.group_id) : null;
-    
+
     req.groupMetadata = req.user.group ? {
       id: req.user.group.id,
       name: req.user.group.name,
@@ -143,7 +143,7 @@ exports.enforceGroupScoping = (options = {}) => {
 
       if (resourceId) {
         const { Proposals, Customer } = require('../models/index');
-        
+
         let resource;
         let groupField;
 
@@ -156,17 +156,17 @@ exports.enforceGroupScoping = (options = {}) => {
         }
 
         if (!resource) {
-          return res.status(404).json({ 
-            success: false, 
-            message: `${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} not found` 
+          return res.status(404).json({
+            success: false,
+            message: `${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} not found`
           });
         }
 
         // Check if the resource belongs to the contractor's group
         if (resource[groupField] !== contractorGroupId) {
-          return res.status(403).json({ 
-            success: false, 
-            message: 'Access denied: insufficient permissions to access this resource' 
+          return res.status(403).json({
+            success: false,
+            message: 'Access denied: insufficient permissions to access this resource'
           });
         }
 
@@ -179,14 +179,14 @@ exports.enforceGroupScoping = (options = {}) => {
 
           // Convert to strings for comparison to avoid type mismatch issues
           if (resourceType === 'proposals' && dataToCheck.owner_group_id && String(dataToCheck.owner_group_id) !== String(contractorGroupId)) {
-            return res.status(403).json({ 
-              success: false, 
-              message: 'Access denied: cannot change group ownership' 
+            return res.status(403).json({
+              success: false,
+              message: 'Access denied: cannot change group ownership'
             });
           } else if (resourceType === 'customers' && dataToCheck.group_id && String(dataToCheck.group_id) !== String(contractorGroupId)) {
-            return res.status(403).json({ 
-              success: false, 
-              message: 'Access denied: cannot change group ownership' 
+            return res.status(403).json({
+              success: false,
+              message: 'Access denied: cannot change group ownership'
             });
           }
         }
@@ -195,9 +195,9 @@ exports.enforceGroupScoping = (options = {}) => {
       next();
     } catch (error) {
       console.error('Group scoping enforcement error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Internal server error during access control validation' 
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error during access control validation'
       });
     }
   };

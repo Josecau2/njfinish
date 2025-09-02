@@ -1,6 +1,6 @@
 const ResourceLink = require('../models/ResourceLink');
 const ResourceFile = require('../models/ResourceFile');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const fs = require('fs');
 
 
@@ -22,9 +22,16 @@ const getLinks = async (req, res) => {
         // Apply group visibility filtering
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
             // Contractors can only see links visible to 'contractor' type or their specific group
+            // Use MySQL-compatible JSON_CONTAINS function instead of PostgreSQL @> operator
             whereClause[Op.or] = [
-                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
-                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_types'), '"contractor"'),
+                    true
+                ),
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_ids'), user.group_id.toString()),
+                    true
+                )
             ];
         }
         // Admins can see all links (no additional filtering)
@@ -194,9 +201,16 @@ const getFiles = async (req, res) => {
         // Apply group visibility filtering
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
             // Contractors can only see files visible to 'contractor' type or their specific group
+            // Use MySQL-compatible JSON_CONTAINS function instead of PostgreSQL @> operator
             whereClause[Op.or] = [
-                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
-                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_types'), '"contractor"'),
+                    true
+                ),
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_ids'), user.group_id.toString()),
+                    true
+                )
             ];
         }
         // Admins can see all files (no additional filtering)
@@ -458,9 +472,16 @@ const downloadFile = async (req, res) => {
         
         // Apply group visibility filtering for contractors
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
+            // Use MySQL-compatible JSON_CONTAINS for visibility checks
             whereClause[Op.or] = [
-                { visible_to_group_types: { [Op.contains]: ['contractor'] } },
-                { visible_to_group_ids: { [Op.contains]: [user.group_id] } }
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_types'), '\"contractor\"'),
+                    true
+                ),
+                Sequelize.where(
+                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_ids'), user.group_id.toString()),
+                    true
+                )
             ];
         }
 

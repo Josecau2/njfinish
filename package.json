@@ -48,7 +48,7 @@
     "@fullcalendar/timegrid": "^6.1.18",
     "@popperjs/core": "^2.11.8",
     "@reduxjs/toolkit": "^2.8.2",
-    "axios": "^1.9.0",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "classnames": "^2.5.1",
     "core-js": "^3.40.0",
