@@ -219,6 +219,7 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     try {
+      // First, check if we got a refreshed token and store it
       const refreshed = error?.response?.headers?.['x-refresh-token'] || error?.response?.headers?.get?.('x-refresh-token');
       if (refreshed && typeof window !== 'undefined') {
         localStorage.setItem('token', refreshed);
@@ -227,12 +228,13 @@ axiosInstance.interceptors.response.use(
       const status = error?.response?.status;
       const original = error?.config;
       const shouldRetry = (status === 401 || status === 403) && original && !original.__isRetryRequest;
+      
       if (shouldRetry) {
-        // Simple retry once using whatever token we currently have stored
-        const newToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-        if (newToken) {
+        // Use the refreshed token if we just got one, otherwise use stored token
+        const retryToken = refreshed || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+        if (retryToken) {
           original.headers = original.headers || {};
-          original.headers.Authorization = `Bearer ${newToken}`;
+          original.headers.Authorization = `Bearer ${retryToken}`;
           original.__isRetryRequest = true;
           return axiosInstance(original);
         }
