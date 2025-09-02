@@ -2021,7 +2021,10 @@
           "applyAll": "Apply to All Items",
           "applyOne": "Apply to This Item Only",
           "applyType": "Apply by Item Type",
+          "applyTypes": "Apply by Multiple Types",
           "selectItemType": "Select Item Type",
+          "selectMultipleTypes": "Select Item Types",
+          "multipleTypesWarning": "This will apply the assembly cost to all items in {{count}} selected types.",
           "chooseType": "Choose a type..."
         },
         "hinges": {

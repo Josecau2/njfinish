@@ -16,7 +16,7 @@ const ManufacturerModificationDetails = require('../models/ManufacturerModificat
 const imageLogger = require('../utils/imageLogger');
 const { v4: uuidv4 } = require('uuid');
 const Sequelize = require('sequelize');
-const { Op } = Sequelize;
+const { Op, QueryTypes } = Sequelize;
 
 
 const fetchManufacturer = async (req, res) => {
@@ -1433,10 +1433,91 @@ const getManufacturerTypes = async (req, res) => {
     }
 };
 
+// Get assembly costs by manufacturer types
+const getAssemblyCostsByTypes = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+
+        if (!manufacturerId) {
+            return res.status(400).json({ success: false, message: 'Manufacturer ID is required.' });
+        }
+
+        // Get all unique types for this manufacturer
+        const types = await ManufacturerCatalogData.findAll({
+            attributes: [
+                [sequelize.fn('DISTINCT', sequelize.col('type')), 'type'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+            ],
+            where: {
+                manufacturerId,
+                type: {
+                    [Op.not]: null,
+                    [Op.ne]: ''
+                }
+            },
+            group: ['type'],
+            order: [['type', 'ASC']],
+            raw: true
+        });
+
+        // For each type, get assembly costs
+        const costsByType = {};
+        
+        for (const typeItem of types) {
+            const type = typeItem.type;
+            
+            // Get items of this type that have assembly costs
+            const itemsWithCosts = await ManufacturerCatalogData.findAll({
+                where: {
+                    manufacturerId,
+                    type: type
+                },
+                include: [{
+                    model: ManufacturerAssemblyCost,
+                    as: 'styleVariantsAssemblyCost',
+                    required: true
+                }],
+                attributes: ['id', 'type']
+            });
+
+            if (itemsWithCosts.length > 0) {
+                costsByType[type] = {
+                    type: type,
+                    totalItems: typeItem.count,
+                    assemblyCosts: []
+                };
+
+                // Group by assembly cost type and price
+                const costGroups = {};
+                itemsWithCosts.forEach(item => {
+                    if (item.styleVariantsAssemblyCost) {
+                        const key = `${item.styleVariantsAssemblyCost.type}-${item.styleVariantsAssemblyCost.price}`;
+                        if (!costGroups[key]) {
+                            costGroups[key] = {
+                                assemblyType: item.styleVariantsAssemblyCost.type,
+                                price: parseFloat(item.styleVariantsAssemblyCost.price),
+                                itemsWithCost: 0
+                            };
+                        }
+                        costGroups[key].itemsWithCost++;
+                    }
+                });
+
+                costsByType[type].assemblyCosts = Object.values(costGroups);
+            }
+        }
+
+        return res.status(200).json({ success: true, data: costsByType });
+    } catch (error) {
+        console.error('Error fetching assembly costs by types:', error);
+        return res.status(500).json({ success: false, message: 'Server error', details: error.message });
+    }
+};
+
 
 const saveAssemblyCost = async (req, res) => {
     try {
-    const { catalogDataId, type, price, applyTo, manufacturerId, itemType } = req.body;
+    const { catalogDataId, type, price, applyTo, manufacturerId, itemType, selectedTypes } = req.body;
 
         if (!catalogDataId || !type || !price) {
             return res.status(400).json({ success: false, message: 'Missing required fields.' });
@@ -1451,6 +1532,44 @@ const saveAssemblyCost = async (req, res) => {
                 cost = await ManufacturerAssemblyCost.create({ catalogDataId, type, price });
             }
             return res.status(200).json({ success: true, data: cost });
+        }
+
+        // Handle multiple types selection
+        if (applyTo === 'types' && selectedTypes && Array.isArray(selectedTypes)) {
+            const results = [];
+            
+            for (const selectedType of selectedTypes) {
+                const catalogItems = await ManufacturerCatalogData.findAll({
+                    where: {
+                        manufacturerId,
+                        type: selectedType
+                    },
+                });
+
+                for (const item of catalogItems) {
+                    let cost = await ManufacturerAssemblyCost.findOne({
+                        where: { catalogDataId: item.id },
+                    });
+
+                    if (cost) {
+                        await cost.update({ type, price });
+                    } else {
+                        cost = await ManufacturerAssemblyCost.create({
+                            catalogDataId: item.id,
+                            type,
+                            price
+                        });
+                    }
+
+                    results.push(cost);
+                }
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Assembly cost applied to ${results.length} items across ${selectedTypes.length} types.`,
+                data: results
+            });
         }
 
         if (applyTo === 'type') {
@@ -2428,6 +2547,7 @@ module.exports = {
     updateTypeMeta,
     deleteType,
     getManufacturerTypes,
+    getAssemblyCostsByTypes,
     addSimpleStyle,
     deleteSimpleStyle
 };

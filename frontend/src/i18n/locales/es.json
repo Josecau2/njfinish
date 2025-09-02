@@ -1959,7 +1959,10 @@
           "applyAll": "Aplicar a todos los ítems",
           "applyOne": "Aplicar solo a este ítem",
           "applyType": "Aplicar por tipo de ítem",
+          "applyTypes": "Aplicar por múltiples tipos",
           "selectItemType": "Seleccione tipo de ítem",
+          "selectMultipleTypes": "Seleccione tipos de ítem",
+          "multipleTypesWarning": "Esto aplicará el costo de ensamblaje a todos los ítems en {{count}} tipos seleccionados.",
           "chooseType": "Seleccione un tipo..."
         },
         "hinges": {

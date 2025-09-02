@@ -100,9 +100,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [assemblyData, setAssemblyData] = useState({
     type: '',
     price: '',
-    applyTo: 'one'
+    applyTo: 'one',
+    selectedTypes: []
   });
   const [availableTypes, setAvailableTypes] = useState([]);
+  const [assemblyCostsByType, setAssemblyCostsByType] = useState({});
 
   const [hingesData, setHingesData] = useState({
     leftHingePrice: '',
@@ -1208,6 +1210,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     }
   };
 
+  // Fetch assembly costs by types
+  const fetchAssemblyCostsByTypes = async () => {
+    if (!id) return;
+    try {
+      const response = await axiosInstance.get(`/api/manufacturers/${id}/assembly-costs-by-types`);
+      if (response.data.success) {
+        setAssemblyCostsByType(response.data.data || {});
+      }
+    } catch (error) {
+      console.error('Failed to fetch assembly costs by types:', error);
+      setAssemblyCostsByType({});
+    }
+  };
+
   const handleAssemblyCostClick = async (item) => {
     try {
       const { id } = item;
@@ -1217,25 +1233,29 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       const { type, price } = res.data || {};
       setSelectedCatalogItem(item);
 
-      // Fetch available types for the dropdown
+      // Fetch available types and assembly costs for the dropdown
       await fetchAvailableTypes();
+      await fetchAssemblyCostsByTypes();
 
       setAssemblyData({
         type: type || '',
         price: price || '',
         applyTo: 'one',
-        selectedItemType: item.type || ''
+        selectedItemType: item.type || '',
+        selectedTypes: []
       });
     } catch (error) {
       console.error('Error fetching assembly cost:', error);
       // Fetch available types even if assembly cost fetch fails
       await fetchAvailableTypes();
+      await fetchAssemblyCostsByTypes();
       setSelectedCatalogItem(item);
       setAssemblyData({
         type: '',
         price: '',
         applyTo: 'one',
-        selectedItemType: item.type || ''
+        selectedItemType: item.type || '',
+        selectedTypes: []
       });
     } finally {
       setShowAssemblyModal(true);
@@ -1276,6 +1296,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         return;
       }
 
+      if (assemblyData.applyTo === 'types' && assemblyData.selectedTypes.length === 0) {
+        alert('Please select at least one item type when applying by types.');
+        return;
+      }
+
       const payload = {
         catalogDataId: selectedCatalogItem.id,
         type: assemblyData.type,
@@ -1284,9 +1309,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         manufacturerId: selectedCatalogItem.manufacturerId,
       };
 
-      // Add itemType if applying by type
+      // Add itemType if applying by single type
       if (assemblyData.applyTo === 'type') {
         payload.itemType = assemblyData.selectedItemType;
+      }
+
+      // Add selectedTypes if applying by multiple types
+      if (assemblyData.applyTo === 'types') {
+        payload.selectedTypes = assemblyData.selectedTypes;
       }
 
       await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
@@ -2455,6 +2485,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           >
             <option value="one">{t('settings.manufacturers.catalogMapping.assembly.applyOne')}</option>
             <option value="type">{t('settings.manufacturers.catalogMapping.assembly.applyType')}</option>
+            <option value="types">{t('settings.manufacturers.catalogMapping.assembly.applyTypes', 'Apply by Multiple Types')}</option>
             <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
           </CFormSelect>
 
@@ -2472,6 +2503,85 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </option>
                 ))}
               </CFormSelect>
+            </>
+          )}
+
+          {assemblyData.applyTo === 'types' && (
+            <>
+              <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.selectMultipleTypes', 'Select Item Types')}</CFormLabel>
+              <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                {availableTypes.map((typeItem) => {
+                  const isSelected = assemblyData.selectedTypes.includes(typeItem.type);
+                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
+                  
+                  return (
+                    <div key={typeItem.type} className="form-check mb-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={`type-${typeItem.type}`}
+                        checked={isSelected}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAssemblyData(prev => ({
+                              ...prev,
+                              selectedTypes: [...prev.selectedTypes, typeItem.type]
+                            }));
+                          } else {
+                            setAssemblyData(prev => ({
+                              ...prev,
+                              selectedTypes: prev.selectedTypes.filter(t => t !== typeItem.type)
+                            }));
+                          }
+                        }}
+                      />
+                      <label className="form-check-label d-flex justify-content-between align-items-center w-100" htmlFor={`type-${typeItem.type}`}>
+                        <div>
+                          <div className="fw-bold">{typeItem.type}</div>
+                          <small className="text-muted">{typeItem.count} items</small>
+                        </div>
+                        <div>
+                          {typeAssemblyCosts.map((cost, idx) => (
+                            <span key={idx} className="badge bg-info ms-1" title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
+                              ${cost.price.toFixed(2)}
+                            </span>
+                          ))}
+                        </div>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div className="mt-3 d-flex gap-2">
+                <button 
+                  className="btn btn-outline-secondary btn-sm"
+                  type="button"
+                  onClick={() => {
+                    const allTypes = availableTypes.map(t => t.type);
+                    setAssemblyData(prev => ({ ...prev, selectedTypes: allTypes }));
+                  }}
+                >
+                  {t('common.selectAll', 'Select All')}
+                </button>
+                <button 
+                  className="btn btn-outline-secondary btn-sm"
+                  type="button"
+                  onClick={() => setAssemblyData(prev => ({ ...prev, selectedTypes: [] }))}
+                >
+                  {t('common.selectNone', 'Select None')}
+                </button>
+              </div>
+              
+              {assemblyData.selectedTypes.length > 0 && (
+                <div className="alert alert-info mt-3">
+                  <small>
+                    {t('settings.manufacturers.catalogMapping.assembly.multipleTypesWarning', 
+                    'This will apply the assembly cost to all items in {{count}} selected types.', 
+                    { count: assemblyData.selectedTypes.length })}
+                  </small>
+                </div>
+              )}
             </>
           )}
 

@@ -58,6 +58,7 @@ router.get('/manufacturers/assemblycost/:id', verifyTokenWithGroup, validateIdPa
 router.get('/manufacturers/items/hinges/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), manufacturerController.fetchManufacturerHingesDetails);
 router.get('/manufacturers/items/modifications/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), manufacturerController.fetchManufacturerItemsModification);
 router.get('/manufacturers/:manufacturerId/types', verifyTokenWithGroup, validateIdParam('manufacturerId'), manufacturerController.getManufacturerTypes);
+router.get('/manufacturers/:manufacturerId/assembly-costs-by-types', verifyTokenWithGroup, validateIdParam('manufacturerId'), manufacturerController.getAssemblyCostsByTypes);
 
 router.post('/manufacturers/items/assembly-cost', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.saveAssemblyCost);
 router.post('/manufacturers/items/hinges', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.saveHingesDetails);
