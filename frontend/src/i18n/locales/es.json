@@ -251,6 +251,7 @@
       "subtotalStyles": "Subtotal (Estilos)",
       "assemblyFee": "Costo de ensamblaje",
       "modifications": "Modificaciones",
+      "deliveryFee": "Tarifa de entrega",
       "discount": "Descuento",
       "tax": "Impuesto",
       "grandTotal": "Total general",
@@ -1797,6 +1798,8 @@
         "newImageSelected": "Nueva imagen seleccionada: {{name}}",
         "priceInfo": "Información de precios",
         "costMultiplier": "Multiplicador de costo",
+        "deliveryFee": "Tarifa de entrega",
+        "deliveryFeeHelp": "Tarifa de entrega opcional cobrada por el fabricante (se agregará a las cotizaciones)",
         "uploadNewCatalog": "Subir nuevos archivos de catálogo",
         "supported": "Soportado: archivos de Excel, CSV",
         "saving": "Guardando...",
@@ -1954,7 +1957,10 @@
           "fixed": "Tarifa fija por gabinete",
           "applyTo": "Aplicar a",
           "applyAll": "Aplicar a todos los ítems",
-          "applyOne": "Aplicar solo a este ítem"
+          "applyOne": "Aplicar solo a este ítem",
+          "applyType": "Aplicar por tipo de ítem",
+          "selectItemType": "Seleccione tipo de ítem",
+          "chooseType": "Seleccione un tipo..."
         },
         "hinges": {
           "modalTitle": "Agregar precios de bisagras y lado expuesto",

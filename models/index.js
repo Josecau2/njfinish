@@ -36,7 +36,7 @@ Manufacturer.hasMany(ManufacturerCatalogData, {
 ManufacturerCatalogData.belongsTo(Manufacturer, {
     foreignKey: 'manufacturerId'
 });
-  
+
 // Manufacturer has many Collections
 Manufacturer.hasMany(Collection, {
     foreignKey: 'vendor_id',
@@ -57,7 +57,7 @@ Manufacturer.hasMany(ManufacturerStyleCollection, {
 // Each Collection belongs to one Manufacturer
 Collection.belongsTo(Manufacturer, {
     foreignKey: 'vendor_id'
-});  
+});
 
 // Define association
 UserGroupMultiplier.belongsTo(UserGroup, {

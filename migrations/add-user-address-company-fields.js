@@ -7,53 +7,53 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'city', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'state', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'zip_code', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'country', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     // Add company information fields
     await queryInterface.addColumn('users', 'company_name', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'company_street_address', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'company_city', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'company_state', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'company_zip_code', {
       type: Sequelize.STRING,
       allowNull: true,
     });
-    
+
     await queryInterface.addColumn('users', 'company_country', {
       type: Sequelize.STRING,
       allowNull: true,
@@ -67,7 +67,7 @@ module.exports = {
     await queryInterface.removeColumn('users', 'state');
     await queryInterface.removeColumn('users', 'zip_code');
     await queryInterface.removeColumn('users', 'country');
-    
+
     // Remove company information fields
     await queryInterface.removeColumn('users', 'company_name');
     await queryInterface.removeColumn('users', 'company_street_address');

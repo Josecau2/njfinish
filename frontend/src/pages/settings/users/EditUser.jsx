@@ -624,8 +624,8 @@ const EditUserForm = () => {
               >
                 {loading ? (
                   <>
-                    <div 
-                      className="spinner-border spinner-border-sm me-2" 
+                    <div
+                      className="spinner-border spinner-border-sm me-2"
                       role="status"
                       style={{ width: '14px', height: '14px' }}
                     >

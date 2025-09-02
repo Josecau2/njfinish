@@ -79,12 +79,12 @@ const OrderDetails = () => {
   // Get styling from PageHeader component logic
   const getContrastColor = (backgroundColor) => {
     if (!backgroundColor) return '#ffffff';
-    
+
     const hex = backgroundColor.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -258,6 +258,7 @@ const OrderDetails = () => {
         styleTotal: 0,
         assemblyFee: 0,
         modificationsCost: 0,
+        deliveryFee: 0,
         discountAmount: 0,
         taxAmount: 0,
         grandTotal: 0,
@@ -275,7 +276,8 @@ const OrderDetails = () => {
         }, 0)
         const assembly = Number(m?.summary?.assemblyFee || 0)
         const modifications = Number(m?.summary?.modificationsCost || 0)
-        const preDiscount = itemsSubtotal + assembly + modifications
+        const deliveryFee = Number(m?.summary?.deliveryFee || 0)
+        const preDiscount = itemsSubtotal + assembly + modifications + deliveryFee
         const discountPercent = Number(m?.summary?.discountPercent || 0)
         const discountAmount = (preDiscount * discountPercent) / 100
         const afterDiscount = preDiscount - discountAmount
@@ -287,6 +289,7 @@ const OrderDetails = () => {
   agg.styleTotal += itemsSubtotal
         agg.assemblyFee += assembly
         agg.modificationsCost += modifications
+        agg.deliveryFee += deliveryFee
         agg.discountAmount += discountAmount
         agg.taxAmount += taxAmount
         agg.grandTotal += grandTotal
@@ -507,6 +510,7 @@ const OrderDetails = () => {
               <div className="mb-2"><strong>{t('orders.details.subtotalStyles', 'Subtotal (Styles)')}:</strong> {currency(displaySummary.styleTotal)}</div>
               <div className="mb-2"><strong>{t('orders.details.assemblyFee', 'Assembly Fee')}:</strong> {currency(displaySummary.assemblyFee)}</div>
               <div className="mb-2"><strong>{t('orders.details.modifications', 'Modifications')}:</strong> {currency(displaySummary.modificationsCost)}</div>
+              <div className="mb-2"><strong>{t('orders.details.deliveryFee', 'Delivery Fee')}:</strong> {currency(displaySummary.deliveryFee)}</div>
               <div className="mb-2"><strong>{t('orders.details.discount', 'Discount')}:</strong> {currency(displaySummary.discountAmount)}</div>
               <div className="mb-2"><strong>{t('orders.details.tax', 'Tax')}:</strong> {currency(displaySummary.taxAmount)}</div>
               <div className="mb-2"><strong>{t('orders.details.grandTotal', 'Grand Total')}:</strong> {currency(displaySummary.grandTotal)}</div>
@@ -694,7 +698,8 @@ const OrderDetails = () => {
                         }, 0)
                         const assembly = Number(m?.summary?.assemblyFee || 0)
                         const modifications = Number(m?.summary?.modificationsCost || 0)
-                        const preDiscount = itemsSubtotal + assembly + modifications
+                        const deliveryFee = Number(m?.summary?.deliveryFee || 0)
+                        const preDiscount = itemsSubtotal + assembly + modifications + deliveryFee
                         const discountPercent = Number(m?.summary?.discountPercent || 0)
                         const discountAmount = (preDiscount * discountPercent) / 100
                         const afterDiscount = preDiscount - discountAmount
@@ -706,6 +711,7 @@ const OrderDetails = () => {
               <div className="mb-2"><strong>{t('orders.details.styleTotal', 'Style Total')}:</strong> {currency(itemsSubtotal)}</div>
               <div className="mb-2"><strong>{t('orders.details.assemblyFee', 'Assembly Fee')}:</strong> {currency(assembly)}</div>
               <div className="mb-2"><strong>{t('orders.details.modifications', 'Modifications')}:</strong> {currency(modifications)}</div>
+              <div className="mb-2"><strong>{t('orders.details.deliveryFee', 'Delivery Fee')}:</strong> {currency(deliveryFee)}</div>
               <div className="mb-2"><strong>{t('orders.details.discount', 'Discount')}:</strong> {currency(discountAmount)}</div>
               <div className="mb-2"><strong>{t('orders.details.tax', 'Tax')}:</strong> {currency(taxAmount)}</div>
               <div className="mb-2"><strong>{t('orders.details.grandTotal', 'Grand Total')}:</strong> {currency(grandTotal)}</div>
@@ -730,17 +736,17 @@ const OrderDetails = () => {
         keyboard={true}
         size="lg"
       >
-        <CModalHeader 
+        <CModalHeader
           className="modal-header-custom"
-          style={{ 
+          style={{
             backgroundColor: `${backgroundColor} !important`,
             color: `${textColor} !important`,
             borderBottom: `1px solid ${textColor === '#ffffff' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(45, 55, 72, 0.2)'}`,
             background: `${backgroundColor} !important`
           }}
         >
-          <CModalTitle 
-            style={{ 
+          <CModalTitle
+            style={{
               color: `${textColor} !important`,
               fontWeight: 'bold'
             }}

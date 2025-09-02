@@ -23,9 +23,9 @@ const fetchManufacturer = async (req, res) => {
     try {
         // Check if user is admin - admins see all manufacturers, contractors only see active ones
         const isAdmin = req.user?.role === 'Admin' || req.user?.role_id === 2;
-        
+
         const whereClause = isAdmin ? {} : { status: true };
-        
+
         const manufacturers = await Manufacturer.findAll({
             where: whereClause
         });
@@ -37,7 +37,7 @@ const fetchManufacturer = async (req, res) => {
 
 const addManufacturer = async (req, res) => {
     const isDev = process.env.NODE_ENV !== 'production';
-    
+
     try {
         upload.fields([
             { name: 'catalogFiles', maxCount: 10 },
@@ -171,10 +171,10 @@ const fetchManufacturerById = async (req, res) => {
         const limit = parseInt(req.query.limit) || 100; // Default to 100 items per page
         const offset = (page - 1) * limit;
         const includeCatalog = req.query.includeCatalog !== 'false'; // Default to true, but allow disabling
-        
+
         // Build includes array conditionally to prevent memory overflow
         const includes = [];
-        
+
         // Always include style collections and catalog files (these are typically smaller)
         includes.push(
             {
@@ -188,7 +188,7 @@ const fetchManufacturerById = async (req, res) => {
                 order: [['createdAt', 'DESC']]
             }
         );
-        
+
         // Only include catalog data if requested (with pagination to prevent memory overflow)
         if (includeCatalog) {
             includes.push({
@@ -212,13 +212,13 @@ const fetchManufacturerById = async (req, res) => {
 
         // If catalog data was requested, also return pagination info
         let response = { manufacturer };
-        
+
         if (includeCatalog) {
             // Get total count of catalog items for pagination
             const totalCatalogItems = await ManufacturerCatalogData.count({
                 where: { manufacturerId: id }
             });
-            
+
             response.pagination = {
                 page,
                 limit,
@@ -260,7 +260,8 @@ const updateManufacturer = async (req, res) => {
             costMultiplier,
             instructions,
             assembledEtaDays,
-            unassembledEtaDays
+            unassembledEtaDays,
+            deliveryFee
         } = req.body;
 
         console.log('Received ETA fields:', {
@@ -318,6 +319,7 @@ const updateManufacturer = async (req, res) => {
                 instructions: instructions || '',
                 assembledEtaDays: assembledEtaDays || null,
                 unassembledEtaDays: unassembledEtaDays || null,
+                deliveryFee: deliveryFee ? parseFloat(deliveryFee) : null,
                 image: imagePath || manufacturer.image
             };
 
@@ -450,8 +452,8 @@ const deleteManualCabinetItem = async (req, res) => {
 
         await item.destroy();
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Item deleted successfully'
         });
 
@@ -465,7 +467,7 @@ const deleteManualCabinetItem = async (req, res) => {
 const uploadCatalogFile = async (req, res) => {
     const { manufacturerId } = req.params;
     const userId = req.user?.id;
-    
+
     uploadCatalogOnly.single('catalogFiles')(req, res, async function (err) {
         if (err) {
             console.error('Multer error:', err);
@@ -499,7 +501,7 @@ const uploadCatalogFile = async (req, res) => {
 
             // Create backup of existing data that will be affected
             console.log('📦 Creating backup of existing catalog data...');
-            
+
             // Get all existing items for this manufacturer to backup
             const existingItems = await ManufacturerCatalogData.findAll({
                 where: { manufacturerId: manufacturerId },
@@ -522,14 +524,14 @@ const uploadCatalogFile = async (req, res) => {
 
             if (isLargeFile) {
                 console.log('🔄 Processing large file in chunks...');
-                
+
                 // Use chunked processing for large files
                 const parser = new ChunkedCatalogParser({
                     chunkSize: 500, // Smaller chunks for better memory management
                     maxFileSize: 50 * 1024 * 1024, // 50MB limit
                     onChunk: async (chunk, processedSoFar, total) => {
                         console.log(`📊 Processing chunk: ${processedSoFar + chunk.length}/${total} rows`);
-                        
+
                         // Process chunk in database transaction
                         const transaction = await sequelize.transaction();
                         try {
@@ -562,10 +564,10 @@ const uploadCatalogFile = async (req, res) => {
                                     createdCount++;
                                 }
                             }
-                            
+
                             await transaction.commit();
                             totalProcessed += chunk.length;
-                            
+
                         } catch (chunkError) {
                             await transaction.rollback();
                             throw chunkError;
@@ -578,7 +580,7 @@ const uploadCatalogFile = async (req, res) => {
                 });
 
                 parsedData = await parser.parse(file.path, file.mimetype);
-                
+
             } else {
                 console.log('📝 Processing regular file...');
                 // Use regular processing for smaller files
@@ -594,7 +596,7 @@ const uploadCatalogFile = async (req, res) => {
                 const batchSize = 100;
                 for (let i = 0; i < parsedData.length; i += batchSize) {
                     const batch = parsedData.slice(i, i + batchSize);
-                    
+
                     const transaction = await sequelize.transaction();
                     try {
                         for (const row of batch) {
@@ -626,10 +628,10 @@ const uploadCatalogFile = async (req, res) => {
                                 createdCount++;
                             }
                         }
-                        
+
                         await transaction.commit();
                         totalProcessed += batch.length;
-                        
+
                     } catch (batchError) {
                         await transaction.rollback();
                         throw batchError;
@@ -676,7 +678,7 @@ const uploadCatalogFile = async (req, res) => {
 
         } catch (parseError) {
             console.error('❌ Error during catalog upload:', parseError);
-            
+
             // If backup was created but upload failed, we should clean up the backup
             if (uploadSessionId) {
                 try {
@@ -687,9 +689,9 @@ const uploadCatalogFile = async (req, res) => {
                     console.error('Error cleaning up backup after failed upload:', cleanupError);
                 }
             }
-            
-            return res.status(500).json({ 
-                message: 'Error processing catalog file', 
+
+            return res.status(500).json({
+                message: 'Error processing catalog file',
                 error: parseError.message,
                 details: isLargeFile ? 'Large file processing failed. Try splitting the file into smaller chunks.' : 'File processing failed.'
             });
@@ -703,7 +705,7 @@ const getCatalogUploadBackups = async (req, res) => {
         const { manufacturerId } = req.params;
 
         const backups = await CatalogUploadBackup.findAll({
-            where: { 
+            where: {
                 manufacturerId: manufacturerId,
                 isRolledBack: false
             },
@@ -711,7 +713,7 @@ const getCatalogUploadBackups = async (req, res) => {
             limit: 10, // Only show last 10 uploads
             attributes: [
                 'id',
-                'uploadSessionId', 
+                'uploadSessionId',
                 'filename',
                 'originalName',
                 'itemsCount',
@@ -727,10 +729,10 @@ const getCatalogUploadBackups = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching catalog backups:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             message: 'Failed to fetch catalog backups',
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -751,7 +753,7 @@ const rollbackCatalogUpload = async (req, res) => {
 
         // Find the backup record
         const backup = await CatalogUploadBackup.findOne({
-            where: { 
+            where: {
                 manufacturerId: manufacturerId,
                 uploadSessionId: uploadSessionId,
                 isRolledBack: false
@@ -1211,7 +1213,7 @@ const fetchManufacturerStylesMeta = async (req, res) => {
         const manufacturer = await Manufacturer.findByPk(id, {
             attributes: ['id', 'name', 'costMultiplier']
         });
-        
+
         if (!manufacturer) {
             return res.status(404).json({ error: 'Manufacturer not found' });
         }
@@ -1282,7 +1284,7 @@ const getItemsByStyleCatalogId = async (req, res) => {
         const manufacturer = await Manufacturer.findByPk(manufacturerId, {
             attributes: ['id', 'name', 'costMultiplier']
         });
-        
+
         if (!manufacturer) {
             return res.status(404).json({ success: false, message: 'Manufacturer not found' });
         }
@@ -1398,9 +1400,43 @@ const fetchManufacturerItemsModification = async (req, res) => {
 
 
 
+const getManufacturerTypes = async (req, res) => {
+    try {
+        const { manufacturerId } = req.params;
+
+        if (!manufacturerId) {
+            return res.status(400).json({ success: false, message: 'Manufacturer ID is required.' });
+        }
+
+        // Get unique types for this manufacturer
+        const types = await ManufacturerCatalogData.findAll({
+            attributes: [
+                [sequelize.fn('DISTINCT', sequelize.col('type')), 'type'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+            ],
+            where: {
+                manufacturerId,
+                type: {
+                    [Op.not]: null,
+                    [Op.ne]: ''
+                }
+            },
+            group: ['type'],
+            order: [['type', 'ASC']],
+            raw: true
+        });
+
+        return res.status(200).json({ success: true, data: types });
+    } catch (error) {
+        console.error('Error fetching manufacturer types:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+
 const saveAssemblyCost = async (req, res) => {
     try {
-    const { catalogDataId, type, price, applyTo, manufacturerId } = req.body;
+    const { catalogDataId, type, price, applyTo, manufacturerId, itemType } = req.body;
 
         if (!catalogDataId || !type || !price) {
             return res.status(400).json({ success: false, message: 'Missing required fields.' });
@@ -1417,20 +1453,46 @@ const saveAssemblyCost = async (req, res) => {
             return res.status(200).json({ success: true, data: cost });
         }
 
-        // Check if assembly cost already exists for this catalog item
-        // let assemblyCost = await ManufacturerAssemblyCost.findOne({
-        //     where: { catalogDataId },
-        // });
+        if (applyTo === 'type') {
+            // Apply to all items with the same type
+            if (!itemType) {
+                return res.status(400).json({ success: false, message: 'Item type is required for type-based application.' });
+            }
 
-        // if (assemblyCost) {
-        //     // Update existing record
-        //     await assemblyCost.update({ type, price });
-        // } else {
-        //     // Create new record
-        //     assemblyCost = await ManufacturerAssemblyCost.create({ catalogDataId, type, price });
-        // }
+            const catalogItems = await ManufacturerCatalogData.findAll({
+                where: {
+                    manufacturerId,
+                    type: itemType
+                },
+            });
 
-        // Apply to all with same style + manufacturer
+            const results = [];
+            for (const item of catalogItems) {
+                let cost = await ManufacturerAssemblyCost.findOne({
+                    where: { catalogDataId: item.id },
+                });
+
+                if (cost) {
+                    await cost.update({ type, price });
+                } else {
+                    cost = await ManufacturerAssemblyCost.create({
+                        catalogDataId: item.id,
+                        type,
+                        price
+                    });
+                }
+
+                results.push(cost);
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Assembly cost applied to ${results.length} items of type "${itemType}".`,
+                data: results
+            });
+        }
+
+        // Apply to all items for manufacturer (default/legacy behavior)
         const catalogItems = await ManufacturerCatalogData.findAll({
             where: { manufacturerId },
         });
@@ -1654,8 +1716,8 @@ const deleteStyle = async (req, res) => {
         message += `: ${duplicatesRemoved} duplicates removed (all items already existed in target style)`;
       }
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: message,
         itemsAffected: itemsToUpdate.length,
         mergedCount: mergedCount,
@@ -1670,8 +1732,8 @@ const deleteStyle = async (req, res) => {
         }
       });
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: `Successfully deleted ${deletedCount} items with style "${styleName}"`,
         itemsDeleted: deletedCount
       });
@@ -1711,7 +1773,7 @@ const cleanupDuplicates = async (req, res) => {
     // Check for duplicates based on code + style combination
     for (const item of allItems) {
       const uniqueKey = `${item.code}_${item.style || 'NO_STYLE'}`;
-      
+
       if (seen.has(uniqueKey)) {
         // This is a duplicate, mark for deletion
         duplicatesToDelete.push(item.id);
@@ -1733,7 +1795,7 @@ const cleanupDuplicates = async (req, res) => {
 
     res.json({
       success: true,
-      message: duplicateCount > 0 
+      message: duplicateCount > 0
         ? `Successfully removed ${duplicateCount} duplicate items`
         : 'No duplicates found',
       duplicatesRemoved: duplicateCount,
@@ -1877,7 +1939,7 @@ const bulkEditCatalogItems = async (req, res) => {
         // Validate that we have at least one field to update
         const allowedFields = ['style', 'type', 'description', 'price'];
         const fieldsToUpdate = {};
-        
+
         for (const field of allowedFields) {
             if (updates[field] !== undefined && updates[field] !== null && updates[field] !== '') {
                 fieldsToUpdate[field] = updates[field];
@@ -1936,14 +1998,14 @@ const editStyleName = async (req, res) => {
         });
 
         if (existingItems) {
-            return res.status(400).json({ 
-                error: `Style "${newStyleName.trim()}" already exists for this manufacturer` 
+            return res.status(400).json({
+                error: `Style "${newStyleName.trim()}" already exists for this manufacturer`
             });
         }
 
         // Update all items with the old style name to the new style name
         const [affectedCount] = await ManufacturerCatalogData.update(
-            { 
+            {
                 style: newStyleName.trim(),
                 updatedAt: new Date()
             },
@@ -1956,8 +2018,8 @@ const editStyleName = async (req, res) => {
         );
 
         if (affectedCount === 0) {
-            return res.status(404).json({ 
-                error: `No items found with style "${oldStyleName}" for this manufacturer` 
+            return res.status(404).json({
+                error: `No items found with style "${oldStyleName}" for this manufacturer`
             });
         }
 
@@ -2216,9 +2278,9 @@ const assignItemsToType = async (req, res) => {
     const { manufacturerId, itemIds, newType } = req.body;
 
     if (!manufacturerId || !itemIds || !Array.isArray(itemIds) || itemIds.length === 0 || !newType) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Manufacturer ID, item IDs array, and new type are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Manufacturer ID, item IDs array, and new type are required'
       });
     }
 
@@ -2234,24 +2296,24 @@ const assignItemsToType = async (req, res) => {
     );
 
     if (updateResult[0] > 0) {
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: `Successfully assigned ${updateResult[0]} items to type "${newType}"`,
         updatedCount: updateResult[0]
       });
     } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'No items were updated. Please check the item IDs and manufacturer ID.' 
+      res.status(404).json({
+        success: false,
+        message: 'No items were updated. Please check the item IDs and manufacturer ID.'
       });
     }
 
   } catch (error) {
     console.error('Error assigning items to type:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Failed to assign items to type',
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -2365,6 +2427,7 @@ module.exports = {
     assignItemsToType,
     updateTypeMeta,
     deleteType,
+    getManufacturerTypes,
     addSimpleStyle,
     deleteSimpleStyle
 };

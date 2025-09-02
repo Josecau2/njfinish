@@ -53,18 +53,18 @@ const FormSection = ({ title, icon, children, className = "" }) => (
   </CCard>
 );
 
-const CustomFormInput = ({ 
-  label, 
-  name, 
-  type = "text", 
-  required = false, 
+const CustomFormInput = ({
+  label,
+  name,
+  type = "text",
+  required = false,
   icon = null,
   placeholder = "",
   value,
   onChange,
   isInvalid,
   feedback,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="settings-form-label">
@@ -93,17 +93,17 @@ const CustomFormInput = ({
   </div>
 );
 
-const CustomFormSelect = ({ 
-  label, 
-  name, 
-  required = false, 
+const CustomFormSelect = ({
+  label,
+  name,
+  required = false,
   icon = null,
   children,
   value,
   onChange,
   isInvalid,
   feedback,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="settings-form-label">
@@ -249,7 +249,7 @@ const AddUserForm = () => {
   return (
     <CContainer fluid className="settings-form-container">
       {/* Header Section */}
-      <PageHeader 
+      <PageHeader
         title={t('settings.users.create.title')}
         subtitle={t('settings.users.create.subtitle')}
         icon={cilUserPlus}
@@ -384,10 +384,10 @@ const AddUserForm = () => {
 
           {/* Sales Representative Toggle */}
           <div className="mb-3">
-            <div className="d-flex align-items-center justify-content-between p-3 rounded-3" 
+            <div className="d-flex align-items-center justify-content-between p-3 rounded-3"
                  style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}>
               <div className="d-flex align-items-center">
-                <div 
+                <div
                   className="rounded-circle d-flex align-items-center justify-content-center me-3"
                   style={{
                     width: '32px',
@@ -607,8 +607,8 @@ const AddUserForm = () => {
               >
                 {loading ? (
                   <>
-                    <div 
-                      className="spinner-border spinner-border-sm me-2" 
+                    <div
+                      className="spinner-border spinner-border-sm me-2"
                       role="status"
                       style={{ width: '14px', height: '14px' }}
                     >

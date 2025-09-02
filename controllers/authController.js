@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email },
       include: [{
         model: UserGroup,
@@ -77,13 +77,13 @@ exports.login = async (req, res) => {
       userRole = 'Contractor';
     }
 
-    const token = jwt.sign({ 
-      id: user.id, 
-      email: user.email, 
-      name: user.name, 
-      role: userRole, 
+    const token = jwt.sign({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: userRole,
       role_id: user.role_id,
-      group_id: user.group_id 
+      group_id: user.group_id
     }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Parse modules if they exist and are stored as string
@@ -100,11 +100,11 @@ exports.login = async (req, res) => {
       }
     }
 
-    res.json({ 
-      token, 
-      userId: user.id, 
-      name: user.name, 
-      role: userRole, 
+    res.json({
+      token,
+      userId: user.id,
+      name: user.name,
+      role: userRole,
       role_id: user.role_id,
       group_id: user.group_id,
       group: groupData
@@ -125,7 +125,7 @@ exports.getCurrentUser = async (req, res) => {
       include: [{ model: UserGroup, as: 'group', attributes: ['id', 'name', 'group_type', 'modules'], required: false }]
     });
     if (!user) return res.status(404).json({ message: 'User not found' });
-    
+
     // Parse modules if they exist and are stored as string
     let userData = user.toJSON();
     if (userData.group && userData.group.modules && typeof userData.group.modules === 'string') {
@@ -136,7 +136,7 @@ exports.getCurrentUser = async (req, res) => {
         // Keep original if parsing fails
       }
     }
-    
+
     res.json(userData);
   } catch (err) {
     console.error('getCurrentUser error:', err);
@@ -246,7 +246,7 @@ exports.fetchUsers = async (req, res) => {
         }
       ]
     });
-    
+
     return res.status(200).json({ message: 'Fetch User', users });
   } catch (err) {
     console.error('Error fetching users:', err);
@@ -279,14 +279,14 @@ exports.fetchSingleUser = async (req, res) => {
 // Add user
 exports.addUser = async (req, res) => {
   try {
-    const { 
-      name, 
-      email, 
-      password, 
-      isSalesRep, 
-      location, 
-      userGroup, 
-      force, 
+    const {
+      name,
+      email,
+      password,
+      isSalesRep,
+      location,
+      userGroup,
+      force,
       role,
       // Personal address fields
       street_address,
@@ -331,7 +331,7 @@ exports.addUser = async (req, res) => {
       // Determine user role based on group type for restoration
       let userRole = role || 'User'; // Use provided role or default to 'User'
       let roleId = 0; // Default role_id
-      
+
       if (userGroup) {
         const group = await UserGroup.findByPk(userGroup);
         if (group) {
@@ -346,7 +346,7 @@ exports.addUser = async (req, res) => {
           }
         }
       }
-      
+
       deletedUser.name = name;
       deletedUser.password = await bcrypt.hash(password, 10);
       deletedUser.isSalesRep = !!isSalesRep;
@@ -394,7 +394,7 @@ exports.addUser = async (req, res) => {
     // Determine user role - use explicitly provided role or determine from group type
     let userRole = role || 'User'; // Use provided role or default to 'User'
     let roleId = 0; // Default role_id
-    
+
     // Only override the role if userGroup is provided and role is not explicitly set
     if (userGroup && !role) {
       const group = await UserGroup.findByPk(userGroup);
@@ -491,14 +491,14 @@ exports.updateUser = async (req, res) => {
     // Conditionally update fields
     if (name) user.name = name;
     if (location) user.location = location;
-    
+
     // Update personal address fields if provided
     if (street_address !== undefined) user.street_address = street_address;
     if (city !== undefined) user.city = city;
     if (state !== undefined) user.state = state;
     if (zip_code !== undefined) user.zip_code = zip_code;
     if (country !== undefined) user.country = country;
-    
+
     // Update company information if provided
     if (company_name !== undefined) user.company_name = company_name;
     if (company_street_address !== undefined) user.company_street_address = company_street_address;
@@ -506,7 +506,7 @@ exports.updateUser = async (req, res) => {
     if (company_state !== undefined) user.company_state = company_state;
     if (company_zip_code !== undefined) user.company_zip_code = company_zip_code;
     if (company_country !== undefined) user.company_country = company_country;
-    
+
     if (userGroup) {
       // Determine user role based on group type for updates
       const group = await UserGroup.findByPk(userGroup);
@@ -520,7 +520,7 @@ exports.updateUser = async (req, res) => {
           // Note: Admin users don't need group modules - they have access to everything by role
         }
       }
-      
+
       user.role = userRole; // Set the role field properly
       user.group_id = parseInt(userGroup) || null;
       user.role_id = roleId; // Set role_id properly based on group type
@@ -584,11 +584,11 @@ exports.deleteUser = async (req, res) => {
 exports.getUserRole = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: 'User not found',
         userId: userId,
         error: 'USER_NOT_FOUND'

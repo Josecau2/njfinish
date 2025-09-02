@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getContrastColor } from '../../../../utils/colorUtils';
 import {
   CAlert,
@@ -20,15 +20,17 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../../helpers/axiosInstance';
+import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
 
 const EditManufacturerTab = ({ manufacturer, id }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,6 +42,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     instructions: '',
     assembledEtaDays: '',
     unassembledEtaDays: '',
+    deliveryFee: '',
   });
   const [files, setFiles] = useState([]);
   const [logoImage, setLogoImage] = useState(null);
@@ -59,6 +62,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         instructions: manufacturer.instructions || '',
         assembledEtaDays: manufacturer.assembledEtaDays || '',
         unassembledEtaDays: manufacturer.unassembledEtaDays || '',
+        deliveryFee: manufacturer.deliveryFee || '',
       });
     }
   }, [manufacturer]);
@@ -91,9 +95,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     console.log('Form data before submit:', formData);
-    
+
     try {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
@@ -101,7 +105,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         console.log(`Appending ${key}:`, value);
         formDataToSend.append(key, value);
       });
-      
+
       if (logoImage) formDataToSend.append('manufacturerImage', logoImage);
       files.forEach((file) => formDataToSend.append('catalogFiles', file));
 
@@ -114,6 +118,8 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (res.data.status === 200) {
         setMessage({ text: t('settings.manufacturers.edit.updated'), type: 'success' });
+        // Refetch manufacturer data to update the form with latest values
+        dispatch(fetchManufacturerById({ id, includeCatalog: false }));
         setTimeout(() => navigate('/settings/manufacturers'), 2000);
       } else {
         setMessage({ text: res.data.message || t('settings.manufacturers.edit.updateFailed'), type: 'danger' });
@@ -187,11 +193,11 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       <CFormLabel htmlFor="assembledEtaDays">
                         {t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
                       </CFormLabel>
-                      <CFormInput 
-                        type="text" 
-                        id="assembledEtaDays" 
-                        name="assembledEtaDays" 
-                        value={formData.assembledEtaDays} 
+                      <CFormInput
+                        type="text"
+                        id="assembledEtaDays"
+                        name="assembledEtaDays"
+                        value={formData.assembledEtaDays}
                         onChange={handleChange}
                         placeholder="e.g., 7-14 days"
                       />
@@ -205,11 +211,11 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       <CFormLabel htmlFor="unassembledEtaDays">
                         {t('settings.manufacturers.fields.unassembledEtaDays', 'Unassembled Items ETA')}
                       </CFormLabel>
-                      <CFormInput 
-                        type="text" 
-                        id="unassembledEtaDays" 
-                        name="unassembledEtaDays" 
-                        value={formData.unassembledEtaDays} 
+                      <CFormInput
+                        type="text"
+                        id="unassembledEtaDays"
+                        name="unassembledEtaDays"
+                        value={formData.unassembledEtaDays}
                         onChange={handleChange}
                         placeholder="e.g., 3-7 days"
                       />
@@ -222,12 +228,12 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
                 <div className="mb-3">
                   <CFormLabel htmlFor="manufacturerImage">{t('settings.manufacturers.edit.updateImage')}</CFormLabel>
-                  
+
                   {/* Display current image if exists */}
                   {manufacturer?.image && !logoImage && (
                     <div className="mb-3">
                       <p className="text-muted">{t('settings.manufacturers.edit.currentImage')}:</p>
-                      <img 
+                      <img
                         src={`${import.meta.env.VITE_API_URL}/uploads/images/${manufacturer.image}`}
                         alt={manufacturer.name}
                         style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
@@ -235,18 +241,18 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       />
                     </div>
                   )}
-                  
-                  <CFormInput 
-                    type="file" 
-                    id="manufacturerImage" 
-                    accept="image/*" 
-                    onChange={(e) => setLogoImage(e.target.files[0])} 
+
+                  <CFormInput
+                    type="file"
+                    id="manufacturerImage"
+                    accept="image/*"
+                    onChange={(e) => setLogoImage(e.target.files[0])}
                   />
                   {logoImage && (
                     <div className="mt-2">
                       <div className="text-success">{t('settings.manufacturers.edit.newImageSelected', { name: logoImage.name })}</div>
                       {/* Preview of new image */}
-                      <img 
+                      <img
                         src={URL.createObjectURL(logoImage)}
                         alt="Preview"
                         style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
@@ -287,6 +293,13 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       {calculateMultiplierExample()}
                     </div>
                   </CCol>
+                  <CCol md={4}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="deliveryFee">{t('settings.manufacturers.edit.deliveryFee')}</CFormLabel>
+                      <CFormInput type="number" step="0.01" min="0" id="deliveryFee" name="deliveryFee" value={formData.deliveryFee} onChange={handleChange} />
+                      <CFormText className="text-muted">{t('settings.manufacturers.edit.deliveryFeeHelp')}</CFormText>
+                    </div>
+                  </CCol>
                 </CRow>
               </CCardBody>
             </CCard>
@@ -311,8 +324,8 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </CCard>
 
             <div className="text-end">
-              <CButton 
-                type="submit" 
+              <CButton
+                type="submit"
                 disabled={loading}
                 style={{
                   background: headerBg,

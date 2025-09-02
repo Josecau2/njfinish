@@ -97,7 +97,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [showHingesModal, setShowHingesModal] = useState(false);
   const [showModificationModal, setShowModificationModal] = useState(false);
 
-  const [assemblyData, setAssemblyData] = useState({ type: '', amount: '', applyTo: 'one' });
+  const [assemblyData, setAssemblyData] = useState({
+    type: '',
+    price: '',
+    applyTo: 'one'
+  });
+  const [availableTypes, setAvailableTypes] = useState([]);
 
   const [hingesData, setHingesData] = useState({
     leftHingePrice: '',
@@ -1189,25 +1194,52 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     }
   }
 
+  // Fetch available types for the manufacturer
+  const fetchAvailableTypes = async () => {
+    if (!id) return;
+    try {
+      const response = await axiosInstance.get(`/api/manufacturers/${id}/types`);
+      if (response.data.success) {
+        setAvailableTypes(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch types:', error);
+      setAvailableTypes([]);
+    }
+  };
+
   const handleAssemblyCostClick = async (item) => {
     try {
-      const { id } = item
+      const { id } = item;
 
-  const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`);
 
       const { type, price } = res.data || {};
       setSelectedCatalogItem(item);
+
+      // Fetch available types for the dropdown
+      await fetchAvailableTypes();
+
       setAssemblyData({
         type: type || '',
-        price: price || '' // Map 'amount' from API to 'price' in state
+        price: price || '',
+        applyTo: 'one',
+        selectedItemType: item.type || ''
       });
     } catch (error) {
-      console.error('Error fetching style:', error);
+      console.error('Error fetching assembly cost:', error);
+      // Fetch available types even if assembly cost fetch fails
+      await fetchAvailableTypes();
+      setSelectedCatalogItem(item);
+      setAssemblyData({
+        type: '',
+        price: '',
+        applyTo: 'one',
+        selectedItemType: item.type || ''
+      });
     } finally {
       setShowAssemblyModal(true);
-
     }
-
   };
 
   // const handleHingesDetailsClick = async (item) => {
@@ -1238,15 +1270,30 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const saveAssemblyCost = async () => {
     try {
+      // Validation
+      if (assemblyData.applyTo === 'type' && !assemblyData.selectedItemType) {
+        alert('Please select an item type when applying by type.');
+        return;
+      }
+
       const payload = {
         catalogDataId: selectedCatalogItem.id,
         type: assemblyData.type,
         price: parseFloat(assemblyData.price) || 0,
-        applyTo: assemblyData.applyTo || 'item',
+        applyTo: assemblyData.applyTo || 'one',
         manufacturerId: selectedCatalogItem.manufacturerId,
       };
-  await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
+
+      // Add itemType if applying by type
+      if (assemblyData.applyTo === 'type') {
+        payload.itemType = assemblyData.selectedItemType;
+      }
+
+      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
       setShowAssemblyModal(false);
+
+      // Refresh the catalog data to show updated assembly costs
+      fetchCatalogData();
     } catch (error) {
       console.error('Failed to save assembly cost:', error);
     }
@@ -2406,9 +2453,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             value={assemblyData.applyTo}
             onChange={(e) => setAssemblyData({ ...assemblyData, applyTo: e.target.value })}
           >
-            <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
             <option value="one">{t('settings.manufacturers.catalogMapping.assembly.applyOne')}</option>
+            <option value="type">{t('settings.manufacturers.catalogMapping.assembly.applyType')}</option>
+            <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
           </CFormSelect>
+
+          {assemblyData.applyTo === 'type' && (
+            <>
+              <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.selectItemType')}</CFormLabel>
+              <CFormSelect
+                value={assemblyData.selectedItemType}
+                onChange={(e) => setAssemblyData({ ...assemblyData, selectedItemType: e.target.value })}
+              >
+                <option value="">{t('settings.manufacturers.catalogMapping.assembly.chooseType')}</option>
+                {availableTypes.map((typeItem) => (
+                  <option key={typeItem.type} value={typeItem.type}>
+                    {typeItem.type} ({typeItem.count} items)
+                  </option>
+                ))}
+              </CFormSelect>
+            </>
+          )}
 
 
         </CModalBody>

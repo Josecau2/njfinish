@@ -252,6 +252,7 @@
       "subtotalStyles": "Subtotal (Styles)",
       "assemblyFee": "Assembly Fee",
       "modifications": "Modifications",
+      "deliveryFee": "Delivery Fee",
       "discount": "Discount",
       "tax": "Tax",
       "grandTotal": "Grand Total",
@@ -1859,6 +1860,8 @@
         "newImageSelected": "New image selected: {{name}}",
         "priceInfo": "Price Information",
         "costMultiplier": "Cost multiplier",
+        "deliveryFee": "Delivery Fee",
+        "deliveryFeeHelp": "Optional delivery fee charged by manufacturer (will be added to proposals)",
         "uploadNewCatalog": "Upload New Catalog Files",
         "supported": "Supported: Excel, CSV files",
         "saving": "Saving...",
@@ -2016,7 +2019,10 @@
           "fixed": "Fixed rate per cabinet",
           "applyTo": "Apply To",
           "applyAll": "Apply to All Items",
-          "applyOne": "Apply to This Item Only"
+          "applyOne": "Apply to This Item Only",
+          "applyType": "Apply by Item Type",
+          "selectItemType": "Select Item Type",
+          "chooseType": "Choose a type..."
         },
         "hinges": {
           "modalTitle": "Add Hinges & Exposed Side Pricing",

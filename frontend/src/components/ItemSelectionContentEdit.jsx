@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback, useMemo, startTransition, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    CFormCheck, CFormSwitch,
+    CFormCheck, CFormSwitch, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList } from '@coreui/icons';
+import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList, cilTrash } from '@coreui/icons';
 import ModificationModalEdit from '../components/model/ModificationModalEdit'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
@@ -96,6 +96,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [modificationItems, setModificationItems] = useState('');
     const [itemModificationID, setItemModificationID] = useState('');
+    const [showModificationsList, setShowModificationsList] = useState(false);
+    const [bulkModifyModalVisible, setBulkModifyModalVisible] = useState(false);
+    const [selectedModForBulk, setSelectedModForBulk] = useState(null);
+    const [selectedItemsForBulk, setSelectedItemsForBulk] = useState([]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -223,16 +227,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
             // Calculate totals following the same flow as the main calculation
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
-
-            // Access current discount and tax values dynamically
-            const currentDiscountPercent = Number(discountPercent || 0);
-            const defaultTax = taxes?.find(tax => tax.is_default === true);
-            const currentDefaultTaxValue = parseFloat(defaultTax?.value || '0');
-
-            const discountAmount = (styleTotal * currentDiscountPercent) / 100;
+            const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const taxAmount = (totalAfterDiscount * currentDefaultTaxValue) / 100;
-            const grandTotal = totalAfterDiscount + taxAmount;
+            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const totalWithDelivery = totalAfterDiscount + deliveryFee;
+            const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
+            const grandTotal = totalWithDelivery + taxAmount;
 
             return grandTotal;
         } catch (error) {
@@ -521,14 +521,15 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 }, 0)
                 : 0;
 
+            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
-
-            const cabinets = customItems?.reduce((sum, item) => sum + (item.price * userGroupMultiplier), 0) +
-                versionItems.reduce((sum, item) => sum + (item.price * item.qty), 0)
+            const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
+                versionItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
             const discountAmount = (styleTotal * discountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const taxAmount = (totalAfterDiscount * defaultTaxValue) / 100;
-            const grandTotal = totalAfterDiscount + taxAmount;
+            const totalWithDelivery = totalAfterDiscount + deliveryFee;
+            const taxAmount = (totalWithDelivery * defaultTaxValue) / 100;
+            const grandTotal = totalWithDelivery + taxAmount;
 
             setFormData(prev => {
                 const existing = Array.isArray(prev?.manufacturersData) ? prev.manufacturersData : [];
@@ -547,6 +548,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
                                 assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
                                 modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
+                                deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
                                 styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
                                 discountPercent: Number(discountPercent) || 0,
                                 discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
@@ -986,6 +988,74 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const formatPrice = (price) => {
         const val = Number(price);
         return !isNaN(val) ? `$${val.toFixed(2)}` : '$0.00';
+    };
+
+    // Get all unique modifications across all items with their total costs
+    const getAllModifications = () => {
+        const allMods = [];
+        
+        versionItems.forEach((item, itemIdx) => {
+            if (Array.isArray(item.modifications) && item.modifications.length > 0) {
+                item.modifications.forEach((mod, modIdx) => {
+                    allMods.push({
+                        ...mod,
+                        itemIndex: itemIdx,
+                        modificationIndex: modIdx,
+                        itemCode: item.code,
+                        itemDescription: item.description,
+                        totalCost: (parseFloat(mod.price || 0) * parseInt(mod.qty || 1))
+                    });
+                });
+            }
+        });
+        
+        return allMods;
+    };
+
+    // Apply modification to selected items
+    const handleBulkApplyModification = (modification, targetItemIndices) => {
+        if (!modification || !targetItemIndices || targetItemIndices.length === 0) return;
+
+        targetItemIndices.forEach(itemIdx => {
+            const currentMods = modificationsMap[itemIdx] || [];
+            
+            // Check if this modification already exists for this item
+            const existingModIndex = currentMods.findIndex(mod => 
+                mod.name === modification.name && 
+                mod.type === modification.type &&
+                (modification.type === 'existing' ? mod.modificationId === modification.modificationId : true)
+            );
+
+            if (existingModIndex === -1) {
+                // Add new modification
+                const newMod = {
+                    ...modification,
+                    // Remove item-specific data
+                    itemIndex: undefined,
+                    modificationIndex: undefined,
+                    itemCode: undefined,
+                    itemDescription: undefined,
+                    totalCost: undefined
+                };
+                
+                const updatedMods = [...currentMods, newMod];
+                updateModification(itemIdx, updatedMods);
+            }
+        });
+
+        setBulkModifyModalVisible(false);
+        setSelectedModForBulk(null);
+        setSelectedItemsForBulk([]);
+    };
+
+    // Get items that can receive modifications (excluding the source item)
+    const getAvailableItemsForBulk = (sourceItemIndex) => {
+        return versionItems.map((item, idx) => ({
+            index: idx,
+            code: item.code,
+            description: item.description,
+            disabled: idx === sourceItemIndex
+        }));
     };
 
 
@@ -1501,6 +1571,146 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 </div>
             )}
 
+            {/* Modifications List Section */}
+            {!readOnly && (
+            <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="mb-0">{t('proposalUI.modifications.title', 'Applied Modifications')}</h6>
+                    <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setShowModificationsList(!showModificationsList)}
+                    >
+                        {showModificationsList ? t('common.hide', 'Hide') : t('common.show', 'Show')} ({getAllModifications().length})
+                    </button>
+                </div>
+
+                {showModificationsList && (
+                    <div className="border rounded p-3 bg-light">
+                        {getAllModifications().length > 0 ? (
+                            <>
+                                {/* Desktop Table */}
+                                <div className="table-responsive d-none d-md-block">
+                                    <table className="table table-sm table-hover">
+                                        <thead className="table-secondary">
+                                            <tr>
+                                                <th>{t('proposalUI.modifications.item', 'Item')}</th>
+                                                <th>{t('proposalUI.modifications.name', 'Modification')}</th>
+                                                <th>{t('proposalUI.modifications.qty', 'Qty')}</th>
+                                                <th>{t('proposalUI.modifications.price', 'Unit Price')}</th>
+                                                <th>{t('proposalUI.modifications.total', 'Total')}</th>
+                                                <th>{t('proposalUI.modifications.note', 'Note')}</th>
+                                                <th>{t('common.actions', 'Actions')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {getAllModifications().map((mod, idx) => (
+                                                <tr key={idx}>
+                                                    <td>
+                                                        <small className="text-muted">{mod.itemCode}</small><br/>
+                                                        <span style={{fontSize: '0.85rem'}}>{mod.itemDescription?.substring(0, 30)}...</span>
+                                                    </td>
+                                                    <td>{mod.name}</td>
+                                                    <td>{mod.qty}</td>
+                                                    <td>{formatPrice(mod.price || 0)}</td>
+                                                    <td className="fw-bold">{formatPrice(mod.totalCost)}</td>
+                                                    <td>
+                                                        <small className="text-muted">{mod.note || '-'}</small>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            className="btn btn-sm btn-outline-primary me-2"
+                                                            onClick={() => {
+                                                                setSelectedModForBulk(mod);
+                                                                setBulkModifyModalVisible(true);
+                                                            }}
+                                                            title={t('proposalUI.modifications.bulkApply', 'Apply to other items')}
+                                                        >
+                                                            <CIcon icon={cilList} size="sm" />
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-outline-danger"
+                                                            onClick={() => handleDeleteModification(mod.itemIndex, mod.modificationIndex)}
+                                                            title={t('common.delete', 'Delete')}
+                                                        >
+                                                            <CIcon icon={cilTrash} size="sm" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                        <tfoot className="table-light">
+                                            <tr>
+                                                <td colSpan="4" className="text-end fw-bold">
+                                                    {t('proposalUI.modifications.totalCost', 'Total Modifications Cost')}:
+                                                </td>
+                                                <td className="fw-bold text-primary">
+                                                    {formatPrice(getAllModifications().reduce((sum, mod) => sum + mod.totalCost, 0))}
+                                                </td>
+                                                <td colSpan="2"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                {/* Mobile List View */}
+                                <div className="d-block d-md-none">
+                                    {getAllModifications().map((mod, idx) => (
+                                        <div key={idx} className="border rounded p-3 mb-3 bg-white">
+                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <div className="fw-bold">{mod.name}</div>
+                                                    <small className="text-muted">{mod.itemCode} - {mod.itemDescription?.substring(0, 40)}...</small>
+                                                </div>
+                                                <div className="text-end">
+                                                    <div className="fw-bold text-primary">{formatPrice(mod.totalCost)}</div>
+                                                    <small className="text-muted">{mod.qty} × {formatPrice(mod.price || 0)}</small>
+                                                </div>
+                                            </div>
+                                            {mod.note && (
+                                                <div className="mb-2">
+                                                    <small className="text-muted">{mod.note}</small>
+                                                </div>
+                                            )}
+                                            <div className="d-flex gap-2">
+                                                <button
+                                                    className="btn btn-sm btn-outline-primary flex-fill"
+                                                    onClick={() => {
+                                                        setSelectedModForBulk(mod);
+                                                        setBulkModifyModalVisible(true);
+                                                    }}
+                                                >
+                                                    {t('proposalUI.modifications.bulkApply', 'Apply to Others')}
+                                                </button>
+                                                <button
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => handleDeleteModification(mod.itemIndex, mod.modificationIndex)}
+                                                >
+                                                    {t('common.delete', 'Delete')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    <div className="border-top pt-3 mt-3">
+                                        <div className="d-flex justify-content-between fw-bold text-primary">
+                                            <span>{t('proposalUI.modifications.totalCost', 'Total Modifications Cost')}:</span>
+                                            <span>{formatPrice(getAllModifications().reduce((sum, mod) => sum + mod.totalCost, 0))}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-center text-muted py-4">
+                                <CIcon icon={cilSettings} size="2xl" className="mb-2 opacity-50" />
+                                <div>{t('proposalUI.modifications.noModifications', 'No modifications have been added yet')}</div>
+                                <small>{t('proposalUI.modifications.addHint', 'Use the gear icon next to items to add modifications')}</small>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+            )}
+
             {!readOnly && isUserAdmin && (
             <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
                 <div
@@ -1696,6 +1906,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         </tr>
 
                         <tr>
+                            <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
+                            <td className="text-center">${selectVersion?.summary?.deliveryFee || "0"}</td>
+                        </tr>
+
+                        <tr>
                             <th className="bg-light">{t('proposalUI.summary.taxRate')}</th>
                             <td className="text-center">{selectVersion?.summary?.taxRate || "0"}%</td>
                         </tr>
@@ -1717,6 +1932,109 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 </table>
             </div>
             )}
+
+            {/* Bulk Modify Modal */}
+            <CModal
+                visible={bulkModifyModalVisible}
+                onClose={() => {
+                    setBulkModifyModalVisible(false);
+                    setSelectedModForBulk(null);
+                    setSelectedItemsForBulk([]);
+                }}
+                alignment="center"
+                size="lg"
+            >
+                <CModalHeader>
+                    <CModalTitle>{t('proposalUI.modifications.bulkApply', 'Apply Modification to Other Items')}</CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                    {selectedModForBulk && (
+                        <>
+                            <div className="alert alert-info">
+                                <h6>{t('proposalUI.modifications.selectedMod', 'Selected Modification')}:</h6>
+                                <div><strong>{selectedModForBulk.name}</strong></div>
+                                <div>{t('proposalUI.modifications.qty', 'Qty')}: {selectedModForBulk.qty} × {formatPrice(selectedModForBulk.price)} = {formatPrice(selectedModForBulk.totalCost)}</div>
+                                {selectedModForBulk.note && <div><small>{t('proposalUI.modifications.note', 'Note')}: {selectedModForBulk.note}</small></div>}
+                            </div>
+                            
+                            <div className="mb-3">
+                                <h6>{t('proposalUI.modifications.selectItems', 'Select items to apply this modification to')}:</h6>
+                                <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                    {getAvailableItemsForBulk(selectedModForBulk.itemIndex).map((item) => (
+                                        <div key={item.index} className="form-check mb-2">
+                                            <CFormCheck
+                                                id={`bulk-item-${item.index}`}
+                                                checked={selectedItemsForBulk.includes(item.index)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedItemsForBulk(prev => [...prev, item.index]);
+                                                    } else {
+                                                        setSelectedItemsForBulk(prev => prev.filter(idx => idx !== item.index));
+                                                    }
+                                                }}
+                                                disabled={item.disabled}
+                                                label={
+                                                    <div className={item.disabled ? 'text-muted' : ''}>
+                                                        <div className="fw-bold">{item.code}</div>
+                                                        <small>{item.description}</small>
+                                                        {item.disabled && <small className="text-muted d-block">(Source item)</small>}
+                                                    </div>
+                                                }
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="mt-3 d-flex gap-2">
+                                    <button 
+                                        className="btn btn-outline-secondary btn-sm"
+                                        onClick={() => {
+                                            const availableItems = getAvailableItemsForBulk(selectedModForBulk.itemIndex)
+                                                .filter(item => !item.disabled)
+                                                .map(item => item.index);
+                                            setSelectedItemsForBulk(availableItems);
+                                        }}
+                                    >
+                                        {t('common.selectAll', 'Select All')}
+                                    </button>
+                                    <button 
+                                        className="btn btn-outline-secondary btn-sm"
+                                        onClick={() => setSelectedItemsForBulk([])}
+                                    >
+                                        {t('common.selectNone', 'Select None')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {selectedItemsForBulk.length > 0 && (
+                                <div className="alert alert-warning">
+                                    <small>
+                                        {t('proposalUI.modifications.bulkApplyWarning', 
+                                        'This will add the modification to {{count}} selected items. Existing modifications on those items will not be affected.', 
+                                        { count: selectedItemsForBulk.length })}
+                                    </small>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </CModalBody>
+                <CModalFooter>
+                    <CButton color="secondary" onClick={() => {
+                        setBulkModifyModalVisible(false);
+                        setSelectedModForBulk(null);
+                        setSelectedItemsForBulk([]);
+                    }}>
+                        {t('common.cancel', 'Cancel')}
+                    </CButton>
+                    <CButton 
+                        color="primary" 
+                        onClick={() => handleBulkApplyModification(selectedModForBulk, selectedItemsForBulk)}
+                        disabled={selectedItemsForBulk.length === 0}
+                    >
+                        {t('proposalUI.modifications.apply', 'Apply')} ({selectedItemsForBulk.length})
+                    </CButton>
+                </CModalFooter>
+            </CModal>
 
             <ModificationModalEdit
                 itemModificationID={itemModificationID}

@@ -148,13 +148,15 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     return sum + unitFee * qty;
                 }, 0)
                 : 0;
+            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
             const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
                 filteredItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
             const discountAmount = (styleTotal * discountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const taxAmount = (totalAfterDiscount * defaultTaxValue) / 100;
-            const grandTotal = totalAfterDiscount + taxAmount;
+            const totalWithDelivery = totalAfterDiscount + deliveryFee;
+            const taxAmount = (totalWithDelivery * defaultTaxValue) / 100;
+            const grandTotal = totalWithDelivery + taxAmount;
 
             // Build data used to compute a stability hash to avoid redundant updates
             const versionName = selectVersion?.versionName;
@@ -169,6 +171,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 // Use the correctly computed assemblyFeeTotal
                 assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
                 modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
+                deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
                 styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
                 discountPercent: Number(discountPercent) || 0,
                 discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
@@ -524,8 +527,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
             const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const taxAmount = (totalAfterDiscount * Number(defaultTaxValue || 0)) / 100;
-            const grandTotal = totalAfterDiscount + taxAmount;
+            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const totalWithDelivery = totalAfterDiscount + deliveryFee;
+            const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
+            const grandTotal = totalWithDelivery + taxAmount;
 
             return grandTotal;
         } catch (error) {
@@ -1552,6 +1557,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             <td className="text-center">
                                 ${selectVersion?.summary?.total || "0"}
                             </td>
+                        </tr>
+
+                        <tr>
+                            <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
+                            <td className="text-center">${selectVersion?.summary?.deliveryFee || "0"}</td>
                         </tr>
 
                         <tr>

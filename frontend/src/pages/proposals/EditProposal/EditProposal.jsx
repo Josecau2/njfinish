@@ -70,6 +70,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   const id = decodeParam(rawId);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const manufacturersById = useSelector((state) => state.manufacturers.byId);
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('item');
@@ -85,7 +86,6 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
   const [showContractModal, setShowContractModal] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [designerOptions, setDesignerOptions] = useState([]);
-  const [manufacturersById, setManufacturersById] = useState([]);
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const loggedInUserId = loggedInUser?.userId;
   const hasSetInitialVersion = useRef(false);
@@ -172,7 +172,6 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
         setInitialData(processedData);
         setFormData(processedData || defaultFormData);
         setHasLocalEdits(false); // Reset local edits flag on initial load
-        setManufacturersById(parsedManufacturersData || []);
         setLoading(false);
       })
       .catch((err) => {

@@ -52,6 +52,13 @@ const Manufacturer = sequelize.define('Manufacturer', {
     field: 'unassembled_eta_days',
     comment: 'Estimated delivery time for unassembled items'
   },
+  deliveryFee: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00,
+    field: 'delivery_fee',
+    comment: 'Delivery fee charged by manufacturer'
+  },
   status: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
