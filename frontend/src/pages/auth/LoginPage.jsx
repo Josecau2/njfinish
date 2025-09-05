@@ -7,6 +7,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
+import { installTokenEverywhere } from '../../utils/authToken';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -71,17 +72,9 @@ const LoginPage = () => {
       const { token, userId, name, role, role_id, group_id, group } = response.data;
       const user = { email, userId, name, role, role_id, group_id, group };
 
-      // Clean slate before saving the new token
-      try { localStorage.removeItem('token'); } catch {}
-      try { sessionStorage.removeItem('token'); } catch {}
-      try {
-        document.cookie = 'token=; Max-Age=0; path=/';
-        document.cookie = 'auth=; Max-Age=0; path=/';
-      } catch {}
-
-      // Store new auth
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+  // Install token everywhere (hard reset) and persist user
+  installTokenEverywhere(token);
+  try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
       // Notify other tabs
       try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
 

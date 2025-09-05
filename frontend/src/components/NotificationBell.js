@@ -60,8 +60,7 @@ const NotificationBell = () => {
     try {
       const token = localStorage.getItem('token')
       if (!token) return
-
-  const { data } = await axiosInstance.get('/api/notifications/unread-count', { __suppressAuthLogout: false })
+      const { data } = await axiosInstance.get('/api/notifications/unread-count', { __suppressAuthLogout: true })
       if (data && typeof data.unreadCount === 'number') {
         dispatch(setUnreadCount(data.unreadCount))
       }
@@ -69,14 +68,13 @@ const NotificationBell = () => {
       if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Stop polling after first auth failure; global axios interceptor will handle logout/redirect
-        disabledRef.current = true
-        if (intervalRef.current) clearInterval(intervalRef.current)
+        // Stay silent & show zero; do NOT logout or stop entire app
+        dispatch(setUnreadCount(0))
         return
       }
-      // Suppress noise on auth-expired cancellations
       if ((error?.message || '').toLowerCase() === 'auth-expired') return
-      console.error('Error fetching unread count:', error?.message || error)
+      // eslint-disable-next-line no-console
+      console.warn('Bell fetch error (non-auth):', error?.message || error)
     }
   }
 
@@ -90,7 +88,7 @@ const NotificationBell = () => {
 
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
-        __suppressAuthLogout: false
+        __suppressAuthLogout: true
       })
       if (data) {
         dispatch(setNotifications(data.data || []))
@@ -100,12 +98,10 @@ const NotificationBell = () => {
       if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Stop polling; interceptor handles redirect
-        disabledRef.current = true
-        if (intervalRef.current) clearInterval(intervalRef.current)
         return
       }
-      console.error('Error fetching notifications:', error?.message || error)
+      // eslint-disable-next-line no-console
+      console.warn('Error fetching notifications:', error?.message || error)
     } finally {
       setFetching(false)
     }
@@ -115,7 +111,7 @@ const NotificationBell = () => {
     try {
       const token = localStorage.getItem('token')
       if (!token) return
-  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: false })
+  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
       // Optimistically zero the badge and mark local items as read
       dispatch(setUnreadCount(0))
       const nowIso = new Date().toISOString()
@@ -149,7 +145,7 @@ const NotificationBell = () => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-  await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, { __suppressAuthLogout: false })
+  await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, { __suppressAuthLogout: true })
       dispatch(markNotificationAsRead(notificationId))
       fetchUnreadCount()
     } catch (error) {
@@ -167,7 +163,7 @@ const NotificationBell = () => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: false })
+  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
       dispatch(setUnreadCount(0))
       fetchNotifications()
     } catch (error) {

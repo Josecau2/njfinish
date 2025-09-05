@@ -15,13 +15,20 @@ let isLoggingOut = false;
 let isRefreshing = false;
 let refreshPromise = null;
 
-// Attach token from localStorage (only; no preflights)
+// Attach token from localStorage (only; no proactive refresh). Instrument tail for debugging.
 api.interceptors.request.use((config) => {
-  const t = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (t) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${t}`;
-  }
+  try {
+    const t = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+    if (t) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${t}`;
+    }
+    // Temporary instrumentation (remove once stable)
+    const tail = t ? t.slice(-10) : '(none)';
+    // eslint-disable-next-line no-console
+    console.debug('[AUTH] sending token tail:', tail, '->', config.url);
+  } catch {}
+
   // Attach abort signal so polling and pending requests stop immediately after 401/403
   try {
     if (!activeAbortController || activeAbortController.signal?.aborted) {

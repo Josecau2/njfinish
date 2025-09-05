@@ -5,10 +5,14 @@ import 'core-js'
 import './i18n'
 
 import App from './App'
+import { detoxAuthStorage } from './utils/authToken'
 import Swal from 'sweetalert2'
 import store from './store'
 import axiosInstance from './helpers/axiosInstance'
 import { logout } from './store/slices/authSlice'
+
+// Early detox: unify to a single freshest token & clear stale persisted shards
+try { detoxAuthStorage(); } catch {}
 
 // On boot hygiene: remove legacy auth cookies and validate token freshness before components mount
 try {
