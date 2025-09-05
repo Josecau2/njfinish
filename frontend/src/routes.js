@@ -55,20 +55,20 @@ const ContactUs = React.lazy(() => import('./pages/contact/ContactUs'))
 const routes = [
   { path: '/', name: 'Dashboard', element: Dashboard },
   { path: '/profile', name: 'Profile', element: Profile },
-  
+
   // Customer routes
   { path: '/customers', name: 'Customers', element: Customers, permission: 'customers:read' },
   // Plain path -> redirect to canonical noisy path
   { path: '/customers/edit/:id', name: 'Edit Customer (redirect)', element: RedirectToNoisyEditCustomer, permission: 'customers:update' },
   { path: '/:noise1/:noise2/customers/edit/:id', name: 'Edit Customer (noisy)', element: CustomerForm, permission: 'customers:update' },
   { path: '/customers/add', name: 'Add Customer', element: CustomerForm, permission: 'customers:create' },
-  
+
   // Quote routes
   { path: '/quotes', name: 'Quote', element: Proposals, permission: 'proposals:read' },
   { path: '/quotes/create', name: 'CreateQuoteForm', element: CreateProposalForm, permission: 'proposals:create' },
   { path: '/quotes/edit/:id', name: 'EditQuote (redirect)', element: RedirectToNoisyEditProposal, permission: 'proposals:update' },
   { path: '/:noise1/:noise2/quotes/edit/:id', name: 'EditQuote (noisy)', element: EditProposal, permission: 'proposals:update' },
-  
+
   // Contracts (related to quotes) - blocked for contractors
   { path: '/contracts', name: 'Contracts', element: Contracts, permission: 'proposals:read', contractorBlock: true },
 
@@ -77,38 +77,38 @@ const routes = [
   { path: '/my-orders', name: 'My Orders', element: MyOrders, permission: 'proposals:read' },
   { path: '/orders/:id', name: 'Order Details', element: OrderDetails, permission: 'proposals:read', contractorBlock: true },
   { path: '/my-orders/:id', name: 'My Order Details', element: OrderDetails, permission: 'proposals:read' },
-  
+
   // Resources
   { path: '/resources', name: 'Resources', element: Resources, permission: 'resources:read' },
   { path: '/contact', name: 'Contact Us', element: ContactUs },
-  
-  // Calendar  
+
+  // Calendar
   { path: '/calender', name: 'Calender', element: Calender, module: 'calendar' },
-  
+
   // Settings routes (admin only)
   { path: '/settings/manufacturers', name: 'ManufacturersList', element: ManufacturersList, permission: 'settings:manufacturers' },
   { path: '/settings/manufacturers/create', name: 'ManufacturersList', element: ManufacturersForm, permission: 'settings:manufacturers' },
   { path: '/settings/manufacturers/edit/:id', name: 'EditManufacturer (redirect)', element: RedirectToNoisyEditManufacturer, permission: 'settings:manufacturers' },
   { path: '/:noise1/:noise2/settings/manufacturers/edit/:id', name: 'EditManufacturer (noisy)', element: EditManufacturer, permission: 'settings:manufacturers' },
   { path: '/settings/usergroup/multipliers', name: 'ManufacturersMultipliers', element: ManufacturersMultipliers, permission: 'settings:manufacturers' },
-  
+
   { path: '/settings/users', name: 'Users', element: UserList, permission: 'settings:users' },
   { path: '/settings/users/create', name: 'Users', element: CreateUser, permission: 'settings:users' },
   { path: '/settings/users/edit/:id', name: 'Users (redirect)', element: RedirectToNoisyEditUser, permission: 'settings:users' },
   { path: '/:noise1/:noise2/settings/users/edit/:id', name: 'Users (noisy)', element: EditUser, permission: 'settings:users' },
-  
+
   { path: '/settings/users/groups', name: 'User Groups', element: UserGroupList, permission: 'settings:groups' },
   { path: '/settings/users/group/create', name: 'Users Group', element: CreateUserGroup, permission: 'settings:groups' },
   { path: '/settings/users/group/edit/:id', name: 'Edit User Group (redirect)', element: RedirectToNoisyEditUserGroup, permission: 'settings:groups' },
   { path: '/:noise1/:noise2/settings/users/group/edit/:id', name: 'Edit User Group (noisy)', element: EditUserGroup, permission: 'settings:groups' },
-  
+
   { path: '/settings/locations', name: 'Locations', element: LocationList, permission: 'settings:locations' },
   { path: '/settings/locations/create', name: 'Locations', element: CreateLocation, permission: 'settings:locations' },
   { path: '/settings/locations/edit/:id', name: 'Locations (redirect)', element: RedirectToNoisyEditLocation, permission: 'settings:locations' },
   { path: '/:noise1/:noise2/settings/locations/edit/:id', name: 'Locations (noisy)', element: EditLocation, permission: 'settings:locations' },
-  
+
   { path: '/settings/taxes', name: 'Tax', element: Tax, permission: 'settings:taxes' },
-  
+
   { path: '/settings/customization', name: 'customization', element: CustomizationPage, permission: 'settings:customization' },
   { path: '/settings/pdflayoutcustomization', name: 'PdfLayoutCustomization', element: PdfLayoutCustomization, permission: 'settings:customization' },
   { path: '/settings/loginlayoutcustomization', name: 'loginlayoutcustomization', element: LoginCustomizerPage, permission: 'settings:customization' },

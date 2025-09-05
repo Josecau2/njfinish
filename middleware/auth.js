@@ -3,17 +3,51 @@ const User = require('../models/User');
 const UserGroup = require('../models/UserGroup');
 const { getUserPermissions } = require('./permissions');
 require('dotenv').config();
+const TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
+
+// Throttle noisy expired-token logs (configurable)
+const EXPIRED_LOG_THROTTLE_MS = parseInt(process.env.JWT_EXPIRED_LOG_THROTTLE_MS || '60000', 10); // default 60s per route
+const EXPIRED_LOG_ENABLED = !['off', 'false', '0'].includes(String(process.env.JWT_EXPIRED_LOGS || '').toLowerCase());
+const __lastExpiredLogByKey = new Map();
+
+function logExpiredOnce(req, scope = 'auth') {
+  if (!EXPIRED_LOG_ENABLED) return;
+  try {
+    const key = `${scope}:${req.method} ${String(req.originalUrl || req.url || '').split('?')[0]}`;
+    const now = Date.now();
+    const last = __lastExpiredLogByKey.get(key) || 0;
+    if (now - last > EXPIRED_LOG_THROTTLE_MS) {
+      __lastExpiredLogByKey.set(key, now);
+      console.warn('Token expired for', req.method, req.originalUrl);
+    }
+  } catch (_) {}
+}
 
 exports.verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const authHeader = req.headers.authorization || '';
+  const token = /^Bearer\s/i.test(authHeader) ? authHeader.split(' ')[1].trim() : null;
   if (!token) return res.status(401).json({ message: 'No token provided' });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findByPk(decoded.id);
     next();
-  } catch {
-    res.status(403).json({ message: 'Invalid token' });
+  } catch (error) {
+    // Return a clear 401 for auth problems so the client can react (logout/renew)
+    const isExpired = error && (error.name === 'TokenExpiredError');
+    const message = isExpired ? 'jwt expired' : 'Invalid token';
+    // Reduce log noise for common expiry
+    try {
+      if (!isExpired) {
+        console.error('Token verification error (basic):', error);
+      } else {
+        logExpiredOnce(req, 'basic');
+      }
+    } catch (_) {}
+    try {
+      res.setHeader('WWW-Authenticate', `Bearer error="invalid_token", error_description="${message}"`);
+    } catch (_) {}
+    return res.status(401).json({ message });
   }
 };
 
@@ -22,7 +56,8 @@ exports.verifyToken = async (req, res, next) => {
  * and injects group information into the request
  */
 exports.verifyTokenWithGroup = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const authHeader = req.headers.authorization || '';
+  const token = /^Bearer\s/i.test(authHeader) ? authHeader.split(' ')[1].trim() : null;
   if (!token) return res.status(401).json({ message: 'No token provided' });
 
   try {
@@ -44,7 +79,7 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
           role: decoded.role,
           role_id: decoded.role_id,
           group_id: decoded.group_id,
-        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
         // Expose header to browser (CORS) if needed
         res.setHeader('x-refresh-token', newToken);
         res.setHeader('Access-Control-Expose-Headers', 'x-refresh-token');
@@ -82,8 +117,20 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('Token verification error:', error);
-    res.status(403).json({ message: 'Invalid token' });
+    // Concise logging; throttle noisy expiry stacks
+    const isExpired = error && (error.name === 'TokenExpiredError');
+    try {
+      if (!isExpired) {
+        console.error('Token verification error:', error);
+      } else {
+        logExpiredOnce(req, 'group');
+      }
+    } catch (_) {}
+    const message = isExpired ? 'jwt expired' : 'Invalid token';
+    try {
+      res.setHeader('WWW-Authenticate', `Bearer error="invalid_token", error_description="${message}"`);
+    } catch (_) {}
+    return res.status(401).json({ message });
   }
 };
 

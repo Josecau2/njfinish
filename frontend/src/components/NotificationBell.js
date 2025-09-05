@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { 
+import {
   CBadge,
   CButton,
   CCard,
@@ -15,6 +15,7 @@ import { cilBell, cilBellExclamation } from '@coreui/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotifications, setUnreadCount, markNotificationAsRead } from '../store/notificationSlice'
 import axiosInstance from '../helpers/axiosInstance'
+import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
 
 const NotificationBell = () => {
@@ -23,11 +24,11 @@ const NotificationBell = () => {
   // Show bell for any authenticated user (admins and contractors)
   if (!user || !token) return null
   const isAdmin = user && (String(user.role).toLowerCase() === 'admin' || String(user.role).toLowerCase() === 'super_admin')
-  
+
   // Get customization for proper contrast
   const customization = useSelector((state) => state.customization) || {}
   const optimalTextColor = getContrastColor(customization.headerBg || '#ffffff')
-  
+
   const dispatch = useDispatch()
   const { notifications, unreadCount, loading } = useSelector((state) => state.notification)
   const [isOpen, setIsOpen] = useState(false)
@@ -39,7 +40,7 @@ const NotificationBell = () => {
   useEffect(() => {
   if (disabledRef.current) return
   fetchUnreadCount()
-    
+
     // Poll for new notifications (configurable via VITE_NOTIFICATIONS_POLL_INTERVAL_MS)
     const pollMs = Number(import.meta.env.VITE_NOTIFICATIONS_POLL_INTERVAL_MS) || 15000
     intervalRef.current = setInterval(() => {
@@ -60,18 +61,21 @@ const NotificationBell = () => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      const { data } = await axiosInstance.get('/api/notifications/unread-count')
+  const { data } = await axiosInstance.get('/api/notifications/unread-count', { __suppressAuthLogout: false })
       if (data && typeof data.unreadCount === 'number') {
         dispatch(setUnreadCount(data.unreadCount))
       }
     } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Do not force logout on notifications auth errors; disable polling silently
+        // Stop polling after first auth failure; global axios interceptor will handle logout/redirect
         disabledRef.current = true
         if (intervalRef.current) clearInterval(intervalRef.current)
         return
       }
+      // Suppress noise on auth-expired cancellations
+      if ((error?.message || '').toLowerCase() === 'auth-expired') return
       console.error('Error fetching unread count:', error?.message || error)
     }
   }
@@ -86,15 +90,17 @@ const NotificationBell = () => {
 
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
+        __suppressAuthLogout: false
       })
       if (data) {
         dispatch(setNotifications(data.data || []))
         if (typeof data.unreadCount === 'number') dispatch(setUnreadCount(data.unreadCount))
       }
     } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Do not logout on notifications auth errors
+        // Stop polling; interceptor handles redirect
         disabledRef.current = true
         if (intervalRef.current) clearInterval(intervalRef.current)
         return
@@ -109,7 +115,7 @@ const NotificationBell = () => {
     try {
       const token = localStorage.getItem('token')
       if (!token) return
-      await axiosInstance.post('/api/notifications/mark-all-read')
+  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: false })
       // Optimistically zero the badge and mark local items as read
       dispatch(setUnreadCount(0))
       const nowIso = new Date().toISOString()
@@ -117,7 +123,8 @@ const NotificationBell = () => {
         const updated = notifications.map(n => n.is_read ? n : { ...n, is_read: true, read_at: nowIso })
         dispatch(setNotifications(updated))
       }
-    } catch (error) {
+  } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
       // Non-fatal; leave as-is if API fails
       const status = error?.response?.status
       if (status !== 401 && status !== 403) {
@@ -142,13 +149,13 @@ const NotificationBell = () => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      await axiosInstance.post(`/api/notifications/${notificationId}/read`)
+  await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, { __suppressAuthLogout: false })
       dispatch(markNotificationAsRead(notificationId))
       fetchUnreadCount()
     } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Ignore auth errors here
         return
       }
       console.error('Error marking notification as read:', error?.message || error)
@@ -160,13 +167,13 @@ const NotificationBell = () => {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      await axiosInstance.post('/api/notifications/mark-all-read')
+  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: false })
       dispatch(setUnreadCount(0))
       fetchNotifications()
     } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
       const status = error?.response?.status
       if (status === 401 || status === 403) {
-        // Ignore auth errors here
         return
       }
       console.error('Error marking all notifications as read:', error?.message || error)
@@ -175,14 +182,14 @@ const NotificationBell = () => {
 
   const formatTimeAgo = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
       if (isNaN(date.getTime())) {
         return 'N/A';
       }
-      
+
       const now = new Date()
       const diffInSeconds = Math.floor((now - date) / 1000)
 
@@ -226,29 +233,29 @@ const NotificationBell = () => {
   }
 
   return (
-    <CDropdown 
+    <CDropdown
       variant="nav-item"
       placement="bottom-end"
       alignment="end"
       visible={isOpen}
       onToggle={handleToggle}
     >
-      <CDropdownToggle 
+      <CDropdownToggle
         caret={false}
         className="position-relative"
         style={{ border: 'none', background: 'transparent' }}
       >
-        <CIcon 
-          icon={unreadCount > 0 ? cilBellExclamation : cilBell} 
+        <CIcon
+          icon={unreadCount > 0 ? cilBellExclamation : cilBell}
           size="lg"
-          style={{ 
+          style={{
             color: unreadCount > 0 ? '#ffc107' : optimalTextColor
           }}
         />
         {unreadCount > 0 && (
-          <CBadge 
-            position="top-end" 
-            shape="rounded-pill" 
+          <CBadge
+            position="top-end"
+            shape="rounded-pill"
             color="danger"
             className="position-absolute translate-middle"
             style={{ fontSize: '0.75rem', minWidth: '1.25rem' }}
@@ -258,25 +265,25 @@ const NotificationBell = () => {
         )}
       </CDropdownToggle>
 
-      <CDropdownMenu 
+      <CDropdownMenu
         className="notification-mobile-dropdown"
         // Let Popper keep it in viewport on desktop
         // eslint-disable-next-line react/forbid-component-props
         popper="true"
         // eslint-disable-next-line react/forbid-component-props
         placement="bottom-end"
-        style={{ 
-          width: '350px', 
-          maxHeight: '400px', 
-          overflowY: 'auto' 
+        style={{
+          width: '350px',
+          maxHeight: '400px',
+          overflowY: 'auto'
         }}
       >
         <div className="dropdown-header d-flex justify-content-between align-items-center px-3 py-2">
           <strong>Notifications</strong>
           {unreadCount > 0 && (
-            <CButton 
-              size="sm" 
-              variant="ghost" 
+            <CButton
+              size="sm"
+              variant="ghost"
               color="primary"
               onClick={handleMarkAllAsRead}
             >
@@ -296,8 +303,8 @@ const NotificationBell = () => {
             No new notifications
           </CDropdownItem>
         )}
-        
-        <CDropdownItem 
+
+        <CDropdownItem
           className="text-center"
           style={{ cursor: 'pointer' }}
           onClick={() => window.location.href = isAdmin ? '/admin/notifications' : '/notifications'}

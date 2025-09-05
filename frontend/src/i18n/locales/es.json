@@ -175,12 +175,14 @@
     "keepMeLoggedIn": "Mantener sesión iniciada",
     "keepLoggedIn": "Mantener sesión iniciada",
     "forgotPassword": "¿Olvidó su contraseña?",
-  "enterCredentials": "¡Ingrese su correo y contraseña para iniciar sesión!",
-  "emailPlaceholder": "tú@ejemplo.com",
-  "passwordPlaceholder": "Ingrese su contraseña",
-  "loginFailed": "No se pudo iniciar sesión. Verifique sus credenciales.",
-  "rightSubtitle": "Configurar - Precios - Cotizar",
-  "rightDescription": "Gestione el flujo de punta a punta, desde la cotización de gabinetes hasta pedidos y devoluciones con nuestro software de automatización de ventas para la industria de cocinas. Una solución B2B flexible y basada en componentes que puede integrarse con su inventario, contabilidad y otros sistemas."
+    "enterCredentials": "¡Ingrese su correo y contraseña para iniciar sesión!",
+    "emailPlaceholder": "tú@ejemplo.com",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "loginFailed": "No se pudo iniciar sesión. Verifique sus credenciales.",
+    "sessionExpired": "Tu sesión expiró. Vuelve a iniciar sesión.",
+    "loginRequired": "Por favor inicia sesión para continuar.",
+    "rightSubtitle": "Configurar - Precios - Cotizar",
+    "rightDescription": "Gestione el flujo de punta a punta, desde la cotización de gabinetes hasta pedidos y devoluciones con nuestro software de automatización de ventas para la industria de cocinas. Una solución B2B flexible y basada en componentes que puede integrarse con su inventario, contabilidad y otros sistemas."
   },
   "nav": {
     "dashboard": "Panel",
@@ -1959,10 +1961,7 @@
           "applyAll": "Aplicar a todos los ítems",
           "applyOne": "Aplicar solo a este ítem",
           "applyType": "Aplicar por tipo de ítem",
-          "applyTypes": "Aplicar por múltiples tipos",
           "selectItemType": "Seleccione tipo de ítem",
-          "selectMultipleTypes": "Seleccione tipos de ítem",
-          "multipleTypesWarning": "Esto aplicará el costo de ensamblaje a todos los ítems en {{count}} tipos seleccionados.",
           "chooseType": "Seleccione un tipo..."
         },
         "hinges": {

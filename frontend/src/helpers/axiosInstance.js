@@ -1,253 +1,122 @@
 import axios from 'axios';
-import Swal from 'sweetalert2';
-import { decodeId } from '../utils/obfuscate';
 import store from '../store';
 import { logout } from '../store/slices/authSlice';
 
-// Lightweight JWT decoder to read exp without verifying signature
-const decodeJwt = (token) => {
-  try {
-    const [, payload] = token.split('.');
-    // Base64url -> base64 with padding
-    let b64 = (payload || '').replace(/-/g, '+').replace(/_/g, '/');
-    if (b64.length % 4 === 1) {
-      // invalid length; bail to avoid atob error
-      return {};
-    }
-    while (b64.length % 4 !== 0) b64 += '=';
-    const json = JSON.parse(atob(b64));
-    return json || {};
-  } catch {
-    return {};
-  }
-};
+const base = (import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:8080');
 
-// Normalize a base URL so we don't end up with /api/api/... when endpoints already include /api
-const normalizeBaseUrl = (url) => {
-  if (!url) return '';
-  // Remove trailing slashes
-  let normalized = url.replace(/\/$/, '');
-  // If the env points at "/api" (reverse proxy style), drop it so our endpoints like "/api/..." still work
-  if (/\/api$/i.test(normalized)) {
-    normalized = normalized.replace(/\/api$/i, '');
-  }
-  return normalized;
-};
-
-// Get API URL from environment with fallback
-const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-
-  // If no environment variable is set, determine based on current domain
-  if (!envUrl) {
-    const currentDomain = window.location.hostname;
-    if (currentDomain.includes('nj.contractors')) {
-      return 'https://app.nj.contractors';
-    } else if (currentDomain.includes('njcontractors.com')) {
-      return 'https://app.njcontractors.com';
-    }
-    return 'http://localhost:8080'; // Development fallback
-  }
-
-  return envUrl;
-};
-
-const api_url = normalizeBaseUrl(getApiUrl());
-
-const axiosInstance = axios.create({
-  baseURL: api_url, // if empty string, axios will use relative paths, which still work
-  withCredentials: true,
+const api = axios.create({
+  baseURL: base,
+  withCredentials: false // do NOT send cookies automatically
 });
 
-// A bare client without interceptors for refresh pings to avoid recursion
-const bareClient = axios.create({ baseURL: api_url, withCredentials: true });
-
-// Simple in-flight refresh coordination
-let refreshPromise = null;
+// Shared AbortController to cancel all requests on first auth failure
+let activeAbortController = new AbortController();
 let isLoggingOut = false;
-const forceLogout = (reason) => {
+let isRefreshing = false;
+let refreshPromise = null;
+
+// Attach token from localStorage (only; no preflights)
+api.interceptors.request.use((config) => {
+  const t = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  if (t) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${t}`;
+  }
+  // Attach abort signal so polling and pending requests stop immediately after 401/403
   try {
-    if (isLoggingOut) return;
-    isLoggingOut = true;
-    // Clear token proactively to stop further authed calls
-    if (typeof window !== 'undefined') {
-      try { localStorage.removeItem('token'); } catch {}
+    if (!activeAbortController || activeAbortController.signal?.aborted) {
+      activeAbortController = new AbortController();
     }
-    // Dispatch Redux logout
-    try { store.dispatch(logout()); } catch {}
-    // Toast to inform user
-    try {
-      Swal.fire({
-        toast: true,
-        icon: 'info',
-        title: 'Your session expired — please log in again.',
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 2500,
-        timerProgressBar: true
-      });
-    } catch {}
-    // Redirect to login
-    if (typeof window !== 'undefined') {
-      const target = '/login';
-      if (window.location.pathname !== target) {
-        window.location.replace(target);
-      }
-    }
-  } catch {
-    // no-op
-  }
-};
-const ensureFreshToken = async () => {
-  try {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!token) return;
+    config.signal = config.signal || activeAbortController.signal;
+  } catch (_) {}
+  return config;
+});
 
-    const { exp } = decodeJwt(token);
-    if (!exp) return;
-    const nowSec = Math.floor(Date.now() / 1000);
-    const timeLeft = exp - nowSec;
-
-    // If token expires within 60s, attempt a refresh ping using the current token
-    if (timeLeft <= 60) {
-      if (!refreshPromise) {
-        refreshPromise = (async () => {
-          try {
-            // Call a lightweight authed endpoint to trigger rolling refresh header
-            const res = await bareClient.get('/api/me', {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            const refreshed = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token');
-            if (refreshed && typeof window !== 'undefined') {
-              localStorage.setItem('token', refreshed);
-            }
-          } catch (refreshError) {
-            // Do not auto-logout or clear token; allow calling code to handle UI/state
-          } finally {
-            const p = refreshPromise; // allow awaiters to resolve before clearing
-            refreshPromise = null;
-            return p;
-          }
-        })();
-      }
-      // Wait for ongoing refresh attempt
-      await refreshPromise;
-    }
-  } catch {
-    // noop
-  }
-};
-
-// Attach Authorization header from localStorage token on every request (if present)
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    try {
-  // Proactively refresh if token is close to expiring to avoid 401/403 during navigation bursts
-  await ensureFreshToken();
-
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      if (token) {
-        // Always attach the token - let the server handle expiration validation
-        // This prevents timing issues where the token gets removed during concurrent requests
-        config.headers = config.headers || {};
-        if (!config.headers.Authorization) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-      }
-
-      // Transparently decode encoded IDs in path params for known API routes
-      if (config.url) {
-        const original = config.url;
-        // Only touch our API calls that start with /api/
-        if (/^\s*\/api\//.test(original)) {
-          const [pathPart, queryPart] = original.split('?');
-          const decodedPath = pathPart
-            .split('/')
-            .map((seg) => {
-              if (!seg) return seg; // keep empty
-              try {
-                const raw = decodeURIComponent(seg);
-                const maybe = decodeId(raw);
-                // Replace only if we got a finite number (successful decode)
-                if (typeof maybe === 'number' && Number.isFinite(maybe)) {
-                  return String(maybe);
-                }
-                return seg;
-              } catch {
-                return seg;
-              }
-            })
-            .join('/');
-          config.url = queryPart ? `${decodedPath}?${queryPart}` : decodedPath;
-        }
-      }
-    } catch (_) {
-      // no-op if storage is inaccessible
-    }
-    return config;
-  }
-);
-
-// Dev-only helper: log full URL on 404s to quickly spot baseURL issues
-if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
-  axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      try {
-        const status = error?.response?.status;
-        if (status === 404) {
-          const cfg = error.config || {};
-          const fullUrl = `${cfg.baseURL || ''}${cfg.url || ''}`;
-          // eslint-disable-next-line no-console
-          console.warn('[API 404]', fullUrl);
-        }
-      } catch (_) {
-        // no-op
-      }
-      return Promise.reject(error);
-    }
-  );
-}
-
-export default axiosInstance;
-
-// Automatically store refreshed tokens sent by the server
-axiosInstance.interceptors.response.use(
-  (response) => {
-    try {
-      const refreshed = response?.headers?.['x-refresh-token'] || response?.headers?.get?.('x-refresh-token');
-      if (refreshed && typeof window !== 'undefined') {
-        localStorage.setItem('token', refreshed);
-      }
-    } catch (_) {}
-    return response;
+// Store x-refresh-token if server rolls it
+api.interceptors.response.use(
+  (res) => {
+    const rt = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token');
+    if (rt && typeof window !== 'undefined') localStorage.setItem('token', rt);
+    return res;
   },
-  async (error) => {
-    try {
-      // First, check if we got a refreshed token and store it
-      const refreshed = error?.response?.headers?.['x-refresh-token'] || error?.response?.headers?.get?.('x-refresh-token');
-      if (refreshed && typeof window !== 'undefined') {
-        localStorage.setItem('token', refreshed);
-      }
+  (err) => {
+    const s = err?.response?.status;
+    const originalConfig = err?.config || {};
+    const suppressLogout = !!originalConfig.__suppressAuthLogout;
+    const isRefreshPing = !!originalConfig.__isRefreshPing;
 
-      const status = error?.response?.status;
-      const original = error?.config;
-      const shouldRetry = (status === 401 || status === 403) && original && !original.__isRetryRequest;
-
-      if (shouldRetry) {
-        // Use the refreshed token if we just got one, otherwise use stored token
-        const retryToken = refreshed || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
-        if (retryToken) {
-          original.headers = original.headers || {};
-          original.headers.Authorization = `Bearer ${retryToken}`;
-          original.__isRetryRequest = true;
-          return axiosInstance(original);
-        }
-      }
-  // Do not auto-logout on auth errors; surface error to callers for UI handling
-    } catch (_) {
-      // fallthrough
+    // If this is our internal ping attempt, do not recurse or logout here
+    if ((s === 401 || s === 403) && isRefreshPing) {
+      return Promise.reject(err);
     }
-    return Promise.reject(error);
+
+    if (s === 401 || s === 403) {
+      // Only attempt a single silent refresh per failed request
+      if (!originalConfig.__retryAttempted) {
+        originalConfig.__retryAttempted = true;
+
+        // Start (or join) a single refresh in flight
+        if (!isRefreshing) {
+          isRefreshing = true;
+          const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+          refreshPromise = api.get('/api/auth/ping', {
+            __isRefreshPing: true,
+            headers: currentToken ? { Authorization: `Bearer ${currentToken}` } : undefined
+          }).finally(() => {
+            isRefreshing = false;
+          });
+        }
+
+        return refreshPromise.then(() => {
+          // After successful refresh, retry the original request with the new token
+          try {
+            // Ensure we don't reuse a potentially aborted signal
+            const { signal, ...rest } = originalConfig;
+            return api.request(rest);
+          } catch (_) {
+            return api.request(originalConfig);
+          }
+        }).catch((refreshErr) => {
+          // Refresh failed. Respect suppression flags: do not logout for suppressed requests.
+          if (suppressLogout) {
+            return Promise.reject(err);
+          }
+
+          // Finalize with a clean logout once
+          if (!isLoggingOut) {
+            isLoggingOut = true;
+            try { activeAbortController.abort('auth-expired'); } catch {}
+            try { activeAbortController = new AbortController(); } catch {}
+            try { localStorage.removeItem('token'); } catch {}
+            try { store.dispatch(logout()); } catch {}
+            if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+              try { window.location.replace('/login'); } catch {}
+            }
+            setTimeout(() => { isLoggingOut = false; }, 1500);
+          }
+          return Promise.reject(err);
+        });
+      }
+
+      // Already retried and still unauthorized: either suppressed or proceed to logout
+      if (suppressLogout) {
+        return Promise.reject(err);
+      }
+
+      if (!isLoggingOut) {
+        isLoggingOut = true;
+        try { activeAbortController.abort('auth-expired'); } catch {}
+        try { activeAbortController = new AbortController(); } catch {}
+        try { localStorage.removeItem('token'); } catch {}
+        try { store.dispatch(logout()); } catch {}
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          try { window.location.replace('/login'); } catch {}
+        }
+        setTimeout(() => { isLoggingOut = false; }, 1500);
+      }
+    }
+    return Promise.reject(err);
   }
 );
+
+export default api;

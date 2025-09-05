@@ -178,12 +178,14 @@
     "keepMeLoggedIn": "Keep me logged in",
     "keepLoggedIn": "Keep me logged in",
     "forgotPassword": "Forgot password?",
-  "enterCredentials": "Enter your email and password to sign in!",
-  "emailPlaceholder": "you@example.com",
-  "passwordPlaceholder": "Enter your password",
-  "loginFailed": "Login failed. Please check your credentials.",
-  "rightSubtitle": "Configure - Price - Quote",
-  "rightDescription": "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems."
+    "enterCredentials": "Enter your email and password to sign in!",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Enter your password",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "sessionExpired": "Your session expired. Please sign in again.",
+    "loginRequired": "Please sign in to continue.",
+    "rightSubtitle": "Configure - Price - Quote",
+    "rightDescription": "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -2021,10 +2023,7 @@
           "applyAll": "Apply to All Items",
           "applyOne": "Apply to This Item Only",
           "applyType": "Apply by Item Type",
-          "applyTypes": "Apply by Multiple Types",
           "selectItemType": "Select Item Type",
-          "selectMultipleTypes": "Select Item Types",
-          "multipleTypesWarning": "This will apply the assembly cost to all items in {{count}} selected types.",
           "chooseType": "Choose a type..."
         },
         "hinges": {

@@ -199,7 +199,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             .join('');
 
         return `
-        
+
         <!DOCTYPE html>
 <html>
 <head>
@@ -210,13 +210,13 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             margin: 20mm;
             size: A4;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
             font-size: 12px;
@@ -322,7 +322,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
         .category-row {
             background-color: #e6e6e6 !important;
             font-weight: bold;
-        }   
+        }
 
         .text-right {
             text-align: right;
@@ -388,7 +388,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
+
             .page-break {
                 page-break-before: always;
             }
@@ -627,8 +627,8 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     return (
         <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
-            <PageHeader 
-                title={t('proposalCommon.emailTitle')} 
+            <PageHeader
+                title={t('proposalCommon.emailTitle')}
                 onClose={onClose}
             />
 

@@ -1,22 +1,23 @@
 const { Customer, Proposals, User, Location, ProposalSession, UserGroup } = require('../models/index');
+const Order = require('../models/Order');
 const { logActivity } = require('../utils/activityLogger');
 const { Op } = require('sequelize');
 
 // Helper function to validate status transitions
 const validateStatusTransition = (currentStatus, newStatus, action) => {
     console.log(`🔍 Validating transition: "${currentStatus}" → "${newStatus}" (action: ${action})`);
-    
+
     // TEMPORARY FIX: Allow transitions from draft to Proposal accepted
     if ((currentStatus === 'draft' || currentStatus === 'Draft') && newStatus === 'Proposal accepted') {
         console.log('✅ Allowing draft → Proposal accepted transition (temporary fix)');
         return true;
     }
-    
+
     // Define all workflow statuses that should allow free transitions between each other
     const workflowStatuses = [
         'Draft', 'draft', // Include both cases
         'Follow up 1', 'Follow up 2', 'Follow up 3',
-        'Measurement Scheduled', 'Measurement done', 
+        'Measurement Scheduled', 'Measurement done',
         'Design done', 'Proposal done',
         'Proposal accepted', 'Proposal rejected',
         'sent', 'accepted', 'rejected', // Legacy statuses
@@ -54,28 +55,28 @@ const validateStatusTransition = (currentStatus, newStatus, action) => {
     // Legacy status support with case insensitive handling
     const normalizeStatus = (status) => {
         if (!status) return 'draft';
-        
+
         // Handle new workflow statuses
         if (status === 'Proposal accepted') return 'accepted';
         if (status === 'Proposal rejected') return 'rejected';
-        
+
         // Handle case variations
         const lowerStatus = status.toLowerCase();
         if (lowerStatus === 'draft') return 'draft';
-        
+
         return lowerStatus;
     };
 
     const normalizedCurrent = normalizeStatus(currentStatus);
     const normalizedNew = normalizeStatus(newStatus);
-    
+
     console.log(`🔍 Normalized: "${normalizedCurrent}" → "${normalizedNew}"`);
-    
+
     // Check if transition is valid
-    const isValid = validTransitions[normalizedCurrent]?.includes(normalizedNew) || 
+    const isValid = validTransitions[normalizedCurrent]?.includes(normalizedNew) ||
                    validTransitions[currentStatus]?.includes(newStatus) || // Check exact match too
                    normalizedCurrent === normalizedNew;
-    
+
     console.log(`${isValid ? '✅' : '❌'} Transition result: ${isValid}`);
     return isValid;
 };
@@ -102,13 +103,13 @@ const saveProposal = async (req, res) => {
                     name: customerName,
                     email: customerEmail,
                 };
-                
+
                 // Add group scoping for contractors
                 if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
                     customerData.group_id = user.group_id;
                     customerData.created_by_user_id = user.id;
                 }
-                
+
                 const newUser = await Customer.create(customerData);
                 customerId = newUser.id;
                 // Audit: customer.create (via proposal.create)
@@ -123,9 +124,9 @@ const saveProposal = async (req, res) => {
                 // For contractors, verify they can access this customer
                 if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
                     if (existingUser.group_id !== user.group_id) {
-                        return res.status(403).json({ 
-                            success: false, 
-                            message: 'Cannot access customer from different contractor group' 
+                        return res.status(403).json({
+                            success: false,
+                            message: 'Cannot access customer from different contractor group'
                         });
                     }
                 }
@@ -137,9 +138,9 @@ const saveProposal = async (req, res) => {
     if (customerId && user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             const customer = await Customer.findByPk(customerId);
             if (customer && customer.group_id !== user.group_id) {
-                return res.status(403).json({ 
-                    success: false, 
-                    message: 'Cannot access customer from different contractor group' 
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot access customer from different contractor group'
                 });
             }
         }
@@ -216,12 +217,12 @@ const getProposal = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
         const user = req.user;
-        
+
         // Build where clause
-        let whereClause = { 
+        let whereClause = {
             isDeleted: false
         };
-        
+
         // Apply user/group scoping
         if (mineFlag) {
             const isContractor = user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')
@@ -305,8 +306,8 @@ const getProposal = async (req, res) => {
         // Convert Sequelize instances to plain JSON objects to ensure associations are serialized
         const plainRows = rows.map(row => row.toJSON());
 
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             data: plainRows,
             pagination: {
                 page,
@@ -333,16 +334,16 @@ const deleteProposals = async (req, res) => {
 
         // Check if proposal is locked
         if (proposal.is_locked) {
-            return res.status(403).json({ 
-                message: 'Proposal is locked and cannot be deleted.' 
+            return res.status(403).json({
+                message: 'Proposal is locked and cannot be deleted.'
             });
         }
 
         // For contractors, verify they own this proposal
         if (user.group_id && user.group && user.group.type === 'contractor') {
             if (proposal.owner_group_id !== user.group_id) {
-                return res.status(403).json({ 
-                    message: 'Cannot delete proposal from different contractor group' 
+                return res.status(403).json({
+                    message: 'Cannot delete proposal from different contractor group'
                 });
             }
         }
@@ -360,7 +361,7 @@ const getProposalById = async (req, res) => {
     try {
         const proposalId = req.params.id;
         const user = req.user;
-        
+
         const proposal = await Proposals.findByPk(proposalId, {
             include: [
                 {
@@ -378,8 +379,8 @@ const getProposalById = async (req, res) => {
         // For contractors, verify they own this proposal
     if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             if (proposal.created_by_user_id !== user.id) {
-                return res.status(403).json({ 
-                    message: 'Cannot access proposal created by different user' 
+                return res.status(403).json({
+                    message: 'Cannot access proposal created by different user'
                 });
             }
         }
@@ -395,12 +396,12 @@ const updateProposal = async (req, res) => {
     try {
     const { action, formData } = req.body;
     const isDev = process.env.NODE_ENV !== 'production';
-    
+
         // Check if formData exists
         if (!formData) {
             return res.status(400).json({ success: false, message: 'formData is required for update.' });
         }
-        
+
         let { id, customerId, customerName, customerEmail } = formData;
 
         const user = req.user;
@@ -420,18 +421,18 @@ const updateProposal = async (req, res) => {
 
         // Check if proposal is locked
         if (existingProposal.is_locked) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Proposal is locked and cannot be edited.' 
+            return res.status(403).json({
+                success: false,
+                message: 'Proposal is locked and cannot be edited.'
             });
         }
 
         // For contractors, verify they own this proposal
     if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             if (existingProposal.owner_group_id !== user.group_id) {
-                return res.status(403).json({ 
-                    success: false, 
-                    message: 'Cannot access proposal from different contractor group' 
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot access proposal from different contractor group'
                 });
             }
         }
@@ -446,13 +447,13 @@ const updateProposal = async (req, res) => {
                     name: customerName,
                     email: customerEmail,
                 };
-                
+
                 // Add group scoping for contractors
                 if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
                     customerData.group_id = user.group_id;
                     customerData.created_by_user_id = user.id;
                 }
-                
+
                 const newUser = await Customer.create(customerData);
                 customerId = newUser.id;
                 // Audit: customer.create (via proposal.update)
@@ -467,9 +468,9 @@ const updateProposal = async (req, res) => {
                 // For contractors, verify they can access this customer
                 if (user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
                     if (existingUser.group_id !== user.group_id) {
-                        return res.status(403).json({ 
-                            success: false, 
-                            message: 'Cannot access customer from different contractor group' 
+                        return res.status(403).json({
+                            success: false,
+                            message: 'Cannot access customer from different contractor group'
                         });
                     }
                 }
@@ -481,9 +482,9 @@ const updateProposal = async (req, res) => {
     if (customerId && user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             const customer = await Customer.findByPk(customerId);
             if (customer && customer.group_id !== user.group_id) {
-                return res.status(403).json({ 
-                    success: false, 
-                    message: 'Cannot access customer from different contractor group' 
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot access customer from different contractor group'
                 });
             }
         }
@@ -495,9 +496,9 @@ const updateProposal = async (req, res) => {
         // Validate status transitions only if status is actually changing
         if (formData.status && formData.status !== existingProposal.status) {
             if (!validateStatusTransition(existingProposal.status, formData.status, action)) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `Invalid status transition from ${existingProposal.status} to ${formData.status}` 
+                return res.status(400).json({
+                    success: false,
+                    message: `Invalid status transition from ${existingProposal.status} to ${formData.status}`
                 });
             }
         }
@@ -662,18 +663,18 @@ const updateProposalStatus = async (req, res) => {
 
         // Check if proposal is locked
         if (proposal.is_locked) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Proposal is locked and cannot be modified.' 
+            return res.status(403).json({
+                success: false,
+                message: 'Proposal is locked and cannot be modified.'
             });
         }
 
         // For contractors, verify they own this proposal
         if (user.group_id && user.group && user.group.type === 'contractor') {
             if (proposal.owner_group_id !== user.group_id) {
-                return res.status(403).json({ 
-                    success: false, 
-                    message: 'Cannot modify proposal from different contractor group' 
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot modify proposal from different contractor group'
                 });
             }
         }
@@ -698,9 +699,9 @@ const updateProposalStatus = async (req, res) => {
 
         // Validate status transition
         if (!validateStatusTransition(proposal.status, newStatus, action)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: `Invalid status transition from ${proposal.status} to ${newStatus}` 
+            return res.status(400).json({
+                success: false,
+                message: `Invalid status transition from ${proposal.status} to ${newStatus}`
             });
         }
 
@@ -724,10 +725,10 @@ const updateProposalStatus = async (req, res) => {
             diff: { before, after: proposal.toJSON(), action, newStatus }
         });
 
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             data: proposal,
-            message: `Proposal status updated to ${newStatus}` 
+            message: `Proposal status updated to ${newStatus}`
         });
     } catch (error) {
         console.error('Error updating proposal status:', error);
@@ -753,25 +754,25 @@ const acceptProposal = async (req, res) => {
         });
 
         if (!proposal) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Proposal not found.' 
+            return res.status(404).json({
+                success: false,
+                message: 'Proposal not found.'
             });
         }
 
         // Check if proposal is already accepted or locked
         if (proposal.status === 'accepted' || proposal.is_locked) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Proposal is already accepted or locked.' 
+            return res.status(400).json({
+                success: false,
+                message: 'Proposal is already accepted or locked.'
             });
         }
 
         // Check if proposal can be accepted (must be in 'sent' status)
         if (proposal.status !== 'sent') {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Proposal must be in "sent" status to be accepted.' 
+            return res.status(400).json({
+                success: false,
+                message: 'Proposal must be in "sent" status to be accepted.'
             });
         }
 
@@ -784,9 +785,9 @@ const acceptProposal = async (req, res) => {
             // For contractors, verify they own this proposal
             if (user.group_id && user.group && user.group.type === 'contractor') {
                 if (proposal.owner_group_id !== user.group_id) {
-                    return res.status(403).json({ 
-                        success: false, 
-                        message: 'Cannot accept proposal from different contractor group' 
+                    return res.status(403).json({
+                        success: false,
+                        message: 'Cannot accept proposal from different contractor group'
                     });
                 }
             }
@@ -807,9 +808,9 @@ const acceptProposal = async (req, res) => {
             acceptedBy = external_signer_name || external_signer_email;
             isExternalAcceptance = true;
         } else {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Authentication required for proposal acceptance' 
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required for proposal acceptance'
             });
         }
 
@@ -834,6 +835,59 @@ const acceptProposal = async (req, res) => {
             diff: { after: { status: 'accepted', accepted_at: acceptanceData.accepted_at, accepted_by: acceptedBy, is_locked: true } }
         });
 
+        // Create Order snapshot
+        try {
+            // Derive snapshot and totals from manufacturersData structure
+            const md = proposal.manufacturersData || {};
+            let snapshot = null;
+            let grandTotalCents = null;
+            let styleId = null;
+            let styleName = null;
+            let manufacturerId = null;
+
+            if (Array.isArray(md?.manufacturersData)) {
+                // Find the selected version if present
+                const selected = md.manufacturersData.find(v => v && v.summary);
+                if (selected) {
+                    snapshot = selected;
+                    const gt = Number(selected.summary?.grandTotal || 0);
+                    grandTotalCents = Math.round(gt * 100);
+                    styleId = selected.selectedStyle || null;
+                    styleName = selected.style || selected.versionName || null;
+                    manufacturerId = selected.manufacturer || null;
+                } else {
+                    snapshot = md.manufacturersData[0] || null;
+                    const gt = Number(snapshot?.summary?.grandTotal || 0);
+                    grandTotalCents = isNaN(gt) ? null : Math.round(gt * 100);
+                }
+            } else if (typeof md === 'object' && md !== null) {
+                snapshot = md;
+                const gt = Number(md?.summary?.grandTotal || 0);
+                grandTotalCents = isNaN(gt) ? null : Math.round(gt * 100);
+                styleId = md.selectedStyle || null;
+                styleName = md.style || md.versionName || null;
+                manufacturerId = md.manufacturer || null;
+            }
+
+            await Order.create({
+                proposal_id: proposal.id,
+                owner_group_id: proposal.owner_group_id || null,
+                customer_id: proposal.customerId || null,
+                manufacturer_id: manufacturerId,
+                style_id: styleId,
+                style_name: styleName,
+                status: 'new',
+                accepted_at: acceptanceData.accepted_at,
+                accepted_by_user_id: typeof acceptedBy === 'number' ? acceptedBy : null,
+                accepted_by_label: typeof acceptedBy === 'string' ? acceptedBy : null,
+                grand_total_cents: grandTotalCents,
+                snapshot
+            });
+        } catch (orderErr) {
+            console.error('Order creation failed:', orderErr.message);
+            // Continue; order creation failure should not block acceptance response
+        }
+
         // Emit proposal.accepted domain event
         const eventData = {
             proposalId: proposal.id,
@@ -852,8 +906,8 @@ const acceptProposal = async (req, res) => {
         // Emit event (using process.emit for in-process events)
         process.emit('proposal.accepted', eventData);
 
-        res.status(200).json({ 
-            success: true, 
+        res.status(200).json({
+            success: true,
             data: proposal,
             message: 'Proposal accepted successfully',
             eventData: eventData
@@ -861,10 +915,10 @@ const acceptProposal = async (req, res) => {
 
     } catch (error) {
         console.error('Error accepting proposal:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error', 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
         });
     }
 };
@@ -976,7 +1030,7 @@ const getProposalAdminDetails = async (req, res) => {
 
         // Parse JSON fields
         let parsedProposal = proposal.toJSON();
-        
+
         // Parse items if it's a string
         if (typeof parsedProposal.items === 'string') {
             try {

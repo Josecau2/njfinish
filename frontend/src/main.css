@@ -53,17 +53,17 @@
     padding: 0.75rem !important;
     min-height: 60px !important;
   }
-  
+
   .sidebar-brand-full img {
     max-height: 40px !important;
     max-width: 100px !important;
   }
-  
+
   /* On mobile, always show full logo and hide narrow */
   .sidebar-brand-full {
     display: block !important;
   }
-  
+
   .sidebar-brand-narrow {
     display: none !important;
   }
@@ -737,78 +737,78 @@
   .contractor-mobile-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  
+
   .contractor-mobile-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   .contractor-action-btn {
     min-width: 44px;
     min-height: 44px;
   }
-  
+
   /* Customer Mobile Cards */
   .customer-mobile-card {
     border-left: 4px solid transparent;
     transition: all 0.2s ease;
   }
-  
+
   .customer-mobile-card:hover {
     border-left-color: #007bff;
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   }
-  
+
   .customer-card-actions {
     min-height: 44px;
     gap: 8px;
   }
-  
+
   .customer-card-actions .btn {
     min-width: 44px;
     min-height: 44px;
     border-radius: 8px;
   }
-  
+
   /* Proposal Mobile Cards */
   .proposal-mobile-card {
     border-left: 4px solid transparent;
     transition: all 0.2s ease;
   }
-  
+
   .proposal-mobile-card:hover {
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   }
-  
+
   .proposal-mobile-card.proposal-draft {
     border-left-color: #6c757d;
   }
-  
+
   .proposal-mobile-card.proposal-sent {
     border-left-color: #007bff;
   }
-  
+
   .proposal-mobile-card.proposal-accepted {
     border-left-color: #28a745;
   }
-  
+
   .proposal-mobile-card.proposal-rejected {
     border-left-color: #dc3545;
   }
-  
+
   .proposal-card-actions {
     min-height: 44px;
     gap: 8px;
   }
-  
+
   .proposal-card-actions .btn {
     min-width: 44px;
     min-height: 44px;
     border-radius: 8px;
   }
-  
+
   /* Notification Bell dropdown: mobile-only fixed layout to keep within viewport */
   @media (max-width: 767.98px) {
     .notification-mobile-dropdown {
@@ -826,45 +826,45 @@
       overflow-y: auto !important;
     }
   }
-  
+
   .notification-item {
     padding: 16px !important;
     border-radius: 8px;
     margin: 4px 8px;
     min-height: 44px;
   }
-  
+
   .notification-item:hover {
     background-color: #f8f9fa !important;
   }
-  
+
   /* Utility classes for mobile */
   .min-width-0 {
     min-width: 0;
   }
-  
+
   .text-truncate-mobile {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 200px;
   }
-  
+
   /* Form elements mobile improvements */
   .form-control, .form-select {
     min-height: 44px;
   }
-  
+
   .btn {
     min-height: 44px;
     padding: 12px 16px;
   }
-  
+
   .btn-sm {
     min-height: 36px;
     padding: 8px 12px;
   }
-  
+
   /* Tab navigation mobile */
   .nav-tabs {
     overflow-x: auto;
@@ -872,30 +872,30 @@
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .nav-tabs .nav-item {
     display: inline-block;
     float: none;
   }
-  
+
   .nav-tabs .nav-link {
     min-width: 120px;
     padding: 12px 16px;
     font-size: 14px;
   }
-  
+
   /* ContractorDetail mobile header */
   .contractor-detail-header {
     flex-direction: column;
     align-items: flex-start !important;
     gap: 16px;
   }
-  
+
   .contractor-detail-header .btn {
     margin-right: 0 !important;
     margin-bottom: 8px;
   }
-  
+
   /* Modal improvements for mobile */
   .modal-dialog {
     margin: 0;
@@ -903,24 +903,24 @@
     height: 100%;
     max-width: none;
   }
-  
+
   .modal-content {
     height: 100vh;
     border: none;
     border-radius: 0;
   }
-  
+
   .modal-header {
     padding: 16px 20px;
     border-bottom: 1px solid #dee2e6;
   }
-  
+
   .modal-body {
     overflow-y: auto;
     flex: 1;
     padding: 20px;
   }
-  
+
   .modal-footer {
     padding: 16px 20px;
     border-top: 1px solid #dee2e6;

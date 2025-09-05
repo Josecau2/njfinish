@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const customerController = require('../controllers/customerController');
 const authController = require('../controllers/authController');
 const manufacturerController = require('../controllers/manufacturerController');
@@ -13,12 +14,14 @@ const upload = require('../middleware/upload');
 const emailController = require('../controllers/emailController');
 const loginCustomizationController = require('../controllers/loginCustomizationController');
 const resourcesController = require('../controllers/resourcesController');
+const { uploadImage } = require('../controllers/uploadController');
 const calenderController = require('../controllers/calenderController');
 const contractorController = require('../controllers/contractorController');
 const notificationController = require('../controllers/notificationController');
 const resourceUpload = require('../middleware/resourceUpload');
 const contactController = require('../controllers/contactController');
 const termsController = require('../controllers/termsController');
+const globalModsController = require('../controllers/globalModificationsController');
 const { fullAccessControl, requirePermission } = require('../middleware/accessControl');
 const { verifyTokenWithGroup, enforceGroupScoping } = require('../middleware/auth');
 const { rateLimitAccept } = require('../middleware/rateLimiter');
@@ -34,6 +37,25 @@ router.post('/login', authController.login);
 router.post('/signup', authController.signup);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
+
+// Lightweight auth ping to roll a fresh access token without heavy payloads
+router.get('/auth/ping', verifyTokenWithGroup, (req, res) => {
+	try {
+		const TTL = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
+		// Minimal claims; verifyTokenWithGroup will load full user per request
+		const claims = {
+			id: req.user?.id,
+			group_id: req.user?.group_id,
+			role: req.user?.role,
+		};
+		const next = jwt.sign(claims, process.env.JWT_SECRET, { expiresIn: TTL });
+		res.set('x-refresh-token', next);
+		res.set('Access-Control-Expose-Headers', 'x-refresh-token');
+		return res.status(204).end();
+	} catch (e) {
+		return res.status(500).json({ message: 'Auth ping error' });
+	}
+});
 
 // Current user (self) profile routes - available to any authenticated user
 router.get('/me', verifyTokenWithGroup, authController.getCurrentUser);
@@ -58,7 +80,6 @@ router.get('/manufacturers/assemblycost/:id', verifyTokenWithGroup, validateIdPa
 router.get('/manufacturers/items/hinges/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), manufacturerController.fetchManufacturerHingesDetails);
 router.get('/manufacturers/items/modifications/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), manufacturerController.fetchManufacturerItemsModification);
 router.get('/manufacturers/:manufacturerId/types', verifyTokenWithGroup, validateIdParam('manufacturerId'), manufacturerController.getManufacturerTypes);
-router.get('/manufacturers/:manufacturerId/assembly-costs-by-types', verifyTokenWithGroup, validateIdParam('manufacturerId'), manufacturerController.getAssemblyCostsByTypes);
 
 router.post('/manufacturers/items/assembly-cost', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.saveAssemblyCost);
 router.post('/manufacturers/items/hinges', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), manufacturerController.saveHingesDetails);
@@ -122,6 +143,44 @@ router.delete('/manufacturers/:manufacturerId/styles/:styleName', verifyTokenWit
 
 
 
+// Global Modifications (admin only)
+router.get('/global-mods/gallery', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getGallery);
+router.post('/global-mods/gallery/:blueprintId/use-here', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('blueprintId'), sanitizeBodyStrings(), globalModsController.useBlueprint);
+router.get('/global-mods/manufacturer/:manufacturerId/mods', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), globalModsController.getManufacturerMods);
+router.get('/global-mods/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getCategories);
+router.get('/global-mods/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getAssignments);
+router.post('/global-mods/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createCategory);
+router.put('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
+router.patch('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
+router.delete('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteCategory);
+router.post('/global-mods/categories/:fromId/merge-into/:toId', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('fromId'), validateIdParam('toId'), globalModsController.mergeCategories);
+router.patch('/global-mods/templates/:id/reassign-category', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.reassignTemplateCategory);
+router.post('/global-mods/templates', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createTemplate);
+router.put('/global-mods/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateTemplate);
+router.delete('/global-mods/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteTemplate);
+router.post('/global-mods/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createAssignment);
+router.delete('/global-mods/assignments/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteAssignment);
+// Allow all authenticated users (admins, contractors) to read applicable item assignments
+router.get('/global-mods/item/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), globalModsController.getItemAssignments);
+
+// API v1 aliases for Global Modifications (mirror of /global-mods)
+router.get('/v1/modifications/gallery', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getGallery);
+router.post('/v1/modifications/gallery/:blueprintId/use-here', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('blueprintId'), sanitizeBodyStrings(), globalModsController.useBlueprint);
+router.get('/v1/modifications/manufacturer/:manufacturerId/mods', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), globalModsController.getManufacturerMods);
+router.get('/v1/modifications/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getCategories);
+router.get('/v1/modifications/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getAssignments);
+router.post('/v1/modifications/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createCategory);
+router.put('/v1/modifications/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
+router.patch('/v1/modifications/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
+router.delete('/v1/modifications/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteCategory);
+router.post('/v1/modifications/categories/:fromId/merge-into/:toId', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('fromId'), validateIdParam('toId'), globalModsController.mergeCategories);
+router.patch('/v1/modifications/templates/:id/reassign-category', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.reassignTemplateCategory);
+router.post('/v1/modifications/templates', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createTemplate);
+router.put('/v1/modifications/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateTemplate);
+router.delete('/v1/modifications/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteTemplate);
+router.post('/v1/modifications/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createAssignment);
+router.delete('/v1/modifications/assignments/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteAssignment);
+router.get('/v1/modifications/item/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), globalModsController.getItemAssignments);
 
 // Multi Manufacturer routes
 router.get('/multi-manufacturer', multiManufacturerController.getAllMultiManufacturers);
@@ -222,8 +281,10 @@ router.get(
 	proposalsController.getContracts
 );
 
-// Example placeholder for future routes:
-// router.get('/orders', orderController.getOrders);
+// Orders (read-only for now)
+const ordersController = require('../controllers/ordersController');
+router.get('/orders', verifyTokenWithGroup, ordersController.listOrders);
+router.get('/orders/:id', verifyTokenWithGroup, validateIdParam('id'), ordersController.getOrder);
 
 router.get('/settings/customization', customizationController.getCustomization)
 router.post('/settings/customization', upload.single('logoImage'), customizationController.saveCustomization)
@@ -263,6 +324,9 @@ router.post('/resources/files', verifyTokenWithGroup, resourceUpload.single('fil
 router.put('/resources/files/:id', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.updateFile);
 router.delete('/resources/files/:id', verifyTokenWithGroup, resourcesController.deleteFile);
 router.get('/resources/files/download/:id', resourcesController.downloadFile);
+
+// Upload images for sample images and category cards (admin only)
+router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);
 
 router.get('/calendar-events', calenderController.fetchEvents);
 

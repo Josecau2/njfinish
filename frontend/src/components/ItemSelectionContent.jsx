@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CFormCheck, CFormSwitch } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList } from '@coreui/icons';
-import ModificationModal from '../components/model/ModificationModal'
+import ModificationBrowserModal from './model/ModificationBrowserModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
 import CatalogTable from './CatalogTable';
@@ -11,6 +11,7 @@ import axiosInstance from '../helpers/axiosInstance';
 import { setTableItems as setTableItemsRedux } from '../store/slices/selectedVersionSlice';
 import { setSelectVersionNew } from '../store/slices/selectVersionNewSlice';
 import { isAdmin } from '../helpers/permissions';
+import './ItemSelectionContent.css';
 
 const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion }) => {
     const { t } = useTranslation();
@@ -117,110 +118,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     // Defer large lists to avoid blocking renders during style switches
     const deferredItems = useDeferredValue(filteredItems);
 
-    // Create a stable updateManufacturerData function that doesn't change on every render
-    const updateManufacturerData = useCallback(() => {
-        try {
-            // Calculate values inside the callback to avoid dependency issues
-            const defaultTax = taxes.find(tax => tax.isDefault);
-            const defaultTaxValue = parseFloat(defaultTax?.value || '0');
 
-            // Calculate totalModificationsCost inside the callback
-            const totalModificationsCost = filteredItems.reduce((sum, item) => {
-                if (!item.modifications) return sum;
-
-                const itemModsTotal = item.modifications.reduce((modSum, mod) => {
-                    const modPrice = parseFloat(mod.price || 0);
-                    const modQty = parseFloat(mod.qty || 1);
-                    return modSum + modPrice * modQty;
-                }, 0);
-
-                return sum + itemModsTotal;
-            }, 0);
-
-            const cabinetPartsTotal = filteredItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
-            const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
-            const modificationsTotal = totalModificationsCost;
-            // Respect per-row assembly toggle; only count rows with includeAssemblyFee when assembled
-            const assemblyFeeTotal = isAssembled
-                ? filteredItems.reduce((sum, item) => {
-                    const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
-                    const qty = Number(item?.qty || 1);
-                    return sum + unitFee * qty;
-                }, 0)
-                : 0;
-            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
-            const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
-            const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
-                filteredItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
-            const discountAmount = (styleTotal * discountPercent) / 100;
-            const totalAfterDiscount = styleTotal - discountAmount;
-            const totalWithDelivery = totalAfterDiscount + deliveryFee;
-            const taxAmount = (totalWithDelivery * defaultTaxValue) / 100;
-            const grandTotal = totalWithDelivery + taxAmount;
-
-            // Build data used to compute a stability hash to avoid redundant updates
-            const versionName = selectVersion?.versionName;
-            const matchedCustomItems = customItems.filter(
-                (item) => item.selectVersion === versionName
-            );
-            const matchedItems = filteredItems.filter(
-                (item) => item.selectVersion === versionName
-            );
-            const newSummary = {
-                cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
-                // Use the correctly computed assemblyFeeTotal
-                assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
-                modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
-                deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
-                styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
-                discountPercent: Number(discountPercent) || 0,
-                discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
-                total: parseFloat((Number(totalAfterDiscount) || 0).toFixed(2)),
-                taxRate: Number(defaultTaxValue) || 0,
-                taxAmount: parseFloat((Number(taxAmount) || 0).toFixed(2)),
-                grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
-            };
-
-            // Compute a compact hash; include counts and style id to reflect relevant changes
-            const hashPayload = {
-                versionName,
-                styleId: selectVersion?.selectedStyle ?? null,
-                itemsLen: matchedItems.length,
-                customLen: matchedCustomItems.length,
-                summary: newSummary,
-            };
-            const nextHash = JSON.stringify(hashPayload);
-            if (versionName && summaryHashRef.current[versionName] === nextHash) {
-                // No meaningful change; skip updating parent to prevent effect churn
-                return;
-            }
-            if (versionName) summaryHashRef.current[versionName] = nextHash;
-
-            startTransition(() => {
-                setFormData(prev => {
-                    const updatedManufacturersData = prev.manufacturersData.map(manufacturer => {
-                        if (manufacturer.versionName === versionName) {
-                            return {
-                                ...manufacturer,
-                                selectedStyle: selectVersion?.selectedStyle,
-                                items: matchedItems,
-                                customItems: matchedCustomItems,
-                                summary: newSummary
-                            };
-                        }
-                        return manufacturer;
-                    });
-
-                    return {
-                        ...prev,
-                        manufacturersData: updatedManufacturersData
-                    };
-                });
-            });
-        } catch (error) {
-            console.log("err::::::", error)
-        }
-    }, [filteredItems, customItems, discountPercent, isAssembled, taxes, selectVersion?.versionName, selectVersion?.selectedStyle]);
 
     // Helper function to update existing table items with type information
     const updateExistingItemsWithTypes = (catalogData) => {
@@ -257,9 +155,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         });
     };
 
-    useEffect(() => {
-        updateManufacturerData();
-    }, [updateManufacturerData]); // Use the memoized function as dependency
+    // (moved below after selectedResult/defaultTaxValue are declared)
 
     useEffect(() => {
         dispatch(fetchTaxes());
@@ -436,12 +332,50 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
-    // Precompute comparison base totals (no longer used - keeping for reference)
-    // const comparisonBaseTotals = useMemo(() => { ... }, [filteredItems, customItems, isAssembled]);
+    // Cache for style calculations to prevent recalculation on selection changes (used by cards)
+    const styleCalculationCache = useRef(new Map());
 
-    // Calculate what the total proposal price would be if a different style was selected
-    // This simulates the full pricing flow by looking up actual catalog prices for each item in the new style
-    const calculateTotalForStyle = (stylePrice, styleId) => {
+    // Atomic totals cache (cents) per style for driving the breakdown table, mirroring Edit
+    // Shape: { epoch: number, key: string, entries: { [styleId]: { result: { partsCents, assemblyCents, modsCents, customCents, subtotalBeforeDiscountCents, discountCents, totalAfterDiscountCents, deliveryCents, taxRatePct, taxCents, grandTotalCents } } } }
+    const totalsCacheRef = useRef({ epoch: 0, key: '', entries: {} });
+
+    // Create a fingerprint for the current items/mods/custom state to detect when recalculation is needed
+    const itemsFingerprint = useMemo(() => {
+        const defaultTax = taxes.find(tax => tax.isDefault);
+        const taxRatePct = parseFloat(defaultTax?.value || '0');
+        const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+        return JSON.stringify({
+            items: filteredItems.map(item => ({
+                id: item.id,
+                code: item.code,
+                qty: item.qty,
+                price: item.price,
+                assemblyFee: item.assemblyFee,
+                includeAssemblyFee: item.includeAssemblyFee,
+                modifications: item.modifications?.map(mod => ({
+                    id: mod.id,
+                    price: mod.price,
+                    qty: mod.qty
+                })) || []
+            })),
+            customItems: customItems.map(item => ({
+                name: item.name,
+                price: item.price,
+                taxable: item.taxable !== false // default true
+            })),
+            isAssembled,
+            discountPercent,
+            multipliers: {
+                manufacturer: manufacturerCostMultiplier,
+                userGroup: userGroupMultiplier
+            },
+            deliveryFee,
+            taxRatePct
+        });
+    }, [filteredItems, customItems, isAssembled, discountPercent, manufacturerCostMultiplier, userGroupMultiplier, taxes, selectVersion?.manufacturerData?.deliveryFee]);
+
+    // Pure calculator that returns detailed cents totals for a given style
+    const computeTotalsForStyle = (stylePrice, styleId) => {
         try {
             // Start with current custom items total (unchanged by style switch)
             const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
@@ -456,6 +390,146 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             // For cabinet items, we need to look up actual prices in the new style
             let cabinetPartsTotal = 0;
             let assemblyFeeTotal = 0;
+            let eligible = 0; // count of parents available in this style
+
+            const manufacturerId = selectVersion?.manufacturerData?.id;
+            if (manufacturerId && styleId) {
+                const cacheKey = `${manufacturerId}:${styleId}`;
+                const catalogData = styleItemsCacheRef.current.get(cacheKey);
+
+                if (catalogData && catalogData.length > 0) {
+                    const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
+                    filteredItems.forEach(item => {
+                        const match = byCode.get(String(item.code).trim());
+                        if (match) {
+                            eligible += 1;
+                            const basePrice = Number(match.price) || 0;
+                            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
+                            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                            const qty = Number(item.qty || 1);
+                            cabinetPartsTotal += finalPrice * qty;
+                            if (isAssembled && item?.includeAssemblyFee) {
+                                const assemblyCost = match.styleVariantsAssemblyCost;
+                                let assemblyFee = 0;
+                                if (assemblyCost) {
+                                    const feePrice = parseFloat(assemblyCost.price || 0);
+                                    const feeType = assemblyCost.type;
+                                    if (feeType === 'flat' || feeType === 'fixed') {
+                                        assemblyFee = feePrice;
+                                    } else if (feeType === 'percentage') {
+                                        assemblyFee = (finalPrice * feePrice) / 100;
+                                    } else {
+                                        assemblyFee = feePrice;
+                                    }
+                                }
+                                assemblyFeeTotal += assemblyFee * qty;
+                            }
+                        }
+                    });
+                } else {
+                    // Fallback to style price ratio method
+                    const newStylePrice = Number(stylePrice || 0);
+                    const manufacturerAdjustedStylePrice = newStylePrice * Number(manufacturerCostMultiplier || 1);
+                    const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
+                    cabinetPartsTotal = finalStylePrice * totalItemCount;
+                    eligible = filteredItems.length > 0 ? 1 : 0;
+
+                    const currentStylePrice = Number(selectedStyleData?.price || 0);
+                    const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);
+                    const currentFinalStylePrice = currentManufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const priceRatio = currentFinalStylePrice > 0 ? finalStylePrice / currentFinalStylePrice : 1;
+                    const currentAssemblyTotal = isAssembled
+                        ? filteredItems.reduce((sum, item) => {
+                            const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                            const qty = Number(item?.qty || 1);
+                            return sum + unitFee * qty;
+                        }, 0)
+                        : 0;
+                    assemblyFeeTotal = currentAssemblyTotal * priceRatio;
+                }
+            }
+
+            const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
+            const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
+            const totalAfterDiscount = styleTotal - discountAmount;
+            const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const deliveryFee = (eligible > 0 ? rawDeliveryFee : 0);
+            const totalWithDelivery = totalAfterDiscount + deliveryFee;
+            const defaultTax = taxes.find(tax => tax.isDefault);
+            const defaultTaxValue = parseFloat(defaultTax?.value || '0');
+            const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
+            const grandTotal = totalWithDelivery + taxAmount;
+
+            // Convert to cents and return detailed shape
+            const toCents = (n) => Math.round(Number(n || 0) * 100);
+            return {
+                partsCents: toCents(cabinetPartsTotal),
+                assemblyCents: toCents(assemblyFeeTotal),
+                modsCents: toCents(modificationsTotal),
+                customCents: toCents(customItemsTotal),
+                subtotalBeforeDiscountCents: toCents(styleTotal),
+                discountCents: toCents(discountAmount),
+                totalAfterDiscountCents: toCents(totalAfterDiscount),
+                deliveryCents: toCents(deliveryFee),
+                taxRatePct: Number(defaultTaxValue || 0),
+                taxCents: toCents(taxAmount),
+                grandTotalCents: toCents(grandTotal)
+            };
+        } catch (_e) {
+            return null;
+        }
+    };
+
+    // Atomic recompute into totals cache when fingerprint changes
+    useEffect(() => {
+        const key = itemsFingerprint;
+        if (!stylesMeta || stylesMeta.length === 0) return;
+        if (totalsCacheRef.current.key === key) return;
+        const entries = {};
+        stylesMeta.forEach(styleItem => {
+            entries[styleItem.id] = {
+                result: computeTotalsForStyle(styleItem.price, styleItem.id)
+            };
+        });
+        totalsCacheRef.current = {
+            epoch: (totalsCacheRef.current.epoch || 0) + 1,
+            key,
+            entries
+        };
+    }, [itemsFingerprint, stylesMeta]);
+
+    // Selected style and selected cached result
+    const selectedStyleId = selectVersion?.selectedStyle || selectedStyleData?.id || stylesMeta?.[0]?.id || null;
+    const selectedResult = selectedStyleId ? totalsCacheRef.current.entries[selectedStyleId]?.result || null : null;
+
+    // Helpers to format money in dollars from cents
+    const money = (c) => `$${(((c || 0)) / 100).toFixed(2)}`;
+
+    // Calculate what the total proposal price would be if a different style was selected
+    // This simulates the full pricing flow by looking up actual catalog prices for each item in the new style
+    const calculateTotalForStyle = (stylePrice, styleId) => {
+        try {
+            // Check cache first - only recalculate if fingerprint changed
+            const cacheKey = `${styleId}:${itemsFingerprint}`;
+            if (styleCalculationCache.current.has(cacheKey)) {
+                return styleCalculationCache.current.get(cacheKey);
+            }
+
+            // Start with current custom items total (unchanged by style switch)
+            const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+
+            // Calculate modifications total (unchanged by style switch)
+            const modificationsTotal = filteredItems.reduce((sum, item) => {
+                if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
+                const mods = item.modifications.reduce((modSum, mod) => modSum + Number(mod.price || 0) * Number(mod.qty || 1), 0);
+                return sum + mods;
+            }, 0);
+
+            // For cabinet items, we need to look up actual prices in the new style
+            let cabinetPartsTotal = 0;
+            let assemblyFeeTotal = 0;
+            let eligible = 0; // count of parents available in this style
 
             // Try to get catalog data for the comparison style from cache
             const manufacturerId = selectVersion?.manufacturerData?.id;
@@ -471,6 +545,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     filteredItems.forEach(item => {
                         const match = byCode.get(String(item.code).trim());
                         if (match) {
+                            eligible += 1;
                             // Apply the full pricing flow: catalog → manufacturer multiplier → user group multiplier
                             const basePrice = Number(match.price) || 0;
                             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
@@ -506,6 +581,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
                     const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
                     cabinetPartsTotal = finalStylePrice * totalItemCount;
+                    // Fail open on eligibility when availability map is missing
+                    eligible = filteredItems.length > 0 ? 1 : 0;
 
                     // Assembly fees proportional to price change
                     const currentStylePrice = Number(selectedStyleData?.price || 0);
@@ -527,10 +604,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
             const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            // Delivery is included per-style only if at least one parent is available in that style
+            const deliveryFee = (eligible > 0 ? rawDeliveryFee : 0);
             const totalWithDelivery = totalAfterDiscount + deliveryFee;
             const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
             const grandTotal = totalWithDelivery + taxAmount;
+
+            // Cache the result
+            const finalCacheKey = `${styleId}:${itemsFingerprint}`;
+            styleCalculationCache.current.set(finalCacheKey, grandTotal);
 
             return grandTotal;
         } catch (error) {
@@ -539,11 +622,70 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         }
     };
 
+    // Determine if a style has at least one eligible parent (fail open if data missing)
+    const hasEligibleInStyle = useCallback((styleId) => {
+        const manufacturerId = selectVersion?.manufacturerData?.id;
+        if (!manufacturerId || !styleId) return filteredItems.length > 0 ? true : false;
+        const cacheKey = `${manufacturerId}:${styleId}`;
+        const catalogData = styleItemsCacheRef.current.get(cacheKey);
+        if (!catalogData || catalogData.length === 0) {
+            // Fail open when availability/pricing map is missing
+            return filteredItems.length > 0 ? true : false;
+        }
+        const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
+        return filteredItems.some(item => byCode.has(String(item.code).trim()));
+    }, [filteredItems, selectVersion?.manufacturerData?.id]);
+
 
     const defaultTax = taxes.find(tax => tax.isDefault);
     const defaultTaxValue = parseFloat(defaultTax?.value || '0');
 
     // (Consolidated in a single effect above)
+
+    // Keep selectVersion.summary in sync for persistence, but do not render from it
+    useEffect(() => {
+        const versionName = selectVersion?.versionName;
+        if (!versionName || !selectedResult) return;
+
+        const newSummary = {
+            cabinets: ((selectedResult.partsCents || 0) / 100).toFixed(2),
+            assemblyFee: ((selectedResult.assemblyCents || 0) / 100).toFixed(2),
+            modificationsCost: ((selectedResult.modsCents || 0) / 100).toFixed(2),
+            deliveryFee: ((selectedResult.deliveryCents || 0) / 100).toFixed(2),
+            styleTotal: ((selectedResult.subtotalBeforeDiscountCents || 0) / 100).toFixed(2),
+            discountPercent: Number(discountPercent) || 0,
+            discountAmount: (((selectedResult.discountCents || 0)) / 100).toFixed(2),
+            total: ((((selectedResult.subtotalBeforeDiscountCents || 0) - (selectedResult.discountCents || 0))) / 100).toFixed(2),
+            taxRate: selectedResult.taxRatePct || defaultTaxValue || 0,
+            taxAmount: ((selectedResult.taxCents || 0) / 100).toFixed(2),
+            grandTotal: ((selectedResult.grandTotalCents || 0) / 100).toFixed(2)
+        };
+
+        startTransition(() => {
+            setFormData(prev => {
+                const updatedManufacturersData = prev.manufacturersData.map(manufacturer => {
+                    if (manufacturer.versionName === versionName) {
+                        const matchedItems = filteredItems.filter((item) => item.selectVersion === versionName);
+                        const matchedCustomItems = customItems.filter((item) => item.selectVersion === versionName);
+                        return {
+                            ...manufacturer,
+                            selectedStyle: selectVersion?.selectedStyle,
+                            items: matchedItems,
+                            customItems: matchedCustomItems,
+                            summary: newSummary
+                        };
+                    }
+                    return manufacturer;
+                });
+
+                return {
+                    ...prev,
+                    manufacturersData: updatedManufacturersData
+                };
+            });
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedResult, selectVersion?.selectedStyle, discountPercent]);
 
     const handleDelete = (index) => {
         // index is relative to filteredItems; map to tableItems index
@@ -753,6 +895,30 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
 
 
+
+    // New handler for ModificationBrowserModal (accepts row index and payload)
+    const handleApplyModification = (index, modificationData) => {
+        const targetIndex = typeof index === 'number' ? index : selectedItemIndexForMod;
+        const mods = modificationsMap[targetIndex] || [];
+
+        // Transform the new modification format to the existing format
+        const newMod = {
+            type: 'existing',
+            modificationId: modificationData.templateId,
+            qty: modificationData.quantity || 1,
+            note: modificationData.note || '',
+            name: modificationData.templateName || '',
+            price: modificationData.price || 0,
+            // Store additional data from the new system
+            fieldsConfig: modificationData.fieldsConfig || {},
+            selectedOptions: modificationData.selectedOptions || {},
+            attachments: Array.isArray(modificationData.attachments) ? modificationData.attachments : []
+        };
+
+    const updatedMods = [...mods, newMod];
+    updateModification(targetIndex, updatedMods);
+        setModificationModalVisible(false);
+    };
 
     const handleSaveModification = () => {
         setValidationAttempted(true);
@@ -1221,11 +1387,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     const variant = styleItem.styleVariants?.[0];
                                                     const totalPrice = calculateTotalForStyle(styleItem.price, styleItem.id);
                                                     const isCurrentStyle = styleItem.id === selectedStyleData?.id;
+                                                    const hasAnyItems = filteredItems.length > 0;
+                                                    const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
 
                                                     return (
                                                         <div
                                                             key={`compact-style-${styleItem.id}-${index}`}
-                                                            className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''}`}
+                                                            className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''} styleCard`}
+                                                            aria-disabled={disabled}
                                                             onClick={() => handleStyleSelect(styleItem.id)}
                                                         >
                                                             <div className="style-info">
@@ -1257,10 +1426,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             >
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const variant = styleItem.styleVariants?.[0];
+                                                    const hasAnyItems = filteredItems.length > 0;
+                                                    const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
                                                     return (
                                                         <div
                                                             key={`style-${styleItem.id}-${index}`}
-                                                            className="style-carousel-item text-center"
+                                                            className="style-carousel-item text-center styleCard"
+                                                            aria-disabled={disabled}
                                                             style={{
                                                                 cursor: 'pointer',
                                                                 transition: 'transform 0.2s ease',
@@ -1506,26 +1678,22 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     <tbody>
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.cabinets')}</th>
-                            <td className="text-center fw-medium">
-                                ${selectVersion?.summary?.cabinets || "0"}
-                            </td>
+                            <td className="text-center fw-medium">{money(selectedResult?.partsCents)}</td>
                         </tr>
 
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.assembly')}</th>
-                            <td className="text-center">${selectVersion?.summary?.assemblyFee || "0"}</td>
+                            <td className="text-center">{money(selectedResult?.assemblyCents)}</td>
                         </tr>
 
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.modifications')}</th>
-                            <td className="text-center">${selectVersion?.summary?.modificationsCost || "0"}</td>
+                            <td className="text-center">{money(selectedResult?.modsCents)}</td>
                         </tr>
 
                         <tr className="table-secondary">
                             <th>{t('proposalDoc.priceSummary.styleTotal')}</th>
-                            <td className="text-center fw-semibold">
-                                ${selectVersion?.summary?.styleTotal || "0"}
-                            </td>
+                            <td className="text-center fw-semibold">{money(selectedResult?.subtotalBeforeDiscountCents)}</td>
                         </tr>
 
                         <tr>
@@ -1535,7 +1703,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     type="number"
                                     min="0"
                                     max="100"
-                                    value={selectVersion?.summary?.discountPercent || "0"}
+                                    value={discountPercent}
                                     onChange={(e) => {
                                         const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
                                         setDiscountPercent(val);
@@ -1554,65 +1722,38 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.total')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.total || "0"}
-                            </td>
+                            <td className="text-center">{money(((selectedResult?.subtotalBeforeDiscountCents || 0) - (selectedResult?.discountCents || 0)))}</td>
                         </tr>
 
                         <tr>
                             <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
-                            <td className="text-center">${selectVersion?.summary?.deliveryFee || "0"}</td>
+                            <td className="text-center">{money(selectedResult?.deliveryCents)}</td>
                         </tr>
 
                         <tr>
                             <th className="bg-light">{t('proposalUI.summary.taxRate')}</th>
-                            <td className="text-center">{selectVersion?.summary?.taxRate || "0"}%</td>
+                            <td className="text-center">{(selectedResult?.taxRatePct ?? defaultTaxValue) || 0}%</td>
                         </tr>
 
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.tax')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.taxAmount || "0"}
-                            </td>
+                            <td className="text-center">{money(selectedResult?.taxCents)}</td>
                         </tr>
 
                         <tr className="table-success fw-bold">
                             <th>{t('proposalDoc.priceSummary.grandTotal')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.grandTotal || "0"}
-                            </td>
+                            <td className="text-center">{money(selectedResult?.grandTotalCents)}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <ModificationModal
-                itemModificationID={itemModificationID}
-                catalogData={modificationItems}
+            <ModificationBrowserModal
                 visible={modificationModalVisible}
                 onClose={() => setModificationModalVisible(false)}
-                onSave={handleSaveModification}
-                modificationType={modificationType}
-                setModificationType={setModificationType}
-                existingModifications={modificationItems}
-                selectedExistingMod={selectedExistingMod}
-                setSelectedExistingMod={setSelectedExistingMod}
-                existingModQty={existingModQty}
-                setExistingModQty={setExistingModQty}
-                existingModNote={existingModNote}
-                setExistingModNote={setExistingModNote}
-                customModName={customModName}
-                setCustomModName={setCustomModName}
-                customModQty={customModQty}
-                setCustomModQty={setCustomModQty}
-                customModPrice={customModPrice}
-                setCustomModPrice={setCustomModPrice}
-                customModTaxable={customModTaxable}
-                setCustomModTaxable={setCustomModTaxable}
-                customModNote={customModNote}
-                setCustomModNote={setCustomModNote}
-                validationAttempted={validationAttempted}
-                isUserAdmin={isUserAdmin}
+                onApplyModification={handleApplyModification}
+                selectedItemIndex={selectedItemIndexForMod}
+                catalogItemId={itemModificationID}
             />
         </div>
     );

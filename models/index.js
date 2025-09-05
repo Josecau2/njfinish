@@ -8,6 +8,7 @@ const UserRole = require('./UserRole');
 const Collection = require('./Collection');
 const Proposals = require('./Proposals');
 const ProposalSession = require('./ProposalSession');
+const Order = require('./Order');
 const Customer = require('./Customer');
 const UserGroupMultiplier = require('./UserGroupMultiplier');
 const {ManufacturerCatalogFile} = require('./ManufacturerCatalogFile');
@@ -151,6 +152,12 @@ ManufacturerCatalogData.hasMany(ManufacturerModificationDetails, {
 // Proposal sessions associations
 Proposals.hasMany(ProposalSession, { foreignKey: 'proposal_id', as: 'sessions' });
 ProposalSession.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
+
+// Orders associations
+Proposals.hasOne(Order, { foreignKey: 'proposal_id', as: 'order' });
+Order.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
+Order.belongsTo(UserGroup, { foreignKey: 'owner_group_id', as: 'ownerGroup' });
+Order.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
 
 // Contact messaging associations
 ContactThread.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });

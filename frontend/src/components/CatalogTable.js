@@ -24,6 +24,64 @@ import PageHeader from './PageHeader'
 const hingeOptions = ['L', 'R', '-']
 const exposedOptions = ['L', 'R', 'B', '-']
 
+// Helpers to render selected modification options (e.g., measurements) neatly
+const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
+const formatMixedFraction = (value, precision = 16) => {
+  if (value == null || isNaN(value)) return ''
+  const sign = value < 0 ? '-' : ''
+  let v = Math.abs(Number(value))
+  let whole = Math.floor(v)
+  let frac = v - whole
+  let num = Math.round(frac * precision)
+  if (num === precision) {
+    whole += 1
+    num = 0
+  }
+  if (num === 0) return `${sign}${whole}`
+  const g = _gcd(num, precision)
+  const n = num / g
+  const d = precision / g
+  return `${sign}${whole ? whole + ' ' : ''}${n}/${d}`
+}
+
+const keyToLabel = (key) => {
+  if (!key) return ''
+  return String(key)
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const mapSide = (s) => {
+  switch (s) {
+    case 'L': return 'Left'
+    case 'R': return 'Right'
+    case 'B': return 'Both'
+    default: return s
+  }
+}
+
+const buildSelectedOptionsText = (selectedOptions) => {
+  if (!selectedOptions || typeof selectedOptions !== 'object') return ''
+  const parts = []
+  const numericEntries = Object.entries(selectedOptions).filter(([k, v]) => typeof v === 'number' && isFinite(v))
+  if (numericEntries.length === 1) {
+    const [, v] = numericEntries[0]
+    const m = formatMixedFraction(v)
+    if (m) parts.push(`${m}\"`)
+  } else if (numericEntries.length > 1) {
+    numericEntries.forEach(([k, v]) => {
+      const m = formatMixedFraction(v)
+      if (m) parts.push(`${keyToLabel(k)} ${m}\"`)
+    })
+  }
+  if (typeof selectedOptions.sideSelector === 'string' && selectedOptions.sideSelector) {
+    parts.push(`Side: ${mapSide(selectedOptions.sideSelector)}`)
+  }
+  return parts.join(' • ')
+}
+
 const CatalogTable = ({
   catalogData,
   handleCatalogSelect,
@@ -54,10 +112,10 @@ const CatalogTable = ({
   const displayItems = Array.isArray(items) ? items : (Array.isArray(selectVersion?.items) ? selectVersion.items : []);
   const { t } = useTranslation();
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [typesMeta, setTypesMeta] = useState([]);
@@ -251,7 +309,7 @@ const CatalogTable = ({
 
       {/* Detailed type info modal */}
       <CModal visible={showTypeModal} onClose={() => setShowTypeModal(false)} size="lg">
-        <PageHeader 
+        <PageHeader
           title={selectedTypeInfo?.type || 'Type Specifications'}
           onClose={() => setShowTypeModal(false)}
         />
@@ -263,12 +321,12 @@ const CatalogTable = ({
                   src={selectedTypeInfo.image ? `${api_url}/uploads/types/${selectedTypeInfo.image}` : '/images/nologo.png'}
                   alt={selectedTypeInfo.type}
                   className="img-fluid"
-                  style={{ 
-                    maxWidth: '100%', 
-                    height: 'auto', 
-                    maxHeight: '200px', 
-                    objectFit: 'contain', 
-                    background: '#ffffff', 
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    maxHeight: '200px',
+                    objectFit: 'contain',
+                    background: '#ffffff',
                     borderRadius: '6px',
                     border: '1px solid #dee2e6'
                   }}
@@ -305,14 +363,14 @@ const CatalogTable = ({
           ) : (
             <div className="text-muted text-center p-4 border rounded bg-light">{t('No type information available.')}</div>
           )}
-          
+
           {/* Mobile Close Button */}
           <div className="d-block d-md-none mt-4 text-center">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn btn-dark btn-lg shadow-sm"
               onClick={() => setShowTypeModal(false)}
-              style={{ 
+              style={{
                 minWidth: '140px',
                 borderRadius: '8px',
                 fontWeight: '500'
@@ -336,6 +394,7 @@ const CatalogTable = ({
               <CTableHeaderCell>{t('proposalColumns.exposedSide')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.total')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposals.headers.actions')}</CTableHeaderCell>
             </CTableRow>
@@ -349,7 +408,10 @@ const CatalogTable = ({
               const isUnavailable = !!item.unavailable
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
               const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
-              const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee
+              const modsTotal = Array.isArray(item.modifications)
+                ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+                : 0
+              const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
 
               return (
                 <React.Fragment key={idx}>
@@ -368,6 +430,16 @@ const CatalogTable = ({
                     <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>
                       <div className="d-flex align-items-center gap-2">
                         <span>{item.code}</span>
+                        {(() => {
+                          try {
+                            const attachmentsCount = Array.isArray(item.modifications)
+                              ? item.modifications.reduce((n, m) => n + (Array.isArray(m.attachments) ? m.attachments.length : 0), 0)
+                              : 0
+                            return attachmentsCount > 0 ? (
+                              <span className="badge text-bg-info" title={`${attachmentsCount} attachment${attachmentsCount>1?'s':''}`}>{attachmentsCount}</span>
+                            ) : null
+                          } catch (_) { return null }
+                        })()}
                         {hasTypeMetadata(item.type) && (
                           <button
                             type="button"
@@ -440,6 +512,8 @@ const CatalogTable = ({
                       )}
                     </CTableDataCell>
 
+                    <CTableDataCell>{formatPrice(modsTotal)}</CTableDataCell>
+
                     <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>{formatPrice(total)}</CTableDataCell>
 
                     <CTableDataCell>
@@ -474,6 +548,36 @@ const CatalogTable = ({
 
                         <CTableDataCell colSpan={3}>
                           {mod.name || t('proposalUI.mod.unnamed')}
+                          {(() => {
+                            const details = buildSelectedOptionsText(mod?.selectedOptions)
+                            return details ? (
+                              <span className="text-muted ms-2">— {details}</span>
+                            ) : null
+                          })()}
+                          {Array.isArray(mod.attachments) && mod.attachments.length > 0 && (
+                            <div className="mt-1 d-flex flex-wrap gap-1">
+                              {mod.attachments.slice(0, 3).map((att, ai) => (
+                                <a
+                                  key={ai}
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="badge text-bg-info text-decoration-none"
+                                  title={att.name || 'Attachment'}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                                >
+                                  {/* Thumbnail for images */}
+                                  {String(att.mimeType || '').startsWith('image/') ? (
+                                    <img src={att.url} alt={att.name || 'img'} style={{ width: 18, height: 18, objectFit: 'cover', borderRadius: 2 }} />
+                                  ) : null}
+                                  <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name || 'File'}</span>
+                                </a>
+                              ))}
+                              {mod.attachments.length > 3 && (
+                                <span className="badge text-bg-secondary">+{mod.attachments.length - 3}</span>
+                              )}
+                            </div>
+                          )}
                         </CTableDataCell>
                         <CTableDataCell>
                           {formatPrice(mod.price || 0)}
@@ -509,7 +613,10 @@ const CatalogTable = ({
           const isUnavailable = !!item.unavailable
           const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
           const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
-          const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee
+          const modsTotal = Array.isArray(item.modifications)
+            ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+            : 0
+          const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
@@ -613,6 +720,12 @@ const CatalogTable = ({
                   </>
                 )}
 
+                {/* Modifications summary on mobile */}
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</span>
+                  <span className="item-value">{formatPrice(modsTotal)}</span>
+                </div>
+
                 <div className={`total-highlight ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>
                   <strong>{t('proposalColumns.total')}: {formatPrice(total)}</strong>
                 </div>
@@ -632,6 +745,12 @@ const CatalogTable = ({
                     </div>
                     <div className="mod-detail">
                       <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
+                      {(() => {
+                        const details = buildSelectedOptionsText(mod?.selectedOptions)
+                        return details ? (
+                          <span className="text-muted"> — {details}</span>
+                        ) : null
+                      })()}
                       <span>Qty: {mod.qty}</span>
                     </div>
                     <div className="mod-detail">

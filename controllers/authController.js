@@ -6,6 +6,9 @@ const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
 require('dotenv').config();
 
+// Centralized token lifetime (default to long-lived sessions)
+const TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -84,7 +87,7 @@ exports.login = async (req, res) => {
       role: userRole,
       role_id: user.role_id,
       group_id: user.group_id
-    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
 
     // Parse modules if they exist and are stored as string
     let groupData = user.group;

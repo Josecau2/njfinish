@@ -22,7 +22,9 @@ import {
   CTableDataCell,
   CFormTextarea,
   CFormSelect,
-  CFormLabel
+  CFormLabel,
+  CFormCheck,
+  CBadge
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilSortAscending, cilSortDescending } from '@coreui/icons';
@@ -96,6 +98,45 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [showAssemblyModal, setShowAssemblyModal] = useState(false);
   const [showHingesModal, setShowHingesModal] = useState(false);
   const [showModificationModal, setShowModificationModal] = useState(false);
+  // Main Modification Management Modal
+  const [showMainModificationModal, setShowMainModificationModal] = useState(false);
+  // Quick edit states for categories/templates within Modification Management
+  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
+  const [editCategory, setEditCategory] = useState({ id: '', name: '', orderIndex: 0, image: '' });
+  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [showMoveModificationModal, setShowMoveModificationModal] = useState(false);
+  const [modificationToMove, setModificationToMove] = useState(null);
+  const [showQuickEditTemplateModal, setShowQuickEditTemplateModal] = useState(false);
+  // Keep full context so quick-save doesn't wipe fields on server
+  const [editTemplate, setEditTemplate] = useState({ id: '', categoryId: '', name: '', defaultPrice: '', sampleImage: '', isReady: false, fieldsConfig: null });
+  const [editGuidedBuilder, setEditGuidedBuilder] = useState({
+    sliders: {
+      height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
+      width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
+      depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+    },
+    sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+    qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
+    notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
+    customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
+    descriptions: { internal: '', customer: '', installer: '', both: false },
+    modSampleImage: { enabled: false, label: 'Sample Image' }
+  });
+  const [modificationView, setModificationView] = useState('cards'); // 'cards', 'addNew', 'gallery'
+  const [selectedModificationCategory, setSelectedModificationCategory] = useState(null);
+  const [modificationStep, setModificationStep] = useState(1); // 1: submenu, 2: template builder
+  // Track editing state for template builder
+  const [editingTemplateId, setEditingTemplateId] = useState(null);
+  // Global Mods integration
+  const [showAssignGlobalModsModal, setShowAssignGlobalModsModal] = useState(false);
+  const [showItemGlobalModsModal, setShowItemGlobalModsModal] = useState(false);
+  const [globalGallery, setGlobalGallery] = useState([]);
+  const [globalAssignments, setGlobalAssignments] = useState([]);
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [assignFormGM, setAssignFormGM] = useState({ templateId: '', scope: 'all', targetStyle: '', targetType: '', overridePrice: '' });
+  const [includeDraftTemplates, setIncludeDraftTemplates] = useState(false);
+  const [itemGlobalList, setItemGlobalList] = useState([]);
 
   const [assemblyData, setAssemblyData] = useState({
     type: '',
@@ -113,6 +154,32 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     exposedSidePrice: '',
   });
   const [modificationData, setModificationData] = useState({ modificationName: '', price: '', notes: '', description: '' });
+
+  // Comprehensive Template Builder State
+  const [newTemplate, setNewTemplate] = useState({
+    categoryId: '',
+    name: '',
+    defaultPrice: '',
+    isReady: false,
+    sampleImage: '',
+    saveAsBlueprint: false // Task 5: Add blueprint checkbox support
+  });
+  const [newCategory, setNewCategory] = useState({ name: '', orderIndex: 0 });
+  const [guidedBuilder, setGuidedBuilder] = useState({
+    sliders: {
+      height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
+      width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
+      depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+    },
+    sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+    qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
+    notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
+    customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
+    descriptions: { internal: '', customer: '', installer: '', both: false },
+    modSampleImage: { enabled: false, label: 'Sample Image' }
+  });
+  const [builderErrors, setBuilderErrors] = useState({});
+  const [creatingModification, setCreatingModification] = useState(false);
 
 
   const [styleImage, setStyleImage] = useState(null);
@@ -173,6 +240,471 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setCatalogData([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Global mods helpers
+  const loadGlobalGallery = async () => {
+    try {
+      const { data } = await axiosInstance.get('/api/global-mods/gallery');
+      setGlobalGallery(data?.gallery || []);
+    } catch (e) {
+      setGlobalGallery([]);
+    }
+  };
+
+  // Load manufacturer-specific categories
+  const [manufacturerCategories, setManufacturerCategories] = useState([]);
+  const loadManufacturerCategories = async () => {
+    if (!id) return;
+    try {
+      const { data } = await axiosInstance.get('/api/global-mods/categories', {
+        params: { scope: 'manufacturer', manufacturerId: id, includeTemplates: true }
+      });
+      setManufacturerCategories(data?.categories || []);
+    } catch (e) {
+      setManufacturerCategories([]);
+    }
+  };
+  const loadGlobalAssignments = async () => {
+    if (!id) return;
+    setAssignLoading(true);
+    try {
+      const { data } = await axiosInstance.get('/api/global-mods/assignments', { params: { manufacturerId: id } });
+      setGlobalAssignments(data?.assignments || []);
+    } catch (e) {
+      setGlobalAssignments([]);
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
+  // Image upload helper (reuses backend /api/global-mods/upload/image)
+  const uploadImageFile = async (file) => {
+    if (!file) return null;
+    const form = new FormData();
+    form.append('logoImage', file);
+    const { data } = await axiosInstance.post('/api/global-mods/upload/image', form, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return data?.filename || null;
+  };
+
+  // Create modification category (submenu)
+  const createModificationCategory = async () => {
+    try {
+      const { data } = await axiosInstance.post('/api/global-mods/categories', {
+        name: newCategory.name,
+        scope: 'manufacturer', // Always manufacturer scope in this context
+        manufacturerId: id, // Current manufacturer ID
+        orderIndex: parseInt(newCategory.orderIndex) || 0
+      });
+      await loadManufacturerCategories(); // Reload manufacturer categories to show new category
+      return data.category;
+    } catch (error) {
+      console.error('Error creating category:', error);
+      throw error;
+    }
+  };
+
+  // Create modification template
+  const createModificationTemplate = async (categoryId) => {
+    try {
+      // Task 5: Ensure manufacturerId is present for proper isolation
+      if (!id) {
+        throw new Error('Manufacturer ID is required to create modifications');
+      }
+
+      const fieldsConfig = {
+        sliders: guidedBuilder.sliders,
+        sideSelector: guidedBuilder.sideSelector,
+        qtyRange: guidedBuilder.qtyRange,
+        notes: guidedBuilder.notes,
+        customerUpload: guidedBuilder.customerUpload,
+        descriptions: guidedBuilder.descriptions,
+        modSampleImage: guidedBuilder.modSampleImage
+      };
+
+      // Task 5: Handle blueprint vs manufacturer mod logic
+      const isBlueprint = newTemplate.saveAsBlueprint || false;
+      const requestData = {
+        categoryId: isBlueprint ? null : (categoryId || null), // Blueprints don't need categories
+        name: newTemplate.name,
+        isReady: newTemplate.isReady,
+        fieldsConfig: fieldsConfig,
+        sampleImage: newTemplate.sampleImage || null,
+        isBlueprint: isBlueprint
+      };
+
+      // Business rule: Blueprints cannot have manufacturerId or price
+      if (isBlueprint) {
+        // Creating blueprint - no manufacturerId, no price
+        requestData.manufacturerId = null;
+        requestData.defaultPrice = null;
+      } else {
+        // Creating manufacturer-specific mod - has manufacturerId and price
+        requestData.manufacturerId = id;
+        requestData.defaultPrice = newTemplate.defaultPrice ? parseFloat(newTemplate.defaultPrice) : null;
+      }
+
+      const { data } = await axiosInstance.post('/api/global-mods/templates', requestData);
+
+      await loadGlobalGallery(); // Reload gallery to show new template
+      await loadManufacturerCategories(); // Reload manufacturer categories in case category was created
+      return data.template;
+    } catch (error) {
+      console.error('Error creating template:', error);
+      throw error;
+    }
+  };
+
+  // Update modification template (edit mode)
+  const updateModificationTemplate = async (templateId, categoryId) => {
+    try {
+      const fieldsConfig = {
+        sliders: guidedBuilder.sliders,
+        sideSelector: guidedBuilder.sideSelector,
+        qtyRange: guidedBuilder.qtyRange,
+        notes: guidedBuilder.notes,
+        customerUpload: guidedBuilder.customerUpload,
+        descriptions: guidedBuilder.descriptions,
+        modSampleImage: guidedBuilder.modSampleImage
+      };
+
+      await axiosInstance.put(`/api/global-mods/templates/${templateId}`, {
+        categoryId: categoryId || null,
+        name: newTemplate.name,
+        defaultPrice: newTemplate.defaultPrice ? parseFloat(newTemplate.defaultPrice) : null,
+        isReady: newTemplate.isReady,
+        fieldsConfig,
+        sampleImage: newTemplate.sampleImage || null
+      });
+
+      await loadGlobalGallery();
+    } catch (error) {
+      console.error('Error updating template:', error);
+      throw error;
+    }
+  };
+
+  // Reset modification form
+  const resetModificationForm = () => {
+    setNewTemplate({
+      categoryId: '',
+      name: '',
+      defaultPrice: '',
+      isReady: false,
+      sampleImage: ''
+    });
+    setNewCategory({ name: '', orderIndex: 0 });
+    setGuidedBuilder({
+      sliders: {
+        height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
+        width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
+        depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+      },
+      sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+      qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
+      notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
+      customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
+      descriptions: { internal: '', customer: '', installer: '', both: false },
+      modSampleImage: { enabled: false, label: 'Sample Image' }
+    });
+    setSelectedModificationCategory(null);
+    setModificationStep(1);
+    setModificationView('cards');
+  setEditingTemplateId(null);
+  };
+
+  // Delete modification template
+  const deleteModificationTemplate = async (templateId) => {
+    try {
+      await axiosInstance.delete(`/api/global-mods/templates/${templateId}`);
+      await loadGlobalGallery(); // Reload gallery to update the list
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "success",
+        title: "Modification deleted successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: "Failed to delete modification",
+        showConfirmButton: false,
+        timer: 1500,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    }
+  };
+
+  // Delete category
+  const deleteCategory = async (categoryId, mode = 'only') => {
+    try {
+      const url = `/api/global-mods/categories/${categoryId}${mode !== 'only' ? `?mode=${mode}` : ''}`;
+      await axiosInstance.delete(url);
+
+      // Reload both gallery and manufacturer categories to update the lists
+      await loadGlobalGallery();
+      await loadManufacturerCategories();
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "success",
+        title: "Category deleted successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to delete category",
+        showConfirmButton: false,
+        timer: 3000,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    }
+  };
+
+  // Move modification to different category
+  const moveModification = async (templateId, newCategoryId) => {
+    try {
+      await axiosInstance.put(`/api/global-mods/templates/${templateId}`, {
+        categoryId: newCategoryId
+      });
+
+      // Reload both gallery and manufacturer categories to update the lists
+      await loadGlobalGallery();
+      await loadManufacturerCategories();
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "success",
+        title: "Modification moved successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    } catch (error) {
+      console.error('Error moving modification:', error);
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to move modification",
+        showConfirmButton: false,
+        timer: 3000,
+        width: '350px',
+        didOpen: (toast) => {
+          toast.style.padding = '8px 12px';
+          toast.style.fontSize = '14px';
+          toast.style.minHeight = 'auto';
+        }
+      });
+    }
+  };
+
+  // Build fieldsConfig from edit guided builder
+  const buildEditFieldsConfig = () => {
+    const fieldsConfig = {
+      sliders: editGuidedBuilder.sliders,
+      sideSelector: editGuidedBuilder.sideSelector,
+      qtyRange: editGuidedBuilder.qtyRange,
+      notes: editGuidedBuilder.notes,
+      customerUpload: editGuidedBuilder.customerUpload,
+      descriptions: editGuidedBuilder.descriptions,
+      modSampleImage: editGuidedBuilder.modSampleImage
+    };
+    return fieldsConfig;
+  };
+  useEffect(() => {
+    loadGlobalGallery();
+  }, []);
+  useEffect(() => {
+    loadGlobalAssignments();
+    loadManufacturerCategories(); // Load manufacturer-specific categories
+  }, [id]);
+
+  const flatTemplates = React.useMemo(() => {
+    const list = [];
+    // Add only manufacturer-specific templates
+    (manufacturerCategories || []).forEach(cat => (cat.templates || []).forEach(t => list.push({ ...t, categoryName: cat.name, isGlobal: false })));
+    return list
+      .filter(t => includeDraftTemplates || t.isReady)
+      .sort((a, b) => (a.categoryName || '').localeCompare(b.categoryName) || a.name.localeCompare(b.name));
+  }, [manufacturerCategories, includeDraftTemplates]);
+
+  const openAssignGlobal = () => {
+    setAssignFormGM({ templateId: '', scope: styleFilter ? 'style' : 'all', targetStyle: styleFilter || '', targetType: typeFilter || '', overridePrice: '' });
+    setShowAssignGlobalModsModal(true);
+  };
+
+  // Transform fieldsConfig from template to guidedBuilder shape
+  const makeGuidedFromFields = (fc) => {
+    const base = {
+      sliders: {
+        height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Height' },
+        width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Width' },
+        depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Depth' }
+      },
+      sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+      qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
+      notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
+      customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
+      descriptions: { internal: '', customer: '', installer: '', both: false },
+      modSampleImage: { enabled: false, label: 'Sample Image' }
+    };
+    if (!fc) return base;
+    // sliders
+    if (fc.sliders) {
+      ['height','width','depth'].forEach(k => {
+        if (fc.sliders[k]) {
+          base.sliders[k].enabled = !!fc.sliders[k].enabled;
+          base.sliders[k].min = Number(fc.sliders[k].min ?? 0);
+          base.sliders[k].max = Number(fc.sliders[k].max ?? 0);
+          base.sliders[k].step = Number(fc.sliders[k].step ?? 1);
+          if (Array.isArray(fc.sliders[k].customIncrements) && fc.sliders[k].customIncrements.length > 0) {
+            base.sliders[k].useCustomIncrements = true;
+            base.sliders[k].customIncrements = fc.sliders[k].customIncrements;
+          } else {
+            base.sliders[k].useCustomIncrements = false;
+          }
+        }
+      });
+    }
+    if (fc.sideSelector) {
+      base.sideSelector.enabled = !!fc.sideSelector.enabled;
+      base.sideSelector.options = Array.isArray(fc.sideSelector.options) && fc.sideSelector.options.length ? fc.sideSelector.options : ['L','R'];
+    }
+    if (fc.qtyRange) {
+      base.qtyRange.enabled = !!fc.qtyRange.enabled;
+      base.qtyRange.min = Number(fc.qtyRange.min ?? 1);
+      base.qtyRange.max = Number(fc.qtyRange.max ?? 10);
+    }
+    if (fc.notes) {
+      base.notes.enabled = !!fc.notes.enabled;
+      base.notes.placeholder = fc.notes.placeholder || '';
+      base.notes.showInRed = !!fc.notes.showInRed;
+    }
+    if (fc.customerUpload) {
+      base.customerUpload.enabled = !!fc.customerUpload.enabled;
+      base.customerUpload.required = !!fc.customerUpload.required;
+      base.customerUpload.title = fc.customerUpload.title || '';
+    }
+    if (fc.descriptions) {
+      base.descriptions.internal = fc.descriptions.internal || '';
+      base.descriptions.customer = fc.descriptions.customer || '';
+      base.descriptions.installer = fc.descriptions.installer || '';
+      base.descriptions.both = !!fc.descriptions.both;
+    }
+    if (fc.modSampleImage) {
+      base.modSampleImage.enabled = !!fc.modSampleImage.enabled;
+    }
+    return base;
+  };
+
+  const submitAssignGlobal = async () => {
+    if (!assignFormGM.templateId) return;
+    try {
+      // Support applying to selected items
+      if (assignFormGM.scope === 'item' && selectedItems.length > 0) {
+        await Promise.all(selectedItems.map(catalogDataId => axiosInstance.post('/api/global-mods/assignments', {
+          templateId: Number(assignFormGM.templateId),
+          manufacturerId: id,
+          scope: 'item',
+          catalogDataId,
+          overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
+        })));
+      } else {
+        await axiosInstance.post('/api/global-mods/assignments', {
+          templateId: Number(assignFormGM.templateId),
+          manufacturerId: id,
+          scope: assignFormGM.scope,
+          targetStyle: assignFormGM.scope === 'style' ? (assignFormGM.targetStyle || null) : null,
+          targetType: assignFormGM.scope === 'type' ? (assignFormGM.targetType || null) : null,
+          catalogDataId: assignFormGM.scope === 'item' ? (selectedCatalogItem?.id || null) : null,
+          overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
+        });
+      }
+      await loadGlobalAssignments();
+      setShowAssignGlobalModsModal(false);
+      Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Assigned', showConfirmButton: false, timer: 1200 });
+    } catch (e) {
+      Swal.fire({ toast: true, position: 'top', icon: 'error', title: e.message || 'Assignment failed', showConfirmButton: false, timer: 1500 });
+    }
+  };
+
+  const removeGlobalAssignment = async (assignmentId) => {
+    try {
+      await axiosInstance.delete(`/api/global-mods/assignments/${assignmentId}`);
+      await loadGlobalAssignments();
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const openItemGlobalMods = async (item) => {
+    setSelectedCatalogItem(item);
+    try {
+      const { data } = await axiosInstance.get(`/api/global-mods/item/${item.id}`);
+      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
+    } catch (e) {
+      setItemGlobalList([]);
+    }
+    setShowItemGlobalModsModal(true);
+  };
+
+  const suppressTemplateForItem = async (templateId, active) => {
+    // active=false => create a suppression assignment; true => remove suppression if exists
+    try {
+      if (active === false) {
+        await axiosInstance.post('/api/global-mods/assignments', { templateId, manufacturerId: id, scope: 'item', catalogDataId: selectedCatalogItem.id, isActive: false });
+      } else {
+        // find suppression assignment to delete (scope=item, isActive=false)
+        const suppress = itemGlobalList.find(a => a.template?.id === templateId && a.scope === 'item' && a.isActive === false);
+        if (suppress) await axiosInstance.delete(`/api/global-mods/assignments/${suppress.id}`);
+      }
+      const { data } = await axiosInstance.get(`/api/global-mods/item/${selectedCatalogItem.id}`);
+      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
+    } catch (e) {
+      // ignore
     }
   };
 
@@ -1458,6 +1990,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <span className="d-sm-none">➕ Add</span>
             </CButton>
             <CButton
+              color="primary"
+              size="sm"
+              className="flex-shrink-0"
+              onClick={() => setShowMainModificationModal(true)}
+              title="Global Modification Management"
+            >
+              <span className="d-none d-sm-inline">Modification</span>
+              <span className="d-sm-none">🔧</span>
+            </CButton>
+            <CButton
+              color="success"
+              size="sm"
+              className="flex-shrink-0"
+              onClick={openAssignGlobal}
+              title="Assign global modifications"
+            >
+              <span className="d-none d-sm-inline">Assign Mods</span>
+              <span className="d-sm-none">🧩</span>
+            </CButton>
+            <CButton
               color="warning"
               size="sm"
               className="flex-shrink-0"
@@ -1996,6 +2548,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     <CButton
                       size="sm"
+                      onClick={() => openItemGlobalMods(item)}
+                      style={{
+                        fontSize: '11px',
+                        padding: '2px 6px',
+                        backgroundColor: '#20c997',
+                        borderColor: '#20c997',
+                        color: '#fff',
+                        minWidth: 'auto'
+                      }}
+                      title="Global Mods for item"
+                    >
+                      🧩
+                    </CButton>
+
+                    <CButton
+                      size="sm"
                       color="danger"
                       onClick={() => handleDeleteItemClick(item)}
                       style={{
@@ -2182,6 +2750,187 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </CButton>
           <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleUpload}>{t('settings.manufacturers.catalogMapping.file.uploadBtn')}</CButton>
 
+        </CModalFooter>
+      </CModal>
+
+      {/* Assign Global Mods Modal */}
+      <CModal visible={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size="lg">
+        <PageHeader title="Assign Global Modifications" />
+        <CModalBody>
+          <div className="mb-3 d-flex align-items-center gap-2">
+            <CFormCheck
+              label="Include drafts"
+              checked={includeDraftTemplates}
+              onChange={(e) => setIncludeDraftTemplates(e.target.checked)}
+            />
+          </div>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <CFormLabel>Template</CFormLabel>
+              <CFormSelect value={assignFormGM.templateId} onChange={e => setAssignFormGM(f => ({ ...f, templateId: e.target.value }))}>
+                <option value="">Select template…</option>
+                {flatTemplates.map(t => (
+                  <option key={t.id} value={t.id}>{t.categoryName ? `[${t.categoryName}] ` : ''}{t.name}{t.defaultPrice != null ? ` — $${Number(t.defaultPrice).toFixed(2)}` : ' — blueprint'}</option>
+                ))}
+              </CFormSelect>
+            </div>
+            <div className="col-md-3">
+              <CFormLabel>Scope</CFormLabel>
+              <CFormSelect value={assignFormGM.scope} onChange={e => setAssignFormGM(f => ({ ...f, scope: e.target.value }))}>
+                <option value="all">All</option>
+                <option value="style">Style</option>
+                <option value="type">Type</option>
+                <option value="item">Selected items</option>
+              </CFormSelect>
+            </div>
+            <div className="col-md-3">
+              <CFormLabel>Override price</CFormLabel>
+              <CFormInput type="number" value={assignFormGM.overridePrice} onChange={e => setAssignFormGM(f => ({ ...f, overridePrice: e.target.value }))} placeholder="optional" />
+            </div>
+          </div>
+          {assignFormGM.scope === 'style' && (
+            <div className="mt-3">
+              <CFormLabel>Target style</CFormLabel>
+              <CFormSelect value={assignFormGM.targetStyle} onChange={e => setAssignFormGM(f => ({ ...f, targetStyle: e.target.value }))}>
+                <option value="">Select style…</option>
+                {sortedUniqueStyles.map((s, i) => (<option key={i} value={s}>{s}</option>))}
+              </CFormSelect>
+            </div>
+          )}
+          {assignFormGM.scope === 'type' && (
+            <div className="mt-3">
+              <CFormLabel>Target type</CFormLabel>
+              <CFormSelect value={assignFormGM.targetType} onChange={e => setAssignFormGM(f => ({ ...f, targetType: e.target.value }))}>
+                <option value="">Select type…</option>
+                {uniqueTypes.map((t, i) => (<option key={i} value={t}>{t}</option>))}
+              </CFormSelect>
+            </div>
+          )}
+          {assignFormGM.scope === 'item' && (
+            <div className="mt-2 text-muted small">{selectedItems.length} selected item(s) will receive this assignment.</div>
+          )}
+          <hr />
+          <div className="mt-2">
+            <h6>Existing assignments</h6>
+            {assignLoading ? (
+              <div>Loading…</div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Template</th>
+                      <th>Scope</th>
+                      <th>Target</th>
+                      <th>Price</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {globalAssignments.map(a => (
+                      <tr key={a.id}>
+                        <td>{a.template?.name}</td>
+                        <td>{a.scope}</td>
+                        <td>{a.scope === 'style' ? a.targetStyle : a.scope === 'type' ? a.targetType : a.scope === 'item' ? `Item ${a.catalogDataId}` : 'All'}</td>
+                        <td>{a.overridePrice != null ? `$${Number(a.overridePrice).toFixed(2)}` : (a.template?.defaultPrice != null ? `$${Number(a.template.defaultPrice).toFixed(2)}` : '—')}</td>
+                        <td>
+                          <CButton color="danger" size="sm" onClick={() => removeGlobalAssignment(a.id)}>Remove</CButton>
+                        </td>
+                      </tr>
+                    ))}
+                    {globalAssignments.length === 0 && (
+                      <tr><td colSpan="5" className="text-muted">No assignments</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowAssignGlobalModsModal(false)}>{t('common.cancel')}</CButton>
+          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={submitAssignGlobal} disabled={!assignFormGM.templateId}>Assign</CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Item Global Mods Modal */}
+      <CModal visible={showItemGlobalModsModal} onClose={() => setShowItemGlobalModsModal(false)} size="lg">
+        <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
+        <CModalBody>
+          <div className="table-responsive">
+            <table className="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Template</th>
+                  <th>Category</th>
+                  <th>Scope</th>
+                  <th>Price</th>
+                  <th>Active</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {itemGlobalList.map(a => (
+                  <tr key={a.id}>
+                    <td>{a.template?.name}</td>
+                    <td>{a.template?.category?.name || '-'}</td>
+                    <td>{a.scope}</td>
+                    <td>{a.overridePrice != null ? `$${Number(a.overridePrice).toFixed(2)}` : (a.template?.defaultPrice != null ? `$${Number(a.template.defaultPrice).toFixed(2)}` : '—')}</td>
+                    <td>{a.isActive === false ? 'Suppressed' : 'Active'}</td>
+                    <td>
+                      {a.scope === 'item' ? (
+                        <CButton color="danger" size="sm" onClick={() => removeGlobalAssignment(a.id)}>Remove</CButton>
+                      ) : (
+                        a.isActive === false ? (
+                          <CButton color="success" size="sm" onClick={() => suppressTemplateForItem(a.template?.id, true)}>Unsuppress</CButton>
+                        ) : (
+                          <CButton color="warning" size="sm" onClick={() => suppressTemplateForItem(a.template?.id, false)}>Suppress</CButton>
+                        )
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {itemGlobalList.length === 0 && (
+                  <tr><td colSpan="6" className="text-muted">No global templates apply</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <hr />
+          <div className="row g-3">
+            <div className="col-md-6">
+              <CFormLabel>Add template to this item</CFormLabel>
+              <CFormSelect value={assignFormGM.templateId} onChange={e => setAssignFormGM(f => ({ ...f, templateId: e.target.value }))}>
+                <option value="">Select template…</option>
+                {flatTemplates.map(t => (
+                  <option key={t.id} value={t.id}>{t.categoryName ? `[${t.categoryName}] ` : ''}{t.name}{t.defaultPrice != null ? ` — $${Number(t.defaultPrice).toFixed(2)}` : ' — blueprint'}</option>
+                ))}
+              </CFormSelect>
+            </div>
+            <div className="col-md-3">
+              <CFormLabel>Override price</CFormLabel>
+              <CFormInput type="number" value={assignFormGM.overridePrice} onChange={e => setAssignFormGM(f => ({ ...f, overridePrice: e.target.value }))} placeholder="optional" />
+            </div>
+            <div className="col-md-3 d-flex align-items-end">
+              <CButton color="primary" disabled={!assignFormGM.templateId} onClick={async () => {
+                try {
+                  await axiosInstance.post('/api/global-mods/assignments', {
+                    templateId: Number(assignFormGM.templateId),
+                    manufacturerId: id,
+                    scope: 'item',
+                    catalogDataId: selectedCatalogItem.id,
+                    overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
+                  });
+                  const { data } = await axiosInstance.get(`/api/global-mods/item/${selectedCatalogItem.id}`);
+                  setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
+                  setAssignFormGM(f => ({ ...f, templateId: '', overridePrice: '' }));
+                } catch (e) {}
+              }}>Add</CButton>
+            </div>
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowItemGlobalModsModal(false)}>{t('common.close', 'Close')}</CButton>
         </CModalFooter>
       </CModal>
 
@@ -2513,7 +3262,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {availableTypes.map((typeItem) => {
                   const isSelected = assemblyData.selectedTypes.includes(typeItem.type);
                   const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
-                  
+
                   return (
                     <div key={typeItem.type} className="form-check mb-2">
                       <input
@@ -2552,9 +3301,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   );
                 })}
               </div>
-              
+
               <div className="mt-3 d-flex gap-2">
-                <button 
+                <button
                   className="btn btn-outline-secondary btn-sm"
                   type="button"
                   onClick={() => {
@@ -2564,7 +3313,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   {t('common.selectAll', 'Select All')}
                 </button>
-                <button 
+                <button
                   className="btn btn-outline-secondary btn-sm"
                   type="button"
                   onClick={() => setAssemblyData(prev => ({ ...prev, selectedTypes: [] }))}
@@ -2572,12 +3321,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {t('common.selectNone', 'Select None')}
                 </button>
               </div>
-              
+
               {assemblyData.selectedTypes.length > 0 && (
                 <div className="alert alert-info mt-3">
                   <small>
-                    {t('settings.manufacturers.catalogMapping.assembly.multipleTypesWarning', 
-                    'This will apply the assembly cost to all items in {{count}} selected types.', 
+                    {t('settings.manufacturers.catalogMapping.assembly.multipleTypesWarning',
+                    'This will apply the assembly cost to all items in {{count}} selected types.',
                     { count: assemblyData.selectedTypes.length })}
                   </small>
                 </div>
@@ -3103,6 +3852,1295 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             )}
           </CButton>
         </CModalFooter>
+      </CModal>
+
+      {/* Main Modification Management Modal */}
+      <CModal visible={showMainModificationModal} onClose={() => setShowMainModificationModal(false)} size="xl">
+        <PageHeader title="Modification Management" />
+        <CModalBody>
+          {modificationView === 'cards' && (
+            <div>
+              {/* Main Action Buttons */}
+              <div className="d-flex gap-3 mb-4 justify-content-center">
+                <CButton
+                  color="primary"
+                  size="lg"
+                  onClick={() => { setEditingTemplateId(null); setSelectedModificationCategory(''); setNewTemplate(n=>({categoryId:'', name:'', defaultPrice:'', isReady:false, sampleImage:'', saveAsBlueprint:false})); setGuidedBuilder(makeGuidedFromFields(null)); setModificationView('addNew'); setModificationStep(1); }}
+                >
+                  Add Modification
+                </CButton>
+                <CButton
+                  color="info"
+                  size="lg"
+                  onClick={() => setModificationView('gallery')}
+                >
+                  Modification Gallery
+                </CButton>
+                <CButton
+                  color="success"
+                  size="lg"
+                  onClick={() => setShowAssignGlobalModsModal(true)}
+                >
+                  Assign Modification
+                </CButton>
+              </div>
+
+              {/* Existing Modification Cards */}
+              <div className="row">
+                {manufacturerCategories.map(category => (
+                  <div key={category.id} className="col-md-6 mb-4">
+                    <div className="card h-100">
+                      <div className="card-header d-flex justify-content-between align-items-center">
+                        <h6 className="mb-0 d-flex align-items-center gap-2">
+                          {category.image && (
+                            <>
+                              <img
+                                src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${category.image}`}
+                                alt={category.name}
+                                width={24}
+                                height={24}
+                                style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
+                                onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
+                              />
+                              <CBadge color="info" title="Category image uploaded">Img</CBadge>
+                            </>
+                          )}
+                          {category.name}
+                        </h6>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="badge bg-secondary">{category.templates?.length || 0} modifications</span>
+                          <CButton size="sm" color="warning" variant="outline" title="Edit category"
+                            onClick={() => { setEditCategory({ id: category.id, name: category.name || '', orderIndex: category.orderIndex || 0, image: category.image || '' }); setShowEditCategoryModal(true); }}>
+                            ✏️ Edit
+                          </CButton>
+                          <CButton size="sm" color="danger" variant="outline" title="Delete category"
+                            onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}>
+                            🗑️ Delete
+                          </CButton>
+                        </div>
+                      </div>
+                      <div className="card-body">
+                        {category.templates?.length ? (
+                          category.templates.map(template => (
+                            <div key={template.id} className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                              <div className="d-flex align-items-center gap-2">
+                                {template.sampleImage && (
+                                  <img
+                                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
+                                    alt={template.name}
+                                    width={32}
+                                    height={32}
+                                    style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
+                                    onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
+                                  />
+                                )}
+                                <div>
+                                  <strong>{template.name}</strong>
+                                  {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
+                                  <div className="d-flex gap-1 mt-1">
+                                    <CBadge color={template.isReady ? 'success' : 'warning'}>
+                                      {template.isReady ? 'Ready' : 'Draft'}
+                                    </CBadge>
+                                    {template.sampleImage && (
+                                      <CBadge color="info" title="Sample image uploaded">Img</CBadge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex gap-1">
+                                <CButton
+                                  size="sm"
+                                  color="outline-primary"
+                                  title="Edit modification"
+                                  onClick={() => {
+                                    // Preserve full state so PUT payload includes required fields
+                                    setEditTemplate({
+                                      id: template.id,
+                                      categoryId: String(template.categoryId || ''),
+                                      name: template.name || '',
+                                      defaultPrice: template.defaultPrice !== null && template.defaultPrice !== undefined ? String(template.defaultPrice) : '',
+                                      sampleImage: template.sampleImage || '',
+                                      isReady: !!template.isReady,
+                                      fieldsConfig: template.fieldsConfig || null,
+                                    });
+                                    // Load guided builder state from fieldsConfig
+                                    setEditGuidedBuilder(makeGuidedFromFields(template.fieldsConfig));
+                                    setShowQuickEditTemplateModal(true);
+                                  }}
+                                >
+                                  ✏️
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="outline-danger"
+                                  title="Delete modification"
+                                  onClick={() => {
+                                    if (window.confirm(`Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`)) {
+                                      deleteModificationTemplate(template.id);
+                                    }
+                                  }}
+                                >
+                                  🗑️
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="outline-warning"
+                                  title="Move to different category"
+                                  onClick={() => {
+                                    setModificationToMove(template);
+                                    setShowMoveModificationModal(true);
+                                  }}
+                                >
+                                  📁
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="outline-success"
+                                  title="Assign"
+                                  onClick={() => {
+                                    setAssignFormGM(f => ({ ...f, templateId: template.id }));
+                                    setShowAssignGlobalModsModal(true);
+                                  }}
+                                >
+                                  🎯
+                                </CButton>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-muted">No modifications in this category</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {!manufacturerCategories.length && (
+                  <div className="col-12 text-center">
+                    <p className="text-muted">No modification categories found. Click "Add Modification" to create your first one.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {modificationView === 'addNew' && (
+            <div>
+              {modificationStep === 1 && (
+                <div>
+                  <h5>Step 1: Select or Create Submenu</h5>
+                  <div className="mb-3">
+                    <CFormSelect
+                      value={selectedModificationCategory}
+                      onChange={e => setSelectedModificationCategory(e.target.value)}
+                    >
+                      <option value="">Select existing submenu...</option>
+                      {/* Show manufacturer categories only for manufacturer context */}
+                      {manufacturerCategories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                      <option value="new">Create new submenu</option>
+                    </CFormSelect>
+                  </div>
+
+                  {selectedModificationCategory === 'new' && (
+                    <div className="border rounded p-3 mb-3">
+                      <h6>Create New Submenu</h6>
+                      <div className="row">
+                        <div className="col-md-8">
+                          <CFormInput
+                            placeholder="Submenu name (e.g., 'Cabinet Modifications', 'Hardware Options')"
+                            value={newCategory.name}
+                            onChange={e => setNewCategory(n => ({ ...n, name: e.target.value }))}
+                          />
+                        </div>
+                        <div className="col-md-4">
+                          <CFormInput
+                            type="number"
+                            placeholder="Order index"
+                            value={newCategory.orderIndex}
+                            onChange={e => setNewCategory(n => ({ ...n, orderIndex: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="d-flex gap-2">
+                    <CButton color="secondary" onClick={() => setModificationView('cards')}>Back to Overview</CButton>
+                    <CButton
+                      color="primary"
+                      onClick={() => setModificationStep(2)}
+                      disabled={!selectedModificationCategory || (selectedModificationCategory === 'new' && !newCategory.name)}
+                    >
+                      Next: Template Builder
+                    </CButton>
+                  </div>
+                </div>
+              )}
+
+              {modificationStep === 2 && (
+                <div>
+                  <h5>Step 2: Build Modification Template</h5>
+
+                  {/* Default Required Fields */}
+                  <div className="border rounded p-3 mb-3">
+                    <h6>Required Fields</h6>
+                    <div className="row">
+                      <div className="col-md-6">
+                        <CFormInput
+                          placeholder="Modification name *"
+                          value={newTemplate.name}
+                          onChange={e => setNewTemplate(n => ({ ...n, name: e.target.value }))}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <CFormInput
+                          type="number"
+                          placeholder={newTemplate.saveAsBlueprint ? "Blueprints don't have prices" : "Default price *"}
+                          value={newTemplate.saveAsBlueprint ? '' : newTemplate.defaultPrice}
+                          onChange={e => setNewTemplate(n => ({ ...n, defaultPrice: e.target.value }))}
+                          disabled={newTemplate.saveAsBlueprint}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Optional Field Builder */}
+                  <div className="border rounded p-3 mb-3">
+                    <h6>Optional Field Builder (Building Blocks)</h6>
+
+                    {/* Slider Controls */}
+                    <div className="row mb-3">
+                      <div className="col-md-4">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Height Slider"
+                              checked={guidedBuilder.sliders.height.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, enabled:e.target.checked}}}))}
+                            />
+                          </div>
+                          {guidedBuilder.sliders.height.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Min height"
+                                  value={guidedBuilder.sliders.height.min}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:e.target.value}}}))}
+                                />
+                              </div>
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Max height"
+                                  value={guidedBuilder.sliders.height.max}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:e.target.value}}}))}
+                                />
+                              </div>
+                              <CFormSelect
+                                value={guidedBuilder.sliders.height.useCustomIncrements ? 'custom' : guidedBuilder.sliders.height.step}
+                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
+                              >
+                                <option value="1">1 inch increments</option>
+                                <option value="0.5">0.5 inch increments</option>
+                                <option value="0.25">0.25 inch increments</option>
+                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
+                              </CFormSelect>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-md-4">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Width Slider"
+                              checked={guidedBuilder.sliders.width.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, enabled:e.target.checked}}}))}
+                            />
+                          </div>
+                          {guidedBuilder.sliders.width.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Min width"
+                                  value={guidedBuilder.sliders.width.min}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:e.target.value}}}))}
+                                />
+                              </div>
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Max width"
+                                  value={guidedBuilder.sliders.width.max}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:e.target.value}}}))}
+                                />
+                              </div>
+                              <CFormSelect
+                                value={guidedBuilder.sliders.width.useCustomIncrements ? 'custom' : guidedBuilder.sliders.width.step}
+                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
+                              >
+                                <option value="1">1 inch increments</option>
+                                <option value="0.5">0.5 inch increments</option>
+                                <option value="0.25">0.25 inch increments</option>
+                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
+                              </CFormSelect>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-md-4">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Depth Slider"
+                              checked={guidedBuilder.sliders.depth.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, enabled:e.target.checked}}}))}
+                            />
+                          </div>
+                          {guidedBuilder.sliders.depth.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Min depth"
+                                  value={guidedBuilder.sliders.depth.min}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:e.target.value}}}))}
+                                />
+                              </div>
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Max depth"
+                                  value={guidedBuilder.sliders.depth.max}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:e.target.value}}}))}
+                                />
+                              </div>
+                              <CFormSelect
+                                value={guidedBuilder.sliders.depth.useCustomIncrements ? 'custom' : guidedBuilder.sliders.depth.step}
+                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
+                              >
+                                <option value="1">1 inch increments</option>
+                                <option value="0.5">0.5 inch increments</option>
+                                <option value="0.25">0.25 inch increments</option>
+                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
+                              </CFormSelect>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Controls */}
+                    <div className="row mb-3">
+                      <div className="col-md-3">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Side Selector"
+                              checked={guidedBuilder.sideSelector.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, enabled:e.target.checked}}))}
+                            />
+                          </div>
+                          {guidedBuilder.sideSelector.enabled && (
+                            <div className="card-body">
+                              <small className="text-muted d-block mb-2">Limited to Left/Right options</small>
+                              <CFormInput
+                                placeholder="L,R"
+                                value={guidedBuilder.sideSelector.options?.join(',')}
+                                onChange={e=>setGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, options:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}}))}
+                                disabled
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-md-3">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Quantity Limits"
+                              checked={guidedBuilder.qtyRange.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, enabled:e.target.checked}}))}
+                            />
+                          </div>
+                          {guidedBuilder.qtyRange.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  type="number"
+                                  placeholder="Min qty"
+                                  value={guidedBuilder.qtyRange.min}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:e.target.value}}))}
+                                />
+                              </div>
+                              <CFormInput
+                                type="number"
+                                placeholder="Max qty"
+                                value={guidedBuilder.qtyRange.max}
+                                onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:e.target.value}}))}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-md-3">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Customer Notes"
+                              checked={guidedBuilder.notes.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, enabled:e.target.checked}}))}
+                            />
+                          </div>
+                          {guidedBuilder.notes.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  placeholder="Notes placeholder"
+                                  value={guidedBuilder.notes.placeholder}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, placeholder:e.target.value}}))}
+                                />
+                              </div>
+                              <CFormCheck
+                                label="Show in red for customer warning"
+                                checked={guidedBuilder.notes.showInRed}
+                                onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, showInRed:e.target.checked}}))}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-md-3">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Customer Upload"
+                              checked={guidedBuilder.customerUpload.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, enabled:e.target.checked}}))}
+                            />
+                          </div>
+                          {guidedBuilder.customerUpload.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormInput
+                                  placeholder="Upload title/reason *"
+                                  value={guidedBuilder.customerUpload.title}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
+                                />
+                              </div>
+                              <CFormCheck
+                                label="Required upload"
+                                checked={guidedBuilder.customerUpload.required}
+                                onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Description and Sample Image */}
+                    <div className="row mb-3">
+                      <div className="col-md-8">
+                        <div className="card">
+                          <div className="card-header">
+                            <h6 className="mb-0">Descriptions</h6>
+                          </div>
+                          <div className="card-body">
+                            <div className="row">
+                              <div className="col-md-4">
+                                <CFormInput
+                                  placeholder="Internal description"
+                                  value={guidedBuilder.descriptions.internal}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <CFormInput
+                                  placeholder="Customer description"
+                                  value={guidedBuilder.descriptions.customer}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <CFormInput
+                                  placeholder="Installer description"
+                                  value={guidedBuilder.descriptions.installer}
+                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
+                                />
+                              </div>
+                            </div>
+                            <div className="mt-2">
+                              <CFormCheck
+                                label="Show customer and installer descriptions to both"
+                                checked={guidedBuilder.descriptions.both}
+                                onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, both:e.target.checked}}))}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="card">
+                          <div className="card-header">
+                            <CFormCheck
+                              label="Sample Image"
+                              checked={guidedBuilder.modSampleImage.enabled}
+                              onChange={e=>setGuidedBuilder(g=>({...g, modSampleImage:{...g.modSampleImage, enabled:e.target.checked}}))}
+                            />
+                          </div>
+                          {guidedBuilder.modSampleImage.enabled && (
+                            <div className="card-body">
+                              <div className="mb-2">
+                                <CFormLabel>Sample Image (upload from computer)</CFormLabel>
+                                <CFormInput type="file" accept="image/*" onChange={async (e)=>{
+                                  const file = e.target.files?.[0];
+                                  const fname = await uploadImageFile(file);
+                                  if (fname) setNewTemplate(n=>({ ...n, sampleImage: fname }));
+                                }} />
+                              </div>
+                              {newTemplate.sampleImage && (
+                                <div className="p-2 bg-light border rounded" style={{ height: 200, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`} alt="Sample" style={{ maxHeight: '100%', maxWidth:'100%', objectFit:'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ready Checkbox */}
+                    <div className="border-top pt-3">
+                      <CFormCheck
+                        label="Mark as Ready (enables assignment options)"
+                        checked={newTemplate.isReady}
+                        onChange={e => setNewTemplate(n => ({ ...n, isReady: e.target.checked }))}
+                      />
+                      {/* Task 5: Blueprint checkbox for saving to gallery */}
+                      <CFormCheck
+                        label="Also save to Gallery as blueprint (allows reuse by other manufacturers)"
+                        checked={newTemplate.saveAsBlueprint}
+                        onChange={e => setNewTemplate(n => ({ ...n, saveAsBlueprint: e.target.checked }))}
+                        className="mt-2"
+                      />
+                      <small className="text-muted d-block mt-1">
+                        When checked, this modification will also be saved as a reusable blueprint in the gallery.
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className="d-flex gap-2">
+                    <CButton color="secondary" onClick={() => setModificationStep(1)}>Back</CButton>
+                    <CButton color="secondary" onClick={() => setModificationView('cards')}>Cancel</CButton>
+                    {editingTemplateId ? (
+                      <CButton
+                        color="primary"
+                        onClick={async () => {
+                          setCreatingModification(true);
+                          try {
+                            let categoryIdToUse = selectedModificationCategory;
+                            if (selectedModificationCategory === 'new') {
+                              const newCat = await createModificationCategory();
+                              categoryIdToUse = newCat.id;
+                            }
+                            await updateModificationTemplate(editingTemplateId, categoryIdToUse);
+                            resetModificationForm();
+                            Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Template updated', showConfirmButton: false, timer: 1500 });
+                          } catch (error) {
+                            console.error('Error updating template:', error);
+                            Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.response?.data?.message || 'Failed to update template', showConfirmButton: false, timer: 1800 });
+                          } finally {
+                            setCreatingModification(false);
+                          }
+                        }}
+                        disabled={!newTemplate.name || creatingModification}
+                      >
+                        {creatingModification ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </CButton>
+                    ) : (
+                      <CButton
+                        color="primary"
+                        onClick={async () => {
+                          // Task 5: Block creation if manufacturerId is missing
+                          if (!id) {
+                            Swal.fire({
+                              title: 'Error',
+                              text: 'Manufacturer ID is required to create modifications. Please ensure you are on a valid manufacturer page.',
+                              icon: 'error'
+                            });
+                            return;
+                          }
+
+                          setCreatingModification(true);
+                          try {
+                            let categoryIdToUse = selectedModificationCategory;
+
+                            // Create new category if needed
+                            if (selectedModificationCategory === 'new') {
+                              const newCat = await createModificationCategory();
+                              categoryIdToUse = newCat.id;
+                            }
+
+                            // Create the template
+                            await createModificationTemplate(categoryIdToUse);
+
+                            // Reset form and go back to cards view
+                            resetModificationForm();
+
+                            // Show success message
+                            Swal.fire({
+                              title: 'Success!',
+                              text: 'Modification template created successfully',
+                              icon: 'success',
+                              timer: 2000
+                            });
+
+                          } catch (error) {
+                            console.error('Error creating template:', error);
+                            Swal.fire({
+                              title: 'Error',
+                              text: error.response?.data?.message || 'Failed to create modification template',
+                              icon: 'error'
+                            });
+                          } finally {
+                            setCreatingModification(false);
+                          }
+                        }}
+                        disabled={!newTemplate.name || !newTemplate.defaultPrice || creatingModification}
+                      >
+                        {creatingModification ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Creating...
+                          </>
+                        ) : (
+                          'Create Modification'
+                        )}
+                      </CButton>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {modificationView === 'gallery' && (
+            <div>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5>Modification Gallery</h5>
+                <CButton color="secondary" onClick={() => setModificationView('cards')}>Back to Overview</CButton>
+              </div>
+
+              <div className="row">
+                {globalGallery.map(category => (
+                  <div key={category.id} className="col-md-6 mb-4">
+                    <div className="card">
+                      <div className="card-header d-flex justify-content-between align-items-center">
+                        <h6 className="mb-0">{category.name}</h6>
+                        <div className="d-flex gap-2">
+                          <CButton
+                            size="sm"
+                            color="danger"
+                            variant="outline"
+                            title="Delete category"
+                            onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}
+                          >
+                            🗑️ Delete
+                          </CButton>
+                        </div>
+                      </div>
+                      <div className="card-body">
+                        {category.templates?.length ? (
+                          category.templates.map(template => (
+                            <div key={template.id} className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                              <div className="d-flex align-items-center gap-2">
+                                {template.sampleImage && (
+                                  <img
+                                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
+                                    alt={template.name}
+                                    width={32}
+                                    height={32}
+                                    style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
+                                    onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
+                                  />
+                                )}
+                                <div>
+                                  <strong>{template.name}</strong>
+                                  {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
+                                  <div className="d-flex gap-1 mt-1">
+                                    <CBadge color={template.isReady ? 'success' : 'warning'}>
+                                      {template.isReady ? 'Ready' : 'Draft'}
+                                    </CBadge>
+                                    {template.sampleImage && (
+                                      <CBadge color="info" title="Sample image uploaded">Img</CBadge>
+                                    )}
+                                  </div>
+                                  <div className="small text-muted">
+                                    {template.fieldsConfig?.descriptions?.customer || 'No description'}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex gap-1 flex-wrap">
+                                <CButton
+                                  size="sm"
+                                  color="outline-primary"
+                                  title="Edit modification"
+                                  onClick={() => {
+                                    // Set up edit state
+                                    setEditTemplate({
+                                      id: template.id,
+                                      categoryId: String(template.categoryId || ''),
+                                      name: template.name || '',
+                                      defaultPrice: template.defaultPrice !== null && template.defaultPrice !== undefined ? String(template.defaultPrice) : '',
+                                      sampleImage: template.sampleImage || '',
+                                      isReady: !!template.isReady,
+                                      fieldsConfig: template.fieldsConfig || null,
+                                    });
+                                    setEditGuidedBuilder(makeGuidedFromFields(template.fieldsConfig));
+                                    setShowQuickEditTemplateModal(true);
+                                  }}
+                                >
+                                  ✏️
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="outline-danger"
+                                  title="Delete modification"
+                                  onClick={() => {
+                                    if (window.confirm(`Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`)) {
+                                      deleteModificationTemplate(template.id);
+                                    }
+                                  }}
+                                >
+                                  🗑️
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="outline-warning"
+                                  title="Move to different category"
+                                  onClick={() => {
+                                    setModificationToMove(template);
+                                    setShowMoveModificationModal(true);
+                                  }}
+                                >
+                                  📁 Move
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="primary"
+                                  title="Use as Blueprint"
+                                  onClick={async () => {
+                                    try {
+                                      await axiosInstance.post('/api/global-mods/templates', {
+                                        categoryId: template.categoryId || null,
+                                        name: `${template.name} (Copy)`,
+                                        defaultPrice: 0,
+                                        isReady: false,
+                                        fieldsConfig: template.fieldsConfig || {},
+                                        sampleImage: template.sampleImage || null,
+                                      });
+                                      await loadGlobalGallery();
+                                    } catch (e) {
+                                      alert(e?.response?.data?.message || e.message);
+                                    }
+                                  }}
+                                >
+                                  📋
+                                </CButton>
+                                <CButton
+                                  size="sm"
+                                  color="success"
+                                  title="Assign to manufacturer items"
+                                  onClick={() => {
+                                    // Assign this template
+                                    setAssignFormGM(prev => ({...prev, templateId: template.id}));
+                                    setShowAssignGlobalModsModal(true);
+                                  }}
+                                >
+                                  🎯
+                                </CButton>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-muted">No templates in this category</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowMainModificationModal(false)}>Close</CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Edit Category Modal */}
+      <CModal visible={showEditCategoryModal} onClose={() => setShowEditCategoryModal(false)} size="lg">
+        <PageHeader title="Edit Category" />
+        <CModalBody>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <CFormLabel>Category Name</CFormLabel>
+              <CFormInput value={editCategory.name} onChange={e=>setEditCategory(c=>({...c, name:e.target.value}))} />
+            </div>
+            <div className="col-md-6">
+              <CFormLabel>Order</CFormLabel>
+              <CFormInput type="number" value={editCategory.orderIndex} onChange={e=>setEditCategory(c=>({...c, orderIndex:e.target.value}))} />
+            </div>
+            <div className="col-12">
+              <CFormLabel>Category Image</CFormLabel>
+              <CFormInput type="file" accept="image/*" onChange={async (e)=>{
+                const file = e.target.files?.[0];
+                const fname = await uploadImageFile(file);
+                if (fname) setEditCategory(c=>({...c, image: fname}));
+              }} />
+              {editCategory.image && (
+                <div className="mt-2 p-2 bg-light border rounded" style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`} alt="Category" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="d-flex gap-2 justify-content-end mt-3">
+            <CButton color="secondary" onClick={() => setShowEditCategoryModal(false)}>Cancel</CButton>
+            <CButton color="primary" onClick={async ()=>{
+              if (!editCategory.id || !editCategory.name.trim()) return;
+              await axiosInstance.put(`/api/global-mods/categories/${editCategory.id}`, {
+                name: editCategory.name.trim(),
+                orderIndex: Number(editCategory.orderIndex || 0),
+                image: editCategory.image || null
+              });
+              setShowEditCategoryModal(false);
+              await loadGlobalGallery();
+            }}>Save</CButton>
+          </div>
+        </CModalBody>
+      </CModal>
+
+      {/* Delete Category Modal */}
+      <CModal visible={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
+        <PageHeader title="Delete Category" />
+        <CModalBody>
+          {categoryToDelete && (
+            <>
+              <p>Are you sure you want to delete the category <strong>"{categoryToDelete.name}"</strong>?</p>
+              {categoryToDelete.templates?.length > 0 && (
+                <div className="alert alert-warning">
+                  <strong>Warning:</strong> This category contains {categoryToDelete.templates.length} modification(s).
+                  Choose how to handle them:
+                  <div className="mt-2">
+                    <div className="form-check">
+                      <input className="form-check-input" type="radio" name="deleteMode" id="deleteCancel" value="cancel" defaultChecked />
+                      <label className="form-check-label" htmlFor="deleteCancel">
+                        Cancel deletion (category has modifications)
+                      </label>
+                    </div>
+                    <div className="form-check">
+                      <input className="form-check-input" type="radio" name="deleteMode" id="deleteWithMods" value="withMods" />
+                      <label className="form-check-label" htmlFor="deleteWithMods">
+                        Delete category and all its modifications
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          <div className="d-flex gap-2 justify-content-end mt-3">
+            <CButton color="secondary" onClick={() => setShowDeleteCategoryModal(false)}>Cancel</CButton>
+            <CButton color="danger" onClick={async () => {
+              if (!categoryToDelete) return;
+
+              let deleteMode = 'only'; // Default mode for empty categories
+              if (categoryToDelete.templates?.length > 0) {
+                const selectedMode = document.querySelector('input[name="deleteMode"]:checked')?.value;
+                if (selectedMode === 'withMods') {
+                  deleteMode = 'withMods';
+                } else {
+                  // User chose to cancel deletion
+                  setShowDeleteCategoryModal(false);
+                  return;
+                }
+              }
+
+              await deleteCategory(categoryToDelete.id, deleteMode);
+              setShowDeleteCategoryModal(false);
+              setCategoryToDelete(null);
+            }}>
+              Delete
+            </CButton>
+          </div>
+        </CModalBody>
+      </CModal>
+
+      {/* Move Modification Modal */}
+      <CModal visible={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
+        <PageHeader title="Move Modification" />
+        <CModalBody>
+          {modificationToMove && (
+            <>
+              <p>Move <strong>"{modificationToMove.name}"</strong> to which category?</p>
+              <div className="mb-3">
+                <label className="form-label">Select destination category:</label>
+                <select
+                  className="form-select"
+                  id="moveToCategory"
+                  defaultValue={modificationToMove.categoryId || ''}
+                >
+                  <option value="">-- Uncategorized --</option>
+                  {/* Gallery categories */}
+                  <optgroup label="Gallery Categories">
+                    {globalGallery.map(cat => (
+                      <option key={`gallery-${cat.id}`} value={cat.id}>
+                        {cat.name} (Gallery)
+                      </option>
+                    ))}
+                  </optgroup>
+                  {/* Manufacturer categories */}
+                  <optgroup label="Manufacturer Categories">
+                    {manufacturerCategories.map(cat => (
+                      <option key={`mfg-${cat.id}`} value={cat.id}>
+                        {cat.name} (Manufacturer)
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+              <div className="alert alert-info">
+                <small>
+                  <strong>Note:</strong> Moving a modification to a different category will update its organization.
+                  Gallery categories are blueprints, while manufacturer categories are specific to this manufacturer.
+                </small>
+              </div>
+            </>
+          )}
+          <div className="d-flex gap-2 justify-content-end mt-3">
+            <CButton color="secondary" onClick={() => setShowMoveModificationModal(false)}>Cancel</CButton>
+            <CButton color="primary" onClick={async () => {
+              if (!modificationToMove) return;
+
+              const newCategoryId = document.getElementById('moveToCategory').value;
+              await moveModification(modificationToMove.id, newCategoryId || null);
+              setShowMoveModificationModal(false);
+              setModificationToMove(null);
+            }}>
+              Move
+            </CButton>
+          </div>
+        </CModalBody>
+      </CModal>
+
+      {/* Enhanced Edit Template Modal */}
+      <CModal visible={showQuickEditTemplateModal} onClose={() => setShowQuickEditTemplateModal(false)} size="xl">
+        <PageHeader title="Edit Modification" />
+        <CModalBody>
+          {/* Basic Information */}
+          <div className="border rounded p-3 mb-3">
+            <h6>Basic Information</h6>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <CFormLabel>Name</CFormLabel>
+                <CFormInput value={editTemplate.name} onChange={e=>setEditTemplate(t=>({...t, name:e.target.value}))} />
+              </div>
+              <div className="col-md-6">
+                <CFormLabel>Default Price {editTemplate.saveAsBlueprint && '(disabled for blueprints)'}</CFormLabel>
+                <CFormInput
+                  type="number"
+                  step="0.01"
+                  value={editTemplate.saveAsBlueprint ? '' : editTemplate.defaultPrice}
+                  onChange={e=>setEditTemplate(t=>({...t, defaultPrice:e.target.value}))}
+                  disabled={editTemplate.saveAsBlueprint}
+                  placeholder={editTemplate.saveAsBlueprint ? "Blueprints don't have prices" : "Enter default price"}
+                />
+              </div>
+              <div className="col-md-6">
+                <CFormLabel>Status</CFormLabel>
+                <CFormSelect value={editTemplate.isReady ? 'ready' : 'draft'} onChange={e=>setEditTemplate(t=>({...t, isReady: e.target.value === 'ready'}))}>
+                  <option value="draft">Draft</option>
+                  <option value="ready">Ready</option>
+                </CFormSelect>
+              </div>
+              <div className="col-md-6">
+                <div className="form-check form-switch mt-4">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="showToBoth"
+                    checked={editTemplate.showToBoth || false}
+                    onChange={e=>setEditTemplate(t=>({...t, showToBoth: e.target.checked}))}
+                  />
+                  <label className="form-check-label" htmlFor="showToBoth">
+                    Show customer & installer descriptions to both
+                  </label>
+                </div>
+              </div>
+              <div className="col-12">
+                <CFormLabel>Sample Image</CFormLabel>
+                <CFormInput type="file" accept="image/*" onChange={async (e)=>{
+                  const file = e.target.files?.[0];
+                  const fname = await uploadImageFile(file);
+                  if (fname) setEditTemplate(t=>({...t, sampleImage: fname}));
+                }} />
+                {editTemplate.sampleImage && (
+                  <div className="mt-2 p-2 bg-light border rounded" style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`} alt="Sample" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced Field Configuration */}
+          <div className="border rounded p-3 mb-3">
+            <h6>Advanced Field Configuration</h6>
+
+            {/* Slider Controls */}
+            <div className="row mb-3">
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Height Slider"
+                      checked={editGuidedBuilder.sliders.height.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, enabled:e.target.checked}}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.sliders.height.enabled && (
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-6">
+                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.height.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:Number(e.target.value)||0}}}))} />
+                        </div>
+                        <div className="col-6">
+                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.height.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:Number(e.target.value)||0}}}))} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Width Slider"
+                      checked={editGuidedBuilder.sliders.width.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, enabled:e.target.checked}}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.sliders.width.enabled && (
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-6">
+                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.width.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:Number(e.target.value)||0}}}))} />
+                        </div>
+                        <div className="col-6">
+                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.width.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:Number(e.target.value)||0}}}))} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Depth Slider"
+                      checked={editGuidedBuilder.sliders.depth.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, enabled:e.target.checked}}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.sliders.depth.enabled && (
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-6">
+                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.depth.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:Number(e.target.value)||0}}}))} />
+                        </div>
+                        <div className="col-6">
+                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.depth.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:Number(e.target.value)||0}}}))} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Controls */}
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Side Selector"
+                      checked={editGuidedBuilder.sideSelector.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, enabled:e.target.checked}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.sideSelector.enabled && (
+                    <div className="card-body">
+                      <CFormInput
+                        placeholder="Options (comma-separated: L,R)"
+                        value={Array.isArray(editGuidedBuilder.sideSelector.options) ? editGuidedBuilder.sideSelector.options.join(',') : 'L,R'}
+                        onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, options:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}}))}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Quantity Range"
+                      checked={editGuidedBuilder.qtyRange.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, enabled:e.target.checked}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.qtyRange.enabled && (
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-6">
+                          <CFormInput placeholder="Min qty" type="number" value={editGuidedBuilder.qtyRange.min} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:Number(e.target.value)||1}}))} />
+                        </div>
+                        <div className="col-6">
+                          <CFormInput placeholder="Max qty" type="number" value={editGuidedBuilder.qtyRange.max} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:Number(e.target.value)||10}}))} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Notes and Upload Controls */}
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Customer Notes Field"
+                      checked={editGuidedBuilder.notes.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, enabled:e.target.checked}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.notes.enabled && (
+                    <div className="card-body">
+                      <CFormInput
+                        placeholder="Placeholder text"
+                        value={editGuidedBuilder.notes.placeholder}
+                        onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, placeholder:e.target.value}}))}
+                      />
+                      <CFormCheck
+                        className="mt-2"
+                        label="Show in red"
+                        checked={editGuidedBuilder.notes.showInRed}
+                        onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, showInRed:e.target.checked}}))}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="card">
+                  <div className="card-header">
+                    <CFormCheck
+                      label="Customer File Upload"
+                      checked={editGuidedBuilder.customerUpload.enabled}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, enabled:e.target.checked}}))}
+                    />
+                  </div>
+                  {editGuidedBuilder.customerUpload.enabled && (
+                    <div className="card-body">
+                      <CFormInput
+                        placeholder="Upload title"
+                        value={editGuidedBuilder.customerUpload.title}
+                        onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
+                      />
+                      <CFormCheck
+                        className="mt-2"
+                        label="Required"
+                        checked={editGuidedBuilder.customerUpload.required}
+                        onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Descriptions */}
+            <div className="card">
+              <div className="card-header">
+                <h6 className="mb-0">Descriptions</h6>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-4">
+                    <CFormInput
+                      placeholder="Internal description"
+                      value={editGuidedBuilder.descriptions.internal}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <CFormInput
+                      placeholder="Customer description"
+                      value={editGuidedBuilder.descriptions.customer}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <CFormInput
+                      placeholder="Installer description"
+                      value={editGuidedBuilder.descriptions.installer}
+                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="d-flex gap-2 justify-content-end mt-3">
+            <CButton color="secondary" onClick={() => setShowQuickEditTemplateModal(false)}>Cancel</CButton>
+            <CButton color="primary" onClick={async ()=>{
+              if (!editTemplate.id || !editTemplate.name.trim()) return;
+              // Build fieldsConfig from edit guided builder
+              const fieldsConfig = buildEditFieldsConfig();
+              // Important: send full payload so server doesn't reset fields to null/false
+              await axiosInstance.put(`/api/global-mods/templates/${editTemplate.id}`, {
+                categoryId: editTemplate.categoryId ? Number(editTemplate.categoryId) : null,
+                name: editTemplate.name.trim(),
+                defaultPrice: editTemplate.defaultPrice ? Number(editTemplate.defaultPrice) : null,
+                fieldsConfig,
+                sampleImage: editTemplate.sampleImage || null,
+                isReady: !!editTemplate.isReady,
+              });
+              setShowQuickEditTemplateModal(false);
+              await loadGlobalGallery();
+            }}>Save Changes</CButton>
+          </div>
+        </CModalBody>
       </CModal>
 
     </div>

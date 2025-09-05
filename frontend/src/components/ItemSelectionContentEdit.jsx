@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback, useMemo, startTransition, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    CFormCheck, CFormSwitch, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton
+    CFormCheck, CFormSwitch,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList, cilTrash } from '@coreui/icons';
-import ModificationModalEdit from '../components/model/ModificationModalEdit'
+import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList } from '@coreui/icons';
+import ModificationBrowserModal from './model/ModificationBrowserModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
 import CatalogTableEdit from './CatalogTableEdit';
@@ -13,6 +13,7 @@ import axiosInstance from '../helpers/axiosInstance';
 import { setTableItemsEdit as setTableItemsRedux } from '../store/slices/selectedVersionEditSlice';
 import { setSelectVersionNewEdit } from '../store/slices/selectVersionNewEditSlice';
 import { isAdmin } from '../helpers/permissions';
+import './ItemSelectionContent.css';
 
 
 
@@ -69,6 +70,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
     const { taxes, loading } = useSelector((state) => state.taxes);
+    const authFailedRef = useRef(false);
     const [customItemError, setCustomItemError] = useState('');
     const [unavailableCount, setUnavailableCount] = useState(0);
     const authUser = useSelector((state) => state.auth?.user);
@@ -77,6 +79,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
     // Cache style items per manufacturer/style to avoid refetching and re-render churn
     const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
+    // Cache calculation results to prevent recalculation when only selection changes
+    const styleCalculationCache = useRef(new Map()); // key: `${styleId}:${itemsFingerprint}` => calculated total
+    // Track last applied summary per version to avoid state update loops
+    const lastSummaryRef = useRef({});
 
     // Extract manufacturerId early for use in functions
     const manufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
@@ -96,10 +102,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [modificationItems, setModificationItems] = useState('');
     const [itemModificationID, setItemModificationID] = useState('');
-    const [showModificationsList, setShowModificationsList] = useState(false);
-    const [bulkModifyModalVisible, setBulkModifyModalVisible] = useState(false);
-    const [selectedModForBulk, setSelectedModForBulk] = useState(null);
-    const [selectedItemsForBulk, setSelectedItemsForBulk] = useState([]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -141,9 +143,23 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
+    // Create a fingerprint of current items/modifications to detect when recalculation is actually needed
+    const itemsFingerprint = useMemo(() => {
+        const items = filteredItems.map(item => `${item.code}:${item.qty}:${JSON.stringify(item.modifications || [])}`).join('|');
+        const customs = customItems.map(item => `${item.name}:${item.price}:${item.taxable}`).join('|');
+        const factors = `${userGroupMultiplier}:${manufacturerCostMultiplier}:${discountPercent}:${isAssembled}`;
+        return `${items}#${customs}#${factors}`;
+    }, [filteredItems, customItems, userGroupMultiplier, manufacturerCostMultiplier, discountPercent, isAssembled]);
+
     // Calculate what the total proposal price would be if a different style was selected
     // This simulates the full pricing flow by looking up actual catalog prices for each item in the new style
     const calculateTotalForStyle = useCallback((stylePrice, styleId) => {
+        // Check cache first to avoid recalculation when items haven't changed
+        const cacheKey = `${styleId}:${itemsFingerprint}`;
+        if (styleCalculationCache.current.has(cacheKey)) {
+            return styleCalculationCache.current.get(cacheKey);
+        }
+
         try {
             // Start with current custom items total (unchanged by style switch)
             const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
@@ -158,6 +174,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             // For cabinet items, we need to look up actual prices in the new style
             let cabinetPartsTotal = 0;
             let assemblyFeeTotal = 0;
+            let eligible = 0;
 
             // Try to get catalog data for the comparison style from cache
             const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
@@ -170,9 +187,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
 
                     // Calculate totals based on actual catalog prices for this style
-                    filteredItems.forEach(item => {
+            filteredItems.forEach(item => {
                         const match = byCode.get(String(item.code).trim());
                         if (match) {
+                eligible += 1;
                             // Apply the full pricing flow: catalog → manufacturer multiplier → user group multiplier
                             const basePrice = Number(match.price) || 0;
                             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
@@ -208,6 +226,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
                     const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
                     cabinetPartsTotal = finalStylePrice * totalItemCount;
+                    eligible = filteredItems.length > 0 ? 1 : 0;
 
                     // Assembly fees proportional to price change
                     const currentStylePrice = Number(selectedStyleData?.price || 0);
@@ -229,17 +248,32 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
             const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
-            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const deliveryFee = (eligible > 0 ? rawDeliveryFee : 0);
             const totalWithDelivery = totalAfterDiscount + deliveryFee;
             const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
             const grandTotal = totalWithDelivery + taxAmount;
+
+            // Cache the result
+            const finalCacheKey = `${styleId}:${itemsFingerprint}`;
+            styleCalculationCache.current.set(finalCacheKey, grandTotal);
 
             return grandTotal;
         } catch (error) {
             console.error('Error calculating total for style:', error);
             return 0;
         }
-    }, [customItems, filteredItems, manufacturerCostMultiplier, userGroupMultiplier, isAssembled, selectedStyleData, preloadingComplete, formData, taxes, discountPercent]);
+    }, [customItems, filteredItems, manufacturerCostMultiplier, userGroupMultiplier, isAssembled, selectedStyleData, preloadingComplete, formData, taxes, discountPercent, itemsFingerprint]);
+
+    const hasEligibleInStyle = useCallback((styleId) => {
+        const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
+        if (!currentManufacturerId || !styleId) return filteredItems.length > 0 ? true : false;
+        const cacheKey = `${currentManufacturerId}:${styleId}`;
+        const catalogData = styleItemsCacheRef.current.get(cacheKey);
+        if (!catalogData || catalogData.length === 0) return filteredItems.length > 0 ? true : false;
+        const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
+        return filteredItems.some(item => byCode.has(String(item.code).trim()));
+    }, [filteredItems, formData?.manufacturersData]);
 
 
 
@@ -521,8 +555,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 }, 0)
                 : 0;
 
-            const deliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
+            const deliveryFee = (versionItems.length > 1) ? rawDeliveryFee : 0;
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
+
+            // (debug logs removed)
             const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
                 versionItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
             const discountAmount = (styleTotal * discountPercent) / 100;
@@ -530,6 +567,29 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const totalWithDelivery = totalAfterDiscount + deliveryFee;
             const taxAmount = (totalWithDelivery * defaultTaxValue) / 100;
             const grandTotal = totalWithDelivery + taxAmount;
+
+            // Compute next summary and compare with last applied to avoid loops
+            const nextSummary = {
+                cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
+                assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
+                modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
+                deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
+                styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
+                discountPercent: Number(discountPercent) || 0,
+                discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
+                total: parseFloat((Number(totalAfterDiscount) || 0).toFixed(2)),
+                taxRate: Number(defaultTaxValue) || 0,
+                taxAmount: parseFloat((Number(taxAmount) || 0).toFixed(2)),
+                grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
+            };
+
+            const versionKey = selectVersion?.versionName || '__default__';
+            const prevHash = lastSummaryRef.current[versionKey];
+            const nextHash = JSON.stringify(nextSummary);
+            if (prevHash === nextHash) {
+                // No material change; skip state updates to prevent effect loops
+                return;
+            }
 
             setFormData(prev => {
                 const existing = Array.isArray(prev?.manufacturersData) ? prev.manufacturersData : [];
@@ -544,27 +604,14 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             selectedStyle: selectVersion?.selectedStyle,
                             items: matchedItems,
                             customItems: matchedCustomItems,
-                            summary: {
-                                cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
-                                assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
-                                modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
-                                deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
-                                styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
-                                discountPercent: Number(discountPercent) || 0,
-                                discountAmount: parseFloat((Number(discountAmount) || 0).toFixed(2)),
-                                total: parseFloat((Number(totalAfterDiscount) || 0).toFixed(2)),
-                                taxRate: Number(defaultTaxValue) || 0,
-                                taxAmount: parseFloat((Number(taxAmount) || 0).toFixed(2)),
-                                grandTotal: parseFloat((Number(grandTotal) || 0).toFixed(2))
-                            }
+                            summary: nextSummary
                         };
+
+                        // (debug logs removed)
 
                         // Also update selectVersion if setSelectedVersion is available
                         if (setSelectedVersion && selectVersion) {
-                            setSelectedVersion({
-                                ...selectVersion,
-                                summary: updatedManufacturer.summary
-                            });
+                            setSelectedVersion({ ...selectVersion, summary: nextSummary });
                         }
 
                         return updatedManufacturer;
@@ -575,6 +622,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 // Avoid unnecessary state updates to prevent loops
                 const same = JSON.stringify(existing) === JSON.stringify(updated);
                 if (same) return prev;
+                // Record last applied summary hash only when we actually update state
+                lastSummaryRef.current[versionKey] = nextHash;
                 return { ...prev, manufacturersData: updated };
             });
         } catch (error) {
@@ -620,54 +669,59 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [manufacturerId]);
 
-    // Preload catalog data for all styles to enable immediate price comparisons
+    // Preload only the selected style's catalog data to avoid request storms
     useEffect(() => {
-        const preloadStylesCatalogData = async () => {
-            if (!manufacturerId || !stylesMeta.length) {
-                setPreloadingComplete(false);
-                return;
-            }
-
-            // Preload catalog data for all styles in parallel
-            const preloadPromises = stylesMeta.map(async (style) => {
-                const cacheKey = `${manufacturerId}:${style.id}`;
-
-                // Skip if already cached
-                if (styleItemsCacheRef.current.has(cacheKey)) {
-                    return;
-                }
-
-                try {
-                    const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${style.id}/items`, {
-                        params: { includeDetails: '1', limit: 1000 }
-                    });
-                    const catalogData = res?.data?.catalogData || [];
-                    styleItemsCacheRef.current.set(cacheKey, catalogData);
-                } catch (error) {
-                    // Silently fail for individual style preloads
-                    console.warn(`Failed to preload catalog for style ${style.id}:`, error.message);
-                }
-            });
-
-            // Wait for all preloads to complete
-            await Promise.allSettled(preloadPromises);
+        const selectedStyleId = selectVersion?.selectedStyle;
+        let cancelled = false;
+        if (!manufacturerId || !selectedStyleId) {
+            setPreloadingComplete(false);
+            return;
+        }
+        const cacheKey = `${manufacturerId}:${selectedStyleId}`;
+        if (styleItemsCacheRef.current.has(cacheKey)) {
             setPreloadingComplete(true);
-        };
-
-        preloadStylesCatalogData();
-    }, [manufacturerId, stylesMeta]);
+            return;
+        }
+        (async () => {
+            try {
+                if (authFailedRef.current) return;
+                const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles/${selectedStyleId}/items`, {
+                    params: { includeDetails: '1', limit: 1000 }
+                });
+                if (cancelled) return;
+                const catalogData = res?.data?.catalogData || [];
+                styleItemsCacheRef.current.set(cacheKey, catalogData);
+            } catch (error) {
+                const status = error?.response?.status;
+                if (status === 401 || status === 403) {
+                    authFailedRef.current = true;
+                    return; // let axios interceptor handle redirect/logout
+                }
+                if (!cancelled) console.warn(`Failed to preload catalog for style ${selectedStyleId}:`, error?.message || error);
+            } finally {
+                if (!cancelled) setPreloadingComplete(true);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [manufacturerId, selectVersion?.selectedStyle]);
 
     useEffect(() => {
         const fetchCollections = async () => {
             if (!manufacturerId) return;
             setCollectionsLoading(true);
             try {
+                if (authFailedRef.current) return;
                 const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styleswithcatalog`);
                 const incoming = response.data || [];
                 const same = JSON.stringify(incoming) === JSON.stringify(fetchedCollections);
                 if (!same) setFetchedCollections(incoming); // Avoid redundant state updates
             } catch (error) {
-                // silent
+                const status = error?.response?.status;
+                if (status === 401 || status === 403) {
+                    authFailedRef.current = true;
+                    return;
+                }
+                // silent for non-auth
             } finally {
                 setCollectionsLoading(false);
             }
@@ -921,6 +975,33 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     };
 
 
+    // New handler for ModificationBrowserModal (accepts row index and payload)
+    const handleApplyModification = (index, modificationData) => {
+        const targetIndex = typeof index === 'number' ? index : selectedItemIndexForMod;
+        const mods = modificationsMap[targetIndex] || [];
+
+        // Transform the modal payload into existing structure used in tables
+        const newMod = {
+            type: 'existing',
+            modificationId: modificationData.templateId,
+            qty: modificationData.quantity || 1,
+            note: modificationData.note || '',
+            name: modificationData.templateName || '',
+            price: modificationData.price || 0,
+            // Extras for grouping and details
+            categoryName: modificationData.categoryName || undefined,
+            fieldsConfig: modificationData.fieldsConfig || {},
+            selectedOptions: modificationData.selectedOptions || {},
+            attachments: Array.isArray(modificationData.attachments) ? modificationData.attachments : [],
+            assignmentId: modificationData.assignmentId
+        };
+
+        const updatedMods = [...mods, newMod];
+        updateModification(targetIndex, updatedMods);
+        setModificationModalVisible(false);
+    };
+
+
     const handleSaveModification = () => {
         setValidationAttempted(true);
 
@@ -988,74 +1069,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const formatPrice = (price) => {
         const val = Number(price);
         return !isNaN(val) ? `$${val.toFixed(2)}` : '$0.00';
-    };
-
-    // Get all unique modifications across all items with their total costs
-    const getAllModifications = () => {
-        const allMods = [];
-        
-        versionItems.forEach((item, itemIdx) => {
-            if (Array.isArray(item.modifications) && item.modifications.length > 0) {
-                item.modifications.forEach((mod, modIdx) => {
-                    allMods.push({
-                        ...mod,
-                        itemIndex: itemIdx,
-                        modificationIndex: modIdx,
-                        itemCode: item.code,
-                        itemDescription: item.description,
-                        totalCost: (parseFloat(mod.price || 0) * parseInt(mod.qty || 1))
-                    });
-                });
-            }
-        });
-        
-        return allMods;
-    };
-
-    // Apply modification to selected items
-    const handleBulkApplyModification = (modification, targetItemIndices) => {
-        if (!modification || !targetItemIndices || targetItemIndices.length === 0) return;
-
-        targetItemIndices.forEach(itemIdx => {
-            const currentMods = modificationsMap[itemIdx] || [];
-            
-            // Check if this modification already exists for this item
-            const existingModIndex = currentMods.findIndex(mod => 
-                mod.name === modification.name && 
-                mod.type === modification.type &&
-                (modification.type === 'existing' ? mod.modificationId === modification.modificationId : true)
-            );
-
-            if (existingModIndex === -1) {
-                // Add new modification
-                const newMod = {
-                    ...modification,
-                    // Remove item-specific data
-                    itemIndex: undefined,
-                    modificationIndex: undefined,
-                    itemCode: undefined,
-                    itemDescription: undefined,
-                    totalCost: undefined
-                };
-                
-                const updatedMods = [...currentMods, newMod];
-                updateModification(itemIdx, updatedMods);
-            }
-        });
-
-        setBulkModifyModalVisible(false);
-        setSelectedModForBulk(null);
-        setSelectedItemsForBulk([]);
-    };
-
-    // Get items that can receive modifications (excluding the source item)
-    const getAvailableItemsForBulk = (sourceItemIndex) => {
-        return versionItems.map((item, idx) => ({
-            index: idx,
-            code: item.code,
-            description: item.description,
-            disabled: idx === sourceItemIndex
-        }));
     };
 
 
@@ -1417,11 +1430,14 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         {stylesMeta.map((styleItem, index) => {
                                                             const totalPrice = calculateTotalForStyle(styleItem.price, styleItem.id);
                                                             const isCurrentStyle = styleItem.id === selectedStyleData?.id;
+                                                            const hasAnyItems = filteredItems.length > 0;
+                                                            const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
 
                                                             return (
                                                                 <div
                                                                     key={`compact-style-${styleItem.id}-${index}`}
-                                                                    className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''}`}
+                                                                    className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''} styleCard`}
+                                                                    aria-disabled={disabled}
                                                                     onClick={() => !readOnly && handleStyleSelect(styleItem.id)}
                                                                     style={{ cursor: readOnly ? 'default' : 'pointer' }}
                                                                 >
@@ -1454,10 +1470,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     >
                                                         {stylesMeta.map((styleItem, index) => {
                                                             const variant = styleItem.styleVariants?.[0];
+                                                            const hasAnyItems = filteredItems.length > 0;
+                                                            const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
                                                             return (
                                                                 <div
                                                                     key={`style-${styleItem.id}-${index}`}
-                                                                    className="style-carousel-item text-center"
+                                                                    className="style-carousel-item text-center styleCard"
+                                                                    aria-disabled={disabled}
                                                                     style={{
                                                                         cursor: readOnly ? 'default' : 'pointer',
                                                                         transition: 'transform 0.2s ease',
@@ -1569,146 +1588,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         </div>
                     </div>
                 </div>
-            )}
-
-            {/* Modifications List Section */}
-            {!readOnly && (
-            <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h6 className="mb-0">{t('proposalUI.modifications.title', 'Applied Modifications')}</h6>
-                    <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setShowModificationsList(!showModificationsList)}
-                    >
-                        {showModificationsList ? t('common.hide', 'Hide') : t('common.show', 'Show')} ({getAllModifications().length})
-                    </button>
-                </div>
-
-                {showModificationsList && (
-                    <div className="border rounded p-3 bg-light">
-                        {getAllModifications().length > 0 ? (
-                            <>
-                                {/* Desktop Table */}
-                                <div className="table-responsive d-none d-md-block">
-                                    <table className="table table-sm table-hover">
-                                        <thead className="table-secondary">
-                                            <tr>
-                                                <th>{t('proposalUI.modifications.item', 'Item')}</th>
-                                                <th>{t('proposalUI.modifications.name', 'Modification')}</th>
-                                                <th>{t('proposalUI.modifications.qty', 'Qty')}</th>
-                                                <th>{t('proposalUI.modifications.price', 'Unit Price')}</th>
-                                                <th>{t('proposalUI.modifications.total', 'Total')}</th>
-                                                <th>{t('proposalUI.modifications.note', 'Note')}</th>
-                                                <th>{t('common.actions', 'Actions')}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {getAllModifications().map((mod, idx) => (
-                                                <tr key={idx}>
-                                                    <td>
-                                                        <small className="text-muted">{mod.itemCode}</small><br/>
-                                                        <span style={{fontSize: '0.85rem'}}>{mod.itemDescription?.substring(0, 30)}...</span>
-                                                    </td>
-                                                    <td>{mod.name}</td>
-                                                    <td>{mod.qty}</td>
-                                                    <td>{formatPrice(mod.price || 0)}</td>
-                                                    <td className="fw-bold">{formatPrice(mod.totalCost)}</td>
-                                                    <td>
-                                                        <small className="text-muted">{mod.note || '-'}</small>
-                                                    </td>
-                                                    <td>
-                                                        <button
-                                                            className="btn btn-sm btn-outline-primary me-2"
-                                                            onClick={() => {
-                                                                setSelectedModForBulk(mod);
-                                                                setBulkModifyModalVisible(true);
-                                                            }}
-                                                            title={t('proposalUI.modifications.bulkApply', 'Apply to other items')}
-                                                        >
-                                                            <CIcon icon={cilList} size="sm" />
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-sm btn-outline-danger"
-                                                            onClick={() => handleDeleteModification(mod.itemIndex, mod.modificationIndex)}
-                                                            title={t('common.delete', 'Delete')}
-                                                        >
-                                                            <CIcon icon={cilTrash} size="sm" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                        <tfoot className="table-light">
-                                            <tr>
-                                                <td colSpan="4" className="text-end fw-bold">
-                                                    {t('proposalUI.modifications.totalCost', 'Total Modifications Cost')}:
-                                                </td>
-                                                <td className="fw-bold text-primary">
-                                                    {formatPrice(getAllModifications().reduce((sum, mod) => sum + mod.totalCost, 0))}
-                                                </td>
-                                                <td colSpan="2"></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-
-                                {/* Mobile List View */}
-                                <div className="d-block d-md-none">
-                                    {getAllModifications().map((mod, idx) => (
-                                        <div key={idx} className="border rounded p-3 mb-3 bg-white">
-                                            <div className="d-flex justify-content-between align-items-start mb-2">
-                                                <div>
-                                                    <div className="fw-bold">{mod.name}</div>
-                                                    <small className="text-muted">{mod.itemCode} - {mod.itemDescription?.substring(0, 40)}...</small>
-                                                </div>
-                                                <div className="text-end">
-                                                    <div className="fw-bold text-primary">{formatPrice(mod.totalCost)}</div>
-                                                    <small className="text-muted">{mod.qty} × {formatPrice(mod.price || 0)}</small>
-                                                </div>
-                                            </div>
-                                            {mod.note && (
-                                                <div className="mb-2">
-                                                    <small className="text-muted">{mod.note}</small>
-                                                </div>
-                                            )}
-                                            <div className="d-flex gap-2">
-                                                <button
-                                                    className="btn btn-sm btn-outline-primary flex-fill"
-                                                    onClick={() => {
-                                                        setSelectedModForBulk(mod);
-                                                        setBulkModifyModalVisible(true);
-                                                    }}
-                                                >
-                                                    {t('proposalUI.modifications.bulkApply', 'Apply to Others')}
-                                                </button>
-                                                <button
-                                                    className="btn btn-sm btn-outline-danger"
-                                                    onClick={() => handleDeleteModification(mod.itemIndex, mod.modificationIndex)}
-                                                >
-                                                    {t('common.delete', 'Delete')}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    
-                                    <div className="border-top pt-3 mt-3">
-                                        <div className="d-flex justify-content-between fw-bold text-primary">
-                                            <span>{t('proposalUI.modifications.totalCost', 'Total Modifications Cost')}:</span>
-                                            <span>{formatPrice(getAllModifications().reduce((sum, mod) => sum + mod.totalCost, 0))}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="text-center text-muted py-4">
-                                <CIcon icon={cilSettings} size="2xl" className="mb-2 opacity-50" />
-                                <div>{t('proposalUI.modifications.noModifications', 'No modifications have been added yet')}</div>
-                                <small>{t('proposalUI.modifications.addHint', 'Use the gear icon next to items to add modifications')}</small>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
             )}
 
             {!readOnly && isUserAdmin && (
@@ -1907,7 +1786,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
                         <tr>
                             <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
-                            <td className="text-center">${selectVersion?.summary?.deliveryFee || "0"}</td>
+                            <td className="text-center">${(versionItems.length > 1 ? (selectVersion?.summary?.deliveryFee || "0") : "0")}</td>
                         </tr>
 
                         <tr>
@@ -1933,136 +1812,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             </div>
             )}
 
-            {/* Bulk Modify Modal */}
-            <CModal
-                visible={bulkModifyModalVisible}
-                onClose={() => {
-                    setBulkModifyModalVisible(false);
-                    setSelectedModForBulk(null);
-                    setSelectedItemsForBulk([]);
-                }}
-                alignment="center"
-                size="lg"
-            >
-                <CModalHeader>
-                    <CModalTitle>{t('proposalUI.modifications.bulkApply', 'Apply Modification to Other Items')}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    {selectedModForBulk && (
-                        <>
-                            <div className="alert alert-info">
-                                <h6>{t('proposalUI.modifications.selectedMod', 'Selected Modification')}:</h6>
-                                <div><strong>{selectedModForBulk.name}</strong></div>
-                                <div>{t('proposalUI.modifications.qty', 'Qty')}: {selectedModForBulk.qty} × {formatPrice(selectedModForBulk.price)} = {formatPrice(selectedModForBulk.totalCost)}</div>
-                                {selectedModForBulk.note && <div><small>{t('proposalUI.modifications.note', 'Note')}: {selectedModForBulk.note}</small></div>}
-                            </div>
-                            
-                            <div className="mb-3">
-                                <h6>{t('proposalUI.modifications.selectItems', 'Select items to apply this modification to')}:</h6>
-                                <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                    {getAvailableItemsForBulk(selectedModForBulk.itemIndex).map((item) => (
-                                        <div key={item.index} className="form-check mb-2">
-                                            <CFormCheck
-                                                id={`bulk-item-${item.index}`}
-                                                checked={selectedItemsForBulk.includes(item.index)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedItemsForBulk(prev => [...prev, item.index]);
-                                                    } else {
-                                                        setSelectedItemsForBulk(prev => prev.filter(idx => idx !== item.index));
-                                                    }
-                                                }}
-                                                disabled={item.disabled}
-                                                label={
-                                                    <div className={item.disabled ? 'text-muted' : ''}>
-                                                        <div className="fw-bold">{item.code}</div>
-                                                        <small>{item.description}</small>
-                                                        {item.disabled && <small className="text-muted d-block">(Source item)</small>}
-                                                    </div>
-                                                }
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                                
-                                <div className="mt-3 d-flex gap-2">
-                                    <button 
-                                        className="btn btn-outline-secondary btn-sm"
-                                        onClick={() => {
-                                            const availableItems = getAvailableItemsForBulk(selectedModForBulk.itemIndex)
-                                                .filter(item => !item.disabled)
-                                                .map(item => item.index);
-                                            setSelectedItemsForBulk(availableItems);
-                                        }}
-                                    >
-                                        {t('common.selectAll', 'Select All')}
-                                    </button>
-                                    <button 
-                                        className="btn btn-outline-secondary btn-sm"
-                                        onClick={() => setSelectedItemsForBulk([])}
-                                    >
-                                        {t('common.selectNone', 'Select None')}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {selectedItemsForBulk.length > 0 && (
-                                <div className="alert alert-warning">
-                                    <small>
-                                        {t('proposalUI.modifications.bulkApplyWarning', 
-                                        'This will add the modification to {{count}} selected items. Existing modifications on those items will not be affected.', 
-                                        { count: selectedItemsForBulk.length })}
-                                    </small>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="secondary" onClick={() => {
-                        setBulkModifyModalVisible(false);
-                        setSelectedModForBulk(null);
-                        setSelectedItemsForBulk([]);
-                    }}>
-                        {t('common.cancel', 'Cancel')}
-                    </CButton>
-                    <CButton 
-                        color="primary" 
-                        onClick={() => handleBulkApplyModification(selectedModForBulk, selectedItemsForBulk)}
-                        disabled={selectedItemsForBulk.length === 0}
-                    >
-                        {t('proposalUI.modifications.apply', 'Apply')} ({selectedItemsForBulk.length})
-                    </CButton>
-                </CModalFooter>
-            </CModal>
-
-            <ModificationModalEdit
-                itemModificationID={itemModificationID}
-                catalogData={modificationItems}
+            <ModificationBrowserModal
                 visible={modificationModalVisible}
                 onClose={() => setModificationModalVisible(false)}
-                onSave={handleSaveModification}
-                modificationType={modificationType}
-                setModificationType={setModificationType}
-                existingModifications={modificationItems}
-                selectedExistingMod={selectedExistingMod}
-                setSelectedExistingMod={setSelectedExistingMod}
-                existingModQty={existingModQty}
-                setExistingModQty={setExistingModQty}
-                existingModNote={existingModNote}
-                setExistingModNote={setExistingModNote}
-                customModName={customModName}
-                setCustomModName={setCustomModName}
-                customModQty={customModQty}
-                setCustomModQty={setCustomModQty}
-                customModPrice={customModPrice}
-                setCustomModPrice={setCustomModPrice}
-                customModTaxable={customModTaxable}
-                setCustomModTaxable={setCustomModTaxable}
-                customModNote={customModNote}
-                setCustomModNote={setCustomModNote}
-                validationAttempted={validationAttempted}
-                isUserAdmin={isUserAdmin}
+                onApplyModification={handleApplyModification}
+                selectedItemIndex={selectedItemIndexForMod}
+                catalogItemId={itemModificationID}
             />
         </div>
     );

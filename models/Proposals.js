@@ -54,7 +54,7 @@ const Proposal = sequelize.define('proposal', {
         type: DataTypes.ENUM(
             // New standardized statuses
             'draft',
-            'sent', 
+            'sent',
             'accepted',
             'rejected',
             'expired',
@@ -135,7 +135,7 @@ const Proposal = sequelize.define('proposal', {
         defaultValue: false,
         comment: 'Locks prices after acceptance'
     },
-    
+
 }, {
     timestamps: true,
     tableName: 'proposals',
@@ -145,7 +145,7 @@ const Proposal = sequelize.define('proposal', {
             fields: ['owner_group_id']
         },
         {
-            name: 'idx_proposals_owner_status', 
+            name: 'idx_proposals_owner_status',
             fields: ['owner_group_id', 'status']
         },
         {

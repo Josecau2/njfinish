@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +11,7 @@ import { getOptimalColors } from '../../utils/colorUtils';
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
@@ -20,6 +21,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [noticeMessage, setNoticeMessage] = useState('');
 
   useEffect(() => {
     const fetchCustomization = async () => {
@@ -35,9 +37,28 @@ const LoginPage = () => {
 
     // Force light mode on login page
     localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
-    
+
     fetchCustomization();
   }, []);
+
+  // Detect redirect reasons (e.g., session expired) and show a banner
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search || '');
+      const reason = params.get('reason') || sessionStorage.getItem('logout_reason') || '';
+      if (reason) {
+        // Clear the stored reason so it doesn't persist
+        try { sessionStorage.removeItem('logout_reason'); } catch {}
+      }
+      if (reason === 'expired' || reason === 'auth-error') {
+        setNoticeMessage(t('auth.sessionExpired') || 'Your session expired. Please sign in again.');
+      } else if (reason) {
+        setNoticeMessage(t('auth.loginRequired') || 'Please sign in to continue.');
+      }
+    } catch (_) {
+      // no-op
+    }
+  }, [location.search, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,14 +71,28 @@ const LoginPage = () => {
       const { token, userId, name, role, role_id, group_id, group } = response.data;
       const user = { email, userId, name, role, role_id, group_id, group };
 
-      dispatch(setUser({ user, token }));
+      // Clean slate before saving the new token
+      try { localStorage.removeItem('token'); } catch {}
+      try { sessionStorage.removeItem('token'); } catch {}
+      try {
+        document.cookie = 'token=; Max-Age=0; path=/';
+        document.cookie = 'auth=; Max-Age=0; path=/';
+      } catch {}
+
+      // Store new auth
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      
+      // Notify other tabs
+      try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
+
+      dispatch(setUser({ user, token }));
+
       // Force light mode as default theme on login
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
 
-      navigate('/');
+      const returnTo = (() => { try { return sessionStorage.getItem('return_to') || '/' } catch { return '/' } })();
+      try { sessionStorage.removeItem('return_to'); } catch {}
+      navigate(returnTo);
     } catch (err) {
       const errorMsg =
         err.response?.data?.message || t('auth.loginFailed');
@@ -106,6 +141,12 @@ const LoginPage = () => {
           )}
           <h2 className="mb-2 fw-bold">{settings.title}</h2>
           <p className="text-muted mb-4">{settings.subtitle}</p>
+
+          {noticeMessage && (
+            <div className="alert alert-info" role="alert">
+              {noticeMessage}
+            </div>
+          )}
 
           {errorMessage && (
             <div className="alert alert-danger" role="alert">

@@ -10,8 +10,14 @@ import store from './store'
 import axiosInstance from './helpers/axiosInstance'
 import { logout } from './store/slices/authSlice'
 
-// On boot: if a token exists but is already expired, immediately log out and redirect
+// On boot hygiene: remove legacy auth cookies and validate token freshness before components mount
 try {
+  try {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'token=; Max-Age=0; path=/';
+      document.cookie = 'auth=; Max-Age=0; path=/';
+    }
+  } catch {}
   const tok = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (tok) {
     const [, p] = tok.split('.')
@@ -38,25 +44,17 @@ try {
         }
       } catch {}
     }
+  } else {
+    // No token at boot: ensure no stale cookie interferes then optionally redirect if on protected page
+    try {
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/reset-password') {
+        // Let route guards handle it or redirect to login depending on app flow
+      }
+    } catch {}
   }
 } catch {}
 
-// Keep-alive: ping a cheap endpoint periodically when the tab is active to roll tokens
-if (typeof window !== 'undefined') {
-  let keepAliveTimer;
-  const PING_MS = 5 * 60 * 1000; // 5 minutes
-  const startKeepAlive = () => {
-    clearInterval(keepAliveTimer);
-    keepAliveTimer = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        axiosInstance.get('/api/me').catch(() => {});
-      }
-    }, PING_MS);
-  };
-  document.addEventListener('visibilitychange', startKeepAlive);
-  window.addEventListener('focus', startKeepAlive);
-  startKeepAlive();
-}
+// Removed proactive /api/me keep-alive pings to avoid token refresh gymnastics
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>

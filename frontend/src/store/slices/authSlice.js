@@ -24,7 +24,14 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      localStorage.clear();
+      try { localStorage.clear(); } catch {}
+      try { sessionStorage.clear(); } catch {}
+      try {
+        if (typeof document !== 'undefined') {
+          document.cookie = 'token=; Max-Age=0; path=/';
+          document.cookie = 'auth=; Max-Age=0; path=/';
+        }
+      } catch {}
     },
   },
 });

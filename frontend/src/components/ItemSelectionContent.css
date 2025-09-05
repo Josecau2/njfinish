@@ -1,0 +1,6 @@
+/* Make a single card unclickable without blocking neighbors */
+.styleCard[aria-disabled="true"] {
+  opacity: .45;
+  filter: grayscale(40%);
+  pointer-events: none; /* only this card is unclickable */
+}

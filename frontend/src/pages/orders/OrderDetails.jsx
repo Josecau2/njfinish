@@ -31,6 +31,51 @@ import {
   CCloseButton,
 } from '@coreui/react'
 
+// Helpers for modification measurements (inches with mixed fractions)
+const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
+const formatMixedFraction = (value, precision = 16) => {
+  if (value == null || isNaN(value)) return ''
+  const sign = value < 0 ? '-' : ''
+  let v = Math.abs(Number(value))
+  let whole = Math.floor(v)
+  let frac = v - whole
+  let num = Math.round(frac * precision)
+  if (num === precision) {
+    whole += 1
+    num = 0
+  }
+  if (num === 0) return `${sign}${whole}`
+  const g = _gcd(num, precision)
+  const n = num / g
+  const d = precision / g
+  return `${sign}${whole ? whole + ' ' : ''}${n}/${d}`
+}
+const keyToLabel = (key) => String(key || '')
+  .replace(/_/g, ' ')
+  .replace(/([a-z])([A-Z])/g, '$1 $2')
+  .replace(/\s+/g, ' ')
+  .trim()
+const mapSide = (s) => (s === 'L' ? 'Left' : s === 'R' ? 'Right' : s === 'B' ? 'Both' : s)
+const buildSelectedOptionsText = (selectedOptions) => {
+  if (!selectedOptions || typeof selectedOptions !== 'object') return ''
+  const parts = []
+  const numericEntries = Object.entries(selectedOptions).filter(([k, v]) => typeof v === 'number' && isFinite(v))
+  if (numericEntries.length === 1) {
+    const [, v] = numericEntries[0]
+    const m = formatMixedFraction(v)
+    if (m) parts.push(`${m}\"`)
+  } else if (numericEntries.length > 1) {
+    numericEntries.forEach(([k, v]) => {
+      const m = formatMixedFraction(v)
+      if (m) parts.push(`${keyToLabel(k)} ${m}\"`)
+    })
+  }
+  if (typeof selectedOptions.sideSelector === 'string' && selectedOptions.sideSelector) {
+    parts.push(`Side: ${mapSide(selectedOptions.sideSelector)}`)
+  }
+  return parts.join(' • ')
+}
+
 const currency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n || 0))
 
 const parseManufacturersData = (raw) => {
@@ -171,6 +216,11 @@ const OrderDetails = () => {
     const unit = base * manuM * groupM
     const total = unit * qty
 
+    // Per-item modifications total (not multiplied by manufacturer/user multipliers)
+    const modsTotal = Array.isArray(it.modifications)
+      ? it.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+      : 0
+
     // Derive style name/image
     let styleName = '-'
     let styleImg = null
@@ -247,7 +297,7 @@ const OrderDetails = () => {
       thumbTitle = (styleName && manuName) ? `${styleName} — ${manuName}` : (styleName || manuName || '')
     }
 
-    return { manuName, qty, unit, total, styleName, styleImg, thumb, thumbTitle }
+  return { manuName, qty, unit, total, modsTotal, styleName, styleImg, thumb, thumbTitle }
   }
 
   // Compute display totals applying manufacturer cost multiplier and user group multiplier
@@ -534,17 +584,18 @@ const OrderDetails = () => {
                   <CTableHeaderCell>{t('orders.details.item', 'Item')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.qty', 'Qty')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.unitPrice', 'Unit Price')}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-end">{t('orders.details.modifications', 'Modifications')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.total', 'Total')}</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
                 {parsed.items.length === 0 ? (
                   <CTableRow>
-                    <CTableDataCell colSpan={7} className="text-center text-muted py-4">{t('orders.details.noItems', 'No items')}</CTableDataCell>
+                    <CTableDataCell colSpan={8} className="text-center text-muted py-4">{t('orders.details.noItems', 'No items')}</CTableDataCell>
                   </CTableRow>
                 ) : (
                   parsed.items.map((it, idx) => {
-                    const { manuName, qty, unit, total, styleName, thumb, thumbTitle } = computeItemView(it)
+                    const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
                     return (
                       <CTableRow key={idx}>
                         <CTableDataCell>
@@ -562,9 +613,55 @@ const OrderDetails = () => {
                         </CTableDataCell>
                         <CTableDataCell>{manuName}</CTableDataCell>
                         <CTableDataCell>{styleName}</CTableDataCell>
-                        <CTableDataCell>{it.name || it.description || it.item || '-'}</CTableDataCell>
+                        <CTableDataCell>
+                          <div>{it.name || it.description || it.item || '-'}</div>
+                          {Array.isArray(it.modifications) && it.modifications.length > 0 && (
+                            <div className="text-muted small mt-1">
+                              {it.modifications.map((m, i) => {
+                                const details = buildSelectedOptionsText(m?.selectedOptions)
+                                const label = m?.name || m?.templateName || 'Modification'
+                                return (
+                                  <div key={`mod-${idx}-${i}`}>• {label}{details ? ` — ${details}` : ''}</div>
+                                )
+                              })}
+                            </div>
+                          )}
+
+                          {/* Attachments gallery under the item for printing/manufacturing clarity */}
+                          {(() => {
+                            const imgs = []
+                            try {
+                              if (Array.isArray(it.modifications)) {
+                                it.modifications.forEach((m) => {
+                                  if (Array.isArray(m.attachments)) {
+                                    m.attachments.forEach((att) => {
+                                      const mt = String(att.mimeType || '')
+                                      if (mt.startsWith('image/')) imgs.push(att.url)
+                                    })
+                                  }
+                                })
+                              }
+                            } catch (_) {}
+                            if (!imgs.length) return null
+                            return (
+                              <div className="mt-2 d-flex flex-wrap gap-2">
+                                {imgs.map((url, ii) => (
+                                  <img
+                                    key={`att-${idx}-${ii}`}
+                                    src={url}
+                                    alt={`Attachment ${ii + 1}`}
+                                    style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 6, border: '1px solid #e9ecef', cursor: 'pointer' }}
+                                    onClick={(e) => { e.stopPropagation(); setPreviewImg(url) }}
+                                  />
+                                ))}
+                              </div>
+                            )
+                          })()}
+                        </CTableDataCell>
                         <CTableDataCell className="text-end">{qty}</CTableDataCell>
                         <CTableDataCell className="text-end">{currency(unit)}</CTableDataCell>
+                        <CTableDataCell className="text-end">{currency(unit)}</CTableDataCell>
+                        <CTableDataCell className="text-end">{currency(modsTotal)}</CTableDataCell>
                         <CTableDataCell className="text-end">{currency(total)}</CTableDataCell>
                       </CTableRow>
                     )
@@ -580,7 +677,7 @@ const OrderDetails = () => {
             ) : (
               <div className="d-flex flex-column gap-2">
                 {parsed.items.map((it, idx) => {
-                  const { manuName, qty, unit, total, styleName, thumb, thumbTitle } = computeItemView(it)
+                  const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
                   const title = it.name || it.description || it.item || '-'
                   return (
                     <div key={idx} className="d-flex p-2 border rounded align-items-center" style={{ gap: 12 }}>
@@ -599,9 +696,23 @@ const OrderDetails = () => {
                       </div>
                       <div className="flex-grow-1">
                         <div style={{ fontWeight: 600 }}>{title}</div>
+                        {Array.isArray(it.modifications) && it.modifications.length > 0 && (
+                          <div className="text-muted" style={{ fontSize: 12 }}>
+                            {it.modifications.map((m, i) => {
+                              const details = buildSelectedOptionsText(m?.selectedOptions)
+                              const label = m?.name || m?.templateName || 'Modification'
+                              return (
+                                <div key={`mod-m-${idx}-${i}`}>• {label}{details ? ` — ${details}` : ''}</div>
+                              )
+                            })}
+                          </div>
+                        )}
                         <div className="text-muted" style={{ fontSize: 12 }}>
                           {t('orders.common.manufacturer', 'Manufacturer')}: {manuName}
                           {styleName ? ` • ${t('common.style', 'Style')}: ${styleName}` : ''}
+                        </div>
+                        <div className="text-muted" style={{ fontSize: 12 }}>
+                          {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
                         </div>
                         <div className="d-flex justify-content-between mt-1" style={{ fontSize: 14 }}>
                           <div>

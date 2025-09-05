@@ -20,6 +20,61 @@ import { BsTools } from 'react-icons/bs'
 const hingeOptions = ['L', 'R', '-']
 const exposedOptions = ['L', 'R', 'B', '-']
 
+// Helpers to render selected modification options neatly (shared logic)
+const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
+const formatMixedFraction = (value, precision = 16) => {
+  if (value == null || isNaN(value)) return ''
+  const sign = value < 0 ? '-' : ''
+  let v = Math.abs(Number(value))
+  let whole = Math.floor(v)
+  let frac = v - whole
+  let num = Math.round(frac * precision)
+  if (num === precision) {
+    whole += 1
+    num = 0
+  }
+  if (num === 0) return `${sign}${whole}`
+  const g = _gcd(num, precision)
+  const n = num / g
+  const d = precision / g
+  return `${sign}${whole ? whole + ' ' : ''}${n}/${d}`
+}
+const keyToLabel = (key) => {
+  if (!key) return ''
+  return String(key)
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+const mapSide = (s) => {
+  switch (s) {
+    case 'L': return 'Left'
+    case 'R': return 'Right'
+    case 'B': return 'Both'
+    default: return s
+  }
+}
+const buildSelectedOptionsText = (selectedOptions) => {
+  if (!selectedOptions || typeof selectedOptions !== 'object') return ''
+  const parts = []
+  const numericEntries = Object.entries(selectedOptions).filter(([k, v]) => typeof v === 'number' && isFinite(v))
+  if (numericEntries.length === 1) {
+    const [, v] = numericEntries[0]
+    const m = formatMixedFraction(v)
+    if (m) parts.push(`${m}\"`)
+  } else if (numericEntries.length > 1) {
+    numericEntries.forEach(([k, v]) => {
+      const m = formatMixedFraction(v)
+      if (m) parts.push(`${keyToLabel(k)} ${m}\"`)
+    })
+  }
+  if (typeof selectedOptions.sideSelector === 'string' && selectedOptions.sideSelector) {
+    parts.push(`Side: ${mapSide(selectedOptions.sideSelector)}`)
+  }
+  return parts.join(' • ')
+}
+
 const CatalogTableEdit = ({
   catalogData,
   handleCatalogSelect,
@@ -48,10 +103,10 @@ const CatalogTableEdit = ({
 }) => {
   const { t } = useTranslation();
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -180,6 +235,7 @@ const CatalogTableEdit = ({
               <CTableHeaderCell>{t('proposalColumns.exposedSide')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
+              <CTableHeaderCell>{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.total')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposals.headers.actions')}</CTableHeaderCell>
             </CTableRow>
@@ -192,7 +248,10 @@ const CatalogTableEdit = ({
               const qty = Number(item.qty || 1)
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
               const assemblyFee = unitAssembly * qty
-              const total = Number(item.price || 0) * qty + assemblyFee
+              const modsTotal = Array.isArray(item.modifications)
+                ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+                : 0
+              const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
 
               const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
               return (
@@ -274,6 +333,7 @@ const CatalogTableEdit = ({
                       )}
                     </CTableDataCell>
 
+                    <CTableDataCell>{formatPrice(modsTotal)}</CTableDataCell>
                     <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : total)}</CTableDataCell>
 
                     <CTableDataCell>
@@ -295,45 +355,60 @@ const CatalogTableEdit = ({
                       </div>
                     </CTableDataCell>
                   </CTableRow>
-                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (
-                    <CTableRow className="table-light">
-                      <CTableDataCell colSpan={9} className="fw-bold text-muted">
-                        {t('proposalDoc.modifications')}
-                      </CTableDataCell>
-                    </CTableRow>
-                  )}
-
-                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (
-                    item.modifications.map((mod, modIdx) => (
-
-                      <CTableRow key={`mod-${idx}-${modIdx}`} className="table-secondary">
-                        <CTableDataCell>-</CTableDataCell>
-                        <CTableDataCell>{mod.qty}</CTableDataCell>
-
-                        <CTableDataCell colSpan={3}>
-                          {mod.name || t('proposalUI.mod.unnamed')}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          {formatPrice(mod.price || 0)}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          -
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          {!readOnly && (
-                            <CIcon
-                              icon={cilTrash}
-                              style={{ cursor: 'pointer', color: 'red' }}
-                              onClick={() => handleDeleteModification(idx, modIdx)}
-                            />
-                          )}
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))
-                  )}
+                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (() => {
+                    // Group by submenu/category when available on mod.categoryName
+                    const groups = item.modifications.reduce((acc, m) => {
+                      const key = m.categoryName || 'Other';
+                      acc[key] = acc[key] || [];
+                      acc[key].push(m);
+                      return acc;
+                    }, {});
+                    const groupKeys = Object.keys(groups);
+                    return (
+                      <>
+                        <CTableRow className="table-light">
+                          <CTableDataCell colSpan={10} className="fw-bold text-muted">
+                            {t('proposalDoc.modifications')}
+                          </CTableDataCell>
+                        </CTableRow>
+                        {groupKeys.map((gkey) => (
+                          <React.Fragment key={`modgrp-${idx}-${gkey}`}>
+                            <CTableRow className="table-light">
+                              <CTableDataCell colSpan={10} className="fw-bold">{gkey}</CTableDataCell>
+                            </CTableRow>
+                            {groups[gkey].map((mod, modIdx) => (
+                              <CTableRow key={`mod-${idx}-${gkey}-${modIdx}`} className="table-secondary">
+                                <CTableDataCell>-</CTableDataCell>
+                                <CTableDataCell>{mod.qty}</CTableDataCell>
+                                <CTableDataCell colSpan={3}>
+                                  {mod.name || t('proposalUI.mod.unnamed')}
+                                  {(() => {
+                                    const details = buildSelectedOptionsText(mod?.selectedOptions)
+                                    return details ? (
+                                      <span className="text-muted ms-2">— {details}</span>
+                                    ) : null
+                                  })()}
+                                </CTableDataCell>
+                                <CTableDataCell>{formatPrice(mod.price || 0)}</CTableDataCell>
+                                <CTableDataCell>-</CTableDataCell>
+                                <CTableDataCell>{/* Modifications column (per-item summary) not applicable on sub-rows */}</CTableDataCell>
+                                <CTableDataCell>{formatPrice((mod.price || 0) * (mod.qty || 1))}</CTableDataCell>
+                                <CTableDataCell>
+                                  {!readOnly && (
+                                    <CIcon
+                                      icon={cilTrash}
+                                      style={{ cursor: 'pointer', color: 'red' }}
+                                      onClick={() => handleDeleteModification(idx, item.modifications.findIndex(m=>m===mod))}
+                                    />
+                                  )}
+                                </CTableDataCell>
+                              </CTableRow>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </>
+                    )
+                  })()}
                 </React.Fragment>
               )
             })}
@@ -348,7 +423,10 @@ const CatalogTableEdit = ({
           const qty = Number(item.qty || 1);
           const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0;
           const assemblyFee = unitAssembly * qty;
-          const total = Number(item.price || 0) * qty + assemblyFee;
+          const modsTotal = Array.isArray(item.modifications)
+            ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+            : 0;
+          const total = Number(item.price || 0) * qty + assemblyFee + modsTotal;
           const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
 
           return (
@@ -444,6 +522,12 @@ const CatalogTableEdit = ({
                     </div>
                   </>
                 )}
+
+                {/* Modifications summary on mobile */}
+                <div className="item-detail-row">
+                  <span className="item-label">{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</span>
+                  <span className="item-value">{formatPrice(modsTotal)}</span>
+                </div>
 
                 <div className="total-highlight">
                   <strong style={rowStyle}>{t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}</strong>
