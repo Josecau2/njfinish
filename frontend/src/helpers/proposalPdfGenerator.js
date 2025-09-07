@@ -19,7 +19,7 @@ export const generateProposalPdfBlob = (formData, selectedVersionData, priceSumm
             },
             margin: [0, 0, 0, 20],
         },
-        { text: 'Proposal Items', style: 'subheader' },
+    { text: 'Quote Items', style: 'subheader' },
         {
             table: {
                 headerRows: 1,

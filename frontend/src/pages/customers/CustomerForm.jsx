@@ -194,7 +194,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
               <CForm onSubmit={handleSubmit}>
                 <CRow>
                   <CCol md={6}>
-                    <div className="mb-3">
+                    <div style={{ marginBottom: 'var(--sp-3)' }}>
                       <CFormLabel htmlFor="name">{t('customers.form.labels.fullName')} *</CFormLabel>
                       <CInputGroup>
                         <CInputGroupText>
@@ -208,6 +208,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
                           onChange={handleInputChange}
                           invalid={!!formErrors.name}
                           required
+                          style={{ minHeight: '44px' }}
                         />
                       </CInputGroup>
                       {formErrors.name && (
@@ -217,7 +218,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
                   </CCol>
 
                   <CCol md={6}>
-                    <div className="mb-3">
+                    <div style={{ marginBottom: 'var(--sp-3)' }}>
                       <CFormLabel htmlFor="email">{t('customers.form.labels.email')}</CFormLabel>
                       <CInputGroup>
                         <CInputGroupText>

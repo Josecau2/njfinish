@@ -81,7 +81,7 @@ const AppHeader = () => {
   return (
     <CHeader
       position="sticky"
-      className="header"
+      className="header toolbar toolbar--sticky"
       ref={headerRef}
       style={{
         backgroundColor: customization.headerBg,

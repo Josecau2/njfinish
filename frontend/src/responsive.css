@@ -2473,8 +2473,8 @@ html, body {
 
 /* Modification cards */
 .modification-card-mobile {
-  background: var(--cui-warning-bg-subtle);
-  border: 1px solid var(--cui-warning-border-subtle);
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
   border-radius: var(--cui-border-radius-sm);
   padding: 0.75rem;
   margin-top: 0.5rem;
@@ -2491,7 +2491,7 @@ html, body {
 .modification-card-mobile .mod-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--cui-warning-text-emphasis);
+  color: #495057;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -2507,7 +2507,7 @@ html, body {
   margin-bottom: 0;
 }
 
-/* Mobile Action Buttons for Edit Proposal */
+/* Mobile Action Buttons for Edit Quote */
 @media (max-width: 576px) {
   .mobile-action-btn {
     width: 100% !important;
@@ -2519,6 +2519,147 @@ html, body {
     width: 100% !important;
     margin-bottom: 8px !important;
   }
+}
+
+
+/* ======================
+   Mobile Compact Tokens
+   and Quote Card Layout
+   ====================== */
+
+/* 1) Density + typography tokens */
+:root {
+  /* spacing scale */
+  --space-1: .25rem;  /* 4px */
+  --space-2: .5rem;   /* 8px */
+  --space-3: .75rem;  /* 12px */
+  --space-4: 1rem;    /* 16px */
+
+  /* radii & shadow */
+  --radius-2: 10px;
+  --elev-1: 0 1px 2px rgba(0,0,0,.06);
+
+  /* fluid type (clamp for mobile) */
+  --fs-body: clamp(14px, 1.9vw, 16px);
+  --fs-sub:  clamp(12px, 1.6vw, 14px);
+  --fs-title: clamp(16px, 2.4vw, 18px);
+}
+
+:root[data-density="compact"] {
+  --space-2: .375rem;  /* 6px */
+  --space-3: .625rem;  /* 10px */
+  --radius-2: 8px;
+}
+
+/* Respect motion prefs */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Utility visibility */
+.mobile-only { display: none !important; }
+.desktop-only { display: block !important; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: block !important; }
+  .desktop-only { display: none !important; }
+}
+
+/* 2) Quote list compact layout */
+.q-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.q-card {
+  background: var(--surface, #fff);
+  border-radius: var(--radius-2);
+  box-shadow: var(--elev-1);
+  padding: var(--space-3);
+  display: grid;
+  row-gap: var(--space-2);
+  container-type: inline-size; /* enable container queries */
+  content-visibility: auto; /* performance */
+}
+
+.q-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+.q-title {
+  font-size: var(--fs-title);
+  line-height: 1.2;
+  margin: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.q-status {
+  font: 600 var(--fs-sub)/1 var(--font, inherit);
+  padding: .25rem .5rem;
+  border-radius: 999px;
+  background: var(--chip-bg, #eef1ff);
+  color: var(--chip-fg, #3a49b6);
+}
+
+.q-meta {
+  display: flex; flex-wrap: wrap; gap: .375rem .5rem;
+  color: var(--muted, #6b7280);
+  font-size: var(--fs-sub);
+}
+.q-dot { opacity: .5; }
+
+.q-desc {
+  margin: 0;
+  display: -webkit-box;
+  line-clamp: 2; /* standard property for compatibility */
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.q-actions {
+  display: grid; grid-auto-flow: column; justify-content: start; gap: .5rem;
+}
+.btn-icon, .q-actions .btn, .q-actions .btn-icon {
+  min-height: 44px; min-width: 44px; /* >=44pt Apple; meets 24px WCAG */
+  border-radius: 10px; border: 1px solid rgba(0,0,0,.08);
+  padding: 0 .75rem; background: #fff;
+}
+.btn-icon { padding: 0; display: grid; place-items: center; }
+.btn[data-variant="ghost"] { background: transparent; }
+
+/* Optional container query tweaks */
+@container (min-width: 360px) {
+  .q-meta { gap: .25rem .75rem; }
+  .q-actions { justify-content: space-between; }
+}
+
+/* 3) Sticky toolbar with chips + search */
+.q-toolbar {
+  position: sticky; top: 0; z-index: 20;
+  padding: .5rem var(--space-2);
+  background: var(--surface, #fff);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+.q-chips { display: grid; grid-auto-flow: column; gap: .5rem; overflow-x: auto; padding-bottom: .25rem; }
+.q-search { height: 44px; }
+
+/* 4) Bottom primary action bar */
+.bottom-bar {
+  position: sticky; bottom: 0; z-index: 30;
+  padding: .5rem calc(var(--space-2) + env(safe-area-inset-right)) calc(.5rem + env(safe-area-inset-bottom)) calc(var(--space-2) + env(safe-area-inset-left));
+  background: #111; color: #fff;
+  border-top-left-radius: 14px; border-top-right-radius: 14px;
+  display: grid; grid-auto-flow: column; gap: .5rem;
+}
+.bottom-bar .btn-primary, .bottom-bar .btn, .bottom-bar button {
+  min-height: 44px; border-radius: 12px;
+}
+
+/* Hide desktop pagination on mobile */
+@media (max-width: 768px) {
+  .data-table-card { display: none; }
 
   .d-flex.gap-2.flex-wrap.justify-content-center.justify-content-sm-end {
     flex-direction: column !important;
@@ -2539,7 +2680,7 @@ html, body {
     gap: 0 !important;
   }
 
-  /* Edit Proposal header action buttons */
+  /* Edit Quote header action buttons */
   .mobile-action-buttons {
     flex-direction: column !important;
     width: 100%;
@@ -2552,7 +2693,7 @@ html, body {
     text-align: center;
   }
 
-  /* Edit proposal header responsiveness */
+  /* Edit quote header responsiveness */
   .header {
     padding: 1rem !important;
     flex-direction: column !important;

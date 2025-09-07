@@ -25,6 +25,10 @@
   "itemsPerPage": "Ítems por página:",
   "pageOf": "Página {{page}} de {{total}}",
   "close": "Cerrar",
+  "ok": "OK",
+  "locked": "Bloqueado",
+  "unsavedConfirm": "Tienes cambios sin guardar. ¿Seguro que deseas salir?",
+  "copyOf": "Copia de",
   "short": {
     "left": "Izq.",
     "right": "Der.",
@@ -38,8 +42,11 @@
     "saving": "Guardando...",
     "description": "Descripción",
     "code": "Código",
-    "image": "Imagen"
+    "image": "Imagen",
+    "currentAssignments": "Asignaciones actuales"
   },
+  "creating": "Creando...",
+  "noDescription": "Sin descripción",
   "styles": {
     "create": "Agregar estilo",
     "createHeader": "Agregar estilo",
@@ -604,12 +611,28 @@
       "deleteTitle": "¿Estás seguro?",
       "deleteText": "¡No podrás deshacer esta acción!",
       "deleteConfirm": "Sí, eliminar",
+      "acceptTitle": "Confirmar aceptación",
+      "acceptText": "¿Desea aceptar esta cotización? Esto la convertirá en un pedido.",
+      "acceptConfirm": "Aceptar",
       "submitTitle": "Confirmar envío de cotización",
       "submitText": "Una vez que envíe esta cotización, será enviada a producción y no se podrá cambiar.",
       "submitWarning": "Al continuar, confirma que todos los detalles son correctos y acepta los Términos y Condiciones.",
       "submitConfirm": "Aceptar y enviar",
       "goBack": "Regresar",
       "cancel": "Cancelar"
+    },
+    "errors": {
+      "noId": "No se encontró el ID de la cotización. Actualice y vuelva a intentarlo.",
+      "noIdAcceptance": "No hay ID de cotización disponible para la aceptación",
+      "alreadyLockedTitle": "Advertencia",
+      "alreadyLockedText": "Esta cotización ya está bloqueada y no se puede modificar.",
+      "alreadyAccepted": "Esta cotización ya está aceptada.",
+      "acceptFailed": "No se pudo aceptar la cotización. Inténtelo de nuevo.",
+      "cannotAccept": "No se puede aceptar la cotización",
+      "operationFailed": "La operación falló. Inténtelo de nuevo."
+    },
+    "success": {
+      "acceptConverted": "¡Cotización aceptada y convertida en pedido!"
     },
     "toast": {
       "successSend": "Cotización enviada correctamente",
@@ -760,6 +783,164 @@
     }
   }
   ,
+  "notifications": {
+    "header": "Notificaciones",
+    "markAll": "Marcar todo como leído",
+    "refresh": "Actualizar",
+    "filters": {
+      "all": "Todas",
+      "unread": "No leídas",
+      "read": "Leídas"
+    },
+    "errors": {
+      "load": "Error al cargar las notificaciones",
+      "markOne": "Error al marcar como leída",
+      "markAll": "Error al marcar todas como leídas"
+    },
+    "success": {
+      "allReadTitle": "Al día",
+      "allReadText": "Todas las notificaciones marcadas como leídas"
+    }
+  },
+  "adminQuote": {
+    "loading": "Cargando detalles de la cotización...",
+    "noId": "No se proporcionó ID de cotización",
+    "labels": {
+      "created": "Creado",
+      "sentToCustomer": "Enviado al cliente",
+      "accepted": "Aceptado"
+    },
+    "timeline": {
+      "created": "La cotización fue creada y agregada al sistema",
+      "sent": "La cotización fue enviada al cliente para revisión",
+      "accepted": "La cotización fue aceptada formalmente",
+      "rejected": "La cotización fue rechazada",
+      "expired": "La cotización ha expirado",
+      "changed": "El estado de la propuesta cambió a {{status}}"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "in_progress": "En progreso",
+      "completed": "Completada"
+    },
+    "ui": {
+      "print": "Imprimir",
+      "overview": "Resumen de la cotización",
+      "proposalId": "ID de la cotización",
+      "customer": "Cliente",
+      "contractorGroup": "Grupo del contratista",
+      "createdDate": "Fecha de creación",
+      "updatedDate": "Última actualización",
+      "sentDate": "Fecha de envío",
+      "acceptedDate": "Fecha de aceptación",
+      "itemsHeader": "Ítems de la cotización ({{count}})",
+      "itemNumber": "Ítem {{n}}",
+      "statusTimeline": "Línea de estado",
+      "notFound": "No se encontró la propuesta."
+    }
+  },
+  "publicQuote": {
+    "loadFailed": "No se pudo cargar la cotización",
+    "acceptFailed": "No se pudo aceptar la cotización",
+    "acceptSuccess": "¡Cotización aceptada. Gracias!",
+    "notFound": "No se encontró una cotización para este enlace.",
+    "titleNumber": "Cotización #{{id}}",
+    "forCustomer": "para {{name}}",
+    "acceptedBadge": "Aceptada",
+    "description": "Descripción",
+    "total": "Total",
+    "summary": "Resumen",
+    "acceptButton": {
+      "accepting": "Aceptando…",
+      "alreadyAccepted": "Ya aceptada",
+      "accept": "Aceptar"
+    }
+  },
+  "globalMods": {
+    "modal": {
+      "add": {
+        "title": "Agregar modificación",
+        "step1Title": "Paso 1: Selecciona o crea submenú",
+        "selectExisting": "Selecciona submenú existente...",
+        "createNew": "Crear submenú nuevo",
+        "newSubmenuName": "Nombre del submenú nuevo",
+        "orderIndex": "Índice de orden",
+        "nextBuilder": "Siguiente: Constructor de plantilla",
+        "step2Title": "Paso 2: Constructor de plantilla",
+        "back": "Atrás",
+        "cancel": "Cancelar",
+        "createTemplate": "Crear plantilla"
+      },
+      "editCategory": {
+        "title": "Editar categoría",
+        "namePlaceholder": "Nombre de la categoría",
+        "orderPlaceholder": "Orden",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "nameLabel": "Nombre de la categoría",
+        "orderLabel": "Orden",
+        "imageLabel": "Imagen de la categoría"
+      },
+      "editTemplate": {
+        "title": "Editar plantilla",
+        "nameLabel": "Nombre de la plantilla",
+        "priceLabel": "Precio por defecto",
+        "sampleUploadLabel": "Subida de imagen de muestra",
+        "sampleAlt": "Muestra",
+        "ready": { "label": "Marcar como Lista (habilita opciones de asignación)", "hint": "Las modificaciones listas pueden asignarse a fabricantes y usarse en cotizaciones." },
+        "cancel": "Cancelar",
+        "saveChanges": "Guardar cambios"
+      },
+      "gallery": {
+        "title": "Galería de modificaciones",
+        "categoryImageUploaded": "Imagen de categoría subida",
+        "useAsBlueprint": "Usar como plano base",
+        "emptyCategory": "No hay plantillas en esta categoría"
+      },
+      "assign": {
+        "title": "Asignar modificación",
+        "selectManufacturer": "Selecciona fabricante...",
+        "selectTemplate": "Selecciona plantilla...",
+        "scope": { "all": "Todos los ítems", "style": "Estilo específico", "type": "Tipo específico", "item": "Ítem específico" },
+        "styleName": "Nombre del estilo",
+        "typeName": "Nombre del tipo",
+        "catalogItemId": "ID de ítem del catálogo",
+        "override": "Sobrescribir precio (opcional)",
+        "cancel": "Cancelar",
+        "assign": "Asignar"
+      },
+      "deleteCategory": {
+        "title": "Eliminar categoría: {{name}}",
+        "warning": "⚠️ Advertencia:",
+        "aboutToDelete": "Estás a punto de eliminar la categoría \"{{name}}\".",
+        "contains": "Esta categoría contiene <strong>{{count}}</strong> modificación(es). ¿Qué te gustaría hacer con ellas?",
+        "move": {
+          "label": "Mover modificaciones a otra categoría",
+          "recommended": "(Recomendado)",
+          "selectTarget": "Selecciona categoría destino...",
+          "optionWithCount": "{{name}} ({{count}} existentes)",
+          "mustSelect": "Debes seleccionar una categoría destino para mover las modificaciones."
+        },
+        "withMods": {
+          "label": "Eliminar categoría Y todas las modificaciones",
+          "permanent": "(Permanente)",
+          "danger": "⚠️ Esto eliminará permanentemente las {{count}} modificación(es) de esta categoría. Esta acción no se puede deshacer."
+        },
+        "emptySafe": "Esta categoría está vacía y puede eliminarse de forma segura.",
+        "cancel": "Cancelar",
+        "deleteOnly": "Eliminar categoría",
+        "deleteWithMods": "Eliminar categoría y modificaciones",
+        "deleteMoveMods": "Eliminar categoría y mover modificaciones",
+        "toast": {
+          "deleted": "Categoría \"{{name}}\" eliminada correctamente",
+          "deletedWithMods": "Categoría \"{{name}}\" eliminada con todas las modificaciones",
+          "deletedMoved": "Categoría \"{{name}}\" eliminada y modificaciones movidas",
+          "deleteFailed": "No se pudo eliminar la categoría"
+        }
+      }
+    }
+  },
   "profile": {
     "header": "Mi perfil",
     "fullName": "Nombre completo",
@@ -1820,6 +2001,104 @@
       "catalogMapping": {
         "title": "Datos de catálogo",
         "empty": "No hay datos de catálogo disponibles.",
+        "subTypes": {
+          "header": "Subtipos de gabinetes",
+          "create": "Crear subtipo",
+          "editTitle": "Editar subtipo",
+          "singular": "Subtipo",
+          "namePlaceholder": "p. ej., Gabinetes de una puerta",
+          "descriptionPlaceholder": "Descripción opcional para este subtipo",
+          "empty": "Aún no se han creado subtipos. Cree subtipos para definir requisitos de bisagra y lado expuesto para grupos específicos de gabinetes.",
+          "requiresHinge": "Requiere lado de bisagra",
+          "requiresHingeSelection": "Requiere selección de lado de bisagra",
+          "requiresHingeHelp": "Cuando está habilitado, los usuarios deben seleccionar un lado de bisagra antes de convertir cotizaciones en órdenes",
+          "requiresExposed": "Requiere lado expuesto",
+          "requiresExposedSelection": "Requiere selección de lado expuesto",
+          "requiresExposedHelp": "Cuando está habilitado, los usuarios deben seleccionar un lado expuesto antes de convertir cotizaciones en órdenes",
+          "assignItems": "Asignar ítems",
+          "deleteTitle": "Eliminar subtipo",
+          "deleteConfirm": "¿Está seguro de que desea eliminar \"{{name}}\"? Esto eliminará todas las asignaciones de ítems.",
+          "deleteSuccess": "¡Subtipo eliminado correctamente!",
+          "deleteFailed": "Error al eliminar el subtipo",
+          "saveFailed": "Error al guardar el subtipo",
+          "assignSuccess": "¡Se asignaron {{count}} ítems al subtipo!",
+          "assignFailed": "Error al asignar ítems al subtipo"
+        },
+        "assignModal": {
+          "title": "Asignar ítems de catálogo al subtipo",
+          "selectLabel": "Seleccione ítems de catálogo para asignar a este subtipo:",
+          "selectedSummary": "Códigos seleccionados: {{codes}} (Total de ítems: {{items}})",
+          "stylesHeader": "Estilos",
+          "itemsCount": "Cantidad de ítems",
+          "more": "más",
+          "assignCTA": "Asignar {{count}} ítems"
+        },
+        "builder": {
+          "uploadTitlePh": "Título/motivo de la carga *",
+          "requiredUpload": "Carga requerida",
+          "descriptions": {
+            "header": "Descripciones",
+            "internal": "Descripción interna",
+            "customer": "Descripción para el cliente",
+            "installer": "Descripción para el instalador",
+            "showBoth": "Mostrar descripciones de cliente e instalador a ambos"
+          },
+          "sampleImage": {
+            "label": "Imagen de muestra",
+            "upload": "Imagen de muestra (subir desde la computadora)",
+            "alt": "Muestra"
+          },
+          "ready": {
+            "markAsReady": "Marcar como lista (habilita opciones de asignación)",
+            "saveAsBlueprint": "Guardar también en la galería como plano (permite reutilizar por otros fabricantes)",
+            "blueprintHint": "Al marcar, esta modificación también se guardará como un plano reutilizable en la galería."
+          },
+          "buttons": {
+            "back": "Atrás",
+            "cancel": "Cancelar",
+            "saveChanges": "Guardar cambios",
+            "create": "Crear modificación"
+          },
+          "toast": {
+            "updateSuccess": "Plantilla actualizada",
+            "updateFailed": "No se pudo actualizar la plantilla",
+            "createSuccessTitle": "¡Éxito!",
+            "createSuccessText": "Plantilla de modificación creada correctamente",
+            "createFailedTitle": "Error",
+            "createFailedText": "No se pudo crear la plantilla de modificación",
+            "manufacturerMissingTitle": "Error",
+            "manufacturerMissingText": "Se requiere el ID del fabricante para crear modificaciones. Asegúrese de estar en una página de fabricante válida."
+          }
+        },
+        "gallery": {
+          "title": "Galería de modificaciones",
+          "back": "Volver a la vista general",
+          "badges": {
+            "ready": "Lista",
+            "draft": "Borrador",
+            "img": "Img"
+          },
+          "tooltips": {
+            "deleteCategory": "Eliminar categoría",
+            "sampleUploaded": "Imagen de muestra subida",
+            "edit": "Editar modificación",
+            "delete": "Eliminar modificación",
+            "move": "Mover a otra categoría",
+            "useAsBlueprint": "Usar como plano",
+            "assignToManufacturer": "Asignar a artículos del fabricante"
+          },
+          "actions": {
+            "delete": "🗑️ Eliminar",
+            "move": "📁 Mover"
+          },
+          "emptyCategory": "No hay plantillas en esta categoría",
+          "noDescription": "Sin descripción"
+        },
+        "modManagement": {
+          "title": "Gestión de modificaciones",
+          "modsCount": "{{count}} modificación(es)",
+          "noCategories": "No se encontraron categorías de modificaciones. Haz clic en \"{{addLabel}}\" para crear la primera."
+        },
         "filters": {
           "allTypes": "Todos los tipos",
           "allStyles": "Todos los estilos"
@@ -1839,6 +2118,7 @@
         "buttons": {
           "uploadCsv": "📁 Subir CSV",
           "addItem": "➕ Agregar ítem",
+          "addShort": "➕ Agregar",
           "deleteSelected": "🗑️ Eliminar seleccionados",
           "deleteStyle": "🗑️ Eliminar estilo",
           "rollback": "↩️ Revertir"
@@ -1860,7 +2140,10 @@
         "actions": {
           "manageStyle": "Gestionar estilo",
           "assemblyCost": "Costo de ensamblaje",
-          "modification": "Modificación"
+          "modification": "Modificación",
+          "modificationManagementTitle": "Gestión de modificaciones globales",
+          "assignMods": "Asignar mods",
+          "assignGlobalModsTitle": "Asignar modificaciones globales"
         },
         "file": {
           "uploadCta": "📁 Subir CSV",
@@ -1876,6 +2159,9 @@
           "uploadCta": "➕ Agregar ítem",
           "modalTitle": "Entrada manual de catálogo"
         },
+        "assign": {
+          "header": "Asignar modificaciones globales"
+        },
         "bulk": {
           "selected": "{{count}} ítem(s) seleccionado(s)",
           "deleteSelected": "🗑️ Eliminar seleccionados",
@@ -1887,6 +2173,9 @@
           "deleteButton": "Eliminar {{count}} ítems",
           "deleteSuccess": "Se eliminaron correctamente {{count}} ítems",
           "deleteFailed": "Error al eliminar algunos ítems"
+        },
+        "bulkEdit": {
+          "header": "Editar en masa {{count}} ítems"
         },
         "deleteItem": {
           "modalTitle": "Eliminar ítem de catálogo",
@@ -2009,6 +2298,166 @@
         "form": {
           "validation": {
             "required": "Este campo es obligatorio"
+          }
+        }
+      }
+    }
+    ,
+    "globalMods": {
+      "ui": {
+        "buttons": {
+          "addModification": "Agregar modificación",
+          "gallery": "Galería de modificaciones",
+          "assignModification": "Asignar modificación"
+        },
+        "galleryHeader": "Galería de modificaciones globales"
+      },
+      "category": {
+        "createTitle": "Crear nueva categoría",
+        "nameLabel": "Nombre de la categoría",
+        "namePlaceholder": "Ingresa el nombre de la categoría (p. ej., 'Dimensiones del producto')",
+        "orderLabel": "Orden",
+        "actionLabel": "Acción",
+        "addButton": "Agregar categoría",
+        "imageLabel": "Imagen de la categoría",
+        "imageHint": "Sube un ícono para representar esta categoría",
+        "imageReady": "✓ Imagen lista",
+        "editTooltip": "Editar categoría y subir imagen",
+        "deleteTooltip": "Eliminar categoría (con opciones para las plantillas)"
+      },
+      "template": {
+        "blueprint": "Plano base",
+        "editTooltip": "Editar plantilla y subir imagen de muestra",
+        "createHeader": "Crear plantilla",
+        "requiredFields": "Campos obligatorios",
+        "nameLabel": "Nombre de la modificación",
+        "namePlaceholder": "Ingresa el nombre de la modificación",
+        "nameRequired": "El nombre de la modificación es obligatorio",
+        "defaultPriceLabel": "Precio por defecto",
+        "defaultPricePlaceholder": "Ingresa el precio por defecto",
+        "defaultPriceRequired": "El precio por defecto es obligatorio",
+        "categoryOptionalLabel": "Categoría (Opcional)",
+        "noSubmenu": "Sin submenú",
+        "statusLabel": "Estado",
+        "status": { "draft": "Borrador", "ready": "Listo" },
+        "saveButton": "Guardar plantilla"
+      },
+      "builder": {
+        "title": "Campos guiados",
+        "heightSlider": "Control deslizante de altura",
+        "widthSlider": "Control deslizante de ancho",
+        "depthSlider": "Control deslizante de profundidad",
+        "min": "mín",
+        "max": "máx",
+        "step": "paso",
+        "sideSelector": { "label": "Selector de lado", "placeholder": "Opciones separadas por comas ej. L,R" },
+        "quantityLimits": { "label": "Límites de cantidad", "minQty": "mín cant", "maxQty": "máx cant" },
+        "customerNotes": { "label": "Notas del cliente", "placeholder": "Texto de notas", "showInRed": "Mostrar en rojo para el cliente" },
+        "customerUpload": { "label": "Subida de archivo del cliente", "titlePlaceholder": "Título/motivo de la subida", "required": "Obligatorio" },
+        "modSampleImage": { "label": "Imagen de muestra de la modificación" },
+        "descriptions": { "internal": "Descripción interna", "customer": "Descripción para cliente", "installer": "Descripción para instalador" },
+        "sampleUpload": {
+          "title": "Subida de imagen de muestra",
+          "uploadLabel": "Subir imagen de muestra",
+          "hint": "Sube una imagen para mostrar al cliente cómo luce esta modificación",
+          "previewAlt": "Vista previa",
+          "uploaded": "✓ Imagen subida: {{name}}",
+          "none": "No se subió imagen de muestra"
+        },
+        "fieldsConfig": { "placeholder": "Configuración de campos opcional (JSON): {\"sliders\": {\"width\": {\"min\": 1, \"max\": 60, \"step\": 1}}}" },
+        "errors": {
+          "invalidRangeStep": "Rango o paso no válido",
+          "invalidQtyRange": "Rango de cantidad no válido",
+          "invalidJson": "fieldsConfig debe ser JSON válido"
+        }
+      },
+      "assign": {
+        "header": "Asignar plantilla",
+        "selectTemplate": "Selecciona plantilla",
+        "selectManufacturer": "Selecciona fabricante",
+        "scope": { "all": "Todos los ítems", "style": "Estilo", "type": "Tipo", "item": "Ítem único" },
+        "target": { "styleName": "Estilo objetivo (nombre)", "typeName": "Tipo objetivo (nombre)", "catalogItemId": "ID de ítem del catálogo", "all": "Todos", "itemWithId": "Ítem {{id}}" },
+        "override": "Sobrescribir precio (opcional)",
+        "assignButton": "Asignar",
+        "table": { "template": "Plantilla", "scope": "Ámbito", "target": "Objetivo", "price": "Precio", "actions": "", "remove": "Quitar" },
+        "none": "Sin asignaciones"
+      },
+      "modal": {
+        "add": {
+          "title": "Agregar modificación",
+          "step1Title": "Paso 1: Selecciona o crea submenú",
+          "selectExisting": "Selecciona submenú existente...",
+          "createNew": "Crear submenú nuevo",
+          "newSubmenuName": "Nombre del submenú nuevo",
+          "orderIndex": "Índice de orden",
+          "nextBuilder": "Siguiente: Constructor de plantilla",
+          "step2Title": "Paso 2: Constructor de plantilla",
+          "back": "Atrás",
+          "cancel": "Cancelar",
+          "createTemplate": "Crear plantilla"
+        },
+        "editCategory": {
+          "title": "Editar categoría",
+          "namePlaceholder": "Nombre de la categoría",
+          "orderPlaceholder": "Orden",
+          "cancel": "Cancelar",
+          "save": "Guardar"
+        },
+        "editTemplate": {
+          "title": "Editar plantilla",
+          "nameLabel": "Nombre de la plantilla",
+          "priceLabel": "Precio por defecto",
+          "sampleUploadLabel": "Subida de imagen de muestra",
+          "sampleAlt": "Muestra",
+          "ready": { "label": "Marcar como Lista (habilita opciones de asignación)", "hint": "Las modificaciones listas pueden asignarse a fabricantes y usarse en cotizaciones." },
+          "cancel": "Cancelar",
+          "saveChanges": "Guardar cambios"
+        },
+        "gallery": {
+          "title": "Galería de modificaciones",
+          "categoryImageUploaded": "Imagen de categoría subida",
+          "useAsBlueprint": "Usar como plano base",
+          "emptyCategory": "No hay plantillas en esta categoría"
+        },
+        "assign": {
+          "title": "Asignar modificación",
+          "selectManufacturer": "Selecciona fabricante...",
+          "selectTemplate": "Selecciona plantilla...",
+          "scope": { "all": "Todos los ítems", "style": "Estilo específico", "type": "Tipo específico", "item": "Ítem específico" },
+          "styleName": "Nombre del estilo",
+          "typeName": "Nombre del tipo",
+          "catalogItemId": "ID de ítem del catálogo",
+          "override": "Sobrescribir precio (opcional)",
+          "cancel": "Cancelar",
+          "assign": "Asignar"
+        },
+        "deleteCategory": {
+          "title": "Eliminar categoría: {{name}}",
+          "warning": "⚠️ Advertencia:",
+          "aboutToDelete": "Estás a punto de eliminar la categoría \"{{name}}\".",
+          "contains": "Esta categoría contiene <strong>{{count}}</strong> modificación(es). ¿Qué te gustaría hacer con ellas?",
+          "move": {
+            "label": "Mover modificaciones a otra categoría",
+            "recommended": "(Recomendado)",
+            "selectTarget": "Selecciona categoría destino...",
+            "optionWithCount": "{{name}} ({{count}} existentes)",
+            "mustSelect": "Debes seleccionar una categoría destino para mover las modificaciones."
+          },
+          "withMods": {
+            "label": "Eliminar categoría Y todas las modificaciones",
+            "permanent": "(Permanente)",
+            "danger": "⚠️ Esto eliminará permanentemente las {{count}} modificación(es) de esta categoría. Esta acción no se puede deshacer."
+          },
+          "emptySafe": "Esta categoría está vacía y puede eliminarse de forma segura.",
+          "cancel": "Cancelar",
+          "deleteOnly": "Eliminar categoría",
+          "deleteWithMods": "Eliminar categoría y modificaciones",
+          "deleteMoveMods": "Eliminar categoría y mover modificaciones",
+          "toast": {
+            "deleted": "Categoría \"{{name}}\" eliminada correctamente",
+            "deletedWithMods": "Categoría \"{{name}}\" eliminada con todas las modificaciones",
+            "deletedMoved": "Categoría \"{{name}}\" eliminada y modificaciones movidas",
+            "deleteFailed": "No se pudo eliminar la categoría"
           }
         }
       }

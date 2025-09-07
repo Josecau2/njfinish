@@ -12,6 +12,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
 import { sendFormDataToBackend } from '../../../store/slices/proposalSlice';
+import axiosInstance from '../../../helpers/axiosInstance';
+import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation';
 import CreatableSelect from 'react-select/creatable';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -110,6 +112,24 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     if (isSubmitting) return; // Prevent duplicate submissions
 
     try {
+      // First, validate sub-type requirements if there are items and a manufacturer
+      if (selectedVersion?.items && selectedVersion.items.length > 0 && formData.manufacturerId) {
+        console.log('🔍 [DEBUG] Validating sub-type requirements before acceptance in ProposalSummary');
+
+        const validation = await validateProposalSubTypeRequirements(
+          selectedVersion.items,
+          formData.manufacturerId
+        );
+
+        if (!validation.isValid) {
+          console.warn('⚠️ [DEBUG] Sub-type validation failed in ProposalSummary:', validation.missingRequirements);
+          await showSubTypeValidationError(validation.missingRequirements, Swal);
+          return;
+        }
+
+        console.log('✅ [DEBUG] Sub-type validation passed in ProposalSummary');
+      }
+
       const result = await Swal.fire({
         title: t('proposals.confirm.submitTitle', 'Confirm Quote Submission'),
         html: `
@@ -129,32 +149,59 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
       if (result.isConfirmed) {
         setIsSubmitting(true);
 
-        // Update status to accepted and lock the quote before sending
-        const updatedFormData = {
-          ...formData,
-          status: 'Proposal accepted',
-          is_locked: true
-        };
-        updateFormData(updatedFormData);
-
-        // Send with the updated data including status and lock
-        const payload = {
-          action: '1',
-          formData: { ...updatedFormData, type: '1' },
-        };
+        console.log('🎯 [DEBUG] handleAcceptOrder: Starting two-step create-then-accept process');
 
         try {
-          const response = await dispatch(sendFormDataToBackend(payload));
-          if (response.payload.success == true) {
-            Swal.fire('Success!', 'Quote accepted and sent to production!', 'success');
-            // Navigate away to prevent duplicate submissions
-            navigate('/quotes');
-          } else {
-            throw new Error(response.payload.message || 'Failed to accept order');
+          // Step 1: First create the proposal (save as draft)
+          console.log('📝 [DEBUG] Step 1: Creating proposal first');
+          const createPayload = {
+            action: '0', // Save as draft first
+            formData: { ...formData, type: '0' },
+          };
+
+          const createResponse = await dispatch(sendFormDataToBackend(createPayload));
+
+          if (!createResponse.payload.success) {
+            throw new Error(createResponse.payload.message || 'Failed to create quote');
           }
+
+          const newProposalId = createResponse.payload.data?.id;
+          console.log('✅ [DEBUG] Step 1 complete: Quote created with ID:', newProposalId);
+
+          if (!newProposalId) {
+            throw new Error('Quote created but no ID returned');
+          }
+
+          // Step 2: Now accept the newly created proposal using the acceptance API
+          console.log('🎯 [DEBUG] Step 2: Accepting the newly created quote');
+
+          const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {
+            // No additional data needed for internal acceptance
+          });
+
+          if (acceptResponse.data.success) {
+            console.log('✅ [DEBUG] Step 2 complete: Quote accepted and converted to order');
+            Swal.fire(t('common.success','Success'), t('proposals.success.acceptConverted','Quote accepted and converted to order!'), 'success');
+            // Navigate away to prevent duplicate submissions
+            navigate('/orders'); // Navigate to orders since it's now an accepted quote
+          } else {
+            throw new Error(acceptResponse.data.message || 'Failed to accept quote');
+          }
+
         } catch (error) {
-          console.error('Error accepting order:', error);
-          Swal.fire('Error!', 'Failed to accept order. Please try again.', 'error');
+          console.error('❌ [DEBUG] Error in handleAcceptOrder:', {
+            error: error.message,
+            response: error.response?.data,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
+          });
+
+          // Check if this is a sub-type validation error from backend
+          if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
+            await showSubTypeValidationError(error.response.data.missingRequirements, Swal);
+          } else {
+            Swal.fire(t('common.error','Error'), error.message || t('proposals.errors.acceptFailed','Failed to accept quote. Please try again.'), 'error');
+          }
           setIsSubmitting(false);
         }
       }
@@ -189,8 +236,8 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     if (existingEntry) {
       Swal.fire({
         icon: 'error',
-        title: 'Duplicate Manufacturer Version',
-        text: `Manufacturer Version Name "${editedVersionName}" already exists.`,
+        title: t('common.error','Error'),
+        text: t('proposals.create.summary.duplicate','Duplicate'),
       });
       return;
     }
@@ -216,7 +263,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
 
   const duplicateVersion = (index) => {
     const copy = { ...formData.manufacturersData[index] };
-    copy.versionName = `Copy of ${copy.versionName}`;
+  copy.versionName = `${t('common.copyOf','Copy of')} ${copy.versionName}`;
     updateFormData({ manufacturersData: [...formData.manufacturersData, copy] });
   };
 

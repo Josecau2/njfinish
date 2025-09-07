@@ -8,8 +8,6 @@ import PageHeader from '../../../../components/PageHeader';
 import {
   CButton,
   CModal,
-  CModalHeader,
-  CModalTitle,
   CModalBody,
   CModalFooter,
   CForm,
@@ -24,10 +22,13 @@ import {
   CFormSelect,
   CFormLabel,
   CFormCheck,
-  CBadge
+  CBadge,
+  CCard,
+  CCardHeader,
+  CCardBody
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilSortAscending, cilSortDescending } from '@coreui/icons';
+import { cilSortAscending, cilSortDescending, cilPlus } from '@coreui/icons';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
@@ -182,11 +183,29 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const [creatingModification, setCreatingModification] = useState(false);
 
 
-  const [styleImage, setStyleImage] = useState(null);
+  // Selected Items for bulk operations
   const [selectedCatalogItem, setSelectedCatalogItem] = useState([]);
 
+  // Sub-types management
+  const [subTypes, setSubTypes] = useState([]);
+  const [showSubTypeModal, setShowSubTypeModal] = useState(false);
+  const [showAssignSubTypeModal, setShowAssignSubTypeModal] = useState(false);
+  const [subTypeForm, setSubTypeForm] = useState({
+    name: '',
+    description: '',
+    requires_hinge_side: false,
+    requires_exposed_side: false
+  });
 
+  // State for grouped catalog view in assignment modal
+  const [groupedCatalogData, setGroupedCatalogData] = useState([]);
+  const [selectedCatalogCodes, setSelectedCatalogCodes] = useState([]);
+  const [editingSubType, setEditingSubType] = useState(null);
+  const [selectedSubType, setSelectedSubType] = useState(null);
+  const [subTypeAssignments, setSubTypeAssignments] = useState({});
 
+  // Style management states
+  const [styleImage, setStyleImage] = useState(null);
 
   const uniqueStyles = filterMeta.uniqueStyles || [];
   const sortedUniqueStyles = [...uniqueStyles];
@@ -240,6 +259,159 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setCatalogData([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load sub-types for this manufacturer
+  const loadSubTypes = async () => {
+    if (!id) return;
+    try {
+      const { data } = await axiosInstance.get(`/api/manufacturers/${id}/sub-types`);
+      setSubTypes(data.data || []);
+    } catch (error) {
+      console.error('Error loading sub-types:', error);
+      setSubTypes([]);
+    }
+  };
+
+  // Create or update sub-type
+  const handleSubTypeSave = async () => {
+    try {
+      if (editingSubType) {
+        await axiosInstance.put(`/api/sub-types/${editingSubType.id}`, subTypeForm);
+        Swal.fire('Success', 'Sub-type updated successfully!', 'success');
+      } else {
+        await axiosInstance.post(`/api/manufacturers/${id}/sub-types`, subTypeForm);
+        Swal.fire('Success', 'Sub-type created successfully!', 'success');
+      }
+
+      setShowSubTypeModal(false);
+      setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
+      setEditingSubType(null);
+      await loadSubTypes();
+    } catch (error) {
+      console.error('Error saving sub-type:', error);
+      Swal.fire(t('common.error'), error.response?.data?.message || t('settings.manufacturers.catalogMapping.subTypes.saveFailed'), 'error');
+    }
+  };
+
+  // Delete sub-type
+  const handleSubTypeDelete = async (subType) => {
+    const result = await Swal.fire({
+      title: t('settings.manufacturers.catalogMapping.subTypes.deleteTitle'),
+      text: t('settings.manufacturers.catalogMapping.subTypes.deleteConfirm', { name: subType.name }),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: t('common.delete'),
+      cancelButtonText: t('common.cancel')
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.delete(`/api/sub-types/${subType.id}`);
+        Swal.fire(t('common.deleted'), t('settings.manufacturers.catalogMapping.subTypes.deleteSuccess'), 'success');
+        await loadSubTypes();
+      } catch (error) {
+        console.error('Error deleting sub-type:', error);
+        Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.subTypes.deleteFailed'), 'error');
+      }
+    }
+  };
+
+  // Assign selected items to sub-type
+  const handleAssignToSubType = async () => {
+    if (!selectedSubType || selectedCatalogItem.length === 0) return;
+
+    try {
+      await axiosInstance.post(`/api/sub-types/${selectedSubType}/assign-items`, {
+        catalogItemIds: selectedCatalogItem
+      });
+
+  Swal.fire(t('common.success'), t('settings.manufacturers.catalogMapping.subTypes.assignSuccess', { count: selectedCatalogItem.length }), 'success');
+      setShowAssignSubTypeModal(false);
+      setSelectedCatalogItem([]);
+      setSelectedSubType(null);
+      await fetchCatalogData(); // Refresh to show assignments
+    } catch (error) {
+      console.error('Error assigning items:', error);
+      Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.subTypes.assignFailed'), 'error');
+    }
+  };
+
+  // Group catalog data by code for assignment modal
+  const groupCatalogDataByCode = (catalogItems) => {
+    const groups = {};
+
+    catalogItems.forEach(item => {
+      const code = item.code;
+      if (!groups[code]) {
+        groups[code] = {
+          code: code,
+          description: item.description,
+          type: item.type,
+          styles: [],
+          itemIds: []
+        };
+      }
+
+      groups[code].styles.push(item.style);
+      groups[code].itemIds.push(item.id);
+    });
+
+    // Convert to array and sort by code
+    return Object.values(groups).sort((a, b) => a.code.localeCompare(b.code));
+  };
+
+  // Handle code selection (selects all items with that code)
+  const handleCodeSelection = (code, isSelected) => {
+    const group = groupedCatalogData.find(g => g.code === code);
+    if (!group) return;
+
+    if (isSelected) {
+      // Add all item IDs for this code
+      setSelectedCatalogItem(prev => [
+        ...prev.filter(id => !group.itemIds.includes(id)), // Remove any existing
+        ...group.itemIds // Add all for this code
+      ]);
+      setSelectedCatalogCodes(prev => [...prev.filter(c => c !== code), code]);
+    } else {
+      // Remove all item IDs for this code
+      setSelectedCatalogItem(prev => prev.filter(id => !group.itemIds.includes(id)));
+      setSelectedCatalogCodes(prev => prev.filter(c => c !== code));
+    }
+  };
+
+  // Update grouped data when catalog data changes
+  useEffect(() => {
+    if (showAssignSubTypeModal && catalogData.length > 0) {
+      setGroupedCatalogData(groupCatalogDataByCode(catalogData));
+      // Load existing assignments for the selected sub-type
+      if (selectedSubType) {
+        loadExistingAssignments();
+      }
+    }
+  }, [showAssignSubTypeModal, catalogData, selectedSubType]);
+
+  // Load existing assignments for the selected sub-type
+  const loadExistingAssignments = async () => {
+    if (!selectedSubType) return;
+
+    try {
+      const { data } = await axiosInstance.get(`/api/sub-types/${selectedSubType}/assignments`);
+      const assignedItems = data.data || [];
+
+      // Extract the assigned item IDs
+      const assignedItemIds = assignedItems.map(item => item.id);
+      setSelectedCatalogItem(assignedItemIds);
+
+      // Extract the codes that are assigned
+      const assignedCodes = [...new Set(assignedItems.map(item => item.code))];
+      setSelectedCatalogCodes(assignedCodes);
+
+    } catch (error) {
+      console.error('Error loading existing assignments:', error);
+      // Don't show error to user as this is just for display purposes
     }
   };
 
@@ -560,6 +732,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   useEffect(() => {
     loadGlobalAssignments();
     loadManufacturerCategories(); // Load manufacturer-specific categories
+    loadSubTypes(); // Load sub-types for this manufacturer
   }, [id]);
 
   const flatTemplates = React.useMemo(() => {
@@ -1987,16 +2160,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onClick={() => setManualModalVisible(true)}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.addItem')}</span>
-              <span className="d-sm-none">➕ Add</span>
+              <span className="d-sm-none">{t('settings.manufacturers.catalogMapping.buttons.addShort', '➕ Add')}</span>
             </CButton>
             <CButton
               color="primary"
               size="sm"
               className="flex-shrink-0"
               onClick={() => setShowMainModificationModal(true)}
-              title="Global Modification Management"
+              title={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
             >
-              <span className="d-none d-sm-inline">Modification</span>
+              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.modification')}</span>
               <span className="d-sm-none">🔧</span>
             </CButton>
             <CButton
@@ -2004,9 +2177,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               className="flex-shrink-0"
               onClick={openAssignGlobal}
-              title="Assign global modifications"
+              title={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
             >
-              <span className="d-none d-sm-inline">Assign Mods</span>
+              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.assignMods')}</span>
               <span className="d-sm-none">🧩</span>
             </CButton>
             <CButton
@@ -2206,6 +2379,85 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           }
         }
   `}</style>
+
+      {/* Sub-Types Management Section */}
+      <CCard className="mb-3">
+        <CCardHeader className="d-flex justify-content-between align-items-center">
+          <h6 className="mb-0">{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
+          <CButton
+            color="primary"
+            size="sm"
+            onClick={() => {
+              setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
+              setEditingSubType(null);
+              setShowSubTypeModal(true);
+            }}
+          >
+            <CIcon icon={cilPlus} /> {t('settings.manufacturers.catalogMapping.subTypes.create')}
+          </CButton>
+        </CCardHeader>
+        <CCardBody>
+          {subTypes.length === 0 ? (
+            <p className="text-muted mb-0">{t('settings.manufacturers.catalogMapping.subTypes.empty')}</p>
+          ) : (
+            <div className="row g-3">
+              {subTypes.map(subType => (
+                <div key={subType.id} className="col-md-6 col-lg-4">
+                  <CCard className="h-100">
+                    <CCardBody>
+                      <h6 className="card-title">{subType.name}</h6>
+                      {subType.description && <p className="card-text small text-muted">{subType.description}</p>}
+                      <div className="mb-2">
+                        {subType.requires_hinge_side && (
+                          <CBadge color="info" className="me-1">{t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}</CBadge>
+                        )}
+                        {subType.requires_exposed_side && (
+                          <CBadge color="warning" className="me-1">{t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}</CBadge>
+                        )}
+                      </div>
+                      <div className="d-flex gap-1 flex-wrap">
+                        <CButton
+                          color="primary"
+                          size="sm"
+                          onClick={() => {
+                            setSubTypeForm({
+                              name: subType.name,
+                              description: subType.description || '',
+                              requires_hinge_side: subType.requires_hinge_side,
+                              requires_exposed_side: subType.requires_exposed_side
+                            });
+                            setEditingSubType(subType);
+                            setShowSubTypeModal(true);
+                          }}
+                        >
+                          {t('common.edit')}
+                        </CButton>
+                        <CButton
+                          color="success"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedSubType(subType.id);
+                            setShowAssignSubTypeModal(true);
+                          }}
+                        >
+                          {t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
+                        </CButton>
+                        <CButton
+                          color="danger"
+                          size="sm"
+                          onClick={() => handleSubTypeDelete(subType)}
+                        >
+                          {t('common.delete')}
+                        </CButton>
+                      </div>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              ))}
+            </div>
+          )}
+        </CCardBody>
+      </CCard>
 
       {/* Mobile-Optimized Filters and Pagination */}
       <div className="row g-2 mb-3">
@@ -2755,7 +3007,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Assign Global Mods Modal */}
       <CModal visible={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size="lg">
-        <PageHeader title="Assign Global Modifications" />
+  <PageHeader title={t('settings.manufacturers.catalogMapping.assign.header', 'Assign Global Modifications')} />
         <CModalBody>
           <div className="mb-3 d-flex align-items-center gap-2">
             <CFormCheck
@@ -3428,7 +3680,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Delete Style Modal */}
       <CModal visible={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)}>
-        <PageHeader title={`Delete Style: "${styleToDelete}"`} />
+  <PageHeader title={t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', { style: styleToDelete })} />
         <CModalBody>
           <div className="mb-3">
             <p>
@@ -3535,7 +3787,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Individual Delete Item Modal */}
       <CModal visible={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)}>
-        <PageHeader title="Delete Catalog Item" />
+  <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
         <CModalBody>
           {itemToDelete && (
             <div>
@@ -3579,7 +3831,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Bulk Delete Modal */}
       <CModal visible={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)}>
-        <PageHeader title="Delete Multiple Items" />
+  <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
         <CModalBody>
           <div>
             <p>Are you sure you want to delete <strong>{selectedItems.length}</strong> selected catalog items?</p>
@@ -3713,7 +3965,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Bulk Edit Modal */}
       <CModal visible={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size="lg">
-        <PageHeader title={`Bulk Edit ${selectedItems.length} Items`} />
+  <PageHeader title={t('settings.manufacturers.catalogMapping.bulkEdit.header', { count: selectedItems.length })} />
         <CModalBody>
           <div>
             <p>Edit the following fields for the selected {selectedItems.length} catalog items. Leave fields empty to keep existing values.</p>
@@ -3856,7 +4108,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Main Modification Management Modal */}
       <CModal visible={showMainModificationModal} onClose={() => setShowMainModificationModal(false)} size="xl">
-        <PageHeader title="Modification Management" />
+        <PageHeader title={t('settings.manufacturers.catalogMapping.modManagement.title', 'Modification Management')} />
         <CModalBody>
           {modificationView === 'cards' && (
             <div>
@@ -3867,21 +4119,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   size="lg"
                   onClick={() => { setEditingTemplateId(null); setSelectedModificationCategory(''); setNewTemplate(n=>({categoryId:'', name:'', defaultPrice:'', isReady:false, sampleImage:'', saveAsBlueprint:false})); setGuidedBuilder(makeGuidedFromFields(null)); setModificationView('addNew'); setModificationStep(1); }}
                 >
-                  Add Modification
+                  {t('globalMods.ui.buttons.addModification', 'Add Modification')}
                 </CButton>
                 <CButton
                   color="info"
                   size="lg"
                   onClick={() => setModificationView('gallery')}
                 >
-                  Modification Gallery
+                  {t('globalMods.ui.buttons.gallery', 'Gallery')}
                 </CButton>
                 <CButton
                   color="success"
                   size="lg"
                   onClick={() => setShowAssignGlobalModsModal(true)}
                 >
-                  Assign Modification
+                  {t('globalMods.ui.buttons.assignModification', 'Assign Modification')}
                 </CButton>
               </div>
 
@@ -3902,20 +4154,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
                                 onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
                               />
-                              <CBadge color="info" title="Category image uploaded">Img</CBadge>
+                              <CBadge color="info" title={t('globalMods.modal.gallery.categoryImageUploaded', 'Category image uploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
                             </>
                           )}
                           {category.name}
                         </h6>
                         <div className="d-flex align-items-center gap-2">
-                          <span className="badge bg-secondary">{category.templates?.length || 0} modifications</span>
-                          <CButton size="sm" color="warning" variant="outline" title="Edit category"
+                          <span className="badge bg-secondary">{t('settings.manufacturers.catalogMapping.modManagement.modsCount', { count: category.templates?.length || 0 })}</span>
+                          <CButton size="sm" color="warning" variant="outline" title={t('globalMods.category.editTooltip')}
                             onClick={() => { setEditCategory({ id: category.id, name: category.name || '', orderIndex: category.orderIndex || 0, image: category.image || '' }); setShowEditCategoryModal(true); }}>
-                            ✏️ Edit
+                            ✏️ {t('common.edit')}
                           </CButton>
-                          <CButton size="sm" color="danger" variant="outline" title="Delete category"
+                          <CButton size="sm" color="danger" variant="outline" title={t('globalMods.category.deleteTooltip')}
                             onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}>
-                            🗑️ Delete
+                            🗑️ {t('common.delete')}
                           </CButton>
                         </div>
                       </div>
@@ -3939,10 +4191,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
                                   <div className="d-flex gap-1 mt-1">
                                     <CBadge color={template.isReady ? 'success' : 'warning'}>
-                                      {template.isReady ? 'Ready' : 'Draft'}
+                                      {template.isReady ? t('settings.manufacturers.catalogMapping.gallery.badges.ready') : t('settings.manufacturers.catalogMapping.gallery.badges.draft')}
                                     </CBadge>
                                     {template.sampleImage && (
-                                      <CBadge color="info" title="Sample image uploaded">Img</CBadge>
+                                      <CBadge color="info" title={t('settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
                                     )}
                                   </div>
                                 </div>
@@ -3951,7 +4203,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-primary"
-                                  title="Edit modification"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.edit')}
                                   onClick={() => {
                                     // Preserve full state so PUT payload includes required fields
                                     setEditTemplate({
@@ -3973,9 +4225,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-danger"
-                                  title="Delete modification"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.delete')}
                                   onClick={() => {
-                                    if (window.confirm(`Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`)) {
+                                    if (window.confirm(t('settings.manufacturers.catalogMapping.gallery.confirmDelete', { name: template.name }))) {
                                       deleteModificationTemplate(template.id);
                                     }
                                   }}
@@ -3985,7 +4237,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-warning"
-                                  title="Move to different category"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.move')}
                                   onClick={() => {
                                     setModificationToMove(template);
                                     setShowMoveModificationModal(true);
@@ -3996,7 +4248,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-success"
-                                  title="Assign"
+                                  title={t('globalMods.modal.assign.title')}
                                   onClick={() => {
                                     setAssignFormGM(f => ({ ...f, templateId: template.id }));
                                     setShowAssignGlobalModsModal(true);
@@ -4008,7 +4260,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </div>
                           ))
                         ) : (
-                          <p className="text-muted">No modifications in this category</p>
+                          <p className="text-muted">{t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}</p>
                         )}
                       </div>
                     </div>
@@ -4016,7 +4268,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 ))}
                 {!manufacturerCategories.length && (
                   <div className="col-12 text-center">
-                    <p className="text-muted">No modification categories found. Click "Add Modification" to create your first one.</p>
+                    <p className="text-muted">{t('settings.manufacturers.catalogMapping.modManagement.noCategories', { addLabel: t('globalMods.ui.buttons.addModification', 'Add Modification') })}</p>
                   </div>
                 )}
               </div>
@@ -4027,26 +4279,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <div>
               {modificationStep === 1 && (
                 <div>
-                  <h5>Step 1: Select or Create Submenu</h5>
+          <h5>{t('globalMods.modal.add.step1Title')}</h5>
                   <div className="mb-3">
                     <CFormSelect
                       value={selectedModificationCategory}
                       onChange={e => setSelectedModificationCategory(e.target.value)}
                     >
-                      <option value="">Select existing submenu...</option>
+            <option value="">{t('globalMods.modal.add.selectExisting')}</option>
                       {/* Show manufacturer categories only for manufacturer context */}
                       {manufacturerCategories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
-                      <option value="new">Create new submenu</option>
+            <option value="new">{t('globalMods.modal.add.createNew')}</option>
                     </CFormSelect>
                   </div>
 
                   {selectedModificationCategory === 'new' && (
                     <div className="border rounded p-3 mb-3">
-                      <h6>Create New Submenu</h6>
+            <h6>{t('globalMods.modal.add.createNew')}</h6>
                       <div className="row">
                         <div className="col-md-8">
                           <CFormInput
-                            placeholder="Submenu name (e.g., 'Cabinet Modifications', 'Hardware Options')"
+              placeholder={t('globalMods.modal.add.newSubmenuName')}
                             value={newCategory.name}
                             onChange={e => setNewCategory(n => ({ ...n, name: e.target.value }))}
                           />
@@ -4054,7 +4306,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <div className="col-md-4">
                           <CFormInput
                             type="number"
-                            placeholder="Order index"
+              placeholder={t('globalMods.modal.add.orderIndex')}
                             value={newCategory.orderIndex}
                             onChange={e => setNewCategory(n => ({ ...n, orderIndex: e.target.value }))}
                           />
@@ -4329,13 +4581,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             <div className="card-body">
                               <div className="mb-2">
                                 <CFormInput
-                                  placeholder="Upload title/reason *"
+                                  placeholder={t('settings.manufacturers.catalogMapping.builder.uploadTitlePh')}
                                   value={guidedBuilder.customerUpload.title}
                                   onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
                                 />
                               </div>
                               <CFormCheck
-                                label="Required upload"
+                                label={t('settings.manufacturers.catalogMapping.builder.requiredUpload')}
                                 checked={guidedBuilder.customerUpload.required}
                                 onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
                               />
@@ -4350,27 +4602,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       <div className="col-md-8">
                         <div className="card">
                           <div className="card-header">
-                            <h6 className="mb-0">Descriptions</h6>
+                            <h6 className="mb-0">{t('settings.manufacturers.catalogMapping.builder.descriptions.header')}</h6>
                           </div>
                           <div className="card-body">
                             <div className="row">
                               <div className="col-md-4">
                                 <CFormInput
-                                  placeholder="Internal description"
+                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.internal')}
                                   value={guidedBuilder.descriptions.internal}
                                   onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
                                 />
                               </div>
                               <div className="col-md-4">
                                 <CFormInput
-                                  placeholder="Customer description"
+                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.customer')}
                                   value={guidedBuilder.descriptions.customer}
                                   onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
                                 />
                               </div>
                               <div className="col-md-4">
                                 <CFormInput
-                                  placeholder="Installer description"
+                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.installer')}
                                   value={guidedBuilder.descriptions.installer}
                                   onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
                                 />
@@ -4378,7 +4630,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </div>
                             <div className="mt-2">
                               <CFormCheck
-                                label="Show customer and installer descriptions to both"
+                                label={t('settings.manufacturers.catalogMapping.builder.descriptions.showBoth')}
                                 checked={guidedBuilder.descriptions.both}
                                 onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, both:e.target.checked}}))}
                               />
@@ -4390,7 +4642,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <div className="card">
                           <div className="card-header">
                             <CFormCheck
-                              label="Sample Image"
+                              label={t('settings.manufacturers.catalogMapping.builder.sampleImage.label')}
                               checked={guidedBuilder.modSampleImage.enabled}
                               onChange={e=>setGuidedBuilder(g=>({...g, modSampleImage:{...g.modSampleImage, enabled:e.target.checked}}))}
                             />
@@ -4398,7 +4650,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {guidedBuilder.modSampleImage.enabled && (
                             <div className="card-body">
                               <div className="mb-2">
-                                <CFormLabel>Sample Image (upload from computer)</CFormLabel>
+                                <CFormLabel>{t('settings.manufacturers.catalogMapping.builder.sampleImage.upload')}</CFormLabel>
                                 <CFormInput type="file" accept="image/*" onChange={async (e)=>{
                                   const file = e.target.files?.[0];
                                   const fname = await uploadImageFile(file);
@@ -4407,7 +4659,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </div>
                               {newTemplate.sampleImage && (
                                 <div className="p-2 bg-light border rounded" style={{ height: 200, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`} alt="Sample" style={{ maxHeight: '100%', maxWidth:'100%', objectFit:'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`} alt={t('settings.manufacturers.catalogMapping.builder.sampleImage.alt')} style={{ maxHeight: '100%', maxWidth:'100%', objectFit:'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
                                 </div>
                               )}
                             </div>
@@ -4419,26 +4671,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     {/* Ready Checkbox */}
                     <div className="border-top pt-3">
                       <CFormCheck
-                        label="Mark as Ready (enables assignment options)"
+                        label={t('settings.manufacturers.catalogMapping.builder.ready.markAsReady')}
                         checked={newTemplate.isReady}
                         onChange={e => setNewTemplate(n => ({ ...n, isReady: e.target.checked }))}
                       />
                       {/* Task 5: Blueprint checkbox for saving to gallery */}
                       <CFormCheck
-                        label="Also save to Gallery as blueprint (allows reuse by other manufacturers)"
+                        label={t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
                         checked={newTemplate.saveAsBlueprint}
                         onChange={e => setNewTemplate(n => ({ ...n, saveAsBlueprint: e.target.checked }))}
                         className="mt-2"
                       />
                       <small className="text-muted d-block mt-1">
-                        When checked, this modification will also be saved as a reusable blueprint in the gallery.
+                        {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
                       </small>
                     </div>
                   </div>
 
                   <div className="d-flex gap-2">
-                    <CButton color="secondary" onClick={() => setModificationStep(1)}>Back</CButton>
-                    <CButton color="secondary" onClick={() => setModificationView('cards')}>Cancel</CButton>
+                    <CButton color="secondary" onClick={() => setModificationStep(1)}>{t('settings.manufacturers.catalogMapping.builder.buttons.back')}</CButton>
+                    <CButton color="secondary" onClick={() => setModificationView('cards')}>{t('settings.manufacturers.catalogMapping.builder.buttons.cancel')}</CButton>
                     {editingTemplateId ? (
                       <CButton
                         color="primary"
@@ -4452,10 +4704,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             }
                             await updateModificationTemplate(editingTemplateId, categoryIdToUse);
                             resetModificationForm();
-                            Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Template updated', showConfirmButton: false, timer: 1500 });
+                            Swal.fire({ toast: true, position: 'top', icon: 'success', title: t('settings.manufacturers.catalogMapping.builder.toast.updateSuccess'), showConfirmButton: false, timer: 1500 });
                           } catch (error) {
                             console.error('Error updating template:', error);
-                            Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.response?.data?.message || 'Failed to update template', showConfirmButton: false, timer: 1800 });
+                            Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.updateFailed'), showConfirmButton: false, timer: 1800 });
                           } finally {
                             setCreatingModification(false);
                           }
@@ -4465,10 +4717,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         {creatingModification ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Saving...
+                            {t('common.saving')}
                           </>
                         ) : (
-                          'Save Changes'
+                          t('settings.manufacturers.catalogMapping.builder.buttons.saveChanges')
                         )}
                       </CButton>
                     ) : (
@@ -4478,8 +4730,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           // Task 5: Block creation if manufacturerId is missing
                           if (!id) {
                             Swal.fire({
-                              title: 'Error',
-                              text: 'Manufacturer ID is required to create modifications. Please ensure you are on a valid manufacturer page.',
+                              title: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle'),
+                              text: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText'),
                               icon: 'error'
                             });
                             return;
@@ -4503,8 +4755,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                             // Show success message
                             Swal.fire({
-                              title: 'Success!',
-                              text: 'Modification template created successfully',
+                              title: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle'),
+                              text: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessText'),
                               icon: 'success',
                               timer: 2000
                             });
@@ -4512,8 +4764,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           } catch (error) {
                             console.error('Error creating template:', error);
                             Swal.fire({
-                              title: 'Error',
-                              text: error.response?.data?.message || 'Failed to create modification template',
+                              title: t('settings.manufacturers.catalogMapping.builder.toast.createFailedTitle'),
+                              text: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.createFailedText'),
                               icon: 'error'
                             });
                           } finally {
@@ -4525,10 +4777,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         {creatingModification ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Creating...
+                            {t('common.creating')}
                           </>
                         ) : (
-                          'Create Modification'
+                          t('settings.manufacturers.catalogMapping.builder.buttons.create')
                         )}
                       </CButton>
                     )}
@@ -4541,8 +4793,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           {modificationView === 'gallery' && (
             <div>
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5>Modification Gallery</h5>
-                <CButton color="secondary" onClick={() => setModificationView('cards')}>Back to Overview</CButton>
+                <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
+                <CButton color="secondary" onClick={() => setModificationView('cards')}>{t('settings.manufacturers.catalogMapping.gallery.back')}</CButton>
               </div>
 
               <div className="row">
@@ -4556,10 +4808,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             size="sm"
                             color="danger"
                             variant="outline"
-                            title="Delete category"
+                            title={t('settings.manufacturers.catalogMapping.gallery.tooltips.deleteCategory')}
                             onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}
                           >
-                            🗑️ Delete
+                            {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
                           </CButton>
                         </div>
                       </div>
@@ -4583,14 +4835,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
                                   <div className="d-flex gap-1 mt-1">
                                     <CBadge color={template.isReady ? 'success' : 'warning'}>
-                                      {template.isReady ? 'Ready' : 'Draft'}
+                                      {template.isReady ? t('settings.manufacturers.catalogMapping.gallery.badges.ready') : t('settings.manufacturers.catalogMapping.gallery.badges.draft')}
                                     </CBadge>
                                     {template.sampleImage && (
-                                      <CBadge color="info" title="Sample image uploaded">Img</CBadge>
+                                      <CBadge color="info" title={t('settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
                                     )}
                                   </div>
                                   <div className="small text-muted">
-                                    {template.fieldsConfig?.descriptions?.customer || 'No description'}
+                                    {template.fieldsConfig?.descriptions?.customer || t('settings.manufacturers.catalogMapping.gallery.noDescription')}
                                   </div>
                                 </div>
                               </div>
@@ -4598,7 +4850,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-primary"
-                                  title="Edit modification"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.edit')}
                                   onClick={() => {
                                     // Set up edit state
                                     setEditTemplate({
@@ -4619,7 +4871,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-danger"
-                                  title="Delete modification"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.delete')}
                                   onClick={() => {
                                     if (window.confirm(`Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`)) {
                                       deleteModificationTemplate(template.id);
@@ -4631,18 +4883,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="outline-warning"
-                                  title="Move to different category"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.move')}
                                   onClick={() => {
                                     setModificationToMove(template);
                                     setShowMoveModificationModal(true);
                                   }}
                                 >
-                                  📁 Move
+                                  {t('settings.manufacturers.catalogMapping.gallery.actions.move')}
                                 </CButton>
                                 <CButton
                                   size="sm"
                                   color="primary"
-                                  title="Use as Blueprint"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.useAsBlueprint')}
                                   onClick={async () => {
                                     try {
                                       await axiosInstance.post('/api/global-mods/templates', {
@@ -4664,7 +4916,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 <CButton
                                   size="sm"
                                   color="success"
-                                  title="Assign to manufacturer items"
+                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.assignToManufacturer')}
                                   onClick={() => {
                                     // Assign this template
                                     setAssignFormGM(prev => ({...prev, templateId: template.id}));
@@ -4677,7 +4929,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </div>
                           ))
                         ) : (
-                          <p className="text-muted">No templates in this category</p>
+                          <p className="text-muted">{t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}</p>
                         )}
                       </div>
                     </div>
@@ -4688,25 +4940,25 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           )}
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowMainModificationModal(false)}>Close</CButton>
+          <CButton color="secondary" onClick={() => setShowMainModificationModal(false)}>{t('common.close', 'Close')}</CButton>
         </CModalFooter>
       </CModal>
 
       {/* Edit Category Modal */}
-      <CModal visible={showEditCategoryModal} onClose={() => setShowEditCategoryModal(false)} size="lg">
-        <PageHeader title="Edit Category" />
+  <CModal visible={showEditCategoryModal} onClose={() => setShowEditCategoryModal(false)} size="lg">
+    <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
         <CModalBody>
           <div className="row g-3">
             <div className="col-md-6">
-              <CFormLabel>Category Name</CFormLabel>
+      <CFormLabel>{t('globalMods.modal.editCategory.nameLabel', 'Category Name')}</CFormLabel>
               <CFormInput value={editCategory.name} onChange={e=>setEditCategory(c=>({...c, name:e.target.value}))} />
             </div>
             <div className="col-md-6">
-              <CFormLabel>Order</CFormLabel>
+      <CFormLabel>{t('globalMods.modal.editCategory.orderLabel', 'Order')}</CFormLabel>
               <CFormInput type="number" value={editCategory.orderIndex} onChange={e=>setEditCategory(c=>({...c, orderIndex:e.target.value}))} />
             </div>
             <div className="col-12">
-              <CFormLabel>Category Image</CFormLabel>
+      <CFormLabel>{t('globalMods.modal.editCategory.imageLabel', 'Category Image')}</CFormLabel>
               <CFormInput type="file" accept="image/*" onChange={async (e)=>{
                 const file = e.target.files?.[0];
                 const fname = await uploadImageFile(file);
@@ -4714,13 +4966,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               }} />
               {editCategory.image && (
                 <div className="mt-2 p-2 bg-light border rounded" style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`} alt="Category" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+      <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`} alt={t('globalMods.modal.editCategory.imageLabel', 'Category Image')} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
                 </div>
               )}
             </div>
           </div>
           <div className="d-flex gap-2 justify-content-end mt-3">
-            <CButton color="secondary" onClick={() => setShowEditCategoryModal(false)}>Cancel</CButton>
+    <CButton color="secondary" onClick={() => setShowEditCategoryModal(false)}>{t('globalMods.modal.editCategory.cancel', 'Cancel')}</CButton>
             <CButton color="primary" onClick={async ()=>{
               if (!editCategory.id || !editCategory.name.trim()) return;
               await axiosInstance.put(`/api/global-mods/categories/${editCategory.id}`, {
@@ -4730,33 +4982,32 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               });
               setShowEditCategoryModal(false);
               await loadGlobalGallery();
-            }}>Save</CButton>
+    }}>{t('globalMods.modal.editCategory.save', 'Save')}</CButton>
           </div>
         </CModalBody>
       </CModal>
 
       {/* Delete Category Modal */}
-      <CModal visible={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
-        <PageHeader title="Delete Category" />
+  <CModal visible={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
+    <PageHeader title={t('globalMods.modal.deleteCategory.title', { name: categoryToDelete?.name || '' })} />
         <CModalBody>
           {categoryToDelete && (
             <>
-              <p>Are you sure you want to delete the category <strong>"{categoryToDelete.name}"</strong>?</p>
+      <p><strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong> {t('globalMods.modal.deleteCategory.aboutToDelete', { name: categoryToDelete.name })}</p>
               {categoryToDelete.templates?.length > 0 && (
                 <div className="alert alert-warning">
-                  <strong>Warning:</strong> This category contains {categoryToDelete.templates.length} modification(s).
-                  Choose how to handle them:
+      <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong> {t('globalMods.modal.deleteCategory.contains', { count: categoryToDelete.templates.length })}
                   <div className="mt-2">
                     <div className="form-check">
                       <input className="form-check-input" type="radio" name="deleteMode" id="deleteCancel" value="cancel" defaultChecked />
                       <label className="form-check-label" htmlFor="deleteCancel">
-                        Cancel deletion (category has modifications)
+        {t('globalMods.modal.deleteCategory.cancel')}
                       </label>
                     </div>
                     <div className="form-check">
                       <input className="form-check-input" type="radio" name="deleteMode" id="deleteWithMods" value="withMods" />
                       <label className="form-check-label" htmlFor="deleteWithMods">
-                        Delete category and all its modifications
+        {t('globalMods.modal.deleteCategory.deleteWithMods')}
                       </label>
                     </div>
                   </div>
@@ -4765,7 +5016,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </>
           )}
           <div className="d-flex gap-2 justify-content-end mt-3">
-            <CButton color="secondary" onClick={() => setShowDeleteCategoryModal(false)}>Cancel</CButton>
+    <CButton color="secondary" onClick={() => setShowDeleteCategoryModal(false)}>{t('globalMods.modal.deleteCategory.cancel', 'Cancel')}</CButton>
             <CButton color="danger" onClick={async () => {
               if (!categoryToDelete) return;
 
@@ -4785,40 +5036,40 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setShowDeleteCategoryModal(false);
               setCategoryToDelete(null);
             }}>
-              Delete
+              {t('globalMods.modal.deleteCategory.deleteOnly', 'Delete Category')}
             </CButton>
           </div>
         </CModalBody>
       </CModal>
 
       {/* Move Modification Modal */}
-      <CModal visible={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
-        <PageHeader title="Move Modification" />
+  <CModal visible={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
+    <PageHeader title={t('common.move', 'Move Modification')} />
         <CModalBody>
           {modificationToMove && (
             <>
-              <p>Move <strong>"{modificationToMove.name}"</strong> to which category?</p>
+      <p>{t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong> {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}</p>
               <div className="mb-3">
-                <label className="form-label">Select destination category:</label>
+        <label className="form-label">{t('globalMods.modal.deleteCategory.move.selectTarget', 'Select destination category')}</label>
                 <select
                   className="form-select"
                   id="moveToCategory"
                   defaultValue={modificationToMove.categoryId || ''}
                 >
-                  <option value="">-- Uncategorized --</option>
+      <option value="">{t('common.uncategorized', '-- Uncategorized --')}</option>
                   {/* Gallery categories */}
-                  <optgroup label="Gallery Categories">
+      <optgroup label={t('common.galleryCategories', 'Gallery Categories')}>
                     {globalGallery.map(cat => (
                       <option key={`gallery-${cat.id}`} value={cat.id}>
-                        {cat.name} (Gallery)
+        {cat.name} ({t('common.gallery', 'Gallery')})
                       </option>
                     ))}
                   </optgroup>
                   {/* Manufacturer categories */}
-                  <optgroup label="Manufacturer Categories">
+      <optgroup label={t('common.manufacturerCategories', 'Manufacturer Categories')}>
                     {manufacturerCategories.map(cat => (
                       <option key={`mfg-${cat.id}`} value={cat.id}>
-                        {cat.name} (Manufacturer)
+        {cat.name} ({t('common.manufacturer', 'Manufacturer')})
                       </option>
                     ))}
                   </optgroup>
@@ -4826,14 +5077,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
               <div className="alert alert-info">
                 <small>
-                  <strong>Note:</strong> Moving a modification to a different category will update its organization.
-                  Gallery categories are blueprints, while manufacturer categories are specific to this manufacturer.
+      <strong>{t('common.note', 'Note')}:</strong> {t('settings.manufacturers.catalogMapping.gallery.tooltips.move', 'Move to different category')}
                 </small>
               </div>
             </>
           )}
           <div className="d-flex gap-2 justify-content-end mt-3">
-            <CButton color="secondary" onClick={() => setShowMoveModificationModal(false)}>Cancel</CButton>
+    <CButton color="secondary" onClick={() => setShowMoveModificationModal(false)}>{t('common.cancel')}</CButton>
             <CButton color="primary" onClick={async () => {
               if (!modificationToMove) return;
 
@@ -4841,8 +5091,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               await moveModification(modificationToMove.id, newCategoryId || null);
               setShowMoveModificationModal(false);
               setModificationToMove(null);
-            }}>
-              Move
+    }}>
+      {t('common.move', 'Move')}
             </CButton>
           </div>
         </CModalBody>
@@ -4850,32 +5100,32 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Enhanced Edit Template Modal */}
       <CModal visible={showQuickEditTemplateModal} onClose={() => setShowQuickEditTemplateModal(false)} size="xl">
-        <PageHeader title="Edit Modification" />
+        <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
         <CModalBody>
           {/* Basic Information */}
           <div className="border rounded p-3 mb-3">
-            <h6>Basic Information</h6>
+            <h6>{t('common.basicInformation', 'Basic Information')}</h6>
             <div className="row g-3">
               <div className="col-md-6">
-                <CFormLabel>Name</CFormLabel>
+                <CFormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</CFormLabel>
                 <CFormInput value={editTemplate.name} onChange={e=>setEditTemplate(t=>({...t, name:e.target.value}))} />
               </div>
               <div className="col-md-6">
-                <CFormLabel>Default Price {editTemplate.saveAsBlueprint && '(disabled for blueprints)'}</CFormLabel>
+                <CFormLabel>{t('globalMods.modal.editTemplate.priceLabel', 'Default Price')} {editTemplate.saveAsBlueprint && t('common.disabledForBlueprints', '(disabled for blueprints)')}</CFormLabel>
                 <CFormInput
                   type="number"
                   step="0.01"
                   value={editTemplate.saveAsBlueprint ? '' : editTemplate.defaultPrice}
                   onChange={e=>setEditTemplate(t=>({...t, defaultPrice:e.target.value}))}
                   disabled={editTemplate.saveAsBlueprint}
-                  placeholder={editTemplate.saveAsBlueprint ? "Blueprints don't have prices" : "Enter default price"}
+                  placeholder={editTemplate.saveAsBlueprint ? t('common.blueprintsNoPrice', "Blueprints don't have prices") : t('globalMods.template.defaultPricePlaceholder', 'Enter default price')}
                 />
               </div>
               <div className="col-md-6">
-                <CFormLabel>Status</CFormLabel>
+                <CFormLabel>{t('globalMods.template.statusLabel', 'Status')}</CFormLabel>
                 <CFormSelect value={editTemplate.isReady ? 'ready' : 'draft'} onChange={e=>setEditTemplate(t=>({...t, isReady: e.target.value === 'ready'}))}>
-                  <option value="draft">Draft</option>
-                  <option value="ready">Ready</option>
+                  <option value="draft">{t('globalMods.template.status.draft', 'Draft')}</option>
+                  <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
                 </CFormSelect>
               </div>
               <div className="col-md-6">
@@ -4888,12 +5138,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onChange={e=>setEditTemplate(t=>({...t, showToBoth: e.target.checked}))}
                   />
                   <label className="form-check-label" htmlFor="showToBoth">
-                    Show customer & installer descriptions to both
+                    {t('globalMods.builder.descriptions.customer', 'Customer description')} & {t('globalMods.builder.descriptions.installer', 'Installer description')} {t('common.showToBoth', 'shown to both')}
                   </label>
                 </div>
               </div>
               <div className="col-12">
-                <CFormLabel>Sample Image</CFormLabel>
+                <CFormLabel>{t('globalMods.modal.editTemplate.sampleUploadLabel', 'Sample Image')}</CFormLabel>
                 <CFormInput type="file" accept="image/*" onChange={async (e)=>{
                   const file = e.target.files?.[0];
                   const fname = await uploadImageFile(file);
@@ -4901,7 +5151,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 }} />
                 {editTemplate.sampleImage && (
                   <div className="mt-2 p-2 bg-light border rounded" style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`} alt="Sample" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                    <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`} alt={t('globalMods.modal.editTemplate.sampleAlt', 'Sample')} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
                   </div>
                 )}
               </div>
@@ -4910,7 +5160,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
           {/* Advanced Field Configuration */}
           <div className="border rounded p-3 mb-3">
-            <h6>Advanced Field Configuration</h6>
+            <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
 
             {/* Slider Controls */}
             <div className="row mb-3">
@@ -4918,7 +5168,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Height Slider"
+                      label={t('globalMods.builder.heightSlider', 'Height Slider')}
                       checked={editGuidedBuilder.sliders.height.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, enabled:e.target.checked}}}))}
                     />
@@ -4927,10 +5177,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <div className="card-body">
                       <div className="row">
                         <div className="col-6">
-                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.height.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.height.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:Number(e.target.value)||0}}}))} />
                         </div>
                         <div className="col-6">
-                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.height.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.height.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:Number(e.target.value)||0}}}))} />
                         </div>
                       </div>
                     </div>
@@ -4941,7 +5191,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Width Slider"
+                      label={t('globalMods.builder.widthSlider', 'Width Slider')}
                       checked={editGuidedBuilder.sliders.width.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, enabled:e.target.checked}}}))}
                     />
@@ -4950,10 +5200,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <div className="card-body">
                       <div className="row">
                         <div className="col-6">
-                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.width.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.width.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:Number(e.target.value)||0}}}))} />
                         </div>
                         <div className="col-6">
-                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.width.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.width.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:Number(e.target.value)||0}}}))} />
                         </div>
                       </div>
                     </div>
@@ -4964,7 +5214,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Depth Slider"
+                      label={t('globalMods.builder.depthSlider', 'Depth Slider')}
                       checked={editGuidedBuilder.sliders.depth.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, enabled:e.target.checked}}}))}
                     />
@@ -4973,10 +5223,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <div className="card-body">
                       <div className="row">
                         <div className="col-6">
-                          <CFormInput placeholder="Min" type="number" value={editGuidedBuilder.sliders.depth.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.depth.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:Number(e.target.value)||0}}}))} />
                         </div>
                         <div className="col-6">
-                          <CFormInput placeholder="Max" type="number" value={editGuidedBuilder.sliders.depth.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:Number(e.target.value)||0}}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.depth.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:Number(e.target.value)||0}}}))} />
                         </div>
                       </div>
                     </div>
@@ -4991,7 +5241,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Side Selector"
+                      label={t('globalMods.builder.sideSelector.label', 'Side Selector')}
                       checked={editGuidedBuilder.sideSelector.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, enabled:e.target.checked}}))}
                     />
@@ -4999,7 +5249,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {editGuidedBuilder.sideSelector.enabled && (
                     <div className="card-body">
                       <CFormInput
-                        placeholder="Options (comma-separated: L,R)"
+                        placeholder={t('globalMods.builder.sideSelector.placeholder', 'Options (comma-separated: L,R)')}
                         value={Array.isArray(editGuidedBuilder.sideSelector.options) ? editGuidedBuilder.sideSelector.options.join(',') : 'L,R'}
                         onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, options:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}}))}
                       />
@@ -5011,7 +5261,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Quantity Range"
+                      label={t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
                       checked={editGuidedBuilder.qtyRange.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, enabled:e.target.checked}}))}
                     />
@@ -5020,10 +5270,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <div className="card-body">
                       <div className="row">
                         <div className="col-6">
-                          <CFormInput placeholder="Min qty" type="number" value={editGuidedBuilder.qtyRange.min} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:Number(e.target.value)||1}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')} type="number" value={editGuidedBuilder.qtyRange.min} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:Number(e.target.value)||1}}))} />
                         </div>
                         <div className="col-6">
-                          <CFormInput placeholder="Max qty" type="number" value={editGuidedBuilder.qtyRange.max} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:Number(e.target.value)||10}}))} />
+                          <CFormInput placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')} type="number" value={editGuidedBuilder.qtyRange.max} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:Number(e.target.value)||10}}))} />
                         </div>
                       </div>
                     </div>
@@ -5038,7 +5288,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Customer Notes Field"
+                      label={t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
                       checked={editGuidedBuilder.notes.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, enabled:e.target.checked}}))}
                     />
@@ -5046,13 +5296,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {editGuidedBuilder.notes.enabled && (
                     <div className="card-body">
                       <CFormInput
-                        placeholder="Placeholder text"
+                        placeholder={t('globalMods.builder.customerNotes.placeholder', 'Placeholder text')}
                         value={editGuidedBuilder.notes.placeholder}
                         onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, placeholder:e.target.value}}))}
                       />
                       <CFormCheck
                         className="mt-2"
-                        label="Show in red"
+                        label={t('globalMods.builder.customerNotes.showInRed', 'Show in red')}
                         checked={editGuidedBuilder.notes.showInRed}
                         onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, showInRed:e.target.checked}}))}
                       />
@@ -5064,7 +5314,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div className="card">
                   <div className="card-header">
                     <CFormCheck
-                      label="Customer File Upload"
+                      label={t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
                       checked={editGuidedBuilder.customerUpload.enabled}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, enabled:e.target.checked}}))}
                     />
@@ -5072,13 +5322,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {editGuidedBuilder.customerUpload.enabled && (
                     <div className="card-body">
                       <CFormInput
-                        placeholder="Upload title"
+                        placeholder={t('globalMods.builder.customerUpload.titlePlaceholder', 'Upload title')}
                         value={editGuidedBuilder.customerUpload.title}
                         onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
                       />
                       <CFormCheck
                         className="mt-2"
-                        label="Required"
+                        label={t('globalMods.builder.customerUpload.required', 'Required')}
                         checked={editGuidedBuilder.customerUpload.required}
                         onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
                       />
@@ -5091,27 +5341,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {/* Descriptions */}
             <div className="card">
               <div className="card-header">
-                <h6 className="mb-0">Descriptions</h6>
+                <h6 className="mb-0">{t('globalMods.builder.title', 'Guided Builder')}</h6>
               </div>
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-4">
                     <CFormInput
-                      placeholder="Internal description"
+                      placeholder={t('globalMods.builder.descriptions.internal', 'Internal description')}
                       value={editGuidedBuilder.descriptions.internal}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
                     />
                   </div>
                   <div className="col-md-4">
                     <CFormInput
-                      placeholder="Customer description"
+                      placeholder={t('globalMods.builder.descriptions.customer', 'Customer description')}
                       value={editGuidedBuilder.descriptions.customer}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
                     />
                   </div>
                   <div className="col-md-4">
                     <CFormInput
-                      placeholder="Installer description"
+                      placeholder={t('globalMods.builder.descriptions.installer', 'Installer description')}
                       value={editGuidedBuilder.descriptions.installer}
                       onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
                     />
@@ -5122,7 +5372,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </div>
 
           <div className="d-flex gap-2 justify-content-end mt-3">
-            <CButton color="secondary" onClick={() => setShowQuickEditTemplateModal(false)}>Cancel</CButton>
+            <CButton color="secondary" onClick={() => setShowQuickEditTemplateModal(false)}>{t('globalMods.modal.add.cancel', 'Cancel')}</CButton>
             <CButton color="primary" onClick={async ()=>{
               if (!editTemplate.id || !editTemplate.name.trim()) return;
               // Build fieldsConfig from edit guided builder
@@ -5138,9 +5388,200 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               });
               setShowQuickEditTemplateModal(false);
               await loadGlobalGallery();
-            }}>Save Changes</CButton>
+            }}>{t('globalMods.modal.editTemplate.saveChanges', 'Save Changes')}</CButton>
           </div>
         </CModalBody>
+      </CModal>
+
+      {/* Sub-Type Create/Edit Modal */}
+      <CModal
+        visible={showSubTypeModal}
+        onClose={() => {
+          setShowSubTypeModal(false);
+          setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
+          setEditingSubType(null);
+        }}
+        size="lg"
+      >
+        <PageHeader
+          title={editingSubType ? t('settings.manufacturers.catalogMapping.subTypes.editTitle') : t('settings.manufacturers.catalogMapping.subTypes.create')}
+          className="rounded-0 border-0"
+          cardClassName="rounded-0 border-bottom"
+        />
+        <CModalBody>
+          <CForm>
+            <div className="mb-3">
+              <CFormLabel>{t('common.name', 'Name')} *</CFormLabel>
+              <CFormInput
+                value={subTypeForm.name}
+                onChange={(e) => setSubTypeForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder={t('settings.manufacturers.catalogMapping.subTypes.namePlaceholder', 'e.g., Single Door Cabinets')}
+              />
+            </div>
+            <div className="mb-3">
+              <CFormLabel>{t('common.description')}</CFormLabel>
+              <CFormTextarea
+                rows={3}
+                value={subTypeForm.description}
+                onChange={(e) => setSubTypeForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder={t('settings.manufacturers.catalogMapping.subTypes.descriptionPlaceholder', 'Optional description for this sub-type')}
+              />
+            </div>
+            <div className="mb-3">
+              <CFormCheck
+                id="requiresHingeSide"
+                label={t('settings.manufacturers.catalogMapping.subTypes.requiresHingeSelection')}
+                checked={subTypeForm.requires_hinge_side}
+                onChange={(e) => setSubTypeForm(prev => ({ ...prev, requires_hinge_side: e.target.checked }))}
+              />
+              <small className="text-muted">
+                {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeHelp')}
+              </small>
+            </div>
+            <div className="mb-3">
+              <CFormCheck
+                id="requiresExposedSide"
+                label={t('settings.manufacturers.catalogMapping.subTypes.requiresExposedSelection')}
+                checked={subTypeForm.requires_exposed_side}
+                onChange={(e) => setSubTypeForm(prev => ({ ...prev, requires_exposed_side: e.target.checked }))}
+              />
+              <small className="text-muted">
+                {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedHelp')}
+              </small>
+            </div>
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setShowSubTypeModal(false);
+              setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
+              setEditingSubType(null);
+            }}
+          >
+            {t('common.cancel')}
+          </CButton>
+          <CButton
+            color="primary"
+            onClick={handleSubTypeSave}
+            disabled={!subTypeForm.name.trim()}
+          >
+            {editingSubType ? t('common.update', 'Update') : t('common.create', 'Create')} {t('settings.manufacturers.catalogMapping.subTypes.singular', 'Sub-Type')}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Assign Items to Sub-Type Modal */}
+      <CModal
+        visible={showAssignSubTypeModal}
+        onClose={() => {
+          setShowAssignSubTypeModal(false);
+          setSelectedSubType(null);
+          setSelectedCatalogItem([]);
+          setSelectedCatalogCodes([]);
+        }}
+        size="xl"
+      >
+        <PageHeader
+          title={t('settings.manufacturers.catalogMapping.subTypes.assignModal.title', 'Assign Catalog Items to Sub-Type')}
+          className="rounded-0 border-0"
+          cardClassName="rounded-0 border-bottom"
+        />
+        <CModalBody>
+          <div className="mb-3">
+            <CFormLabel>{t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel', 'Select catalog items to assign to this sub-type:')}</CFormLabel>
+            <small className="d-block text-muted mb-3">
+              {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', { codes: selectedCatalogCodes.length, items: selectedCatalogItem.length })}
+            </small>
+          </div>
+
+          <div className="table-responsive" style={{ maxHeight: '400px' }}>
+            <CTable hover>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell>
+                    <CFormCheck
+                      checked={selectedCatalogCodes.length === groupedCatalogData.length && groupedCatalogData.length > 0}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          // Select all codes
+                          const allCodes = groupedCatalogData.map(group => group.code);
+                          const allItemIds = groupedCatalogData.flatMap(group => group.itemIds);
+                          setSelectedCatalogCodes(allCodes);
+                          setSelectedCatalogItem(allItemIds);
+                        } else {
+                          // Deselect all
+                          setSelectedCatalogCodes([]);
+                          setSelectedCatalogItem([]);
+                        }
+                      }}
+                    />
+                  </CTableHeaderCell>
+                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.code')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.description')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.subTypes.assignModal.itemsCount', 'Items Count')}</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>
+                {groupedCatalogData.map(group => (
+                  <CTableRow key={group.code}>
+                    <CTableDataCell>
+                      <CFormCheck
+                        checked={selectedCatalogCodes.includes(group.code)}
+                        onChange={(e) => {
+                          handleCodeSelection(group.code, e.target.checked);
+                        }}
+                      />
+                    </CTableDataCell>
+                    <CTableDataCell>{group.code}</CTableDataCell>
+                    <CTableDataCell>{group.description}</CTableDataCell>
+                    <CTableDataCell>{group.type}</CTableDataCell>
+                    <CTableDataCell>
+                      <small className="text-muted">
+                        {group.styles.slice(0, 3).join(', ')}
+                        {group.styles.length > 3 && ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}
+                      </small>
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      <CBadge color="info">{group.itemIds.length}</CBadge>
+                    </CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setShowAssignSubTypeModal(false);
+              setSelectedSubType(null);
+              setSelectedCatalogItem([]);
+              setSelectedCatalogCodes([]);
+            }}
+          >
+            {t('common.cancel')}
+          </CButton>
+          <CButton
+            color="primary"
+            onClick={() => {
+              if (selectedSubType && selectedCatalogItem.length > 0) {
+                handleAssignToSubType();
+                setShowAssignSubTypeModal(false);
+                setSelectedSubType(null);
+                setSelectedCatalogItem([]);
+                setSelectedCatalogCodes([]);
+              }
+            }}
+            disabled={selectedCatalogItem.length === 0}
+          >
+            {t('settings.manufacturers.catalogMapping.subTypes.assignModal.assignCTA', { count: selectedCatalogItem.length })}
+          </CButton>
+        </CModalFooter>
       </CModal>
 
     </div>

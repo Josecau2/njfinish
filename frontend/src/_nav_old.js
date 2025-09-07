@@ -58,7 +58,7 @@ const useNavItems = () => {
         ];
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: 'Create Proposal', to: '/quotes/create' });
+          proposalItems.push({ component: CNavItem, name: 'Create Quote', to: '/quotes/create' });
         }
 
   // Contracts: visible only to non-contractors
@@ -226,7 +226,7 @@ export default useNavItems;
       let role = user.role_id;
       console.log('User data:', user);
       console.log('Role from localStorage:', role);
-      
+
       if (!role) {
         try {
           const axiosInstance = (await import('./helpers/axiosInstance')).default;
@@ -236,11 +236,11 @@ export default useNavItems;
         } catch (error) {
           console.error('Failed to fetch user role:', error);
           console.warn('User not found in database, clearing localStorage and defaulting to basic navigation');
-          
+
           // Clear invalid user data from localStorage
           localStorage.removeItem('user');
           localStorage.removeItem('token');
-          
+
           // Set a default role for basic navigation or redirect to login
           role = ROLE_USER; // or redirect to login page
         }
@@ -268,7 +268,7 @@ export default useNavItems;
       if (isContractor) {
         console.log('Adding contractor navigation items');
         console.log('Contractor modules:', contractorModules);
-        
+
         // Only show base dashboard (always visible)
         const contractorNav = [];
 
@@ -280,7 +280,7 @@ export default useNavItems;
             icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
             items: [
               { component: CNavItem, name: 'View Proposals', to: '/quotes' },
-              { component: CNavItem, name: 'Create Proposal', to: '/quotes/create' },
+              { component: CNavItem, name: 'Create Quote', to: '/quotes/create' },
             ],
           });
         }
@@ -318,7 +318,7 @@ export default useNavItems;
             name: 'Proposals',
             icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
             items: [
-              { component: CNavItem, name: 'New Proposal', to: '/quotes' },
+              { component: CNavItem, name: 'New Quote', to: '/quotes' },
               { component: CNavItem, name: 'Contracts', to: '/contracts' },
             ],
           },
@@ -362,7 +362,7 @@ export default useNavItems;
           name: 'Proposals',
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
           items: [
-            { component: CNavItem, name: 'New Proposal', to: '/quotes' },
+            { component: CNavItem, name: 'New Quote', to: '/quotes' },
             { component: CNavItem, name: 'Contracts', to: '/contracts' },
           ],
         })

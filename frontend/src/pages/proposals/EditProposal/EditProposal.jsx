@@ -51,6 +51,7 @@ import withContractorScope from '../../../components/withContractorScope';
 import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/PageHeader';
+import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation';
 
 const statusOptions = [
   { label: 'Draft', value: 'Draft' },
@@ -175,7 +176,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching proposal:', err);
+  console.error('Error fetching quote:', err);
         setLoading(false);
       });
   }, [id]);
@@ -215,7 +216,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     if (manufacturersData.length > 0) {
       manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersById[item.manufacturer]) {
-          // Don't load full catalog data for proposal editing - only manufacturer info needed
+          // Don't load full catalog data for quote editing - only manufacturer info needed
           dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
         }
       });
@@ -353,6 +354,24 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
 
   const handleAcceptOrder = async () => {
     try {
+      // Pre-validate sub-type requirements like Create flow
+      const manufacturerIdForValidation =
+        selectedVersion?.manufacturerData?.id ||
+        selectedVersion?.manufacturer ||
+        formData?.manufacturerId ||
+        formData?.manufacturersData?.[selectedVersionIndex]?.manufacturer;
+
+      if (selectedVersion?.items && selectedVersion.items.length > 0 && manufacturerIdForValidation) {
+        const validation = await validateProposalSubTypeRequirements(
+          selectedVersion.items,
+          manufacturerIdForValidation
+        );
+        if (!validation.isValid) {
+          await showSubTypeValidationError(validation.missingRequirements, Swal);
+          return;
+        }
+      }
+
       const result = await Swal.fire({
         title: t('proposals.confirm.submitTitle', 'Confirm Quote Submission'),
         html: `
@@ -369,7 +388,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
         focusCancel: true,
       });
       if (result.isConfirmed) {
-        sendToBackend({ ...formData, status: 'Proposal accepted', is_locked: true }, 'accept');
+  sendToBackend({ ...formData, status: 'Proposal accepted', is_locked: true }, 'accept');
       }
     } catch (_) {
       // no-op
@@ -393,24 +412,48 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
       const payload = { action, formData: finalData };
       const response = await dispatch(sendFormDataToBackend(payload));
       if (response.payload?.success === true) {
-        Swal.fire('Success!', 'Quote saved successfully!', 'success');
+        Swal.fire(t('common.success','Success'), t('proposals.toast.successSend','Quote saved successfully'), 'success');
         navigate('/quotes');
-      } else if (response.error) {
-        const msg = response.error.message || response.payload?.message || 'Failed to save quote';
-        if (/locked/i.test(msg)) {
-          Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
+      } else {
+        const apiMsg = response.payload?.message || response.error?.message || '';
+        const missing = response.payload?.missingRequirements;
+        if (missing && Array.isArray(missing) && missing.length > 0) {
+          await showSubTypeValidationError(missing, Swal);
+          return;
+        }
+        if (action === 'accept' && typeof apiMsg === 'string' && /(missing|required selections|is missing)/i.test(apiMsg)) {
+          await Swal.fire({
+            icon: 'warning',
+            title: t('proposals.errors.cannotAccept','Cannot accept quote'),
+            text: apiMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+          });
+          return;
+        }
+        if (/locked/i.test(apiMsg)) {
+          Swal.fire(t('common.warning','Warning'), t('proposals.lockedStatus.description'), 'warning');
         } else {
-          Swal.fire('Error', msg, 'error');
+          Swal.fire(t('common.error','Error'), apiMsg || t('proposals.toast.errorGeneric'), 'error');
         }
       }
     } catch (error) {
       console.error('Error sending data to backend:', error);
       const status = error?.response?.status;
-      const message = error?.response?.data?.message || error?.message || 'Failed to save quote';
+      const message = error?.response?.data?.message || error?.message || t('proposals.toast.errorGeneric');
       if (status === 403 && /locked/i.test(message)) {
-        Swal.fire('Cannot Edit', t('proposals.lockedStatus.description'), 'warning');
+        Swal.fire(t('common.warning','Warning'), t('proposals.lockedStatus.description'), 'warning');
+      } else if (status === 400) {
+        const missing = error?.response?.data?.missingRequirements;
+        if (missing && Array.isArray(missing) && missing.length > 0) {
+          await showSubTypeValidationError(missing, Swal);
+        } else if (/(missing|required selections|is missing)/i.test(message)) {
+          Swal.fire(t('proposals.errors.cannotAccept','Cannot accept quote'), message, 'warning');
+        } else {
+          Swal.fire(t('common.error','Error'), message, 'error');
+        }
       } else {
-        Swal.fire('Error', message, 'error');
+        Swal.fire(t('common.error','Error'), message, 'error');
       }
     }
   };

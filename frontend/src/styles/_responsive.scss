@@ -1,0 +1,30 @@
+/* Visibility helpers */
+.u-desktop { display:block !important; }
+.u-mobile  { display:none  !important; }
+@media (max-width: 576px) { .u-desktop{display:none!important;} .u-mobile{display:block!important;} }
+
+/* Container queries (components adapt to parent width) */
+.container-query { container-type: inline-size; }  /* enable @container rules */
+
+/* Global anti-overflow guardrails */
+html{ box-sizing:border-box; } *,*::before,*::after{ box-sizing:inherit; }
+img,svg,video,canvas,iframe{ max-width:100%; height:auto; display:block; }
+table{ width:100%; border-collapse:collapse; }
+
+/* Long strings never cause sideways scroll */
+.wrap-anywhere{ overflow-wrap:anywhere; }
+.wrap-break{ overflow-wrap:break-word; }
+
+/* Flex/Grid children may shrink (prevents overflow) */
+.flex > *, .grid > *{ min-width:0; }
+
+/* Avoid the 100vw trap unless you truly need full-bleed */
+.full-bleed{ width:100%; }
+
+/* Tables: either stack or local-scroll, never page-scroll horizontally */
+.table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+@media (max-width:576px){
+  .table--stack tr{ display:grid; grid-template-columns:auto 1fr; gap:.25rem .5rem; }
+  .table--stack td{ display:contents; }
+  .table--stack td::before{ content:attr(data-label); color:#6b7280; }
+}

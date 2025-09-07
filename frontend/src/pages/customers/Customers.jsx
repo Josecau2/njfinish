@@ -55,17 +55,17 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
   const formatAddress = (customer) => {
     const parts = [];
-    
+
     // Add street address
     if (customer.address) {
       parts.push(customer.address);
     }
-    
+
     // Add apt/suite if present
     if (customer.aptOrSuite) {
       parts.push(customer.aptOrSuite);
     }
-    
+
     // Create city, state zip line
     const cityStateZip = [];
     if (customer.city) {
@@ -77,11 +77,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
     if (customer.zipCode) {
       cityStateZip.push(customer.zipCode);
     }
-    
+
     if (cityStateZip.length > 0) {
       parts.push(cityStateZip.join(', '));
     }
-    
+
     return parts.length > 0 ? parts.join(', ') : null;
   };
 
@@ -266,7 +266,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Desktop Table */}
       {!loading && !error && (
-        <div className="table-responsive-md">
+        <div className="table-responsive-md desktop-only">
           <CCard className="data-table-card">
             <CTable hover>
               <CTableHead>
@@ -355,7 +355,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
-        <div className="mobile-card-view">
+        <div className="mobile-card-view mobile-only">
           {sortedFilteredCustomers?.length === 0 ? (
             <CCard>
               <CCardBody className="text-center py-5">

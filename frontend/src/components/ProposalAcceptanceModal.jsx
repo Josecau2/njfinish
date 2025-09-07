@@ -21,12 +21,12 @@ import { useDispatch } from 'react-redux';
 import { acceptProposal } from '../store/slices/proposalSlice';
 import Swal from 'sweetalert2';
 
-const ProposalAcceptanceModal = ({ 
-  show, 
-  onClose, 
-  proposal, 
+const ProposalAcceptanceModal = ({
+  show,
+  onClose,
+  proposal,
   onAcceptanceComplete,
-  isContractor = false 
+  isContractor = false
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -37,15 +37,23 @@ const ProposalAcceptanceModal = ({
   const [error, setError] = useState('');
 
   const handleAccept = async () => {
+    console.log('🎯 [DEBUG] ProposalAcceptanceModal handleAccept called:', {
+      proposalId: proposal?.id,
+      isExternalAcceptance,
+      externalSignerName,
+      externalSignerEmail,
+      timestamp: new Date().toISOString()
+    });
+
     setError('');
-    
+
     // Validation for external acceptance
   if (isExternalAcceptance) {
       if (!externalSignerName.trim() && !externalSignerEmail.trim()) {
     setError(t('proposalAcceptance.errors.needNameOrEmail'));
         return;
       }
-      
+
       if (externalSignerEmail && !/\S+@\S+\.\S+/.test(externalSignerEmail)) {
     setError(t('proposalAcceptance.errors.invalidEmail'));
         return;
@@ -53,12 +61,12 @@ const ProposalAcceptanceModal = ({
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const acceptanceData = {
         id: proposal.id
       };
-      
+
       if (isExternalAcceptance) {
         if (externalSignerName.trim()) {
           acceptanceData.externalSignerName = externalSignerName.trim();
@@ -68,20 +76,30 @@ const ProposalAcceptanceModal = ({
         }
       }
 
-      await dispatch(acceptProposal(acceptanceData)).unwrap();
-      
+      console.log('📤 [DEBUG] Dispatching acceptProposal with data:', acceptanceData);
+
+      const result = await dispatch(acceptProposal(acceptanceData)).unwrap();
+
+      console.log('✅ [DEBUG] acceptProposal succeeded:', result);
+
       Swal.fire({
         title: t('common.success'),
         text: t('proposals.toast.successAccept'),
         icon: 'success',
         timer: 2000
       });
-      
+
+      console.log('🔄 [DEBUG] Calling onAcceptanceComplete');
       onAcceptanceComplete?.();
       onClose();
-      
+
     } catch (error) {
-  console.error('Acceptance error:', error);
+  console.error('❌ [DEBUG] Acceptance error:', {
+    error: error.message || error,
+    proposalId: proposal?.id,
+    stack: error.stack,
+    timestamp: new Date().toISOString()
+  });
   setError(error.message || t('proposalAcceptance.errors.failedAccept'));
     } finally {
       setIsSubmitting(false);
@@ -109,7 +127,7 @@ const ProposalAcceptanceModal = ({
             {error}
           </CAlert>
         )}
-        
+
         <div className="mb-4">
           <h6>{t('proposalAcceptance.details')}</h6>
           <p className="mb-1"><strong>{t('proposalAcceptance.labels.customer')}:</strong> {proposal?.customer?.name || t('common.na')}</p>
@@ -170,15 +188,15 @@ const ProposalAcceptanceModal = ({
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton 
-          color="secondary" 
+        <CButton
+          color="secondary"
           onClick={handleClose}
           disabled={isSubmitting}
         >
           {t('common.cancel')}
         </CButton>
-        <CButton 
-          color="success" 
+        <CButton
+          color="success"
           onClick={handleAccept}
           disabled={isSubmitting}
           className="d-flex align-items-center gap-2"

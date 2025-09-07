@@ -30,14 +30,14 @@ const ContractorDashboard = () => {
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem('user') || '{}');
   }, []);
-  
+
   const groupName = user.group?.name || 'Unknown Group';
-  
+
   // Stabilize groupId to prevent re-renders
   const groupId = useMemo(() => {
     return user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null;
   }, [user.group?.id, user.group_id, user.groupId, user.group?.group_id]);
-  
+
   const modulesList = useMemo(() => {
     const raw = user.group?.modules;
     try {
@@ -69,7 +69,7 @@ const ContractorDashboard = () => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch real stats from APIs
   // axiosInstance includes base URL and auth by default
 
@@ -208,8 +208,8 @@ const ContractorDashboard = () => {
                     <CCardBody>
                       <div className="d-flex flex-wrap gap-2">
                         {modulesList.includes('proposals') && (
-                          <CButton 
-                            color="primary" 
+                          <CButton
+                            color="primary"
                             variant="outline"
                             onClick={() => navigate('/quotes/create')}
                           >
@@ -217,16 +217,16 @@ const ContractorDashboard = () => {
                           </CButton>
                         )}
                         {modulesList.includes('customers') && (
-                          <CButton 
-                            color="success" 
+                          <CButton
+                            color="success"
                             variant="outline"
                             onClick={() => navigate('/customers/add')}
                           >
                             {t('nav.addCustomer')}
                           </CButton>
                         )}
-                        <CButton 
-                          color="info" 
+                        <CButton
+                          color="info"
                           variant="outline"
                           onClick={() => navigate('/profile')}
                         >

@@ -8,6 +8,13 @@ import { logout } from '../store/slices/authSlice'
 import { useLocation } from 'react-router-dom'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
 
+// Import global style layers after CoreUI
+import '../styles/_tokens.scss'
+import '../styles/_mixins.scss'
+import '../styles/_modern.scss'
+import '../styles/_coreui-overrides.scss'
+import '../styles/_responsive.scss'
+
 const DefaultLayout = () => {
   const user = useSelector((s) => s.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
@@ -16,6 +23,21 @@ const DefaultLayout = () => {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const location = useLocation()
+
+  // Set compact density on mobile
+  useEffect(() => {
+    const updateDensity = () => {
+      if (window.innerWidth <= 576) {
+        document.documentElement.dataset.density = 'compact'
+      } else {
+        delete document.documentElement.dataset.density
+      }
+    }
+    
+    updateDensity()
+    window.addEventListener('resize', updateDensity)
+    return () => window.removeEventListener('resize', updateDensity)
+  }, [])
 
   useEffect(() => {
     // Don't check terms until we have user data

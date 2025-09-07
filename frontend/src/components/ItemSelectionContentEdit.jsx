@@ -46,6 +46,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [customItems, setCustomItems] = useState([]);
     const [modificationModalVisible, setModificationModalVisible] = useState(false);
     const [selectedItemIndexForMod, setSelectedItemIndexForMod] = useState(null);
+    const [selectedItemIdForMod, setSelectedItemIdForMod] = useState(null);
     const [modificationType, setModificationType] = useState('existing');
     const [existingModQty, setExistingModQty] = useState(1);
     const [existingModNote, setExistingModNote] = useState('');
@@ -79,8 +80,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
     // Cache style items per manufacturer/style to avoid refetching and re-render churn
     const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
-    // Cache calculation results to prevent recalculation when only selection changes
-    const styleCalculationCache = useRef(new Map()); // key: `${styleId}:${itemsFingerprint}` => calculated total
     // Track last applied summary per version to avoid state update loops
     const lastSummaryRef = useRef({});
 
@@ -102,6 +101,47 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [modificationItems, setModificationItems] = useState('');
     const [itemModificationID, setItemModificationID] = useState('');
+
+    // Helper: update existing items with type info from catalog
+    const updateExistingItemsWithTypes = useCallback((catalogData) => {
+        if (!Array.isArray(catalogData) || catalogData.length === 0) return;
+        const codeToType = new Map();
+        catalogData.forEach(ci => {
+            if (ci.code && ci.type) codeToType.set(String(ci.code).trim(), ci.type);
+        });
+
+        // Compute against current formData to avoid invoking child state updates inside parent setState updater
+        const mdCurrent = Array.isArray(formData?.manufacturersData) ? [...formData.manufacturersData] : [];
+        const vIdxCurrent = mdCurrent.findIndex(m => m.versionName === selectVersion?.versionName);
+        if (vIdxCurrent === -1) return;
+        const itemsCurrent = Array.isArray(mdCurrent[vIdxCurrent].items) ? mdCurrent[vIdxCurrent].items : [];
+
+        let changed = false;
+        const updatedItems = itemsCurrent.map(it => {
+            if (it?.type) return it;
+            const t = codeToType.get(String(it?.code || '').trim());
+            if (t) { changed = true; return { ...it, type: t }; }
+            return it;
+        });
+        if (!changed) return;
+
+        // 1) Update local table immediately (child state)
+        setTableItemsEdit(updatedItems);
+        // 2) Inform parent selectedVersion outside of parent's setState updater
+        if (setSelectedVersion && selectVersion) {
+            startTransition(() => {
+                setSelectedVersion({ ...selectVersion, items: updatedItems });
+            });
+        }
+        // 3) Persist to formData (parent state) using updater without additional child updates inside
+        setFormData(prev => {
+            const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+            const vIdx = md.findIndex(m => m.versionName === selectVersion?.versionName);
+            if (vIdx === -1) return prev;
+            md[vIdx] = { ...md[vIdx], items: updatedItems };
+            return { ...prev, manufacturersData: md };
+        });
+    }, [formData, selectVersion, setFormData, setSelectedVersion]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -151,120 +191,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         return `${items}#${customs}#${factors}`;
     }, [filteredItems, customItems, userGroupMultiplier, manufacturerCostMultiplier, discountPercent, isAssembled]);
 
-    // Calculate what the total proposal price would be if a different style was selected
-    // This simulates the full pricing flow by looking up actual catalog prices for each item in the new style
-    const calculateTotalForStyle = useCallback((stylePrice, styleId) => {
-        // Check cache first to avoid recalculation when items haven't changed
-        const cacheKey = `${styleId}:${itemsFingerprint}`;
-        if (styleCalculationCache.current.has(cacheKey)) {
-            return styleCalculationCache.current.get(cacheKey);
-        }
-
-        try {
-            // Start with current custom items total (unchanged by style switch)
-            const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
-
-            // Calculate modifications total (unchanged by style switch)
-            const modificationsTotal = filteredItems.reduce((sum, item) => {
-                if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
-                const mods = item.modifications.reduce((modSum, mod) => modSum + Number(mod.price || 0) * Number(mod.qty || 1), 0);
-                return sum + mods;
-            }, 0);
-
-            // For cabinet items, we need to look up actual prices in the new style
-            let cabinetPartsTotal = 0;
-            let assemblyFeeTotal = 0;
-            let eligible = 0;
-
-            // Try to get catalog data for the comparison style from cache
-            const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
-            if (currentManufacturerId && styleId) {
-                const cacheKey = `${currentManufacturerId}:${styleId}`;
-                const catalogData = styleItemsCacheRef.current.get(cacheKey);
-
-                if (catalogData && catalogData.length > 0) {
-                    // Build lookup map by item code
-                    const byCode = new Map(catalogData.map(ci => [String(ci.code).trim(), ci]));
-
-                    // Calculate totals based on actual catalog prices for this style
-            filteredItems.forEach(item => {
-                        const match = byCode.get(String(item.code).trim());
-                        if (match) {
-                eligible += 1;
-                            // Apply the full pricing flow: catalog → manufacturer multiplier → user group multiplier
-                            const basePrice = Number(match.price) || 0;
-                            const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
-                            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
-
-                            const qty = Number(item.qty || 1);
-                            cabinetPartsTotal += finalPrice * qty;
-
-                            // Calculate assembly fee if assembled
-                            if (isAssembled && item?.includeAssemblyFee) {
-                                const assemblyCost = match.styleVariantsAssemblyCost;
-                                let assemblyFee = 0;
-                                if (assemblyCost) {
-                                    const feePrice = parseFloat(assemblyCost.price || 0);
-                                    const feeType = assemblyCost.type;
-                                    if (feeType === 'flat' || feeType === 'fixed') {
-                                        assemblyFee = feePrice;
-                                    } else if (feeType === 'percentage') {
-                                        assemblyFee = (finalPrice * feePrice) / 100;
-                                    } else {
-                                        assemblyFee = feePrice;
-                                    }
-                                }
-                                assemblyFeeTotal += assemblyFee * qty;
-                            }
-                        }
-                        // If item not found in new style, it contributes $0 (unavailable)
-                    });
-                } else {
-                    // Fallback: use style price as approximation when catalog data not available
-                    const newStylePrice = Number(stylePrice || 0);
-                    const manufacturerAdjustedStylePrice = newStylePrice * Number(manufacturerCostMultiplier || 1);
-                    const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
-                    const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
-                    cabinetPartsTotal = finalStylePrice * totalItemCount;
-                    eligible = filteredItems.length > 0 ? 1 : 0;
-
-                    // Assembly fees proportional to price change
-                    const currentStylePrice = Number(selectedStyleData?.price || 0);
-                    const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);
-                    const currentFinalStylePrice = currentManufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
-                    const priceRatio = currentFinalStylePrice > 0 ? finalStylePrice / currentFinalStylePrice : 1;
-                    const currentAssemblyTotal = isAssembled
-                        ? filteredItems.reduce((sum, item) => {
-                            const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
-                            const qty = Number(item?.qty || 1);
-                            return sum + unitFee * qty;
-                        }, 0)
-                        : 0;
-                    assemblyFeeTotal = currentAssemblyTotal * priceRatio;
-                }
-            }
-
-            // Calculate totals following the same flow as the main calculation
-            const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
-            const discountAmount = (styleTotal * Number(discountPercent || 0)) / 100;
-            const totalAfterDiscount = styleTotal - discountAmount;
-            const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
-            const deliveryFee = (eligible > 0 ? rawDeliveryFee : 0);
-            const totalWithDelivery = totalAfterDiscount + deliveryFee;
-            const taxAmount = (totalWithDelivery * Number(defaultTaxValue || 0)) / 100;
-            const grandTotal = totalWithDelivery + taxAmount;
-
-            // Cache the result
-            const finalCacheKey = `${styleId}:${itemsFingerprint}`;
-            styleCalculationCache.current.set(finalCacheKey, grandTotal);
-
-            return grandTotal;
-        } catch (error) {
-            console.error('Error calculating total for style:', error);
-            return 0;
-        }
-    }, [customItems, filteredItems, manufacturerCostMultiplier, userGroupMultiplier, isAssembled, selectedStyleData, preloadingComplete, formData, taxes, discountPercent, itemsFingerprint]);
-
     const hasEligibleInStyle = useCallback((styleId) => {
         const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
         if (!currentManufacturerId || !styleId) return filteredItems.length > 0 ? true : false;
@@ -313,7 +239,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 return { ...prev, manufacturersData: md };
             });
             if (setSelectedVersion && selectVersion) {
-                setSelectedVersion({ ...selectVersion, items: itemsWithAssemblyFlag });
+                startTransition(() => {
+                    setSelectedVersion({ ...selectVersion, items: itemsWithAssemblyFlag });
+                });
             }
         } else {
             setTableItemsEdit([]); // fallback in case data is missing
@@ -556,7 +484,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 : 0;
 
             const rawDeliveryFee = Number(selectVersion?.manufacturerData?.deliveryFee || 0);
-            const deliveryFee = (versionItems.length > 1) ? rawDeliveryFee : 0;
+            // Include delivery fee when there is at least one line item in the version
+            const deliveryFee = (versionItems.length > 0) ? rawDeliveryFee : 0;
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
 
             // (debug logs removed)
@@ -606,14 +535,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             customItems: matchedCustomItems,
                             summary: nextSummary
                         };
-
-                        // (debug logs removed)
-
-                        // Also update selectVersion if setSelectedVersion is available
-                        if (setSelectedVersion && selectVersion) {
-                            setSelectedVersion({ ...selectVersion, summary: nextSummary });
-                        }
-
                         return updatedManufacturer;
                     }
                     return manufacturer;
@@ -626,6 +547,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 lastSummaryRef.current[versionKey] = nextHash;
                 return { ...prev, manufacturersData: updated };
             });
+            // Update the selectedVersion snapshot separately to avoid nested updates during another component's render
+            if (setSelectedVersion && selectVersion) {
+                startTransition(() => {
+                    setSelectedVersion({ ...selectVersion, summary: nextSummary });
+                });
+            }
         } catch (error) {
             // Error calculating totals
         }
@@ -691,6 +618,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 if (cancelled) return;
                 const catalogData = res?.data?.catalogData || [];
                 styleItemsCacheRef.current.set(cacheKey, catalogData);
+                // Enrich current items with type for Specs visibility
+                updateExistingItemsWithTypes(catalogData);
             } catch (error) {
                 const status = error?.response?.status;
                 if (status === 401 || status === 403) {
@@ -818,6 +747,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 id: item.id,
                 code: item.code,
                 description: item.description,
+                type: item.type, // used for Specs badge
                 qty: 1,
                 // Track base and applied multiplier for idempotent recalculation later
                 originalPrice: basePrice,
@@ -915,32 +845,52 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         setCustomItems(prev => prev.filter((_, i) => i !== index));
     };
 
-    const updateModification = (filteredIdx, updatedModifications) => {
-        // Update modificationsMap
-        setModificationsMap(prev => ({
-            ...prev,
-            [filteredIdx]: updatedModifications
-        }));
+    // Update modifications for a specific item instance by row index (handles duplicates)
+    const updateItemMods = (rowIndex, updatedModifications) => {
+        if (typeof rowIndex !== 'number') return;
 
-        const matchedItems = filteredItems.filter(
-            (item) => item.selectVersion === selectVersion?.versionName
-        );
+        // Use row index as the key to handle duplicate items independently
+        const itemKey = `row_${rowIndex}`;
+        setModificationsMap(prev => ({ ...prev, [itemKey]: updatedModifications }));
 
-        // Update tableItems
-        const itemToUpdate = matchedItems[filteredIdx];
-        const itemIndexInTable = tableItems?.findIndex(item => item?.id === itemToUpdate?.id);
-        if (itemIndexInTable !== -1) {
-            const updatedTableItems = [...tableItems];
-            updatedTableItems[itemIndexInTable] = {
-                ...updatedTableItems[itemIndexInTable],
-                modifications: updatedModifications,
-            };
-            setTableItemsEdit(updatedTableItems);
+        // Update local table items by index
+        setTableItemsEdit(prevItems => {
+            const next = Array.isArray(prevItems) ? [...prevItems] : [];
+            if (rowIndex >= 0 && rowIndex < next.length) {
+                next[rowIndex] = { ...next[rowIndex], modifications: updatedModifications };
+            }
+            return next;
+        });
+
+        // Update backing formData structure for current version
+        setFormData(prev => {
+            const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+            const vIdx = md.findIndex(m => m.versionName === selectVersion?.versionName);
+            if (vIdx !== -1) {
+                const items = Array.isArray(md[vIdx].items) ? [...md[vIdx].items] : [];
+                if (rowIndex >= 0 && rowIndex < items.length) {
+                    items[rowIndex] = { ...items[rowIndex], modifications: updatedModifications };
+                }
+                md[vIdx] = { ...md[vIdx], items };
+            }
+            return { ...prev, manufacturersData: md };
+        });
+
+        // Update selectedVersion snapshot if provided
+        if (setSelectedVersion && selectVersion?.items) {
+            const updatedItems = [...selectVersion.items];
+            if (rowIndex >= 0 && rowIndex < updatedItems.length) {
+                updatedItems[rowIndex] = { ...updatedItems[rowIndex], modifications: updatedModifications };
+                startTransition(() => {
+                    setSelectedVersion({ ...selectVersion, items: updatedItems });
+                });
+            }
         }
     };
 
     const handleOpenModificationModal = (index, id) => {
         setSelectedItemIndexForMod(index);
+        setSelectedItemIdForMod(`row_${index}`); // Use row-based key
         setModificationModalVisible(true);
         setItemModificationID(id);
         fetchCatalogItems(id);
@@ -977,8 +927,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     // New handler for ModificationBrowserModal (accepts row index and payload)
     const handleApplyModification = (index, modificationData) => {
-        const targetIndex = typeof index === 'number' ? index : selectedItemIndexForMod;
-        const mods = modificationsMap[targetIndex] || [];
+        const targetRowIndex = typeof index === 'number' ? index : selectedItemIndexForMod;
+        const itemKey = `row_${targetRowIndex}`;
+        const mods = modificationsMap[itemKey] || [];
 
         // Transform the modal payload into existing structure used in tables
         const newMod = {
@@ -997,11 +948,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         };
 
         const updatedMods = [...mods, newMod];
-        updateModification(targetIndex, updatedMods);
+        updateItemMods(targetRowIndex, updatedMods);
         setModificationModalVisible(false);
     };
-
-
     const handleSaveModification = () => {
         setValidationAttempted(true);
 
@@ -1015,10 +964,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             }
         }
 
-        const mods = modificationsMap[selectedItemIndexForMod] || [];
+        const rowKey = `row_${selectedItemIndexForMod}`;
+        const mods = modificationsMap[rowKey] || [];
         const selectedModObj = modificationItems.find(mod => mod.id == selectedExistingMod);
 
-    const newMod = modificationType === 'existing'
+        const newMod = modificationType === 'existing'
             ? {
                 type: 'existing',
                 modificationId: selectedExistingMod,
@@ -1031,13 +981,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 type: 'custom',
                 qty: customModQty,
                 price: customModPrice,
-        taxable: isUserAdmin ? customModTaxable : true,
+                taxable: isUserAdmin ? customModTaxable : true,
                 note: customModNote,
                 name: customModName
             };
 
         const updatedMods = [...mods, newMod];
-        updateModification(selectedItemIndexForMod, updatedMods);
+        updateItemMods(selectedItemIndexForMod, updatedMods);
         setModificationModalVisible(false);
         setExistingModQty(1);
         setExistingModNote('');
@@ -1054,10 +1004,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     };
 
-    const handleDeleteModification = (filteredIdx, modIdx) => {
-        const updated = [...modificationsMap[filteredIdx]];
+    const handleDeleteModification = (rowIndex, modIdx) => {
+        const rowKey = `row_${rowIndex}`;
+        const current = modificationsMap[rowKey] || [];
+        const updated = [...current];
         updated.splice(modIdx, 1);
-        updateModification(filteredIdx, updated);
+        updateItemMods(rowIndex, updated);
     };
 
     const existingModifications = [
@@ -1247,37 +1199,82 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     };
 
     const updateHingeSide = (index, selectedSide) => {
+        // Update local working items array
         setTableItemsEdit(prevItems => {
-            const updated = prevItems.map((item, i) => {
-                if (i !== index) return item;
-                return {
-                    ...item,
-                    hingeSide: selectedSide,
-                };
-            });
-            dispatch(setTableItemsRedux(updated));
+            const updated = prevItems.map((item, i) => (
+                i === index ? { ...item, hingeSide: selectedSide } : item
+            ));
+            // Defer Redux to keep UI responsive
+            startTransition(() => dispatch(setTableItemsRedux(updated)));
             return updated;
         });
+
+        // Update backing formData structure for the current version
+        setFormData(prev => {
+            const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+            const vIdx = md.findIndex(m => m.versionName === selectVersion?.versionName);
+            if (vIdx !== -1) {
+                const items = Array.isArray(md[vIdx].items) ? [...md[vIdx].items] : [];
+                if (index >= 0 && index < items.length) {
+                    items[index] = { ...items[index], hingeSide: selectedSide };
+                }
+                md[vIdx] = { ...md[vIdx], items };
+            }
+            return { ...prev, manufacturersData: md };
+        });
+
+        // Update the selectVersion snapshot consumed by CatalogTableEdit
+        if (setSelectedVersion && selectVersion?.items) {
+            const svItems = [...selectVersion.items];
+            if (index >= 0 && index < svItems.length) {
+                svItems[index] = { ...svItems[index], hingeSide: selectedSide };
+            }
+            startTransition(() => {
+                setSelectedVersion({ ...selectVersion, items: svItems });
+            });
+        }
     };
 
 
     const updateExposedSide = (index, selectedSide) => {
-
+        // Update local working items array
         setTableItemsEdit(prevItems => {
-            const updated = prevItems.map((item, i) => {
-                if (i !== index) return item;
-                return {
-                    ...item,
-                    exposedSide: selectedSide,
-                };
-            });
-            dispatch(setTableItemsRedux(updated));
+            const updated = prevItems.map((item, i) => (
+                i === index ? { ...item, exposedSide: selectedSide } : item
+            ));
+            // Defer Redux to keep UI responsive
+            startTransition(() => dispatch(setTableItemsRedux(updated)));
             return updated;
         });
+
+        // Update backing formData structure for the current version
+        setFormData(prev => {
+            const md = Array.isArray(prev?.manufacturersData) ? [...prev.manufacturersData] : [];
+            const vIdx = md.findIndex(m => m.versionName === selectVersion?.versionName);
+            if (vIdx !== -1) {
+                const items = Array.isArray(md[vIdx].items) ? [...md[vIdx].items] : [];
+                if (index >= 0 && index < items.length) {
+                    items[index] = { ...items[index], exposedSide: selectedSide };
+                }
+                md[vIdx] = { ...md[vIdx], items };
+            }
+            return { ...prev, manufacturersData: md };
+        });
+
+        // Update the selectVersion snapshot consumed by CatalogTableEdit
+        if (setSelectedVersion && selectVersion?.items) {
+            const svItems = [...selectVersion.items];
+            if (index >= 0 && index < svItems.length) {
+                svItems[index] = { ...svItems[index], exposedSide: selectedSide };
+            }
+            startTransition(() => {
+                setSelectedVersion({ ...selectVersion, items: svItems });
+            });
+        }
     };
 
     return (
-        <div>
+        <div className="item-selection-edit">
             {!pricingReady && (
                 <div className="alert alert-info my-3" role="status">
                     Applying your pricing... Please wait.
@@ -1290,7 +1287,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         <div className="current-style-section" style={{ minWidth: '250px', flex: '0 0 auto' }}>
                             <h5 className="mb-3">{t('proposalUI.currentStyle')}</h5>
                             <div className="current-style-content d-flex gap-4 align-items-start">
-                                <div className="current-style-image" style={{ width: '100px' }}>
+                                <div className="current-style-image" style={{ width: '100px', flexShrink: 0 }}>
                                     <img
                                         src={
                                             selectedStyleData.styleVariants?.[0]?.image
@@ -1428,7 +1425,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     /* Collapsed/Compact View - List format */
                                                     <div className="styles-compact-list">
                                                         {stylesMeta.map((styleItem, index) => {
-                                                            const totalPrice = calculateTotalForStyle(styleItem.price, styleItem.id);
                                                             const isCurrentStyle = styleItem.id === selectedStyleData?.id;
                                                             const hasAnyItems = filteredItems.length > 0;
                                                             const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
@@ -1443,15 +1439,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                 >
                                                                     <div className="style-info">
                                                                         <span className="style-name">{styleItem.style}</span>
-                                                                        <span className="price-label">
-                                                                            {isCurrentStyle
-                                                                                ? t('proposalUI.styleComparison.currentTotal')
-                                                                                : t('proposalUI.styleComparison.totalIfSelected')
-                                                                            }
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className={`style-price ${isCurrentStyle ? 'current' : 'alternate'}`}>
-                                                                        ${totalPrice.toFixed(2)}
+                                                                        {isCurrentStyle && (
+                                                                            <span className="current-style-indicator">
+                                                                                {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
+                                                                            </span>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             );
@@ -1516,15 +1508,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
                                                                     }}>
                                                                         <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>{styleItem.style}</div>
-                                                                        <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
-                                                                            {styleItem.id === selectedStyleData?.id
-                                                                                ? t('proposalUI.styleComparison.currentTotal')
-                                                                                : t('proposalUI.styleComparison.totalIfSelected')
-                                                                            }
-                                                                        </div>
-                                                                        <strong style={{ color: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#28a745' }}>
-                                                                            ${calculateTotalForStyle(styleItem.price, styleItem.id).toFixed(2)}
-                                                                        </strong>
+                                                                        {styleItem.id === selectedStyleData?.id && (
+                                                                            <div style={{ fontSize: '0.75rem', color: '#1a73e8', marginBottom: '0.25rem' }}>
+                                                                                {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             );
@@ -1556,7 +1544,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 updateQty={readOnly ? () => {} : updateQty}
                 handleOpenModificationModal={readOnly ? () => {} : handleOpenModificationModal}
                 handleDelete={readOnly ? () => {} : handleDelete}
-                updateModification={readOnly ? () => {} : updateModification}
                 setModificationsMap={setModificationsMap}
                 modificationsMap={modificationsMap}
                 handleDeleteModification={readOnly ? () => {} : handleDeleteModification}
@@ -1753,29 +1740,31 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             </td>
                         </tr>
 
-                        <tr>
-                            <th className="bg-light">{t('proposalUI.summary.discountPct')}</th>
-                            <td className="text-center">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={selectVersion?.summary?.discountPercent || "0"}
-                                    onChange={(e) => {
-                                        const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
-                                        setDiscountPercent(val);
-                                    }}
-                                    style={{
-                                        border: 'none',
-                                        outline: 'none',
-                                        background: 'transparent',
-                                        width: '60px',
-                                        textAlign: 'right',
-                                        fontWeight: '500',
-                                    }}
-                                />
-                            </td>
-                        </tr>
+                        {isUserAdmin && (
+                            <tr>
+                                <th className="bg-light">{t('proposalUI.summary.discountPct')}</th>
+                                <td className="text-center">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={selectVersion?.summary?.discountPercent || "0"}
+                                        onChange={(e) => {
+                                            const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
+                                            setDiscountPercent(val);
+                                        }}
+                                        style={{
+                                            border: 'none',
+                                            outline: 'none',
+                                            background: 'transparent',
+                                            width: '60px',
+                                            textAlign: 'right',
+                                            fontWeight: '500',
+                                        }}
+                                    />
+                                </td>
+                            </tr>
+                        )}
 
                         <tr>
                             <th className="bg-light">{t('proposalDoc.priceSummary.total')}</th>
@@ -1786,7 +1775,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
                         <tr>
                             <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
-                            <td className="text-center">${(versionItems.length > 1 ? (selectVersion?.summary?.deliveryFee || "0") : "0")}</td>
+                            <td className="text-center">${(versionItems.length > 0 ? (selectVersion?.summary?.deliveryFee || "0") : "0")}</td>
                         </tr>
 
                         <tr>

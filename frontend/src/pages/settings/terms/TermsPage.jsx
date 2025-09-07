@@ -5,6 +5,7 @@ import PageHeader from '../../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
+import Swal from 'sweetalert2'
 
 const TermsPage = () => {
   const { t } = useTranslation()
@@ -37,9 +38,20 @@ const TermsPage = () => {
     setSaving(true)
     try {
       await saveTerms({ content, bumpVersion: bumpVersion ? true : false })
+      // Success feedback
+      await Swal.fire({
+        icon: 'success',
+        title: bumpVersion ? t('settings.terms.publishedTitle','Published') : t('common.saved','Saved'),
+        text: bumpVersion
+          ? t('settings.terms.publishedMessage','A new version of your Terms & Conditions has been published.')
+          : t('settings.terms.updatedMessage','Your Terms & Conditions have been updated.'),
+        timer: 1600,
+        showConfirmButton: false
+      })
       await load()
     } catch (error) {
       console.error('Save terms error:', error)
+      Swal.fire({ icon: 'error', title: t('common.error','Error'), text: error?.response?.data?.message || t('settings.terms.saveError','Failed to save terms. Please try again.') })
     } finally { setSaving(false) }
   }
 

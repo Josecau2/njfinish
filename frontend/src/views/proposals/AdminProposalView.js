@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../helpers/axiosInstance';
 import { useParams, useNavigate } from 'react-router-dom';
 import { decodeParam } from '../../utils/obfuscate';
@@ -53,10 +54,11 @@ const AdminProposalView = () => {
   const proposalId = decodeParam(rawProposalId);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const [proposal, setProposal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   // Status definitions
   const statusDefinitions = {
@@ -71,6 +73,21 @@ const AdminProposalView = () => {
     completed: { label: 'Completed', color: 'success', icon: cilCheckCircle }
   };
 
+  const getStatusLabel = (status) => {
+    const map = {
+      draft: t('proposals.status.draft', 'Draft'),
+      sent: t('proposals.status.sent', 'Sent'),
+      pending: t('adminQuote.status.pending', 'Pending'),
+      approved: t('adminQuote.status.approved', 'Approved'),
+      accepted: t('proposals.status.accepted', 'Accepted'),
+      rejected: t('proposals.status.rejected', 'Rejected'),
+      expired: t('proposals.status.expired', 'Expired'),
+      in_progress: t('adminQuote.status.in_progress', 'In Progress'),
+      completed: t('adminQuote.status.completed', 'Completed')
+    };
+    return map[status] || status || t('proposals.status.draft', 'Draft');
+  };
+
   useEffect(() => {
     if (proposalId) {
       fetchProposalDetails();
@@ -81,7 +98,7 @@ const AdminProposalView = () => {
     try {
       setLoading(true);
       if (!proposalId) {
-        throw new Error('No proposal ID provided');
+        throw new Error(t('adminQuote.noId','No quote ID provided'));
       }
   const { data } = await axiosInstance.get(`/api/quotes/proposalByID/${proposalId}`);
       setProposal(data);
@@ -150,7 +167,7 @@ const AdminProposalView = () => {
         summary: combinedSummary
       };
     } catch (error) {
-      console.error('Error parsing manufacturer data:', error);
+  console.error('Error parsing manufacturer data:', error);
       return { items: [], totalAmount: 0, summary: {} };
     }
   };
@@ -159,13 +176,13 @@ const AdminProposalView = () => {
   const parsedData = proposal ? parseProposalData(proposal) : { items: [], totalAmount: 0, summary: {} };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    
+  if (!dateString) return t('common.na','N/A');
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
       if (isNaN(date.getTime())) {
-        return 'N/A';
+        return t('common.na','N/A');
       }
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -175,32 +192,32 @@ const AdminProposalView = () => {
         minute: '2-digit'
       });
     } catch (error) {
-      console.error('Error formatting date:', error);
-      return 'N/A';
+  console.error('Error formatting date:', error);
+      return t('common.na','N/A');
     }
   };
 
   const getStatusTimeline = (proposal) => {
     const timeline = [];
-    
+
     timeline.push({
       status: 'created',
-      label: 'Created',
+      label: t('adminQuote.labels.created','Created'),
       date: proposal.created_at,
       icon: cilClipboard,
       color: 'secondary',
-      description: 'Proposal was created and added to the system'
+      description: t('adminQuote.timeline.created','Quote was created and added to the system')
     });
 
     // Add sent status if it exists
     if (proposal.sent_at) {
       timeline.push({
         status: 'sent',
-        label: 'Sent to Customer',
+        label: t('adminQuote.labels.sentToCustomer','Sent to Customer'),
         date: proposal.sent_at,
         icon: cilPaperPlane,
         color: 'info',
-        description: 'Proposal was sent to the customer for review'
+        description: t('adminQuote.timeline.sent','Quote was sent to the customer for review')
       });
     }
 
@@ -208,11 +225,11 @@ const AdminProposalView = () => {
     if (proposal.accepted_at) {
       timeline.push({
         status: 'accepted',
-        label: 'Accepted',
+        label: t('adminQuote.labels.accepted','Accepted'),
         date: proposal.accepted_at,
         icon: cilCheckCircle,
         color: 'success',
-        description: 'Proposal was formally accepted'
+        description: t('adminQuote.timeline.accepted','Quote was formally accepted')
       });
     }
 
@@ -220,13 +237,13 @@ const AdminProposalView = () => {
     if (proposal.status && !['draft', 'sent', 'accepted'].includes(proposal.status)) {
       timeline.push({
         status: proposal.status,
-        label: statusDefinitions[proposal.status]?.label || proposal.status,
+  label: getStatusLabel(proposal.status),
         date: proposal.updated_at,
         icon: getStatusIcon(proposal.status),
         color: getStatusColor(proposal.status),
-        description: proposal.status === 'rejected' ? 'Proposal was rejected' :
-                    proposal.status === 'expired' ? 'Proposal has expired' :
-                    `Proposal status changed to ${proposal.status}`
+  description: proposal.status === 'rejected' ? t('adminQuote.timeline.rejected','Quote was rejected') :
+        proposal.status === 'expired' ? t('adminQuote.timeline.expired','Quote has expired') :
+        t('adminQuote.timeline.changed','Proposal status changed to {{status}}',{ status: proposal.status })
       });
     }
 
@@ -246,7 +263,7 @@ const AdminProposalView = () => {
       <CContainer className="py-4">
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <CSpinner color="primary" size="lg" />
-          <span className="ms-3">Loading proposal details...</span>
+          <span className="ms-3">{t('adminQuote.loading','Loading proposal details...')}</span>
         </div>
       </CContainer>
     );
@@ -261,7 +278,7 @@ const AdminProposalView = () => {
         </CAlert>
         <CButton color="secondary" onClick={() => navigate(-1)}>
           <CIcon icon={cilArrowLeft} className="me-1" />
-          Go Back
+          {t('common.back','Back')}
         </CButton>
       </CContainer>
     );
@@ -272,11 +289,11 @@ const AdminProposalView = () => {
       <CContainer className="py-4">
         <CAlert color="warning">
           <CIcon icon={cilInfo} className="me-2" />
-          Proposal not found.
+          {t('adminQuote.ui.notFound','Proposal not found.')}
         </CAlert>
         <CButton color="secondary" onClick={() => navigate(-1)}>
           <CIcon icon={cilArrowLeft} className="me-1" />
-          Go Back
+          {t('common.back','Back')}
         </CButton>
       </CContainer>
     );
@@ -300,7 +317,7 @@ const AdminProposalView = () => {
               <div>
                 <h3 className="mb-1">
                   <CIcon icon={cilBriefcase} className="me-2" />
-                  {proposal.title || `Proposal #${proposal.id}`}
+                  {proposal.title || t('publicQuote.titleNumber', { id: proposal.id })}
                 </h3>
                 <div className="d-flex align-items-center gap-3 text-muted">
                   <span>
@@ -313,7 +330,7 @@ const AdminProposalView = () => {
                   </span>
                   <CBadge color={getStatusColor(proposal.status)} size="lg">
                     <CIcon icon={getStatusIcon(proposal.status)} className="me-1" />
-                    {statusDefinitions[proposal.status]?.label || proposal.status || 'Draft'}
+                    {getStatusLabel(proposal.status)}
                   </CBadge>
                 </div>
               </div>
@@ -321,11 +338,11 @@ const AdminProposalView = () => {
             <div className="d-flex gap-2">
               <CButton color="outline-secondary" size="sm" onClick={handlePrint}>
                 <CIcon icon={cilPrint} className="me-1" />
-                Print
+                {t('adminQuote.ui.print','Print')}
               </CButton>
               <CButton color="outline-primary" size="sm" onClick={handleDownload}>
                 <CIcon icon={cilCloudDownload} className="me-1" />
-                Download PDF
+                {t('proposalCommon.downloadPdf','Download PDF')}
               </CButton>
             </div>
           </div>
@@ -337,47 +354,47 @@ const AdminProposalView = () => {
           {/* Main Content */}
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Proposal Overview</strong>
+              <strong>{t('adminQuote.ui.overview','Quote Overview')}</strong>
             </CCardHeader>
             <CCardBody>
               <CRow className="mb-4">
                 <CCol md={6}>
                   <h4 className="text-success mb-3">{formatCurrency(parsedData.totalAmount)}</h4>
-                  
+
                   <CListGroup flush>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">Proposal ID</span>
+                      <span className="text-muted">{t('adminQuote.ui.proposalId','Quote ID')}</span>
                       <strong>#{proposal.id}</strong>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">Customer</span>
-                      <span>{proposal.customer?.name || 'N/A'}</span>
+                      <span className="text-muted">{t('adminQuote.ui.customer','Customer')}</span>
+                      <span>{proposal.customer?.name || t('common.na','N/A')}</span>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">Contractor Group</span>
-                      <span>{proposal.UserGroup?.name || 'N/A'}</span>
+                      <span className="text-muted">{t('adminQuote.ui.contractorGroup','Contractor Group')}</span>
+                      <span>{proposal.UserGroup?.name || t('common.na','N/A')}</span>
                     </CListGroupItem>
                   </CListGroup>
                 </CCol>
                 <CCol md={6}>
                   <CListGroup flush>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">Created Date</span>
+                      <span className="text-muted">{t('adminQuote.ui.createdDate','Created Date')}</span>
                       <span>{formatDate(proposal.created_at)}</span>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">Last Updated</span>
+                      <span className="text-muted">{t('adminQuote.ui.updatedDate','Last Updated')}</span>
                       <span>{formatDate(proposal.updated_at)}</span>
                     </CListGroupItem>
                     {proposal.sent_at && (
                       <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">Sent Date</span>
+                        <span className="text-muted">{t('adminQuote.ui.sentDate','Sent Date')}</span>
                         <span className="text-info">{formatDate(proposal.sent_at)}</span>
                       </CListGroupItem>
                     )}
                     {proposal.accepted_at && (
                       <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">Accepted Date</span>
+                        <span className="text-muted">{t('adminQuote.ui.acceptedDate','Accepted Date')}</span>
                         <span className="text-success">{formatDate(proposal.accepted_at)}</span>
                       </CListGroupItem>
                     )}
@@ -387,7 +404,7 @@ const AdminProposalView = () => {
 
               {proposal.description && (
                 <div className="mt-4">
-                  <h6 className="text-muted mb-2">Description</h6>
+                  <h6 className="text-muted mb-2">{t('common.description','Description')}</h6>
                   <div className="bg-light p-3 rounded">
                     <p className="mb-0">{proposal.description}</p>
                   </div>
@@ -402,7 +419,7 @@ const AdminProposalView = () => {
               <CCardHeader>
                 <strong>
                   <CIcon icon={cilClipboard} className="me-2" />
-                  Proposal Items ({parsedData.items.length})
+                  {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', { count: parsedData.items.length })}
                 </strong>
               </CCardHeader>
               <CCardBody>
@@ -410,20 +427,20 @@ const AdminProposalView = () => {
                   <CTable hover>
                     <CTableHead>
                       <CTableRow>
-                        <CTableHeaderCell>Item</CTableHeaderCell>
-                        <CTableHeaderCell>Description</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center">Qty</CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">Unit Price</CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">Total</CTableHeaderCell>
+                        <CTableHeaderCell>{t('proposalColumns.item','Item')}</CTableHeaderCell>
+                        <CTableHeaderCell>{t('common.description','Description')}</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">{t('proposalColumns.qty','Qty')}</CTableHeaderCell>
+                        <CTableHeaderCell className="text-end">{t('proposalDoc.catalog.unitPrice','Unit Price')}</CTableHeaderCell>
+                        <CTableHeaderCell className="text-end">{t('proposalColumns.total','Total')}</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
                       {parsedData.items.map((item, index) => (
                         <CTableRow key={index}>
                           <CTableDataCell>
-                            <strong>{item.code || `Item ${index + 1}`}</strong>
+                            <strong>{item.code || t('adminQuote.ui.itemNumber','Item {{n}}', { n: index + 1 })}</strong>
                           </CTableDataCell>
-                          <CTableDataCell>{item.description || 'N/A'}</CTableDataCell>
+                          <CTableDataCell>{item.description || t('common.na','N/A')}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.qty || 1}</CTableDataCell>
                           <CTableDataCell className="text-end">{formatCurrency(parseFloat(item.price) || 0)}</CTableDataCell>
                           <CTableDataCell className="text-end">
@@ -434,42 +451,42 @@ const AdminProposalView = () => {
                     </CTableBody>
                   </CTable>
                 </div>
-                
+
                 {/* Totals */}
                 <div className="border-top pt-3 mt-3">
                   <CRow>
                     <CCol md={6}></CCol>
                     <CCol md={6}>
                       <div className="d-flex justify-content-between mb-2">
-                        <span>Cabinets:</span>
+                        <span>{t('proposalDoc.priceSummary.cabinets','Cabinets & Parts:')}</span>
                         <span>{formatCurrency(parsedData.summary.cabinets || 0)}</span>
                       </div>
                       {parsedData.summary.assemblyFee > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>Assembly Fee:</span>
+                          <span>{t('proposalDoc.priceSummary.assembly','Assembly fee:')}</span>
                           <span>{formatCurrency(parsedData.summary.assemblyFee)}</span>
                         </div>
                       )}
                       {parsedData.summary.modificationsCost > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>Modifications:</span>
+                          <span>{t('proposalDoc.priceSummary.modifications','Modifications:')}</span>
                           <span>{formatCurrency(parsedData.summary.modificationsCost)}</span>
                         </div>
                       )}
                       {parsedData.summary.discountAmount > 0 && (
                         <div className="d-flex justify-content-between mb-2 text-danger">
-                          <span>Discount:</span>
+                          <span>{t('orders.details.discount','Discount')}</span>
                           <span>-{formatCurrency(parsedData.summary.discountAmount)}</span>
                         </div>
                       )}
                       {parsedData.summary.taxAmount > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>Tax:</span>
+                          <span>{t('proposalDoc.priceSummary.tax','Tax:')}</span>
                           <span>{formatCurrency(parsedData.summary.taxAmount)}</span>
                         </div>
                       )}
                       <div className="d-flex justify-content-between border-top pt-2">
-                        <strong>Total:</strong>
+                        <strong>{t('proposalDoc.priceSummary.total','Total:')}</strong>
                         <strong className="text-success fs-5">{formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}</strong>
                       </div>
                     </CCol>
@@ -486,14 +503,14 @@ const AdminProposalView = () => {
             <CCardHeader>
               <strong>
                 <CIcon icon={cilHistory} className="me-2" />
-                Status Timeline
+                {t('adminQuote.ui.statusTimeline','Status Timeline')}
               </strong>
             </CCardHeader>
             <CCardBody>
               <div className="timeline">
                 {getStatusTimeline(proposal).map((item, index) => (
                   <div key={index} className="d-flex mb-4">
-                    <div className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`} 
+                    <div className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
                          style={{ width: '40px', height: '40px', minWidth: '40px' }}>
                       <CIcon icon={item.icon} size="sm" />
                     </div>

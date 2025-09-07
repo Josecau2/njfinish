@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
@@ -6,6 +6,8 @@ import {
   CFormCheck,
   CInputGroup,
   CFormInput,
+  CModal,
+  CModalBody,
   CTable,
   CTableHead,
   CTableRow,
@@ -16,6 +18,9 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilCopy, cilSettings, cilTrash } from '@coreui/icons'
 import { BsTools } from 'react-icons/bs'
+import axiosInstance from '../helpers/axiosInstance'
+import PageHeader from './PageHeader'
+import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
 
 const hingeOptions = ['L', 'R', '-']
 const exposedOptions = ['L', 'R', 'B', '-']
@@ -88,7 +93,6 @@ const CatalogTableEdit = ({
   updateQty,
   handleOpenModificationModal,
   handleDelete,
-  updateModification,
   setModificationsMap,
   modificationsMap,
   handleDeleteModification,
@@ -109,6 +113,16 @@ const CatalogTableEdit = ({
 
   const [partQuery, setPartQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef(null);
+  const [typesMeta, setTypesMeta] = useState([]);
+  const [showTypeModal, setShowTypeModal] = useState(false);
+  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
+  const [subTypeRequirements, setSubTypeRequirements] = useState({
+    requiresHinge: false,
+    requiresExposed: false,
+    itemRequirements: {}
+  });
+  const api_url = import.meta.env.VITE_API_URL;
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -142,6 +156,89 @@ const CatalogTableEdit = ({
       .slice(0, 20);
   }, [catalogData, selectedStyleData?.style, partQuery]);
 
+  // Fetch types metadata once per manufacturer (for Specs)
+  useEffect(() => {
+    const manufacturerId = selectVersion?.manufacturerData?.id;
+    if (!manufacturerId) { setTypesMeta([]); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`);
+        const data = Array.isArray(res?.data) ? res.data : [];
+        if (!cancelled) setTypesMeta(data);
+      } catch (err) {
+        console.error('Failed to fetch types metadata:', err);
+        if (!cancelled) setTypesMeta([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectVersion?.manufacturerData?.id]);
+
+  // Check sub-type requirements for conditional column display
+  useEffect(() => {
+    const checkRequirements = async () => {
+      const manufacturerId = selectVersion?.manufacturerData?.id;
+      const items = selectVersion?.items || [];
+      if (!manufacturerId || !Array.isArray(items) || items.length === 0) {
+        setSubTypeRequirements({
+          requiresHinge: false,
+          requiresExposed: false,
+          itemRequirements: {}
+        });
+        return;
+      }
+
+      try {
+        const requirements = await checkSubTypeRequirements(items, manufacturerId);
+        setSubTypeRequirements(requirements);
+      } catch (error) {
+        console.error('Failed to check sub-type requirements:', error);
+        setSubTypeRequirements({
+          requiresHinge: false,
+          requiresExposed: false,
+          itemRequirements: {}
+        });
+      }
+    };
+
+    checkRequirements();
+  }, [selectVersion?.manufacturerData?.id, selectVersion?.items]);
+
+  // Build quick map for type metadata
+  const typeMap = useMemo(() => {
+    const m = new Map();
+    (typesMeta || []).forEach(t => { if (t?.type) m.set(String(t.type), t); });
+    return m;
+  }, [typesMeta]);
+
+  // Also map code -> type (many catalogs in edit don't carry `type` on items)
+  const typeByCodeMap = useMemo(() => {
+    const m = new Map();
+    (typesMeta || []).forEach(t => {
+      if (t?.code && t?.type) m.set(String(t.code), String(t.type));
+    });
+    return m;
+  }, [typesMeta]);
+
+  const getItemType = (item) => {
+    if (!item) return undefined;
+    return item.type || typeByCodeMap.get(String(item.code || ''));
+  };
+
+  const hasTypeMetadata = (type) => {
+    if (!type) return false;
+    const meta = typeMap.get(String(type));
+    return meta && (meta.image || (meta.longDescription || meta.description || '').trim());
+  };
+
+  const openTypeModal = (type) => {
+    const meta = typeMap.get(String(type));
+    if (meta) {
+      setSelectedTypeInfo(meta);
+      setShowTypeModal(true);
+    }
+  };
+
   const pickItem = (item) => {
     if (!item) return;
     handleCatalogSelect({ target: { value: `${item.code} -- ${item.description}` } });
@@ -151,33 +248,142 @@ const CatalogTableEdit = ({
 
   // console.log('catalogData in Edit: ',catalogData);
   // console.log('selectedStyleData in Edit: ',selectedStyleData);
+  // Close suggestions on outside click to avoid overlay blocking other controls
+  useEffect(() => {
+    const handleDocMouseDown = (e) => {
+      const node = searchContainerRef.current;
+      if (!node) return;
+      if (!node.contains(e.target)) setShowSuggestions(false);
+    };
+    if (showSuggestions) {
+      document.addEventListener('mousedown', handleDocMouseDown);
+      return () => document.removeEventListener('mousedown', handleDocMouseDown);
+    }
+  }, [showSuggestions]);
   return (
     <div className="mt-5 mb-5">
+      {/* Detailed type info modal */}
+      <CModal visible={showTypeModal} onClose={() => setShowTypeModal(false)} size="lg">
+        <PageHeader
+          title={selectedTypeInfo?.type || 'Type Specifications'}
+          onClose={() => setShowTypeModal(false)}
+        />
+        <CModalBody className="p-3 p-md-4">
+          {selectedTypeInfo ? (
+            <div className="d-flex flex-column flex-md-row gap-4">
+              <div className="text-center text-md-start border rounded p-3 bg-light" style={{ width: '100%', maxWidth: '220px', margin: '0 auto' }}>
+                <img
+                  src={selectedTypeInfo.image ? `${api_url}/uploads/types/${selectedTypeInfo.image}` : '/images/nologo.png'}
+                  alt={selectedTypeInfo.type}
+                  className="img-fluid"
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    maxHeight: '200px',
+                    objectFit: 'contain',
+                    background: '#ffffff',
+                    borderRadius: '6px',
+                    border: '1px solid #dee2e6'
+                  }}
+                  onError={(e) => {
+                    if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
+                      e.target.dataset.fallbackTried = '1';
+                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`;
+                    } else {
+                      e.target.src = '/images/nologo.png';
+                    }
+                  }}
+                />
+              </div>
+              <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
+                <div className="mb-3">
+                  <span className="badge text-bg-secondary me-2">{t('Type')}</span>
+                  <strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>
+                </div>
+                {selectedTypeInfo.code && (
+                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Code:</span> <strong>{selectedTypeInfo.code}</strong></div>
+                )}
+                {selectedTypeInfo.name && (
+                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Name:</span> <strong>{selectedTypeInfo.name}</strong></div>
+                )}
+                {selectedTypeInfo.shortName && (
+                  <div className="mb-3 border-bottom pb-2"><span className="text-muted fw-medium">Short:</span> <strong>{selectedTypeInfo.shortName}</strong></div>
+                )}
+                <div className="mt-3" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  <strong className="text-muted d-block mb-2">Description:</strong>
+                  {selectedTypeInfo.longDescription || selectedTypeInfo.description || t('No description available for this type.')}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-muted text-center p-4 border rounded bg-light">{t('No type information available.')}</div>
+          )}
+
+          {/* Mobile Close Button */}
+          <div className="d-block d-md-none mt-4 text-center">
+            <button
+              type="button"
+              className="btn btn-dark btn-lg shadow-sm"
+              onClick={() => setShowTypeModal(false)}
+              style={{
+                minWidth: '140px',
+                borderRadius: '8px',
+                fontWeight: '500'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </CModalBody>
+      </CModal>
       {/* Controls - align with create (adds catalog-controls-mobile for responsive) */}
       <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
         {!readOnly && (
-          <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }}>
+          <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }} ref={searchContainerRef}>
             <CInputGroup>
               <CFormInput
                 placeholder={t('proposalUI.enterPartCode')}
                 value={partQuery}
                 onChange={(e) => { setPartQuery(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => setShowSuggestions(true)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && filteredOptions[0]) { e.preventDefault(); pickItem(filteredOptions[0]); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && filteredOptions[0]) { e.preventDefault(); pickItem(filteredOptions[0]); }
+                  if (e.key === 'Escape') { setShowSuggestions(false); }
+                }}
               />
             </CInputGroup>
             {showSuggestions && filteredOptions.length > 0 && (
               <div className="dropdown-menu show w-100" style={{ maxHeight: '260px', overflowY: 'auto' }}>
                 {filteredOptions.map((item) => (
-                  <button
-                    type="button"
+                  <div
                     key={item.id}
-                    className="dropdown-item text-wrap"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => pickItem(item)}
+                    className="dropdown-item-wrapper d-flex justify-content-between align-items-center"
+                    style={{ padding: '0.25rem' }}
                   >
-                    <strong>{item.code}</strong> — {item.description}
-                  </button>
+                    <button
+                      type="button"
+                      className="dropdown-item text-wrap flex-grow-1 border-0 bg-transparent text-start"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pickItem(item)}
+                      style={{ padding: '0.25rem 0.75rem' }}
+                    >
+                      <strong>{item.code}</strong> — {item.description}
+                    </button>
+                    {hasTypeMetadata(getItemType(item)) && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-info ms-2"
+                        style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTypeModal(getItemType(item));
+                        }}
+                        title={`View ${getItemType(item)} specifications`}
+                      >
+                        Specs
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -224,15 +430,23 @@ const CatalogTableEdit = ({
       </div>
 
   {/* Desktop table view */}
-  <div className="table-responsive table-responsive-md">
+  <div className="table-responsive table-responsive-md desktop-only">
         <CTable>
           <CTableHead>
             <CTableRow>
               <CTableHeaderCell>{t('proposalColumns.no')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.qty')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.item')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.hingeSide')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.exposedSide')}</CTableHeaderCell>
+              {subTypeRequirements.requiresHinge && (
+                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                  {t('proposalColumns.hingeSide')}
+                </CTableHeaderCell>
+              )}
+              {subTypeRequirements.requiresExposed && (
+                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                  {t('proposalColumns.exposedSide')}
+                </CTableHeaderCell>
+              )}
               <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</CTableHeaderCell>
@@ -256,8 +470,36 @@ const CatalogTableEdit = ({
               const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
               return (
                 <React.Fragment key={idx}>
-                  <CTableRow className={item.unavailable ? 'table-danger' : ''}>
-                    <CTableDataCell>{idx + 1}</CTableDataCell>
+                  <CTableRow
+                    className={item.unavailable ? 'table-danger' : ''}
+                    style={{
+                      backgroundColor: item.unavailable ? undefined : (idx % 2 === 0 ? '#fbfdff' : '#ffffff'),
+                      borderBottom: '2px solid #e6ebf1',
+                      ...(idx === 0 ? { borderTop: '2px solid #e6ebf1' } : {}),
+                    }}
+                  >
+                    <CTableDataCell style={{ width: '56px' }}>
+                      <span
+                        className="shadow-sm"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: '36px',
+                          height: '28px',
+                          padding: '0 10px',
+                          borderRadius: '9999px',
+                          backgroundColor: headerBg,
+                          color: textColor,
+                          fontWeight: 700,
+                          fontSize: '0.95rem',
+                          letterSpacing: '0.2px'
+                        }}
+                        title={`Row ${idx + 1}`}
+                      >
+                        {idx + 1}
+                      </span>
+                    </CTableDataCell>
                     <CTableDataCell>
                       <CFormInput
                         type="number"
@@ -269,59 +511,119 @@ const CatalogTableEdit = ({
                       />
                     </CTableDataCell>
 
-                    <CTableDataCell style={rowStyle}>{item.code}</CTableDataCell>
-
-                    <CTableDataCell>
-                      {assembled ? (
-                        <div className="d-flex gap-1">
-              {hingeOptions.map((opt) => (
+                    <CTableDataCell style={rowStyle}>
+                      <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
+                        <div className="d-flex align-items-baseline gap-2 flex-wrap" style={{ minWidth: 0 }}>
+                          <strong>{item.code}</strong>
+                          {item?.description ? (
                             <span
-                              key={opt}
-                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-light' : 'btn-light'}`}
-                              style={{
-                                ...(item.hingeSide === opt ? {
-                                  background: headerBg,
-                                  color: textColor,
-                                  border: `1px solid ${headerBg}`
-                                } : {}),
-                                ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
-                              }}
-                              onClick={() => !readOnly && updateHingeSide(idx, opt)}
+                              className="text-muted text-truncate"
+                              style={{ maxWidth: '420px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                              title={item.description}
                             >
-                              {codeToLabel(opt)}
+                              — {item.description}
                             </span>
-                          ))}
+                          ) : null}
                         </div>
-                      ) : (
-                        t('common.na')
-                      )}
+            {hasTypeMetadata(getItemType(item)) && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-info"
+                            style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+              onClick={() => openTypeModal(getItemType(item))}
+              title={`View ${getItemType(item)} specifications`}
+                          >
+                            Specs
+                          </button>
+                        )}
+                      </div>
                     </CTableDataCell>
 
-                    <CTableDataCell>
-                      {assembled ? (
-                        <div className="d-flex gap-1">
-              {exposedOptions.map((opt) => (
-                            <span
-                              key={opt}
-                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-light' : 'btn-light'}`}
-                              style={{
-                                ...(item.exposedSide === opt ? {
-                                  background: headerBg,
-                                  color: textColor,
-                                  border: `1px solid ${headerBg}`
-                                } : {}),
-                                ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
-                              }}
-                              onClick={() => !readOnly && updateExposedSide(idx, opt)}
-                            >
-                              {codeToLabel(opt)}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        t('common.na')
-                      )}
-                    </CTableDataCell>
+                    {subTypeRequirements.requiresHinge && (
+                      <CTableDataCell
+                        style={{
+                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
+                            ? '#ffebee'
+                            : 'transparent'
+                        }}
+                      >
+                        {assembled ? (
+                          <div>
+                            {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
+                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
+                              </div>
+                            )}
+                            <div className="d-flex gap-1">
+                              {hingeOptions.map((opt) => (
+                                <button
+                                  key={opt}
+                                  type="button"
+                                  className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                  style={{
+                                    ...(item.hingeSide === opt ? {
+                                      background: headerBg,
+                                      color: textColor,
+                                      border: `1px solid ${headerBg}`
+                                    } : {}),
+                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                                  }}
+                                  onClick={() => !readOnly && updateHingeSide(idx, opt)}
+                                  disabled={readOnly}
+                                >
+                                  {codeToLabel(opt)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          t('common.na')
+                        )}
+                      </CTableDataCell>
+                    )}
+
+                    {subTypeRequirements.requiresExposed && (
+                      <CTableDataCell
+                        style={{
+                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
+                            ? '#ffebee'
+                            : 'transparent'
+                        }}
+                      >
+                        {assembled ? (
+                          <div>
+                            {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
+                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
+                              </div>
+                            )}
+                            <div className="d-flex gap-1">
+                              {exposedOptions.map((opt) => (
+                                <button
+                                  key={opt}
+                                  type="button"
+                                  className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                  style={{
+                                    ...(item.exposedSide === opt ? {
+                                      background: headerBg,
+                                      color: textColor,
+                                      border: `1px solid ${headerBg}`
+                                    } : {}),
+                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                                  }}
+                                  onClick={() => !readOnly && updateExposedSide(idx, opt)}
+                                  disabled={readOnly}
+                                >
+                                  {codeToLabel(opt)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          t('common.na')
+                        )}
+                      </CTableDataCell>
+                    )}
 
                     <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : item.price)}</CTableDataCell>
 
@@ -366,44 +668,109 @@ const CatalogTableEdit = ({
                     const groupKeys = Object.keys(groups);
                     return (
                       <>
-                        <CTableRow className="table-light">
-                          <CTableDataCell colSpan={10} className="fw-bold text-muted">
-                            {t('proposalDoc.modifications')}
+                        <CTableRow className="modification-header">
+                          <CTableDataCell
+                            colSpan={10}
+                            style={{
+                              backgroundColor: headerBg,
+                              color: textColor,
+                              padding: '8px 16px',
+                              paddingLeft: '56px',
+                              fontSize: '0.9rem',
+                              borderTop: `2px solid ${headerBg}`,
+                              borderLeft: `6px solid ${headerBg}`,
+                              borderTopLeftRadius: '6px',
+                              borderTopRightRadius: '6px',
+                              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)'
+                            }}
+                          >
+                            <BsTools className="me-2" style={{ fontSize: '14px', color: textColor }} />
+                            <span className="fw-bold">{t('proposalDoc.modifications')}</span>
                           </CTableDataCell>
                         </CTableRow>
-                        {groupKeys.map((gkey) => (
+                        {groupKeys.map((gkey, gi) => (
                           <React.Fragment key={`modgrp-${idx}-${gkey}`}>
-                            <CTableRow className="table-light">
-                              <CTableDataCell colSpan={10} className="fw-bold">{gkey}</CTableDataCell>
+                            <CTableRow className="modification-category" style={{ backgroundColor: '#f1f3f5' }}>
+                              <CTableDataCell colSpan={10} className="fw-semibold text-secondary" style={{ paddingLeft: '72px', fontSize: '0.85rem', borderLeft: `6px solid ${headerBg}`, borderBottom: '1px solid #dee2e6' }}>
+                                📂 {gkey}
+                              </CTableDataCell>
                             </CTableRow>
-                            {groups[gkey].map((mod, modIdx) => (
-                              <CTableRow key={`mod-${idx}-${gkey}-${modIdx}`} className="table-secondary">
-                                <CTableDataCell>-</CTableDataCell>
-                                <CTableDataCell>{mod.qty}</CTableDataCell>
-                                <CTableDataCell colSpan={3}>
-                                  {mod.name || t('proposalUI.mod.unnamed')}
-                                  {(() => {
-                                    const details = buildSelectedOptionsText(mod?.selectedOptions)
-                                    return details ? (
-                                      <span className="text-muted ms-2">— {details}</span>
-                                    ) : null
-                                  })()}
-                                </CTableDataCell>
-                                <CTableDataCell>{formatPrice(mod.price || 0)}</CTableDataCell>
-                                <CTableDataCell>-</CTableDataCell>
-                                <CTableDataCell>{/* Modifications column (per-item summary) not applicable on sub-rows */}</CTableDataCell>
-                                <CTableDataCell>{formatPrice((mod.price || 0) * (mod.qty || 1))}</CTableDataCell>
-                                <CTableDataCell>
-                                  {!readOnly && (
-                                    <CIcon
-                                      icon={cilTrash}
-                                      style={{ cursor: 'pointer', color: 'red' }}
-                                      onClick={() => handleDeleteModification(idx, item.modifications.findIndex(m=>m===mod))}
-                                    />
+                            {groups[gkey].map((mod, modIdx) => {
+                              const isLastRow = gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1;
+                              return (
+                                <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
+                                  <CTableRow className="modification-item" style={{
+                                    backgroundColor: '#fcfcfd',
+                                    borderLeft: `6px solid ${headerBg}`,
+                                    fontSize: '0.9rem',
+                                    borderBottom: isLastRow ? `2px solid ${headerBg}` : '1px solid #e9ecef'
+                                  }}>
+                                    <CTableDataCell style={{ paddingLeft: '88px', color: '#6c757d' }}>
+                                      ↳
+                                    </CTableDataCell>
+                                    <CTableDataCell style={{ fontWeight: '500' }}>{mod.qty}</CTableDataCell>
+                                    <CTableDataCell colSpan={3} style={{ paddingLeft: '8px' }}>
+                                      <div className="d-flex align-items-center flex-wrap gap-2">
+                                        <span
+                                          className="shadow-sm"
+                                          style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '2px 10px',
+                                            borderRadius: '9999px',
+                                            backgroundColor: '#f3f5f7',
+                                            border: `1px solid ${headerBg}`,
+                                            color: '#212529',
+                                            fontWeight: 600,
+                                            lineHeight: 1.2
+                                          }}
+                                        >
+                                          {mod.name || t('proposalUI.mod.unnamed')}
+                                        </span>
+                                        {(() => {
+                                          const details = buildSelectedOptionsText(mod?.selectedOptions)
+                                          return details ? (
+                                            <span
+                                              className="text-muted"
+                                              style={{
+                                                fontSize: '0.8rem',
+                                                padding: '2px 8px',
+                                                borderRadius: '6px',
+                                                background: '#f8f9fa',
+                                                border: '1px dashed #ced4da'
+                                              }}
+                                            >
+                                              {details}
+                                            </span>
+                                          ) : null
+                                        })()}
+                                      </div>
+                                    </CTableDataCell>
+                                    <CTableDataCell className="fw-medium text-success">{formatPrice(mod.price || 0)}</CTableDataCell>
+                                    <CTableDataCell style={{ color: '#6c757d' }}>-</CTableDataCell>
+                                    <CTableDataCell>{/* Modifications column (per-item summary) not applicable on sub-rows */}</CTableDataCell>
+                                    <CTableDataCell className="fw-semibold text-success">{formatPrice((mod.price || 0) * (mod.qty || 1))}</CTableDataCell>
+                                    <CTableDataCell style={{ textAlign: 'center' }}>
+                                      {!readOnly && (
+                                        <CIcon
+                                          icon={cilTrash}
+                                          style={{ cursor: 'pointer', color: '#dc3545', fontSize: '14px' }}
+                                          onClick={() => handleDeleteModification(idx, item.modifications.findIndex(m=>m===mod))}
+                                          title="Remove modification"
+                                        />
+                                      )}
+                                    </CTableDataCell>
+                                  </CTableRow>
+                                  {isLastRow && (
+                                    <CTableRow>
+                                      <CTableDataCell colSpan={10} style={{ padding: 0 }}>
+                                        <div style={{ height: '10px', borderBottom: '1px dashed #cfd4da' }} />
+                                      </CTableDataCell>
+                                    </CTableRow>
                                   )}
-                                </CTableDataCell>
-                              </CTableRow>
-                            ))}
+                                </React.Fragment>
+                              )
+                            })}
                           </React.Fragment>
                         ))}
                       </>
@@ -416,8 +783,8 @@ const CatalogTableEdit = ({
         </CTable>
       </div>
 
-      {/* Mobile card view to match create */}
-      <div className="mobile-card-view d-none">
+  {/* Mobile card view to match create */}
+  <div className="mobile-card-view mobile-only">
         {selectVersion?.items?.map((item, idx) => {
           const assembled = !!isAssembled;
           const qty = Number(item.qty || 1);
@@ -431,7 +798,15 @@ const CatalogTableEdit = ({
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
-              <div className="item-card-mobile">
+              <div
+                className="item-card-mobile"
+                style={{
+                  border: '2px solid #e6ebf1',
+                  borderRadius: '8px',
+                  backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
+                  marginBottom: '12px'
+                }}
+              >
                 <div className="item-header">
                   <div className="item-number">{idx + 1}</div>
                   {!readOnly && (
@@ -452,7 +827,29 @@ const CatalogTableEdit = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <span className="item-value item-code" style={rowStyle}>{item.code}</span>
+                  <div className="d-flex align-items-center gap-2 flex-wrap" style={{ minWidth: 0 }}>
+                    <span className="item-value item-code" style={rowStyle}><strong>{item.code}</strong></span>
+                    {item?.description ? (
+                      <span
+                        className="text-muted text-truncate"
+                        style={{ maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                        title={item.description}
+                      >
+                        — {item.description}
+                      </span>
+                    ) : null}
+          {hasTypeMetadata(getItemType(item)) && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-info"
+                        style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+            onClick={() => openTypeModal(getItemType(item))}
+            title={`View ${getItemType(item)} specifications`}
+                      >
+                        Specs
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="item-detail-row">
@@ -474,47 +871,75 @@ const CatalogTableEdit = ({
 
                 {assembled && (
                   <>
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.hingeSide')}</span>
-                      <div className="btn-group-mobile">
-                        {hingeOptions.map((opt) => (
-                          <button
-                            key={opt}
-                            className={`btn ${item.hingeSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
-                            style={item.hingeSide === opt ? {
-                              background: headerBg,
-                              color: textColor,
-                              border: `1px solid ${headerBg}`
-                            } : {}}
-                            onClick={() => !readOnly && updateHingeSide(idx, opt)}
-                            disabled={readOnly}
-                          >
-                            {codeToLabel(opt)}
-                          </button>
-                        ))}
+                    {subTypeRequirements.requiresHinge && (
+                      <div className="item-detail-row" style={{
+                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
+                          ? '#ffebee'
+                          : 'transparent',
+                        padding: '0.5rem',
+                        borderRadius: '4px'
+                      }}>
+                        <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                        {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
+                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                            {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
+                          </div>
+                        )}
+                        <div className="btn-group-mobile">
+                          {hingeOptions.map((opt) => (
+                            <button
+                              key={opt}
+                              type="button"
+                              className={`btn ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                              style={item.hingeSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
+                              onClick={() => !readOnly && updateHingeSide(idx, opt)}
+                              disabled={readOnly}
+                            >
+                              {codeToLabel(opt)}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.exposedSide')}</span>
-                      <div className="btn-group-mobile">
-                        {exposedOptions.map((opt) => (
-                          <button
-                            key={opt}
-                            className={`btn ${item.exposedSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
-                            style={item.exposedSide === opt ? {
-                              background: headerBg,
-                              color: textColor,
-                              border: `1px solid ${headerBg}`
-                            } : {}}
-                            onClick={() => !readOnly && updateExposedSide(idx, opt)}
-                            disabled={readOnly}
-                          >
-                            {codeToLabel(opt)}
-                          </button>
-                        ))}
+                    {subTypeRequirements.requiresExposed && (
+                      <div className="item-detail-row" style={{
+                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
+                          ? '#ffebee'
+                          : 'transparent',
+                        padding: '0.5rem',
+                        borderRadius: '4px'
+                      }}>
+                        <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                        {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
+                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                            {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
+                          </div>
+                        )}
+                        <div className="btn-group-mobile">
+                          {exposedOptions.map((opt) => (
+                            <button
+                              key={opt}
+                              type="button"
+                              className={`btn ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                              style={item.exposedSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
+                              onClick={() => !readOnly && updateExposedSide(idx, opt)}
+                              disabled={readOnly}
+                            >
+                              {codeToLabel(opt)}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="item-detail-row">
                       <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
@@ -533,6 +958,94 @@ const CatalogTableEdit = ({
                   <strong style={rowStyle}>{t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}</strong>
                 </div>
               </div>
+
+              {/* Mobile Modification Cards */}
+              {Array.isArray(item.modifications) && item.modifications.length > 0 && (
+                item.modifications.map((mod, modIdx) => (
+                  <div
+                    key={`mobile-mod-${idx}-${modIdx}`}
+                    style={{
+                      background: headerBg,
+                      color: textColor,
+                      border: `1px solid ${headerBg}`,
+                      borderRadius: '6px',
+                      padding: '0.75rem',
+                      marginTop: '0.75rem',
+                      marginBottom: '1.5rem',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      maxWidth: '90%',
+                      position: 'relative',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    {/* Item indicator badge */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      left: '12px',
+                      background: textColor,
+                      color: headerBg,
+                      borderRadius: '50%',
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      border: `2px solid ${headerBg}`
+                    }}>
+                      {idx + 1}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        color: textColor,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}>{t('proposalDoc.modifications')}</span>
+                      {!readOnly && (
+                        <CIcon
+                          icon={cilTrash}
+                          style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
+                          onClick={() => handleDeleteModification(idx, modIdx)}
+                        />
+                      )}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.875rem',
+                      marginBottom: '0.25rem'
+                    }}>
+                      <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
+                      {(() => {
+                        const details = buildSelectedOptionsText(mod?.selectedOptions)
+                        return details ? (
+                          <span style={{ opacity: 0.7 }}> — {details}</span>
+                        ) : null
+                      })()}
+                      <span>Qty: {mod.qty}</span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.875rem',
+                      marginBottom: '0'
+                    }}>
+                      <span>{t('proposalColumns.price')}: {formatPrice(mod.price || 0)}</span>
+                      <span><strong>{t('proposalColumns.total')}: {formatPrice((mod.price || 0) * (mod.qty || 1))}</strong></span>
+                    </div>
+                  </div>
+                ))
+              )}
             </React.Fragment>
           );
         })}
@@ -542,3 +1055,4 @@ const CatalogTableEdit = ({
 }
 
 export default CatalogTableEdit
+

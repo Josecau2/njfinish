@@ -172,6 +172,36 @@
 				"build:frontend"
 			],
 			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
 		}
 	]
 }

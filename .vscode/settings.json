@@ -2,5 +2,6 @@
   "files.trimTrailingWhitespace": true,
   "files.exclude": {
     "**/frontend/src/pages/proposals/CreateProposal/FileUploadSection .jsx": true
-  }
+  },
+  "github.copilot.chat.instructions": "Always reference the instructions in .github/instructions/copilot instruction.instructions.md for this project. The backend is always running on port 8080. Use existing debug script patterns for testing. Follow the database access patterns and testing methods specified in the instructions."
 }

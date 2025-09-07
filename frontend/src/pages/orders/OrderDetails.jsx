@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { FaShoppingCart } from 'react-icons/fa'
@@ -30,6 +29,8 @@ import {
   CModalTitle,
   CCloseButton,
 } from '@coreui/react'
+import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
+import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -78,27 +79,35 @@ const buildSelectedOptionsText = (selectedOptions) => {
 
 const currency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n || 0))
 
-const parseManufacturersData = (raw) => {
-  if (!raw) return { manufacturers: [], items: [], summary: { grandTotal: 0 } }
+// Snapshot-first parser: orders store the final snapshot under order.snapshot
+const parseFromSnapshot = (order) => {
+  const snap = order?.snapshot
+  if (!snap) return { manufacturers: [], items: [], summary: { grandTotal: 0 } }
   try {
-    const arr = typeof raw === 'string' ? JSON.parse(raw) : raw
-    const items = []
-    const summary = { grandTotal: 0, taxAmount: 0, discountAmount: 0, assemblyFee: 0, cabinets: 0, modificationsCost: 0, styleTotal: 0 }
-    for (const m of arr) {
-      if (Array.isArray(m.items)) items.push(...m.items)
-      if (m.summary) {
-        summary.grandTotal += m.summary.grandTotal || 0
-        summary.taxAmount += m.summary.taxAmount || 0
-        summary.discountAmount += m.summary.discountAmount || 0
-        summary.assemblyFee += m.summary.assemblyFee || 0
-        summary.cabinets += m.summary.cabinets || 0
-        summary.modificationsCost += m.summary.modificationsCost || 0
-        summary.styleTotal += m.summary.styleTotal || 0
+    const root = typeof snap === 'string' ? JSON.parse(snap) : snap
+    // Snapshot may be either { manufacturers: [...], summary, items? } or just an array of manufacturers
+    const manufacturers = Array.isArray(root?.manufacturers)
+      ? root.manufacturers
+      : Array.isArray(root)
+        ? root
+        : []
+    const items = Array.isArray(root?.items)
+      ? root.items
+      : manufacturers.flatMap((m) => Array.isArray(m.items) ? m.items : [])
+    const summary = root?.summary || manufacturers.reduce((agg, m) => {
+      const s = m?.summary || {}
+      return {
+        styleTotal: (agg.styleTotal || 0) + Number(s.styleTotal || 0),
+        assemblyFee: (agg.assemblyFee || 0) + Number(s.assemblyFee || 0),
+        modificationsCost: (agg.modificationsCost || 0) + Number(s.modificationsCost || 0),
+        deliveryFee: (agg.deliveryFee || 0) + Number(s.deliveryFee || 0),
+        discountAmount: (agg.discountAmount || 0) + Number(s.discountAmount || 0),
+        taxAmount: (agg.taxAmount || 0) + Number(s.taxAmount || 0),
+        grandTotal: (agg.grandTotal || 0) + Number(s.grandTotal || 0),
       }
-    }
-    return { manufacturers: arr, items, summary }
+    }, {})
+    return { manufacturers, items, summary: summary || { grandTotal: 0 } }
   } catch (e) {
-    console.error('Failed to parse manufacturersData', e)
     return { manufacturers: [], items: [], summary: { grandTotal: 0 } }
   }
 }
@@ -109,16 +118,9 @@ const OrderDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const customization = useSelector((state) => state.customization)
+  const { current: order, loading, error } = useSelector((state) => state.orders)
   const { list: manuList, byId: manuById } = useSelector((state) => state.manufacturers)
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [proposal, setProposal] = useState(null)
-  const [manufacturerNames, setManufacturerNames] = useState({})
-  const [stylesByManu, setStylesByManu] = useState({})
-  const [typesByManu, setTypesByManu] = useState({})
-  const [manufacturerCosts, setManufacturerCosts] = useState({})
-  const [userMultiplier, setUserMultiplier] = useState(1)
   const [previewImg, setPreviewImg] = useState(null)
 
   // Get styling from PageHeader component logic
@@ -159,274 +161,73 @@ const OrderDetails = () => {
   }
 
   useEffect(() => {
-    const run = async () => {
-      try {
-        setLoading(true)
-        const { data } = await axiosInstance.get(`/api/quotes/proposalByID/${id}`)
-        setProposal(data)
-        setError(null)
-      } catch (e) {
-        setError(e.response?.data?.message || e.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-    if (id) run()
-  }, [id])
+    if (id) dispatch(fetchOrderById(id))
+    // Fetch manufacturers for name resolution
+    dispatch(fetchManufacturers())
+    return () => { dispatch(clearCurrentOrder()) }
+  }, [dispatch, id])
 
-  // Fetch current user's group multiplier (used for display when totals aren't saved)
-  useEffect(() => {
-    let cancelled = false
-    const fetchMultiplier = async () => {
-      try {
-        const { data } = await axiosInstance.get('/api/user/multiplier')
-        if (!cancelled && typeof data?.multiplier === 'number') {
-          setUserMultiplier(Number(data.multiplier) || 1)
-        }
-      } catch (_) {
-        // default 1
-      }
-    }
-    fetchMultiplier()
-    return () => { cancelled = true }
-  }, [])
-
-  const parsed = useMemo(() => parseManufacturersData(proposal?.manufacturersData), [proposal])
+  // Parse snapshot from the fetched order
+  const parsed = useMemo(() => parseFromSnapshot(order), [order])
 
   // Helper to compute display fields for an item (used by table and mobile views)
   const computeItemView = (it) => {
-    const manuId = it.manufacturer || it.manufacturerId || parsed.manufacturers?.[0]?.manufacturer
-    // Prefer fetched names; then inline manufacturerName; then avoid generic placeholders
-    let manuName = manufacturerNames[manuId] || it.manufacturerName || null
-    if (!manuName && (manuById?.[manuId]?.name || manuList?.find?.((m) => m.id === manuId)?.name)) {
-      manuName = manuById?.[manuId]?.name || manuList.find((m) => m.id === manuId)?.name
-    }
-    if (!manuName) {
-      const inline = parsed.manufacturers?.find?.((m) => m.manufacturer === manuId)?.name
-      if (inline && !/^manufacturer\s*\d+$/i.test(String(inline).trim())) manuName = inline
-    }
-    if (!manuName) manuName = '-'
+    // Enhanced manufacturer name resolution
+    const resolveManuName = () => {
+      // Try direct manufacturer association from API
+      if (order?.manufacturer?.name) return order.manufacturer.name;
+
+      // Try snapshot manufacturer ID resolution
+      if (parsed?.manufacturers?.[0]?.manufacturer) {
+        const manuId = parsed.manufacturers[0].manufacturer;
+        const fromMap = manuById?.[manuId] || manuById?.[String(manuId)];
+        if (fromMap?.name) return fromMap.name;
+
+        const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId));
+        if (fromList?.name) return fromList.name;
+      }
+
+      // Fallback to existing logic
+      return it.manufacturerName || order?.manufacturer_name || parsed.manufacturers?.[0]?.manufacturerName || parsed.manufacturers?.[0]?.name || '-';
+    };
+
+    const manuName = resolveManuName();
     const qty = Number(it.qty || it.quantity || 1)
-
-    // Derive unit/total using multipliers for display
-    const manuIdNum = Number(manuId)
-    const manuM = Number(manufacturerCosts[manuIdNum] || manufacturerCosts[manuId] || 1)
-    const groupM = Number(userMultiplier || 1)
-    const base = Number(it.basePrice ?? it.price ?? it.unitPrice ?? 0)
-    const unit = base * manuM * groupM
-    const total = unit * qty
-
-    // Per-item modifications total (not multiplied by manufacturer/user multipliers)
+    const unit = Number(it.snapshotUnitPrice ?? it.finalUnitPrice ?? it.calculatedUnitPrice ?? it.unitPrice ?? it.price ?? 0)
+    const total = Number(it.snapshotTotal ?? it.finalTotal ?? it.total ?? (unit * qty))
     const modsTotal = Array.isArray(it.modifications)
       ? it.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
-      : 0
+      : Number(it.modificationsTotal || 0)
 
-    // Derive style name/image
-    let styleName = '-'
-    let styleImg = null
-    try {
-      const block = (parsed.manufacturers || []).find((m) => m.manufacturer === manuId)
-      const selectedStyleIdOrName = block?.selectedStyle
-      const styles = stylesByManu[manuId]
-      if (Array.isArray(styles)) {
-        let sf = typeof selectedStyleIdOrName === 'number'
-          ? styles.find((s) => s.id === selectedStyleIdOrName)
-          : null
-        if (!sf && selectedStyleIdOrName && typeof selectedStyleIdOrName === 'string') {
-          sf = styles.find((s) => String(s.style).toLowerCase() === selectedStyleIdOrName.toLowerCase()) || null
+    // Enhanced style name resolution - avoid showing manufacturer name as style
+    const resolveItemStyleName = () => {
+      const potentialStyleName = it.styleName || parsed.manufacturers?.[0]?.styleName || parsed.manufacturers?.[0]?.style;
+
+      // If the styleName matches the manufacturer name, it's wrong data
+      if (potentialStyleName && potentialStyleName === manuName) {
+        // Try to get style name from order.style_name instead
+        if (order?.style_name && order.style_name !== manuName) {
+          return order.style_name;
         }
-        if (!sf) {
-          const nm = block?.styleName || block?.style || block?.selectedStyleName
-          if (nm) sf = styles.find((s) => String(s.style).toLowerCase() === String(nm).toLowerCase()) || null
-        }
-        if (sf?.style) styleName = sf.style
-        // Resolve image similarly as top card
-        let resolved = null
-        if (sf) {
-          if (sf.image) {
-            resolved = sf.image
-          } else if (Array.isArray(sf.styleVariants) && sf.styleVariants.length) {
-            const selectedColor = block?.styleColor || block?.selectedStyleColor || block?.styleVariant || block?.colorName || block?.color
-            const vm = selectedColor
-              ? sf.styleVariants.find(v => (v.shortName || '').toLowerCase() === String(selectedColor).toLowerCase())
-              : null
-            resolved = (vm?.image) || sf.styleVariants[0]?.image || null
-          }
-        }
-        if (resolved) {
-          styleImg = String(resolved).startsWith('/')
-            ? `${import.meta.env.VITE_API_URL || ''}${resolved}`
-            : `${import.meta.env.VITE_API_URL || ''}/uploads/images/${resolved}`
-        }
+        // If still wrong, return a generic placeholder
+        return '-';
       }
-    } catch (_) {}
 
-    // Try to find type image (with details) and fall back to style image
-    let thumb = null
-    let thumbTitle = ''
-    try {
-      const types = typesByManu[manuId]
-      const candidates = [it.type, it.typeName, it.itemType, it.code].filter(Boolean).map(String)
-      if (Array.isArray(types) && types.length) {
-        let match = null
-        if (candidates.length) {
-          const lcSet = new Set(candidates.map((s) => s.toLowerCase()))
-          match = types.find((t) => [t.type, t.name, t.shortName, t.code].filter(Boolean).some(v => lcSet.has(String(v).toLowerCase()))) || null
-        }
-        if (!match) {
-          const text = `${it.name || ''} ${it.description || ''}`.toLowerCase()
-          match = types.find((t) => {
-            const keys = [t.type, t.name, t.shortName, t.code].filter(Boolean).map((x) => String(x).toLowerCase())
-            return keys.some((k) => k && text.includes(k))
-          }) || null
-        }
-        const img = match?.image
-        if (img) {
-          thumb = String(img).startsWith('/')
-            ? `${import.meta.env.VITE_API_URL || ''}${img}`
-            : `${import.meta.env.VITE_API_URL || ''}/uploads/types/${img}`
-          const tname = match?.type || match?.name || ''
-          const sname = match?.shortName ? ` (${match.shortName})` : ''
-          const desc = match?.longDescription || match?.description || ''
-          thumbTitle = [`${tname}${sname}`.trim(), desc ? `— ${desc}` : ''].join(' ').trim()
-        }
-      }
-    } catch (_) {}
-    if (!thumb) {
-      thumb = styleImg
-      thumbTitle = (styleName && manuName) ? `${styleName} — ${manuName}` : (styleName || manuName || '')
-    }
+      // Use the styleName if it's different from manufacturer name
+      return potentialStyleName || order?.style_name || '-';
+    };
 
-  return { manuName, qty, unit, total, modsTotal, styleName, styleImg, thumb, thumbTitle }
+    const styleName = resolveItemStyleName();
+    const thumb = it.image || it.thumb || parsed.manufacturers?.[0]?.styleImage || null
+    const thumbTitle = [styleName, manuName].filter(Boolean).join(' — ')
+    return { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle }
   }
 
   // Compute display totals applying manufacturer cost multiplier and user group multiplier
-  const displaySummary = useMemo(() => {
-    try {
-      const manufacturers = Array.isArray(parsed.manufacturers) ? parsed.manufacturers : []
-      let agg = {
-        styleTotal: 0,
-        assemblyFee: 0,
-        modificationsCost: 0,
-        deliveryFee: 0,
-        discountAmount: 0,
-        taxAmount: 0,
-        grandTotal: 0,
-      }
-      for (const m of manufacturers) {
-        const manuId = m.manufacturer
-        const manuM = Number(manufacturerCosts[manuId] || 1)
-        const groupM = Number(userMultiplier || 1)
-        const items = Array.isArray(m.items) ? m.items : []
-        const itemsSubtotal = items.reduce((sum, it) => {
-          const qty = Number(it.qty || it.quantity || 1)
-          const base = Number(it.basePrice ?? it.price ?? it.unitPrice ?? 0)
-          const unit = base * manuM * groupM
-          return sum + unit * qty
-        }, 0)
-        const assembly = Number(m?.summary?.assemblyFee || 0)
-        const modifications = Number(m?.summary?.modificationsCost || 0)
-        const deliveryFee = Number(m?.summary?.deliveryFee || 0)
-        const preDiscount = itemsSubtotal + assembly + modifications + deliveryFee
-        const discountPercent = Number(m?.summary?.discountPercent || 0)
-        const discountAmount = (preDiscount * discountPercent) / 100
-        const afterDiscount = preDiscount - discountAmount
-        const taxRate = Number(m?.summary?.taxRate || 0)
-        const taxAmount = (afterDiscount * taxRate) / 100
-        const grandTotal = afterDiscount + taxAmount
+  // Use saved snapshot totals as-is
+  const displaySummary = parsed.summary || { grandTotal: 0 }
 
-  // Style total reflects items subtotal only (no assembly/mods)
-  agg.styleTotal += itemsSubtotal
-        agg.assemblyFee += assembly
-        agg.modificationsCost += modifications
-        agg.deliveryFee += deliveryFee
-        agg.discountAmount += discountAmount
-        agg.taxAmount += taxAmount
-        agg.grandTotal += grandTotal
-      }
-      return agg
-    } catch (_) {
-      return parsed.summary || { grandTotal: 0 }
-    }
-  }, [parsed.manufacturers, manufacturerCosts, userMultiplier])
-
-  // Fetch manufacturer names, styles meta, and types meta for the manufacturers present in this proposal
-  useEffect(() => {
-    const loadMeta = async () => {
-      try {
-        const uniqManuIds = Array.from(
-          new Set(
-            (parsed.manufacturers || [])
-              .map((m) => m.manufacturer)
-              .filter((id) => typeof id === 'number' || typeof id === 'string')
-          )
-        )
-        if (!uniqManuIds.length) return
-
-  const nameMap = { ...manufacturerNames }
-        const stylesMap = { ...stylesByManu }
-        const typesMap = { ...typesByManu }
-        const costsMap = { ...manufacturerCosts }
-        for (const id of uniqManuIds) {
-          // Fetch manufacturer basic info (name)
-      if (!nameMap[id]) {
-            try {
-              const { data } = await axiosInstance.get(`/api/manufacturers/${id}`)
-              const name = data?.manufacturer?.name || data?.name
-        if (name && !/^manufacturer\s*\d+$/i.test(String(name).trim())) nameMap[id] = name
-              const cost = data?.manufacturer?.costMultiplier ?? data?.costMultiplier
-              if (cost && !costsMap[id]) costsMap[id] = Number(cost) || 1
-            } catch (_) {
-              // ignore
-            }
-          }
-          // Fetch styles meta (to get style names and images)
-          if (!stylesMap[id]) {
-            try {
-              const { data } = await axiosInstance.get(`/api/manufacturers/${id}/styles-meta`)
-              if (data && Array.isArray(data.styles)) stylesMap[id] = data.styles
-              if (data && data.manufacturerCostMultiplier && !costsMap[id]) {
-                costsMap[id] = Number(data.manufacturerCostMultiplier) || 1
-              }
-            } catch (_) {
-              // ignore
-            }
-          }
-          // Fetch types meta (to get type thumbnails)
-          if (!typesMap[id]) {
-            try {
-              const { data } = await axiosInstance.get(`/api/manufacturers/${id}/types-meta`)
-              if (data && Array.isArray(data)) typesMap[id] = data
-              // Some APIs may return { types: [...] }
-              else if (data && Array.isArray(data.types)) typesMap[id] = data.types
-            } catch (_) {
-              // ignore
-            }
-          }
-        }
-        setManufacturerNames(nameMap)
-        setStylesByManu(stylesMap)
-        setTypesByManu(typesMap)
-  setManufacturerCosts(costsMap)
-      } catch (_) {
-        // no-op
-      }
-    }
-    if (parsed?.manufacturers?.length) {
-      loadMeta()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsed?.manufacturers?.length])
-
-  // Ensure manufacturer list is loaded for fallbacks
-  useEffect(() => {
-    // lazy import to avoid circular
-    import('../../store/slices/manufacturersSlice').then(({ fetchManufacturers }) => {
-      if (!manuList || manuList.length === 0) {
-        dispatch(fetchManufacturers())
-      }
-    })
-  }, [dispatch])
+  // No external meta fetching; snapshot is the source of truth
 
   if (loading) {
     return (
@@ -464,7 +265,7 @@ const OrderDetails = () => {
       </style>
       <PageHeader
         title={t('orders.details.title', 'Order Details')}
-        subtitle={proposal?.customer?.name ? `${t('orders.details.customerLabel', 'Customer')}: ${proposal.customer.name}` : t('orders.details.subtitle', 'Accepted order overview')}
+  subtitle={order?.customer?.name ? `${t('orders.details.customerLabel', 'Customer')}: ${order.customer.name}` : t('orders.details.subtitle', 'Accepted order overview')}
         icon={FaShoppingCart}
         rightContent={
           <button type="button" className="btn btn-light btn-sm" onClick={handleBack}>
@@ -473,52 +274,65 @@ const OrderDetails = () => {
         }
       />
       {/* Manufacturer Details (primary) */}
-      {parsed.manufacturers?.length > 0 && (
+  {parsed.manufacturers?.length > 0 && (
         <CRow className="mb-3">
           <CCol md={12}>
             <CCard>
               <CCardHeader>{t('orders.details.manufacturerDetails', 'Manufacturer Details')}</CCardHeader>
               <CCardBody className="d-flex align-items-center" style={{ gap: 16, flexWrap: 'wrap' }}>
                 {(() => {
-                  const m = parsed.manufacturers[0]
-                  const manuName = manufacturerNames[m.manufacturer] || m.name || t('orders.common.manufacturer', 'Manufacturer')
-                  const styles = stylesByManu[m.manufacturer]
-                  let found = Array.isArray(styles) ? styles.find((s) => s.id === m.selectedStyle) : null
-                  if (!found && Array.isArray(styles)) {
-                    const styleNameFromProposal = m?.styleName || m?.style || m?.selectedStyleName || (typeof m?.selectedStyle === 'string' ? m.selectedStyle : null)
-                    if (styleNameFromProposal) {
-                      found = styles.find((s) => String(s.style).toLowerCase() === String(styleNameFromProposal).toLowerCase()) || null
-                    }
-                  }
-                  // Try multiple ways to resolve the style image:
-                  // 1) Direct image on the style payload
-                  // 2) Match a style variant image by selected color/variant name
-                  // 3) Fallback to the first available variant image
-                  let resolvedImg = null
-                  if (found) {
-                    if (found.image) {
-                      resolvedImg = found.image
-                    } else if (Array.isArray(found.styleVariants) && found.styleVariants.length) {
-                      const selectedColor = m?.styleColor || m?.selectedStyleColor || m?.styleVariant || m?.colorName || m?.color
-                      const match = selectedColor
-                        ? found.styleVariants.find(v => (v.shortName || '').toLowerCase() === String(selectedColor).toLowerCase())
-                        : null
-                      resolvedImg = (match?.image) || found.styleVariants[0]?.image || null
-                    }
-                  }
-                  const imgUrl = resolvedImg
-                    ? (String(resolvedImg).startsWith('/')
-                        ? `${import.meta.env.VITE_API_URL || ''}${resolvedImg}`
-                        : `${import.meta.env.VITE_API_URL || ''}/uploads/images/${resolvedImg}`)
-                    : null
+      const m = parsed.manufacturers[0]
+
+      // Enhanced manufacturer name resolution
+      const resolveManuName = () => {
+        // Try direct manufacturer association from API
+        if (order?.manufacturer?.name) return order.manufacturer.name;
+
+        // Try snapshot manufacturer ID resolution
+        if (m?.manufacturer) {
+          const manuId = m.manufacturer;
+          const fromMap = manuById?.[manuId] || manuById?.[String(manuId)];
+          if (fromMap?.name) return fromMap.name;
+
+          const fromList = manuList?.find?.((mn) => Number(mn?.id) === Number(manuId));
+          if (fromList?.name) return fromList.name;
+        }
+
+        // Fallback to existing logic
+        return m.manufacturerName || m.name || order?.manufacturer_name || t('orders.common.manufacturer', 'Manufacturer');
+      };
+
+      const manuName = resolveManuName();
+
+      // Enhanced style name resolution - avoid showing manufacturer name as style
+      const resolveStyleName = () => {
+        // Check if styleName is actually the manufacturer name (wrong data)
+        const potentialStyleName = m?.styleName || m?.style;
+
+        // If the styleName matches the manufacturer name, it's wrong data
+        if (potentialStyleName && potentialStyleName === manuName) {
+          // Try to get style name from order.style_name instead
+          if (order?.style_name && order.style_name !== manuName) {
+            return order.style_name;
+          }
+          // If still wrong, return a generic placeholder
+          return t('common.na');
+        }
+
+        // Use the styleName if it's different from manufacturer name
+        return potentialStyleName || order?.style_name || t('common.na');
+      };
+
+      const styleName = resolveStyleName();
+      const imgUrl = m.styleImage
                   return (
                     <>
                       {imgUrl && (
-                        <img src={imgUrl} alt={found?.style || t('common.style', 'Style')} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }} onClick={() => setPreviewImg(imgUrl)} />
+        <img src={imgUrl} alt={styleName || t('common.style', 'Style')} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }} onClick={() => setPreviewImg(imgUrl)} />
                       )}
                       <div>
-                        <div className="mb-1"><strong>{t('orders.common.manufacturer', 'Manufacturer')}:</strong> {manuName}</div>
-                        <div className="mb-0"><strong>{t('orders.details.styleColor', 'Style (Color)')}:</strong> {found?.style || t('common.na')}</div>
+        <div className="mb-1"><strong>{t('orders.common.manufacturer', 'Manufacturer')}:</strong> {manuName}</div>
+        <div className="mb-0"><strong>{t('orders.details.styleColor', 'Style (Color)')}:</strong> {styleName}</div>
                       </div>
                     </>
                   )
@@ -535,10 +349,10 @@ const OrderDetails = () => {
           <CCard>
             <CCardHeader>{t('orders.details.order', 'Order')}</CCardHeader>
             <CCardBody>
-              <div className="mb-2"><strong>{t('orders.details.id', 'ID')}:</strong> {proposal?.id}</div>
-              <div className="mb-2"><strong>{t('orders.details.date', 'Date')}:</strong> {new Date(proposal?.date || proposal?.createdAt).toLocaleDateString()}</div>
-              <div className="mb-2"><strong>{t('orders.details.status', 'Status')}:</strong> <CBadge color="success">{proposal?.status || 'accepted'}</CBadge></div>
-              <div className="mb-2"><strong>{t('orders.details.acceptedAt', 'Accepted at')}:</strong> {proposal?.accepted_at ? new Date(proposal.accepted_at).toLocaleString() : t('common.na')}</div>
+              <div className="mb-2"><strong>{t('orders.details.id', 'ID')}:</strong> {order?.id}</div>
+              <div className="mb-2"><strong>{t('orders.details.date', 'Date')}:</strong> {new Date(order?.accepted_at || order?.date || order?.createdAt).toLocaleDateString()}</div>
+              <div className="mb-2"><strong>{t('orders.details.status', 'Status')}:</strong> <CBadge color="success">{order?.status || 'accepted'}</CBadge></div>
+              <div className="mb-2"><strong>{t('orders.details.acceptedAt', 'Accepted at')}:</strong> {order?.accepted_at ? new Date(order.accepted_at).toLocaleString() : t('common.na')}</div>
             </CCardBody>
           </CCard>
         </CCol>
@@ -546,10 +360,10 @@ const OrderDetails = () => {
           <CCard>
             <CCardHeader>{t('orders.details.customer', 'Customer')}</CCardHeader>
             <CCardBody>
-              <div className="mb-2"><strong>{t('orders.details.name', 'Name')}:</strong> {proposal?.customer?.name || t('common.na')}</div>
-              <div className="mb-2"><strong>{t('orders.details.email', 'Email')}:</strong> {proposal?.customer?.email || t('common.na')}</div>
-              <div className="mb-2"><strong>{t('orders.details.phone', 'Phone')}:</strong> {proposal?.customer?.mobile || proposal?.customer?.phone || t('common.na')}</div>
-              <div className="mb-2"><strong>{t('orders.details.address', 'Address')}:</strong> {proposal?.customer?.address || t('common.na')}</div>
+              <div className="mb-2"><strong>{t('orders.details.name', 'Name')}:</strong> {order?.customer?.name || order?.customer_name || t('common.na')}</div>
+              <div className="mb-2"><strong>{t('orders.details.email', 'Email')}:</strong> {order?.customer?.email || order?.customer_email || t('common.na')}</div>
+              <div className="mb-2"><strong>{t('orders.details.phone', 'Phone')}:</strong> {order?.customer?.mobile || order?.customer?.phone || order?.customer_phone || t('common.na')}</div>
+              <div className="mb-2"><strong>{t('orders.details.address', 'Address')}:</strong> {order?.customer?.address || order?.customer_address || t('common.na')}</div>
             </CCardBody>
           </CCard>
         </CCol>
@@ -578,10 +392,10 @@ const OrderDetails = () => {
             <CTable hover>
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell>{t('orders.details.specs', 'Specs')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('orders.common.manufacturer', 'Manufacturer')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('common.style', 'Style')}</CTableHeaderCell>
                   <CTableHeaderCell>{t('orders.details.item', 'Item')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('orders.details.specs', 'Specs')}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{t('orders.details.hingeSide', 'Hinge Side')}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{t('orders.details.exposedSide', 'Exposed Side')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.qty', 'Qty')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.unitPrice', 'Unit Price')}</CTableHeaderCell>
                   <CTableHeaderCell className="text-end">{t('orders.details.modifications', 'Modifications')}</CTableHeaderCell>
@@ -598,21 +412,6 @@ const OrderDetails = () => {
                     const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
                     return (
                       <CTableRow key={idx}>
-                        <CTableDataCell>
-                          {thumb ? (
-                            <img
-                              src={thumb}
-                              alt={styleName || manuName}
-                              title={thumbTitle}
-                              style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
-                              onClick={(e) => { e.stopPropagation(); setPreviewImg(thumb) }}
-                            />
-                          ) : (
-                            <span className="text-muted">-</span>
-                          )}
-                        </CTableDataCell>
-                        <CTableDataCell>{manuName}</CTableDataCell>
-                        <CTableDataCell>{styleName}</CTableDataCell>
                         <CTableDataCell>
                           <div>{it.name || it.description || it.item || '-'}</div>
                           {Array.isArray(it.modifications) && it.modifications.length > 0 && (
@@ -658,8 +457,30 @@ const OrderDetails = () => {
                             )
                           })()}
                         </CTableDataCell>
+                        <CTableDataCell>
+                          {thumb ? (
+                            <img
+                              src={thumb}
+                              alt={styleName || manuName}
+                              title={thumbTitle}
+                              style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
+                              onClick={(e) => { e.stopPropagation(); setPreviewImg(thumb) }}
+                            />
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
+                        </CTableDataCell>
+                        <CTableDataCell className="text-center">
+                          <span className={`badge ${it.hingeSide ? 'bg-primary' : 'bg-secondary'}`}>
+                            {it.hingeSide || '-'}
+                          </span>
+                        </CTableDataCell>
+                        <CTableDataCell className="text-center">
+                          <span className={`badge ${it.exposedSide ? 'bg-primary' : 'bg-secondary'}`}>
+                            {it.exposedSide || '-'}
+                          </span>
+                        </CTableDataCell>
                         <CTableDataCell className="text-end">{qty}</CTableDataCell>
-                        <CTableDataCell className="text-end">{currency(unit)}</CTableDataCell>
                         <CTableDataCell className="text-end">{currency(unit)}</CTableDataCell>
                         <CTableDataCell className="text-end">{currency(modsTotal)}</CTableDataCell>
                         <CTableDataCell className="text-end">{currency(total)}</CTableDataCell>
@@ -708,12 +529,18 @@ const OrderDetails = () => {
                           </div>
                         )}
                         <div className="text-muted" style={{ fontSize: 12 }}>
-                          {t('orders.common.manufacturer', 'Manufacturer')}: {manuName}
-                          {styleName ? ` • ${t('common.style', 'Style')}: ${styleName}` : ''}
-                        </div>
-                        <div className="text-muted" style={{ fontSize: 12 }}>
                           {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
                         </div>
+                        {(it.hingeSide || it.exposedSide) && (
+                          <div className="text-muted" style={{ fontSize: 12 }}>
+                            {it.hingeSide && (
+                              <span className="badge bg-primary me-2">{t('orders.details.hingeSide', 'Hinge Side')}: {it.hingeSide}</span>
+                            )}
+                            {it.exposedSide && (
+                              <span className="badge bg-primary">{t('orders.details.exposedSide', 'Exposed Side')}: {it.exposedSide}</span>
+                            )}
+                          </div>
+                        )}
                         <div className="d-flex justify-content-between mt-1" style={{ fontSize: 14 }}>
                           <div>
                             {t('orders.details.qty', 'Qty')}: <strong>{qty}</strong>
@@ -747,76 +574,31 @@ const OrderDetails = () => {
                 <CCol md={6} key={i}>
                   <CCard>
                     <CCardHeader>
-            {manufacturerNames[m.manufacturer] || m.name || `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`}
+            {m.manufacturerName || m.name || `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`}
                     </CCardHeader>
                     <CCardBody>
-                      {/* Style meta (name + picture) */}
+                      {/* Style (name + picture) from snapshot */}
+                      {m?.styleName || m?.style || m?.styleImage ? (
+                        <div className="d-flex align-items-center mb-3" style={{ gap: 12 }}>
+                          {m.styleImage && (
+                            <CCardImage src={m.styleImage} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }} onClick={() => setPreviewImg(m.styleImage)} />
+                          )}
+                          <div>
+                            <div className="text-muted" style={{ fontSize: 12 }}>{t('orders.details.selectedStyle', 'Selected Style')}</div>
+                            <div><strong>{m.styleName || m.style}</strong></div>
+                          </div>
+                        </div>
+                      ) : null}
                       {(() => {
-                        try {
-                          const styles = stylesByManu[m.manufacturer]
-                          let found = Array.isArray(styles)
-                            ? styles.find((s) => s.id === m.selectedStyle)
-                            : null
-                          if (!found && Array.isArray(styles)) {
-                            const styleNameFromProposal = m?.styleName || m?.style || m?.selectedStyleName || (typeof m?.selectedStyle === 'string' ? m.selectedStyle : null)
-                            if (styleNameFromProposal) {
-                              found = styles.find((s) => String(s.style).toLowerCase() === String(styleNameFromProposal).toLowerCase()) || null
-                            }
-                          }
-                          if (!found) return null
-                          // Resolve image from style or its variants
-                          let resolved = null
-                          if (found.image) {
-                            resolved = found.image
-                          } else if (Array.isArray(found.styleVariants) && found.styleVariants.length) {
-                            const selectedColor = m?.styleColor || m?.selectedStyleColor || m?.styleVariant || m?.colorName || m?.color
-                            const vm = selectedColor
-                              ? found.styleVariants.find(v => (v.shortName || '').toLowerCase() === String(selectedColor).toLowerCase())
-                              : null
-                            resolved = (vm?.image) || found.styleVariants[0]?.image || null
-                          }
-                          const imgUrl = resolved
-                            ? (String(resolved).startsWith('/')
-                                ? `${import.meta.env.VITE_API_URL || ''}${resolved}`
-                                : `${import.meta.env.VITE_API_URL || ''}/uploads/images/${resolved}`)
-                            : null
-                          return (
-                            <div className="d-flex align-items-center mb-3" style={{ gap: 12 }}>
-                              {imgUrl && (
-                                <CCardImage src={imgUrl} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }} onClick={() => setPreviewImg(imgUrl)} />
-                              )}
-                              <div>
-                <div className="text-muted" style={{ fontSize: 12 }}>{t('orders.details.selectedStyle', 'Selected Style')}</div>
-                                <div><strong>{found.style}</strong></div>
-                              </div>
-                            </div>
-                          )
-                        } catch (_) {
-                          return null
-                        }
-                      })()}
-                      {(() => {
-                        // Per-manufacturer computed totals
-                        const manuId = m.manufacturer
-                        const manuM = Number(manufacturerCosts[manuId] || 1)
-                        const groupM = Number(userMultiplier || 1)
-                        const items = Array.isArray(m.items) ? m.items : []
-                        const itemsSubtotal = items.reduce((sum, it) => {
-                          const qty = Number(it.qty || it.quantity || 1)
-                          const base = Number(it.basePrice ?? it.price ?? it.unitPrice ?? 0)
-                          const unit = base * manuM * groupM
-                          return sum + unit * qty
-                        }, 0)
-                        const assembly = Number(m?.summary?.assemblyFee || 0)
-                        const modifications = Number(m?.summary?.modificationsCost || 0)
-                        const deliveryFee = Number(m?.summary?.deliveryFee || 0)
-                        const preDiscount = itemsSubtotal + assembly + modifications + deliveryFee
-                        const discountPercent = Number(m?.summary?.discountPercent || 0)
-                        const discountAmount = (preDiscount * discountPercent) / 100
-                        const afterDiscount = preDiscount - discountAmount
-                        const taxRate = Number(m?.summary?.taxRate || 0)
-                        const taxAmount = (afterDiscount * taxRate) / 100
-                        const grandTotal = afterDiscount + taxAmount
+                        // Per-manufacturer totals from snapshot
+                        const s = m?.summary || {}
+                        const itemsSubtotal = Number(s.styleTotal || 0)
+                        const assembly = Number(s.assemblyFee || 0)
+                        const modifications = Number(s.modificationsCost || 0)
+                        const deliveryFee = Number(s.deliveryFee || 0)
+                        const discountAmount = Number(s.discountAmount || 0)
+                        const taxAmount = Number(s.taxAmount || 0)
+                        const grandTotal = Number(s.grandTotal || 0)
                         return (
                           <>
               <div className="mb-2"><strong>{t('orders.details.styleTotal', 'Style Total')}:</strong> {currency(itemsSubtotal)}</div>

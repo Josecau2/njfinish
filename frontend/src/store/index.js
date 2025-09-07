@@ -19,6 +19,7 @@ import contractsReducer from './slices/contractsSlice'
 import contractorReducer from './slices/contractorSlice';
 import notificationReducer from './notificationSlice';
 import authReducer from './slices/authSlice';
+import ordersReducer from './slices/ordersSlice';
 
 const store = configureStore({
   reducer: {
@@ -41,6 +42,7 @@ const store = configureStore({
     contracts: contractsReducer,
     contractors: contractorReducer,
     notification: notificationReducer,
+  orders: ordersReducer,
 
   },
 });

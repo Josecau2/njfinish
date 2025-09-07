@@ -22,16 +22,18 @@ import { setNotifications, setLoading, setError, markNotificationAsRead, markAll
 import axiosInstance from '../../helpers/axiosInstance'
 import EmptyState from '../../components/common/EmptyState'
 import { notifyError, notifySuccess } from '../../helpers/notify'
+import { useTranslation } from 'react-i18next'
 
 const NotificationsPage = () => {
   const dispatch = useDispatch()
+  const { t } = useTranslation()
   const { notifications, loading, error } = useSelector((state) => state.notification)
   const authUser = useSelector((state) => state.auth?.user)
   const isAdmin = (() => {
     const role = String(authUser?.role || '').toLowerCase()
     return role === 'admin' || role === 'super_admin'
   })()
-  
+
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [filter, setFilter] = useState('all') // 'all', 'unread', 'read'
@@ -62,7 +64,7 @@ const NotificationsPage = () => {
     if (showSpinner) {
       dispatch(setLoading(true))
     }
-    
+
     try {
       const params = {
         page: currentPage,
@@ -93,7 +95,7 @@ const NotificationsPage = () => {
   }
   useEffect(() => {
     if (error) {
-      notifyError('Failed to load notifications', typeof error === 'string' ? error : '')
+      notifyError(t('notifications.errors.load','Failed to load notifications'), typeof error === 'string' ? error : '')
     }
   }, [error])
 
@@ -107,8 +109,8 @@ const NotificationsPage = () => {
       await axiosInstance.post(`/api/notifications/${notificationId}/read`)
       dispatch(markNotificationAsRead(notificationId))
     } catch (error) {
-      console.error('Error marking notification as read:', error)
-      notifyError('Failed to mark as read', error.message)
+  console.error('Error marking notification as read:', error)
+  notifyError(t('notifications.errors.markOne','Failed to mark as read'), error.message)
     }
   }
 
@@ -118,10 +120,10 @@ const NotificationsPage = () => {
       dispatch(markAllAsRead())
       // Refresh to update the list
       fetchNotifications(false)
-      notifySuccess('All caught up', 'All notifications marked as read')
+  notifySuccess(t('notifications.success.allReadTitle','All caught up'), t('notifications.success.allReadText','All notifications marked as read'))
     } catch (error) {
-      console.error('Error marking all notifications as read:', error)
-      notifyError('Failed to mark all as read', error.message)
+  console.error('Error marking all notifications as read:', error)
+  notifyError(t('notifications.errors.markAll','Failed to mark all as read'), error.message)
     }
   }
 
@@ -172,7 +174,7 @@ const NotificationsPage = () => {
         <CCol>
           <CCard>
             <CCardHeader className="d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">Notifications</h4>
+              <h4 className="mb-0">{t('notifications.header','Notifications')}</h4>
               <div className="d-flex gap-2">
                 <CButton
                   variant="outline"
@@ -279,7 +281,7 @@ const NotificationsPage = () => {
               )}
 
               {!loading && filteredNotifications.map((notification) => (
-                <CCard 
+                <CCard
                   key={notification.id}
                   className={`mb-3 notification-card ${!notification.is_read ? 'notification-unread' : ''}`}
                   style={{
@@ -348,13 +350,13 @@ const NotificationsPage = () => {
               {totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-4">
                   <CPagination>
-                    <CPaginationItem 
+                    <CPaginationItem
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage(currentPage - 1)}
                     >
                       Previous
                     </CPaginationItem>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                       <CPaginationItem
                         key={page}
@@ -364,8 +366,8 @@ const NotificationsPage = () => {
                         {page}
                       </CPaginationItem>
                     ))}
-                    
-                    <CPaginationItem 
+
+                    <CPaginationItem
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage(currentPage + 1)}
                     >

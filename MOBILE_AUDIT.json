@@ -1,0 +1,124 @@
+{
+  "stack": {
+    "framework": "react",
+    "frameworkVersion": "19",
+    "router": "react-router-dom@7.8.2",
+    "state": "@reduxjs/toolkit + react-redux",
+    "ui": "@coreui/react@5",
+    "i18n": "i18next + react-i18next",
+    "build": {
+      "tool": "vite",
+      "version": "7",
+      "plugin": "@vitejs/plugin-react",
+      "minify": "terser",
+      "manualChunks": [
+        "react-vendor",
+        "ui-vendor",
+        "form-vendor",
+        "date-vendor",
+        "redux-vendor",
+        "icons-vendor",
+        "editor-vendor",
+        "utils-vendor"
+      ]
+    }
+  },
+  "layout": {
+    "shell": "frontend/src/layout/DefaultLayout.js",
+    "components": ["AppHeader", "AppSidebar", "AppContent", "AppFooter"],
+    "mobile": {
+      "autoCloseSidebarOnRouteChange": true,
+      "termsGateForNonAdmins": true,
+      "densityToggle": "html[data-density=compact] at <=768px"
+    }
+  },
+  "routes": {
+    "config": "frontend/src/routes.js",
+    "areas": [
+      "Dashboard",
+      "Customers",
+      "Quotes (list/create/edit)",
+      "Contracts",
+      "Orders (admin & my)",
+      "Resources",
+      "Calendar",
+      "Settings (manufacturers, users, groups, locations, taxes, customization, terms)",
+      "Admin (contractors, notifications)",
+      "Profile",
+      "Contact",
+      "404"
+    ],
+    "flags": ["permission", "adminOnly", "contractorBlock", "noisyRedirects"]
+  },
+  "styling": {
+    "core": [
+      "frontend/src/scss",
+      "frontend/src/styles/main.css",
+      "frontend/src/styles/responsive.css",
+      "frontend/src/styles/header-overrides.css"
+    ],
+    "themes": {
+      "pageHeaderDrivenCards": true
+    },
+    "tokens": ["spacing", "radii", "shadows", "colors", "density"]
+  },
+  "mobilePatterns": {
+    "lists": {
+      "cards": "compact q-card style",
+      "stickyToolbar": true,
+      "stickyBottomBar": true,
+      "loadMore": true,
+      "infiniteScroll": false
+    },
+    "modals": {
+      "modificationModalSize": "lg",
+      "fullScreenOnMobile": true
+    },
+    "contentVisibility": true,
+    "textClamp": {
+      "webkitLineClamp": true,
+      "standardLineClamp": false
+    }
+  },
+  "accessibility": {
+    "strengths": ["route code-splitting", "spinner role=status", "nav/tabs roles"],
+    "gaps": [
+      "aria-labels for icon-only buttons",
+      "standardize page heading levels",
+      "verify tap targets >= 44x44 CSS px"
+    ],
+    "actions": [
+      "Ensure type=button for non-submit buttons",
+      "Label sticky toolbars and bottom bars",
+      "Audit focus-visible styles"
+    ]
+  },
+  "performance": {
+    "split": ["route-level React.lazy", "vite manualChunks"],
+    "css": ["autoprefixer", "cssCodeSplit"],
+    "todo": [
+      "add standard line-clamp",
+      "image lazy-loading where applicable",
+      "safe-area insets for bottom bars",
+      "bundle analyzer checks"
+    ]
+  },
+  "i18n": {
+    "libs": ["i18next", "react-i18next"],
+    "actions": [
+      "wrap new mobile UI strings in t()",
+      "ensure aria-labels use translation keys",
+      "verify language switcher wiring"
+    ]
+  },
+  "recentFixes": [
+    "Immediate hinge/exposed side selection feedback",
+    "startTransition for safe state updates",
+    "row-based keying across create/edit",
+    "prevent unintended mobile submits via type=button",
+    "modification modal size set to lg",
+    "PageHeader-driven theming for mobile modification cards",
+    "centered mod cards with ownership indicators",
+    "quotes list: compact cards + sticky filters/search + load more + sticky bottom actions"
+  ]
+}

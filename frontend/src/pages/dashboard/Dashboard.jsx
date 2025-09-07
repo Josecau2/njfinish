@@ -57,7 +57,7 @@ const Dashboard = () => {
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem('user') || '{}');
   }, []);
-  
+
   const isContractor = user.group && user.group.group_type === 'contractor';
 
   // If contractor, show contractor dashboard
@@ -176,14 +176,14 @@ const Dashboard = () => {
 
   const translateStatus = (status) => {
     if (!status) return '';
-    
+
     // Normalize the status string for mapping
     const normalizedStatus = status.toLowerCase().replace(/\s+/g, '');
-    
+
     // Map specific status values to translation keys
     const statusMap = {
       'draft': 'draft',
-      'sent': 'sent', 
+      'sent': 'sent',
       'accepted': 'accepted',
       'rejected': 'rejected',
       'expired': 'expired',
@@ -192,12 +192,12 @@ const Dashboard = () => {
       'measurementdone': 'measurementDone',
       'designdone': 'designDone',
       'followup1': 'followUp1',
-      'followup2': 'followUp2', 
+      'followup2': 'followUp2',
       'followup3': 'followUp3',
       'proposalaccepted': 'proposalAccepted',
       'proposalrejected': 'proposalRejected'
     };
-    
+
     const translationKey = statusMap[normalizedStatus] || normalizedStatus;
     return t(`status.${translationKey}`, status);
   };
@@ -229,7 +229,7 @@ const Dashboard = () => {
 
   return (
     <CContainer fluid className="dashboard-container">
-      <PageHeader 
+      <PageHeader
         title={t('dashboard.title', 'Dashboard')}
         rightContent={
           <div className="d-flex gap-2">

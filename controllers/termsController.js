@@ -55,21 +55,29 @@ exports.saveTerms = async (req, res) => {
     }
     // Determine version
     const latest = await Terms.findOne({ order: [['version', 'DESC']] });
-    let nextVersion;
-    
+    // If no terms exist yet, create version 1
     if (!latest) {
-      // No existing terms, start with version 1
-      nextVersion = 1;
-    } else if (bumpVersion) {
-      // Create new version by incrementing
-      nextVersion = latest.version + 1;
-    } else {
-      // Update existing version
-      nextVersion = latest.version;
+      const created = await Terms.create({
+        content,
+        version: 1,
+        created_by_user_id: req.user?.id || null,
+      });
+      return res.json({ success: true, data: created });
     }
-    
-    const created = await Terms.create({ content, version: nextVersion, created_by_user_id: req.user?.id || null });
-    return res.json({ success: true, data: created });
+
+    // If bumpVersion is requested, create a new version (latest.version + 1)
+    if (bumpVersion) {
+      const created = await Terms.create({
+        content,
+        version: latest.version + 1,
+        created_by_user_id: req.user?.id || null,
+      });
+      return res.json({ success: true, data: created });
+    }
+
+    // Otherwise, update the existing latest version's content (avoid unique violation)
+    await latest.update({ content });
+    return res.json({ success: true, data: latest });
   } catch (e) {
     return res.status(500).json({ success: false, message: 'Failed to save terms' });
   }

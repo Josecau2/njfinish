@@ -53,7 +53,7 @@ const useNavItems = () => {
         ];
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: 'Create Proposal', to: '/proposals/create' });
+          proposalItems.push({ component: CNavItem, name: 'Create Quote', to: '/proposals/create' });
         }
 
   // Contracts: visible only to non-contractors

@@ -4,3 +4,102 @@
   filter: grayscale(40%);
   pointer-events: none; /* only this card is unclickable */
 }
+
+/* Shared layout rules to keep style area from shifting between style changes */
+.other-styles-section {
+  /* Ensure the right column keeps a stable height even when alert appears/disappears */
+  min-height: 360px;
+}
+
+.other-styles-carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden; /* prevent horizontal scroll jumps */
+}
+
+.other-styles-carousel-container:not(.collapsed-view) {
+  /* Reserve enough space for image + caption so layout doesn't jump */
+  min-height: 320px;
+}
+
+.other-styles-carousel-container.collapsed-view {
+  /* Compact list still keeps a small stable height */
+  min-height: 120px;
+}
+
+.styles-carousel-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.styles-carousel-track {
+  display: flex;
+  gap: 1rem;
+  will-change: transform;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Individual style cards */
+.style-carousel-item {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* Compact list rows */
+.styles-compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.compact-style-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .5rem .75rem;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.compact-style-item.current-style {
+  border-color: #1a73e8;
+  background: #d0e6ff;
+}
+
+.style-info .style-name {
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.current-style-indicator {
+  font-size: .75rem;
+  color: #1a73e8;
+  margin-left: .5rem;
+}
+
+/* Minor helpers for consistent spacing */
+.style-separator {
+  background-color: #ccc;
+}
+
+.current-style-info {
+  min-height: 260px; /* roughly matches image height so columns align */
+}
+
+/* Stabilize edit page left column so long names don't resize the grid */
+.item-selection-edit .current-style-section {
+  width: 250px;
+  min-width: 250px;
+  max-width: 280px; /* small flex for aesthetics while preventing jumps */
+}
+.item-selection-edit .current-style-content h5 {
+  margin: 0;
+  line-height: 1.25;
+}
+.item-selection-edit .current-style-content h5.mb-0 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* avoid expanding the column when switching */
+}

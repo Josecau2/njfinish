@@ -202,53 +202,34 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
       </CRow>
 
       {/* Search and Filters */}
-      <CCard className="border-0 shadow-sm mb-3">
-        <CCardBody className="py-3">
-          <CRow className="align-items-center g-2">
-            <CCol md={6}>
-              <CInputGroup>
-                <CInputGroupText>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
-                  placeholder="Search customers by name or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-                  style={{ 
-                    border: 'none',
-                    boxShadow: 'none',
-                    backgroundColor: '#f8f9fa'
-                  }}
-                />
-              </CInputGroup>
-            </CCol>
-            <CCol md={3}>
-              <CFormSelect
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                style={{ 
-                  border: 'none',
-                  boxShadow: 'none',
-                  backgroundColor: '#f8f9fa'
-                }}
-              >
-                <option value={5}>5 per page</option>
-                <option value={10}>10 per page</option>
-                <option value={25}>25 per page</option>
-                <option value={50}>50 per page</option>
-              </CFormSelect>
-            </CCol>
-            <CCol md={3}>
-              <div className="text-muted small text-end">
-                Showing {sortedFilteredCustomers.length} of {total} customers
-                {isContractor && (
-                  <div className="text-primary">({contractorGroupName})</div>
-                )}
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <div className="toolbar">
+        <CInputGroup>
+          <CInputGroupText>
+            <CIcon icon={cilSearch} />
+          </CInputGroupText>
+          <CFormInput
+            className="search"
+            placeholder="Search customers by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+          />
+        </CInputGroup>
+        <CFormSelect
+          value={itemsPerPage}
+          onChange={(e) => setItemsPerPage(Number(e.target.value))}
+        >
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={25}>25 per page</option>
+          <option value={50}>50 per page</option>
+        </CFormSelect>
+        <div className="text-muted small">
+          Showing {sortedFilteredCustomers.length} of {total} customers
+          {isContractor && (
+            <div className="text-primary">({contractorGroupName})</div>
+          )}
+        </div>
+      </div>
 
       {/* Loading State */}
       {loading && (
@@ -276,10 +257,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
         <CCard className="border-0 shadow-sm d-none d-md-block">
           <CCardBody className="p-0">
             <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
+              <CTable hover responsive className="mb-0 table-modern">
                 <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
                   <CTableRow>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 sticky-col">
                       Location
                     </CTableHeaderCell>
                     <CTableHeaderCell 
@@ -385,37 +366,22 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
                           <div className="d-flex justify-content-center gap-2">
                             <PermissionGate action="update" resource="customer" item={cust}>
-                              <CButton
-                                color="light"
-                                size="sm"
+                              <button
+                                className="icon-btn"
                                 onClick={() => handleEdit(cust)}
-                                title="Edit customer"
-                                className="rounded-pill d-flex align-items-center px-3"
-                                style={{
-                                  border: '1px solid #e0e0e0',
-                                  transition: 'all 0.2s ease'
-                                }}
+                                aria-label="Edit customer"
                               >
-                                <CIcon icon={cilPencil} size="sm" className="me-1" />
-                                Edit
-                              </CButton>
+                                <CIcon icon={cilPencil} />
+                              </button>
                             </PermissionGate>
                             <PermissionGate action="delete" resource="customer" item={cust}>
-                              <CButton
-                                color="light"
-                                size="sm"
+                              <button
+                                className="icon-btn"
                                 onClick={() => handleDelete(cust.id)}
-                                title="Delete customer"
-                                className="rounded-pill d-flex align-items-center px-3"
-                                style={{
-                                  border: '1px solid #e0e0e0',
-                                  color: '#dc3545',
-                                  transition: 'all 0.2s ease'
-                                }}
+                                aria-label="Delete customer"
                               >
-                                <CIcon icon={cilTrash} size="sm" className="me-1" />
-                                Delete
-                              </CButton>
+                                <CIcon icon={cilTrash} />
+                              </button>
                             </PermissionGate>
                           </div>
                         </CTableDataCell>
@@ -445,110 +411,41 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
           ) : (
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
-                <CCard key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
-                  <CCardBody className="p-3">
-                    {/* Header */}
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                        <CIcon icon={cilUser} className="me-2 text-muted" size="lg" />
-                        <div className="flex-grow-1 min-width-0">
-                          <div className="fw-medium text-dark text-truncate" title={cust.name || 'N/A'}>
-                            {cust.name || 'N/A'}
-                          </div>
-                          <CBadge 
-                            color="secondary" 
-                            className="px-2 py-1 mt-1"
-                            style={{ 
-                              borderRadius: '10px',
-                              fontSize: '10px',
-                              fontWeight: '500'
-                            }}
-                          >
-                            Main
-                          </CBadge>
-                        </div>
-                      </div>
-                    </div>
+                <div key={cust.id} className="card--compact">
+                  <div className="card__head">
+                    <h3 className="card__title">{cust.name || 'N/A'}</h3>
+                    <CBadge color="secondary" className="status-pill">
+                      Main
+                    </CBadge>
+                  </div>
+                  
+                  <div className="card__meta">
+                    <span>{cust.email || 'N/A'}</span>
+                    <span>{cust.proposalCount || 0} Proposals</span>
+                    <span>0 Orders</span>
+                  </div>
 
-                    {/* Contact Info */}
-                    <div className="mb-3">
-                      <div className="small text-muted">Email</div>
-                      <div className="d-flex align-items-center">
-                        <CIcon icon={cilEnvelopeClosed} className="me-1 text-muted" size="sm" />
-                        <span className="text-truncate-mobile text-muted" title={cust.email || 'N/A'}>
-                          {cust.email || 'N/A'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="row g-2 mb-3">
-                      <div className="col-6">
-                        <CBadge 
-                          color="info" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
-                            fontWeight: '500',
-                          }}
-                        >
-                          {cust.proposalCount || 0} Proposals
-                        </CBadge>
-                      </div>
-                      <div className="col-6">
-                        <CBadge 
-                          color="success" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
-                            fontWeight: '500',
-                          }}
-                        >
-                          0 Orders
-                        </CBadge>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="d-flex justify-content-center gap-2 customer-card-actions">
-                      <PermissionGate action="update" resource="customer" item={cust}>
-                        <CButton
-                          color="light"
-                          size="sm"
-                          onClick={() => handleEdit(cust)}
-                          title="Edit customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
-                          style={{
-                            border: '1px solid #e0e0e0',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          <CIcon icon={cilPencil} size="sm" className="me-1" />
-                          Edit
-                        </CButton>
-                      </PermissionGate>
-                      <PermissionGate action="delete" resource="customer" item={cust}>
-                        <CButton
-                          color="light"
-                          size="sm"
-                          onClick={() => handleDelete(cust.id)}
-                          title="Delete customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
-                          style={{
-                            border: '1px solid #e0e0e0',
-                            color: '#dc3545',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          <CIcon icon={cilTrash} size="sm" className="me-1" />
-                          Delete
-                        </CButton>
-                      </PermissionGate>
-                    </div>
-                  </CCardBody>
-                </CCard>
+                  <div className="d-flex justify-content-center gap-2">
+                    <PermissionGate action="update" resource="customer" item={cust}>
+                      <button
+                        className="icon-btn"
+                        onClick={() => handleEdit(cust)}
+                        aria-label="Edit customer"
+                      >
+                        <CIcon icon={cilPencil} />
+                      </button>
+                    </PermissionGate>
+                    <PermissionGate action="delete" resource="customer" item={cust}>
+                      <button
+                        className="icon-btn"
+                        onClick={() => handleDelete(cust.id)}
+                        aria-label="Delete customer"
+                      >
+                        <CIcon icon={cilTrash} />
+                      </button>
+                    </PermissionGate>
+                  </div>
+                </div>
               ))}
             </div>
           )}

@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Create Quote",
+      "passed": false,
+      "timestamp": "2025-09-06T02:57:06.683Z",
+      "details": {
+        "error": "Failed to create quote"
+      }
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "total": 1
+  }
+}

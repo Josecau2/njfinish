@@ -7,6 +7,7 @@ import './i18n'
 import App from './App'
 import { detoxAuthStorage } from './utils/authToken'
 import Swal from 'sweetalert2'
+import i18n from './i18n'
 import store from './store'
 import axiosInstance from './helpers/axiosInstance'
 import { logout } from './store/slices/authSlice'
@@ -35,7 +36,7 @@ try {
             Swal.fire({
               toast: true,
               icon: 'info',
-              title: 'Your session expired — please log in again.',
+              title: i18n.t('auth.sessionExpired','Your session expired. Please sign in again.'),
               position: 'top-end',
               showConfirmButton: false,
               timer: 2500,

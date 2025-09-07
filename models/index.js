@@ -23,6 +23,8 @@ const ContactThread = require('./ContactThread');
 const ContactMessage = require('./ContactMessage');
 const Terms = require('./Terms');
 const TermsAcceptance = require('./TermsAcceptance');
+const ManufacturerSubType = require('./ManufacturerSubType');
+const CatalogSubTypeAssignment = require('./CatalogSubTypeAssignment');
 
 const ManufacturerAssemblyCost = require('./ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('./ManufacturerHingesDetails');
@@ -158,6 +160,7 @@ Proposals.hasOne(Order, { foreignKey: 'proposal_id', as: 'order' });
 Order.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
 Order.belongsTo(UserGroup, { foreignKey: 'owner_group_id', as: 'ownerGroup' });
 Order.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
+Order.belongsTo(Manufacturer, { foreignKey: 'manufacturer_id', as: 'manufacturer' });
 
 // Contact messaging associations
 ContactThread.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
@@ -172,6 +175,15 @@ ContactMessage.belongsTo(User, { foreignKey: 'author_user_id', as: 'author' });
 TermsAcceptance.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 User.hasMany(TermsAcceptance, { foreignKey: 'user_id', as: 'termsAcceptances' });
 
+// Sub-type associations
+ManufacturerSubType.belongsTo(Manufacturer, { foreignKey: 'manufacturer_id', as: 'manufacturer' });
+Manufacturer.hasMany(ManufacturerSubType, { foreignKey: 'manufacturer_id', as: 'subTypes' });
+
+CatalogSubTypeAssignment.belongsTo(ManufacturerCatalogData, { foreignKey: 'catalog_data_id', as: 'catalogItem' });
+CatalogSubTypeAssignment.belongsTo(ManufacturerSubType, { foreignKey: 'sub_type_id', as: 'subType' });
+ManufacturerCatalogData.hasMany(CatalogSubTypeAssignment, { foreignKey: 'catalog_data_id', as: 'subTypeAssignments' });
+ManufacturerSubType.hasMany(CatalogSubTypeAssignment, { foreignKey: 'sub_type_id', as: 'catalogAssignments' });
+
 
 module.exports = {
     Manufacturer,
@@ -182,6 +194,7 @@ module.exports = {
     UserRole,
     Collection,
     Proposals,
+  Order,
     Customer,
     UserGroup,
     UserGroupMultiplier,
@@ -196,5 +209,7 @@ module.exports = {
   ContactThread,
   ContactMessage,
   Terms,
-  TermsAcceptance
+  TermsAcceptance,
+  ManufacturerSubType,
+  CatalogSubTypeAssignment
 };

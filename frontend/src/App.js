@@ -14,9 +14,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
 import PublicProposalPage from './pages/public/PublicProposalPage'
 import AppInitializer from './components/AppInitializer'
-import { setSidebarShow } from './store/slices/sidebarSlice' 
+import { setSidebarShow } from './store/slices/sidebarSlice'
 import { useDispatch } from 'react-redux'
-import { debounce } from 'lodash' 
+import { debounce } from 'lodash'
 
 
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -35,14 +35,21 @@ const App = () => {
       if (newSize !== lastSize.current) {
         lastSize.current = newSize
         dispatch(setSidebarShow(!isMobile)) // ✅ Show on desktop, hide on mobile
+  // Toggle compact density tokens on <html>
+  const html = document.documentElement
+  if (isMobile) html.setAttribute('data-density', 'compact')
+  else html.removeAttribute('data-density')
       }
     }
 
     const debouncedResize = debounce(handleResize, 150)
     window.addEventListener('resize', debouncedResize)
 
-    // Initial check (call only once)
-    handleResize()
+  // Initial check (call only once)
+  handleResize()
+  // Initialize density on first load
+  const html = document.documentElement
+  if (window.innerWidth <= 768) html.setAttribute('data-density', 'compact')
 
     return () => {
       window.removeEventListener('resize', debouncedResize)

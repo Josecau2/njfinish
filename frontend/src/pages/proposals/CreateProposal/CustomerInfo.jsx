@@ -23,10 +23,12 @@ import { fetchUsers } from '../../../store/slices/userSlice';
 import { fetchLocations } from '../../../store/slices/locationSlice';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import Swal from 'sweetalert2';
 
 const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBack, isContractor, contractorGroupId }) => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [isCreatingDesigner, setIsCreatingDesigner] = useState(false);
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
   const { t } = useTranslation();
   const [customerOptions, setCustomerOptions] = useState([]);
   const dispatch = useDispatch();
@@ -223,21 +225,47 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                           setFieldValue('customerEmail', email);
                           setFieldValue('customerId', customerId);
                         }}
-                        onCreateOption={(inputValue) => {
-                          updateFormData({
-                            ...formData,
-                            customerName: inputValue,
-                          customerEmail: '',
-                          customerId: ''
-                        });
-                        setFieldValue('customerName', inputValue);
-                        setFieldValue('customerEmail', '');
-                        setFieldValue('customerId', '');
-                      }}
+                        onCreateOption={async (inputValue) => {
+                          const name = String(inputValue || '').trim();
+                          if (!name) return;
+                          try {
+                            setIsCreatingCustomer(true);
+                            // Compose minimal payload; admin may need group_id when creating for a contractor
+                            const payload = {
+                              name,
+                              email: values.customerEmail || '',
+                              ...(isContractor && contractorGroupId ? { group_id: contractorGroupId } : {}),
+                            };
+                            const res = await axiosInstance.post('/api/customers/add', payload);
+                            const created = res?.data?.customer || res?.data;
+                            const newId = created?.id || '';
+
+                            // Update form and local options
+                            const option = { label: created?.name || name, value: created?.name || name, data: created };
+                            setCustomerOptions((prev) => [option, ...prev.filter((o) => o.value !== option.value)]);
+
+                            updateFormData({
+                              ...formData,
+                              customerName: created?.name || name,
+                              customerEmail: created?.email || values.customerEmail || '',
+                              customerId: newId,
+                            });
+                            setFieldValue('customerName', created?.name || name);
+                            setFieldValue('customerEmail', created?.email || values.customerEmail || '');
+                            setFieldValue('customerId', newId);
+
+                            Swal.fire('Customer Created', `"${created?.name || name}" was added.`, 'success');
+                          } catch (err) {
+                            const msg = err?.response?.data?.message || err?.message || 'Failed to create customer';
+                            Swal.fire('Error', msg, 'error');
+                          } finally {
+                            setIsCreatingCustomer(false);
+                          }
+                        }}
                       onBlur={handleBlur}
                       inputId="customerName"
                       placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
-                      isLoading={loading}
+                      isLoading={loading || isCreatingCustomer}
                     />
                     {errors.customerName && touched.customerName && (
                       <div className="text-danger small mt-1">{errors.customerName}</div>

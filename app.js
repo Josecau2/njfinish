@@ -16,14 +16,14 @@ const app = express();
 app.use((req, res, next) => {
   // Remove server signature
   res.removeHeader('X-Powered-By');
-  
+
   // Security headers to prevent information disclosure
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  
+
   // Content Security Policy (allow listed origins for images and API/connect)
   const originList = (env.CORS_ALLOWED_ORIGINS || []).join(' ');
   const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
       "frame-ancestors 'none'",
     ].join('; ') + ';'
   );
-  
+
   next();
 });
 
@@ -52,7 +52,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
   if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -102,7 +102,7 @@ const syncPromise = syncOptions ? sequelize.sync(syncOptions) : Promise.resolve(
 
 syncPromise.then(async () => {
   console.log('Database synced');
-  
+
   // Run production setup automatically if needed
   if (process.env.NODE_ENV === 'production') {
     await startupHandler.checkAndRunSetup();

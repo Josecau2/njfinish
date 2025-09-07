@@ -169,12 +169,12 @@ const CalendarView = () => {
                 subtitle="Manage your scheduled events and appointments"
                 icon={FaCalendarAlt}
             >
-                <CButton 
-                    color="light" 
+                <CButton
+                    color="light"
                     className="shadow-sm px-4 fw-semibold"
                     onClick={handleRefresh}
                     disabled={loading}
-                    style={{ 
+                    style={{
                         borderRadius: '5px',
                         border: 'none',
                         transition: 'all 0.3s ease'
@@ -191,7 +191,7 @@ const CalendarView = () => {
                     <CCard className="border-0 shadow-sm h-100">
                         <CCardBody className="text-center">
                             <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div 
+                                <div
                                     className="d-flex align-items-center justify-content-center me-3"
                                     style={{
                                         width: '40px',
@@ -214,7 +214,7 @@ const CalendarView = () => {
                     <CCard className="border-0 shadow-sm h-100">
                         <CCardBody className="text-center">
                             <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div 
+                                <div
                                     className="d-flex align-items-center justify-content-center me-3"
                                     style={{
                                         width: '40px',
@@ -237,7 +237,7 @@ const CalendarView = () => {
                     <CCard className="border-0 shadow-sm h-100">
                         <CCardBody className="text-center">
                             <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div 
+                                <div
                                     className="d-flex align-items-center justify-content-center me-3"
                                     style={{
                                         width: '40px',
@@ -267,10 +267,10 @@ const CalendarView = () => {
                                 <CInputGroupText style={{ background: 'none', border: 'none' }}>
                                     <CIcon icon={cilFilter} />
                                 </CInputGroupText>
-                                <CFormSelect 
-                                    value={eventType} 
+                                <CFormSelect
+                                    value={eventType}
                                     onChange={handleFilterChange}
-                                    style={{ 
+                                    style={{
                                         border: '1px solid #e3e6f0',
                                         borderRadius: '10px',
                                         fontSize: '14px',
@@ -288,11 +288,11 @@ const CalendarView = () => {
                         <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
                             <div className="d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
                                 {eventTypeOptions.slice(1).map((type) => (
-                                    <CBadge 
+                                    <CBadge
                                         key={type}
                                         color={badgeColors[type] || 'secondary'}
                                         className="px-2 py-1"
-                                        style={{ 
+                                        style={{
                                             borderRadius: '12px',
                                             fontSize: '11px',
                                             fontWeight: '500'
@@ -355,15 +355,15 @@ const CalendarView = () => {
                                 />
                             </div>
                         </div>
-                        
+
                         {/* Empty State */}
                         {filteredEvents.length === 0 && (
                             <div className="text-center py-5">
                                 <FaCalendarAlt className="text-muted mb-3" style={{ fontSize: '48px', opacity: 0.3 }} />
                                 <p className="text-muted mb-1 fs-5">No events found</p>
                                 <small className="text-muted">
-                                    {eventType === 'All' 
-                                        ? "No events are scheduled at this time" 
+                                    {eventType === 'All'
+                                        ? "No events are scheduled at this time"
                                         : `No events found for "${eventType}"`
                                     }
                                 </small>
@@ -378,19 +378,19 @@ const CalendarView = () => {
                 .fc {
                     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                 }
-                
+
                 .fc-toolbar {
                     background: #f8f9fa;
                     padding: 1rem;
                     border-radius: 8px 8px 0 0;
                     border-bottom: 1px solid #e3e6f0;
                 }
-                
+
                 .fc-toolbar-title {
                     color: #495057;
                     font-weight: 600;
                 }
-                
+
                 .fc-button {
                     border-radius: 6px !important;
                     border: 1px solid #e3e6f0 !important;
@@ -399,30 +399,30 @@ const CalendarView = () => {
                     font-weight: 500;
                     transition: all 0.2s ease;
                 }
-                
+
                 .fc-button:hover {
                     background: #e7f3ff !important;
                     border-color: #0d6efd !important;
                     color: #0d6efd !important;
                 }
-                
+
                 .fc-button-active {
                     background: #0d6efd !important;
                     border-color: #0d6efd !important;
                     color: white !important;
                 }
-                
+
                 .fc-daygrid-day {
                     border-color: #e3e6f0;
                 }
-                
+
                 .fc-col-header-cell {
                     background: #f8f9fa;
                     border-color: #e3e6f0;
                     font-weight: 600;
                     color: #495057;
                 }
-                
+
                 .fc-event {
                     border-radius: 6px !important;
                     border: none !important;
@@ -430,12 +430,12 @@ const CalendarView = () => {
                     cursor: pointer;
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
                 }
-                
+
                 .fc-event:hover {
                     transform: translateY(-1px);
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 }
-                
+
                 .fc-day-today {
                     background: rgba(13, 110, 253, 0.05) !important;
                 }

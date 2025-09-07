@@ -22,6 +22,7 @@ import { cilArrowLeft, cilMagnifyingGlass, cilX } from '@coreui/icons'
 import axiosInstance from '../../helpers/axiosInstance'
 import Swal from 'sweetalert2'
 import PageHeader from '../PageHeader'
+import { useTranslation } from 'react-i18next'
 
 const ModificationBrowserModal = ({
   visible,
@@ -31,6 +32,7 @@ const ModificationBrowserModal = ({
   catalogItemId
 }) => {
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
   const [gallery, setGallery] = useState([])
   const [currentView, setCurrentView] = useState('categories') // 'categories', 'templates', 'details'
@@ -62,7 +64,7 @@ const ModificationBrowserModal = ({
         if (!template) return
 
         // Prefer assignment.category provided by the API; template only has categoryId
-        const categoryName = assignment.category?.name || 'Uncategorized'
+  const categoryName = assignment.category?.name || t('common.none','None')
         const categoryId = assignment.category?.id || 'uncategorized'
 
         if (!categoryMap.has(categoryId)) {
@@ -86,7 +88,7 @@ const ModificationBrowserModal = ({
       setGallery(Array.from(categoryMap.values()))
     } catch (error) {
       console.error('Error loading assigned modifications:', error)
-      Swal.fire('Error', 'Failed to load modifications', 'error')
+  Swal.fire(t('common.error','Error'), t('proposals.toast.errorGeneric','An error occurred'), 'error')
       setGallery([])
     } finally {
       setLoading(false)
@@ -184,7 +186,7 @@ const ModificationBrowserModal = ({
     // Validate required customer upload
     const cfg = selectedTemplate.fieldsConfig || {}
     if (cfg.customerUpload && cfg.customerUpload.enabled !== false && cfg.customerUpload.required && (!modification.uploadedFiles || modification.uploadedFiles.length === 0)) {
-      Swal.fire('Missing file', 'This modification requires a file upload. Please attach at least one file.', 'warning')
+  Swal.fire(t('common.warning','Warning'), t('proposalUI.custom.validation.missingFile','This modification requires a file upload. Please attach at least one file.'), 'warning')
       return
     }
 
@@ -211,7 +213,7 @@ const ModificationBrowserModal = ({
       }
     } catch (err) {
       console.error('Upload failed:', err)
-      Swal.fire('Upload failed', 'Could not upload one or more files. Please try again.', 'error')
+  Swal.fire(t('common.error','Error'), t('proposalUI.custom.validation.uploadFailed','Could not upload one or more files. Please try again.'), 'error')
       return
     }
 
@@ -231,11 +233,11 @@ const ModificationBrowserModal = ({
 
     try {
       await onApplyModification(selectedItemIndex, modificationData)
-      Swal.fire('Success', 'Modification applied successfully!', 'success')
+  Swal.fire(t('common.success','Success'), t('proposalUI.custom.applied','Modification applied successfully!'), 'success')
       onClose()
     } catch (error) {
       console.error('Error applying modification:', error)
-      Swal.fire('Error', 'Failed to apply modification', 'error')
+  Swal.fire(t('common.error','Error'), t('proposalUI.custom.applyFailed','Failed to apply modification'), 'error')
     }
   }
 
@@ -244,7 +246,7 @@ const ModificationBrowserModal = ({
     if (!selectedTemplate?.fieldsConfig) {
       return (
         <div className="alert alert-info">
-          <small>This modification template has no configurable options.</small>
+    <small>{t('proposalUI.custom.noOptions','This modification template has no configurable options.')}</small>
         </div>
       )
     }
@@ -300,7 +302,7 @@ const ModificationBrowserModal = ({
           return (
             <div key={sliderKey} className="mb-4">
               <label className="form-label text-capitalize">
-        Choose {sliderKey}: <strong>{formatInches(currentValue)}</strong>
+            {t('proposalUI.custom.choose','Choose')} {sliderKey}: <strong>{formatInches(currentValue)}</strong>
               </label>
               <CFormRange
                 min={slider.min}
@@ -444,7 +446,7 @@ const ModificationBrowserModal = ({
     <CModal
       visible={visible}
       onClose={onClose}
-      size="xl"
+      size="lg"
       scrollable
     >
       {/* Header using PageHeader component */}

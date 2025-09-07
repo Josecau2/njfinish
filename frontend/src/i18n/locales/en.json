@@ -25,6 +25,10 @@
   "itemsPerPage": "Items per page:",
   "pageOf": "Page {{page}} of {{total}}",
   "close": "Close",
+  "ok": "OK",
+  "locked": "Locked",
+  "unsavedConfirm": "You have unsaved changes. Are you sure you want to leave?",
+  "copyOf": "Copy of",
   "short": {
     "left": "L",
     "right": "R",
@@ -38,8 +42,95 @@
   "saving": "Saving...",
   "description": "Description",
   "code": "Code",
-  "image": "Image"
+  "image": "Image",
+  "currentAssignments": "Current Assignments"
   },
+  "globalMods": {
+    "modal": {
+      "add": {
+        "title": "Add Modification",
+        "step1Title": "Step 1: Select or Create Submenu",
+        "selectExisting": "Select existing submenu...",
+        "createNew": "Create new submenu",
+        "newSubmenuName": "New submenu name",
+        "orderIndex": "Order index",
+        "nextBuilder": "Next: Template Builder",
+        "step2Title": "Step 2: Template Builder",
+        "back": "Back",
+        "cancel": "Cancel",
+        "createTemplate": "Create Template"
+      },
+      "editCategory": {
+        "title": "Edit Category",
+        "namePlaceholder": "Category name",
+        "orderPlaceholder": "Order",
+        "cancel": "Cancel",
+        "save": "Save",
+        "nameLabel": "Category Name",
+        "orderLabel": "Order",
+        "imageLabel": "Category Image"
+      },
+      "editTemplate": {
+        "title": "Edit Template",
+        "nameLabel": "Template Name",
+        "priceLabel": "Default Price",
+        "sampleUploadLabel": "Sample Image Upload",
+        "sampleAlt": "Sample",
+        "ready": { "label": "Mark as Ready (enables assignment options)", "hint": "Ready modifications can be assigned to manufacturers and used in quotes." },
+        "cancel": "Cancel",
+        "saveChanges": "Save Changes"
+      },
+      "gallery": {
+        "title": "Modification Gallery",
+        "categoryImageUploaded": "Category image uploaded",
+        "useAsBlueprint": "Use as Blueprint",
+        "emptyCategory": "No templates in this category"
+      },
+      "assign": {
+        "title": "Assign Modification",
+        "selectManufacturer": "Select manufacturer...",
+        "selectTemplate": "Select template...",
+        "scope": { "all": "All items", "style": "Specific style", "type": "Specific type", "item": "Specific item" },
+        "styleName": "Style name",
+        "typeName": "Type name",
+        "catalogItemId": "Catalog item ID",
+        "override": "Override price (optional)",
+        "cancel": "Cancel",
+        "assign": "Assign"
+      },
+      "deleteCategory": {
+        "title": "Delete Category: {{name}}",
+        "warning": "⚠️ Warning:",
+        "aboutToDelete": "You are about to delete the category \"{{name}}\".",
+        "contains": "This category contains <strong>{{count}}</strong> modification(s). What would you like to do with them?",
+        "move": {
+          "label": "Move modifications to another category",
+          "recommended": "(Recommended)",
+          "selectTarget": "Select target category...",
+          "optionWithCount": "{{name}} ({{count}} existing)",
+          "mustSelect": "You must select a target category to move the modifications."
+        },
+        "withMods": {
+          "label": "Delete category AND all modifications",
+          "permanent": "(Permanent)",
+          "danger": "⚠️ This will permanently delete all {{count}} modification(s) in this category. This action cannot be undone."
+        },
+        "emptySafe": "This category is empty and can be safely deleted.",
+        "cancel": "Cancel",
+        "deleteOnly": "Delete Category",
+        "deleteWithMods": "Delete Category & Modifications",
+        "deleteMoveMods": "Delete Category & Move Modifications",
+        "toast": {
+          "deleted": "Category \"{{name}}\" deleted successfully",
+          "deletedWithMods": "Category \"{{name}}\" deleted with all modifications",
+          "deletedMoved": "Category \"{{name}}\" deleted and modifications moved",
+          "deleteFailed": "Failed to delete category"
+        }
+      }
+    }
+  },
+  "creating": "Creating...",
+  "noDescription": "No description",
   "new": "New",
   "styles": {
     "create": "Add Style",
@@ -663,12 +754,28 @@
       "deleteTitle": "Are you sure?",
       "deleteText": "You won't be able to revert this!",
       "deleteConfirm": "Yes, delete it!",
+      "acceptTitle": "Confirm Acceptance",
+      "acceptText": "Are you sure you want to accept this quote? This will convert it to an order.",
+      "acceptConfirm": "Accept",
       "submitTitle": "Confirm Quote Submission",
       "submitText": "Once you submit this quote, it will be sent to production and cannot be changed.",
       "submitWarning": "By continuing, you confirm that all details are correct and you accept the Terms & Conditions.",
       "submitConfirm": "Accept and Submit",
       "goBack": "Go Back",
       "cancel": "Cancel"
+    },
+    "errors": {
+      "noId": "No quote ID found. Please refresh and try again.",
+      "noIdAcceptance": "No quote ID available for acceptance",
+      "alreadyLockedTitle": "Warning",
+      "alreadyLockedText": "This quote is already locked and cannot be modified.",
+      "alreadyAccepted": "This quote is already accepted.",
+      "acceptFailed": "Failed to accept quote. Please try again.",
+      "cannotAccept": "Cannot accept quote",
+      "operationFailed": "Operation failed. Please try again."
+    },
+    "success": {
+      "acceptConverted": "Quote accepted and converted to order!"
     },
     "toast": {
       "successSend": "Quote sent successfully",
@@ -690,6 +797,9 @@
       "error": "Could not create share link"
     },
     "lockedTooltip": "Quote is locked",
+    "edit": {
+      "title": "Edit Quote"
+    },
     "create": {
       "steps": {
         "1": "Customer Information",
@@ -808,14 +918,89 @@
       },
       "summary": {
         "duplicate": "Duplicate",
-        "acceptAndOrder": "Accept and Order",
-        "rejectAndArchive": "Reject and Archive",
+  "acceptAndOrder": "Accept and Order",
+  "rejectAndArchive": "Reject and Archive",
         "editVersionTitle": "Edit Version Name",
         "confirmDeleteVersion": "Are you sure you want to delete this version?"
       }
     }
   }
   ,
+  "publicQuote": {
+    "loadFailed": "Failed to load quote",
+    "acceptFailed": "Failed to accept quote",
+    "acceptSuccess": "Quote accepted. Thank you!",
+    "notFound": "No quote found for this link.",
+    "titleNumber": "Quote #{{id}}",
+    "forCustomer": "for {{name}}",
+    "acceptedBadge": "Accepted",
+    "description": "Description",
+    "total": "Total",
+    "summary": "Summary",
+    "acceptButton": {
+      "accepting": "Accepting…",
+      "alreadyAccepted": "Already accepted",
+      "accept": "Accept"
+    }
+  }
+  ,
+  "notifications": {
+    "header": "Notifications",
+    "markAll": "Mark all as read",
+    "refresh": "Refresh",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "errors": {
+      "load": "Failed to load notifications",
+      "markOne": "Failed to mark as read",
+      "markAll": "Failed to mark all as read"
+    },
+    "success": {
+      "allReadTitle": "All caught up",
+      "allReadText": "All notifications marked as read"
+    }
+  },
+  "adminQuote": {
+    "loading": "Loading proposal details...",
+    "noId": "No quote ID provided",
+    "labels": {
+      "created": "Created",
+      "sentToCustomer": "Sent to Customer",
+      "accepted": "Accepted"
+    },
+    "timeline": {
+      "created": "Quote was created and added to the system",
+      "sent": "Quote was sent to the customer for review",
+      "accepted": "Quote was formally accepted",
+      "rejected": "Quote was rejected",
+      "expired": "Quote has expired",
+      "changed": "Proposal status changed to {{status}}"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "in_progress": "In Progress",
+      "completed": "Completed"
+    },
+    "ui": {
+      "print": "Print",
+      "overview": "Quote Overview",
+      "proposalId": "Quote ID",
+      "customer": "Customer",
+      "contractorGroup": "Contractor Group",
+      "createdDate": "Created Date",
+      "updatedDate": "Last Updated",
+      "sentDate": "Sent Date",
+      "acceptedDate": "Accepted Date",
+      "itemsHeader": "Quote Items ({{count}})",
+      "itemNumber": "Item {{n}}",
+      "statusTimeline": "Status Timeline",
+      "notFound": "Proposal not found."
+    }
+  },
   "profile": {
     "header": "My Profile",
     "fullName": "Full Name",
@@ -1882,6 +2067,104 @@
       "catalogMapping": {
         "title": "Catalog Data",
         "empty": "No catalog data available.",
+        "subTypes": {
+          "header": "Cabinet Sub-Types",
+          "create": "Create Sub-Type",
+          "editTitle": "Edit Sub-Type",
+          "singular": "Sub-Type",
+          "namePlaceholder": "e.g., Single Door Cabinets",
+          "descriptionPlaceholder": "Optional description for this sub-type",
+          "empty": "No sub-types created yet. Create sub-types to define hinge and exposed side requirements for specific cabinet groups.",
+          "requiresHinge": "Requires Hinge Side",
+          "requiresHingeSelection": "Requires Hinge Side Selection",
+          "requiresHingeHelp": "When enabled, users must select a hinge side before converting quotes to orders",
+          "requiresExposed": "Requires Exposed Side",
+          "requiresExposedSelection": "Requires Exposed Side Selection",
+          "requiresExposedHelp": "When enabled, users must select an exposed side before converting quotes to orders",
+          "assignItems": "Assign Items",
+          "deleteTitle": "Delete Sub-type",
+          "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This will remove all item assignments.",
+          "deleteSuccess": "Sub-type deleted successfully!",
+          "deleteFailed": "Failed to delete sub-type",
+          "saveFailed": "Failed to save sub-type",
+          "assignSuccess": "Assigned {{count}} items to sub-type!",
+          "assignFailed": "Failed to assign items to sub-type"
+        },
+        "assignModal": {
+          "title": "Assign Catalog Items to Sub-Type",
+          "selectLabel": "Select catalog items to assign to this sub-type:",
+          "selectedSummary": "Selected codes: {{codes}} (Total items: {{items}})",
+          "stylesHeader": "Styles",
+          "itemsCount": "Items Count",
+          "more": "more",
+          "assignCTA": "Assign {{count}} Items"
+        },
+        "builder": {
+          "uploadTitlePh": "Upload title/reason *",
+          "requiredUpload": "Required upload",
+          "descriptions": {
+            "header": "Descriptions",
+            "internal": "Internal description",
+            "customer": "Customer description",
+            "installer": "Installer description",
+            "showBoth": "Show customer and installer descriptions to both"
+          },
+          "sampleImage": {
+            "label": "Sample Image",
+            "upload": "Sample Image (upload from computer)",
+            "alt": "Sample"
+          },
+          "ready": {
+            "markAsReady": "Mark as Ready (enables assignment options)",
+            "saveAsBlueprint": "Also save to Gallery as blueprint (allows reuse by other manufacturers)",
+            "blueprintHint": "When checked, this modification will also be saved as a reusable blueprint in the gallery."
+          },
+          "buttons": {
+            "back": "Back",
+            "cancel": "Cancel",
+            "saveChanges": "Save Changes",
+            "create": "Create Modification"
+          },
+          "toast": {
+            "updateSuccess": "Template updated",
+            "updateFailed": "Failed to update template",
+            "createSuccessTitle": "Success!",
+            "createSuccessText": "Modification template created successfully",
+            "createFailedTitle": "Error",
+            "createFailedText": "Failed to create modification template",
+            "manufacturerMissingTitle": "Error",
+            "manufacturerMissingText": "Manufacturer ID is required to create modifications. Please ensure you are on a valid manufacturer page."
+          }
+        },
+        "gallery": {
+          "title": "Modification Gallery",
+          "back": "Back to Overview",
+          "badges": {
+            "ready": "Ready",
+            "draft": "Draft",
+            "img": "Img"
+          },
+          "tooltips": {
+            "deleteCategory": "Delete category",
+            "sampleUploaded": "Sample image uploaded",
+            "edit": "Edit modification",
+            "delete": "Delete modification",
+            "move": "Move to different category",
+            "useAsBlueprint": "Use as Blueprint",
+            "assignToManufacturer": "Assign to manufacturer items"
+          },
+          "actions": {
+            "delete": "🗑️ Delete",
+            "move": "📁 Move"
+          },
+          "emptyCategory": "No templates in this category",
+          "noDescription": "No description"
+        },
+        "modManagement": {
+          "title": "Modification Management",
+          "modsCount": "{{count}} modification(s)",
+          "noCategories": "No modification categories found. Click \"{{addLabel}}\" to create your first one."
+        },
         "filters": {
           "allTypes": "All Types",
           "allStyles": "All Styles"
@@ -1901,6 +2184,7 @@
         "buttons": {
           "uploadCsv": "📁 Upload CSV",
           "addItem": "➕ Add Item",
+          "addShort": "➕ Add",
           "deleteSelected": "🗑️ Delete Selected",
           "deleteStyle": "🗑️ Delete Style",
           "rollback": "↩️ Rollback"
@@ -1922,7 +2206,10 @@
         "actions": {
           "manageStyle": "Manage Style",
           "assemblyCost": "Assembly Cost",
-          "modification": "Modification"
+          "modification": "Modification",
+          "modificationManagementTitle": "Global Modification Management",
+          "assignMods": "Assign Mods",
+          "assignGlobalModsTitle": "Assign global modifications"
         },
         "file": {
           "uploadCta": "📁 Upload CSV",
@@ -1938,6 +2225,9 @@
           "uploadCta": "➕ Add Item",
           "modalTitle": "Manual Catalog Entry"
         },
+        "assign": {
+          "header": "Assign Global Modifications"
+        },
         "bulk": {
           "selected": "{{count}} item(s) selected",
           "deleteSelected": "🗑️ Delete Selected",
@@ -1949,6 +2239,9 @@
           "deleteButton": "Delete {{count}} Items",
           "deleteSuccess": "Successfully deleted {{count}} items",
           "deleteFailed": "Failed to delete some items"
+        },
+        "bulkEdit": {
+          "header": "Bulk Edit {{count}} Items"
         },
         "deleteItem": {
           "modalTitle": "Delete Catalog Item",
@@ -2072,6 +2365,166 @@
           "sizeKb": "Size (KB)",
           "uploadedOn": "Uploaded On",
           "download": "Download"
+        }
+      }
+    }
+    ,
+    "globalMods": {
+      "ui": {
+        "buttons": {
+          "addModification": "Add Modification",
+          "gallery": "Modification Gallery",
+          "assignModification": "Assign Modification"
+        },
+        "galleryHeader": "Global Modifications Gallery"
+      },
+      "category": {
+        "createTitle": "Create New Category",
+        "nameLabel": "Category Name",
+        "namePlaceholder": "Enter category name (e.g., 'Product Dimensions')",
+        "orderLabel": "Order",
+        "actionLabel": "Action",
+        "addButton": "Add Category",
+        "imageLabel": "Category Image",
+        "imageHint": "Upload an icon to represent this category",
+        "imageReady": "✓ Image ready",
+        "editTooltip": "Edit category and upload image",
+        "deleteTooltip": "Delete category (with options for templates)"
+      },
+      "template": {
+        "blueprint": "Blueprint",
+        "editTooltip": "Edit template and upload sample image",
+        "createHeader": "Create Template",
+        "requiredFields": "Required Fields",
+        "nameLabel": "Modification Name",
+        "namePlaceholder": "Enter modification name",
+        "nameRequired": "Modification name is required",
+        "defaultPriceLabel": "Default Price",
+        "defaultPricePlaceholder": "Enter default price",
+        "defaultPriceRequired": "Default price is required",
+        "categoryOptionalLabel": "Category (Optional)",
+        "noSubmenu": "No submenu",
+        "statusLabel": "Status",
+        "status": { "draft": "Draft", "ready": "Ready" },
+        "saveButton": "Save Template"
+      },
+      "builder": {
+        "title": "Guided fields",
+        "heightSlider": "Height slider",
+        "widthSlider": "Width slider",
+        "depthSlider": "Depth slider",
+        "min": "min",
+        "max": "max",
+        "step": "step",
+        "sideSelector": { "label": "Side selector", "placeholder": "Options comma separated e.g. L,R" },
+        "quantityLimits": { "label": "Quantity limits", "minQty": "min qty", "maxQty": "max qty" },
+        "customerNotes": { "label": "Customer notes", "placeholder": "Notes placeholder", "showInRed": "Show in red for customer" },
+        "customerUpload": { "label": "Customer file upload", "titlePlaceholder": "Upload title/reason", "required": "Required" },
+        "modSampleImage": { "label": "Modification sample image" },
+        "descriptions": { "internal": "Internal description", "customer": "Customer description", "installer": "Installer description" },
+        "sampleUpload": {
+          "title": "Sample Image Upload",
+          "uploadLabel": "Upload Sample Image",
+          "hint": "Upload an image to show customers what this modification looks like",
+          "previewAlt": "Sample preview",
+          "uploaded": "✓ Image uploaded: {{name}}",
+          "none": "No sample image uploaded"
+        },
+        "fieldsConfig": { "placeholder": "Optional fields config (JSON): {\"sliders\": {\"width\": {\"min\": 1, \"max\": 60, \"step\": 1}}}" },
+        "errors": {
+          "invalidRangeStep": "Invalid range or step",
+          "invalidQtyRange": "Invalid quantity range",
+          "invalidJson": "fieldsConfig must be valid JSON"
+        }
+      },
+      "assign": {
+        "header": "Assign Template",
+        "selectTemplate": "Select template",
+        "selectManufacturer": "Select manufacturer",
+        "scope": { "all": "All items", "style": "Style", "type": "Type", "item": "Single item" },
+        "target": { "styleName": "Target style (name)", "typeName": "Target type (name)", "catalogItemId": "Catalog Item ID", "all": "All", "itemWithId": "Item {{id}}" },
+        "override": "Override price (optional)",
+        "assignButton": "Assign",
+        "table": { "template": "Template", "scope": "Scope", "target": "Target", "price": "Price", "actions": "", "remove": "Remove" },
+        "none": "No assignments"
+      },
+      "modal": {
+        "add": {
+          "title": "Add Modification",
+          "step1Title": "Step 1: Select or Create Submenu",
+          "selectExisting": "Select existing submenu...",
+          "createNew": "Create new submenu",
+          "newSubmenuName": "New submenu name",
+          "orderIndex": "Order index",
+          "nextBuilder": "Next: Template Builder",
+          "step2Title": "Step 2: Template Builder",
+          "back": "Back",
+          "cancel": "Cancel",
+          "createTemplate": "Create Template"
+        },
+        "editCategory": {
+          "title": "Edit Category",
+          "namePlaceholder": "Category name",
+          "orderPlaceholder": "Order",
+          "cancel": "Cancel",
+          "save": "Save"
+        },
+        "editTemplate": {
+          "title": "Edit Template",
+          "nameLabel": "Template Name",
+          "priceLabel": "Default Price",
+          "sampleUploadLabel": "Sample Image Upload",
+          "sampleAlt": "Sample",
+          "ready": { "label": "Mark as Ready (enables assignment options)", "hint": "Ready modifications can be assigned to manufacturers and used in quotes." },
+          "cancel": "Cancel",
+          "saveChanges": "Save Changes"
+        },
+        "gallery": {
+          "title": "Modification Gallery",
+          "categoryImageUploaded": "Category image uploaded",
+          "useAsBlueprint": "Use as Blueprint",
+          "emptyCategory": "No templates in this category"
+        },
+        "assign": {
+          "title": "Assign Modification",
+          "selectManufacturer": "Select manufacturer...",
+          "selectTemplate": "Select template...",
+          "scope": { "all": "All items", "style": "Specific style", "type": "Specific type", "item": "Specific item" },
+          "styleName": "Style name",
+          "typeName": "Type name",
+          "catalogItemId": "Catalog item ID",
+          "override": "Override price (optional)",
+          "cancel": "Cancel",
+          "assign": "Assign"
+        },
+        "deleteCategory": {
+          "title": "Delete Category: {{name}}",
+          "warning": "⚠️ Warning:",
+          "aboutToDelete": "You are about to delete the category \"{{name}}\".",
+          "contains": "This category contains <strong>{{count}}</strong> modification(s). What would you like to do with them?",
+          "move": {
+            "label": "Move modifications to another category",
+            "recommended": "(Recommended)",
+            "selectTarget": "Select target category...",
+            "optionWithCount": "{{name}} ({{count}} existing)",
+            "mustSelect": "You must select a target category to move the modifications."
+          },
+          "withMods": {
+            "label": "Delete category AND all modifications",
+            "permanent": "(Permanent)",
+            "danger": "⚠️ This will permanently delete all {{count}} modification(s) in this category. This action cannot be undone."
+          },
+          "emptySafe": "This category is empty and can be safely deleted.",
+          "cancel": "Cancel",
+          "deleteOnly": "Delete Category",
+          "deleteWithMods": "Delete Category & Modifications",
+          "deleteMoveMods": "Delete Category & Move Modifications",
+          "toast": {
+            "deleted": "Category \"{{name}}\" deleted successfully",
+            "deletedWithMods": "Category \"{{name}}\" deleted with all modifications",
+            "deletedMoved": "Category \"{{name}}\" deleted and modifications moved",
+            "deleteFailed": "Failed to delete category"
+          }
         }
       }
     }

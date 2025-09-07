@@ -47,6 +47,7 @@ import EmailProposalModal from '../../components/model/EmailProposalModal';
 import EmailContractModal from '../../components/model/EmailContractModal';
 import Loader from '../../components/Loader';
 import axiosInstance from '../../helpers/axiosInstance';
+import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../helpers/subTypeValidation';
 
 
 const validationSchema = Yup.object().shape({
@@ -63,9 +64,9 @@ const statusOptions = [
   { label: 'Measurement Scheduled', value: 'Measurement Scheduled' },
   { label: 'Measurement done', value: 'Measurement done' },
   { label: 'Design done', value: 'Design done' },
-  { label: 'Proposal done', value: 'Proposal done' },
-  { label: 'Proposal accepted', value: 'Proposal accepted' },
-  { label: 'Proposal rejected', value: 'Proposal rejected' },
+  { label: 'Quote done', value: 'Proposal done' },
+  { label: 'Quote accepted', value: 'Proposal accepted' },
+  { label: 'Quote rejected', value: 'Proposal rejected' },
 ];
 
 const EditProposal = () => {
@@ -117,7 +118,7 @@ const EditProposal = () => {
   };
 
   const [formData, setFormData] = useState(defaultFormData);
-  // Determine if form should be disabled (locked proposal OR contractor viewing accepted proposal)
+  // Determine if form should be disabled (locked quote OR contractor viewing accepted quote)
   const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted';
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin);
 
@@ -140,7 +141,7 @@ const EditProposal = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching proposal:', err);
+  console.error('Error fetching quote:', err);
         setLoading(false);
       });
   }, [id]);
@@ -177,7 +178,7 @@ const EditProposal = () => {
 
       formData.manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
-          // Don't load full catalog data for proposal editing - only manufacturer info needed
+          // Don't load full catalog data for quote editing - only manufacturer info needed
           dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
         }
       });
@@ -300,79 +301,236 @@ const EditProposal = () => {
   };
 
   const handleSaveOrder = () => sendToBackend({ ...formData }, 'update');
-  const handleAcceptOrder = () => sendToBackend({ ...formData, status: 'Proposal accepted' }, 'accept');
+  const handleAcceptOrder = async () => {
+    console.log('🎯 [DEBUG] handleAcceptOrder called from EditProposal.jsx:', {
+      proposalId: formData?.id,
+      currentStatus: formData?.status,
+      isLocked: formData?.is_locked,
+      userId: loggedInUserId,
+      userRole: userInfo?.role,
+      timestamp: new Date().toISOString()
+    });
+
+    if (!formData?.id) {
+  console.error('❌ [DEBUG] No quote ID available for acceptance');
+  Swal.fire(t('common.error','Error'), t('proposals.errors.noIdAcceptance','No quote ID available for acceptance'), 'error');
+      return;
+    }
+
+    try {
+      // First, validate sub-type requirements if there are items and a manufacturer
+      const manufacturerIdForValidation =
+        selectedVersion?.manufacturerData?.id ||
+        selectedVersion?.manufacturer ||
+        formData?.manufacturerId ||
+        formData?.manufacturersData?.[selectedVersionIndex]?.manufacturer;
+
+      if (selectedVersion?.items && selectedVersion.items.length > 0 && manufacturerIdForValidation) {
+        console.log('🔍 [DEBUG] Validating sub-type requirements before acceptance');
+
+        const validation = await validateProposalSubTypeRequirements(
+          selectedVersion.items,
+          manufacturerIdForValidation
+        );
+
+        if (!validation.isValid) {
+          console.warn('⚠️ [DEBUG] Sub-type validation failed:', validation.missingRequirements);
+          await showSubTypeValidationError(validation.missingRequirements, Swal);
+          return;
+        }
+
+        console.log('✅ [DEBUG] Sub-type validation passed');
+      }
+
+  const result = await Swal.fire({
+        title: t('proposals.confirm.acceptTitle', 'Confirm Acceptance'),
+        html: `
+          <div style="text-align:left">
+            <p>${t('proposals.confirm.acceptText', 'Are you sure you want to accept this quote? This will convert it to an order.')}</p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('proposals.confirm.acceptConfirm', 'Accept'),
+        cancelButtonText: t('proposals.confirm.cancel', 'Cancel'),
+        reverseButtons: true,
+        focusCancel: true,
+      });
+
+      if (result.isConfirmed) {
+        console.log('🎯 [DEBUG] User confirmed acceptance, calling proper acceptance API');
+
+        const acceptResponse = await axiosInstance.post(`/api/proposals/${formData.id}/accept`, {
+          // No additional data needed for internal acceptance
+        });
+
+        if (acceptResponse.data.success) {
+          console.log('✅ [DEBUG] Quote accepted successfully:', acceptResponse.data);
+          Swal.fire(t('common.success','Success'), t('proposals.success.acceptConverted','Quote accepted and converted to order!'), 'success');
+          // Navigate to orders since this quote is now an order
+          navigate('/orders');
+        } else {
+          throw new Error(acceptResponse.data.message || t('proposals.errors.acceptFailed'));
+        }
+      }
+    } catch (error) {
+  console.error('❌ [DEBUG] Error accepting quote from EditProposal:', {
+        error: error.message,
+        response: error.response?.data,
+        proposalId: formData?.id,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
+
+      // Check if this is a sub-type validation error from backend
+      if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
+        await showSubTypeValidationError(error.response.data.missingRequirements, Swal);
+      } else {
+  Swal.fire(t('common.error','Error'), error.message || t('proposals.errors.acceptFailed'), 'error');
+      }
+    }
+  };
   const handleRejectOrder = () => sendToBackend({ ...formData, status: 'Proposal rejected' }, 'reject');
 
   const sendToBackend = async (finalData, action = 'update') => {
     try {
+      console.log('🚀 [DEBUG] sendToBackend called from EditProposal.jsx:', {
+        proposalId: finalData?.id,
+        action,
+        currentStatus: finalData?.status,
+  newStatus: action === 'accept' ? 'Proposal accepted' : finalData?.status,
+        isLocked: finalData?.is_locked,
+        userRole: userInfo?.role,
+        timestamp: new Date().toISOString()
+      });
+
       const payload = { action, formData: finalData };
 
       // Add validation checks
       if (!finalData.id) {
-        Swal.fire('Error!', 'Proposal ID is missing. Cannot update proposal.', 'error');
+  console.error('❌ [DEBUG] No quote ID found');
+  Swal.fire(t('common.error','Error'), t('proposals.errors.noId','No quote ID found. Please refresh and try again.'), 'error');
         return;
       }
 
-      // Check if proposal is already locked
+  // Check if quote is already locked
       if (finalData.is_locked && (action === 'accept' || action === 'reject')) {
-        Swal.fire('Cannot Modify', 'This proposal is already accepted and locked. It cannot be modified.', 'warning');
+  console.warn('⚠️ [DEBUG] Attempting to modify locked quote');
+  Swal.fire(t('proposals.errors.alreadyLockedTitle','Warning'), t('proposals.errors.alreadyLockedText','This quote is already locked and cannot be modified.'), 'warning');
         return;
       }
 
-      // Check if trying to accept an already accepted proposal
+      // Check if trying to accept an already accepted quote
       if (action === 'accept' && (finalData.status === 'Proposal accepted' || finalData.status === 'accepted')) {
-        Swal.fire('Already Accepted', 'This proposal has already been accepted.', 'info');
+  console.warn('⚠️ [DEBUG] Attempting to accept already accepted quote');
+  Swal.fire(t('proposals.errors.alreadyLockedTitle','Warning'), t('proposals.errors.alreadyAccepted','This quote is already accepted.'), 'warning');
         return;
       }
 
-      console.log('🔄 Sending proposal update:', {
-        id: finalData.id,
-        action,
-        currentStatus: finalData.status,
-        isLocked: finalData.is_locked,
-        newStatus: action === 'accept' ? 'Proposal accepted' : finalData.status
+      // Validate sub-type requirements for acceptance actions
+      const manufacturerIdForValidation =
+        selectedVersion?.manufacturerData?.id ||
+        selectedVersion?.manufacturer ||
+        finalData?.manufacturerId ||
+        finalData?.manufacturersData?.[selectedVersionIndex]?.manufacturer;
+
+      if (action === 'accept' && selectedVersion?.items && selectedVersion.items.length > 0 && manufacturerIdForValidation) {
+        console.log('🔍 [DEBUG] Validating sub-type requirements for sendToBackend acceptance');
+
+        const validation = await validateProposalSubTypeRequirements(
+          selectedVersion.items,
+          manufacturerIdForValidation
+        );
+
+        if (!validation.isValid) {
+          console.warn('⚠️ [DEBUG] Sub-type validation failed in sendToBackend:', validation.missingRequirements);
+          await showSubTypeValidationError(validation.missingRequirements, Swal);
+          return;
+        }
+
+        console.log('✅ [DEBUG] Sub-type validation passed in sendToBackend');
+      }
+
+      console.log('� [DEBUG] Dispatching sendFormDataToBackend with payload:', {
+        action: payload.action,
+        proposalId: payload.formData?.id,
+        payloadSize: JSON.stringify(payload).length
       });
 
       const response = await dispatch(sendFormDataToBackend(payload));
 
-      if (response.payload.success === true) {
-        Swal.fire('Success!', 'Proposal saved successfully!', 'success');
-        navigate('/quotes');
-      } else if (response.error) {
-        // Handle Redux Toolkit's error format
-        const errorMessage = response.error.message || response.payload?.message || 'Failed to save quote';
-        console.error('❌ Update failed:', response.error);
+      console.log('📥 [DEBUG] Response received from sendFormDataToBackend:', {
+        success: response.payload?.success,
+        message: response.payload?.message,
+        hasData: !!response.payload?.data,
+        timestamp: new Date().toISOString()
+      });
 
-        if (errorMessage.includes('locked')) {
-          Swal.fire('Cannot Edit', 'This proposal is locked and cannot be edited.', 'warning');
-        } else if (errorMessage.includes('permission') || errorMessage.includes('access')) {
-          Swal.fire('Access Denied', 'You do not have permission to edit this proposal.', 'error');
-        } else if (errorMessage.includes('Invalid status transition')) {
-          Swal.fire('Invalid Action', 'This status change is not allowed. The proposal may already be processed.', 'warning');
+  if (response.payload.success === true) {
+        console.log('✅ [DEBUG] Backend operation successful');
+
+        if (action === 'accept') {
+          console.log('🎉 [DEBUG] Quote accepted successfully, showing success message');
+          Swal.fire('Success!', 'Quote accepted successfully!', 'success').then(() => {
+            console.log('🔄 [DEBUG] Refreshing page after acceptance');
+            window.location.reload();
+          });
+        } else if (action === 'reject') {
+          console.log('📝 [DEBUG] Quote rejected successfully');
+          Swal.fire('Success!', 'Quote rejected successfully!', 'success').then(() => {
+            console.log('🔄 [DEBUG] Refreshing page after rejection');
+            window.location.reload();
+          });
         } else {
-          Swal.fire('Error!', errorMessage, 'error');
+          console.log('💾 [DEBUG] Quote updated successfully');
+          Swal.fire('Success!', 'Quote updated successfully!', 'success');
+          setFormData(response.payload.data || finalData);
         }
+      } else {
+        console.error('❌ [DEBUG] Backend operation failed:', response.payload);
+        const apiMsg = response.payload?.message || response.error?.message || '';
+        const missing = response.payload?.missingRequirements;
+        if (missing && Array.isArray(missing) && missing.length > 0) {
+          await showSubTypeValidationError(missing, Swal);
+          return;
+        }
+        // If backend returned a plain message describing missing selections, show it as a warning
+        if (action === 'accept' && typeof apiMsg === 'string' && /(missing|required selections|is missing)/i.test(apiMsg)) {
+          await Swal.fire({
+            icon: 'warning',
+            title: t('proposals.errors.cannotAccept','Cannot accept quote'),
+            text: apiMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+          });
+          return;
+        }
+        Swal.fire(t('common.error','Error'), apiMsg || t('proposals.errors.operationFailed'), 'error');
       }
     } catch (error) {
-      console.error('Error sending data to backend:', error);
+      console.error('❌ [DEBUG] Error in sendToBackend:', {
+        error: error.message,
+        stack: error.stack,
+        proposalId: finalData?.id,
+        action,
+        timestamp: new Date().toISOString()
+      });
 
       // More specific error handling
       if (error.response?.status === 403) {
-        const message = error.response.data?.message || 'Access denied';
-        if (message.includes('locked')) {
-          Swal.fire('Cannot Edit', 'This proposal is locked and cannot be edited.', 'warning');
-        } else {
-          Swal.fire('Access Denied', message, 'error');
-        }
+        Swal.fire(t('common.error','Error'), t('proposals.toast.errorGeneric','An error occurred'), 'error');
       } else if (error.response?.status === 400) {
-        const message = error.response.data?.message || 'Invalid request';
-        if (message.includes('Invalid status transition')) {
-          Swal.fire('Invalid Action', 'This status change is not allowed. The proposal may already be processed.', 'warning');
+        // Check if this is a sub-type validation error from backend
+        if (error.response?.data?.missingRequirements) {
+          await showSubTypeValidationError(error.response.data.missingRequirements, Swal);
         } else {
-          Swal.fire('Validation Error', message, 'error');
+          const message = error.response?.data?.message || t('proposals.toast.errorGeneric','An error occurred');
+          // If backend returned a descriptive missing-selections string, show as warning for clarity
+          const isMissingMsg = /(missing|required selections|is missing)/i.test(message);
+          Swal.fire(isMissingMsg ? t('proposals.errors.cannotAccept','Cannot accept quote') : t('common.error','Error'), message, isMissingMsg ? 'warning' : 'error');
         }
       } else {
-        Swal.fire('Error!', 'Failed to save quote. Please try again.', 'error');
+        Swal.fire(t('common.error','Error'), error.message || t('proposals.toast.errorGeneric'), 'error');
       }
     }
   };
@@ -387,12 +545,12 @@ const EditProposal = () => {
     <>
   <div className="header py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap">
         <div className="d-flex align-items-center gap-3">
-          <h4 className="text-muted m-0">Edit Proposal</h4>
+          <h4 className="text-muted m-0">{t('proposals.edit.title','Edit Quote')}</h4>
           {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
             <CBadge color="success" className="px-2 py-1">{t('proposals.lockedStatus.title')}</CBadge>
           )}
           {formData?.is_locked && (
-            <CBadge color="dark" className="px-2 py-1">Locked</CBadge>
+            <CBadge color="dark" className="px-2 py-1">{t('common.locked','Locked')}</CBadge>
           )}
         </div>
   <div className="d-flex gap-2 flex-wrap mobile-action-buttons">
@@ -409,7 +567,7 @@ const EditProposal = () => {
             onClick={() => setShowPrintModal(true)}
           >
             <FaPrint className="me-2" />
-            Print Proposal
+            Print Quote
           </div>
           {!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') && (
             <>
@@ -426,7 +584,7 @@ const EditProposal = () => {
                 onClick={() => setShowEmailModal(true)}
               >
                 <FaEnvelope className="me-2" />
-                Email Proposal
+                Email Quote
               </div>
               <div
                 className="px-3 py-2 rounded d-flex align-items-center"
@@ -455,7 +613,7 @@ const EditProposal = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => {
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => {
             // Sync formData with Formik's values
             useEffect(() => {
               updateFormData(values);
@@ -493,8 +651,15 @@ const EditProposal = () => {
                           name="description"
                           value={values.description}
                           onChange={handleChange}
+                          onInput={(e) => {
+                            // Ensure autofill or paste events also update Formik and local formData
+                            const val = e.target.value;
+                            setFieldValue('description', val, false);
+                            updateFormData({ description: val });
+                          }}
                           onBlur={handleBlur}
                           placeholder="Description"
+                          autoComplete="off"
                           disabled={isFormDisabled}
                         />
                         {errors.description && touched.description && (
@@ -868,7 +1033,7 @@ const EditProposal = () => {
                   style={{ maxWidth: '600px', margin: '0 auto' }}
                 >
                   {(isFormDisabled) ? (
-                    // Show status message instead of buttons when proposal is locked OR when contractor views accepted proposal
+                    // Show status message instead of buttons when quote is locked OR when contractor views accepted quote
                     <div className="w-100">
                       <CAlert color="success" className="text-center">
                         <h5 className="alert-heading mb-3">
@@ -884,12 +1049,12 @@ const EditProposal = () => {
                       </CAlert>
                     </div>
                   ) : (
-                    // Show action buttons only when proposal is not locked
+                    // Show action buttons only when quote is not locked
                     <>
                       <CButton
                         color="secondary"
                         variant="outline"
-                        onClick={handleSaveOrder}
+                        type="submit"
                         style={{ minWidth: '140px' }}
                       >
                         Save

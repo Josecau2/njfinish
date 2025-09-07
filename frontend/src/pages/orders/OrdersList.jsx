@@ -24,14 +24,14 @@ import { cilSearch } from '@coreui/icons'
 import PageHeader from '../../components/PageHeader'
 import { FaShoppingCart } from 'react-icons/fa'
 import PaginationComponent from '../../components/common/PaginationComponent'
-import { getOrders } from '../../store/slices/proposalSlice'
+import { fetchOrders } from '../../store/slices/ordersSlice'
 import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { useNavigate } from 'react-router-dom'
 
 const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, mineOnly = false }) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
-  const { data, loading } = useSelector((s) => s.proposal)
+  const { items: orders, loading } = useSelector((s) => s.orders)
   const { list: manuList, byId: manuById } = useSelector((s) => s.manufacturers)
   const authUser = useSelector((s) => s.auth?.user)
   const [search, setSearch] = useState('')
@@ -39,9 +39,51 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const perPage = 10
   const navigate = useNavigate()
 
-  // Resolve manufacturer name from manufacturersData; tolerate type mismatches and various shapes
+  // Resolve manufacturer name from order snapshot first; fall back to legacy manufacturersData if present
   const resolveManuName = (item) => {
     try {
+      // NEW: First try the manufacturer association from enhanced API
+      if (item?.manufacturer?.name) {
+        return item.manufacturer.name;
+      }
+
+      // Second, try to resolve manufacturer ID from snapshot to actual manufacturer name
+      const snap = item?.snapshot;
+      if (snap) {
+        // Parse snapshot if it's a string
+        const parsedSnap = typeof snap === 'string' ? JSON.parse(snap) : snap;
+
+        if (parsedSnap?.manufacturers?.[0]?.manufacturer) {
+          const manuId = parsedSnap.manufacturers[0].manufacturer;
+          // Try to find manufacturer name from Redux store by ID
+          const fromMap = manuById?.[manuId] || manuById?.[String(manuId)];
+          if (fromMap?.name) return fromMap.name;
+
+          const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId));
+          if (fromList?.name) return fromList.name;
+        }
+
+        // Fallback to manufacturerName in snapshot (but this might be incorrect as shown in the data)
+        if (parsedSnap?.manufacturers?.[0]?.manufacturerName) {
+          return parsedSnap.manufacturers[0].manufacturerName;
+        }
+      }
+
+      // Prefer snapshot-based fields (order shape) - keeping existing logic as fallback
+      if (snap) {
+        const mArr = Array.isArray(snap.manufacturers) ? snap.manufacturers : (Array.isArray(snap) ? snap : [])
+        if (mArr.length) {
+          const m0 = mArr[0]
+          const name = m0.manufacturerName || m0.name
+          if (name && String(name).trim()) return String(name).trim()
+          const embedded = m0.manufacturerData?.name || m0.manufacturer?.name
+          if (embedded) return embedded
+        }
+        const direct = snap.manufacturerName || snap.manufacturer_name
+        if (direct) return direct
+      }
+
+      // Legacy: proposals-based manufacturersData
       const raw = item?.manufacturersData
       if (!raw) return '-'
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
@@ -106,8 +148,9 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   }
 
   useEffect(() => {
-    dispatch(getOrders({ groupId, mineOnly }))
-  }, [dispatch, groupId, mineOnly])
+    // Server will scope by mineOnly; groupId currently unused here
+    dispatch(fetchOrders({ mineOnly }))
+  }, [dispatch, mineOnly])
 
   // Warm up manufacturers cache for name resolution
   useEffect(() => {
@@ -116,76 +159,37 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     }
   }, [dispatch, manuList?.length])
 
-  // Proactively fetch missing manufacturer records by ID (covers contractors who don't receive disabled manufacturers in list)
+  // Optionally warm up manufacturers cache (used only for legacy fallbacks)
   useEffect(() => {
-    try {
-      const list = Array.isArray(data) ? data : []
-      const missing = new Set()
-      for (const p of list) {
-        const raw = p?.manufacturersData
-        if (!raw) continue
-        let parsed = raw
-        if (typeof raw === 'string') {
-          try { parsed = JSON.parse(raw) } catch { parsed = [] }
-        }
-        // Handle object-shaped data (single manufacturer)
-        if (parsed && !Array.isArray(parsed) && typeof parsed === 'object') {
-          const idRaw = parsed.manufacturer ?? parsed.manufacturerId ?? parsed.manufacturer_id ?? parsed.id
-          const idNum = idRaw != null && idRaw !== '' ? Number(idRaw) : null
-          if (idNum != null && !Number.isNaN(idNum)) {
-            if (!manuById?.[idNum] && !manuList?.some?.((m) => Number(m?.id) === idNum)) {
-              missing.add(idNum)
-            }
-          }
-          continue
-        }
-        const arr = Array.isArray(parsed) ? parsed : []
-        for (const b of arr) {
-          const idRaw = b?.manufacturer ?? b?.manufacturerId ?? b?.manufacturer_id ?? b?.id
-          const idNum = idRaw != null && idRaw !== '' ? Number(idRaw) : null
-          if (idNum != null && !Number.isNaN(idNum)) {
-            if (!manuById?.[idNum] && !manuList?.some?.((m) => Number(m?.id) === idNum)) {
-              missing.add(idNum)
-            }
-          }
-        }
-      }
-      // Fetch each missing manufacturer with a lightweight request
-      for (const id of missing) {
-        dispatch(fetchManufacturerById({ id, includeCatalog: false }))
-      }
-    } catch (_) {
-      // noop
+    // No-op if already loaded
+    if (!manuList || manuList.length === 0) {
+      dispatch(fetchManufacturers())
     }
-    // We intentionally omit manuList length to avoid refetch loops; byId will update when fetches resolve
-  }, [data, manuById, dispatch])
+  }, [dispatch, manuList?.length])
 
   const filtered = useMemo(() => {
-    const list = Array.isArray(data) ? data : []
-    const isAcceptedStatus = (s) => {
-      if (!s) return false
-      const lower = String(s).toLowerCase()
-      return lower === 'accepted' || s === 'Proposal accepted'
-    }
+    const list = Array.isArray(orders) ? orders : []
     const term = (search || '').toLowerCase()
-    const base = list
-      .filter((p) => isAcceptedStatus(p.status))
-      .filter((p) => {
-        if (!term) return true
-        const customerName = (p.customer?.name || '').toLowerCase()
-        if (customerName.includes(term)) return true
-        if (!isContractor) {
-          const contractor = (p?.ownerGroup?.name || p?.Owner?.group?.name || p?.Owner?.name || '').toLowerCase()
-          if (contractor.includes(term)) return true
-        }
-        return false
-      })
-    if (mineOnly) {
-      const currentUserId = authUser?.userId ?? authUser?.id
-      return base.filter((p) => String(p.created_by_user_id) === String(currentUserId))
-    }
+    const base = list.filter((p) => {
+      if (!term) return true
+
+      // Enhanced customer name search with multiple fallbacks
+      const customerName = (
+        p.customer?.name ||
+        p.proposal?.customerName ||
+        p.customer_name ||
+        ''
+      ).toLowerCase()
+      if (customerName.includes(term)) return true
+
+      if (!isContractor) {
+        const contractor = (p?.Owner?.name || p?.ownerGroup?.name || p?.Owner?.group?.name || '').toLowerCase()
+        if (contractor.includes(term)) return true
+      }
+      return false
+    })
     return base
-  }, [data, search])
+  }, [orders, search])
 
   const paged = useMemo(() => {
     const start = (page - 1) * perPage
@@ -195,7 +199,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const statusColor = (status) => {
     const map = {
       accepted: 'success',
-      'Proposal accepted': 'success',
+  'Proposal accepted': 'success',
       sent: 'info',
       draft: 'secondary',
     }
@@ -208,10 +212,24 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   }
 
   const renderCustomerCell = (item) => {
+    // Enhanced customer name resolution with multiple fallbacks
+    const getCustomerName = () => {
+      // Try direct customer association first
+      if (item?.customer?.name) return item.customer.name;
+
+      // Try proposal customerName
+      if (item?.proposal?.customerName) return item.proposal.customerName;
+
+      // Try customer_name field (legacy)
+      if (item?.customer_name) return item.customer_name;
+
+      return t('common.na');
+    };
+
     // For admins: show contractor (group or owner) on top, end-customer below
     if (!isContractor) {
       const contractor = item?.Owner?.name || item?.ownerGroup?.name || item?.Owner?.group?.name || t('common.na')
-      const endUser = item?.customer?.name || t('common.na')
+      const endUser = getCustomerName();
       return (
         <div>
           <div className="fw-semibold">{contractor}</div>
@@ -220,7 +238,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
       )
     }
     // Contractors just see their end-customer
-    return item?.customer?.name || t('common.na')
+    return getCustomerName();
   }
 
   return (
@@ -244,7 +262,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
             </CCol>
             <CCol md={4} className="text-md-end">
               <small className="text-muted">
-                {t('orders.showingCount', { count: filtered.length, total: Array.isArray(data) ? data.length : 0 })}
+                {t('orders.showingCount', { count: filtered.length, total: Array.isArray(orders) ? orders.length : 0 })}
               </small>
             </CCol>
           </CRow>
@@ -276,9 +294,9 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
               ) : (
                 paged.map((item) => (
                   <CTableRow key={item.id} onClick={() => openDetails(item.id)} style={{ cursor: 'pointer' }}>
-                    <CTableDataCell>{new Date(item.date || item.createdAt).toLocaleDateString()}</CTableDataCell>
+                    <CTableDataCell>{new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}</CTableDataCell>
                     <CTableDataCell>{renderCustomerCell(item)}</CTableDataCell>
-                    <CTableDataCell className="text-muted">{item.description || t('common.na')}</CTableDataCell>
+                    <CTableDataCell className="text-muted">{(item.description || item?.proposal?.description || '').trim() || t('common.na')}</CTableDataCell>
                     <CTableDataCell>{resolveManuName(item)}</CTableDataCell>
                     <CTableDataCell>
                       <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
@@ -326,10 +344,10 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                       </CBadge>
                     </div>
                     <div className="text-muted" style={{ fontSize: 12 }}>
-                      {new Date(item.date || item.createdAt).toLocaleDateString()} • {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
+                      {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()} • {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
                     </div>
                     <div className="text-truncate-2 mt-1" style={{ fontSize: 14, color: '#444' }}>
-                      {item.description || t('common.na')}
+                      {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
                     </div>
                   </div>
                 </div>

@@ -26,7 +26,9 @@
     "db:migrate:status": "node scripts/migrate.js status",
     "setup:production": "npm run build:backend && node check-production-setup.js && node setup-production.js && node verify-production-images.js",
     "verify:production": "node verify-production-images.js",
-    "check:production": "node check-production-setup.js"
+    "check:production": "node check-production-setup.js",
+    "debug:orders:db": "node scripts/debug-list-orders.js --limit 20",
+    "debug:orders:api": "node scripts/debug-fetch-orders.js"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^44.3.0",

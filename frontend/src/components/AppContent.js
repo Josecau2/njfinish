@@ -11,7 +11,7 @@ const AppContent = () => {
   const user = reduxUser || (() => {
     try { return JSON.parse(localStorage.getItem('user')) || null } catch { return null }
   })();
-  
+
   // Filter routes based on user permissions
   const allowedRoutes = user ? filterRoutesByPermission(routes, user) : [];
 
@@ -28,7 +28,7 @@ const AppContent = () => {
                   exact={route.exact}
                   name={route.name}
                   element={
-                    <RouteGuard 
+                    <RouteGuard
                       permission={route.permission}
                       module={route.module}
                       adminOnly={route.adminOnly}

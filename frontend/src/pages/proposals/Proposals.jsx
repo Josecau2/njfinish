@@ -53,7 +53,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const navigate = useNavigate();
   const { data, loading, error } = useSelector((state) => state.proposal);
   const proposal = Array.isArray(data) ? data : [];
-  
+
   // Get user data for permission checks
   const loggedInUser = JSON.parse(localStorage.getItem('user'));
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
@@ -126,6 +126,11 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const tabCounts = getTabCounts();
 
   const filteredProposals = proposal?.filter((item) => {
+    // By default, hide accepted/locked items from the All tab so accepted quotes "disappear" from quotes
+    const normalized = (item.status || '').toLowerCase();
+    const isAcceptedLike = normalized === 'accepted' || item.status === 'Proposal accepted' || item.is_locked;
+    if (activeTab === 'All' && isAcceptedLike) return false;
+
     const matchStatus = activeTab === 'All' || item.status === activeTab;
     const customerName = item.customer?.name || '';
     const matchSearch = searchTerm === '' || customerName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -155,13 +160,13 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const getAvailableActions = (proposal) => {
     const status = proposal.status?.toLowerCase() || 'draft';
     const isLocked = proposal.is_locked;
-    
+
     if (isLocked) {
       return []; // No actions available for locked proposals
     }
 
     const actions = [];
-    
+
     switch (status) {
       case 'draft':
         actions.push({ type: 'send', label: t('proposals.actions.send'), icon: cilPaperPlane, color: 'info' });
@@ -190,7 +195,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
   const renderStatusActions = (proposal) => {
     const availableActions = getAvailableActions(proposal);
-    
+
     return availableActions.map((action) => (
       <CButton
         key={action.type}
@@ -259,14 +264,29 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   };
 
   const handleAcceptProposal = (proposal) => {
+    console.log('🎯 [DEBUG] handleAcceptProposal called from Proposals.jsx:', {
+      proposalId: proposal?.id,
+      proposalStatus: proposal?.status,
+      isLocked: proposal?.is_locked,
+      timestamp: new Date().toISOString()
+    });
     setSelectedProposalForAcceptance(proposal);
     setShowAcceptanceModal(true);
   };
 
   const handleAcceptanceComplete = () => {
+    console.log('🔄 [DEBUG] handleAcceptanceComplete called:', {
+      isContractor,
+      contractorGroupId,
+      timestamp: new Date().toISOString()
+    });
+    // Refresh proposals list (for counts) and redirect to Orders so users immediately see the new order
     const groupId = isContractor ? contractorGroupId : null;
     dispatch(getProposal(groupId));
     setSelectedProposalForAcceptance(null);
+    const ordersPath = isContractor ? '/my-orders' : '/orders';
+    console.log('🔀 [DEBUG] Redirecting to:', ordersPath);
+    navigate(ordersPath);
   };
 
   const handleRejectProposal = (proposalId) => {
@@ -298,11 +318,11 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         dispatch(deleteFormData(id))
           .then((res) => {
             if (res.meta.requestStatus === 'fulfilled') {
-              Swal.fire(t('common.deleted') || 'Deleted', t('proposals.toast.deleted') || 'Your proposal has been deleted.', 'success');
+              Swal.fire(t('common.deleted') || 'Deleted', t('proposals.toast.deleted') || 'Your quote has been deleted.', 'success');
               const groupId = isContractor ? contractorGroupId : null;
               dispatch(getProposal(groupId));
             } else {
-              Swal.fire(t('common.error'), t('proposals.toast.deleteFailed') || 'Failed to delete the proposal.', 'error');
+              Swal.fire(t('common.error'), t('proposals.toast.deleteFailed') || 'Failed to delete the quote.', 'error');
             }
           });
       }
@@ -402,22 +422,24 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         </PermissionGate>
       </PageHeader>
 
-      {/* Status Tabs */}
-      <div className="tabs-container">
+  {/* Status Tabs (desktop only) */}
+  <div className="segmented desktop-only">
         {tabs.map((tab, idx) => {
           const isActive = activeTab === tab;
           const count = tabCounts[tab] || 0;
           if (count === 0 && tab !== 'All' && !tabs.slice(0, 6).includes(tab)) return null; // Hide unused legacy tabs
           return (
-            <CButton
-              key={idx}
-              color="light"
-              className={`tab-button ${isActive ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab(tab);
-                setCurrentPage(1);
-              }}
-            >
+            <label key={idx} className={isActive ? 'selected' : ''}>
+              <input
+                type="radio"
+                name="proposalTab"
+                value={tab}
+                checked={isActive}
+                onChange={() => {
+                  setActiveTab(tab);
+                  setCurrentPage(1);
+                }}
+              />
               {getTabLabel(tab)}
               <CBadge
                 color={isActive ? 'light' : 'secondary'}
@@ -426,44 +448,37 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
               >
                 {count}
               </CBadge>
-            </CButton>
+            </label>
           );
         })}
       </div>
 
-      {/* Search and Filters */}
-      <CCard className="filter-card">
-        <CCardBody>
-          <CRow className="align-items-center g-3">
-            <CCol md={8}>
-              <CInputGroup>
-                <CInputGroupText>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
-                  type="text"
-                  placeholder={t('proposals.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </CInputGroup>
-            </CCol>
-            <CCol md={4} className="text-md-end">
-              <small className="text-muted">
-                {t('proposals.showingCount', { count: filteredProposals?.length || 0, total: proposal?.length || 0 })}
-              </small>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+  {/* Search and Filters (desktop only) */}
+  <div className="toolbar">
+        <CInputGroup>
+          <CInputGroupText>
+            <CIcon icon={cilSearch} />
+          </CInputGroupText>
+          <CFormInput
+            type="text"
+            className="search"
+            placeholder={t('proposals.searchPlaceholder')}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </CInputGroup>
+        <small className="text-muted">
+          {t('proposals.showingCount', { count: filteredProposals?.length || 0, total: proposal?.length || 0 })}
+        </small>
+      </div>
 
-      {/* Desktop Table */}
-      <div className="table-responsive-md">
+  {/* Desktop Table */}
+      <div className="table-responsive-md desktop-only">
         <CCard className="data-table-card">
-          <CTable hover>
+          <CTable hover className="table-modern">
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell>{t('proposals.headers.date')}</CTableHeaderCell>
+                <CTableHeaderCell className="sticky-col">{t('proposals.headers.date')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('proposals.headers.customer')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('proposals.headers.description')}</CTableHeaderCell>
                 {canAssignDesigner && <CTableHeaderCell>{t('proposals.headers.designer')}</CTableHeaderCell>}
@@ -504,25 +519,23 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       <div className="d-flex justify-content-center gap-2">
                         {renderStatusActions(item)}
                         <PermissionGate action="update" resource="proposal" item={item}>
-                          <CButton
-                            color="primary"
-                            variant="outline"
-                            size="sm"
+                          <button
+                            className="icon-btn"
+                            aria-label={t('common.edit')}
                             onClick={() => handleNavigate(item.id)}
                           >
                             <CIcon icon={cilPencil} />
-                          </CButton>
+                          </button>
                         </PermissionGate>
                         {!item.is_locked && (
                           <PermissionGate action="delete" resource="proposal" item={item}>
-                            <CButton
-                              color="danger"
-                              variant="outline"
-                              size="sm"
+                            <button
+                              className="icon-btn"
+                              aria-label={t('common.delete')}
                               onClick={() => handleDelete(item.id)}
                             >
                               <CIcon icon={cilTrash} />
-                            </CButton>
+                            </button>
                           </PermissionGate>
                         )}
                       </div>
@@ -535,72 +548,140 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         </CCard>
       </div>
 
-  {/* Mobile Card Layout (hidden on desktop; shown via responsive.css on mobile) */}
-  <div className="mobile-card-view d-none">
-        {paginatedItems?.length === 0 ? (
-          <CCard>
-            <CCardBody className="text-center py-5">
-              <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
-              <p className="mb-0">{t('proposals.empty.title')}</p>
-              <small className="text-muted">{t('proposals.empty.subtitle')}</small>
-            </CCardBody>
-          </CCard>
-        ) : (
-          paginatedItems?.map((item) => (
-            <CCard key={item.id} className="proposal-mobile-card">
-              <CCardBody>
-                <div className="d-flex justify-content-between align-items-start">
-                  <div className="customer-name">{item.customer?.name || t('common.na')}</div>
-                  <CBadge color={getStatusColor(item.status || 'Draft')} shape="rounded-pill">
-                    {getTabLabel(item.status || 'Draft')}
-                  </CBadge>
-                </div>
-                <div className="proposal-details">
-                  <div className="detail-item">
-                    <span>{new Date(item.date || item.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span>{item.description || t('common.na')}</span>
-                  </div>
-                  {canAssignDesigner && (
-                    <div className="detail-item">
-                      <strong>{t('proposals.headers.designer')}:</strong>
-                      <span>{item.designerData?.name || t('common.na')}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="actions">
-                  {renderStatusActions(item)}
-                  <PermissionGate action="update" resource="proposal" item={item}>
-                    <CButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleNavigate(item.id)}
+      {/* Mobile Compact UI */}
+      {(() => {
+        // Mobile-only helpers
+        const mobilePageSize = 10;
+        const [mobileCount, setMobileCount] = useState(mobilePageSize);
+        const mobileItems = (filteredProposals || []).slice(0, mobileCount);
+
+        return (
+          <>
+            {/* Sticky toolbar */}
+            <div className="q-toolbar mobile-only">
+              <div className="q-chips">
+                {tabs.slice(0, 6).map((tab, idx) => {
+                  const count = tabCounts[tab] || 0;
+                  if (count === 0 && tab !== 'All') return null;
+                  const isActive = activeTab === tab;
+                  return (
+                    <button
+                      key={`chip-${idx}`}
+                      type="button"
+                      className={`btn btn-sm ${isActive ? 'btn-dark' : 'btn-light'}`}
+                      style={{ borderRadius: '999px' }}
+                      onClick={() => { setActiveTab(tab); setCurrentPage(1); setMobileCount(mobilePageSize); }}
                     >
-                      <CIcon icon={cilPencil} className="me-1" />
-                      {t('common.edit')}
-                    </CButton>
-                  </PermissionGate>
-                  {!item.is_locked && (
-                    <PermissionGate action="delete" resource="proposal" item={item}>
-                      <CButton
-                        color="danger"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <CIcon icon={cilTrash} className="me-1" />
-                        {t('common.delete')}
-                      </CButton>
-                    </PermissionGate>
-                  )}
+                      {getTabLabel(tab)} <span className="ms-1 badge text-bg-secondary">{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-2">
+                <CInputGroup className="q-search">
+                  <CInputGroupText><CIcon icon={cilSearch} /></CInputGroupText>
+                  <CFormInput
+                    type="text"
+                    placeholder={t('proposals.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => { setSearchTerm(e.target.value); setMobileCount(mobilePageSize); }}
+                  />
+                </CInputGroup>
+              </div>
+            </div>
+
+            {/* Compact card list */}
+            <div className="q-list mobile-only">
+              {mobileItems.length === 0 ? (
+                <div className="card--compact text-center">
+                  <CIcon icon={cilSearch} size="xl" className="text-muted mb-2" />
+                  <div>{t('proposals.empty.title')}</div>
+                  <div className="text-muted" style={{ fontSize: 'var(--fs-sub)' }}>{t('proposals.empty.subtitle')}</div>
                 </div>
-              </CCardBody>
-            </CCard>
-          ))
-        )}
-      </div>
+              ) : (
+                mobileItems.map((item) => (
+                  <div key={item.id} className="card--compact">
+                    <div className="card__head">
+                      <h3 className="card__title">{item.customer?.name || t('common.na')}</h3>
+                      <CBadge color={getStatusColor(item.status || 'Draft')} className="status-pill">
+                        {getTabLabel(item.status || 'Draft')}
+                      </CBadge>
+                    </div>
+                    <div className="card__meta">
+                      <span>{new Date(item.date || item.createdAt).toLocaleDateString()}</span>
+                      {canAssignDesigner && (
+                        <span>{t('proposals.headers.designer')}: {item.designerData?.name || t('common.na')}</span>
+                      )}
+                      {item.manufacturer?.name && (
+                        <span>{item.manufacturer.name}</span>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="clamp-2">{item.description}</p>
+                    )}
+                    <div className="q-actions">
+                      {/* Primary visible actions */}
+                      {!item.is_locked && (
+                        <button
+                          type="button"
+                          className="icon-btn"
+                          aria-label={t('proposals.actions.send')}
+                          onClick={() => handleSendProposal(item.id)}
+                        >
+                          <CIcon icon={cilPaperPlane} />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => handleNavigate(item.id)}
+                        aria-label={t('common.edit')}
+                      >
+                        <CIcon icon={cilPencil} />
+                      </button>
+                      {/* Overflow menu for secondary actions (e.g., Delete) */}
+                      <CDropdown alignment="end">
+                        <CDropdownToggle color="light" size="sm" className="btn-icon">⋮</CDropdownToggle>
+                        <CDropdownMenu>
+                          {!item.is_locked && (
+                            <CDropdownItem onClick={() => handleDelete(item.id)}>
+                              <CIcon icon={cilTrash} className="me-2" /> {t('common.delete')}
+                            </CDropdownItem>
+                          )}
+                          <CDropdownItem onClick={() => handleCreateShareLink(item)}>
+                            <CIcon icon={cilSend} className="me-2" /> {t('proposals.actions.share')}
+                          </CDropdownItem>
+                        </CDropdownMenu>
+                      </CDropdown>
+                    </div>
+                  </div>
+                ))
+              )}
+              {filteredProposals && mobileCount < filteredProposals.length && (
+                <div className="text-center mt-2">
+                  <button type="button" className="btn btn-light" onClick={() => setMobileCount((c) => c + mobilePageSize)}>
+                    {t('common.loadMore', 'Load more')}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom bar with primary action */}
+            <div className="bottom-bar mobile-only">
+              <PermissionGate permission="proposals:create">
+                <CButton color="success" className="flex-fill" onClick={handleCreateQuickProposal}>
+                  {t('proposals.quick')}
+                </CButton>
+              </PermissionGate>
+              <PermissionGate permission="proposals:create">
+                <CButton color="light" className="flex-fill" onClick={handleCreateProposal}>
+                  {t('proposals.new')}
+                </CButton>
+              </PermissionGate>
+            </div>
+          </>
+        );
+      })()}
 
       {/* Pagination */}
       <CCard className="data-table-card mt-4">

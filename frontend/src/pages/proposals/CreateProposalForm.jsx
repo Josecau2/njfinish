@@ -76,7 +76,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
     };
 
     const handlePopState = (e) => {
-      const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+  const confirmLeave = window.confirm(t('common.unsavedConfirm','You have unsaved changes. Are you sure you want to leave?'));
       if (!confirmLeave) {
         window.history.pushState(null, '', window.location.pathname);
       } else {
@@ -139,19 +139,68 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
   const sendToBackend = async (actionType) => {
     try {
+      console.log('🚀 [DEBUG] sendToBackend called from CreateProposalForm.jsx:', {
+        actionType,
+        customerId: formData.customerId,
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail,
+        manufacturersDataLength: formData.manufacturersData?.length || 0,
+        isContractor,
+        contractorGroupId,
+        timestamp: new Date().toISOString()
+      });
+
       const payload = {
         action: actionType,
         formData: { ...formData, type: actionType },
       };
 
+      console.log('📤 [DEBUG] Dispatching sendFormDataToBackend with payload:', {
+        action: payload.action,
+        customerId: payload.formData.customerId,
+        customerName: payload.formData.customerName,
+        payloadSize: JSON.stringify(payload).length,
+        hasManufacturersData: !!payload.formData.manufacturersData?.length
+      });
+
       const response = await dispatch(sendFormDataToBackend(payload));
+
+      console.log('📥 [DEBUG] Response received from backend:', {
+        success: response.payload?.success,
+        message: response.payload?.message,
+        hasData: !!response.payload?.data,
+        proposalId: response.payload?.data?.id,
+        timestamp: new Date().toISOString()
+      });
+
       if (response.payload.success == true) {
-        Swal.fire('Success!', 'Proposal saved successfully!', 'success');
+        console.log('✅ [DEBUG] Proposal creation/update successful');
+  Swal.fire(t('common.success','Success'), t('proposals.toast.successSend','Quote sent successfully'), 'success');
         setIsFormDirty(false);
+
+        console.log('🔀 [DEBUG] Navigating back to quotes list');
         navigate('/quotes');
+      } else {
+        console.error('❌ [DEBUG] Backend operation failed:', response.payload);
+  Swal.fire(t('common.error','Error'), response.payload?.message || t('proposals.errors.operationFailed','Operation failed. Please try again.'), 'error');
       }
     } catch (error) {
-      console.error('Error sending data to backend:', error);
+      console.error('❌ [DEBUG] Error in sendToBackend from CreateProposalForm:', {
+        error: error.message,
+        stack: error.stack,
+        actionType,
+        customerId: formData.customerId,
+        timestamp: new Date().toISOString()
+      });
+
+      if (error.response?.status === 403) {
+  Swal.fire(t('common.error','Error'), t('settings.customization.ui.alerts.saveFailed','Failed to save customization. Please try again.'), 'error');
+      } else if (error.response?.status === 400) {
+  const message = error.response?.data?.message || t('proposals.errors.operationFailed','Operation failed. Please try again.');
+  Swal.fire(t('common.error','Error'), message, 'error');
+      } else {
+  Swal.fire(t('common.error','Error'), error.message || t('proposals.toast.errorGeneric','An error occurred'), 'error');
+      }
     }
   };
 

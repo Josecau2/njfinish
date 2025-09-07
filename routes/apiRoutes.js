@@ -356,9 +356,21 @@ router.post('/notifications/mark-all-read', verifyTokenWithGroup, notificationCo
 
 // Terms & Conditions
 router.get('/terms/latest', verifyTokenWithGroup, termsController.getLatestTerms);
-router.post('/terms', verifyTokenWithGroup, requirePermission('admin:settings'), sanitizeBodyStrings(), termsController.saveTerms);
+// Allow very long terms content without truncation
+router.post('/terms', verifyTokenWithGroup, requirePermission('admin:settings'), sanitizeBodyStrings(2000000), termsController.saveTerms);
 router.get('/terms/acceptance', verifyTokenWithGroup, requirePermission('admin:users'), termsController.getAcceptanceStatus);
 router.post('/terms/accept', verifyTokenWithGroup, termsController.acceptLatest);
+
+// Sub-type management routes (admin only)
+const subTypeController = require('../controllers/subTypeController');
+router.get('/manufacturers/:manufacturerId/sub-types', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), subTypeController.getSubTypes);
+router.post('/manufacturers/:manufacturerId/sub-types', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), sanitizeBodyStrings(), subTypeController.createSubType);
+router.put('/sub-types/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), subTypeController.updateSubType);
+router.delete('/sub-types/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), subTypeController.deleteSubType);
+router.post('/sub-types/:subTypeId/assign-items', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('subTypeId'), sanitizeBodyStrings(), subTypeController.assignCatalogItems);
+router.get('/sub-types/:subTypeId/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('subTypeId'), subTypeController.getSubTypeAssignments);
+router.post('/sub-types/validate-requirements', verifyTokenWithGroup, sanitizeBodyStrings(), subTypeController.validateSubTypeRequirements);
+router.post('/catalog-items/requirements', verifyTokenWithGroup, sanitizeBodyStrings(), subTypeController.getCatalogItemRequirements);
 
 
 module.exports = router;

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
+import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
 import {
   CFormCheck,
   CInputGroup,
@@ -121,6 +122,11 @@ const CatalogTable = ({
   const [typesMeta, setTypesMeta] = useState([]);
   const [showTypeModal, setShowTypeModal] = useState(false);
   const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
+  const [subTypeRequirements, setSubTypeRequirements] = useState({
+    requiresHinge: false,
+    requiresExposed: false,
+    itemRequirements: {}
+  });
   const hoverTimerRef = useRef(null);
   const searchContainerRef = useRef(null);
   const api_url = import.meta.env.VITE_API_URL;
@@ -164,6 +170,39 @@ const CatalogTable = ({
     })();
     return () => { cancelled = true; };
   }, [selectVersion?.manufacturerData?.id]);
+
+  // Check sub-type requirements for conditional column display
+  useEffect(() => {
+    const manufacturerId = selectVersion?.manufacturerData?.id;
+    if (!manufacturerId || !displayItems?.length) {
+      setSubTypeRequirements({
+        requiresHinge: false,
+        requiresExposed: false,
+        itemRequirements: {}
+      });
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const requirements = await checkSubTypeRequirements(displayItems, manufacturerId);
+        if (!cancelled) {
+          setSubTypeRequirements(requirements);
+        }
+      } catch (err) {
+        console.error('Failed to check sub-type requirements:', err);
+        if (!cancelled) {
+          setSubTypeRequirements({
+            requiresHinge: false,
+            requiresExposed: false,
+            itemRequirements: {}
+          });
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectVersion?.manufacturerData?.id, displayItems]);
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -383,15 +422,23 @@ const CatalogTable = ({
       </CModal>
 
       {/* Desktop Table View */}
-      <div className="table-responsive table-responsive-md">
+  <div className="table-responsive table-responsive-md desktop-only">
         <CTable>
           <CTableHead>
             <CTableRow>
               <CTableHeaderCell>{t('proposalColumns.no')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.qty')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.item')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.hingeSide')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.exposedSide')}</CTableHeaderCell>
+              {subTypeRequirements.requiresHinge && (
+                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                  {t('proposalColumns.hingeSide')}
+                </CTableHeaderCell>
+              )}
+              {subTypeRequirements.requiresExposed && (
+                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                  {t('proposalColumns.exposedSide')}
+                </CTableHeaderCell>
+              )}
               <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</CTableHeaderCell>
@@ -415,8 +462,35 @@ const CatalogTable = ({
 
               return (
                 <React.Fragment key={idx}>
-                  <CTableRow>
-                    <CTableDataCell>{idx + 1}</CTableDataCell>
+                  <CTableRow
+                    style={{
+                      backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
+                      borderBottom: '2px solid #e6ebf1',
+                      ...(idx === 0 ? { borderTop: '2px solid #e6ebf1' } : {}),
+                    }}
+                  >
+                    <CTableDataCell style={{ width: '56px' }}>
+                      <span
+                        className="shadow-sm"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: '36px',
+                          height: '28px',
+                          padding: '0 10px',
+                          borderRadius: '9999px',
+                          backgroundColor: headerBg,
+                          color: textColor,
+                          fontWeight: 700,
+                          fontSize: '0.95rem',
+                          letterSpacing: '0.2px'
+                        }}
+                        title={`Row ${idx + 1}`}
+                      >
+                        {idx + 1}
+                      </span>
+                    </CTableDataCell>
                     <CTableDataCell>
                       <CFormInput
                         type="number"
@@ -428,8 +502,13 @@ const CatalogTable = ({
                     </CTableDataCell>
 
                     <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>
-                      <div className="d-flex align-items-center gap-2">
-                        <span>{item.code}</span>
+                      <div className="d-flex align-items-center gap-2 flex-wrap" style={{ minWidth: 0 }}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '320px' }}>
+                          <strong>{item.code}</strong>
+                          {item.description ? (
+                            <span className="text-muted ms-1">— {item.description}</span>
+                          ) : null}
+                        </span>
                         {(() => {
                           try {
                             const attachmentsCount = Array.isArray(item.modifications)
@@ -454,51 +533,83 @@ const CatalogTable = ({
                       </div>
                     </CTableDataCell>
 
-                    <CTableDataCell>
-                      {assembled ? (
-                        <div className="d-flex gap-1">
-              {hingeOptions.map((opt) => (
-                            <button
-                              key={opt}
-                              className={`btn btn-sm ${item.hingeSide === opt ? 'btn-light' : 'btn-light'}`}
-                              style={item.hingeSide === opt ? {
-                                background: headerBg,
-                                color: textColor,
-                                border: `1px solid ${headerBg}`
-                              } : {}}
-                              onClick={() => updateHingeSide(idx, opt)}
-                            >
-                {codeToLabel(opt)}
-                            </button>
-                          ))}
-                        </div>
-                      ) : (
-                        t('common.na')
-                      )}
-                    </CTableDataCell>
+                    {subTypeRequirements.requiresHinge && (
+                      <CTableDataCell
+                        style={{
+                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
+                            ? '#ffebee'
+                            : 'transparent'
+                        }}
+                      >
+                        {assembled ? (
+                          <div>
+                            {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
+                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
+                              </div>
+                            )}
+                            <div className="d-flex gap-1">
+                              {hingeOptions.map((opt) => (
+                                <button
+                                  key={opt}
+                                  type="button"
+                                  className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                  style={item.hingeSide === opt ? {
+                                    background: headerBg,
+                                    color: textColor,
+                                    border: `1px solid ${headerBg}`
+                                  } : {}}
+                                  onClick={() => updateHingeSide(idx, opt)}
+                                >
+                                  {codeToLabel(opt)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          t('common.na')
+                        )}
+                      </CTableDataCell>
+                    )}
 
-                    <CTableDataCell>
-                      {assembled ? (
-                        <div className="d-flex gap-1">
-              {exposedOptions.map((opt) => (
-                            <button
-                              key={opt}
-                              className={`btn btn-sm ${item.exposedSide === opt ? 'btn-light' : 'btn-light'}`}
-                              style={item.exposedSide === opt ? {
-                                background: headerBg,
-                                color: textColor,
-                                border: `1px solid ${headerBg}`
-                              } : {}}
-                              onClick={() => updateExposedSide(idx, opt)}
-                            >
-                {codeToLabel(opt)}
-                            </button>
-                          ))}
-                        </div>
-                      ) : (
-                        t('common.na')
-                      )}
-                    </CTableDataCell>
+                    {subTypeRequirements.requiresExposed && (
+                      <CTableDataCell
+                        style={{
+                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
+                            ? '#ffebee'
+                            : 'transparent'
+                        }}
+                      >
+                        {assembled ? (
+                          <div>
+                            {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
+                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
+                              </div>
+                            )}
+                            <div className="d-flex gap-1">
+                              {exposedOptions.map((opt) => (
+                                <button
+                                  key={opt}
+                                  type="button"
+                                  className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                  style={item.exposedSide === opt ? {
+                                    background: headerBg,
+                                    color: textColor,
+                                    border: `1px solid ${headerBg}`
+                                  } : {}}
+                                  onClick={() => updateExposedSide(idx, opt)}
+                                >
+                                  {codeToLabel(opt)}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          t('common.na')
+                        )}
+                      </CTableDataCell>
+                    )}
 
                     <CTableDataCell className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}>
                       {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
@@ -531,73 +642,130 @@ const CatalogTable = ({
                       </div>
                     </CTableDataCell>
                   </CTableRow>
-                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (
-                    <CTableRow className="table-light">
-                      <CTableDataCell colSpan={9} className="fw-bold text-muted">
-                        {t('proposalDoc.modifications')}
-                      </CTableDataCell>
-                    </CTableRow>
-                  )}
-
-                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (
-                    item.modifications.map((mod, modIdx) => (
-
-                      <CTableRow key={`mod-${idx}-${modIdx}`} className="table-secondary">
-                        <CTableDataCell>-</CTableDataCell>
-                        <CTableDataCell>{mod.qty}</CTableDataCell>
-
-                        <CTableDataCell colSpan={3}>
-                          {mod.name || t('proposalUI.mod.unnamed')}
-                          {(() => {
-                            const details = buildSelectedOptionsText(mod?.selectedOptions)
-                            return details ? (
-                              <span className="text-muted ms-2">— {details}</span>
-                            ) : null
-                          })()}
-                          {Array.isArray(mod.attachments) && mod.attachments.length > 0 && (
-                            <div className="mt-1 d-flex flex-wrap gap-1">
-                              {mod.attachments.slice(0, 3).map((att, ai) => (
-                                <a
-                                  key={ai}
-                                  href={att.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="badge text-bg-info text-decoration-none"
-                                  title={att.name || 'Attachment'}
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                                >
-                                  {/* Thumbnail for images */}
-                                  {String(att.mimeType || '').startsWith('image/') ? (
-                                    <img src={att.url} alt={att.name || 'img'} style={{ width: 18, height: 18, objectFit: 'cover', borderRadius: 2 }} />
-                                  ) : null}
-                                  <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name || 'File'}</span>
-                                </a>
-                              ))}
-                              {mod.attachments.length > 3 && (
-                                <span className="badge text-bg-secondary">+{mod.attachments.length - 3}</span>
-                              )}
-                            </div>
-                          )}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          {formatPrice(mod.price || 0)}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          -
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          <CIcon
-                            icon={cilTrash}
-                            style={{ cursor: 'pointer', color: 'red' }}
-                            onClick={() => handleDeleteModification(idx, modIdx)}
-                          />
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))
-                  )}
+                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (() => {
+                    const groups = item.modifications.reduce((acc, m) => {
+                      const key = m.categoryName || 'Other';
+                      acc[key] = acc[key] || [];
+                      acc[key].push(m);
+                      return acc;
+                    }, {});
+                    const groupKeys = Object.keys(groups);
+                    return (
+                      <>
+                        <CTableRow className="modification-header">
+                          <CTableDataCell
+                            colSpan={10}
+                            style={{
+                              backgroundColor: headerBg,
+                              color: textColor,
+                              padding: '8px 16px',
+                              paddingLeft: '56px',
+                              fontSize: '0.9rem',
+                              borderTop: `2px solid ${headerBg}`,
+                              borderLeft: `6px solid ${headerBg}`,
+                              borderTopLeftRadius: '6px',
+                              borderTopRightRadius: '6px',
+                              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)'
+                            }}
+                          >
+                            <BsTools className="me-2" style={{ fontSize: '14px', color: textColor }} />
+                            <span className="fw-bold">{t('proposalDoc.modifications')}</span>
+                          </CTableDataCell>
+                        </CTableRow>
+                        {groupKeys.map((gkey, gi) => (
+                          <React.Fragment key={`modgrp-${idx}-${gkey}`}>
+                            <CTableRow className="modification-category" style={{ backgroundColor: '#f1f3f5' }}>
+                              <CTableDataCell colSpan={10} className="fw-semibold text-secondary" style={{ paddingLeft: '72px', fontSize: '0.85rem', borderLeft: `6px solid ${headerBg}`, borderBottom: '1px solid #dee2e6' }}>
+                                📂 {gkey}
+                              </CTableDataCell>
+                            </CTableRow>
+                            {groups[gkey].map((mod, modIdx) => {
+                              const isLastRow = gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1;
+                              return (
+                                <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
+                                  <CTableRow className="modification-item" style={{
+                                    backgroundColor: '#fcfcfd',
+                                    borderLeft: `6px solid ${headerBg}`,
+                                    fontSize: '0.9rem',
+                                    borderBottom: isLastRow ? `2px solid ${headerBg}` : '1px solid #e9ecef'
+                                  }}>
+                                    <CTableDataCell style={{ paddingLeft: '88px', color: '#6c757d' }}>↳</CTableDataCell>
+                                    <CTableDataCell style={{ fontWeight: '500' }}>{mod.qty}</CTableDataCell>
+                                    <CTableDataCell colSpan={3} style={{ paddingLeft: '8px' }}>
+                                      <div className="d-flex align-items-center flex-wrap gap-2">
+                                        <span
+                                          className="shadow-sm"
+                                          style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            padding: '2px 10px',
+                                            borderRadius: '9999px',
+                                            backgroundColor: '#f3f5f7',
+                                            border: `1px solid ${headerBg}`,
+                                            color: '#212529',
+                                            fontWeight: 600,
+                                            lineHeight: 1.2
+                                          }}
+                                        >
+                                          {mod.name || t('proposalUI.mod.unnamed')}
+                                        </span>
+                                        {(() => {
+                                          const details = buildSelectedOptionsText(mod?.selectedOptions)
+                                          return details ? (
+                                            <span
+                                              className="text-muted"
+                                              style={{
+                                                fontSize: '0.8rem',
+                                                padding: '2px 8px',
+                                                borderRadius: '6px',
+                                                background: '#f8f9fa',
+                                                border: '1px dashed #ced4da'
+                                              }}
+                                            >
+                                              {details}
+                                            </span>
+                                          ) : null
+                                        })()}
+                                      </div>
+                                      {Array.isArray(mod.attachments) && mod.attachments.length > 0 && (
+                                        <div className="mt-1 d-flex flex-wrap gap-1">
+                                          {mod.attachments.slice(0, 3).map((att, ai) => (
+                                            <a key={ai} href={att.url} target="_blank" rel="noreferrer" className="badge text-bg-info text-decoration-none" title={att.name || 'Attachment'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                              {String(att.mimeType || '').startsWith('image/') ? (
+                                                <img src={att.url} alt={att.name || 'img'} style={{ width: 18, height: 18, objectFit: 'cover', borderRadius: 2 }} />
+                                              ) : null}
+                                              <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name || 'File'}</span>
+                                            </a>
+                                          ))}
+                                          {mod.attachments.length > 3 && (
+                                            <span className="badge text-bg-secondary">+{mod.attachments.length - 3}</span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="fw-medium text-success">{formatPrice(mod.price || 0)}</CTableDataCell>
+                                    <CTableDataCell style={{ color: '#6c757d' }}>-</CTableDataCell>
+                                    <CTableDataCell>{/* Modifications column (per-item summary) not applicable on sub-rows */}</CTableDataCell>
+                                    <CTableDataCell className="fw-semibold text-success">{formatPrice((mod.price || 0) * (mod.qty || 1))}</CTableDataCell>
+                                    <CTableDataCell style={{ textAlign: 'center' }}>
+                                      <CIcon icon={cilTrash} style={{ cursor: 'pointer', color: '#dc3545', fontSize: '14px' }} onClick={() => handleDeleteModification(idx, modIdx)} title="Remove modification" />
+                                    </CTableDataCell>
+                                  </CTableRow>
+                                  {isLastRow && (
+                                    <CTableRow>
+                                      <CTableDataCell colSpan={10} style={{ padding: 0 }}>
+                                        <div style={{ height: '10px', borderBottom: '1px dashed #cfd4da' }} />
+                                      </CTableDataCell>
+                                    </CTableRow>
+                                  )}
+                                </React.Fragment>
+                              )
+                            })}
+                          </React.Fragment>
+                        ))}
+                      </>
+                    );
+                  })()}
                 </React.Fragment>
               )
             })}
@@ -605,8 +773,8 @@ const CatalogTable = ({
         </CTable>
       </div>
 
-      {/* Mobile Card View */}
-      <div className="mobile-card-view d-none">
+    {/* Mobile Card View */}
+  <div className="mobile-card-view mobile-only">
         {displayItems.map((item, idx) => {
           const assembled = !!isAssembled
           const qty = Number(item.qty || 1)
@@ -620,7 +788,15 @@ const CatalogTable = ({
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
-              <div className="item-card-mobile">
+              <div
+                className="item-card-mobile"
+                style={{
+                  border: '2px solid #e6ebf1',
+                  borderRadius: '8px',
+                  backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
+                  marginBottom: '12px'
+                }}
+              >
                 <div className="item-header">
                   <div className="item-number">{idx + 1}</div>
                   <div className="item-actions">
@@ -639,8 +815,13 @@ const CatalogTable = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}>{item.code}</span>
+                  <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
+                    <span className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <strong>{item.code}</strong>
+                      {item.description ? (
+                        <span className="text-muted ms-1">— {item.description}</span>
+                      ) : null}
+                    </span>
                     {hasTypeMetadata(item.type) && (
                       <button
                         type="button"
@@ -673,45 +854,73 @@ const CatalogTable = ({
 
                 {assembled && (
                   <>
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.hingeSide')}</span>
-                      <div className="btn-group-mobile">
-                        {hingeOptions.map((opt) => (
-                          <button
-                            key={opt}
-                            className={`btn ${item.hingeSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
-                            style={item.hingeSide === opt ? {
-                              background: headerBg,
-                              color: textColor,
-                              border: `1px solid ${headerBg}`
-                            } : {}}
-                            onClick={() => updateHingeSide(idx, opt)}
-                          >
-                            {codeToLabel(opt)}
-                          </button>
-                        ))}
+                    {subTypeRequirements.requiresHinge && (
+                      <div className="item-detail-row" style={{
+                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
+                          ? '#ffebee'
+                          : 'transparent',
+                        padding: '0.5rem',
+                        borderRadius: '4px'
+                      }}>
+                        <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                        {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
+                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                            {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
+                          </div>
+                        )}
+                        <div className="btn-group-mobile">
+                          {hingeOptions.map((opt) => (
+                            <button
+                              key={opt}
+                              type="button"
+                              className={`btn ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                              style={item.hingeSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
+                              onClick={() => updateHingeSide(idx, opt)}
+                            >
+                              {codeToLabel(opt)}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.exposedSide')}</span>
-                      <div className="btn-group-mobile">
-                        {exposedOptions.map((opt) => (
-                          <button
-                            key={opt}
-                            className={`btn ${item.exposedSide === opt ? 'btn-outline-secondary' : 'btn-outline-secondary'}`}
-                            style={item.exposedSide === opt ? {
-                              background: headerBg,
-                              color: textColor,
-                              border: `1px solid ${headerBg}`
-                            } : {}}
-                            onClick={() => updateExposedSide(idx, opt)}
-                          >
-                            {codeToLabel(opt)}
-                          </button>
-                        ))}
+                    {subTypeRequirements.requiresExposed && (
+                      <div className="item-detail-row" style={{
+                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
+                          ? '#ffebee'
+                          : 'transparent',
+                        padding: '0.5rem',
+                        borderRadius: '4px'
+                      }}>
+                        <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                        {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
+                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                            {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
+                          </div>
+                        )}
+                        <div className="btn-group-mobile">
+                          {exposedOptions.map((opt) => (
+                            <button
+                              key={opt}
+                              type="button"
+                              className={`btn ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
+                              style={item.exposedSide === opt ? {
+                                background: headerBg,
+                                color: textColor,
+                                border: `1px solid ${headerBg}`
+                              } : {}}
+                              onClick={() => updateExposedSide(idx, opt)}
+                            >
+                              {codeToLabel(opt)}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="item-detail-row">
                       <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
@@ -734,26 +943,82 @@ const CatalogTable = ({
               {/* Mobile Modification Cards */}
               {Array.isArray(item.modifications) && item.modifications.length > 0 && (
                 item.modifications.map((mod, modIdx) => (
-                  <div key={`mobile-mod-${idx}-${modIdx}`} className="modification-card-mobile">
-                    <div className="mod-header">
-                      <span className="mod-label">{t('proposalDoc.modifications')}</span>
+                  <div
+                    key={`mobile-mod-${idx}-${modIdx}`}
+                    style={{
+                      background: headerBg,
+                      color: textColor,
+                      border: `1px solid ${headerBg}`,
+                      borderRadius: '6px',
+                      padding: '0.75rem',
+                      marginTop: '0.75rem',
+                      marginBottom: '1.5rem',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      maxWidth: '90%',
+                      position: 'relative',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    {/* Item indicator badge */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      left: '12px',
+                      background: textColor,
+                      color: headerBg,
+                      borderRadius: '50%',
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      border: `2px solid ${headerBg}`
+                    }}>
+                      {idx + 1}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        color: textColor,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}>{t('proposalDoc.modifications')}</span>
                       <CIcon
                         icon={cilTrash}
                         style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
                         onClick={() => handleDeleteModification(idx, modIdx)}
                       />
                     </div>
-                    <div className="mod-detail">
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.875rem',
+                      marginBottom: '0.25rem'
+                    }}>
                       <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
                       {(() => {
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
                         return details ? (
-                          <span className="text-muted"> — {details}</span>
+                          <span style={{ opacity: 0.7 }}> — {details}</span>
                         ) : null
                       })()}
                       <span>Qty: {mod.qty}</span>
                     </div>
-                    <div className="mod-detail">
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.875rem',
+                      marginBottom: '0'
+                    }}>
                       <span>{t('proposalColumns.price')}: {formatPrice(mod.price || 0)}</span>
                       <span><strong>{t('proposalColumns.total')}: {formatPrice((mod.price || 0) * (mod.qty || 1))}</strong></span>
                     </div>
