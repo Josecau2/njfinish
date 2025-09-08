@@ -2,8 +2,16 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Create manufacturer_sub_types table
-    await queryInterface.createTable('manufacturer_sub_types', {
+    const tableExists = async (name) => {
+      const [rows] = await queryInterface.sequelize.query(
+        "SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?",
+        { replacements: [name] }
+      );
+      return rows.length > 0;
+    };
+
+    if (!(await tableExists('manufacturer_sub_types'))) {
+      await queryInterface.createTable('manufacturer_sub_types', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -58,10 +66,20 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
-    });
+      });
 
-    // Create catalog_sub_type_assignments table
-    await queryInterface.createTable('catalog_sub_type_assignments', {
+      await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id'], {
+        name: 'idx_manufacturer_sub_types_manufacturer_id'
+      });
+
+      await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id', 'name'], {
+        name: 'idx_manufacturer_sub_types_manufacturer_name',
+        unique: true
+      });
+    }
+
+    if (!(await tableExists('catalog_sub_type_assignments'))) {
+      await queryInterface.createTable('catalog_sub_type_assignments', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -71,11 +89,7 @@ module.exports = {
       catalog_data_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        // Correct parent table name (was mistakenly 'catalog_data')
-        references: {
-          model: 'manufacturer_catalog_data',
-          key: 'id'
-        },
+        references: { model: 'manufacturer_catalog_data', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
@@ -109,42 +123,23 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
-    });
+      });
 
-    // Add indexes for better performance
-    await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id'], {
-      name: 'idx_manufacturer_sub_types_manufacturer_id'
-    });
-
-    await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id', 'name'], {
-      name: 'idx_manufacturer_sub_types_manufacturer_name',
-      unique: true
-    });
-
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id'], {
-      name: 'idx_catalog_sub_type_assignments_catalog_data_id'
-    });
-
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['sub_type_id'], {
-      name: 'idx_catalog_sub_type_assignments_sub_type_id'
-    });
-
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id', 'sub_type_id'], {
-      name: 'idx_catalog_sub_type_assignments_unique',
-      unique: true
-    });
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id'], {
+        name: 'idx_catalog_sub_type_assignments_catalog_data_id'
+      });
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['sub_type_id'], {
+        name: 'idx_catalog_sub_type_assignments_sub_type_id'
+      });
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id', 'sub_type_id'], {
+        name: 'idx_catalog_sub_type_assignments_unique',
+        unique: true
+      });
+    }
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Drop indexes first
-    await queryInterface.removeIndex('catalog_sub_type_assignments', 'idx_catalog_sub_type_assignments_unique');
-    await queryInterface.removeIndex('catalog_sub_type_assignments', 'idx_catalog_sub_type_assignments_sub_type_id');
-    await queryInterface.removeIndex('catalog_sub_type_assignments', 'idx_catalog_sub_type_assignments_catalog_data_id');
-    await queryInterface.removeIndex('manufacturer_sub_types', 'idx_manufacturer_sub_types_manufacturer_name');
-    await queryInterface.removeIndex('manufacturer_sub_types', 'idx_manufacturer_sub_types_manufacturer_id');
-
-    // Drop tables in reverse order (due to foreign key constraints)
-    await queryInterface.dropTable('catalog_sub_type_assignments');
-    await queryInterface.dropTable('manufacturer_sub_types');
+    // Non-destructive down: keep data (no-op)
+    return Promise.resolve();
   }
 };
