@@ -2,78 +2,31 @@ const { Sequelize } = require('sequelize');
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Add personal address fields
-    await queryInterface.addColumn('users', 'street_address', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
+    const columns = [
+      'street_address','city','state','zip_code','country',
+      'company_name','company_street_address','company_city','company_state','company_zip_code','company_country'
+    ];
 
-    await queryInterface.addColumn('users', 'city', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
+    // Fetch existing columns in one query
+    const [rows] = await queryInterface.sequelize.query(
+      "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'"
+    );
+    const existing = new Set(rows.map(r => r.COLUMN_NAME));
 
-    await queryInterface.addColumn('users', 'state', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
+    const addIfMissing = async (name) => {
+      if (existing.has(name)) return; // already there
+      let type = Sequelize.STRING;
+      await queryInterface.addColumn('users', name, { type, allowNull: true });
+    };
 
-    await queryInterface.addColumn('users', 'zip_code', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'country', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    // Add company information fields
-    await queryInterface.addColumn('users', 'company_name', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'company_street_address', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'company_city', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'company_state', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'company_zip_code', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
-
-    await queryInterface.addColumn('users', 'company_country', {
-      type: Sequelize.STRING,
-      allowNull: true,
-    });
+    for (const col of columns) {
+      // Sequential to keep logs readable
+      await addIfMissing(col);
+    }
   },
 
-  async down(queryInterface, Sequelize) {
-    // Remove personal address fields
-    await queryInterface.removeColumn('users', 'street_address');
-    await queryInterface.removeColumn('users', 'city');
-    await queryInterface.removeColumn('users', 'state');
-    await queryInterface.removeColumn('users', 'zip_code');
-    await queryInterface.removeColumn('users', 'country');
-
-    // Remove company information fields
-    await queryInterface.removeColumn('users', 'company_name');
-    await queryInterface.removeColumn('users', 'company_street_address');
-    await queryInterface.removeColumn('users', 'company_city');
-    await queryInterface.removeColumn('users', 'company_state');
-    await queryInterface.removeColumn('users', 'company_zip_code');
-    await queryInterface.removeColumn('users', 'company_country');
+  async down() {
+    // No-op: keep data (non-destructive rollback)
+    return Promise.resolve();
   }
 };
