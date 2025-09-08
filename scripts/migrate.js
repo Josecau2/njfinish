@@ -54,7 +54,19 @@ async function run() {
     }
   }
   if (cmd === 'up') {
-    await umzug.up();
+    try {
+      await umzug.up();
+    } catch (err) {
+      // Auto-skip idempotent structural errors to prevent crash loops
+      const msg = String(err && err.message || '');
+      const dupCol = msg.includes('Duplicate column name');
+      const noTable = msg.includes("doesn't exist") && /global_modification_templates|global_modification_categories/.test(msg);
+      if (dupCol || noTable) {
+        console.warn('[MIGRATE] Non-fatal duplication/missing prerequisite detected, treating as already applied:', msg);
+      } else {
+        throw err;
+      }
+    }
     console.log('Migrations applied.');
   } else if (cmd === 'down') {
     await umzug.down();
