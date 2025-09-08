@@ -2,6 +2,7 @@
 require('dotenv').config();
 const { Umzug, SequelizeStorage } = require('umzug');
 const path = require('path');
+const fs = require('fs');
 const sequelize = require('../config/db');
 const { spawn } = require('child_process');
 const env = require('../config/env');
@@ -9,8 +10,47 @@ const env = require('../config/env');
 // Ensure models are loaded for associations when needed by migrations
 require('../models');
 
+// Check for migrations in both directories
+const scriptsMigrationsPath = path.join(__dirname, 'migrations');
+const rootMigrationsPath = path.join(__dirname, '..', 'migrations');
+
+console.log('Checking migration directories:');
+console.log('- Scripts migrations:', scriptsMigrationsPath);
+console.log('- Root migrations:', rootMigrationsPath);
+
+// Get all migration files from both directories
+function getAllMigrationFiles() {
+  const migrationFiles = [];
+  
+  // Get migrations from scripts/migrations
+  if (fs.existsSync(scriptsMigrationsPath)) {
+    const scriptFiles = fs.readdirSync(scriptsMigrationsPath)
+      .filter(f => f.endsWith('.js'))
+      .map(f => path.join(scriptsMigrationsPath, f));
+    migrationFiles.push(...scriptFiles);
+    console.log(`Found ${scriptFiles.length} migrations in scripts/migrations/`);
+  }
+  
+  // Get migrations from root migrations (excluding duplicates)
+  if (fs.existsSync(rootMigrationsPath)) {
+    const rootFiles = fs.readdirSync(rootMigrationsPath)
+      .filter(f => f.endsWith('.js'))
+      .map(f => path.join(rootMigrationsPath, f));
+    
+    // Filter out duplicates based on filename
+    const existingNames = migrationFiles.map(f => path.basename(f));
+    const uniqueRootFiles = rootFiles.filter(f => !existingNames.includes(path.basename(f)));
+    
+    migrationFiles.push(...uniqueRootFiles);
+    console.log(`Found ${rootFiles.length} migrations in root migrations/ (${uniqueRootFiles.length} unique)`);
+  }
+  
+  console.log(`Total migrations to process: ${migrationFiles.length}`);
+  return migrationFiles;
+}
+
 const umzug = new Umzug({
-  migrations: { glob: path.join(__dirname, 'migrations', '*.js') },
+  migrations: getAllMigrationFiles(),
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize, modelName: 'SequelizeMeta' }),
   logger: console,

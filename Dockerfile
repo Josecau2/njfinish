@@ -78,6 +78,7 @@ COPY middleware ./middleware
 COPY constants ./constants
 COPY utils ./utils
 COPY scripts ./scripts
+COPY migrations ./migrations
 COPY *.js ./
 
 # copy the built frontend from the builder (Vite outDir -> /app/frontend/build). App serves from /app/build
