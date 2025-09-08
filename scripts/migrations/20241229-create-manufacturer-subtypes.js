@@ -71,8 +71,9 @@ module.exports = {
       catalog_data_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        // Correct parent table name (was mistakenly 'catalog_data')
         references: {
-          model: 'catalog_data',
+          model: 'manufacturer_catalog_data',
           key: 'id'
         },
         onUpdate: 'CASCADE',
