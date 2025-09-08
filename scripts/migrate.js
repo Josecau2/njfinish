@@ -18,41 +18,20 @@ console.log('Checking migration directories:');
 console.log('- Scripts migrations:', scriptsMigrationsPath);
 console.log('- Root migrations:', rootMigrationsPath);
 
-// Get all migration files from both directories
-function getAllMigrationFiles() {
-  const migrationFiles = [];
-  
-  // Get migrations from scripts/migrations
-  if (fs.existsSync(scriptsMigrationsPath)) {
-    const scriptFiles = fs.readdirSync(scriptsMigrationsPath)
-      .filter(f => f.endsWith('.js'))
-      .map(f => path.join(scriptsMigrationsPath, f));
-    migrationFiles.push(...scriptFiles);
-    console.log(`Found ${scriptFiles.length} migrations in scripts/migrations/`);
-  }
-  
-  // Get migrations from root migrations (excluding duplicates)
-  if (fs.existsSync(rootMigrationsPath)) {
-    const rootFiles = fs.readdirSync(rootMigrationsPath)
-      .filter(f => f.endsWith('.js'))
-      .map(f => path.join(rootMigrationsPath, f));
-    
-    // Filter out duplicates based on filename
-    const existingNames = migrationFiles.map(f => path.basename(f));
-    const uniqueRootFiles = rootFiles.filter(f => !existingNames.includes(path.basename(f)));
-    
-    migrationFiles.push(...uniqueRootFiles);
-    console.log(`Found ${rootFiles.length} migrations in root migrations/ (${uniqueRootFiles.length} unique)`);
-  }
-  
-  console.log(`Total migrations to process: ${migrationFiles.length}`);
-  return migrationFiles;
-}
-
 const umzug = new Umzug({
-  migrations: getAllMigrationFiles(),
+  migrations: {
+    glob: ['scripts/migrations/*.js', { cwd: path.join(__dirname, '..') }],
+    resolve: ({ name, path: filePath, context }) => {
+      const migration = require(filePath);
+      return {
+        name,
+        up: async () => migration.up(context, sequelize.Sequelize),
+        down: async () => migration.down ? migration.down(context, sequelize.Sequelize) : Promise.resolve(),
+      };
+    },
+  },
   context: sequelize.getQueryInterface(),
-  storage: new SequelizeStorage({ sequelize, modelName: 'SequelizeMeta' }),
+  storage: new SequelizeStorage({ sequelize, tableName: 'SequelizeMeta' }),
   logger: console,
 });
 
