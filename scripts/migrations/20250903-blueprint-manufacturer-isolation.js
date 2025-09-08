@@ -4,8 +4,8 @@
 // and scope/manufacturer fields to global_modification_categories
 
 module.exports = {
-  async up({ context: qi }) {
-    const sequelize = qi ? qi.sequelize : require('../../config/db');
+  async up(qi) {
+    const sequelize = qi && qi.sequelize ? qi.sequelize : require('../../config/db');
 
     // helper: check column exists
     async function hasColumn(table, col){
@@ -121,7 +121,7 @@ module.exports = {
   console.log('✅ Schema migration completed: prerequisites ensured and blueprint/manufacturer isolation fields added');
   },
 
-  async down({ context: qi }) {
+  async down(qi) {
     // Non-destructive rollback: do nothing (keep data).
     return Promise.resolve();
   }

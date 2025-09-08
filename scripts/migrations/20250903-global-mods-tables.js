@@ -3,7 +3,7 @@
 // Creates global_modification_* tables if missing and adds image column.
 
 module.exports = {
-  async up({ context: qi }) {
+  async up(qi) {
     const sequelize = qi.sequelize;
 
     // helper: check table exists
@@ -75,7 +75,7 @@ module.exports = {
     }
   },
 
-  async down({ context: qi }) {
+  async down(qi) {
     // Non-destructive rollback: do nothing (keep data).
     return Promise.resolve();
   }

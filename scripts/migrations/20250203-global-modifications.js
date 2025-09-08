@@ -4,12 +4,10 @@
 'use strict';
 
 module.exports = {
-	async up({ context: qi }) {
-		// Intentionally no-op; real global modifications schema created in later dated migrations.
+	async up(qi) {
 		return Promise.resolve();
 	},
-	async down() {
-		// Non-destructive rollback
+	async down(qi) {
 		return Promise.resolve();
 	}
 };
