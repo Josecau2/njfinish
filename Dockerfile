@@ -33,8 +33,7 @@ COPY package.json package-lock.json* ./
 # Install ALL dependencies (including dev) for building
 # - Set npm proxy if provided
 # - Prefer configured registry; fallback to mirror if ping fails
-# - Use BuildKit cache mount to reuse the npm cache across builds
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
+RUN set -eux; \
         if [ -n "${HTTP_PROXY}" ]; then npm config set proxy "$HTTP_PROXY"; fi; \
         if [ -n "${HTTPS_PROXY}" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi; \
         npm config set registry "${NPM_REGISTRY}"; \
