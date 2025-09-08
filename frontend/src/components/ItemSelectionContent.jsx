@@ -1478,6 +1478,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             shape="pill"
                                             checked={isAssembled}
                                             onChange={(e) => setIsAssembled(e.target.checked)}
+                                            aria-label={t('proposalColumns.assembled')}
                                         />
                                     </div>
                                 </div>
@@ -1501,7 +1502,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     <button
                                         className={`btn btn-sm ${isStylesCollapsed ? 'btn-primary' : 'btn-outline-primary'}`}
                                         onClick={() => setIsStylesCollapsed(!isStylesCollapsed)}
-                                        style={{ padding: '0.25rem 0.75rem' }}
+                                        style={{ padding: '0.25rem 0.75rem', minHeight: 44, minWidth: 44 }}
+                                        aria-pressed={isStylesCollapsed}
+                                        aria-label={isStylesCollapsed ? t('proposalUI.expandImages') : t('proposalUI.compactView')}
                                     >
                                         {isStylesCollapsed ? (
                                             <>
@@ -1524,7 +1527,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
                                                 onClick={prevSlide}
                                                 disabled={!canGoPrev()}
-                                                style={{ padding: '0.25rem 0.5rem' }}
+                                                style={{ padding: '0.25rem 0.5rem', minHeight: 44, minWidth: 44 }}
                                                 aria-label="Previous styles"
                                             >
                                                 <CIcon icon={cilChevronLeft} size="sm" />
@@ -1533,7 +1536,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
                                                 onClick={nextSlide}
                                                 disabled={!canGoNext()}
-                                                style={{ padding: '0.25rem 0.5rem' }}
+                                                style={{ padding: '0.25rem 0.5rem', minHeight: 44, minWidth: 44 }}
                                                 aria-label="Next styles"
                                             >
                                                 <CIcon icon={cilChevronRight} size="sm" />

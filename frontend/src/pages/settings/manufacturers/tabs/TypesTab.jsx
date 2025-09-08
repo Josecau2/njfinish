@@ -32,6 +32,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../../helpers/axiosInstance';
 import PageHeader from '../../../../components/PageHeader';
+// Use centralized lucide icon module via @ alias
+import { Pencil, Trash } from '@/icons-lucide';
 
 // Helper function to get auth headers
 
@@ -607,6 +609,10 @@ const TypesTab = ({ manufacturer }) => {
 
   return (
     <div>
+      <style>{`
+        .overlay-action-btn { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+        @media (max-width: 576px) { .overlay-action-btn { padding: 8px 10px !important; } }
+      `}</style>
       <CCard>
         <CCardHeader className="bg-light border-bottom">
           <div className="d-flex justify-content-between align-items-center">
@@ -839,22 +845,25 @@ const TypesTab = ({ manufacturer }) => {
                                   <CButton
                                     color="light"
                                     size="sm"
+                                    className="overlay-action-btn"
+                                    aria-label={t('types.meta.editType', 'Edit Type')}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleEditType(type);
                                     }}
                                     style={{ fontSize: '0.75rem' }}
                                   >
-                                    <i className="bi bi-pencil"></i> {t('types.meta.editType', 'Edit Type')}
+                                    <Pencil size={18} aria-hidden="true" className="me-1" /> {t('types.meta.editType', 'Edit Type')}
                                   </CButton>
                                   <CButton
                                     color="danger"
                                     size="sm"
-                                    className="ms-2"
+                                    className="ms-2 overlay-action-btn"
+                                    aria-label={t('common.delete', 'Delete')}
                                     onClick={(e)=>{ e.stopPropagation(); setDeleteTypeAsk({ open: true, typeName: type.type }); setReassignTypeTo(''); }}
                                     style={{ fontSize: '0.75rem' }}
                                   >
-                                    <i className="bi bi-trash"></i>
+                                    <Trash size={18} aria-hidden="true" />
                                   </CButton>
                                 </div>
                               </div>
@@ -931,9 +940,10 @@ const TypesTab = ({ manufacturer }) => {
                       <CButton
                         color="primary"
                         size="sm"
+                        aria-label={t('types.meta.editType', 'Edit Type')}
                         onClick={() => handleEditType(type)}
                       >
-                        <i className="bi bi-pencil"></i>
+                        <Pencil size={18} aria-hidden="true" />
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>

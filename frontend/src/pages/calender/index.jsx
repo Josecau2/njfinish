@@ -161,8 +161,12 @@ const CalendarView = () => {
     const todaysEvents = getTodaysEvents();
     const thisWeeksEvents = getThisWeeksEvents();
 
-    return (
-        <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+        return (
+                <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+                        <style>{`
+                            .calendar-wrapper{ overflow-x:hidden; }
+                            .btn, .form-select, .form-control{ min-height:44px; }
+                        `}</style>
             {/* Header Section */}
             <PageHeader
                 title="Event Calendar"

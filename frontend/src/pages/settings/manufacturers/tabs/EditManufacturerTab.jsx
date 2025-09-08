@@ -138,7 +138,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
       <CCard>
         <CCardHeader className="d-flex justify-content-between align-items-center bg-body border-bottom">
           <h5 className="mb-0">{t('settings.manufacturers.edit.title')}</h5>
-          <CButton color="light" onClick={() => navigate(-1)}>
+          <CButton color="light" onClick={() => navigate(-1)} className="icon-btn" aria-label={t('settings.manufacturers.edit.back')}>
             {t('settings.manufacturers.edit.back')}
           </CButton>
         </CCardHeader>
@@ -171,13 +171,37 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   <CCol md={6}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="phone">{t('settings.manufacturers.fields.phone')} *</CFormLabel>
-                      <CFormInput id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
+                      <CFormInput
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        inputMode="tel"
+                        aria-describedby="phoneHelp"
+                      />
+                      <CFormText id="phoneHelp" className="text-muted">
+                        {t('settings.manufacturers.help.phoneFormat', 'Include country/area code if needed')}
+                      </CFormText>
                     </div>
                   </CCol>
                   <CCol md={6}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="website">{t('settings.manufacturers.fields.website')} *</CFormLabel>
-                      <CFormInput id="website" name="website" value={formData.website} onChange={handleChange} required />
+                      <CFormInput
+                        type="url"
+                        id="website"
+                        name="website"
+                        value={formData.website}
+                        onChange={handleChange}
+                        required
+                        inputMode="url"
+                        aria-describedby="websiteHelp"
+                      />
+                      <CFormText id="websiteHelp" className="text-muted">
+                        {t('settings.manufacturers.help.websiteFormat', 'https://example.com')}
+                      </CFormText>
                     </div>
                   </CCol>
                 </CRow>
@@ -200,8 +224,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         value={formData.assembledEtaDays}
                         onChange={handleChange}
                         placeholder="e.g., 7-14 days"
+                        aria-describedby="assembledEtaHelp"
                       />
-                      <CFormText className="text-muted">
+                      <CFormText id="assembledEtaHelp" className="text-muted">
                         {t('settings.manufacturers.help.assembledEta', 'Estimated delivery time for assembled cabinets')}
                       </CFormText>
                     </div>
@@ -218,8 +243,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         value={formData.unassembledEtaDays}
                         onChange={handleChange}
                         placeholder="e.g., 3-7 days"
+                        aria-describedby="unassembledEtaHelp"
                       />
-                      <CFormText className="text-muted">
+                      <CFormText id="unassembledEtaHelp" className="text-muted">
                         {t('settings.manufacturers.help.unassembledEta', 'Estimated delivery time for unassembled cabinets')}
                       </CFormText>
                     </div>
@@ -247,7 +273,11 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     id="manufacturerImage"
                     accept="image/*"
                     onChange={(e) => setLogoImage(e.target.files[0])}
+                    aria-describedby="manufacturerImageHelp"
                   />
+                  <CFormText id="manufacturerImageHelp" className="text-muted">
+                    {t('settings.manufacturers.edit.imageHelp', 'PNG or JPG recommended. Max ~5MB.')}
+                  </CFormText>
                   {logoImage && (
                     <div className="mt-2">
                       <div className="text-success">{t('settings.manufacturers.edit.newImageSelected', { name: logoImage.name })}</div>
@@ -266,38 +296,64 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
             <CCard className="mb-4">
               <CCardBody>
-                <div className="mb-3">
-                  <CFormLabel>{t('settings.manufacturers.edit.priceInfo')}</CFormLabel>
+                <fieldset className="mb-3">
+                  <CFormLabel as="legend">{t('settings.manufacturers.edit.priceInfo')}</CFormLabel>
+                  <span className="visually-hidden" id="priceTypeDesc">
+                    {t('settings.manufacturers.help.priceInfo', 'Choose how prices are handled')}
+                  </span>
                   <CFormCheck
                     type="radio"
+                    name="priceType"
                     id="msrpPrices"
                     label={t('settings.manufacturers.fields.msrpOption')}
                     checked={formData.isPriceMSRP}
                     onChange={() => handlePriceTypeChange(true)}
                     className="mb-2"
+                    aria-describedby="priceTypeDesc"
                   />
                   <CFormCheck
                     type="radio"
+                    name="priceType"
                     id="costPrices"
                     label={t('settings.manufacturers.fields.costOption')}
                     checked={!formData.isPriceMSRP}
                     onChange={() => handlePriceTypeChange(false)}
+                    aria-describedby="priceTypeDesc"
                   />
-                </div>
+                </fieldset>
 
                 <CRow>
                   <CCol md={4}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="costMultiplier">{t('settings.manufacturers.edit.costMultiplier')} *</CFormLabel>
-                      <CFormInput type="number" step="0.1" id="costMultiplier" name="costMultiplier" value={formData.costMultiplier} onChange={handleChange} required />
+                      <CFormInput
+                        type="number"
+                        step="0.1"
+                        id="costMultiplier"
+                        name="costMultiplier"
+                        value={formData.costMultiplier}
+                        onChange={handleChange}
+                        required
+                        inputMode="decimal"
+                      />
                       {calculateMultiplierExample()}
                     </div>
                   </CCol>
                   <CCol md={4}>
                     <div className="mb-3">
                       <CFormLabel htmlFor="deliveryFee">{t('settings.manufacturers.edit.deliveryFee')}</CFormLabel>
-                      <CFormInput type="number" step="0.01" min="0" id="deliveryFee" name="deliveryFee" value={formData.deliveryFee} onChange={handleChange} />
-                      <CFormText className="text-muted">{t('settings.manufacturers.edit.deliveryFeeHelp')}</CFormText>
+                      <CFormInput
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        id="deliveryFee"
+                        name="deliveryFee"
+                        value={formData.deliveryFee}
+                        onChange={handleChange}
+                        inputMode="decimal"
+                        aria-describedby="deliveryFeeHelp"
+                      />
+                      <CFormText id="deliveryFeeHelp" className="text-muted">{t('settings.manufacturers.edit.deliveryFeeHelp')}</CFormText>
                     </div>
                   </CCol>
                 </CRow>
@@ -317,8 +373,14 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
               <CCardBody>
                 <div className="mb-3">
                   <CFormLabel htmlFor="catalogFiles">{t('settings.manufacturers.edit.uploadNewCatalog')}</CFormLabel>
-                  <CFormInput type="file" id="catalogFiles" multiple onChange={handleFileChange} />
-                  <CFormText className="text-muted">{t('settings.manufacturers.edit.supported')}</CFormText>
+                  <CFormInput
+                    type="file"
+                    id="catalogFiles"
+                    multiple
+                    onChange={handleFileChange}
+                    aria-describedby="catalogFilesHelp"
+                  />
+                  <CFormText id="catalogFilesHelp" className="text-muted">{t('settings.manufacturers.edit.supported')}</CFormText>
                 </div>
               </CCardBody>
             </CCard>

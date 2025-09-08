@@ -5,7 +5,7 @@ import 'core-js'
 import './i18n'
 
 import App from './App'
-import { detoxAuthStorage } from './utils/authToken'
+import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
 import Swal from 'sweetalert2'
 import i18n from './i18n'
 import store from './store'
@@ -23,12 +23,17 @@ try {
       document.cookie = 'auth=; Max-Age=0; path=/';
     }
   } catch {}
-  const tok = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const tok = typeof window !== 'undefined' ? getFreshestToken() : null;
+  // Expose a quick debug helper
+  try { window.debugAuth = debugAuthSnapshot; } catch {}
+  try { console.info('[AUTH] Tip: run window.debugAuth() to inspect token tails and expirations'); } catch {}
   if (tok) {
     const [, p] = tok.split('.')
     if (p) {
       try {
-        const payload = JSON.parse(atob(p.replace(/-/g, '+').replace(/_/g, '/')))
+        const pad = '='.repeat((4 - (p.length % 4)) % 4)
+        const b64 = (p.replace(/-/g, '+').replace(/_/g, '/')) + pad
+        const payload = JSON.parse(atob(b64))
         const now = Math.floor(Date.now() / 1000)
         if (payload?.exp && payload.exp <= now) {
           store.dispatch(logout())

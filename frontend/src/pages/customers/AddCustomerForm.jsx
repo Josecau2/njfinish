@@ -7,8 +7,8 @@ import {
   CButton,
   CRow,
   CCol,
-  CCard, 
-  CCardBody, 
+  CCard,
+  CCardBody,
   CFormFeedback,
   CContainer,
   CInputGroup,
@@ -16,17 +16,17 @@ import {
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
 import PageHeader from '../../components/PageHeader';
-import { 
-  cilUser, 
-  cilEnvelopeClosed, 
-  cilLocationPin, 
-  cilPhone, 
+import {
+  cilUser,
+  cilEnvelopeClosed,
+  cilLocationPin,
+  cilPhone,
   cilBuilding,
   cilArrowLeft,
   cilSave,
   cilUserPlus
 } from '@coreui/icons';
-import axios from "axios";
+import axiosInstance from '../../helpers/axiosInstance';
 import Swal from "sweetalert2";
 import { useSelector } from 'react-redux';
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -39,7 +39,7 @@ const FormSection = ({ title, icon, children, className = "" }) => (
   <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
     <CCardBody className="p-4">
       <div className="d-flex align-items-center mb-3">
-        <div 
+        <div
           className="rounded-circle d-flex align-items-center justify-content-center me-3"
           style={{
             width: '40px',
@@ -57,18 +57,18 @@ const FormSection = ({ title, icon, children, className = "" }) => (
   </CCard>
 );
 
-const CustomFormInput = ({ 
-  label, 
-  name, 
-  type = "text", 
-  required = false, 
+const CustomFormInput = ({
+  label,
+  name,
+  type = "text",
+  required = false,
   icon = null,
   placeholder = "",
   formData,
   validationErrors,
   handleChange,
   inputRefs,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -77,8 +77,8 @@ const CustomFormInput = ({
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText 
-          style={{ 
+        <CInputGroupText
+          style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
             borderRight: 'none'
@@ -123,17 +123,17 @@ const CustomFormInput = ({
   </div>
 );
 
-const CustomFormSelect = ({ 
-  label, 
-  name, 
-  required = false, 
+const CustomFormSelect = ({
+  label,
+  name,
+  required = false,
   icon = null,
   children,
   formData,
   validationErrors,
   handleChange,
   inputRefs,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -142,8 +142,8 @@ const CustomFormSelect = ({
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText 
-          style={{ 
+        <CInputGroupText
+          style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
             borderRight: 'none'
@@ -193,7 +193,7 @@ const AddCustomerForm = () => {
   const customization = useSelector((state) => state.customization);
   const headerBg = customization?.headerBg || '#321fdb';
   const textColor = customization?.headerTextColor || '#ffffff';
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -268,7 +268,7 @@ const AddCustomerForm = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post(`${api_url}/api/customers/add`, formData);
+      await axiosInstance.post(`/api/customers/add`, formData);
       Swal.fire({
         icon: "success",
         title: t('form.alerts.createdTitle'),
@@ -307,11 +307,14 @@ const AddCustomerForm = () => {
 
   return (
     <CContainer fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
+      <style>{`
+        .add-new-customer .btn { min-height: 44px; }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center"
               style={{
                 width: '48px',
@@ -331,6 +334,7 @@ const AddCustomerForm = () => {
             color="light"
             className="shadow-sm px-4 fw-semibold"
             onClick={() => navigate("/customers")}
+            aria-label={t('form.actions.backToCustomers')}
             style={{
               borderRadius: '5px',
               border: 'none',
@@ -375,7 +379,7 @@ const AddCustomerForm = () => {
               />
             </CCol>
           </CRow>
-          
+
           <CRow>
             <CCol md={6}>
               <CustomFormSelect
@@ -598,8 +602,8 @@ const AddCustomerForm = () => {
 
           <div className="mb-3">
       <CFormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</CFormLabel>
-            <div style={{ 
-              border: '1px solid #e3e6f0', 
+            <div style={{
+              border: '1px solid #e3e6f0',
               borderRadius: '10px',
               overflow: 'hidden'
             }}>
@@ -652,8 +656,8 @@ const AddCustomerForm = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <div 
-                      className="spinner-border spinner-border-sm me-2" 
+                    <div
+                      className="spinner-border spinner-border-sm me-2"
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >

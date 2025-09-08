@@ -12,10 +12,15 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-  const payload = action.payload || {};
-  state.user = payload.user || null;
-  state.token = payload.token || null;
-  state.error = null;
+      const payload = action.payload || {};
+      const incomingUser = payload.user || null;
+      // Normalize role to lowercase for consistent frontend checks
+      if (incomingUser && typeof incomingUser.role === 'string') {
+        incomingUser.role = incomingUser.role.toLowerCase();
+      }
+      state.user = incomingUser;
+      state.token = payload.token || null;
+      state.error = null;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -24,8 +29,17 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      try { localStorage.clear(); } catch {}
-      try { sessionStorage.clear(); } catch {}
+      // Clear tokens from all locations
+      try { localStorage.removeItem('token'); } catch {}
+      try { sessionStorage.removeItem('token'); } catch {}
+      try { localStorage.removeItem('user'); } catch {}
+      try { sessionStorage.removeItem('user'); } catch {}
+      // Clear other auth-related items but don't wipe everything
+      const keysToRemove = ['persist:auth', 'persist:user'];
+      keysToRemove.forEach(key => {
+        try { localStorage.removeItem(key); } catch {}
+        try { sessionStorage.removeItem(key); } catch {}
+      });
       try {
         if (typeof document !== 'undefined') {
           document.cookie = 'token=; Max-Age=0; path=/';

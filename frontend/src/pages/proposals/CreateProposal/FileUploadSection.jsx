@@ -263,6 +263,9 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   return (
     <>
+      <style>{`
+        .file-upload-section .btn { min-height: 44px; }
+      `}</style>
       <CCard>
         <CCardHeader>
           <h5 className="mb-0">{t('files.title')}</h5>
@@ -298,6 +301,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               accept={allAcceptedTypes.join(',')}
               onChange={handleInputChange}
               style={{ display: 'none' }}
+              aria-label={t('files.inputAria','Select files to upload')}
             />
 
             {uploading ? (
@@ -340,6 +344,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                               color="transparent"
                               size="sm"
                               style={{ padding: '2px 6px' }}
+                              aria-label={t('files.actions','File actions')}
                             >
                               <CIcon icon={cilSettings} />
                             </CDropdownToggle>

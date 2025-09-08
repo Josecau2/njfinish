@@ -178,6 +178,15 @@ const Dashboard = () => {
 
   return (
     <>
+      <style>{`
+        /* Ensure dashboard action buttons meet 44px touch targets on mobile */
+        @media (max-width: 576px){
+          .dash-actions .btn, .dash-actions .btn > * {
+            min-height: 44px;
+          }
+          .dash-actions { gap: .5rem; flex-wrap: wrap; }
+        }
+      `}</style>
       <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
         <CCardBody>
@@ -188,8 +197,8 @@ const Dashboard = () => {
               </h4>
               <div className="small text-body-secondary">January - July 2023</div>
             </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
+            <CCol sm={7} className="d-none d-md-block dash-actions">
+              <CButton color="primary" className="float-end" aria-label="Download traffic data">
                 <CIcon icon={cilCloudDownload} />
               </CButton>
               <CButtonGroup className="float-end me-3">
@@ -199,6 +208,8 @@ const Dashboard = () => {
                     key={value}
                     className="mx-0"
                     active={value === 'Month'}
+                    aria-pressed={value === 'Month'}
+                    aria-label={`Time range: ${value}`}
                   >
                     {value}
                   </CButton>

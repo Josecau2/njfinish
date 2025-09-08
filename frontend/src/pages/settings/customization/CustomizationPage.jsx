@@ -44,7 +44,7 @@ const CustomizationPage = () => {
                 setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.fileTooLarge') })
                 return
             }
-            
+
             if (!file.type.startsWith('image/')) {
                 setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.invalidImage') })
                 return
@@ -112,12 +112,12 @@ const CustomizationPage = () => {
                 subtitle={t('settings.customization.ui.headerSubtitle')}
                 icon={FaCog}
             >
-                <CButton 
-                    color="light" 
+                <CButton
+                    color="light"
                     className="shadow-sm px-4 fw-semibold d-flex align-items-center"
                     onClick={handleSave}
                     disabled={loading}
-                    style={{ 
+                    style={{
                         borderRadius: '8px',
                         border: 'none',
                         transition: 'all 0.3s ease'
@@ -141,12 +141,14 @@ const CustomizationPage = () => {
             {message.text && (
                 <CCard className="border-0 shadow-sm mb-2">
                     <CCardBody className="py-2">
-                        <CAlert 
-                            color={message.type} 
-                            dismissible 
+                        <CAlert
+                            color={message.type}
+                            dismissible
                             onClose={clearMessage}
                             className="mb-0"
-                            style={{ 
+                            role="status"
+                            aria-live="polite"
+                            style={{
                                 border: 'none',
                                 borderRadius: '8px'
                             }}
@@ -162,14 +164,14 @@ const CustomizationPage = () => {
                 {/* Brand Logo Section */}
                 <CCol lg={6}>
                     <CCard className="border-0 shadow-sm h-100">
-                        <div 
+                        <div
                             className="px-4 py-3 border-bottom"
                             style={{ backgroundColor: '#f8f9fa' }}
                         >
                             <div className="d-flex align-items-center gap-3">
-                                <div 
+                                <div
                                     className="d-flex align-items-center justify-content-center brand-logo"
-                                   
+
                                 >
                                     <CIcon icon={cilImage} style={{ color: 'white', fontSize: '14px' }} />
                                 </div>
@@ -179,7 +181,7 @@ const CustomizationPage = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <CCardBody className="p-4">
                             <div className="mb-3">
                                 <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.logoText')}</CFormLabel>
@@ -188,7 +190,7 @@ const CustomizationPage = () => {
                                     value={formData.logoText}
                                     onChange={handleChange}
                                     placeholder={t('settings.customization.ui.brandLogo.placeholders.logoText')}
-                                    style={{ 
+                                    style={{
                                         border: '1px solid #e3e6f0',
                                         borderRadius: '8px',
                                         fontSize: '14px',
@@ -200,15 +202,16 @@ const CustomizationPage = () => {
                             <div className="mb-3">
                                 <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.uploadLogo')}</CFormLabel>
                                 <div className="position-relative">
-                                    <CFormInput 
-                                        type="file" 
-                                        accept="image/*" 
+                                    <CFormInput
+                                        type="file"
+                                        accept="image/*"
                                         onChange={handleLogoUpload}
                                         className="position-absolute opacity-0 w-100 h-100"
+                                        aria-label={t('settings.customization.ui.brandLogo.labels.uploadLogo')}
                                         style={{ zIndex: 2, cursor: 'pointer' }}
                                         id="logo-upload"
                                     />
-                                    <div 
+                                    <div
                                         className="d-flex align-items-center justify-content-center p-4 text-center"
                                         style={{
                                             border: '2px dashed #e3e6f0',
@@ -230,7 +233,7 @@ const CustomizationPage = () => {
                             {previewLogo && (
                                 <div className="mb-0">
                                     <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.ui.brandLogo.labels.preview')}</CFormLabel>
-                                    <div 
+                                    <div
                                         className="d-flex align-items-center gap-3 p-3"
                                         style={{
                                             backgroundColor: '#f8f9fa',
@@ -238,9 +241,9 @@ const CustomizationPage = () => {
                                             border: '1px solid #e9ecef'
                                         }}
                                     >
-                                        <img 
-                                            src={previewLogo} 
-                                            alt={t('settings.customization.ui.brandLogo.alt.logoPreview')} 
+                                        <img
+                                            src={previewLogo}
+                                            alt={t('settings.customization.ui.brandLogo.alt.logoPreview')}
                                             style={{
                                                 height: '40px',
                                                 width: 'auto',
@@ -248,16 +251,19 @@ const CustomizationPage = () => {
                                                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                                             }}
                                         />
-                                        <CButton 
+                                        <CButton
                                             color="light"
                                             size="sm"
                                             onClick={handleRemoveLogo}
                                             disabled={loading}
                                             className="p-2"
+                                            aria-label={t('settings.customization.ui.brandLogo.labels.removeLogo')}
                                             style={{
                                                 borderRadius: '6px',
                                                 border: '1px solid #e3e6f0',
-                                                transition: 'all 0.2s ease'
+                                                transition: 'all 0.2s ease',
+                                                minHeight: 44,
+                                                minWidth: 44
                                             }}
                                         >
                                             {loading ? <CSpinner size="sm" /> : <CIcon icon={cilTrash} style={{ color: '#dc3545' }} />}
@@ -272,12 +278,12 @@ const CustomizationPage = () => {
                 {/* Color Palette Section */}
                 <CCol lg={6}>
                     <CCard className="border-0 shadow-sm h-100">
-                        <div 
+                        <div
                             className="px-4 py-3 border-bottom"
                             style={{ backgroundColor: '#f8f9fa' }}
                         >
                             <div className="d-flex align-items-center gap-3">
-                                <div 
+                                <div
                                     className="d-flex align-items-center justify-content-center brand-logo"
                                     // style={{
                                     //     width: '32px',
@@ -294,13 +300,13 @@ const CustomizationPage = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <CCardBody className="p-4">
                             {/* Header & Navigation Colors */}
                             <div className="mb-4">
                                 <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                                    <CBadge 
-                                        color="info" 
+                                    <CBadge
+                                        color="info"
                                         className="px-2 py-1"
                                         style={{ borderRadius: '4px', fontSize: '10px' }}
                                     >
@@ -308,7 +314,7 @@ const CustomizationPage = () => {
                                     </CBadge>
                                     {t('settings.customization.ui.colorPalette.headerTitle')}
                                 </h6>
-                                
+
                                 <CRow className="g-3 mb-3">
                                     <CCol sm={6}>
                                         <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.logoBg')}</CFormLabel>
@@ -327,10 +333,10 @@ const CustomizationPage = () => {
                                                     padding: '0'
                                                 }}
                                             />
-                                            <CBadge 
-                                                color="light" 
+                                            <CBadge
+                                                color="light"
                                                 className="px-3 py-2"
-                                                style={{ 
+                                                style={{
                                                     fontFamily: 'monospace',
                                                     fontSize: '12px',
                                                     backgroundColor: '#f8f9fa',
@@ -359,10 +365,10 @@ const CustomizationPage = () => {
                                                     padding: '0'
                                                 }}
                                             />
-                                            <CBadge 
-                                                color="light" 
+                                            <CBadge
+                                                color="light"
                                                 className="px-3 py-2"
-                                                style={{ 
+                                                style={{
                                                     fontFamily: 'monospace',
                                                     fontSize: '12px',
                                                     backgroundColor: '#f8f9fa',
@@ -375,7 +381,7 @@ const CustomizationPage = () => {
                                         </div>
                                     </CCol>
                                 </CRow>
-                                
+
                                 <CRow className="g-3">
                                     <CCol sm={6}>
                                         <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.headerText')}</CFormLabel>
@@ -394,10 +400,10 @@ const CustomizationPage = () => {
                                                     padding: '0'
                                                 }}
                                             />
-                                            <CBadge 
-                                                color="light" 
+                                            <CBadge
+                                                color="light"
                                                 className="px-3 py-2"
-                                                style={{ 
+                                                style={{
                                                     fontFamily: 'monospace',
                                                     fontSize: '12px',
                                                     backgroundColor: '#f8f9fa',
@@ -415,8 +421,8 @@ const CustomizationPage = () => {
                             {/* Sidebar Colors */}
                             <div className="mb-0">
                                 <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                                    <CBadge 
-                                        color="secondary" 
+                                    <CBadge
+                                        color="secondary"
                                         className="px-2 py-1"
                                         style={{ borderRadius: '4px', fontSize: '10px' }}
                                     >
@@ -424,7 +430,7 @@ const CustomizationPage = () => {
                                     </CBadge>
                                     {t('settings.customization.ui.colorPalette.sidebarTitle')}
                                 </h6>
-                                
+
                                 <CRow className="g-3">
                                     <CCol sm={6}>
                                         <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.ui.colorPalette.labels.sidebarBg')}</CFormLabel>
@@ -443,10 +449,10 @@ const CustomizationPage = () => {
                                                     padding: '0'
                                                 }}
                                             />
-                                            <CBadge 
-                                                color="light" 
+                                            <CBadge
+                                                color="light"
                                                 className="px-3 py-2"
-                                                style={{ 
+                                                style={{
                                                     fontFamily: 'monospace',
                                                     fontSize: '12px',
                                                     backgroundColor: '#f8f9fa',
@@ -475,10 +481,10 @@ const CustomizationPage = () => {
                                                     padding: '0'
                                                 }}
                                             />
-                                            <CBadge 
-                                                color="light" 
+                                            <CBadge
+                                                color="light"
                                                 className="px-3 py-2"
-                                                style={{ 
+                                                style={{
                                                     fontFamily: 'monospace',
                                                     fontSize: '12px',
                                                     backgroundColor: '#f8f9fa',

@@ -6,7 +6,7 @@ import {
   CCard, CCardBody, CFormInput, CInputGroup, CInputGroupText,
   CTable, CTableHead, CTableBody, CTableRow, CTableDataCell,
   CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem,
-  CFormCheck, CFormSelect
+  CFormCheck, CFormSelect, CFormLabel
 } from '@coreui/react';
 import PaginationControls from "../../../../components/PaginationControls";
 import axiosInstance from '../../../../helpers/axiosInstance';
@@ -182,7 +182,7 @@ const SettingsTab = ({ manufacturer }) => {
   const renderDropdown = (selectedFields, toggleHandler, prefix) => (
     <div className="d-flex align-items-center">
       <CDropdown className="ms-2">
-        <CDropdownToggle color="secondary" variant="outline" size="sm">
+        <CDropdownToggle color="secondary" variant="outline" size="sm" aria-label={t('common.displayedColumns', 'Displayed Columns')}>
           {selectedFields.length > 0
             ? selectedFields
                 .slice(0, 3)
@@ -285,10 +285,14 @@ const SettingsTab = ({ manufacturer }) => {
       <CCard>
         <CCardBody>
           <p><strong>{t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}</strong></p>
-          <div className="border rounded p-2 mb-3 small" style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}>
+          <div id="costMultiplierHelp" className="border rounded p-2 mb-3 small" style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}>
             {t('settings.manufacturers.settings.costMultiplierHelp', 'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.')}
           </div>
           <CFormInput
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.001"
             value={multiplier1}
             onChange={e => {
               const value = e.target.value;
@@ -298,6 +302,8 @@ const SettingsTab = ({ manufacturer }) => {
             placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
+            aria-describedby="costMultiplierHelp"
+            aria-label={t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}
           />
           {multiplier1Error && <div className="text-danger mt-1 mb-2">{multiplier1Error}</div>}
 
@@ -306,6 +312,7 @@ const SettingsTab = ({ manufacturer }) => {
               value={searchCode1}
               onChange={e => setSearchCode1(e.target.value)}
               placeholder={t('common.search') + '...'}
+              aria-label={t('common.search', 'Search')}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
             {renderDropdown(selectedFields1, field => toggleField(field, setSelectedFields1, selectedFields1), '1')}
@@ -318,12 +325,14 @@ const SettingsTab = ({ manufacturer }) => {
           <div className="d-flex justify-content-between align-items-center mt-3">
             <div>{t('common.pageOf', { page: page1, total: totalPages1, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              {t('common.itemsPerPage', 'Items per page:')}
+              <CFormLabel htmlFor="itemsPerPage1" className="me-2 mb-0">{t('common.itemsPerPage', 'Items per page:')}</CFormLabel>
               <CFormSelect
                 size="sm"
                 className="d-inline w-auto ms-2"
                 value={itemsPerPage1}
                 onChange={e => setItemsPerPage1(Number(e.target.value))}
+                id="itemsPerPage1"
+                aria-label={t('common.itemsPerPage', 'Items per page:')}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -344,10 +353,14 @@ const SettingsTab = ({ manufacturer }) => {
       <CCard className="mt-4">
         <CCardBody>
           <p><strong>{t('settings.manufacturers.settings.customerMultiplierTitle', 'Customer price multiplier')}</strong></p>
-          <div className="border rounded p-2 mb-3 small" style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}>
+          <div id="customerMultiplierHelp" className="border rounded p-2 mb-3 small" style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}>
             {t('settings.manufacturers.settings.customerMultiplierHelp', 'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.')}
           </div>
           <CFormInput
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.001"
             value={multiplier2}
             onChange={e => {
               const value = e.target.value;
@@ -357,6 +370,8 @@ const SettingsTab = ({ manufacturer }) => {
             placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
+            aria-describedby="customerMultiplierHelp"
+            aria-label={t('settings.manufacturers.settings.customerMultiplierTitle', 'Customer price multiplier')}
           />
           {multiplier2Error && <div className="text-danger mt-1 mb-2">{multiplier2Error}</div>}
 
@@ -365,6 +380,7 @@ const SettingsTab = ({ manufacturer }) => {
               value={searchCode2}
               onChange={e => setSearchCode2(e.target.value)}
               placeholder={t('common.search') + '...'}
+              aria-label={t('common.search', 'Search')}
             />
             <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
             {renderDropdown(selectedFields2, field => toggleField(field, setSelectedFields2, selectedFields2), '2')}
@@ -377,12 +393,14 @@ const SettingsTab = ({ manufacturer }) => {
           <div className="d-flex justify-content-between align-items-center mt-3">
             <div>{t('common.pageOf', { page: page2, total: totalPages2, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              {t('common.itemsPerPage', 'Items per page:')}
+              <CFormLabel htmlFor="itemsPerPage2" className="me-2 mb-0">{t('common.itemsPerPage', 'Items per page:')}</CFormLabel>
               <CFormSelect
                 size="sm"
                 className="d-inline w-auto ms-2"
                 value={itemsPerPage2}
                 onChange={e => setItemsPerPage2(Number(e.target.value))}
+                id="itemsPerPage2"
+                aria-label={t('common.itemsPerPage', 'Items per page:')}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>

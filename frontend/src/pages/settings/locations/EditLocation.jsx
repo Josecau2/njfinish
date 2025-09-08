@@ -246,13 +246,14 @@ const LocationForm = () => {
 
             <hr className="my-4" />
 
-            <div className="d-flex gap-2 mt-4">
-      <CButton type="submit" color="success" disabled={loading}>
+    <div className="d-flex gap-2 mt-4 form-buttons">
+  <CButton type="submit" color="success" disabled={loading} aria-label={t('settings.locations.edit.update')} style={{ minHeight: '44px' }}>
         {loading ? t('settings.locations.edit.updating') : t('settings.locations.edit.update')}
               </CButton>
               <CButton
                 type="button"
                 color="secondary"
+        aria-label={t('common.cancel')}
                 onClick={() => {
                   if (isFormDirty()) {
                     Swal.fire({

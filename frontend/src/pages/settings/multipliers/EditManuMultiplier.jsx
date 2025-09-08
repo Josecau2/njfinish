@@ -12,6 +12,7 @@ import {
 } from '@coreui/react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
+import PageHeader from '../../../components/PageHeader'
 
 // Mock data — replace this with your API call
 const mockManufacturers = [
@@ -83,7 +84,20 @@ const EditManufacturer = () => {
         )
 
     return (
-        <CCard style={{ maxWidth: '600px', margin: '20px auto' }}>
+        <div className="multiplier-edit">
+            {/* Scoped responsive/touch styles */}
+            <style>{`
+                .multiplier-edit .form-control, .multiplier-edit .btn { min-height: 44px; }
+                .multiplier-edit .form-check-input { width: 2.25rem; height: 1.25rem; }
+            `}</style>
+
+            <PageHeader
+                title="Edit Manufacturer Multiplier"
+                showBackButton={true}
+                onBackClick={() => navigate('/settings/multipliers')}
+            />
+
+            <CCard style={{ maxWidth: '600px', margin: '20px auto' }}>
             <CCardHeader>Edit Manufacturer</CCardHeader>
             <CCardBody>
                 <CForm onSubmit={handleSubmit}>
@@ -152,7 +166,8 @@ const EditManufacturer = () => {
                     </div>
                 </CForm>
             </CCardBody>
-        </CCard>
+            </CCard>
+        </div>
     )
 }
 

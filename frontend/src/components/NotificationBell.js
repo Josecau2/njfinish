@@ -17,10 +17,11 @@ import { setNotifications, setUnreadCount, markNotificationAsRead } from '../sto
 import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
+import { getFreshestToken } from '../utils/authToken'
 
 const NotificationBell = () => {
   const user = (() => { try { return JSON.parse(localStorage.getItem('user')) } catch { return null } })()
-  const token = localStorage.getItem('token')
+  const token = getFreshestToken()
   // Show bell for any authenticated user (admins and contractors)
   if (!user || !token) return null
   const isAdmin = user && (String(user.role).toLowerCase() === 'admin' || String(user.role).toLowerCase() === 'super_admin')
@@ -58,7 +59,7 @@ const NotificationBell = () => {
 
   const fetchUnreadCount = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getFreshestToken()
       if (!token) return
       const { data } = await axiosInstance.get('/api/notifications/unread-count', { __suppressAuthLogout: true })
       if (data && typeof data.unreadCount === 'number') {
@@ -83,7 +84,7 @@ const NotificationBell = () => {
 
     setFetching(true)
     try {
-      const token = localStorage.getItem('token')
+      const token = getFreshestToken()
       if (!token) return
 
       const { data } = await axiosInstance.get('/api/notifications', {
@@ -109,7 +110,7 @@ const NotificationBell = () => {
 
   const markAllReadSilently = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getFreshestToken()
       if (!token) return
   await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
       // Optimistically zero the badge and mark local items as read
@@ -142,7 +143,7 @@ const NotificationBell = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getFreshestToken()
       if (!token) return
 
   await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, { __suppressAuthLogout: true })
@@ -160,7 +161,7 @@ const NotificationBell = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = getFreshestToken()
       if (!token) return
 
   await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
@@ -239,7 +240,8 @@ const NotificationBell = () => {
       <CDropdownToggle
         caret={false}
         className="position-relative"
-        style={{ border: 'none', background: 'transparent' }}
+  style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px' }}
+        aria-label={unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'}
       >
         <CIcon
           icon={unreadCount > 0 ? cilBellExclamation : cilBell}
@@ -255,6 +257,8 @@ const NotificationBell = () => {
             color="danger"
             className="position-absolute translate-middle"
             style={{ fontSize: '0.75rem', minWidth: '1.25rem' }}
+            aria-live="polite"
+            aria-atomic="true"
           >
             {unreadCount > 99 ? '99+' : unreadCount}
           </CBadge>
@@ -273,6 +277,7 @@ const NotificationBell = () => {
           maxHeight: '400px',
           overflowY: 'auto'
         }}
+        aria-label="Notifications list"
       >
         <div className="dropdown-header d-flex justify-content-between align-items-center px-3 py-2">
           <strong>Notifications</strong>
@@ -282,6 +287,9 @@ const NotificationBell = () => {
               variant="ghost"
               color="primary"
               onClick={handleMarkAllAsRead}
+              type="button"
+              aria-label="Mark all notifications as read"
+              style={{ minHeight: '44px' }}
             >
               Mark all read
             </CButton>
@@ -295,7 +303,7 @@ const NotificationBell = () => {
         )}
 
         {!fetching && (
-          <CDropdownItem disabled className="text-center py-3">
+          <CDropdownItem disabled className="text-center py-3" aria-live="polite">
             No new notifications
           </CDropdownItem>
         )}
@@ -304,6 +312,7 @@ const NotificationBell = () => {
           className="text-center"
           style={{ cursor: 'pointer' }}
           onClick={() => window.location.href = isAdmin ? '/admin/notifications' : '/notifications'}
+          aria-label="View all notifications"
         >
           View all notifications
         </CDropdownItem>

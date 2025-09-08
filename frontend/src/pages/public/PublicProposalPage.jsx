@@ -57,7 +57,7 @@ export default function PublicProposalPage() {
   }
 
   if (loading) {
-    return <div className="d-flex justify-content-center p-5"><CSpinner color="primary" /></div>;
+  return <div className="d-flex justify-content-center p-5" role="status" aria-live="polite"><CSpinner color="primary" /></div>;
   }
 
   if (error) {
@@ -78,6 +78,7 @@ export default function PublicProposalPage() {
 
   return (
     <div className="container py-4">
+      <style>{`.container .btn{ min-height:44px; }`}</style>
       <CCard className="shadow-sm">
         <CCardHeader>
           <div className="d-flex justify-content-between align-items-center">

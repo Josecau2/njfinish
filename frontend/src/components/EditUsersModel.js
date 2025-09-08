@@ -1,6 +1,9 @@
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton, CFormInput, CFormSelect, CFormSwitch } from '@coreui/react';
 import { useState, useEffect } from 'react';
 import { useDispatch,useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import { fetchLocations } from '../store/slices/locationSlice';
+// import { Save, X } from '@/icons';
 
 const EditUserModal = ({ visible, onClose, user }) => {
     const dispatch = useDispatch();
@@ -52,10 +55,19 @@ const EditUserModal = ({ visible, onClose, user }) => {
         onClose();
     };
 
-    return (
-        <CModal visible={visible} onClose={onClose}>
-            <CModalHeader>Edit User</CModalHeader>
-            <CModalBody>
+        return (
+                <CModal visible={visible} onClose={onClose}>
+                        {/* UI-TASK: Scoped responsive/touch styles */}
+                        <style>{`
+                            .edit-user-modal .form-control, .edit-user-modal .form-select { min-height: 44px; }
+                            .edit-user-modal .btn { min-height: 44px; }
+                            @media (max-width: 576px) {
+                                .edit-user-modal .modal-footer { flex-wrap: wrap; }
+                                .edit-user-modal .modal-footer .btn { width: 100%; }
+                            }
+                        `}</style>
+                        <CModalHeader>Edit User</CModalHeader>
+                        <CModalBody className="edit-user-modal">
                 <CFormInput
                     label="Name"
                     name="name"
@@ -120,8 +132,8 @@ const EditUserModal = ({ visible, onClose, user }) => {
                 />
             </CModalBody>
             <CModalFooter>
-                <CButton color="secondary" onClick={onClose}>Cancel</CButton>
-                <CButton color="primary" onClick={handleSubmit}>Save Changes</CButton>
+                <CButton color="secondary" onClick={onClose} aria-label="Cancel editing user">Cancel</CButton>
+                <CButton color="primary" onClick={handleSubmit} aria-label="Save user changes">Save Changes</CButton>
             </CModalFooter>
         </CModal>
     );

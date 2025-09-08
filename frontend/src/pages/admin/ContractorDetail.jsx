@@ -21,15 +21,7 @@ import {
   CButton,
   CButtonGroup
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { 
-  cilArrowLeft, 
-  cilPeople, 
-  cilChart, 
-  cilBriefcase, 
-  cilGroup, 
-  cilSettings 
-} from '@coreui/icons';
+import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from '@/icons-lucide';
 import { fetchContractor } from '../../store/slices/contractorSlice';
 import OverviewTab from './ContractorDetail/OverviewTab';
 import ProposalsTab from './ContractorDetail/ProposalsTab';
@@ -42,9 +34,9 @@ const ContractorDetail = () => {
   const groupId = decodeParam(rawGroupId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const { selectedContractor: contractor, loading, error } = useSelector(state => state.contractors);
-  
+
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -61,25 +53,25 @@ const ContractorDetail = () => {
     {
       key: 'overview',
       label: t('contractorsAdmin.detail.tabs.overview'),
-      icon: cilChart,
+  icon: 'chart',
       component: OverviewTab
     },
     {
       key: 'proposals',
       label: t('contractorsAdmin.detail.tabs.proposals'),
-      icon: cilBriefcase,
+  icon: 'briefcase',
       component: ProposalsTab
     },
     {
       key: 'customers',
       label: t('contractorsAdmin.detail.tabs.customers'),
-      icon: cilGroup,
+  icon: 'group',
       component: CustomersTab
     },
     {
       key: 'settings',
       label: t('contractorsAdmin.detail.tabs.settings'),
-      icon: cilSettings,
+  icon: 'settings',
       component: SettingsTab
     }
   ];
@@ -100,8 +92,8 @@ const ContractorDetail = () => {
         <CAlert color="danger">
           <h4>{t('contractorsAdmin.detail.errorTitle')}</h4>
           <p>{error}</p>
-          <CButton color="primary" onClick={handleBack}>
-            <CIcon icon={cilArrowLeft} className="me-2" />
+          <CButton color="primary" onClick={handleBack} aria-label={t('common.back')} className="d-inline-flex align-items-center">
+            <ArrowLeft size={16} className="me-2" aria-hidden="true" />
             {t('contractorsAdmin.detail.backToList')}
           </CButton>
         </CAlert>
@@ -115,8 +107,8 @@ const ContractorDetail = () => {
         <CAlert color="warning">
           <h4>{t('contractorsAdmin.detail.notFoundTitle')}</h4>
           <p>{t('contractorsAdmin.detail.notFoundText')}</p>
-          <CButton color="primary" onClick={handleBack}>
-            <CIcon icon={cilArrowLeft} className="me-2" />
+          <CButton color="primary" onClick={handleBack} aria-label={t('common.back')} className="d-inline-flex align-items-center">
+            <ArrowLeft size={16} className="me-2" aria-hidden="true" />
             {t('contractorsAdmin.detail.backToList')}
           </CButton>
         </CAlert>
@@ -138,12 +130,12 @@ const ContractorDetail = () => {
                 className="me-3 d-flex align-items-center"
                 style={{ minWidth: '44px', minHeight: '44px' }}
               >
-                <CIcon icon={cilArrowLeft} size="sm" />
+                <ArrowLeft size={16} aria-hidden="true" />
                 <span className="d-none d-sm-inline ms-1">{t('common.back')}</span>
               </CButton>
               <div>
                 <h2 className="mb-0 d-flex align-items-center">
-                  <CIcon icon={cilPeople} className="me-2" />
+                  <Users size={20} className="me-2" aria-hidden="true" />
                   <span className="text-truncate" style={{ maxWidth: '200px' }}>
                     {contractor.name}
                   </span>
@@ -160,29 +152,34 @@ const ContractorDetail = () => {
           <CCard>
             <CCardHeader className="pb-0">
               <CNav variant="tabs" role="tablist">
-                {tabs.map(tab => (
+        {tabs.map(tab => (
                   <CNavItem key={tab.key}>
                     <CNavLink
                       active={activeTab === tab.key}
                       onClick={() => setActiveTab(tab.key)}
                       className="cursor-pointer"
+          aria-current={activeTab === tab.key ? 'page' : undefined}
+          role="tab"
                     >
-                      <CIcon icon={tab.icon} className="me-2" />
-                      {tab.label}
+                      {tab.icon === 'chart' && <BarChart3 size={16} className="me-2" aria-hidden="true" />}
+          {tab.icon === 'briefcase' && <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />}
+          {tab.icon === 'group' && <UsersGroup size={16} className="me-2" aria-hidden="true" />}
+          {tab.icon === 'settings' && <Settings size={16} className="me-2" aria-hidden="true" />}
+          {tab.label}
                     </CNavLink>
                   </CNavItem>
                 ))}
               </CNav>
             </CCardHeader>
-            
+
             <CCardBody>
               <CTabContent>
                 {tabs.map(tab => {
                   const TabComponent = tab.component;
                   return (
-                    <CTabPane 
+                    <CTabPane
                       key={tab.key}
-                      role="tabpanel" 
+                      role="tabpanel"
                       aria-labelledby={`${tab.key}-tab`}
                       visible={activeTab === tab.key}
                     >

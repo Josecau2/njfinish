@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   CFormInput,
-  CFormSelect,
   CTable,
   CTableBody,
   CTableHead,
@@ -19,9 +18,7 @@ import {
   CInputGroup,
   CInputGroupText,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilPencil, cilTrash, cilSearch, cilUser, cilUserPlus, cilSettings } from '@coreui/icons';
-import PaginationControls from '../../../components/PaginationControls';
+import { Plus, Settings as Gear, Search, Pencil, Trash, Users, User as UserIcon } from '@/icons-lucide';
 import { useNavigate } from 'react-router-dom';
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
@@ -126,7 +123,7 @@ const UsersPage = () => {
 
   return (
     <CContainer fluid className="settings-container">
-      <PageHeader 
+      <PageHeader
         title={t('settings.users.header')}
         subtitle={t('settings.users.subtitle')}
         rightContent={
@@ -135,16 +132,18 @@ const UsersPage = () => {
               color="light"
               className="settings-action-button"
               onClick={handleCreateUser}
+              aria-label={t('settings.users.addUser')}
             >
-              <CIcon icon={cilUserPlus} className="me-2" />
+              <Plus size={16} className="me-2" aria-hidden="true" />
               {t('settings.users.addUser')}
             </CButton>
             <CButton
               color="success"
               className="settings-action-button success"
               onClick={handleCreateUserGroup}
+              aria-label={t('settings.users.addGroup')}
             >
-              <CIcon icon={cilSettings} className="me-2" />
+              <Gear size={16} className="me-2" aria-hidden="true" />
               {t('settings.users.addGroup')}
             </CButton>
           </div>
@@ -158,7 +157,7 @@ const UsersPage = () => {
             <CCardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon primary">
-                  <CIcon icon={cilUser} size="lg" />
+                  <Users size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-primary">{filteredUsers.length}</h4>
@@ -173,7 +172,7 @@ const UsersPage = () => {
             <CCardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon success">
-                  <CIcon icon={cilSettings} size="lg" />
+                  <Gear size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-success">{adminCount}</h4>
@@ -188,7 +187,7 @@ const UsersPage = () => {
             <CCardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon warning">
-                  <CIcon icon={cilUser} size="lg" />
+                  <UserIcon size={20} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-warning">{regularCount}</h4>
@@ -207,7 +206,7 @@ const UsersPage = () => {
             <CCol md={6} lg={4}>
               <CInputGroup>
                 <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                  <CIcon icon={cilSearch} />
+                  <Search size={16} aria-hidden="true" />
                 </CInputGroupText>
                 <CFormInput
                   type="text"
@@ -218,6 +217,7 @@ const UsersPage = () => {
                     setCurrentPage(1);
                   }}
                   className="settings-search-input"
+                  aria-label={t('settings.users.searchPlaceholder')}
                 />
               </CInputGroup>
             </CCol>
@@ -256,8 +256,8 @@ const UsersPage = () => {
         <CCard className="settings-table-card">
           <CCardBody className="p-0">
             {/* Desktop Table View */}
-            <div className="settings-table-responsive" style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
+            <div className="d-none d-md-block table-wrap">
+              <CTable hover responsive className="mb-0 table-modern">
                 <CTableHead className="settings-table-header">
                   <CTableRow>
                     <CTableHeaderCell className="text-center">
@@ -265,7 +265,7 @@ const UsersPage = () => {
                     </CTableHeaderCell>
                     <CTableHeaderCell>
                       <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilUser} size="sm" />
+                        <UserIcon size={14} aria-hidden="true" />
                         {t('settings.users.table.name')}
                       </div>
                     </CTableHeaderCell>
@@ -285,7 +285,7 @@ const UsersPage = () => {
                     <CTableRow>
                       <CTableDataCell colSpan="5" className="settings-empty-state">
                         <div className="text-muted">
-                          <CIcon icon={cilSearch} size="xl" className="settings-empty-icon" />
+                          <Search size={20} className="settings-empty-icon" aria-hidden="true" />
                           <p className="mb-0">{t('settings.users.empty.title')}</p>
                           <small>{t('settings.users.empty.subtitle')}</small>
                         </div>
@@ -340,27 +340,25 @@ const UsersPage = () => {
                             <CButton
                               color="light"
                               size="sm"
-                              className="settings-action-btn edit"
+                              className="icon-btn"
                               onClick={() => handleUpdateUser(user.id)}
+                              title={t('common.edit')}
+                              aria-label={t('common.edit')}
+                              style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                             >
-                              <CIcon
-                                icon={cilPencil}
-                                size="sm"
-                                style={{ color: '#0d6efd' }}
-                              />
+                              <Pencil size={16} aria-hidden="true" />
                             </CButton>
 
                             <CButton
                               color="light"
                               size="sm"
-                              className="settings-action-btn delete"
+                              className="icon-btn"
                               onClick={() => handleDelete(user.id)}
+                              title={t('common.delete')}
+                              aria-label={t('common.delete')}
+                              style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                             >
-                              <CIcon
-                                icon={cilTrash}
-                                size="sm"
-                                style={{ color: '#dc3545' }}
-                              />
+                              <Trash size={16} aria-hidden="true" />
                             </CButton>
                           </div>
                         </CTableDataCell>
@@ -372,11 +370,11 @@ const UsersPage = () => {
             </div>
 
             {/* Mobile Card View */}
-            <div className="settings-mobile-cards">
+            <div className="settings-mobile-cards d-md-none">
               {paginatedUsers?.length === 0 ? (
                 <div className="settings-empty-state">
                   <div className="text-muted">
-                    <CIcon icon={cilSearch} size="xl" className="settings-empty-icon" />
+                    <Search size={20} className="settings-empty-icon" aria-hidden="true" />
                     <p className="mb-0">{t('settings.users.empty.title')}</p>
                     <small>{t('settings.users.empty.subtitle')}</small>
                   </div>
@@ -409,18 +407,24 @@ const UsersPage = () => {
                       <CButton
                         color="light"
                         size="sm"
-                        className="settings-action-btn edit"
+                        className="icon-btn"
                         onClick={() => handleUpdateUser(user.id)}
+                        title={t('common.edit')}
+                        aria-label={t('common.edit')}
+                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                       >
-                        <CIcon icon={cilPencil} size="sm" style={{ color: '#0d6efd' }} />
+                        <Pencil size={16} aria-hidden="true" />
                       </CButton>
                       <CButton
                         color="light"
                         size="sm"
-                        className="settings-action-btn delete"
+                        className="icon-btn"
                         onClick={() => handleDelete(user.id)}
+                        title={t('common.delete')}
+                        aria-label={t('common.delete')}
+                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                       >
-                        <CIcon icon={cilTrash} size="sm" style={{ color: '#dc3545' }} />
+                        <Trash size={16} aria-hidden="true" />
                       </CButton>
                     </div>
                   </div>

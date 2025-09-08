@@ -396,6 +396,23 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
   return (
     <CContainer fluid className="dashboard-container">
+      {/* Scoped mobile layout improvements for Quotes */}
+      <style>{`
+        /* Visibility helpers hook into our global _responsive.scss classes */
+        .q-toolbar { position: sticky; top: 0; z-index: 1030; background: var(--surface, #fff); padding: .5rem; border-bottom: 1px solid var(--border, #e5e7eb); }
+        .q-chips { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: .5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: .25rem .125rem; }
+        .q-search .form-control { min-height: 44px; }
+        .q-list { display: grid; gap: .5rem; content-visibility: auto; contain-intrinsic-size: 300px; }
+        .q-list .card--compact { border-radius: 12px; border: 1px solid var(--border, #e5e7eb); }
+        .q-list .card__head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .5rem; }
+        .q-list .status-pill { justify-self: end; }
+        .q-actions { display: flex; gap: .375rem; align-items: center; margin-top: .5rem; }
+        .q-actions .icon-btn, .q-actions .btn-icon { min-width: 44px; min-height: 44px; }
+        .bottom-bar { position: sticky; bottom: 0; z-index: 1030; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .5rem; background: color-mix(in oklch, var(--surface, #fff) 90%, #fff); border-top: 1px solid var(--border, #e5e7eb); }
+        .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        /* Desktop table wrapper */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={t('proposals.header')}
@@ -423,7 +440,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       </PageHeader>
 
   {/* Status Tabs (desktop only) */}
-  <div className="segmented desktop-only">
+  <div className="segmented u-desktop" role="tablist" aria-label={t('proposals.tabs.ariaLabel', 'Quote status tabs')}>
         {tabs.map((tab, idx) => {
           const isActive = activeTab === tab;
           const count = tabCounts[tab] || 0;
@@ -454,7 +471,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       </div>
 
   {/* Search and Filters (desktop only) */}
-  <div className="toolbar">
+  <div className="toolbar u-desktop" role="search">
         <CInputGroup>
           <CInputGroupText>
             <CIcon icon={cilSearch} />
@@ -473,17 +490,18 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       </div>
 
   {/* Desktop Table */}
-      <div className="table-responsive-md desktop-only">
+      <div className="u-desktop">
+        <div className="table-wrap">
         <CCard className="data-table-card">
-          <CTable hover className="table-modern">
+          <CTable hover className="table-modern" role="table">
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell className="sticky-col">{t('proposals.headers.date')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('proposals.headers.customer')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('proposals.headers.description')}</CTableHeaderCell>
-                {canAssignDesigner && <CTableHeaderCell>{t('proposals.headers.designer')}</CTableHeaderCell>}
-                <CTableHeaderCell>{t('proposals.headers.status')}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{t('proposals.headers.actions')}</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="sticky-col">{t('proposals.headers.date')}</CTableHeaderCell>
+                <CTableHeaderCell scope="col">{t('proposals.headers.customer')}</CTableHeaderCell>
+                <CTableHeaderCell scope="col">{t('proposals.headers.description')}</CTableHeaderCell>
+                {canAssignDesigner && <CTableHeaderCell scope="col">{t('proposals.headers.designer')}</CTableHeaderCell>}
+                <CTableHeaderCell scope="col">{t('proposals.headers.status')}</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">{t('proposals.headers.actions')}</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
@@ -545,7 +563,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
               )}
             </CTableBody>
           </CTable>
-        </CCard>
+  </CCard>
+  </div>
       </div>
 
       {/* Mobile Compact UI */}
@@ -558,7 +577,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         return (
           <>
             {/* Sticky toolbar */}
-            <div className="q-toolbar mobile-only">
+            <div className="q-toolbar u-mobile" role="region" aria-label={t('proposals.mobile.toolbar', 'Filters and search')}>
               <div className="q-chips">
                 {tabs.slice(0, 6).map((tab, idx) => {
                   const count = tabCounts[tab] || 0;
@@ -571,6 +590,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       className={`btn btn-sm ${isActive ? 'btn-dark' : 'btn-light'}`}
                       style={{ borderRadius: '999px' }}
                       onClick={() => { setActiveTab(tab); setCurrentPage(1); setMobileCount(mobilePageSize); }}
+                      aria-pressed={isActive}
+                      aria-label={`${getTabLabel(tab)} (${count})`}
                     >
                       {getTabLabel(tab)} <span className="ms-1 badge text-bg-secondary">{count}</span>
                     </button>
@@ -585,13 +606,14 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     placeholder={t('proposals.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => { setSearchTerm(e.target.value); setMobileCount(mobilePageSize); }}
+                    aria-label={t('proposals.searchAria', 'Search quotes by customer')}
                   />
                 </CInputGroup>
               </div>
             </div>
 
             {/* Compact card list */}
-            <div className="q-list mobile-only">
+            <div className="q-list u-mobile">
               {mobileItems.length === 0 ? (
                 <div className="card--compact text-center">
                   <CIcon icon={cilSearch} size="xl" className="text-muted mb-2" />
@@ -641,7 +663,9 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       </button>
                       {/* Overflow menu for secondary actions (e.g., Delete) */}
                       <CDropdown alignment="end">
-                        <CDropdownToggle color="light" size="sm" className="btn-icon">⋮</CDropdownToggle>
+                        <CDropdownToggle color="light" size="sm" className="btn-icon" aria-label={t('common.moreActions', 'More actions')}>
+                          ⋮
+                        </CDropdownToggle>
                         <CDropdownMenu>
                           {!item.is_locked && (
                             <CDropdownItem onClick={() => handleDelete(item.id)}>
@@ -667,7 +691,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             </div>
 
             {/* Bottom bar with primary action */}
-            <div className="bottom-bar mobile-only">
+            <div className="bottom-bar u-mobile" role="region" aria-label={t('proposals.mobile.primaryActions', 'Primary quote actions')}>
               <PermissionGate permission="proposals:create">
                 <CButton color="success" className="flex-fill" onClick={handleCreateQuickProposal}>
                   {t('proposals.quick')}

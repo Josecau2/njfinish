@@ -34,7 +34,7 @@ const FormSection = ({ title, icon, children, className = "", customization = {}
     <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
         <CCardBody className="p-3 p-md-4">
             <div className="d-flex align-items-center mb-3">
-                <div 
+                <div
                     className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
                     style={{
                         width: '32px',
@@ -52,18 +52,18 @@ const FormSection = ({ title, icon, children, className = "", customization = {}
     </CCard>
 );
 
-const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
+const CustomFormInput = ({
+    label,
+    name,
+    type = "text",
+    required = false,
     icon = null,
     placeholder = "",
     value,
     onChange,
     isInvalid,
     feedback,
-    ...props 
+    ...props
 }) => (
     <div className="mb-3">
         <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
@@ -72,9 +72,9 @@ const CustomFormInput = ({
         </CFormLabel>
         <CInputGroup>
             {icon && (
-                <CInputGroupText 
+                <CInputGroupText
                     className="d-none d-md-flex"
-                    style={{ 
+                    style={{
                         background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                         border: '1px solid #e3e6f0',
                         borderRight: 'none'
@@ -135,10 +135,10 @@ const AddUserGroupForm = () => {
         const r = parseInt(hex.substr(0, 2), 16);
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
-        
+
         // Calculate luminance
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        
+
         // Return dark color for light backgrounds, light color for dark backgrounds
         return luminance > 0.5 ? '#2d3748' : '#ffffff';
     };
@@ -196,15 +196,18 @@ const AddUserGroupForm = () => {
         return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current);
     };
 
-    
 
-    return (
-        <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+
+        return (
+                <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+                        <style>{`
+                            .settings-form-container .btn, .notification-mobile-dropdown .btn, .btn { min-height: 44px; }
+                        `}</style>
             {/* Header Section */}
             <PageHeader
                 title={
                     <div className="d-flex align-items-center gap-3">
-                        <div 
+                        <div
                             className="d-flex align-items-center justify-content-center"
                             style={{
                                 width: '48px',
@@ -224,6 +227,7 @@ const AddUserGroupForm = () => {
                         variant="outline"
                         onClick={handleBackClick}
                         className="me-2"
+                        aria-label={t('common.back')}
                         style={{
                             borderColor: 'rgba(255, 255, 255, 0.3)',
                             color: 'rgba(255, 255, 255, 0.9)',
@@ -237,16 +241,16 @@ const AddUserGroupForm = () => {
 
             <CForm onSubmit={handleSubmit}>
                 {/* Group Information Section */}
-                <FormSection 
-                    title={t('settings.userGroups.form.titles.groupInfo')} 
+                <FormSection
+                    title={t('settings.userGroups.form.titles.groupInfo')}
                     icon={cilGroup}
                     customization={customization}
                 >
                     {/* Info Card */}
                     <div className="mb-4">
-                        <div className="d-flex align-items-start p-3 rounded-3" 
+                        <div className="d-flex align-items-start p-3 rounded-3"
                              style={{ backgroundColor: '#fff3cd', border: '1px solid #ffecb5' }}>
-                            <div 
+                            <div
                                 className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
                                 style={{
                                     width: '32px',
@@ -308,7 +312,7 @@ const AddUserGroupForm = () => {
                     {/* Features Preview */}
                     <div className="mt-4">
                         <div className="d-flex align-items-center mb-3">
-                            <div 
+                            <div
                                 className="rounded-circle d-flex align-items-center justify-content-center me-2"
                                 style={{
                                     width: '24px',
@@ -321,7 +325,7 @@ const AddUserGroupForm = () => {
                             </div>
                 <h6 className="mb-0 fw-semibold text-dark" style={{ fontSize: '13px' }}>{t('settings.userGroups.create.afterCreateTitle')}</h6>
                         </div>
-                        
+
                         <div className="row g-2">
                             <div className="col-md-6">
                                 <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
@@ -353,15 +357,15 @@ const AddUserGroupForm = () => {
 
                 {/* Module Permissions Section - Only for Contractor Groups */}
                 {formData.group_type === 'contractor' && (
-                    <FormSection 
-                        title={t('settings.userGroups.form.titles.modulePermissions')} 
+                    <FormSection
+                        title={t('settings.userGroups.form.titles.modulePermissions')}
                         icon={cilSettings}
                         customization={customization}
                     >
                         <div className="mb-4">
-                            <div className="d-flex align-items-start p-3 rounded-3" 
+                            <div className="d-flex align-items-start p-3 rounded-3"
                                  style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>
-                                <div 
+                                <div
                                     className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
                                     style={{
                                         width: '32px',
@@ -475,8 +479,8 @@ const AddUserGroupForm = () => {
                             >
                                 {loading ? (
                                     <>
-                                        <div 
-                                            className="spinner-border spinner-border-sm me-2" 
+                                        <div
+                                            className="spinner-border spinner-border-sm me-2"
                                             role="status"
                                             style={{ width: '14px', height: '14px' }}
                                         >

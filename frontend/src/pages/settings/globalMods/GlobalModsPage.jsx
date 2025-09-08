@@ -44,7 +44,7 @@ const GlobalModsPage = () => {
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [showEditCategoryModal, setShowEditCategoryModal] = useState(false)
   const [selectedManufacturer, setSelectedManufacturer] = useState('')
-  const [createStep, setCreateStep] = useState(1 // 1: submenu, 2: template builder
+  const [createStep, setCreateStep] = useState(1) // 1: submenu, 2: template builder
   const [selectedSubmenu, setSelectedSubmenu] = useState('')
   const [editCategory, setEditCategory] = useState({ id: '', name: '', orderIndex: 0, image: '' })
   const [showEditTemplateModal, setShowEditTemplateModal] = useState(false)
@@ -319,22 +319,34 @@ const GlobalModsPage = () => {
 
   return (
     <div className="container-fluid">
-      {/* Main Action Buttons */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="d-flex gap-3 flex-wrap">
-            <CButton color="primary" onClick={() => setShowCreateModModal(true)}>
+      <style>{`
+        /* Local, scoped mobile/a11y tweaks for Global Mods */
+        .global-mods-actions { flex-wrap: wrap; gap: .5rem; }
+        .global-mods-actions .btn { min-height: 44px; }
+        .icon-btn-44 { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+        @media (max-width: 575.98px) {
+          .global-mods-actions { width: 100%; }
+          .global-mods-actions .btn { flex: 1 1 48%; }
+        }
+      `}</style>
+
+      <PageHeader
+        title={t('globalMods.title', 'Global Modifications')}
+        mobileLayout="stack"
+        rightContent={
+          <div className="global-mods-actions d-flex">
+            <CButton color="primary" onClick={() => setShowCreateModModal(true)} aria-label={t('globalMods.ui.buttons.addModification')}>
               {t('globalMods.ui.buttons.addModification')}
             </CButton>
-            <CButton color="success" onClick={() => setShowGalleryModal(true)}>
+            <CButton color="success" onClick={() => setShowGalleryModal(true)} aria-label={t('globalMods.ui.buttons.gallery')}>
               {t('globalMods.ui.buttons.gallery')}
             </CButton>
-            <CButton color="info" onClick={() => setShowAssignModal(true)}>
+            <CButton color="info" onClick={() => setShowAssignModal(true)} aria-label={t('globalMods.ui.buttons.assignModification')}>
               {t('globalMods.ui.buttons.assignModification')}
             </CButton>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <CRow>
         <CCol md={6}>
@@ -428,6 +440,9 @@ const GlobalModsPage = () => {
                         variant="outline"
                         onClick={() => openEditCategory(cat)}
                         title={t('globalMods.category.editTooltip')}
+                        aria-label={t('globalMods.category.editTooltip')}
+                        className="icon-btn-44"
+                        type="button"
                       >
                         ✏️
                       </CButton>
@@ -438,6 +453,9 @@ const GlobalModsPage = () => {
                         variant="outline"
                         onClick={() => openDeleteCategory(cat)}
                         title={t('globalMods.category.deleteTooltip')}
+                        aria-label={t('globalMods.category.deleteTooltip')}
+                        className="icon-btn-44"
+                        type="button"
                       >
                         🗑️
                       </CButton>
@@ -463,9 +481,11 @@ const GlobalModsPage = () => {
                             size="sm"
                             color="warning"
                             variant="outline"
-                            className="position-absolute top-0 end-0 m-1"
+                            className="position-absolute top-0 end-0 m-1 icon-btn-44"
                             onClick={() => openEditTemplate(tpl)}
                             title={t('globalMods.template.editTooltip')}
+                            aria-label={t('globalMods.template.editTooltip')}
+                            type="button"
                           >
                             ✏️
                           </CButton>
@@ -776,7 +796,7 @@ const GlobalModsPage = () => {
               </div>
             </CCardBody>
           </CCard>
-        </CCol
+        </CCol>
       </CRow>
 
       {/* Add Modification Modal */}
@@ -1027,16 +1047,17 @@ const GlobalModsPage = () => {
                 </CCardBody>
               </CCard>
 
-              <div className="d-flex gap-2">
-                <CButton color="secondary" onClick={() => setCreateStep(1)}>{t('globalMods.modal.add.back')}</CButton>
-                <CButton color="secondary" onClick={() => setShowCreateModModal(false)}>{t('globalMods.modal.add.cancel')}</CButton>
+              <div className="mt-4">
+                <h6>{t('common.currentAssignments', 'Current Assignments')}</h6>
+                <div className="table-wrap">
+                <CTable small hover responsive className="table-modern">
                 <CButton
                   color="primary"
-                  onClick={async () => {
-                    if (selectedSubmenu === 'new') {
-                      await createCategory()
-                    }
-                    setNewTemplate(prev => ({...prev, categoryId: selectedSubmenu === 'new' ? gallery[gallery.length-1]?.id : selectedSubmenu}))
+                      <CTableHeaderCell scope="col">{t('globalMods.assign.table.template')}</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">{t('globalMods.assign.table.scope')}</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">{t('globalMods.assign.table.target')}</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">{t('globalMods.assign.table.price')}</CTableHeaderCell>
+                      <CTableHeaderCell scope="col"></CTableHeaderCell>
                     await createTemplate()
                     setShowCreateModModal(false)
                     setCreateStep(1)
@@ -1047,7 +1068,15 @@ const GlobalModsPage = () => {
                 </CButton>
               </div>
             </div>
-          )}
+                          <CButton
+                            color="danger"
+                            size="sm"
+                            type="button"
+                            aria-label={t('globalMods.assign.table.remove') + ': ' + (a.template?.name || '') + ' ' + (a.scope || '') + ' ' + (a.targetStyle || a.targetType || a.catalogDataId || '')}
+                            onClick={() => deleteAssignment(a.id)}
+                          >
+                            {t('globalMods.assign.table.remove')}
+                          </CButton>
         </CModalBody>
       </CModal>
 
@@ -1055,7 +1084,8 @@ const GlobalModsPage = () => {
       <CModal visible={showEditCategoryModal} onClose={() => setShowEditCategoryModal(false)} size="md">
     <PageHeader title={t('globalMods.modal.editCategory.title')} />
         <CModalBody>
-          <CRow className="mb-3">
+                </CTable>
+                </div>
             <CCol md={8}>
       <CFormInput placeholder={t('globalMods.modal.editCategory.namePlaceholder')} value={editCategory.name} onChange={e=>setEditCategory(c=>({...c, name:e.target.value}))} />
             </CCol>

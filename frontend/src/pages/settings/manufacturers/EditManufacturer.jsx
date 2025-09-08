@@ -36,8 +36,22 @@ const EditManufacturer = () => {
   }, [id, dispatch]);
 
   return (
-    <div className="">
-      <CNav variant="tabs" role="tablist" className="border-bottom-0 mb-0">
+    <div className="edit-manufacturer-page">
+      {/* UI-TASK: Scoped responsive/touch styles for manufacturer tabs */}
+      <style>{`
+        .edit-manufacturer-page .manufacturer-tabs .nav-link { min-height: 44px; }
+        .edit-manufacturer-page .manufacturer-tabs .nav-link { border-radius: 8px; }
+        @media (max-width: 576px) {
+          .edit-manufacturer-page .manufacturer-tabs.nav {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+          .edit-manufacturer-page .manufacturer-tabs.nav .nav-item { width: 100%; }
+          .edit-manufacturer-page .manufacturer-tabs.nav .nav-link { width: 100%; text-align: center; padding: 10px 12px !important; }
+        }
+      `}</style>
+      <CNav variant="tabs" role="tablist" className="manufacturer-tabs border-bottom-0 mb-0">
         <CNavItem>
           <CNavLink
             style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
@@ -100,7 +114,7 @@ const EditManufacturer = () => {
         </CNavItem>
       </CNav>
 
-      <CTabContent className="mt-4">
+  <CTabContent className="mt-4">
         <CTabPane visible={activeKey === 0}>
           <EditManufacturerTab manufacturer={manufacturer} id={id} />
         </CTabPane>

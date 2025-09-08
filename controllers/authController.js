@@ -89,6 +89,19 @@ exports.login = async (req, res) => {
       group_id: user.group_id
     }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
 
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      const decoded = jwt.decode(token);
+      console.log('Login Debug - Token created:', {
+        userId: user.id,
+        email: user.email,
+        expiresIn: TOKEN_EXPIRES_IN,
+        issuedAt: new Date(decoded.iat * 1000).toISOString(),
+        expiresAt: new Date(decoded.exp * 1000).toISOString(),
+        tokenLength: token.length
+      });
+    }
+
     // Parse modules if they exist and are stored as string
     let groupData = user.group;
     if (groupData && groupData.modules && typeof groupData.modules === 'string') {

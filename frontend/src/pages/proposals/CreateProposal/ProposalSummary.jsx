@@ -273,6 +273,10 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
 
   return (
     <>
+      <style>{`
+        .proposal-summary-form .btn { min-height: 44px; }
+        .proposal-version-badges { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      `}</style>
       <div className="quote-form-mobile">
         <div className="button-group">
           {!hideBack && (
@@ -280,6 +284,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
               color="secondary"
               variant="outline"
               onClick={prevStep}
+              aria-label={t('common.back','Back')}
               style={{ borderRadius: '6px', minWidth: '90px' }}
             >
               Back

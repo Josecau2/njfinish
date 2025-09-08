@@ -32,7 +32,29 @@ const AppBreadcrumb = () => {
   const breadcrumbs = getBreadcrumbs(currentLocation)
 
   return (
-    <CBreadcrumb className="my-0">
+    <>
+      <style>{`
+        /* Breadcrumbs: compact, no wrap on mobile, scroll instead of overflow */
+        .modern-breadcrumb {
+          margin: 0;
+          padding: .25rem .5rem;
+          background: transparent;
+        }
+        .modern-breadcrumb .breadcrumb { margin: 0; }
+        .modern-breadcrumb .breadcrumb-item { white-space: nowrap; }
+        @media (max-width: 575.98px){
+          .modern-breadcrumb { padding: .25rem 0; }
+          .modern-breadcrumb .breadcrumb {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: .25rem;
+          }
+          .modern-breadcrumb .breadcrumb::-webkit-scrollbar{ display:none; }
+        }
+      `}</style>
+      <CBreadcrumb className="my-0 modern-breadcrumb">
       <CBreadcrumbItem href="/">Home</CBreadcrumbItem>
       {breadcrumbs.map((breadcrumb, index) => {
         return (
@@ -44,7 +66,8 @@ const AppBreadcrumb = () => {
           </CBreadcrumbItem>
         )
       })}
-    </CBreadcrumb>
+      </CBreadcrumb>
+    </>
   )
 }
 

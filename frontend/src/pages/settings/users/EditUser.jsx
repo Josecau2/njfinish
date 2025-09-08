@@ -175,6 +175,16 @@ const EditUserForm = () => {
 
   return (
     <CContainer fluid className="settings-form-container">
+      {/* UI-TASK: Scoped responsive/touch styles */}
+      <style>{`
+        .settings-form-container .settings-section-card { border: 0; box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,.06)); border-radius: var(--radius, 12px); }
+        .settings-form-container .settings-form-input { min-height: 44px; }
+        .settings-form-container .settings-form-cancel-btn,
+        .settings-form-container .settings-form-submit-btn { min-height: 44px; }
+        @media (max-width: 576px) {
+          .settings-form-container .settings-section-title { font-size: 0.95rem; }
+        }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={t('settings.users.edit.title')}
@@ -184,9 +194,9 @@ const EditUserForm = () => {
         onBackClick={() => navigate('/settings/users')}
       />
 
-      <CForm onSubmit={handleSubmit}>
+  <CForm onSubmit={handleSubmit}>
         {/* Basic Information Section */}
-        <CCard className="settings-section-card">
+  <CCard className="settings-section-card">
           <CCardBody className="p-3 p-md-4">
             <div className="settings-section-header">
               <div className="settings-section-icon">
@@ -208,6 +218,7 @@ const EditUserForm = () => {
                     onChange={handleChange}
                     invalid={!!errors.name}
                     className="settings-form-input"
+                    aria-required="true"
                   />
                   <CFormFeedback invalid>{errors.name}</CFormFeedback>
                 </div>
@@ -228,6 +239,7 @@ const EditUserForm = () => {
                       cursor: 'not-allowed',
                       backgroundColor: '#e9ecef',
                     }}
+                    aria-disabled="true"
                   />
                 </div>
               </CCol>
@@ -259,6 +271,7 @@ const EditUserForm = () => {
                     invalid={!!errors.password}
                     className="settings-form-input"
                     placeholder={t('settings.users.form.placeholders.password')}
+                    aria-describedby="passwordHelp"
                   />
                   <CFormFeedback invalid>{errors.password}</CFormFeedback>
                 </div>
@@ -277,6 +290,7 @@ const EditUserForm = () => {
                     invalid={!!errors.confirmPassword}
                     className="settings-form-input"
                     placeholder={t('settings.users.form.placeholders.confirmPassword')}
+                    aria-describedby="confirmPasswordHelp"
                   />
                   <CFormFeedback invalid>{errors.confirmPassword}</CFormFeedback>
                 </div>
@@ -308,6 +322,7 @@ const EditUserForm = () => {
                     onChange={handleChange}
                     invalid={!!errors.userGroup}
                     className="settings-form-input"
+                    aria-required="true"
                   >
                     <option value="">{t('settings.users.form.select.group')}</option>
                     {userGroups.map((group) => (
@@ -332,6 +347,7 @@ const EditUserForm = () => {
                     onChange={handleChange}
                     invalid={!!errors.location}
                     className="settings-form-input"
+                    aria-required="true"
                   >
                     <option value="">{t('settings.users.form.select.location')}</option>
                     {locations.map(loc => (
@@ -360,6 +376,7 @@ const EditUserForm = () => {
                 style={{
                   transform: 'scale(1.1)',
                 }}
+                aria-checked={formData.isSalesRep}
               />
             </div>
           </CCardBody>

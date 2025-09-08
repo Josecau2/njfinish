@@ -248,6 +248,9 @@ const AddUserForm = () => {
   };
   return (
     <CContainer fluid className="settings-form-container">
+      <style>{`
+        .settings-form-container .btn { min-height: 44px; }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={t('settings.users.create.title')}

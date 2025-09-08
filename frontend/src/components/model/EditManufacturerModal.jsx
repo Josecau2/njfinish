@@ -14,6 +14,7 @@ import {
     CRow,
     CCol,
 } from '@coreui/react'
+import { Pencil, Save, X } from '@/icons'
 
 const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
     const [formData, setFormData] = useState({
@@ -65,12 +66,21 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
         cursor: 'not-allowed',
     }
 
-    return (
-        <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center"  scrollable>
-            <CForm onSubmit={handleSubmit}>
-                <CModalHeader>
-                    <CModalTitle>Edit Manufacturer</CModalTitle>
-                </CModalHeader>
+        return (
+                <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center"  scrollable>
+                        {/* UI-TASK: Scoped responsive/touch styles */}
+                        <style>{`
+                            .edit-manufacturer-modal .form-control, .edit-manufacturer-modal .form-select { min-height: 44px; }
+                            .edit-manufacturer-modal .btn { min-height: 44px; }
+                            @media (max-width: 576px) {
+                                .edit-manufacturer-modal .modal-footer { flex-wrap: wrap; }
+                                .edit-manufacturer-modal .modal-footer .btn { width: 100%; }
+                            }
+                        `}</style>
+                        <CForm onSubmit={handleSubmit} className="edit-manufacturer-modal">
+                                <CModalHeader>
+                                        <CModalTitle>Edit Manufacturer</CModalTitle>
+                                </CModalHeader>
                 <CModalBody>
                     {error && <CAlert color="danger">{error}</CAlert>}
 
@@ -151,10 +161,12 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                     </CContainer>
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="secondary" variant="outline" onClick={onClose}>
+                    <CButton color="secondary" variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
+                        {/* <X size={16} className="me-2" /> */}
                         Cancel
                     </CButton>
-                    <CButton color="primary" type="submit">
+                    <CButton color="primary" type="submit" aria-label="Save manufacturer changes">
+                        {/* <Save size={16} className="me-2" /> */}
                         Save Changes
                     </CButton>
                 </CModalFooter>

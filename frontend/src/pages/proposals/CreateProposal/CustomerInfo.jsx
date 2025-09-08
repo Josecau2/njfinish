@@ -166,6 +166,11 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   return (
     <div className="w-100 my-4 proposal-form-mobile">
+      <style>{`
+        /* Mobile/a11y quick wins */
+        .proposal-form-mobile .btn { min-height: 44px; }
+        .proposal-form-mobile .text-break { word-break: break-word; overflow-wrap: anywhere; }
+      `}</style>
       <CCard>
         <CCardBody className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -175,6 +180,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                 color="secondary"
                 variant="outline"
                 onClick={prevStep}
+                aria-label={t('common.back')}
                 style={{ borderRadius: '6px', minWidth: '90px' }}
               >
                 {t('common.back')}
@@ -454,6 +460,8 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                     color="link"
                     className="text-decoration-none p-0"
                     onClick={toggleMoreOptions}
+                    aria-expanded={showMoreOptions}
+                    aria-controls="customer-more-options"
                   >
                     {showMoreOptions ? t('proposals.create.customerInfo.hideOptions') : t('proposals.create.customerInfo.moreOptions')}
                   </CButton>
@@ -466,6 +474,7 @@ const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
+                      id="customer-more-options"
                     >
                       <h5 className="mb-3 mt-4">{t('proposals.create.customerInfo.additionalInfo')}</h5>
                       <CRow className="mb-3">

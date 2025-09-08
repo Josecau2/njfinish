@@ -16,7 +16,16 @@ const AppContent = () => {
   const allowedRoutes = user ? filterRoutesByPermission(routes, user) : [];
 
   return (
-    <CContainer fluid className="px-0">
+    <>
+      <style>{`
+        /* Main content paddings separated by breakpoints */
+        .modern-content { padding-left: 0; padding-right: 0; overflow-x: hidden; }
+        @media (max-width: 767.98px){ .modern-content { padding-left:.5rem; padding-right:.5rem; } }
+        @media (min-width: 768px) and (max-width: 991.98px){ .modern-content { padding-left:.75rem; padding-right:.75rem; } }
+        @media (min-width: 992px){ .modern-content { padding-left:1rem; padding-right:1rem; } }
+        @media (min-width: 1200px){ .modern-content { padding-left:1.5rem; padding-right:1.5rem; } }
+      `}</style>
+      <CContainer fluid className="modern-content">
       <Suspense fallback={<CSpinner color="primary" />}>
         <Routes>
           {allowedRoutes.map((route, idx) => {
@@ -44,7 +53,8 @@ const AppContent = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </CContainer>
+      </CContainer>
+    </>
   )
 }
 

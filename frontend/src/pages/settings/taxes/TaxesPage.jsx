@@ -69,14 +69,17 @@ const TaxesPage = () => {
 
   return (
     <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <style>{`
+        .settings-taxes .btn, .btn { min-height: 44px; }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         icon={FaCoins}
         title={t('settings.taxes.header')}
         subtitle={t('settings.taxes.subtitle')}
         rightContent={
-          <CButton 
-            color="light" 
+          <CButton
+            color="light"
             className="shadow-sm px-4 fw-semibold"
             onClick={handleAddTaxRow}
             disabled={
@@ -84,7 +87,7 @@ const TaxesPage = () => {
               (!newTaxes[newTaxes.length - 1].label.trim() ||
                 !newTaxes[newTaxes.length - 1].value.trim())
             }
-            style={{ 
+            style={{
               borderRadius: '5px',
               border: 'none',
               transition: 'all 0.3s ease'
@@ -115,10 +118,10 @@ const TaxesPage = () => {
             </CCol>
             <CCol md={6} className="text-md-end mt-3 mt-md-0">
               <div className="d-flex justify-content-md-end align-items-center gap-3">
-                <CBadge 
-                  color="info" 
+                <CBadge
+                  color="info"
                   className="px-3 py-2"
-                  style={{ 
+                  style={{
                     borderRadius: '20px',
                     fontSize: '12px',
                     fontWeight: '500'
@@ -126,10 +129,10 @@ const TaxesPage = () => {
                 >
                   {t('settings.taxes.stats.total', { count: taxes?.length || 0 })}
                 </CBadge>
-                <CBadge 
-                  color="success" 
+                <CBadge
+                  color="success"
                   className="px-3 py-2"
-                  style={{ 
+                  style={{
                     borderRadius: '20px',
                     fontSize: '12px',
                     fontWeight: '500'
@@ -157,7 +160,7 @@ const TaxesPage = () => {
       {!loading && (
         <CCard className="border-0 shadow-sm">
           <CCardBody className="p-0">
-            
+
             {/* Existing Taxes */}
             {taxes?.length > 0 ? (
               <div className="p-3">
@@ -187,16 +190,16 @@ const TaxesPage = () => {
                           <CFormLabel className="mb-2 fw-semibold text-dark">
                             {t('settings.taxes.fields.taxLabel')}
                           </CFormLabel>
-                          <CFormInput 
-                            value={tax.label} 
-                            readOnly 
+                          <CFormInput
+                            value={tax.label}
+                            readOnly
                             className="fw-medium"
-                            style={{ 
+                            style={{
                               backgroundColor: 'white',
                               border: '1px solid #dee2e6',
                               borderRadius: '8px',
                               fontSize: '14px'
-                            }} 
+                            }}
                           />
                         </CCol>
 
@@ -205,15 +208,15 @@ const TaxesPage = () => {
                             {t('settings.taxes.fields.taxRate')}
                           </CFormLabel>
                           <CInputGroup>
-                            <CFormInput 
-                              value={tax.value} 
-                              readOnly 
+                            <CFormInput
+                              value={tax.value}
+                              readOnly
                               className="fw-medium text-center"
-                              style={{ 
+                              style={{
                                 backgroundColor: 'white',
                                 border: '1px solid #dee2e6',
                                 fontSize: '14px'
-                              }} 
+                              }}
                             />
                             <CInputGroupText
                               style={{
@@ -233,10 +236,10 @@ const TaxesPage = () => {
                           </CFormLabel>
                           <div className="d-flex justify-content-center align-items-center" style={{ height: '38px' }}>
                             {tax.isDefault ? (
-                              <CBadge 
-                                color="success" 
+                              <CBadge
+                                color="success"
                                 className="px-3 py-2"
-                                style={{ 
+                                style={{
                                   borderRadius: '20px',
                                   fontSize: '11px',
                                   fontWeight: '600'
@@ -331,7 +334,7 @@ const TaxesPage = () => {
                             onChange={(e) => handleNewTaxChange(i, 'label', e.target.value)}
                             placeholder={t('settings.taxes.new.placeholderLabel')}
                             autoFocus
-                            style={{ 
+                            style={{
                               borderRadius: '8px',
                               border: '1px solid #ffc107',
                               fontSize: '14px',
@@ -353,7 +356,7 @@ const TaxesPage = () => {
                               min={0}
                               max={100}
                               step="0.01"
-                              style={{ 
+                              style={{
                                 borderRadius: '8px 0 0 8px',
                                 border: '1px solid #ffc107',
                                 fontSize: '14px'
@@ -380,7 +383,7 @@ const TaxesPage = () => {
                               onClick={() => handleSaveNewTax(i)}
                               className="flex-grow-1"
                               disabled={!tax.label.trim() || !tax.value.trim()}
-                              style={{ 
+                              style={{
                                 borderRadius: '8px',
                                 fontWeight: '600',
                                 boxShadow: '0 4px 12px rgba(72, 180, 97, 0.3)'
@@ -394,7 +397,7 @@ const TaxesPage = () => {
                               variant="outline"
                               onClick={() => handleCancelNewTax(i)}
                               className="flex-grow-1"
-                              style={{ 
+                              style={{
                                 borderRadius: '8px',
                                 fontWeight: '600',
                                 borderColor: '#6c757d',

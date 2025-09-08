@@ -208,6 +208,7 @@
     "admin": "Admin",
     "contractors": "Contratistas",
     "notifications": "Notificaciones",
+      "payment": "Pagos",
   "settings": "Ajustes",
   "userManagement": "Gestión de usuarios",
   "users": "Usuarios",
@@ -2460,6 +2461,135 @@
             "deleteFailed": "No se pudo eliminar la categoría"
           }
         }
+      }
+    },
+    "payments": {
+      "title": "Pagos",
+      "myPayments": "Mis pagos",
+      "allPayments": "Todos los pagos",
+      "noPayments": "No se encontraron pagos",
+      "paymentDetails": "Detalles del pago",
+      "filters": {
+        "all": "Todos",
+        "pending": "Pendiente",
+        "processing": "Procesando",
+        "completed": "Completado",
+        "failed": "Fallido"
+      },
+      "table": {
+        "orderId": "ID de pedido",
+        "amount": "Monto",
+        "status": "Estado",
+        "method": "Método",
+        "date": "Fecha",
+        "actions": "Acciones",
+        "contractor": "Contratista",
+        "transactionId": "ID de transacción"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "processing": "Procesando",
+        "completed": "Completado",
+        "failed": "Fallido",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "viewDetails": "Ver detalles",
+        "makePayment": "Hacer pago",
+        "retry": "Reintentar",
+        "cancel": "Cancelar"
+      },
+      "toast": {
+        "paymentInitiated": "Pago iniciado exitosamente",
+        "paymentFailed": "Error al procesar el pago",
+        "paymentCancelled": "Pago cancelado",
+        "statusUpdated": "Estado del pago actualizado"
+      }
+    },
+    "payment": {
+      "title": "Procesar pago",
+      "orderDetails": "Detalles del pedido",
+      "orderId": "ID del pedido",
+      "amount": "Monto a pagar",
+      "description": "Descripción",
+      "paymentMethods": "Métodos de pago",
+      "creditCard": "Tarjeta de crédito",
+      "bankTransfer": "Transferencia bancaria",
+      "paypal": "PayPal",
+      "other": "Otro",
+      "processing": "Procesando pago...",
+      "success": {
+        "title": "¡Pago exitoso!",
+        "message": "Tu pago ha sido procesado exitosamente",
+        "transactionId": "ID de transacción: {{id}}",
+        "backToOrders": "Volver a pedidos"
+      },
+      "error": {
+        "title": "Error en el pago",
+        "message": "Hubo un problema procesando tu pago",
+        "retry": "Reintentar",
+        "contact": "Contactar soporte"
+      },
+      "embed": {
+        "loading": "Cargando formulario de pago...",
+        "error": "Error cargando el formulario de pago"
+      },
+      "external": {
+        "redirecting": "Redirigiendo al procesador de pagos...",
+        "newWindow": "Se abrirá una nueva ventana",
+        "instructions": "Serás redirigido a nuestro procesador de pagos seguro para completar la transacción."
+      }
+    },
+    "paymentConfig": {
+      "title": "Configuración de pagos",
+      "gateway": {
+        "title": "Gateway de pago",
+        "url": "URL del gateway",
+        "urlPlaceholder": "https://payments.example.com",
+        "embedCode": "Código embebido",
+        "embedPlaceholder": "Código HTML/JS para formulario embebido",
+        "testMode": "Modo de prueba",
+        "testModeHelp": "Habilitar para usar el entorno de pruebas del gateway"
+      },
+      "settings": {
+        "title": "Configuración general",
+        "currency": "Moneda por defecto",
+        "currencyHelp": "Moneda utilizada para mostrar los montos",
+        "timeout": "Tiempo límite (segundos)",
+        "timeoutHelp": "Tiempo máximo para completar el pago",
+        "retries": "Reintentos permitidos",
+        "retriesHelp": "Número máximo de reintentos para pagos fallidos"
+      },
+      "webhook": {
+        "title": "Webhook",
+        "url": "URL del webhook",
+        "urlPlaceholder": "https://tudominio.com/webhook/payments",
+        "secret": "Secreto del webhook",
+        "secretPlaceholder": "Secreto para validar webhooks",
+        "events": "Eventos",
+        "eventsHelp": "Eventos a enviar vía webhook",
+        "testWebhook": "Probar webhook"
+      },
+      "advanced": {
+        "title": "Configuración avanzada",
+        "customSettings": "Configuración personalizada",
+        "customPlaceholder": "JSON con configuración adicional del gateway",
+        "supportedMethods": "Métodos soportados",
+        "methodsHelp": "Métodos de pago habilitados"
+      },
+      "actions": {
+        "save": "Guardar configuración",
+        "test": "Probar configuración",
+        "reset": "Restablecer",
+        "export": "Exportar configuración",
+        "import": "Importar configuración"
+      },
+      "toast": {
+        "saved": "Configuración guardada exitosamente",
+        "testSuccess": "Prueba exitosa",
+        "testFailed": "Prueba fallida",
+        "exportSuccess": "Configuración exportada",
+        "importSuccess": "Configuración importada"
       }
     }
   }

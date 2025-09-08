@@ -383,23 +383,24 @@ const OrderDetails = () => {
         </CCol>
       </CRow>
 
-      {/* Items Table */}
-      <CCard className="mb-4">
+  {/* Items Table */}
+  <CCard className="mb-4">
         <CCardHeader>{t('orders.details.items', 'Items')}</CCardHeader>
         <CCardBody>
           {/* Desktop/tablet view */}
-          <div className="d-none d-md-block">
-            <CTable hover>
+      <div className="d-none d-md-block">
+    <div className="table-wrap">
+    <CTable hover className="table-modern" role="table">
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell>{t('orders.details.item', 'Item')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('orders.details.specs', 'Specs')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{t('orders.details.hingeSide', 'Hinge Side')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{t('orders.details.exposedSide', 'Exposed Side')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-end">{t('orders.details.qty', 'Qty')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-end">{t('orders.details.unitPrice', 'Unit Price')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-end">{t('orders.details.modifications', 'Modifications')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-end">{t('orders.details.total', 'Total')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col">{t('orders.details.item', 'Item')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col">{t('orders.details.specs', 'Specs')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-center">{t('orders.details.hingeSide', 'Hinge Side')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-center">{t('orders.details.exposedSide', 'Exposed Side')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-end">{t('orders.details.qty', 'Qty')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-end">{t('orders.details.unitPrice', 'Unit Price')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-end">{t('orders.details.modifications', 'Modifications')}</CTableHeaderCell>
+      <CTableHeaderCell scope="col" className="text-end">{t('orders.details.total', 'Total')}</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -490,6 +491,7 @@ const OrderDetails = () => {
                 )}
               </CTableBody>
             </CTable>
+            </div>
           </div>
           {/* Mobile view */}
           <div className="d-block d-md-none">

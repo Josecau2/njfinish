@@ -1,15 +1,70 @@
 // Re-export commonly used icons for consistent imports
 export {
   cilSearch,
-  cilTrash, 
+  cilTrash,
   cilPencil,
   cilPlus,
   cilUser,
   cilSettings,
   cilExternalLink,
-  cilEye,
   cilFile,
   cilClipboard,
   cilMenu,
-  cilX
+  cilX,
+  cilCreditCard,
+  cilMoney,
+  cilDollar,
+  cilCheckCircle,
+  cilClock,
+  cilBan,
+  cilCheck,
+  cilSave,
+  cilArrowLeft,
+  // Navigation icons
+  cilCog,
+  cilDrop,
+  cilPuzzle,
+  cilSpeedometer,
+  cilCalendar,
+  cilFolderOpen,
+  cilPeople,
+  cilGroup,
+  cilBell,
+  cilNotes,
+  cilLocationPin,
+  cilCalculator,
+  cilBrush,
+  cilIndustry,
+  cilChatBubble,
+  // Other commonly used icons
+  cilEnvelopeClosed,
+  cilPhone,
+  cilLockLocked,
+  cilUserPlus,
+  cilEyedropper,
+  cilHome,
+  cilBuilding,
+  cilPaperPlane,
+  cilSend,
+  cilOptions,
+  cilCopy,
+  cilList,
+  cilBriefcase,
+  cilChart,
+  cilContrast,
+  cilEnvelopeOpen,
+  cilMoon,
+  cilSun,
+  cilBellExclamation,
+  cilChevronLeft,
+  cilChevronRight,
+  cilMagnifyingGlass,
+  cilSortAscending,
+  cilSortDescending
 } from '@coreui/icons'
+
+// Also re-export a small set of lucide-react components under the same module path
+// so consumers can import `Pencil`, `Trash`, etc. from '../../../../icons'.
+// Also provide a few commonly used lucide React components here so imports
+// that target this module (without the .tsx suffix) still work in builds.
+export { Pencil, Trash2 as Trash, ChevronUp, ChevronDown, Plus } from 'lucide-react';

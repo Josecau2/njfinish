@@ -12,7 +12,14 @@ const LanguageSwitcher = () => {
     localStorage.setItem('lang', lng)
   }
   return (
-    <CFormSelect size="sm" value={current} onChange={onChange} className="w-auto">
+    <CFormSelect
+      size="sm"
+      value={current}
+      onChange={onChange}
+      className="w-auto"
+      aria-label="Select language"
+      style={{ minHeight: 44 }}
+    >
       <option value="en">English</option>
       <option value="es">Español</option>
     </CFormSelect>

@@ -38,29 +38,29 @@ import {
   CProgress,
   CTooltip
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
 import EmptyState from '../../../components/common/EmptyState';
 import { notifyError } from '../../../helpers/notify';
 import {
-  cilSearch,
-  cilBriefcase,
-  cilCalendar,
-  cilDollar,
-  cilUser,
-  cilLocationPin,
-  cilExternalLink,
-  cilClipboard,
-  cilHistory,
-  cilCheckCircle,
-  cilXCircle,
-  cilClock,
-  cilInfo,
-  cilPaperPlane
-} from '@coreui/icons';
-import { 
-  fetchContractorProposals, 
+  Search,
+  BriefcaseBusiness,
+  Calendar,
+  User,
+  MapPin,
+  ExternalLink,
+  Clipboard,
+  History,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Info,
+  Send,
+  ChevronUp,
+  ChevronDown
+} from '@/icons-lucide';
+import {
+  fetchContractorProposals,
   fetchProposalDetails,
-  clearProposalDetails 
+  clearProposalDetails
 } from '../../../store/slices/contractorSlice';
 import PaginationComponent from '../../../components/common/PaginationComponent';
 
@@ -68,12 +68,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const { 
+
+  const {
     contractorProposals: { data: proposals, pagination, loading, error },
     proposalDetails
   } = useSelector(state => state.contractors);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -85,16 +85,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   // Status definitions with counts and colors
   const statusDefinitions = {
-    all: { label: t('proposals.tabs.all'), color: 'primary', icon: cilClipboard },
-    draft: { label: t('proposals.status.draft'), color: 'secondary', icon: cilClipboard },
-    sent: { label: t('proposals.status.sent'), color: 'info', icon: cilPaperPlane },
-    pending: { label: t('contractorsAdmin.detail.proposals.status.pending'), color: 'warning', icon: cilClock },
-    approved: { label: t('contractorsAdmin.detail.proposals.status.approved'), color: 'success', icon: cilCheckCircle },
-    accepted: { label: t('proposals.status.accepted'), color: 'success', icon: cilCheckCircle },
-    rejected: { label: t('proposals.status.rejected'), color: 'danger', icon: cilXCircle },
-    expired: { label: t('proposals.status.expired'), color: 'dark', icon: cilClock },
-    in_progress: { label: t('contractorsAdmin.detail.proposals.status.inProgress'), color: 'info', icon: cilClock },
-    completed: { label: t('contractorsAdmin.detail.proposals.status.completed'), color: 'success', icon: cilCheckCircle }
+    all: { label: t('proposals.tabs.all'), color: 'primary', Icon: Clipboard },
+    draft: { label: t('proposals.status.draft'), color: 'secondary', Icon: Clipboard },
+    sent: { label: t('proposals.status.sent'), color: 'info', Icon: Send },
+    pending: { label: t('contractorsAdmin.detail.proposals.status.pending'), color: 'warning', Icon: Clock },
+    approved: { label: t('contractorsAdmin.detail.proposals.status.approved'), color: 'success', Icon: CheckCircle },
+    accepted: { label: t('proposals.status.accepted'), color: 'success', Icon: CheckCircle },
+    rejected: { label: t('proposals.status.rejected'), color: 'danger', Icon: XCircle },
+    expired: { label: t('proposals.status.expired'), color: 'dark', Icon: Clock },
+    in_progress: { label: t('contractorsAdmin.detail.proposals.status.inProgress'), color: 'info', Icon: Clock },
+    completed: { label: t('contractorsAdmin.detail.proposals.status.completed'), color: 'success', Icon: CheckCircle }
   };
 
   // Debounce search term
@@ -108,10 +108,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   useEffect(() => {
     if (groupId) {
-      dispatch(fetchContractorProposals({ 
-        groupId, 
-        page: currentPage, 
-        limit: itemsPerPage, 
+      dispatch(fetchContractorProposals({
+        groupId,
+        page: currentPage,
+        limit: itemsPerPage,
         status: statusFilter === 'all' ? undefined : statusFilter,
         search: debouncedSearchTerm
       }));
@@ -169,7 +169,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
   };
 
   const getStatusIcon = (status) => {
-    return statusDefinitions[status]?.icon || cilClipboard;
+    return statusDefinitions[status]?.Icon || Clipboard;
   };
 
   const formatCurrency = (amount) => {
@@ -182,17 +182,17 @@ const ProposalsTab = ({ contractor, groupId }) => {
   // Calculate total amount from manufacturersData
   const calculateTotalAmount = (proposal) => {
     if (!proposal.manufacturersData) return 0;
-    
+
     try {
       const manufacturersData = JSON.parse(proposal.manufacturersData);
       let totalAmount = 0;
-      
+
       manufacturersData.forEach(manufacturer => {
         if (manufacturer.summary && manufacturer.summary.grandTotal) {
           totalAmount += manufacturer.summary.grandTotal;
         }
       });
-      
+
       return totalAmount;
     } catch (error) {
       console.error('Error parsing manufacturer data for proposal', proposal.id, error);
@@ -202,7 +202,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
@@ -224,7 +224,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const formatDateShort = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
@@ -256,13 +256,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
   // Create status timeline for proposal
   const getStatusTimeline = (proposal) => {
     const timeline = [];
-    
+
     // Always show creation
     timeline.push({
       status: 'created',
       label: 'Created',
       date: proposal.createdAt,
-      icon: cilClipboard,
+      Icon: Clipboard,
       color: 'secondary',
       completed: true
     });
@@ -273,7 +273,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         status: 'sent',
         label: 'Sent to Customer',
         date: proposal.sent_at,
-        icon: cilPaperPlane,
+        Icon: Send,
         color: 'info',
         completed: true
       });
@@ -285,7 +285,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         status: 'accepted',
         label: 'Accepted',
         date: proposal.accepted_at,
-        icon: cilCheckCircle,
+        Icon: CheckCircle,
         color: 'success',
         completed: true
       });
@@ -297,7 +297,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         status: proposal.status,
         label: statusDefinitions[proposal.status]?.label || proposal.status,
         date: proposal.updatedAt,
-        icon: getStatusIcon(proposal.status),
+        Icon: getStatusIcon(proposal.status),
         color: getStatusColor(proposal.status),
         completed: true
       });
@@ -308,7 +308,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   // Since filtering is done server-side, use proposals directly
   const displayProposals = proposals || [];
-  
+
   const totalPages = pagination?.totalPages || 1;
 
   if (loading) {
@@ -326,7 +326,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
           <CCard>
             <CCardHeader>
               <strong>
-                <CIcon icon={cilBriefcase} className="me-2" />
+                <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />
                 {t('contractorsAdmin.detail.proposals.header', { count: pagination?.total || 0 })}
               </strong>
             </CCardHeader>
@@ -337,12 +337,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
               <CRow className="mb-4">
                 <CCol md={6}>
                   <CInputGroup>
-                    <CInputGroupText>
-                      <CIcon icon={cilSearch} />
+                    <CInputGroupText aria-hidden="true">
+                      <Search size={16} />
                     </CInputGroupText>
                     <CFormInput
                       type="text"
                       placeholder={t('contractorsAdmin.detail.proposals.searchPlaceholder')}
+                      aria-label={t('contractorsAdmin.detail.proposals.searchAria', 'Search proposals')}
                       value={searchTerm}
                       onChange={handleSearchChange}
                     />
@@ -359,7 +360,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   {Object.entries(statusDefinitions).map(([status, definition]) => {
                     const count = statusCounts[status] || 0;
                     const isActive = statusFilter === status;
-                    
+
                     return (
                       <CButton
                         key={status}
@@ -370,11 +371,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleStatusFilterChange(status)}
                         disabled={count === 0 && status !== 'all'}
                       >
-                        <CIcon icon={definition.icon} className="me-1" size="sm" />
+                        {(() => { const Icon = definition.Icon; return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
                         {definition.label}
                         {count > 0 && (
-                          <CBadge 
-                            color={isActive ? 'light' : definition.color} 
+                          <CBadge
+                            color={isActive ? 'light' : definition.color}
                             className="ms-1"
                           >
                             {count}
@@ -387,8 +388,8 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </div>
 
               {/* Table */}
-              <div className="table-responsive">
-                <CTable hover striped>
+              <div className="table-wrap">
+                <CTable hover striped className="table-modern">
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell
@@ -397,6 +398,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('title')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.title')}
+                        {sortConfig.key === 'title' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -404,6 +410,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('customer_name')}
                       >
                         {t('proposals.headers.customer')}
+                        {sortConfig.key === 'customer_name' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -411,6 +422,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('status')}
                       >
                         {t('proposals.headers.status')}
+                        {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -418,6 +434,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('total_amount')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.amount')}
+                        {sortConfig.key === 'total_amount' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -425,11 +446,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('createdAt')}
                       >
                         {t('proposals.headers.date')}
-                        {sortConfig.key === 'createdAt' && (
-                          <span className="ms-1">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
+                        {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -437,11 +458,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         onClick={() => handleSort('updatedAt')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.updated')}
-                        {sortConfig.key === 'updatedAt' && (
-                          <span className="ms-1">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
+                        {sortConfig.key === 'updatedAt' && (sortConfig.direction === 'asc' ? (
+                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                        ))}
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col" className="text-center" style={{ width: '150px' }}>
                         {t('proposals.headers.actions')}
@@ -469,17 +490,17 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           </CTableDataCell>
                           <CTableDataCell>
                             <div className="d-flex align-items-center">
-                              <CIcon icon={cilUser} className="me-1 text-muted" size="sm" />
+                              <User size={14} className="me-1 text-muted" aria-hidden="true" />
                               {proposal.customer?.name || proposal.customer_name || 'N/A'}
                             </div>
                           </CTableDataCell>
                           <CTableDataCell>
-                            <CBadge 
-                              color={getStatusColor(proposal.status)} 
+                            <CBadge
+                              color={getStatusColor(proposal.status)}
                               className="d-flex align-items-center"
                               style={{ width: 'fit-content' }}
                             >
-                              <CIcon icon={getStatusIcon(proposal.status)} className="me-1" size="sm" />
+                              {(() => { const Icon = getStatusIcon(proposal.status); return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
                               {statusDefinitions[proposal.status]?.label || proposal.status || t('proposals.status.draft')}
                             </CBadge>
                           </CTableDataCell>
@@ -502,18 +523,22 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 <CButton
                                   color="outline-info"
                                   size="sm"
+                                  className="icon-btn"
+                                  aria-label={t('contractorsAdmin.detail.proposals.actions.viewDetails', 'View proposal details')}
                                   onClick={() => handleViewProposal(proposal)}
                                 >
-                                  <CIcon icon={cilSearch} size="sm" />
+                                  <Search size={16} aria-hidden="true" />
                                 </CButton>
                               </CTooltip>
                               <CTooltip content="Go to Proposal">
                                 <CButton
                                   color="outline-primary"
                                   size="sm"
+                                  className="icon-btn"
+                                  aria-label={t('contractorsAdmin.detail.proposals.actions.open', 'Open proposal')}
                                   onClick={() => handleGoToProposal(proposal.id)}
                                 >
-                                  <CIcon icon={cilExternalLink} size="sm" />
+                                  <ExternalLink size={16} aria-hidden="true" />
                                 </CButton>
                               </CTooltip>
                             </CButtonGroup>
@@ -551,7 +576,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       >
         <CModalHeader>
           <CModalTitle>
-            <CIcon icon={cilBriefcase} className="me-2" />
+            <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />
             {t('contractorsAdmin.detail.proposals.modal.title')}
             {selectedProposal && (
               <CBadge color={getStatusColor(selectedProposal.status)} className="ms-2">
@@ -574,15 +599,15 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   <h4 className="mb-2">{proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}</h4>
                   <div className="d-flex flex-wrap gap-3 text-muted">
                     <div>
-                      <CIcon icon={cilUser} className="me-1" />
+                      <User size={14} className="me-1" aria-hidden="true" />
                       <strong>{t('proposalAcceptance.labels.customer')}:</strong> {proposalDetails.data.customer?.name || t('common.na')}
                     </div>
                     <div>
-                      <CIcon icon={cilCalendar} className="me-1" />
+                      <Calendar size={14} className="me-1" aria-hidden="true" />
                       <strong>{t('proposals.headers.date')}:</strong> {formatDate(proposalDetails.data.createdAt)}
                     </div>
                     <div>
-                      <CIcon icon={cilLocationPin} className="me-1" />
+                      <MapPin size={14} className="me-1" aria-hidden="true" />
                       <strong>{t('contractorsAdmin.detail.proposals.modal.group')}:</strong> {contractor?.name || t('common.na')}
                     </div>
                   </div>
@@ -595,10 +620,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   <CButton
                     color="primary"
                     size="sm"
+                    className="icon-btn"
+                    aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                     onClick={() => handleGoToProposal(proposalDetails.data.id)}
-                    className="me-2"
                   >
-                    <CIcon icon={cilExternalLink} className="me-1" />
+                    <ExternalLink size={16} className="me-1" aria-hidden="true" />
                     {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                   </CButton>
                 </CCol>
@@ -607,10 +633,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
               <CAccordion flush>
                 {/* Basic Information */}
                 <CAccordionItem itemKey="1">
-                  <CAccordionHeader>
-                    <CIcon icon={cilInfo} className="me-2" />
-                    {t('contractorsAdmin.detail.proposals.modal.basicInfo')}
-                  </CAccordionHeader>
+                    <CAccordionHeader>
+                      <Info size={16} className="me-2" aria-hidden="true" />
+                      {t('contractorsAdmin.detail.proposals.modal.basicInfo')}
+                    </CAccordionHeader>
                   <CAccordionBody>
                     <CRow>
                       <CCol md={6}>
@@ -622,7 +648,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
                             <span className="text-muted">{t('proposals.headers.status')}</span>
                             <CBadge color={getStatusColor(proposalDetails.data.status)}>
-                              <CIcon icon={getStatusIcon(proposalDetails.data.status)} className="me-1" size="sm" />
+                              {(() => { const Icon = getStatusIcon(proposalDetails.data.status); return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
                               {statusDefinitions[proposalDetails.data.status]?.label || proposalDetails.data.status || t('proposals.status.draft')}
                             </CBadge>
                           </CListGroupItem>
@@ -665,7 +691,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         </CListGroup>
                       </CCol>
                     </CRow>
-                    
+
                     {proposalDetails.data.description && (
                       <div className="mt-3">
                         <h6 className="text-muted mb-2">{t('proposals.labels.description')}</h6>
@@ -679,17 +705,17 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
                 {/* Status Timeline */}
                 <CAccordionItem itemKey="2">
-                  <CAccordionHeader>
-                    <CIcon icon={cilHistory} className="me-2" />
-                    {t('contractorsAdmin.detail.proposals.timeline.title')}
-                  </CAccordionHeader>
+                    <CAccordionHeader>
+                      <History size={16} className="me-2" aria-hidden="true" />
+                      {t('contractorsAdmin.detail.proposals.timeline.title')}
+                    </CAccordionHeader>
                   <CAccordionBody>
                     <div className="timeline">
                       {getStatusTimeline(proposalDetails.data).map((item, index) => (
                         <div key={index} className="d-flex align-items-center mb-3">
-                          <div className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`} 
+                          <div className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
                                style={{ width: '40px', height: '40px', minWidth: '40px' }}>
-                            <CIcon icon={item.icon} size="sm" />
+                            {(() => { const Icon = item.Icon || Clipboard; return <Icon size={18} aria-hidden="true" />; })()}
                           </div>
                           <div className="flex-grow-1">
                             <div className="d-flex justify-content-between align-items-center">
@@ -719,7 +745,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 {proposalDetails.data.items && proposalDetails.data.items.length > 0 && (
                   <CAccordionItem itemKey="3">
                     <CAccordionHeader>
-                      <CIcon icon={cilClipboard} className="me-2" />
+                      <Clipboard size={16} className="me-2" aria-hidden="true" />
                       {t('contractorsAdmin.detail.proposals.itemsTitle', { count: proposalDetails.data.items.length })}
                     </CAccordionHeader>
                     <CAccordionBody>
@@ -751,7 +777,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           </CTableBody>
                         </CTable>
                       </div>
-                      
+
                       <div className="border-top pt-3 mt-3">
                         <CRow>
                           <CCol md={6}></CCol>
@@ -780,7 +806,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
             </div>
           ) : (
             <CAlert color="warning" className="mb-0">
-              <CIcon icon={cilInfo} className="me-2" />
+              <Info size={16} className="me-2" aria-hidden="true" />
               {t('contractorsAdmin.detail.proposals.modal.failed')}
             </CAlert>
           )}
@@ -791,9 +817,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
               <CButton
                 color="primary"
                 variant="outline"
+                className="icon-btn"
+                aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                 onClick={() => handleGoToProposal(selectedProposal.id)}
               >
-                <CIcon icon={cilExternalLink} className="me-1" />
+                <ExternalLink size={16} className="me-1" aria-hidden="true" />
                 {t('contractorsAdmin.detail.proposals.modal.openFull')}
               </CButton>
             )}

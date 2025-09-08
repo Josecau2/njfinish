@@ -39,12 +39,18 @@ const Widgets = () => {
 
   return (
     <CCard className="mb-4">
+      <style>{`
+        @media (max-width: 576px){
+          .docs-example .btn, .docs-example .btn > * { min-height: 44px; }
+          .docs-example .row { row-gap: .5rem; }
+        }
+      `}</style>
       <CCardHeader>Widgets</CCardHeader>
       <CCardBody>
-        <DocsExample href="components/widgets/#cwidgetstatsa">
+        <DocsExample href="components/widgets/#cwidgetstatsa" className="docs-example">
           <WidgetsDropdown />
         </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsb">
+        <DocsExample href="components/widgets/#cwidgetstatsb" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={12} sm={6} xl={4} xxl={3}>
               <CWidgetStatsB
@@ -79,8 +85,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsb">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsb" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={12} sm={6} xl={4} xxl={3}>
               <CWidgetStatsB
@@ -123,8 +129,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatse">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatse" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol sm={4} md={3} xl={2}>
               <CWidgetStatsE
@@ -577,8 +583,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsf">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsf" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={12} sm={6} xl={4} xxl={3}>
               <CWidgetStatsF
@@ -613,8 +619,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsf">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsf" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={12} sm={6} xl={4} xxl={3}>
               <CWidgetStatsF
@@ -693,8 +699,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsf">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsf" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={12} sm={6} xl={4} xxl={3}>
               <CWidgetStatsF
@@ -733,14 +739,14 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsd">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsd" className="docs-example">
           <WidgetsBrand />
         </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsd">
+  <DocsExample href="components/widgets/#cwidgetstatsd" className="docs-example">
           <WidgetsBrand withCharts />
         </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsc">
+  <DocsExample href="components/widgets/#cwidgetstatsc" className="docs-example">
           <CCardGroup className="mb-4">
             <CWidgetStatsC
               icon={<CIcon icon={cilPeople} height={36} />}
@@ -773,8 +779,8 @@ const Widgets = () => {
               progress={{ color: 'danger', value: 75 }}
             />
           </CCardGroup>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsc">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsc" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={6} lg={4} xxl={2}>
               <CWidgetStatsC
@@ -825,8 +831,8 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
-        <DocsExample href="components/widgets/#cwidgetstatsc">
+  </DocsExample>
+  <DocsExample href="components/widgets/#cwidgetstatsc" className="docs-example">
           <CRow xs={{ gutter: 4 }}>
             <CCol xs={6} lg={4} xxl={2}>
               <CWidgetStatsC
@@ -889,7 +895,7 @@ const Widgets = () => {
               />
             </CCol>
           </CRow>
-        </DocsExample>
+  </DocsExample>
       </CCardBody>
     </CCard>
   )

@@ -1,8 +1,11 @@
 import axios from 'axios';
-import store from '../store';
-import { logout } from '../store/slices/authSlice';
+import { installTokenEverywhere, getFreshestToken } from '../utils/authToken';
 
-const base = (import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:8080');
+// Normalize base URL: strip trailing "/api" and extra slashes
+const rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const base = rawBase
+  .replace(/\/api\/?$/, '')
+  .replace(/\/+$/, '');
 
 const api = axios.create({
   baseURL: base,
@@ -15,27 +18,78 @@ let isLoggingOut = false;
 let isRefreshing = false;
 let refreshPromise = null;
 
-// Attach token from localStorage (only; no proactive refresh). Instrument tail for debugging.
-api.interceptors.request.use((config) => {
+function compactDecodeExp(token) {
   try {
-    const t = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+  const seg = (token || '').split('.')[1];
+  if (!seg) return 0;
+  const pad = '='.repeat((4 - (seg.length % 4)) % 4);
+  const b64 = (seg.replace(/-/g, '+').replace(/_/g, '/')) + pad;
+  const payload = JSON.parse(atob(b64));
+  return Number(payload.exp) * 1000;
+  } catch {
+    return 0;
+  }
+}
+
+function handleUnauthorized(originalConfig) {
+  // Allow callers to opt-out of global logout (e.g., notification bell)
+  if (originalConfig && originalConfig.__suppressAuthLogout) {
+    return;
+  }
+
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+
+  // Abort all in-flight requests to prevent thundering herd of 401s
+  try { activeAbortController.abort(); } catch {}
+  activeAbortController = new AbortController();
+
+  // Clear tokens and user locally
+  try { localStorage.removeItem('token'); } catch {}
+  try { sessionStorage.removeItem('token'); } catch {}
+  try { localStorage.removeItem('user'); } catch {}
+  try { sessionStorage.setItem('logout_reason', 'auth-error'); } catch {}
+  // Notify other tabs
+  try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
+
+  // Redirect to login if not already there
+  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+    try { window.location.replace('/login?reason=auth-error'); } catch {}
+  }
+
+  setTimeout(() => { isLoggingOut = false; }, 1000);
+}
+
+// Get the freshest token from both localStorage and sessionStorage, with debugging
+api.interceptors.request.use(async (config) => {
+  try {
+    let t = getFreshestToken();
+    // If no token yet, poll briefly to avoid startup race conditions
+    if (!t) {
+      for (let i = 0; i < 5 && !t; i++) {
+        // ~100ms max wait
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((r) => setTimeout(r, 20));
+        t = getFreshestToken();
+      }
+    }
+
     if (t) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${t}`;
     }
-    // Temporary instrumentation (remove once stable)
-    const tail = t ? t.slice(-10) : '(none)';
-    // eslint-disable-next-line no-console
-    console.debug('[AUTH] sending token tail:', tail, '->', config.url);
+
+    // Attach abort signal so we can cancel on first global 401
+    try { config.signal = activeAbortController.signal; } catch {}
+
+    // Compact one-line debug to see auth per request quickly
+    const authTail = config.headers?.Authorization ? String(config.headers.Authorization).slice(-10) : 'none';
+    const expMs = t ? compactDecodeExp(t) : 0;
+    const expIso = expMs ? new Date(expMs).toISOString() : 'n/a';
+    const isExp = expMs ? Date.now() >= expMs : false;
+    console.info(`[HTTP] ${String(config.method || 'get').toUpperCase()} ${base}${config.url} auth=${authTail==='none'?'no':'yes'} tail=${authTail} exp=${expIso} expired=${isExp}`);
   } catch {}
 
-  // Attach abort signal so polling and pending requests stop immediately after 401/403
-  try {
-    if (!activeAbortController || activeAbortController.signal?.aborted) {
-      activeAbortController = new AbortController();
-    }
-    config.signal = config.signal || activeAbortController.signal;
-  } catch (_) {}
   return config;
 });
 
@@ -43,84 +97,24 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => {
     const rt = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token');
-    if (rt && typeof window !== 'undefined') localStorage.setItem('token', rt);
+    if (rt && typeof window !== 'undefined') {
+      // Use installTokenEverywhere to ensure token is stored in both localStorage and sessionStorage
+      installTokenEverywhere(rt);
+      console.debug('[AUTH] Token refreshed from server');
+    }
     return res;
   },
   (err) => {
     const s = err?.response?.status;
     const originalConfig = err?.config || {};
-    const suppressLogout = !!originalConfig.__suppressAuthLogout;
-    const isRefreshPing = !!originalConfig.__isRefreshPing;
-
-    // If this is our internal ping attempt, do not recurse or logout here
-    if ((s === 401 || s === 403) && isRefreshPing) {
-      return Promise.reject(err);
-    }
+    // Compact response debug
+    try {
+      const tail = originalConfig.headers?.Authorization ? String(originalConfig.headers.Authorization).slice(-10) : 'none';
+      console.info(`[HTTP] ${s || 'ERR'} ${String(originalConfig.method || 'get').toUpperCase()} ${base}${originalConfig.url} auth=${tail==='none'?'no':'yes'} tail=${tail}`);
+    } catch {}
 
     if (s === 401 || s === 403) {
-      // Only attempt a single silent refresh per failed request
-      if (!originalConfig.__retryAttempted) {
-        originalConfig.__retryAttempted = true;
-
-        // Start (or join) a single refresh in flight
-        if (!isRefreshing) {
-          isRefreshing = true;
-          const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-          refreshPromise = api.get('/api/auth/ping', {
-            __isRefreshPing: true,
-            headers: currentToken ? { Authorization: `Bearer ${currentToken}` } : undefined
-          }).finally(() => {
-            isRefreshing = false;
-          });
-        }
-
-        return refreshPromise.then(() => {
-          // After successful refresh, retry the original request with the new token
-          try {
-            // Ensure we don't reuse a potentially aborted signal
-            const { signal, ...rest } = originalConfig;
-            return api.request(rest);
-          } catch (_) {
-            return api.request(originalConfig);
-          }
-        }).catch((refreshErr) => {
-          // Refresh failed. Respect suppression flags: do not logout for suppressed requests.
-          if (suppressLogout) {
-            return Promise.reject(err);
-          }
-
-          // Finalize with a clean logout once
-          if (!isLoggingOut) {
-            isLoggingOut = true;
-            try { activeAbortController.abort('auth-expired'); } catch {}
-            try { activeAbortController = new AbortController(); } catch {}
-            try { localStorage.removeItem('token'); } catch {}
-            try { store.dispatch(logout()); } catch {}
-            if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-              try { window.location.replace('/login'); } catch {}
-            }
-            setTimeout(() => { isLoggingOut = false; }, 1500);
-          }
-          return Promise.reject(err);
-        });
-      }
-
-      // Already retried and still unauthorized: either suppressed or proceed to logout
-      if (suppressLogout) {
-        return Promise.reject(err);
-      }
-
-      if (!isLoggingOut) {
-        isLoggingOut = true;
-        try { activeAbortController.abort('auth-expired'); } catch {}
-        try { activeAbortController = new AbortController(); } catch {}
-        try { localStorage.removeItem('token'); } catch {}
-        try { store.dispatch(logout()); } catch {}
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          try { window.location.replace('/login'); } catch {}
-        }
-        setTimeout(() => { isLoggingOut = false; }, 1500);
-      }
+      handleUnauthorized(originalConfig);
     }
     return Promise.reject(err);
   }

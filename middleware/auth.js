@@ -58,10 +58,35 @@ exports.verifyToken = async (req, res, next) => {
 exports.verifyTokenWithGroup = async (req, res, next) => {
   const authHeader = req.headers.authorization || '';
   const token = /^Bearer\s/i.test(authHeader) ? authHeader.split(' ')[1].trim() : null;
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[AUTH DEBUG] verifyTokenWithGroup called for:', req.path);
+    console.log('[AUTH DEBUG] Authorization header exists:', !!authHeader);
+    console.log('[AUTH DEBUG] Token extracted:', token ? `${token.substring(0, 20)}...` : 'null');
+
+    // Show token timestamp to identify which login it's from
+    if (token) {
+      try {
+        const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        console.log('[AUTH DEBUG] Token issued at:', new Date(payload.iat * 1000).toISOString());
+        console.log('[AUTH DEBUG] Token expires at:', new Date(payload.exp * 1000).toISOString());
+        console.log('[AUTH DEBUG] Token user:', payload.email);
+      } catch (e) {
+        console.log('[AUTH DEBUG] Could not decode token for inspection');
+      }
+    }
+  }
+
   if (!token) return res.status(401).json({ message: 'No token provided' });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH DEBUG] Token decoded successfully for:', decoded.email);
+      console.log('[AUTH DEBUG] Token exp:', new Date(decoded.exp * 1000).toISOString());
+      console.log('[AUTH DEBUG] Current time:', new Date().toISOString());
+    }
 
     // Rolling token refresh: if token is close to expiring, mint a fresh one
     try {
@@ -98,7 +123,18 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
     });
 
     if (!req.user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AUTH DEBUG] User not found in database for ID:', decoded.id);
+      }
       return res.status(403).json({ message: 'User not found' });
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH DEBUG] User loaded successfully:', {
+        id: req.user.id,
+        email: req.user.email,
+        hasGroup: !!req.user.group
+      });
     }
 
     // Ensure group_id is properly set (convert to integer if needed)
@@ -117,6 +153,15 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
 
     next();
   } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH DEBUG] verifyTokenWithGroup error:', {
+        name: error.name,
+        message: error.message,
+        path: req.path,
+        token: token ? `${token.substring(0, 20)}...` : 'none'
+      });
+    }
+
     // Concise logging; throttle noisy expiry stacks
     const isExpired = error && (error.name === 'TokenExpiredError');
     try {

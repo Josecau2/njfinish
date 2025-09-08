@@ -25,12 +25,12 @@ exports.requirePermission = (permission) => {
       if (!userPermissions) {
         userPermissions = await getUserPermissions(req.user);
       }
-      
+
       // Check if user has the required permission
       if (hasPermission(userPermissions, permission)) {
         next();
       } else {
-        res.status(403).json({ 
+        res.status(403).json({
           message: 'Insufficient permissions',
           required: permission,
           user: req.user.id
@@ -59,11 +59,11 @@ exports.requireAnyPermission = (permissions) => {
       if (!userPermissions) {
         userPermissions = await getUserPermissions(req.user);
       }
-      
+
       if (hasAnyPermission(userPermissions, permissions)) {
         next();
       } else {
-        res.status(403).json({ 
+        res.status(403).json({
           message: 'Insufficient permissions',
           required: permissions,
           user: req.user.id
@@ -92,11 +92,11 @@ exports.requireAllPermissions = (permissions) => {
       if (!userPermissions) {
         userPermissions = await getUserPermissions(req.user);
       }
-      
+
       if (hasAllPermissions(userPermissions, permissions)) {
         next();
       } else {
-        res.status(403).json({ 
+        res.status(403).json({
           message: 'Insufficient permissions',
           required: permissions,
           user: req.user.id
@@ -114,16 +114,22 @@ exports.requireAllPermissions = (permissions) => {
  * @param {Object} user - User object from database
  * @returns {Array} Array of permission strings
  */
+function isAdminRole(role) {
+  const r = String(role || '').toLowerCase().trim();
+  return r === 'admin' || r === 'super_admin' || r === 'superadmin' || r === 'super admin' || r === 'manufacturers' || r === 'manufacturer';
+}
+
 async function getUserPermissions(user) {
   try {
     // For backward compatibility: Admin and Manufacturers roles get all permissions
-    if (user.role === 'Admin' || user.role === 'Manufacturers') {
+    if (isAdminRole(user.role)) {
       return [
         ...Object.values(PERMISSIONS.ADMIN),
         ...Object.values(PERMISSIONS.CONTRACTORS),
         ...Object.values(PERMISSIONS.PROPOSALS),
         ...Object.values(PERMISSIONS.CUSTOMERS),
-        ...Object.values(PERMISSIONS.RESOURCES)
+        ...Object.values(PERMISSIONS.RESOURCES),
+        ...Object.values(PERMISSIONS.PAYMENTS)
       ];
     }
 
@@ -132,7 +138,7 @@ async function getUserPermissions(user) {
     if (!userGroup && user.group_id) {
       userGroup = await UserGroup.findByPk(user.group_id);
     }
-    
+
     if (userGroup) {
       // Ensure modules is parsed as an object if it's stored as a string
       let modules = userGroup.modules;
@@ -144,15 +150,15 @@ async function getUserPermissions(user) {
           modules = { dashboard: false, proposals: false, customers: false, resources: false };
         }
       }
-      
+
   // Debug log removed to reduce noise
-      
+
       return getGroupPermissions(userGroup.group_type, modules);
     }
 
     // Default: regular users get standard permissions for backward compatibility
     return getGroupPermissions('standard');
-    
+
   } catch (error) {
     console.error('Error getting user permissions:', error);
     // On error, return empty permissions for safety
@@ -186,7 +192,7 @@ exports.attachPermissions = async (req, res, next) => {
  */
 exports.scopeToGroup = (baseQuery = {}, groupId, options = {}) => {
   const { table = 'proposals', includeUnowned = null } = options;
-  
+
   // No scoping for admin users (null groupId means admin)
   if (groupId === null) {
     return baseQuery;
@@ -194,18 +200,18 @@ exports.scopeToGroup = (baseQuery = {}, groupId, options = {}) => {
 
   // Determine the foreign key field based on table
   const groupField = table === 'proposals' ? 'owner_group_id' : 'group_id';
-  
+
   // Default includeUnowned behavior
   const shouldIncludeUnowned = includeUnowned !== null ? includeUnowned : false;
 
   // Build where clause for group scoping
-  const groupWhere = shouldIncludeUnowned 
+  const groupWhere = shouldIncludeUnowned
     ? { [Op.or]: [{ [groupField]: groupId }, { [groupField]: null }] }
     : { [groupField]: groupId };
 
   // Merge with existing where clause
   const existingWhere = baseQuery.where || {};
-  
+
   let scopedWhere;
   if (Object.keys(existingWhere).length > 0) {
     scopedWhere = { [Op.and]: [existingWhere, groupWhere] };
@@ -226,8 +232,8 @@ exports.scopeToGroup = (baseQuery = {}, groupId, options = {}) => {
 exports.injectGroupScoping = (req, res, next) => {
   try {
     const userGroupId = req.user?.group_id || null;
-    const isAdmin = req.user?.role === 'Admin' || req.user?.role === 'Manufacturers';
-    
+    const isAdmin = isAdminRole(req.user?.role);
+
     // Inject scoping helpers into request
     req.scopeToUserGroup = (baseQuery = {}, options = {}) => {
       // Admin users see everything

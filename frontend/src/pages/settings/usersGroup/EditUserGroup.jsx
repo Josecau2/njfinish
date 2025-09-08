@@ -30,6 +30,7 @@ import Swal from 'sweetalert2';
 import axiosInstance from '../../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/PageHeader';
+import { getContrastColor } from '../../../utils/colorUtils';
 
 // External components to avoid re-creation on each render
 const FormSection = ({ title, icon, children, className = "", customization = {} }) => (
@@ -132,21 +133,7 @@ const EditUserGroupForm = () => {
     const [loadingData, setLoadingData] = useState(true);
     const customization = useSelector((state) => state.customization);
 
-    // Function to get optimal text color for contrast
-    const getContrastColor = (backgroundColor) => {
-        if (!backgroundColor) return '#ffffff';
-        // Convert hex to RGB
-        const hex = backgroundColor.replace('#', '');
-        const r = parseInt(hex.substr(0, 2), 16);
-        const g = parseInt(hex.substr(2, 2), 16);
-        const b = parseInt(hex.substr(4, 2), 16);
 
-        // Calculate luminance
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-        // Return dark color for light backgrounds, light color for dark backgrounds
-        return luminance > 0.5 ? '#2d3748' : '#ffffff';
-    };
 
     useEffect(() => {
         const fetchUserGroup = async () => {
@@ -232,7 +219,15 @@ const EditUserGroupForm = () => {
     }
 
     return (
-        <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+                <CContainer fluid className="p-1 p-md-2 m-0 m-md-2 user-group-edit" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+                        {/* UI-TASK: Scoped responsive/touch styles */}
+                        <style>{`
+                            .user-group-edit .form-select, .user-group-edit .form-control { min-height: 44px; }
+                            .user-group-edit .btn { min-height: 44px; }
+                            @media (max-width: 576px) {
+                                .user-group-edit .form-check.form-switch { padding: .25rem 0; }
+                            }
+                        `}</style>
             {/* Header Section */}
             <PageHeader
                 title={t('settings.userGroups.edit.title')}

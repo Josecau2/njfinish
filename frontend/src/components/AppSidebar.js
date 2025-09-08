@@ -47,92 +47,255 @@ const AppSidebar = () => {
     }
   }, [sidebarShow, dispatch])
   return (
-    <CSidebar
-      ref={sidebarRef}
-      className={`border-end ${sidebarShow ? 'show' : ''}`}
-      colorScheme="dark"
-      position="fixed"
-      unfoldable={unfoldable}
-      visible={sidebarShow}
-      onVisibleChange={(visible) => {
-        dispatch(setSidebarShow(visible))
-      }}
-      style={{
-        backgroundColor: customization.sidebarBg,
-        color: customization.sidebarFontColor,
-      }}
-    >
-      <CSidebarHeader
-        className="border-bottom"
+    <>
+      {/* Mobile-optimized sidebar CSS */}
+      <style>{`
+        .modern-sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          width: 260px;
+          z-index: 1040;
+          transform: translateX(-100%);
+          transition: transform 0.15s ease-in-out;
+          border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modern-sidebar.show {
+          transform: translateX(0);
+        }
+
+        .modern-sidebar__header {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modern-sidebar__brand {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          color: inherit;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .modern-sidebar__close {
+          display: none;
+          background: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 1.25rem;
+          padding: 0.5rem;
+          cursor: pointer;
+          border-radius: 4px;
+          min-width: 44px;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modern-sidebar__close:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+
+        .modern-sidebar__footer {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 56px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          display: none;
+        }
+
+        /* Mobile styles */
+        @media (max-width: 767.98px) {
+          .modern-sidebar {
+            width: 280px;
+            max-width: 85vw;
+          }
+
+          .modern-sidebar__close {
+            display: flex;
+          }
+
+          .modern-sidebar__footer {
+            display: none !important;
+          }
+        }
+
+        /* Tablet styles */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+          .modern-sidebar {
+            transform: translateX(0);
+            position: relative;
+            height: 100vh;
+            overflow-y: auto;
+          }
+
+          .modern-sidebar__close {
+            display: none;
+          }
+
+          .modern-sidebar__footer {
+            display: flex;
+          }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 992px) {
+          .modern-sidebar {
+            transform: translateX(0);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+          }
+
+          .modern-sidebar.sidebar-narrow {
+            width: 56px;
+          }
+
+          .modern-sidebar__close {
+            display: none;
+          }
+
+          .modern-sidebar__footer {
+            display: flex;
+            position: relative;
+          }
+        }
+
+        /* Logo optimizations */
+        .sidebar-brand-full {
+          display: block;
+        }
+
+        .sidebar-brand-narrow {
+          display: none;
+        }
+
+        .modern-sidebar.sidebar-narrow .sidebar-brand-full {
+          display: none;
+        }
+
+        .modern-sidebar.sidebar-narrow .sidebar-brand-narrow {
+          display: block;
+        }
+
+        /* Navigation improvements */
+        .modern-sidebar .sidebar-nav {
+          padding: 0.5rem 0;
+          height: calc(100vh - 60px - 56px);
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        @media (max-width: 767.98px) {
+          .modern-sidebar .sidebar-nav {
+            height: calc(100vh - 60px);
+            padding-bottom: 2rem;
+          }
+        }
+      `}</style>
+
+      <CSidebar
+        ref={sidebarRef}
+        className={`modern-sidebar border-end ${sidebarShow ? 'show' : ''} ${unfoldable ? 'sidebar-narrow' : ''}`}
+        colorScheme="dark"
+        position="fixed"
+        unfoldable={unfoldable}
+        visible={sidebarShow}
+        onVisibleChange={(visible) => {
+          dispatch(setSidebarShow(visible))
+        }}
         style={{
-          backgroundColor: customization.logoBg,
+          backgroundColor: customization.sidebarBg,
+          color: customization.sidebarFontColor,
         }}
       >
-        <CSidebarBrand to="/" className="d-flex align-items-center justify-content-center w-100 text-decoration-none"
-          onClick={() => {
-            if (window.innerWidth < 768) {
-              dispatch(setSidebarShow(false))
-            }
+        <CSidebarHeader
+          className="modern-sidebar__header border-bottom"
+          style={{
+            backgroundColor: customization.logoBg,
           }}
         >
-          {customization.logoImage ? (
-            <>
-              {/* Full sidebar logo - visible when expanded */}
-              <img
-                src={`${api_url}${customization.logoImage}`}
-                alt="Logo"
-                className="sidebar-brand-full"
-                style={{
-                  maxHeight: 60,
-                  maxWidth: 120,
-                  objectFit: 'contain',
-                }}
-              />
-              {/* Collapsed sidebar logo - visible when collapsed */}
-              <img
-                src={`${api_url}${customization.logoImage}`}
-                alt="Logo"
-                className="sidebar-brand-narrow"
-                style={{
-                  maxHeight: 32,
-                  maxWidth: 32,
-                  objectFit: 'contain',
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <div className="sidebar-brand-full fw-bold fs-5" style={{ color: '#fff', cursor: 'pointer' }}>
-                {customization.logoText}
-              </div>
-              <CIcon icon={sygnet} height={32} className="sidebar-brand-narrow" />
-            </>
-          )}
-        </CSidebarBrand>
-        <CCloseButton
-          className="d-lg-none"
-          dark
-          onClick={() => dispatch(setSidebarShow(false))}
-          style={{padding:'0 0 0 50px'}}
-        />
-      </CSidebarHeader>
+          <CSidebarBrand
+            to="/"
+            className="modern-sidebar__brand d-flex align-items-center text-decoration-none"
+            onClick={() => {
+              if (window.innerWidth < 768) {
+                dispatch(setSidebarShow(false))
+              }
+            }}
+          >
+            {customization.logoImage ? (
+              <>
+                {/* Full sidebar logo - visible when expanded */}
+                <img
+                  src={`${api_url}${customization.logoImage}`}
+                  alt="Logo"
+                  className="sidebar-brand-full"
+                  style={{
+                    maxHeight: 40,
+                    maxWidth: 160,
+                    objectFit: 'contain',
+                  }}
+                />
+                {/* Collapsed sidebar logo - visible when collapsed */}
+                <img
+                  src={`${api_url}${customization.logoImage}`}
+                  alt="Logo"
+                  className="sidebar-brand-narrow"
+                  style={{
+                    maxHeight: 28,
+                    maxWidth: 28,
+                    objectFit: 'contain',
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <div className="sidebar-brand-full fw-bold fs-6" style={{ color: '#fff', cursor: 'pointer' }}>
+                  {customization.logoText}
+                </div>
+                <CIcon icon={sygnet} height={28} className="sidebar-brand-narrow" />
+              </>
+            )}
+          </CSidebarBrand>
 
-      {navItems.length > 0 ? (
-        <div style={{ color: customization.sidebarFontColor }}>
-          <AppSidebarNav items={navItems} fontColor={customization.sidebarFontColor} />
-        </div>
-      ) : (
-        <div className="text-white text-center py-4 d-flex justify-content-center">
-          <CSpinner color="light" />
-        </div>
-      )}
+          <button
+            className="modern-sidebar__close d-lg-none"
+            onClick={() => dispatch(setSidebarShow(false))}
+            aria-label="Close sidebar"
+          >
+            ×
+          </button>
+        </CSidebarHeader>
 
-      <CSidebarFooter className="border-top d-none d-lg-flex">
-        <CSidebarToggler
-          onClick={() => dispatch(setSidebarUnfoldable(!unfoldable))}
-        />
-      </CSidebarFooter>
-    </CSidebar>
+        {navItems.length > 0 ? (
+          <div className="sidebar-nav" style={{ color: customization.sidebarFontColor }}>
+            <AppSidebarNav items={navItems} fontColor={customization.sidebarFontColor} />
+          </div>
+        ) : (
+          <div className="text-white text-center py-4 d-flex justify-content-center">
+            <CSpinner color="light" />
+          </div>
+        )}
+
+        <CSidebarFooter className="modern-sidebar__footer border-top d-none d-lg-flex">
+          <CSidebarToggler
+            onClick={() => dispatch(setSidebarUnfoldable(!unfoldable))}
+          />
+        </CSidebarFooter>
+      </CSidebar>
+    </>
   )
 }
 

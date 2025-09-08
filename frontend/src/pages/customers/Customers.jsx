@@ -25,9 +25,7 @@ import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice
 import { useNavigate } from 'react-router-dom';
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import Swal from 'sweetalert2';
-import axios from 'axios';
-import CIcon from '@coreui/icons-react';
-import { cilSearch, cilPencil, cilTrash, cilPlus, cilUser, cilEnvelopeClosed, cilPhone, cilLocationPin } from '@coreui/icons';
+import { Search, Pencil, Trash, Plus, User, Mail, Phone, MapPin } from '@/icons-lucide';
 import PaginationComponent from '../../components/common/PaginationComponent';
 import withContractorScope from '../../components/withContractorScope';
 import PermissionGate from '../../components/PermissionGate';
@@ -168,7 +166,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             color="light"
             onClick={handleNewCustomer}
           >
-            <CIcon icon={cilPlus} className="me-2" />
+            <Plus size={16} className="me-2" aria-hidden="true" />
             {t('nav.addCustomer')}
           </CButton>
         </PermissionGate>
@@ -216,11 +214,12 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
           <CRow className="align-items-center g-3">
             <CCol md={6}>
               <CInputGroup>
-                <CInputGroupText>
-                  <CIcon icon={cilSearch} />
+                <CInputGroupText aria-hidden="true">
+                  <Search size={16} />
                 </CInputGroupText>
                 <CFormInput
                   placeholder={t('customers.searchPlaceholder')}
+                  aria-label={t('customers.searchAriaLabel', 'Search customers')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
                 />
@@ -266,18 +265,18 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Desktop Table */}
       {!loading && !error && (
-        <div className="table-responsive-md desktop-only">
+        <div className="table-wrap desktop-only">
           <CCard className="data-table-card">
-            <CTable hover>
+            <CTable hover className="table-modern">
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>{t('customers.location', 'Location')}</CTableHeaderCell>
                   <CTableHeaderCell onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                    <CIcon icon={cilUser} className="me-2" />
+                    <User size={16} className="me-2" aria-hidden="true" />
                     {t('customers.name', 'Name')} {getSortIcon('name')}
                   </CTableHeaderCell>
                   <CTableHeaderCell onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
-                    <CIcon icon={cilEnvelopeClosed} className="me-2" />
+                    <Mail size={16} className="me-2" aria-hidden="true" />
                     {t('customers.email', 'Email')} {getSortIcon('email')}
                   </CTableHeaderCell>
                   <CTableHeaderCell>{t('customers.phone', 'Phone')}</CTableHeaderCell>
@@ -291,7 +290,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 {sortedFilteredCustomers?.length === 0 ? (
                   <CTableRow>
                     <CTableDataCell colSpan="8" className="text-center py-5">
-                      <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+                      <Search size={48} className="text-muted mb-3" aria-hidden="true" />
                       <p className="mb-0">{t('customers.noResults')}</p>
                       <small className="text-muted">{t('customers.tryAdjusting')}</small>
                     </CTableDataCell>
@@ -318,28 +317,30 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           {t('customers.ordersCount', { count: 0 })}
                         </CBadge>
                       </CTableDataCell>
-                      <CTableDataCell className="text-center">
+          <CTableDataCell className="text-center">
                         <div className="d-flex justify-content-center gap-2">
                           <PermissionGate action="update" resource="customer" item={cust}>
                             <CButton
                               color="primary"
-                              variant="outline"
-                              size="sm"
+            variant="outline"
+            className="icon-btn"
                               onClick={() => handleEdit(cust)}
                               title={t('customers.editTooltip', 'Edit customer')}
+            aria-label={t('customers.editTooltip', 'Edit customer')}
                             >
-                              <CIcon icon={cilPencil} />
+            <Pencil size={16} aria-hidden="true" />
                             </CButton>
                           </PermissionGate>
                           <PermissionGate action="delete" resource="customer" item={cust}>
                             <CButton
                               color="danger"
-                              variant="outline"
-                              size="sm"
+            variant="outline"
+            className="icon-btn"
                               onClick={() => handleDelete(cust.id)}
                               title={t('customers.deleteTooltip', 'Delete customer')}
+            aria-label={t('customers.deleteTooltip', 'Delete customer')}
                             >
-                              <CIcon icon={cilTrash} />
+            <Trash size={16} aria-hidden="true" />
                             </CButton>
                           </PermissionGate>
                         </div>
@@ -356,10 +357,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div className="mobile-card-view mobile-only">
-          {sortedFilteredCustomers?.length === 0 ? (
+      {sortedFilteredCustomers?.length === 0 ? (
             <CCard>
               <CCardBody className="text-center py-5">
-                <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+        <Search size={48} className="text-muted mb-3" aria-hidden="true" />
                 <p className="mb-0">{t('customers.noResults')}</p>
                 <small className="text-muted">{t('customers.tryAdjusting')}</small>
               </CCardBody>
@@ -378,15 +379,15 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   </div>
                   <div className="mt-3">
                     <div className="contact-info">
-                      <CIcon icon={cilEnvelopeClosed} />
+          <Mail size={16} aria-hidden="true" />
                       <span>{cust.email || 'N/A'}</span>
                     </div>
                     <div className="contact-info">
-                      <CIcon icon={cilPhone} />
+          <Phone size={16} aria-hidden="true" />
                       <span>{cust.mobile || cust.homePhone || 'No phone'}</span>
                     </div>
                     <div className="contact-info">
-                      <CIcon icon={cilLocationPin} />
+          <MapPin size={16} aria-hidden="true" />
                       <span>{formatAddress(cust) || 'No address'}</span>
                     </div>
                   </div>
@@ -407,7 +408,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         onClick={() => handleEdit(cust)}
                         className="flex-grow-1"
                       >
-                        <CIcon icon={cilPencil} className="me-1" />
+        <Pencil size={16} className="me-1" aria-hidden="true" />
                         {t('common.edit')}
                       </CButton>
                     </PermissionGate>
@@ -419,7 +420,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         onClick={() => handleDelete(cust.id)}
                         className="flex-grow-1"
                       >
-                        <CIcon icon={cilTrash} className="me-1" />
+        <Trash size={16} className="me-1" aria-hidden="true" />
                         {t('common.delete')}
                       </CButton>
                     </PermissionGate>

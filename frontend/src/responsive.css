@@ -170,6 +170,7 @@ html, body {
 /* Main Content Area */
 .main {
   padding: 1.5rem; /* 24px */
+  overflow-x: hidden; /* Guard against layout shifts causing horizontal scroll */
 }
 
 /* Sidebar */

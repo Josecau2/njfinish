@@ -32,7 +32,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   // Memoize enabled manufacturers to prevent unnecessary filtering and re-renders
   const enabledManufacturers = useMemo(() => {
     // Check both 'status' field (from backend) and 'enabled' field (legacy) for active manufacturers
-    return allManufacturers.filter(manufacturer => 
+    return allManufacturers.filter(manufacturer =>
       manufacturer.status !== false && manufacturer.enabled !== false
     );
   }, [allManufacturers]);
@@ -98,17 +98,17 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   const ManufacturerCard = React.memo(({ manufacturer, isSelected, onClick }) => {
     const [imageError, setImageError] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
-    
+
     const handleImageError = useCallback(() => {
       setImageError(true);
       setImageLoaded(true);
     }, []);
-    
+
     const handleImageLoad = useCallback(() => {
       setImageLoaded(true);
       setImageError(false);
     }, []);
-    
+
     // Determine image source - avoid re-renders by computing once
     const imageSrc = useMemo(() => {
       if (!manufacturer.image || imageError) {
@@ -116,7 +116,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       }
       return `${api_url}/uploads/images/${manufacturer.image}`;
     }, [manufacturer.image, imageError, api_url]);
-    
+
     // Memoize card styles to prevent re-renders
     const cardStyles = useMemo(() => ({
       cursor: 'pointer',
@@ -126,7 +126,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       position: 'relative',
       overflow: 'hidden'
     }), [isSelected]);
-    
+
     const imageStyles = useMemo(() => ({
       maxWidth: '100%',
       maxHeight: '80px',
@@ -138,13 +138,20 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       border: imageError ? '2px dashed #dee2e6' : 'none',
       opacity: imageLoaded ? 1 : 0.7
     }), [isSelected, imageError, imageLoaded]);
-    
+
     const nameStyles = useMemo(() => ({
       fontSize: '0.9rem',
       color: isSelected ? '#0d6efd' : '#495057',
       transition: 'color 0.3s ease'
     }), [isSelected]);
-    
+
+    const handleKeyDown = useCallback((e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick();
+      }
+    }, [onClick]);
+
     return (
       <motion.div
         className="h-100"
@@ -156,6 +163,11 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
           className={`h-100 manufacturer-card ${isSelected ? 'border-primary shadow-lg' : 'border-light shadow-sm'}`}
           style={cardStyles}
           onClick={onClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          aria-pressed={isSelected}
+          aria-label={`${t('proposals.create.manufacturer.labels.manufacturer')}: ${manufacturer.name}`}
         >
           {isSelected && (
             <div
@@ -180,7 +192,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
             </div>
           )}
           <CCardBody className="text-center p-3 d-flex flex-column">
-            <div 
+            <div
               className="manufacturer-logo-container mb-3"
               style={{
                 flex: '1',
@@ -199,13 +211,13 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                 loading="lazy"
               />
             </div>
-            <h6 
+            <h6
               className="manufacturer-name mb-0 fw-semibold"
               style={nameStyles}
             >
               {manufacturer.name}
             </h6>
-            
+
             {/* ETA Information */}
             {(manufacturer.assembledEtaDays || manufacturer.unassembledEtaDays) && (
               <div className="mt-2">
@@ -232,6 +244,12 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   return (
     <div className="my-4 w-100 proposal-form-mobile">
+      <style>{`
+        .proposal-form-mobile .btn { min-height: 44px; }
+        @media (max-width: 576px) {
+          .manufacturer-grid-item { min-width: 0; }
+        }
+      `}</style>
       <CCard>
         <CCardBody className="p-4">
           <h4 className="mb-4 fw-semibold">{t('proposals.create.manufacturer.title')}</h4>
@@ -262,14 +280,14 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
               return (
                 <CForm onSubmit={handleSubmit} noValidate>
                   <div className="form-section">
-                    
+
                     {/* Manufacturer Grid Selection */}
                     <div className="mb-4">
                       <CFormLabel className="fw-semibold mb-3">
                         {t('proposals.create.manufacturer.labels.manufacturer')}{' '}
                         <span className="text-danger">*</span>
                       </CFormLabel>
-                      
+
                       {loading ? (
                         <div className="text-center py-5">
                           <div className="spinner-border text-primary" role="status">
@@ -279,12 +297,12 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                         </div>
                       ) : (
                         <>
-                          <CRow className="g-3 mb-3">
+          <CRow className="g-3 mb-3">
                             {enabledManufacturers.map((manufacturer) => (
-                              <CCol 
-                                key={manufacturer.id} 
-                                xs={6} 
-                                md={4} 
+                              <CCol
+                                key={manufacturer.id}
+            xs={12}
+                                md={4}
                                 lg={3}
                                 className="manufacturer-grid-item"
                               >
@@ -296,7 +314,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                               </CCol>
                             ))}
                           </CRow>
-                          
+
                           {errors.manufacturer && touched.manufacturer && (
                             <div className="text-danger small mt-2">
                               {errors.manufacturer}
@@ -331,7 +349,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                         </CCol>
                       </CRow>
                     )}
-                    
+
                   </div>
 
                   <div className="button-group">
@@ -340,15 +358,17 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                         color="secondary"
                         variant="outline"
                         onClick={prevStep}
-                        style={{ borderRadius: '6px', minWidth: '90px' }}
+                        style={{ borderRadius: '6px', minWidth: '90px', minHeight: '44px' }}
+                        aria-label={t('common.back')}
                       >
                         {t('common.back')}
                       </CButton>
                     )}
-                    <CButton 
-                      type="submit" 
-                      color="primary" 
-                      style={{ borderRadius: '6px', minWidth: '90px' }}
+                    <CButton
+                      type="submit"
+                      color="primary"
+                      style={{ borderRadius: '6px', minWidth: '90px', minHeight: '44px' }}
+                      aria-label={t('common.next')}
                       disabled={!selectedManufacturer}
                     >
                       {t('common.next')}

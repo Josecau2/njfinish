@@ -198,7 +198,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             })
             .join('');
 
-        return `
+    return `
 
         <!DOCTYPE html>
 <html>

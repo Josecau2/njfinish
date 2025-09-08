@@ -26,16 +26,7 @@ import {
   CButtonGroup
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { 
-  cilSearch, 
-  cilPeople, 
-  cilUser, 
-  cilGroup, 
-  cilBriefcase, 
-  cilChart,
-  cilSettings,
-  cilViewModule
-} from '@coreui/icons';
+import { Search, Users, User, List as ViewModule, BriefcaseBusiness as Briefcase, BarChart3 as ChartBar, Settings } from '@/icons-lucide';
 import { fetchContractors } from '../../store/slices/contractorSlice';
 import PaginationComponent from '../../components/common/PaginationComponent';
 
@@ -43,9 +34,9 @@ const Contractors = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   const { list: contractors, loading, error, pagination } = useSelector(state => state.contractors);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -76,7 +67,7 @@ const Contractors = () => {
     if (!contractors || !Array.isArray(contractors)) {
       return [];
     }
-    
+
     let filtered = contractors.filter(
       (contractor) =>
         contractor.name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -86,12 +77,12 @@ const Contractors = () => {
       filtered.sort((a, b) => {
         let aVal = a[sortConfig.key];
         let bVal = b[sortConfig.key];
-        
+
         if (sortConfig.key === 'user_count' || sortConfig.key === 'customer_count' || sortConfig.key === 'proposal_count') {
           aVal = parseInt(aVal) || 0;
           bVal = parseInt(bVal) || 0;
         }
-        
+
         if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
@@ -103,10 +94,10 @@ const Contractors = () => {
 
   const getModuleBadges = (modules) => {
     if (!modules) return null;
-    
+
     const moduleLabels = {
       dashboard: t('contractorsAdmin.modules.dashboard'),
-      proposals: t('contractorsAdmin.modules.proposals'), 
+      proposals: t('contractorsAdmin.modules.proposals'),
       customers: t('contractorsAdmin.modules.customers'),
       resources: t('contractorsAdmin.modules.resources')
     };
@@ -122,7 +113,7 @@ const Contractors = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
@@ -155,11 +146,11 @@ const Contractors = () => {
           <CCard className="mb-4">
             <CCardHeader>
               <strong>
-                <CIcon icon={cilPeople} className="me-2" />
+                <Users className="me-2" size={18} aria-hidden="true" />
                 {t('contractorsAdmin.header')}
               </strong>
             </CCardHeader>
-            
+
             <CCardBody>
               {error && (
                 <CAlert color="danger" className="mb-3">
@@ -171,8 +162,8 @@ const Contractors = () => {
               <CRow className="mb-4">
                 <CCol md={6}>
                   <CInputGroup>
-                    <CInputGroupText>
-                      <CIcon icon={cilSearch} />
+                    <CInputGroupText aria-hidden="true">
+                      <Search size={16} />
                     </CInputGroupText>
                     <CFormInput
                       type="text"
@@ -226,8 +217,8 @@ const Contractors = () => {
               </CRow>
 
               {/* Desktop Table */}
-              <div className="table-responsive d-none d-md-block">
-                <CTable hover striped>
+              <div className="table-wrap d-none d-md-block">
+                <CTable hover className="table-modern">
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell
@@ -236,9 +227,7 @@ const Contractors = () => {
                         onClick={() => handleSort('name')}
                       >
                         {t('contractorsAdmin.table.contractorName')}
-                        {sortConfig.key === 'name' && (
-                          <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                        )}
+                        {/* sort caret is visual only here; screen readers rely on column header click */}
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -246,9 +235,7 @@ const Contractors = () => {
                         onClick={() => handleSort('user_count')}
                       >
                         {t('contractorsAdmin.table.users')}
-                        {sortConfig.key === 'user_count' && (
-                          <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                        )}
+
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -256,9 +243,7 @@ const Contractors = () => {
                         onClick={() => handleSort('customer_count')}
                       >
                         {t('contractorsAdmin.table.customers')}
-                        {sortConfig.key === 'customer_count' && (
-                          <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                        )}
+
                       </CTableHeaderCell>
                       <CTableHeaderCell
                         scope="col"
@@ -266,9 +251,7 @@ const Contractors = () => {
                         onClick={() => handleSort('proposal_count')}
                       >
                         {t('contractorsAdmin.table.proposals')}
-                        {sortConfig.key === 'proposal_count' && (
-                          <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                        )}
+
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col">
                         {t('contractorsAdmin.table.modules')}
@@ -279,9 +262,7 @@ const Contractors = () => {
                         onClick={() => handleSort('created_at')}
                       >
                         {t('contractorsAdmin.table.created')}
-                        {sortConfig.key === 'created_at' && (
-                          <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                        )}
+
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col" className="text-center">
                         {t('contractorsAdmin.table.actions')}
@@ -292,7 +273,7 @@ const Contractors = () => {
                     {sortedFilteredContractors?.length === 0 ? (
                       <CTableRow>
                         <CTableDataCell colSpan="7" className="text-center py-4">
-                          <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+              <Search size={28} className="mb-3 opacity-50" aria-hidden="true" />
                           <p className="text-muted mb-0">{t('contractorsAdmin.empty.title')}</p>
                           <small>{t('contractorsAdmin.empty.tryAdjusting')}</small>
                         </CTableDataCell>
@@ -302,7 +283,7 @@ const Contractors = () => {
                         <CTableRow key={contractor.id} className="align-middle">
                           <CTableDataCell>
                             <div className="d-flex align-items-center">
-                              <CIcon icon={cilGroup} className="me-2 text-muted" />
+                <Users className="me-2 text-muted" size={18} aria-hidden="true" />
                               <div>
                                 <div className="fw-semibold">{contractor.name}</div>
                                 <small className="text-muted">ID: {contractor.id}</small>
@@ -337,16 +318,16 @@ const Contractors = () => {
                             </small>
                           </CTableDataCell>
                           <CTableDataCell className="text-center">
-                            <CButtonGroup size="sm">
-                              <CButton
-                                color="outline-primary"
-                                size="sm"
-                                onClick={() => handleView(contractor)}
-                                title={t('contractorsAdmin.actions.viewDetails')}
-                              >
-                                <CIcon icon={cilChart} size="sm" />
-                              </CButton>
-                            </CButtonGroup>
+                            <CButton
+                              color="outline-primary"
+                              size="sm"
+                              onClick={() => handleView(contractor)}
+                              className="icon-btn"
+                              aria-label={t('contractorsAdmin.actions.viewDetails')}
+                              title={t('contractorsAdmin.actions.viewDetails')}
+                            >
+                              <ChartBar size={16} aria-hidden="true" />
+                            </CButton>
                           </CTableDataCell>
                         </CTableRow>
                       ))
@@ -360,7 +341,7 @@ const Contractors = () => {
                 {sortedFilteredContractors?.length === 0 ? (
                   <CCard>
                     <CCardBody className="text-center py-4">
-                      <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+                      <Search size={28} className="mb-3 opacity-50" aria-hidden="true" />
                       <p className="text-muted mb-0">{t('contractorsAdmin.empty.title')}</p>
                       <small>{t('contractorsAdmin.empty.tryAdjusting')}</small>
                     </CCardBody>
@@ -373,7 +354,7 @@ const Contractors = () => {
                           {/* Header with name and action */}
                           <div className="d-flex justify-content-between align-items-start mb-3">
                             <div className="d-flex align-items-center flex-grow-1">
-                              <CIcon icon={cilGroup} className="me-2 text-muted" size="lg" />
+                              <Users className="me-2 text-muted" size={18} aria-hidden="true" />
                               <div className="flex-grow-1 min-width-0">
                                 <div className="fw-semibold text-truncate" title={contractor.name}>
                                   {contractor.name}
@@ -385,10 +366,11 @@ const Contractors = () => {
                               color="outline-primary"
                               size="sm"
                               onClick={() => handleView(contractor)}
-                              title="View Details"
-                              className="ms-2 contractor-action-btn"
+                              title={t('contractorsAdmin.actions.viewDetails')}
+                              aria-label={t('contractorsAdmin.actions.viewDetails')}
+                              className="ms-2 contractor-action-btn icon-btn"
                             >
-                              <CIcon icon={cilChart} size="sm" />
+                              <ChartBar size={16} aria-hidden="true" />
                             </CButton>
                           </div>
 

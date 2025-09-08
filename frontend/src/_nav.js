@@ -19,7 +19,8 @@ import {
   cilCalculator,
   cilBrush,
   cilIndustry,
-  cilChatBubble
+  cilChatBubble,
+  cilCreditCard
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
@@ -101,6 +102,16 @@ const useNavItems = () => {
             items: ordersItems,
           })
         }
+      }
+
+      // Payments section - visible when user can read proposals
+      if (hasPermission(user, 'proposals:read')) {
+        navigationItems.push({
+          component: CNavItem,
+          name: t('nav.payments', 'Payments'),
+          to: '/payments',
+          icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
+        });
       }
 
       // Customers section
@@ -253,6 +264,16 @@ const useNavItems = () => {
               { component: CNavItem, name: t('nav.uiCustomization'), to: '/settings/ui-customization' },
               { component: CNavItem, name: t('nav.terms', 'Terms & Conditions'), to: '/settings/terms' },
             ],
+          });
+        }
+
+        // Payment Configuration
+        if (hasPermission(user, 'admin:settings')) {
+          settingsItems.push({
+            component: CNavItem,
+            name: t('nav.paymentConfig', 'Payment Configuration'),
+            to: '/settings/payment-config',
+            icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
           });
         }
 

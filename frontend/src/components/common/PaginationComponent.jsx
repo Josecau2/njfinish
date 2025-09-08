@@ -30,32 +30,32 @@ const PaginationComponent = ({
     const pages = [];
     const maxVisible = isSmallMobile ? 3 : isMobile ? 4 : maxVisiblePages;
     const halfVisible = Math.floor(maxVisible / 2);
-    
+
     let startPage = Math.max(1, currentPage - halfVisible);
     let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-    
+
     if (endPage - startPage + 1 < maxVisible) {
       startPage = Math.max(1, endPage - maxVisible + 1);
     }
-    
+
     if (startPage > 1) {
       pages.push(1);
       if (startPage > 2) {
         pages.push('ellipsis-start');
       }
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
+
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
         pages.push('ellipsis-end');
       }
       pages.push(totalPages);
     }
-    
+
     return pages;
   };
 
@@ -105,7 +105,7 @@ const PaginationComponent = ({
     paginationContainer: {
       display: 'flex',
       alignItems: 'center',
-      gap: isSmallMobile ? '4px' : '6px',
+  gap: isSmallMobile ? '6px' : '8px',
       order: isMobile ? 1 : 2,
       flexWrap: 'nowrap',
       justifyContent: 'center'
@@ -114,15 +114,16 @@ const PaginationComponent = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: isSmallMobile ? '32px' : '40px',
-      height: isSmallMobile ? '32px' : '40px',
+  // Enforce touch target minimums on mobile
+  width: isSmallMobile || isMobile ? '44px' : '40px',
+  height: isSmallMobile || isMobile ? '44px' : '40px',
   borderWidth: '1px',
   borderStyle: 'solid',
   borderColor: '#ced4da',
       borderRadius: '6px',
       backgroundColor: '#fff',
       color: '#495057',
-      fontSize: isSmallMobile ? '12px' : '14px',
+  fontSize: isSmallMobile ? '14px' : '14px',
       fontWeight: '500',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
@@ -157,24 +158,24 @@ const PaginationComponent = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: isSmallMobile ? '32px' : '40px',
-      height: isSmallMobile ? '32px' : '40px',
+  width: isSmallMobile || isMobile ? '44px' : '40px',
+  height: isSmallMobile || isMobile ? '44px' : '40px',
       color: '#adb5bd',
-      fontSize: isSmallMobile ? '14px' : '16px'
+  fontSize: isSmallMobile ? '16px' : '16px'
     },
     navigationButton: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: isSmallMobile ? '32px' : '40px',
-      height: isSmallMobile ? '32px' : '40px',
+  width: isSmallMobile || isMobile ? '44px' : '40px',
+  height: isSmallMobile || isMobile ? '44px' : '40px',
   borderWidth: '1px',
   borderStyle: 'solid',
   borderColor: '#ced4da',
       borderRadius: '6px',
       backgroundColor: '#fff',
-      color: '#495057',
-      fontSize: isSmallMobile ? '12px' : '14px',
+  color: '#495057',
+  fontSize: isSmallMobile ? '14px' : '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
       userSelect: 'none'
@@ -226,12 +227,13 @@ const PaginationComponent = ({
       {/* Pagination Controls */}
       <div style={styles.paginationContainer}>
         {/* First Page - Hide on very small screens */}
-        {!isSmallMobile && (
+    {!isSmallMobile && (
           <button
             onClick={() => handlePageClick(1)}
             disabled={currentPage === 1}
             style={getButtonStyle(false, currentPage === 1)}
-            title={t('pagination.firstPageTitle')}
+      title={t('pagination.firstPageTitle')}
+      aria-label={t('pagination.firstPageTitle')}
             onMouseEnter={(e) => {
               if (currentPage !== 1) {
                 Object.assign(e.target.style, buttonHoverStyle);
@@ -253,6 +255,7 @@ const PaginationComponent = ({
           disabled={currentPage === 1}
           style={getButtonStyle(false, currentPage === 1)}
           title={t('pagination.prevPageTitle')}
+          aria-label={t('pagination.prevPageTitle')}
           onMouseEnter={(e) => {
             if (currentPage !== 1) {
               Object.assign(e.target.style, buttonHoverStyle);
@@ -283,6 +286,7 @@ const PaginationComponent = ({
               key={page}
               onClick={() => handlePageClick(page)}
               style={getButtonStyle(isActive, false)}
+              aria-label={t('pagination.pageNumberAria', { page })}
               onMouseEnter={(e) => {
                 if (!isActive) {
                   Object.assign(e.target.style, buttonHoverStyle);
@@ -305,6 +309,7 @@ const PaginationComponent = ({
           disabled={currentPage === totalPages}
           style={getButtonStyle(false, currentPage === totalPages)}
           title={t('pagination.nextPageTitle')}
+          aria-label={t('pagination.nextPageTitle')}
           onMouseEnter={(e) => {
             if (currentPage !== totalPages) {
               Object.assign(e.target.style, buttonHoverStyle);
@@ -320,12 +325,13 @@ const PaginationComponent = ({
         </button>
 
         {/* Last Page - Hide on very small screens */}
-        {!isSmallMobile && (
+    {!isSmallMobile && (
           <button
             onClick={() => handlePageClick(totalPages)}
             disabled={currentPage === totalPages}
             style={getButtonStyle(false, currentPage === totalPages)}
-            title={t('pagination.lastPageTitle')}
+      title={t('pagination.lastPageTitle')}
+      aria-label={t('pagination.lastPageTitle')}
             onMouseEnter={(e) => {
               if (currentPage !== totalPages) {
                 Object.assign(e.target.style, buttonHoverStyle);

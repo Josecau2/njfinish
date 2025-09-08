@@ -19,17 +19,17 @@ import {
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
 import PageHeader from '../../components/PageHeader';
-import { 
-  cilUser, 
-  cilEnvelopeClosed, 
-  cilLocationPin, 
-  cilPhone, 
+import {
+  cilUser,
+  cilEnvelopeClosed,
+  cilLocationPin,
+  cilPhone,
   cilBuilding,
   cilArrowLeft,
   cilSave,
   cilPencil
 } from '@coreui/icons';
-import axios from "axios";
+import axiosInstance from '../../helpers/axiosInstance';
 import Swal from "sweetalert2";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -42,7 +42,7 @@ const FormSection = ({ title, icon, children, className = "" }) => (
   <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
     <CCardBody className="p-4">
       <div className="d-flex align-items-center mb-3">
-        <div 
+        <div
           className="rounded-circle d-flex align-items-center justify-content-center me-3"
           style={{
             width: '40px',
@@ -60,11 +60,11 @@ const FormSection = ({ title, icon, children, className = "" }) => (
   </CCard>
 );
 
-const CustomFormInput = ({ 
-  label, 
-  name, 
-  type = "text", 
-  required = false, 
+const CustomFormInput = ({
+  label,
+  name,
+  type = "text",
+  required = false,
   icon = null,
   placeholder = "",
   value,
@@ -72,7 +72,7 @@ const CustomFormInput = ({
   isInvalid,
   feedback,
   inputRef,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -81,8 +81,8 @@ const CustomFormInput = ({
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText 
-          style={{ 
+        <CInputGroupText
+          style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
             borderRight: 'none'
@@ -127,10 +127,10 @@ const CustomFormInput = ({
   </div>
 );
 
-const CustomFormSelect = ({ 
-  label, 
-  name, 
-  required = false, 
+const CustomFormSelect = ({
+  label,
+  name,
+  required = false,
   icon = null,
   children,
   value,
@@ -138,7 +138,7 @@ const CustomFormSelect = ({
   isInvalid,
   feedback,
   inputRef,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -147,8 +147,8 @@ const CustomFormSelect = ({
     </CFormLabel>
     <CInputGroup>
       {icon && (
-        <CInputGroupText 
-          style={{ 
+        <CInputGroupText
+          style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
             borderRight: 'none'
@@ -196,10 +196,10 @@ const CustomFormSelect = ({
 const EditCustomerPage = () => {
   const { t } = useTranslation();
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -230,7 +230,7 @@ const EditCustomerPage = () => {
     const fetchCustomer = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${api_url}/api/customers/${customerId}`);
+        const res = await axiosInstance.get(`/api/customers/${customerId}`);
         setFormData(res.data);
       } catch (err) {
         console.error(err);
@@ -275,7 +275,7 @@ const EditCustomerPage = () => {
     }
     setIsSubmitting(true);
     try {
-      await axios.put(`${api_url}/api/customers/update/${customerId}`, formData);
+      await axiosInstance.put(`/api/customers/update/${customerId}`, formData);
       Swal.fire({
         icon: "success",
         title: t('customers.form.alerts.updatedTitle'),
@@ -307,11 +307,22 @@ const EditCustomerPage = () => {
 
   return (
     <CContainer fluid className="p-2 m-2 edit-customer-page bg-body" style={{ minHeight: '100vh' }}>
+      {/* UI-TASK: Scoped mobile/touch styles for this page */}
+      <style>{`
+        .edit-customer-page .form-buttons .btn { min-height: 44px; }
+        .edit-customer-page .form-buttons { flex-wrap: wrap; }
+        .edit-customer-page .form-control { min-height: 44px; }
+        .edit-customer-page .ck.ck-editor__editable { min-height: 160px; }
+        @media (max-width: 576px) {
+          .edit-customer-page .form-buttons { flex-direction: column; align-items: stretch; }
+          .edit-customer-page .form-buttons .btn { width: 100%; }
+        }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center"
               style={{
                 width: '48px',
@@ -327,14 +338,16 @@ const EditCustomerPage = () => {
         }
         subtitle="Update customer profile with detailed information"
         rightContent={
-          <CButton 
-            color="light" 
+          <CButton
+            color="light"
             variant="outline"
             className="me-2"
             onClick={() => window.history.back()}
+            aria-label={t('common.back')}
             style={{
               borderColor: 'rgba(255, 255, 255, 0.3)',
               color: 'rgba(255, 255, 255, 0.9)',
+              minHeight: '44px'
             }}
           >
             <CIcon icon={cilArrowLeft} className="me-1" size="sm" />
@@ -377,7 +390,7 @@ const EditCustomerPage = () => {
               />
             </CCol>
           </CRow>
-          
+
           <CRow>
             <CCol md={6}>
               <CustomFormSelect
@@ -603,8 +616,8 @@ const EditCustomerPage = () => {
           </CRow>
           <div className="mb-3">
       <CFormLabel className="fw-medium text-dark mb-2">{t('customers.form.labels.notes')}</CFormLabel>
-            <div style={{ 
-              border: '1px solid #e3e6f0', 
+            <div style={{
+              border: '1px solid #e3e6f0',
               borderRadius: '10px',
               overflow: 'hidden'
             }}>
@@ -657,8 +670,8 @@ const EditCustomerPage = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <div 
-                      className="spinner-border spinner-border-sm me-2" 
+                    <div
+                      className="spinner-border spinner-border-sm me-2"
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >

@@ -53,6 +53,33 @@ the backend is always running. do not ask to start it everytime you are going to
 - Null grand_total_cents: Use proposals with valid pricing data for testing
 - formData structure: Edit flow requires action inside formData object
 
+#### Admin Login Immediately Logs Out (Token/Authorization Missing on First Requests)
+**Problem**: After logging in as admin, the first dashboard API calls (`/dashboard/counts`, `/dashboard/latest-proposals`) hit the backend without an `Authorization` header. Backend logs showed:
+```
+[AUTH DEBUG] verifyTokenWithGroup called for: /dashboard/counts
+[AUTH DEBUG] Authorization header exists: false
+[AUTH DEBUG] Token extracted: null
+```
+While other requests like `/notifications/unread-count` carried the token correctly. Contractors did not experience this issue.
+
+**Root Cause**: A first-frame race right after login. The admin dashboard dispatched thunks immediately on mount, sometimes before the token was visible to the axios interceptor. Contractor flows naturally delayed/serialized early requests, avoiding the race.
+
+**Solution (that worked)**:
+1. Harden axios request interceptor to retry token read briefly when null:
+    - If `getFreshestToken()` returns null, wait ~10ms and try again before sending the request.
+2. Make admin thunks tolerant of first-frame races:
+    - In `dashboardSlice.js`, pass `{ __suppressAuthLogout: true }` to initial dashboard GETs so a transient 401 doesn’t trigger global logout.
+3. Ensure token retrieval is robust:
+    - `authToken.getFreshestToken()` validates memory/local/session tokens and cleans expired ones; login uses `installTokenEverywhere()` to set memory + both storages.
+4. Optionally, gate initial admin dispatches on token presence (Dashboard.jsx already includes a short wait loop).
+
+**Files touched**:
+- `frontend/src/helpers/axiosInstance.js` (retry token in request interceptor)
+- `frontend/src/store/slices/dashboardSlice.js` (use `__suppressAuthLogout` on first calls)
+- `frontend/src/utils/authToken.js` (tightened validation/selection logic)
+
+**Backend confirmation**: After fix, backend shows `Authorization header exists: true` for dashboard endpoints immediately after login.
+
 #### Modifications Not Saving in Create Proposals (Critical Fix)
 **Problem**: In CreateProposalForm.jsx/ItemSelectionContent.jsx, modifications were stored in a separate `modificationsMap` state but were not being merged into the `manufacturersData` when saving. This caused modifications to be lost during proposal creation (action="0" save operations).
 

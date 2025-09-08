@@ -100,7 +100,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error for this field
     if (formErrors[name]) {
       setFormErrors(prev => ({
@@ -112,15 +112,15 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!formData.name.trim()) {
   errors.name = t('customers.form.validation.nameRequired');
     }
-    
+
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
   errors.email = t('customers.form.validation.invalidEmail');
     }
-    
+
     if (!formData.mobile.trim() && !formData.homePhone.trim()) {
   errors.phone = t('customers.form.validation.phoneAtLeastOne');
     }
@@ -130,7 +130,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -139,17 +139,17 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
     try {
       if (isEditing) {
-        await dispatch(updateCustomer({ 
-          id: parseInt(id), 
-          customerData: formData 
+        await dispatch(updateCustomer({
+          id: parseInt(id),
+          customerData: formData
         })).unwrap();
-        
+
   Swal.fire(t('common.success'), t('customers.form.alerts.updatedText'), 'success');
       } else {
         await dispatch(createCustomer(formData)).unwrap();
   Swal.fire(t('common.success'), t('customers.form.alerts.createdText'), 'success');
       }
-      
+
       navigate('/customers');
     } catch (error) {
   console.error('Form submission error:', error);
@@ -163,6 +163,9 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
 
   return (
     <CContainer fluid>
+      <style>{`
+        .settings-form-container .btn, .add-new-customer .btn, .customers-form .btn { min-height: 44px; }
+      `}</style>
       <CRow>
         <CCol xs={12}>
           <CCard>
@@ -179,6 +182,7 @@ const CustomerForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 color="light"
                 onClick={handleCancel}
                 className="d-flex align-items-center gap-2"
+                aria-label={t('customers.form.actions.backToCustomers')}
               >
                 <CIcon icon={cilArrowLeft} size="sm" />
                 {t('customers.form.actions.backToCustomers')}

@@ -263,7 +263,16 @@ const CatalogTableEdit = ({
   return (
     <div className="mt-5 mb-5">
       {/* Detailed type info modal */}
-      <CModal visible={showTypeModal} onClose={() => setShowTypeModal(false)} size="lg">
+      <CModal
+        visible={showTypeModal}
+        onClose={() => setShowTypeModal(false)}
+        size="xl"
+        className="specs-modal"
+        alignment="center"
+        style={{ '--bs-modal-width': '960px', '--cui-modal-width': '960px' }}
+        backdrop={true}
+        keyboard={true}
+      >
         <PageHeader
           title={selectedTypeInfo?.type || 'Type Specifications'}
           onClose={() => setShowTypeModal(false)}
@@ -271,7 +280,7 @@ const CatalogTableEdit = ({
         <CModalBody className="p-3 p-md-4">
           {selectedTypeInfo ? (
             <div className="d-flex flex-column flex-md-row gap-4">
-              <div className="text-center text-md-start border rounded p-3 bg-light" style={{ width: '100%', maxWidth: '220px', margin: '0 auto' }}>
+              <div className="text-center text-md-start border rounded p-3 bg-light" style={{ width: '100%', maxWidth: '520px', margin: '0 auto' }}>
                 <img
                   src={selectedTypeInfo.image ? `${api_url}/uploads/types/${selectedTypeInfo.image}` : '/images/nologo.png'}
                   alt={selectedTypeInfo.type}
@@ -279,7 +288,7 @@ const CatalogTableEdit = ({
                   style={{
                     maxWidth: '100%',
                     height: 'auto',
-                    maxHeight: '200px',
+                    maxHeight: '455px',
                     objectFit: 'contain',
                     background: '#ffffff',
                     borderRadius: '6px',

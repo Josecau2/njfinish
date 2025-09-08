@@ -100,12 +100,12 @@ export const AppSidebarNav = ({ items, fontColor }) => {
     const { component, name, icon, items, to, ...rest } = item
     const Component = component
     return (
-      <Component 
-        compact 
-        as="div" 
-        key={index} 
-        toggler={navLink(name, icon)} 
-        {...rest} 
+      <Component
+        compact
+        as="div"
+        key={index}
+        toggler={navLink(name, icon)}
+        {...rest}
         style={{ color: fontColor }}
         // Do not auto-close when expanding/collapsing groups; users may want to explore submenus.
       >

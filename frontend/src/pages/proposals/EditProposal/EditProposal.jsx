@@ -67,6 +67,21 @@ const statusOptions = [
 ];
 
 const EditProposal = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
+  // Page-level style hook for mobile touch targets
+  // Keeps buttons at least 44px tall on small screens
+  const pageInlineStyles = (
+    <style>{`
+      .edit-proposal-page .btn { min-height: 44px; }
+      /* Horizontal scroll guards for long badge rows */
+      .edit-proposal-page .proposal-version-badges { display: flex; gap: .5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: .25rem; }
+      .edit-proposal-page .proposal-version-badge { min-height: 44px; align-items: center; }
+      /* Sticky bottom action bar on small screens */
+      @media (max-width: 576px) {
+        .edit-proposal-page .proposal-actions { position: sticky; bottom: 0; left: 0; right: 0; z-index: 1020; background: rgba(255,255,255,.96); backdrop-filter: saturate(140%) blur(8px); border-top: 1px solid #e5e7eb; padding: .5rem env(safe-area-inset-right) calc(.5rem + env(safe-area-inset-bottom)) env(safe-area-inset-left); margin: 0 -1rem; }
+        .edit-proposal-page .proposal-actions .mobile-form-btn { flex: 1 1 auto; }
+      }
+    `}</style>
+  );
   const { id: rawId } = useParams();
   const id = decodeParam(rawId);
   const navigate = useNavigate();
@@ -524,7 +539,8 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
     return <Loader />;
   }
   return (
-    <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container edit-proposal-page" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      {pageInlineStyles}
       {/* Header Section */}
       <PageHeader
         title={t('proposals.edit.title', 'Edit Quote')}
@@ -786,6 +802,16 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                               transition: 'all 0.3s ease',
                             }}
                             onClick={() => handleBadgeClick(index, version)}
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={isSelected}
+                            aria-label={`Select version ${version.versionName}${isSelected ? ' (current)' : ''}`}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleBadgeClick(index, version);
+                              }
+                            }}
                           >
                             <div>
                               {!isUserContractor && (
@@ -801,7 +827,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                               </small>
                             </div>
                             {!isUserContractor && (
-                              <CDropdown onClick={(e) => e.stopPropagation()}>
+                <CDropdown onClick={(e) => e.stopPropagation()}>
                                 <CDropdownToggle
                                   color="transparent"
                                   size="sm"
@@ -815,6 +841,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                                     boxShadow: 'none',
                                     transition: 'all 0.2s ease',
                                   }}
+                  aria-label={`Version actions for ${version.versionName}`}
                                 >
                                   <CIcon icon={cilOptions} />
                                 </CDropdownToggle>

@@ -62,7 +62,7 @@ const ModificationModal = ({
             <PageHeader title="Modification" />
 
             <CModalBody style={{ padding: '2rem', borderRadius: '0 0 8px 8px' }}>
-                <div className="mb-4 d-flex gap-4 align-items-center">
+                <div className="mb-4 d-flex gap-4 align-items-center" role="radiogroup" aria-label="Modification type">
                     <CFormCheck
                         type="radio"
                         label={<span style={{ fontSize: '1.1rem' }}>Select existing modification</span>}
@@ -93,6 +93,7 @@ const ModificationModal = ({
                                 required
                                 invalid={validationAttempted && !selectedExistingMod}
                                 feedbackInvalid="Modification code is required"
+                                aria-label="Select existing modification"
                             >
                                 <option value="" disabled>Select modification</option>
                                 {Array.isArray(catalogData) && catalogData.length > 0 ? (
@@ -119,6 +120,7 @@ const ModificationModal = ({
                             className="mb-3"
                             min={1}
                             required
+                        aria-label="Existing modification quantity"
                         />
 
                         <CFormInput
@@ -126,6 +128,7 @@ const ModificationModal = ({
                             value={existingModNote}
                             onChange={(e) => setExistingModNote(e.target.value)}
                             placeholder="Note (Optional)"
+                        aria-label="Existing modification note"
                         />
                         <div className="text-muted mb-1 p-1">If needed, provide custom instructions for applying the modification</div>
                     </>
@@ -142,6 +145,7 @@ const ModificationModal = ({
                                 required
                                 invalid={validationAttempted && !customModName}
                                 feedbackInvalid="Modification code is required"
+                                aria-label="Custom modification name"
                             />
                         </div>
 
@@ -156,6 +160,7 @@ const ModificationModal = ({
                                 placeholder="Qty"
                                 min={1}
                                 style={{ width: '100px' }}
+                                aria-label="Quantity"
                             />
 
                             <CFormInput
@@ -166,6 +171,7 @@ const ModificationModal = ({
                                 min={0}
                                 className="flex-grow-1"
                                 style={{ width: '100px' }}
+                                aria-label="Price"
                             />
 
 
@@ -177,6 +183,7 @@ const ModificationModal = ({
                                     disabled={!isUserAdmin}
                                     style={{ transform: 'scale(1.4)' }}
                                     label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>Taxable</span>}
+                                    aria-label="Taxable"
                                 />
                             </div>
                         </div>
@@ -186,6 +193,7 @@ const ModificationModal = ({
                             value={customModNote}
                             onChange={(e) => setCustomModNote(e.target.value)}
                             placeholder="Note (Optional)"
+                        aria-label="Custom modification note"
                         />
                         <div className="text-muted mb-5 p-1">If needed, provide custom instructions for applying the modification</div>
                         {/* <div className="text-primary">
@@ -196,8 +204,8 @@ const ModificationModal = ({
             </CModalBody>
 
             <CModalFooter>
-                <CButton color="secondary" onClick={onClose}>Cancel</CButton>
-                <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={onSave}>Save</CButton>
+                <CButton color="secondary" onClick={onClose} style={{ minHeight: '44px' }}>Cancel</CButton>
+                <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg, minHeight: '44px' }} onClick={onSave}>Save</CButton>
             </CModalFooter>
         </CModal>
     )

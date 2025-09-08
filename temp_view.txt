@@ -1,0 +1,40 @@
+import axios from 'axios';
+import { installTokenEverywhere, getFreshestToken } from '../utils/authToken';
+
+const base = (import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:8080');
+
+const api = axios.create({
+  baseURL: base,
+  withCredentials: false // do NOT send cookies automatically
+});
+
+// Shared AbortController to cancel all requests on first auth failure
+let activeAbortController = new AbortController();
+let isLoggingOut = false;
+let isRefreshing = false;
+let refreshPromise = null;
+
+function compactDecodeExp(token) {
+  try {
+  const seg = (token || '').split('.')[1];
+  if (!seg) return 0;
+  const pad = '='.repeat((4 - (seg.length % 4)) % 4);
+  const b64 = (seg.replace(/-/g, '+').replace(/_/g, '/')) + pad;
+  const payload = JSON.parse(atob(b64));
+  return Number(payload.exp) * 1000;
+  } catch {
+    return 0;
+  }
+}
+
+function handleUnauthorized(originalConfig) {
+  // Allow callers to opt-out of global logout (e.g., notification bell)
+  if (originalConfig && originalConfig.__suppressAuthLogout) {
+    return;
+  }
+
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+
+  // Abort all in-flight requests to prevent thundering herd of 401s
+  try { activeAbortController.abort(); } catch {}

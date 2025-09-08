@@ -141,7 +141,7 @@ const ProfilePage = () => {
   // Show loader while initial data is loading
   if (isLoading) {
     return (
-      <div className="profile-container">
+      <div className="profile-container" role="status" aria-live="polite">
         <CCard className="profile-card">
           <CCardBody className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
             <CSpinner color="primary" size="lg" />
@@ -153,6 +153,12 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-container">
+      <style>{`
+        .profile-form input, .profile-form select, .profile-form button { min-height:44px; }
+        @media (max-width: 576px) {
+          .profile-card { margin: 0 .5rem; }
+        }
+      `}</style>
       <CCard className="profile-card">
         <CCardHeader>
           <h4 className="mb-0">{t('profile.header')}</h4>
@@ -171,6 +177,8 @@ const ProfilePage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   invalid={!!errors.name}
+                  aria-required="true"
+                  aria-invalid={!!errors.name}
                   placeholder={t('profile.enterName')}
                 />
                 <CFormFeedback invalid>{errors.name}</CFormFeedback>
@@ -184,6 +192,7 @@ const ProfilePage = () => {
                   value={formData.email}
                   disabled
                   style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }}
+                  aria-readonly="true"
                 />
               </CCol>
 
@@ -208,6 +217,7 @@ const ProfilePage = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   invalid={!!errors.confirmPassword}
+                  aria-invalid={!!errors.confirmPassword}
                   placeholder={t('profile.reenterPassword')}
                 />
                 <CFormFeedback invalid>{errors.confirmPassword}</CFormFeedback>
@@ -225,6 +235,7 @@ const ProfilePage = () => {
                     value={formData.location}
                     onChange={handleChange}
                     invalid={!!errors.location}
+                    aria-required="true"
                   >
                     <option value="">-- {t('profile.selectLocation')} --</option>
                     {locations.map((loc) => (
@@ -239,9 +250,9 @@ const ProfilePage = () => {
             </CRow>
 
             <div className="d-flex justify-content-center justify-content-md-end mt-4">
-              <CButton 
-                type="submit" 
-                className="px-4" 
+              <CButton
+                type="submit"
+                className="px-4"
                 disabled={submitting}
                 style={{
                   backgroundColor: customization?.headerBg || '#321fdb',

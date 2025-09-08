@@ -344,7 +344,19 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   };
 
   return (
-    <CContainer fluid className="dashboard-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <CContainer fluid className="dashboard-container proposal-create" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <style>{`
+        /* Touch targets on this page */
+        .proposal-create .btn { min-height: 44px; }
+        /* Sticky bottom action bar (mobile) */
+        .proposal-create__sticky {
+          position: sticky; bottom: 0; z-index: 1030;
+          background: rgba(255,255,255,0.96);
+          backdrop-filter: saturate(140%) blur(8px);
+          border-top: 1px solid #e5e7eb;
+          padding: .5rem .75rem env(safe-area-inset-bottom);
+        }
+      `}</style>
       {/* Header Section */}
       <PageHeader
         title={currentStepInfo.title}
@@ -358,7 +370,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       />
 
       {/* Progress Bar */}
-      <CCard className="proposal-progress-bar">
+      <CCard className="proposal-progress-bar" aria-label={t('proposals.create.progress','Progress')}>
         <CCardBody className="py-3">
           <div className="d-flex align-items-center justify-content-between position-relative w-100">
             {/* Progress line - full width background */}
@@ -385,6 +397,11 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 transition: 'all 0.3s ease',
                 zIndex: 2
               }}
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(((currentStep - 1) / 3) * 100)}
+              aria-label={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
             />
 
             {/* Step numbers - equally distributed */}
@@ -419,6 +436,20 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       <div className="mb-4">
         {renderStep()}
       </div>
+
+      {/* Sticky mobile actions (steps 1–3) */}
+      {currentStep < 4 && (
+        <div className="proposal-create__sticky d-md-none">
+          <div className="d-flex gap-2">
+            <CButton color="secondary" variant="outline" onClick={prevStep} aria-label={t('common.back','Back')} className="flex-fill">
+              {t('common.back','Back')}
+            </CButton>
+            <CButton color="primary" onClick={nextStep} aria-label={t('common.next','Next')} className="flex-fill">
+              {t('common.next','Next')}
+            </CButton>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <PrintProposalModal show={showPrintModal} onClose={() => setShowPrintModal(false)} formData={formData} />

@@ -74,6 +74,11 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
 
   return (
     <div className="w-100 proposal-form-mobile">
+      <style>{`
+        .proposal-form-mobile .btn { min-height: 44px; }
+        .design-upload-mobile-actions { position: sticky; bottom: 0; background: var(--cui-body-bg, #fff); border-top: 1px solid rgba(0,0,0,.06); }
+        .mobile-tab-button { min-height: 44px; }
+      `}</style>
       <CCard className="my-4 shadow-sm w-100">
         <CCardBody className="p-4">
           <div className="d-flex justify-content-between">
@@ -240,7 +245,7 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
       </CCard>
 
       {/* Mobile action buttons - fixed at bottom */}
-      <div className="d-md-none design-upload-mobile-actions">
+  <div className="d-md-none design-upload-mobile-actions">
         <div className="container-fluid p-3">
           <div className="row g-2">
             <div className="col-6">
@@ -249,6 +254,7 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                 className="w-100 mobile-tab-button"
                 onClick={() => handleTabSelect('manual')}
                 size="lg"
+        aria-label={t('proposals.create.design.tabs.manualEntry')}
               >
                 <div className="text-center">
                   <i className="bi bi-pencil-square d-block mb-1"></i>
@@ -262,6 +268,7 @@ const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, for
                 className="w-100 mobile-tab-button"
                 onClick={() => handleTabSelect('import')}
                 size="lg"
+        aria-label={t('proposals.create.design.tabs.import2020')}
               >
                 <div className="text-center">
                   <i className="bi bi-upload d-block mb-1"></i>

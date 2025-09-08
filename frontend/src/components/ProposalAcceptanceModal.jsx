@@ -123,7 +123,7 @@ const ProposalAcceptanceModal = ({
       </CModalHeader>
       <CModalBody>
         {error && (
-          <CAlert color="danger" className="mb-3">
+          <CAlert color="danger" className="mb-3" role="alert" aria-live="assertive">
             {error}
           </CAlert>
         )}
@@ -147,6 +147,7 @@ const ProposalAcceptanceModal = ({
             checked={isExternalAcceptance}
             onChange={(e) => setIsExternalAcceptance(e.target.checked)}
             className="mb-3"
+            aria-label={t('proposalAcceptance.externalCheck')}
           />
 
           {isExternalAcceptance && (
@@ -163,6 +164,7 @@ const ProposalAcceptanceModal = ({
                       onChange={(e) => setExternalSignerName(e.target.value)}
                       placeholder={t('proposalAcceptance.signerNamePlaceholder')}
                       disabled={isSubmitting}
+                      aria-label={t('proposalAcceptance.signerName')}
                     />
                   </div>
                 </CCol>
@@ -176,6 +178,7 @@ const ProposalAcceptanceModal = ({
                       onChange={(e) => setExternalSignerEmail(e.target.value)}
                       placeholder={t('proposalAcceptance.signerEmailPlaceholder')}
                       disabled={isSubmitting}
+                      aria-label={t('proposalAcceptance.signerEmail')}
                     />
                   </div>
                 </CCol>
@@ -192,6 +195,7 @@ const ProposalAcceptanceModal = ({
           color="secondary"
           onClick={handleClose}
           disabled={isSubmitting}
+          style={{ minHeight: '44px' }}
         >
           {t('common.cancel')}
         </CButton>
@@ -200,6 +204,7 @@ const ProposalAcceptanceModal = ({
           onClick={handleAccept}
           disabled={isSubmitting}
           className="d-flex align-items-center gap-2"
+          style={{ minHeight: '44px' }}
         >
           {isSubmitting && <CSpinner size="sm" />}
           {t('proposalAcceptance.acceptButton')}

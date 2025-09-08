@@ -33,16 +33,16 @@ import {
   CInputGroupText,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { 
-  cilSearch, 
-  cilFilter, 
-  cilPlus, 
-  cilCalendar, 
-  cilUser, 
-  cilDescription, 
-  cilBriefcase, 
-  cilOptions, 
-  cilPencil, 
+import {
+  cilSearch,
+  cilFilter,
+  cilPlus,
+  cilCalendar,
+  cilUser,
+  cilDescription,
+  cilBriefcase,
+  cilOptions,
+  cilPencil,
   cilTrash,
 } from '@coreui/icons';
 import { getContracts } from '../../store/slices/proposalSlice';
@@ -72,10 +72,10 @@ const Contracts = () => {
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Return dark color for light backgrounds, light color for dark backgrounds
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -166,7 +166,7 @@ const Contracts = () => {
     const headerColor = "#FFFFFF";
     const headerTxtColor = "#000000";
     const items = formData?.manufacturersData?.[0]?.items || [];
-    
+
     // Localized labels for the PDF/HTML template
     const pdf = {
       title: t('nav.contracts'),
@@ -251,7 +251,7 @@ const Contracts = () => {
               .items-table th { background-color: #f8f9fa; padding: 10px 8px; border: 1px solid #dee2e6; font-weight: bold; text-align: left; font-size: 11px; }
               .items-table td { padding: 8px; border: 1px solid #dee2e6; font-size: 10px; }
               .items-table tr:nth-child(even) { background-color: #f9f9f9; }
-              .category-row { background-color: #e6e6e6 !important; font-weight: bold; }   
+              .category-row { background-color: #e6e6e6 !important; font-weight: bold; }
               .text-right { text-align: right; }
               .text-left { text-align: left; }
               .price-summary { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; font-family: 'Arial', sans-serif; font-size: 0.95rem; }
@@ -345,7 +345,7 @@ const Contracts = () => {
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center"
               style={{
                 width: '48px',
@@ -380,7 +380,7 @@ const Contracts = () => {
                 />
               </CInputGroup>
             </CCol>
-            
+
             <CCol xs="auto" className="ms-auto">
               <div className="d-flex align-items-center gap-3">
                 <div className="d-flex align-items-center gap-2">
@@ -396,7 +396,7 @@ const Contracts = () => {
                     <option value={30}>30</option>
                   </CFormSelect>
                 </div>
-                
+
                 <CButtonGroup size="sm">
                   <CButton
                     color={viewMode === 'card' ? 'primary' : 'light'}
@@ -417,7 +417,7 @@ const Contracts = () => {
                 </CButtonGroup>
               </div>
             </CCol>
-            
+
             {/* <CCol xs={12} className="mt-3">
               <span className="text-muted small">
                 Showing {filteredProposals?.length || 0} of {contractsdata?.length || 0} contracts
@@ -428,7 +428,7 @@ const Contracts = () => {
       </CCard>
 
       {/* Content */}
-      {viewMode === 'card' ? (
+  {viewMode === 'card' ? (
         /* Card View */
         <CRow className="g-3 mb-1">
           {paginatedItems?.length === 0 ? (
@@ -447,9 +447,9 @@ const Contracts = () => {
                   <CCardHeader className="contracts-card-header">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center gap-2">
-                        <CIcon 
-                          icon={cilCalendar} 
-                          size="sm" 
+                        <CIcon
+                          icon={cilCalendar}
+                          size="sm"
                           className="contracts-card-date-icon"
                         />
                         <small className="text-muted fw-medium">
@@ -486,10 +486,10 @@ const Contracts = () => {
                       </CDropdown> */}
                     </div>
                   </CCardHeader>
-                  
+
                   <CCardBody className="pt-0">
                     <CCardTitle className="contracts-card-title d-flex align-items-center gap-2">
-                      <div 
+                      <div
                         className="d-flex align-items-center justify-content-center"
                         style={{
                           width: '32px',
@@ -507,18 +507,18 @@ const Contracts = () => {
                         {item.customer?.name || t('common.na')}
                       </span>
                     </CCardTitle>
-                    
+
                     <CCardText className="contracts-card-customer">
                       {item.description || t('contracts.noDescription')}
                     </CCardText>
                     <CCardText className="contracts-card-customer">
                       {item.description || t('contracts.noDescription')}
                     </CCardText>
-                    
+
                     <div className="d-flex align-items-center gap-2 mb-3">
-                      <CIcon 
-                        icon={cilBriefcase} 
-                        size="sm" 
+                      <CIcon
+                        icon={cilBriefcase}
+                        size="sm"
                         className="text-success"
                         style={{ backgroundColor: '#e6f7e6', padding: '4px', borderRadius: '4px' }}
                       />
@@ -526,7 +526,7 @@ const Contracts = () => {
                         {item.designerData?.name || t('contracts.noDesigner')}
                       </small>
                     </div>
-                    
+
                     <div className="d-flex justify-content-between align-items-center">
                       <CBadge
                         color={getStatusColor(item.status || 'Draft')}
@@ -547,7 +547,7 @@ const Contracts = () => {
                           return key ? t(`contracts.status.${key}`) : (item.status || t('contracts.status.draft'));
                         })()}
                       </CBadge>
-                      
+
                       <CButton
                         color="primary"
                         variant="ghost"
@@ -573,16 +573,16 @@ const Contracts = () => {
         /* Table View */
         <CCard className="contracts-table-card">
           <CCardBody className="p-0">
-            <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="contracts-table">
+            <div className="table-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <CTable hover responsive className="contracts-table table-modern">
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell>{t('contracts.table.date')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('contracts.table.customer')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('contracts.table.description')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('contracts.table.designer')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('contracts.table.status')}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">{t('contracts.table.actions')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">{t('contracts.table.date')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">{t('contracts.table.customer')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">{t('contracts.table.description')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">{t('contracts.table.designer')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">{t('contracts.table.status')}</CTableHeaderCell>
+                    <CTableHeaderCell scope="col" className="text-center">{t('contracts.table.actions')}</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -603,7 +603,7 @@ const Contracts = () => {
                             {new Date(item.date || item.createdAt).toLocaleDateString()}
                           </span>
                         </CTableDataCell>
-                        <CTableDataCell 
+                        <CTableDataCell
                           className="py-3 border-0 border-bottom border-light"
                           style={{
                             color: customization.headerBg || '#667eea',
@@ -613,7 +613,7 @@ const Contracts = () => {
                         >
                           {item.customer?.name || t('common.na')}
                         </CTableDataCell>
-                        <CTableDataCell 
+                        <CTableDataCell
                           className="py-3 border-0 border-bottom border-light"
                           style={{
                             whiteSpace: 'normal',
@@ -661,13 +661,14 @@ const Contracts = () => {
                             <CButton
                               color="light"
                               size="sm"
-                              className="p-2"
+                              className="p-2 icon-btn"
                               onClick={() => handleNavigate(item.id)}
                               style={{
                                 borderRadius: '8px',
                                 border: '1px solid #e3e6f0',
                                 transition: 'all 0.2s ease'
                               }}
+                              aria-label={t('contracts.viewDetails')}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
                                 e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
@@ -687,8 +688,9 @@ const Contracts = () => {
                             <CButton
                               color="light"
                               size="sm"
-                              className="contracts-action-btn"
+                              className="contracts-action-btn icon-btn"
                               onClick={() => handleDelete(item.id)}
+                              aria-label={t('common.delete')}
                             >
                               <CIcon icon={cilTrash} size="sm" style={{ color: '#dc3545' }} />
                             </CButton>
@@ -715,16 +717,16 @@ const Contracts = () => {
       )}
 
       {/* Contract Details Modal */}
-      <CModal 
-        visible={showModal} 
-        onClose={() => setShowModal(false)} 
+      <CModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
         size="xl"
         className="contract-modal"
       >
-        <CModalHeader 
+        <CModalHeader
           onClose={() => setShowModal(false)}
           className="border-0"
-          style={{ 
+          style={{
             background: customization.headerBg || '#667eea',
             color: getContrastColor(customization.headerBg || '#667eea')
           }}
@@ -742,7 +744,7 @@ const Contracts = () => {
               <p className="mt-3 text-muted">{t('contracts.loadingDetails')}</p>
             </div>
           ) : htmlContent ? (
-            <div 
+            <div
               className="contract-content"
               style={{
                 maxHeight: '70vh',
@@ -762,15 +764,15 @@ const Contracts = () => {
         </CModalBody>
   <CModalFooter className="border-0 bg-body-secondary">
           <div className="d-flex gap-2 w-100 justify-content-end">
-            <CButton 
-              color="secondary" 
+            <CButton
+              color="secondary"
               onClick={() => setShowModal(false)}
               className="px-4"
               style={{ borderRadius: '8px' }}
             >
               {t('common.close')}
             </CButton>
-            {/* <CButton 
+            {/* <CButton
               color="primary"
               className="px-4"
               style={{ borderRadius: '8px' }}
@@ -778,10 +780,10 @@ const Contracts = () => {
               <CIcon icon={cilPencil} className="me-2" />
               Edit Contract
             </CButton>
-            <CButton 
+            <CButton
               color="success"
               className="px-4"
-              style={{ 
+              style={{
                 borderRadius: '8px',
                 background: 'linear-gradient(45deg, #28a745, #20c997)'
               }}
@@ -796,21 +798,21 @@ const Contracts = () => {
         .contract-modal .modal-dialog {
           max-width: 95%;
         }
-        
+
         .contract-content::-webkit-scrollbar {
           width: 8px;
         }
-        
+
         .contract-content::-webkit-scrollbar-track {
           background: #f1f1f1;
           border-radius: 4px;
         }
-        
+
         .contract-content::-webkit-scrollbar-thumb {
           background: #c1c1c1;
           border-radius: 4px;
         }
-        
+
         .contract-content::-webkit-scrollbar-thumb:hover {
           background: #a1a1a1;
         }

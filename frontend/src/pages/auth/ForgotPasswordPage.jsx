@@ -46,12 +46,12 @@ const ForgotPasswordPage = () => {
           <h2 className="fw-bold mb-2">Forgot Password</h2>
           <p className="mb-4 text-muted">Enter your email and we'll send you a link to reset your password.</p>
           {message && (
-            <div className="alert alert-success" role="alert">
+            <div className="alert alert-success" role="status" aria-live="polite">
               {message}
             </div>
           )}
           {error && (
-            <div className="alert alert-danger" role="alert">
+            <div className="alert alert-danger" role="alert" aria-live="assertive">
               {error}
             </div>
           )}
@@ -66,10 +66,12 @@ const ForgotPasswordPage = () => {
                 value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
+                id="email"
+                aria-required="true"
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-primary w-100" style={{ minHeight: 44 }}>
               Send Reset Link
             </button>
           </form>
@@ -81,7 +83,7 @@ const ForgotPasswordPage = () => {
         </div>
       </div>
 
-      {/* Right Panel */}
+  {/* Right Panel */}
       <div className="col-md-6 text-white d-flex flex-column justify-content-center align-items-center login-right-panel">
         <div className="text-center px-5">
           {/* <img src="/logo.png" alt="TailAdmin" className="mb-3" style={{ height: '60px' }} /> */}
@@ -89,7 +91,7 @@ const ForgotPasswordPage = () => {
           <p className="text-light">Configure - Price - Quote</p>
           <p className="text-light">Dealer Portal</p>
           <p className="text-light">Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.</p>
-        </div>
+  </div>
       </div>
     </div>
   );

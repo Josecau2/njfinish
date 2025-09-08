@@ -42,6 +42,12 @@ const TermsPage = React.lazy(() => import('./pages/settings/terms/TermsPage'))
 const AdminOrders = React.lazy(() => import('./pages/orders/AdminOrders'))
 const MyOrders = React.lazy(() => import('./pages/orders/MyOrders'))
 const OrderDetails = React.lazy(() => import('./pages/orders/OrderDetails'))
+const PaymentsList = React.lazy(() => import('./pages/payments/PaymentsList'))
+const PaymentConfiguration = React.lazy(() => import('./pages/payments/PaymentConfiguration'))
+const PaymentPage = React.lazy(() => import('./pages/payments/PaymentPage'))
+const PaymentSuccess = React.lazy(() => import('./pages/payments/PaymentSuccess'))
+const PaymentCancel = React.lazy(() => import('./pages/payments/PaymentCancel'))
+const PaymentTest = React.lazy(() => import('./pages/payments/PaymentTest'))
 
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Resources = React.lazy(() => import('../src/pages/Resources'))
@@ -77,6 +83,14 @@ const routes = [
   { path: '/my-orders', name: 'My Orders', element: MyOrders, permission: 'proposals:read' },
   { path: '/orders/:id', name: 'Order Details', element: OrderDetails, permission: 'proposals:read', contractorBlock: true },
   { path: '/my-orders/:id', name: 'My Order Details', element: OrderDetails, permission: 'proposals:read' },
+
+  // Payment routes
+  { path: '/payments', name: 'Payments', element: PaymentsList, permission: 'proposals:read' },
+  { path: '/payments/:id', name: 'Payment Details', element: PaymentPage, permission: 'proposals:read' },
+  { path: '/payments/:id/pay', name: 'Make Payment', element: PaymentPage, permission: 'proposals:read' },
+  { path: '/payments/success', name: 'Payment Success', element: PaymentSuccess, permission: 'proposals:read' },
+  { path: '/payments/cancel', name: 'Payment Cancelled', element: PaymentCancel, permission: 'proposals:read' },
+  { path: '/payments/test', name: 'Payment Test', element: PaymentTest, permission: 'proposals:read' },
 
   // Resources
   { path: '/resources', name: 'Resources', element: Resources, permission: 'resources:read' },
@@ -114,6 +128,7 @@ const routes = [
   { path: '/settings/loginlayoutcustomization', name: 'loginlayoutcustomization', element: LoginCustomizerPage, permission: 'settings:customization' },
   { path: '/settings/ui-customization', name: 'UI Customization', element: UiCustomization, permission: 'settings:customization' },
   { path: '/settings/terms', name: 'Terms & Conditions', element: TermsPage, permission: 'settings:customization' },
+  { path: '/settings/payment-config', name: 'Payment Configuration', element: PaymentConfiguration, permission: 'admin:settings' },
 
   // Admin routes
   { path: '/admin/contractors', name: 'Contractors', element: Contractors, adminOnly: true },

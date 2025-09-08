@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useSelector } from 'react-redux';
 import { getContrastColor, getOptimalColors } from '../utils/colorUtils';
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Eye, EyeOff } from '@/icons-lucide';
 
 const LoginPreview = ({ config }) => {
   const [showPassword, setShowPassword] = useState(false);
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
 
@@ -43,11 +42,13 @@ const LoginPreview = ({ config }) => {
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
+                  className="btn btn-outline-secondary icon-btn"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
+                  style={{ minHeight: 44, minWidth: 44 }}
                 >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                  {showPassword ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
                 </button>
               </div>
             </div>
@@ -64,14 +65,16 @@ const LoginPreview = ({ config }) => {
               )}
             </div>
 
-            <button 
-              type="submit" 
-              className="btn w-100" 
+            <button
+              type="submit"
+              className="btn w-100"
+              aria-label="Sign in (preview)"
               disabled
               style={{
                 background: headerBg,
                 color: textColor,
-                border: 'none'
+                border: 'none',
+                minHeight: 44
               }}
             >
               Sign in

@@ -17,6 +17,7 @@ import '../styles/_responsive.scss'
 
 const DefaultLayout = () => {
   const user = useSelector((s) => s.auth.user)
+  const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
   const [forceTerms, setForceTerms] = useState(false)
   const [latestVersion, setLatestVersion] = useState(null)
@@ -33,7 +34,7 @@ const DefaultLayout = () => {
         delete document.documentElement.dataset.density
       }
     }
-    
+
     updateDensity()
     window.addEventListener('resize', updateDensity)
     return () => window.removeEventListener('resize', updateDensity)
@@ -59,7 +60,7 @@ const DefaultLayout = () => {
         const v = res?.data?.data?.version
         const alreadyAccepted = !!res?.data?.data?.accepted
         setLatestVersion(v || null)
-        
+
         if (v) {
           const key = `terms.accepted.v${v}`
           // Prefer server truth; fall back to cached localStorage if server couldn’t say
@@ -120,9 +121,9 @@ const DefaultLayout = () => {
         <div className="text-center">
           <h4 className="mb-4">Terms & Conditions Required</h4>
           <p className="text-muted mb-4">You must review and accept the terms and conditions to continue.</p>
-          <TermsModal 
-            visible={true} 
-            onClose={handleAccepted} 
+          <TermsModal
+            visible={true}
+            onClose={handleAccepted}
             onReject={handleRejected}
             isForced={true}
             requireScroll={true}
@@ -133,16 +134,117 @@ const DefaultLayout = () => {
   }
 
   return (
-    <div>
-      <AppSidebar />
-      <div className="wrapper d-flex flex-column min-vh-100">
-        <AppHeader />
-        <div className="body flex-grow-1 main">
-          <AppContent />
+    <>
+      {/* Mobile-optimized CSS injection */}
+      <style>{`
+        .modern-layout {
+          min-height: 100vh;
+          position: relative;
+          /* Guard against any accidental horizontal overflow on desktop */
+          overflow-x: hidden;
+        }
+
+        .modern-layout__wrapper {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          margin-left: 0;
+          transition: margin-left 0.15s ease-in-out;
+        }
+
+        .modern-layout__main {
+          flex: 1;
+          padding: 0;
+          overflow-x: hidden;
+        }
+
+  /* Mobile-first responsive adjustments */
+        @media (max-width: 767.98px) {
+          .modern-layout__wrapper {
+            margin-left: 0 !important;
+          }
+
+          .modern-layout__main {
+            padding: 0.5rem;
+          }
+
+          /* Use general sibling: overlay sits between .sidebar and wrapper */
+          .sidebar.show ~ .modern-layout__wrapper {
+            margin-left: 0;
+          }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+          .modern-layout__main {
+            padding: 0.75rem;
+          }
+        }
+
+      /* Desktop adjustments */
+        @media (min-width: 992px) {
+       .modern-layout__wrapper { margin-left: 260px; }
+       /* When the sidebar collapses to narrow, shrink content offset too.
+         Use general sibling (~) because the overlay element is between */
+       .sidebar.sidebar-narrow ~ .modern-layout__wrapper { margin-left: 56px; }
+
+          .modern-layout__main {
+            padding: 1rem;
+          }
+        }
+
+        @media (min-width: 1200px) {
+          .modern-layout__main {
+            padding: 1.5rem;
+          }
+        }
+
+        /* Overlay for mobile sidebar */
+        .mobile-sidebar-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          /* Avoid 100vw trap which can cause right-side overflow on desktop */
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 1030;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+        }
+
+        .mobile-sidebar-overlay.show {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        @media (min-width: 768px) {
+          .mobile-sidebar-overlay {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="modern-layout">
+        <AppSidebar />
+
+        {/* Mobile overlay */}
+        <div
+          className={`mobile-sidebar-overlay d-lg-none ${sidebarShow ? 'show' : ''}`}
+          onClick={() => dispatch(setSidebarShow(false))}
+        />
+
+  {/* Drop CoreUI's .wrapper here to avoid sidebar padding-inline affecting content width */}
+  <div className="modern-layout__wrapper d-flex flex-column">
+          <AppHeader />
+          <div className="modern-layout__main body flex-grow-1 main">
+            <AppContent />
+          </div>
+          <AppFooter />
         </div>
-        <AppFooter />
       </div>
-    </div>
+    </>
   )
 }
 

@@ -4,14 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   CBadge,
   CButton,
-  CCard,
-  CCardBody,
-  CCol,
   CContainer,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
-  CRow,
   CTable,
   CTableBody,
   CTableDataCell,
@@ -20,12 +13,13 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilSearch } from '@coreui/icons'
+import { cilSearch, cilCreditCard } from '@coreui/icons'
 import PageHeader from '../../components/PageHeader'
 import { FaShoppingCart } from 'react-icons/fa'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import { fetchOrders } from '../../store/slices/ordersSlice'
 import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/manufacturersSlice'
+import { fetchPayments } from '../../store/slices/paymentsSlice'
 import { useNavigate } from 'react-router-dom'
 
 const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, mineOnly = false }) => {
@@ -33,6 +27,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const dispatch = useDispatch()
   const { items: orders, loading } = useSelector((s) => s.orders)
   const { list: manuList, byId: manuById } = useSelector((s) => s.manufacturers)
+  const { payments } = useSelector((s) => s.payments)
   const authUser = useSelector((s) => s.auth?.user)
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -150,18 +145,12 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   useEffect(() => {
     // Server will scope by mineOnly; groupId currently unused here
     dispatch(fetchOrders({ mineOnly }))
+    // Fetch payments to check payment status for orders
+    dispatch(fetchPayments())
   }, [dispatch, mineOnly])
 
-  // Warm up manufacturers cache for name resolution
+  // Warm up manufacturers cache for name resolution (single effect)
   useEffect(() => {
-    if (!manuList || manuList.length === 0) {
-      dispatch(fetchManufacturers())
-    }
-  }, [dispatch, manuList?.length])
-
-  // Optionally warm up manufacturers cache (used only for legacy fallbacks)
-  useEffect(() => {
-    // No-op if already loaded
     if (!manuList || manuList.length === 0) {
       dispatch(fetchManufacturers())
     }
@@ -206,6 +195,73 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     return map[status] || 'success'
   }
 
+  // Get payment status for an order
+  const getOrderPayment = (orderId) => {
+    return payments?.find(payment => payment.orderId === orderId)
+  }
+
+  // Get payment status badge info
+  const getPaymentStatus = (orderId) => {
+    const payment = getOrderPayment(orderId)
+
+    if (!payment) {
+      return {
+        status: 'payment_required',
+        label: t('payments.status.paymentRequired', 'Payment Required'),
+        color: 'warning',
+        showButton: true
+      }
+    }
+
+    switch (payment.status) {
+      case 'completed':
+        return {
+          status: 'paid',
+          label: t('payments.status.paid', 'Paid'),
+          color: 'success',
+          showButton: false
+        }
+      case 'pending':
+        return {
+          status: 'payment_required',
+          label: t('payments.status.paymentRequired', 'Payment Required'),
+          color: 'warning',
+          showButton: true
+        }
+      case 'processing':
+        return {
+          status: 'processing',
+          label: t('payments.status.processing', 'Processing'),
+          color: 'info',
+          showButton: false
+        }
+      case 'failed':
+        return {
+          status: 'payment_required',
+          label: t('payments.status.paymentRequired', 'Payment Required'),
+          color: 'danger',
+          showButton: true
+        }
+      default:
+        return {
+          status: 'payment_required',
+          label: t('payments.status.paymentRequired', 'Payment Required'),
+          color: 'warning',
+          showButton: true
+        }
+    }
+  }
+
+  const handleMakePayment = (orderId) => {
+    const payment = getOrderPayment(orderId)
+    if (payment) {
+      navigate(`/payments/${payment.id}/pay`)
+    } else {
+      // If no payment exists, go to payments page to potentially create one
+      navigate('/payments')
+    }
+  }
+
   const openDetails = (orderId) => {
     const base = isContractor ? '/my-orders' : '/orders'
     navigate(`${base}/${orderId}`)
@@ -245,128 +301,180 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     <CContainer fluid>
       <PageHeader title={title} subtitle={subtitle} icon={FaShoppingCart} />
 
-      <CCard className="filter-card">
-        <CCardBody>
-          <CRow className="align-items-center g-3">
-            <CCol md={8}>
-              <CInputGroup>
-                <CInputGroupText>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
-                  placeholder={t('orders.searchPlaceholder', 'Search by customer')}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </CInputGroup>
-            </CCol>
-            <CCol md={4} className="text-md-end">
-              <small className="text-muted">
-                {t('orders.showingCount', { count: filtered.length, total: Array.isArray(orders) ? orders.length : 0 })}
-              </small>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      {/* Toolbar: search + count */}
+      <div className="toolbar" role="search">
+        <div className="toolbar__start" style={{ flex: 1 }}>
+          <div className="search" style={{ maxWidth: 520 }}>
+            <CIcon icon={cilSearch} className="search__icon" />
+            <input
+              type="search"
+              className="search__input"
+              placeholder={t('orders.searchPlaceholder', 'Search by customer')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label={t('orders.searchAria', 'Search orders by customer name')}
+            />
+          </div>
+        </div>
+        <div className="toolbar__end">
+          <small className="text-muted">
+            {t('orders.showingCount', { count: filtered.length, total: Array.isArray(orders) ? orders.length : 0 })}
+          </small>
+        </div>
+      </div>
 
-      <CCard className="data-table-card">
-        {/* Desktop / tablet table */}
-        <div className="d-none d-md-block">
-          <CTable hover>
+      {/* Desktop / tablet table */}
+      <div className="u-desktop">
+        <div className="table-scroll">
+          <CTable hover className="table-modern">
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell>{t('orders.headers.date', 'Date')}</CTableHeaderCell>
+                <CTableHeaderCell className="sticky-col">{t('orders.headers.date', 'Date')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.customer', 'Customer')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.description', 'Description')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.manufacturer', 'Manufacturer')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.status', 'Status')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('orders.headers.payment', 'Payment')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('orders.headers.actions', 'Actions')}</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {paged.length === 0 ? (
                 <CTableRow>
-                  <CTableDataCell colSpan={5} className="text-center py-5">
+                  <CTableDataCell colSpan={7} className="text-center py-5">
                     <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
                     <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
                     <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
                   </CTableDataCell>
                 </CTableRow>
               ) : (
-                paged.map((item) => (
-                  <CTableRow key={item.id} onClick={() => openDetails(item.id)} style={{ cursor: 'pointer' }}>
-                    <CTableDataCell>{new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}</CTableDataCell>
-                    <CTableDataCell>{renderCustomerCell(item)}</CTableDataCell>
-                    <CTableDataCell className="text-muted">{(item.description || item?.proposal?.description || '').trim() || t('common.na')}</CTableDataCell>
-                    <CTableDataCell>{resolveManuName(item)}</CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
-                        {item.status || 'accepted'}
-                      </CBadge>
-                    </CTableDataCell>
-                  </CTableRow>
-                ))
+                paged.map((item) => {
+                  const paymentInfo = getPaymentStatus(item.id)
+                  return (
+                    <CTableRow key={item.id} onClick={() => openDetails(item.id)} style={{ cursor: 'pointer' }}>
+                      <CTableDataCell className="sticky-col">
+                        {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}
+                      </CTableDataCell>
+                      <CTableDataCell>{renderCustomerCell(item)}</CTableDataCell>
+                      <CTableDataCell className="text-muted">
+                        {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
+                      </CTableDataCell>
+                      <CTableDataCell>{resolveManuName(item)}</CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
+                          {item.status || 'accepted'}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color={paymentInfo.color} shape="rounded-pill">
+                          {paymentInfo.label}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        {paymentInfo.showButton && (
+                          <CButton
+                            color="primary"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleMakePayment(item.id)
+                            }}
+                          >
+                            <CIcon icon={cilCreditCard} className="me-1" size="sm" />
+                            {t('orders.actions.makePayment', 'Make Payment')}
+                          </CButton>
+                        )}
+                      </CTableDataCell>
+                    </CTableRow>
+                  )
+                })
               )}
             </CTableBody>
           </CTable>
         </div>
+      </div>
 
-        {/* Mobile card list */}
-        <div className="d-block d-md-none">
-          {paged.length === 0 ? (
-            <div className="text-center py-5">
-              <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
-              <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
-              <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
-            </div>
-          ) : (
-            <div className="d-flex flex-column gap-2">
-              {paged.map((item) => (
-                <div
+      {/* Mobile card list */}
+      <div className="u-mobile">
+        {paged.length === 0 ? (
+          <div className="text-center py-5">
+            <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
+            <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
+            <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
+          </div>
+        ) : (
+          <div className="stack gap-2">
+            {paged.map((item) => {
+              const paymentInfo = getPaymentStatus(item.id)
+              return (
+                <article
                   key={item.id}
-                  className="border rounded p-2 d-flex align-items-start"
-                  style={{ gap: 12, cursor: 'pointer' }}
+                  className="card card--compact"
+                  role="button"
                   onClick={() => openDetails(item.id)}
+                  aria-label={t('orders.openDetails', 'Open order details')}
                 >
-                  <div className="flex-grow-1">
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div style={{ fontSize: 16 }}>
-                        {isContractor ? (
-                          <span className="fw-semibold">{item.customer?.name || t('common.na')}</span>
-                        ) : (
-                          <div className="d-flex flex-column">
-                            <span className="fw-semibold">{item?.Owner?.group?.name || item?.ownerGroup?.name || item?.Owner?.name || t('common.na')}</span>
-                            <small className="text-muted" style={{ fontSize: 12 }}>{item?.customer?.name || t('common.na')}</small>
-                          </div>
-                        )}
-                      </div>
+                  <div className="card__head">
+                    <div className="card__title">
+                      {isContractor ? (
+                        <span className="fw-semibold">{item.customer?.name || t('common.na')}</span>
+                      ) : (
+                        <div className="d-flex flex-column">
+                          <span className="fw-semibold">{item?.Owner?.group?.name || item?.ownerGroup?.name || item?.Owner?.name || t('common.na')}</span>
+                          <small className="text-muted">{item?.customer?.name || t('common.na')}</small>
+                        </div>
+                      )}
+                    </div>
+                    <div className="d-flex flex-column gap-1">
                       <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
                         {item.status || 'accepted'}
                       </CBadge>
-                    </div>
-                    <div className="text-muted" style={{ fontSize: 12 }}>
-                      {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()} • {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
-                    </div>
-                    <div className="text-truncate-2 mt-1" style={{ fontSize: 14, color: '#444' }}>
-                      {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
+                      <CBadge color={paymentInfo.color} shape="rounded-pill" size="sm">
+                        {paymentInfo.label}
+                      </CBadge>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </CCard>
+                  <div className="card__meta">
+                    <span>
+                      {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}
+                    </span>
+                    <span>
+                      {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
+                    </span>
+                  </div>
+                  <div className="card__content text-muted">
+                    {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
+                  </div>
+                  {paymentInfo.showButton && (
+                    <div className="card__actions">
+                      <CButton
+                        color="primary"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleMakePayment(item.id)
+                        }}
+                      >
+                        <CIcon icon={cilCreditCard} className="me-1" size="sm" />
+                        {t('orders.actions.makePayment', 'Make Payment')}
+                      </CButton>
+                    </div>
+                  )}
+                </article>
+              )
+            })}
+          </div>
+        )}
+      </div>
 
-      <CCard className="data-table-card mt-4">
-        <CCardBody>
-          <PaginationComponent
-            currentPage={page}
-            totalPages={Math.ceil(filtered.length / perPage) || 1}
-            onPageChange={setPage}
-            itemsPerPage={perPage}
-          />
-        </CCardBody>
-      </CCard>
+      <div className="mt-4">
+        <PaginationComponent
+          currentPage={page}
+          totalPages={Math.ceil(filtered.length / perPage) || 1}
+          onPageChange={setPage}
+          itemsPerPage={perPage}
+        />
+      </div>
     </CContainer>
   )
 }

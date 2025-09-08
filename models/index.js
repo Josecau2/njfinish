@@ -25,6 +25,8 @@ const Terms = require('./Terms');
 const TermsAcceptance = require('./TermsAcceptance');
 const ManufacturerSubType = require('./ManufacturerSubType');
 const CatalogSubTypeAssignment = require('./CatalogSubTypeAssignment');
+const Payment = require('./Payment');
+const PaymentConfiguration = require('./PaymentConfiguration');
 
 const ManufacturerAssemblyCost = require('./ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('./ManufacturerHingesDetails');
@@ -161,6 +163,12 @@ Order.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
 Order.belongsTo(UserGroup, { foreignKey: 'owner_group_id', as: 'ownerGroup' });
 Order.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
 Order.belongsTo(Manufacturer, { foreignKey: 'manufacturer_id', as: 'manufacturer' });
+Order.belongsTo(User, { foreignKey: 'accepted_by_user_id', as: 'creator' });
+
+// Payment associations
+Order.hasMany(Payment, { foreignKey: 'orderId', as: 'payments' });
+Payment.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
+Payment.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 
 // Contact messaging associations
 ContactThread.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
@@ -211,5 +219,7 @@ module.exports = {
   Terms,
   TermsAcceptance,
   ManufacturerSubType,
-  CatalogSubTypeAssignment
+  CatalogSubTypeAssignment,
+  Payment,
+  PaymentConfiguration
 };

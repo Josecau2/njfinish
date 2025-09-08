@@ -9,18 +9,7 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
-import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
-  cilSettings,
-  cilTask,
-  cilUser,
-} from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { LogOut, User as UserIcon } from '@/icons-lucide'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../store/slices/authSlice'; // Adjust the path as needed
@@ -42,6 +31,7 @@ const AppHeaderDropdown = () => {
         placement="bottom-end"
         className="py-0 pe-0 d-flex align-items-center justify-content-center"
         caret={false}
+        aria-label="Account menu"
       >
         <CAvatar
           size="md"
@@ -51,9 +41,12 @@ const AppHeaderDropdown = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            minWidth: 44,
+            minHeight: 44,
           }}
+          aria-hidden
         >
-          <CIcon icon={cilUser} size="lg" />
+          <UserIcon size={20} aria-hidden />
         </CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
@@ -87,12 +80,12 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader> */}
-        <CDropdownItem onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-          <CIcon icon={cilUser} className="me-2" />
+        <CDropdownItem onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} aria-label="Profile">
+          <UserIcon size={16} className="me-2" aria-hidden />
           Profile
         </CDropdownItem>
-        <CDropdownItem href="#"  onClick={handleLogout}>
-          <CIcon icon={cilLockLocked} className="me-2" />
+        <CDropdownItem href="#" onClick={handleLogout} aria-label="Logout">
+          <LogOut size={16} className="me-2" aria-hidden />
           Logout
         </CDropdownItem>
         {/* <CDropdownItem href="#">

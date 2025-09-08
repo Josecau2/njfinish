@@ -20,6 +20,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../../helpers/axiosInstance';
 import PageHeader from '../../../../components/PageHeader';
+// Use lucide-only module via centralized alias
+import { Pencil, Trash } from '@/icons-lucide';
 
 // Helper function to get auth headers
 
@@ -241,6 +243,20 @@ const StylePicturesTab = ({ manufacturer }) => {
 
   return (
     <div>
+      <style>{`
+        .overlay-action-btn {
+          min-width: 44px;
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 576px) {
+          .overlay-action-btn {
+            padding: 8px 10px !important;
+          }
+        }
+      `}</style>
       <CCard>
         <CCardHeader>
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
@@ -357,22 +373,25 @@ const StylePicturesTab = ({ manufacturer }) => {
                         <CButton
                           color="light"
                           size="sm"
+                          className="overlay-action-btn"
+                          aria-label={t('types.ui.uploadImage','Upload Image')}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleEditImage(style);
                           }}
                           style={{ fontSize: '0.75rem' }}
                         >
-                          <i className="bi bi-pencil"></i> {t('types.ui.uploadImage','Upload Image')}
+                          <Pencil size={18} aria-hidden="true" className="me-1" /> {t('types.ui.uploadImage','Upload Image')}
                         </CButton>
                         <CButton
                           color="danger"
                           size="sm"
-                          className="ms-2"
+                          className="ms-2 overlay-action-btn"
+                          aria-label={t('common.delete','Delete')}
                           onClick={(e) => { e.stopPropagation(); setDeleteAsk({ open: true, styleName: style.style }); setReassignTo(''); }}
                           style={{ fontSize: '0.75rem' }}
                         >
-                          <i className="bi bi-trash"></i>
+                          <Trash size={18} aria-hidden="true" />
                         </CButton>
                       </div>
                     </div>

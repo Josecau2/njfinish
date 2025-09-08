@@ -391,6 +391,34 @@
   background: #f8f9fa;
 }
 
+/* Ensure custom Specs modal sits above other overlays (CoreUI/Bootstrap use ~1050-1100) */
+/* Increase z-index significantly to overcome any stacking context issues */
+.specs-modal {
+  z-index: 9999 !important;
+}
+.specs-modal .modal-dialog {
+  z-index: 9999 !important;
+  position: relative !important;
+  margin: auto !important;
+  pointer-events: auto !important;
+}
+.specs-modal .modal-content {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+.specs-modal .modal-backdrop,
+.modal-backdrop.show {
+  z-index: 9998 !important;
+}
+
+/* Ensure modal shows properly when visible */
+.specs-modal.show {
+  display: block !important;
+}
+.specs-modal .modal-dialog {
+  transform: none !important;
+}
+
 /* Invoice Preview Styling */
 .invoice-preview {
   background: white;
@@ -631,8 +659,9 @@
 
 /* Only for mobile changes */
 @media (max-width: 668px) {
+  /* Avoid forcing extra right padding globally which can cause overflow */
   .main-content-container {
-    padding-right: 40px !important;
+    padding-right: 0 !important;
   }
 
   .main-content-container .edit-customer-page .card-body {

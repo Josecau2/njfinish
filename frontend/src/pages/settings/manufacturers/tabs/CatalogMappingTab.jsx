@@ -27,8 +27,8 @@ import {
   CCardHeader,
   CCardBody
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilSortAscending, cilSortDescending, cilPlus } from '@coreui/icons';
+// Use lucide icons (React components) only via centralized module
+import { Plus, ChevronUp, ChevronDown } from '@/icons-lucide';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
@@ -2103,7 +2103,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           }
 
           /* Mobile responsive styles */
-          @media (max-width: 768px) {
+      @media (max-width: 767px) {
             .table-responsive {
               border: none;
             }
@@ -2117,8 +2117,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               font-weight: 600;
             }
             .btn-sm {
-              padding: 1px 4px !important;
-              font-size: 10px !important;
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        min-height: 44px;
             }
             .mobile-stack {
               display: flex;
@@ -2149,6 +2150,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               className="flex-shrink-0"
               onClick={() => setFileModalVisible(true)}
+              aria-label={t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}</span>
               <span className="d-sm-none">📁 CSV</span>
@@ -2158,6 +2160,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               className="flex-shrink-0"
               onClick={() => setManualModalVisible(true)}
+              aria-label={t('settings.manufacturers.catalogMapping.buttons.addItem')}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.addItem')}</span>
               <span className="d-sm-none">{t('settings.manufacturers.catalogMapping.buttons.addShort', '➕ Add')}</span>
@@ -2168,6 +2171,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               className="flex-shrink-0"
               onClick={() => setShowMainModificationModal(true)}
               title={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
+              aria-label={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.modification')}</span>
               <span className="d-sm-none">🔧</span>
@@ -2178,6 +2182,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               className="flex-shrink-0"
               onClick={openAssignGlobal}
               title={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
+              aria-label={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.assignMods')}</span>
               <span className="d-sm-none">🧩</span>
@@ -2189,6 +2194,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onClick={handleCleanupDuplicates}
               disabled={isCleaningDuplicates}
               title={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
+              aria-label={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
             >
               {isCleaningDuplicates ? (
                 <>
@@ -2210,6 +2216,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onClick={handleRollbackClick}
               disabled={(pagination.total || 0) === 0}
               title="Rollback recent catalog upload"
+              aria-label={t('settings.manufacturers.catalogMapping.rollback.buttonText')}
             >
               <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.rollback.buttonText')}</span>
               <span className="d-sm-none">↶</span>
@@ -2241,11 +2248,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         }
 
         /* Improved touch targets for mobile */
-        .mobile-catalog-card .btn {
-          min-height: 36px;
-          font-size: 12px;
-          white-space: nowrap;
-        }
+          .mobile-catalog-card .btn {
+            min-height: 44px;
+            font-size: 12px;
+            white-space: nowrap;
+          }
 
         .mobile-catalog-card .form-check-input {
           width: 18px;
@@ -2260,9 +2267,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           .catalog-actions .btn {
             flex: 1;
             min-width: 0;
-            min-height: 32px; /* Reduced from 44px */
-            font-size: 0.75rem !important;
-            padding: 0.25rem 0.5rem !important;
+            min-height: 44px;
+            font-size: 0.875rem !important;
+            padding: 0.5rem 0.75rem !important;
           }
 
           /* Better mobile table */
@@ -2277,13 +2284,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
           /* Mobile-optimized filters */
           .form-select, .form-control {
-            min-height: 36px; /* Reduced from 44px */
-            font-size: 0.875rem;
+            min-height: 44px;
+            font-size: 0.95rem;
           }
 
           /* Mobile card specific improvements */
           .mobile-catalog-card .card-body {
-            padding: 0.75rem !important; /* Reduced padding */
+            padding: 0.75rem !important;
           }
 
           .mobile-catalog-card .btn {
@@ -2310,9 +2317,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           .catalog-actions .btn {
             flex: 1;
             min-width: 0;
-            font-size: 0.7rem !important;
-            padding: 0.2rem 0.3rem !important;
-            min-height: 28px;
+            font-size: 0.8rem !important;
+            padding: 0.4rem 0.5rem !important;
+            min-height: 44px;
           }
 
           /* Stack filters vertically on very small screens */
@@ -2359,8 +2366,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           }
 
           .page-item .page-link {
-            min-width: 36px; /* Reduced from 44px */
-            min-height: 36px;
+            min-width: 44px;
+            min-height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2393,7 +2400,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setShowSubTypeModal(true);
             }}
           >
-            <CIcon icon={cilPlus} /> {t('settings.manufacturers.catalogMapping.subTypes.create')}
+            <Plus size={16} aria-hidden="true" className="me-1" /> {t('settings.manufacturers.catalogMapping.subTypes.create')}
           </CButton>
         </CCardHeader>
         <CCardBody>
@@ -2429,6 +2436,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             setEditingSubType(subType);
                             setShowSubTypeModal(true);
                           }}
+                          aria-label={t('common.edit')}
                         >
                           {t('common.edit')}
                         </CButton>
@@ -2439,6 +2447,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             setSelectedSubType(subType.id);
                             setShowAssignSubTypeModal(true);
                           }}
+                          aria-label={t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
                         >
                           {t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
                         </CButton>
@@ -2446,6 +2455,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           color="danger"
                           size="sm"
                           onClick={() => handleSubTypeDelete(subType)}
+                          aria-label={t('common.delete')}
                         >
                           {t('common.delete')}
                         </CButton>
@@ -2468,8 +2478,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               className="form-select form-select-sm"
               style={{ width: 'auto', minWidth: '60px' }}
               value={itemsPerPage}
+              aria-label={t('settings.manufacturers.catalogMapping.pagination.itemsPerPage', 'Items per page')}
               onChange={(e) => {
-                const value = Number(e.target.value);
+                const value = parseInt(e.target.value, 10);
                 setItemsPerPage(value);
                 localStorage.setItem('catalogItemsPerPage', value);
                 setCurrentPage(1);
@@ -2489,6 +2500,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <div className="col-12 col-sm-12 col-lg-4 order-first order-lg-3">
           <div className="position-relative">
             <input
+              aria-label={t('settings.manufacturers.catalogMapping.search', 'Search styles')}
               type="text"
               className="form-control form-control-sm"
               placeholder="🔍 Search styles..."
@@ -2499,6 +2511,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {searchFilter && (
               <button
                 type="button"
+                aria-label={t('common.clearSearch', 'Clear search')}
                 className="btn btn-sm btn-link position-absolute top-0 end-0 p-1"
                 onClick={() => setSearchFilter('')}
                 style={{ color: '#6c757d', textDecoration: 'none', zIndex: 5 }}
@@ -2513,6 +2526,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <div className="col-6 col-sm-6 col-lg-auto">
           <select
             className="form-select form-select-sm"
+            aria-label={t('settings.manufacturers.catalogMapping.filters.type', 'Filter by type')}
             value={typeFilter}
             onChange={(e) => {
               setCurrentPage(1);
@@ -2532,6 +2546,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <div className="col-6 col-sm-6 col-lg-auto">
           <select
             className="form-select form-select-sm"
+            aria-label={t('settings.manufacturers.catalogMapping.filters.style', 'Filter by style')}
             value={styleFilter}
             onChange={(e) => {
               setCurrentPage(1);
@@ -2672,14 +2687,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     style={{ minWidth: '80px', cursor: 'pointer', userSelect: 'none' }}
                     onClick={() => handleSort('code')}
                     className="d-flex align-items-center"
+                    role="button"
+                    tabIndex={0}
+                    aria-sort={sortBy === 'code' ? (sortOrder === 'ASC' ? 'ascending' : 'descending') : 'none'}
+                    aria-label={`${t('settings.manufacturers.catalogMapping.table.code')} ${sortBy === 'code' ? (sortOrder === 'ASC' ? t('common.sortAscending', 'ascending') : t('common.sortDescending', 'descending')) : t('common.sortable', 'sortable')}`}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('code'); } }}
                   >
                     {t('settings.manufacturers.catalogMapping.table.code')}
                     {sortBy === 'code' && (
-                      <CIcon
-                        icon={sortOrder === 'ASC' ? cilSortAscending : cilSortDescending}
-                        size="sm"
-                        className="ms-1"
-                      />
+                      sortOrder === 'ASC' ? (
+                        <ChevronUp size={16} aria-hidden="true" className="ms-1" />
+                      ) : (
+                        <ChevronDown size={16} aria-hidden="true" className="ms-1" />
+                      )
                     )}
                   </CTableHeaderCell>
                   <CTableHeaderCell style={{ minWidth: '120px', maxWidth: '180px' }}>
@@ -2700,6 +2720,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     checked={selectedItems.includes(item.id)}
                     onChange={(e) => handleSelectItem(item.id, e.target.checked)}
                     className="form-check-input"
+                    aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
                     style={{
                       borderColor: '#6c757d',
                       borderWidth: '2px',

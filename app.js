@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const apiRoutes = require('./routes/apiRoutes');
+const paymentsRoutes = require('./routes/payments');
+const paymentConfigRoutes = require('./routes/paymentConfig');
 const sequelize = require('./config/db');
 const path = require('path');
 const env = require('./config/env');
@@ -72,6 +74,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
 // Serve static uploads

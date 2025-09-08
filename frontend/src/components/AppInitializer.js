@@ -14,13 +14,13 @@ const AppInitializer = ({ children }) => {
   useEffect(() => {
     if (customization.logoText) {
       document.title = customization.logoText
-      
+
       // Update meta tags for better SEO
       const metaTitle = document.querySelector('meta[property="og:title"]')
       if (metaTitle) {
         metaTitle.content = customization.logoText
       }
-      
+
       const metaSiteName = document.querySelector('meta[property="og:site_name"]')
       if (metaSiteName) {
         metaSiteName.content = customization.logoText
@@ -39,7 +39,7 @@ const AppInitializer = ({ children }) => {
         newFavicon.href = `${api_url}${customization.logoImage}`
         document.head.appendChild(newFavicon)
       }
-      
+
       // Also create/update standard icon link
       let iconLink = document.querySelector('link[rel="icon"]')
       if (!iconLink) {
@@ -51,6 +51,25 @@ const AppInitializer = ({ children }) => {
     }
   }, [customization.logoText, customization.logoImage, api_url])
 
+  // Apply density token on small screens and update on resize
+  useEffect(() => {
+    const applyDensity = () => {
+      const isCompact = window.matchMedia('(max-width: 576px)').matches
+      document.documentElement.setAttribute('data-density', isCompact ? 'compact' : 'comfortable')
+    }
+    applyDensity()
+    window.addEventListener('resize', applyDensity)
+    return () => window.removeEventListener('resize', applyDensity)
+  }, [])
+
+  // Expose customization colors as CSS variables for theming
+  useEffect(() => {
+    const root = document.documentElement
+    if (customization?.headerBg) root.style.setProperty('--header-bg', customization.headerBg)
+    if (customization?.headerFontColor) root.style.setProperty('--header-fg', customization.headerFontColor)
+    if (customization?.sidebarBg) root.style.setProperty('--sidebar-bg', customization.sidebarBg)
+    if (customization?.sidebarFontColor) root.style.setProperty('--sidebar-fg', customization.sidebarFontColor)
+  }, [customization?.headerBg, customization?.headerFontColor, customization?.sidebarBg, customization?.sidebarFontColor])
 
 
 
@@ -91,8 +110,8 @@ const AppInitializer = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="text-center pt-5">
-        <CSpinner color="primary" />
+      <div className="text-center pt-5" role="status" aria-live="polite">
+        <CSpinner color="primary" aria-label="Loading application" />
       </div>
     )
   }

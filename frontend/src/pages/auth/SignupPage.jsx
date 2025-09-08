@@ -14,7 +14,7 @@ const SignupPage = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -50,6 +50,12 @@ const SignupPage = () => {
           </a> */}
           <h2 className="fw-bold mb-2">Sign Up</h2>
           <p className="mb-4 text-muted">Create your account to get started.</p>
+
+          {error && (
+            <div className="alert alert-danger" role="alert" aria-live="assertive">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
@@ -99,17 +105,20 @@ const SignupPage = () => {
                   onChange={handleChange}
                   required
                 />
-                <span
-                  className="input-group-text"
-                  style={{ cursor: 'pointer' }}
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  style={{ minHeight: 44, minWidth: 44 }}
                 >
-                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
-                </span>
+                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} aria-hidden />
+                </button>
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-primary w-100" style={{ minHeight: 44 }}>
               Sign Up
             </button>
           </form>

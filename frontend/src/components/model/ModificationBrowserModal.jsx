@@ -289,7 +289,7 @@ const ModificationBrowserModal = ({
     return (
       <div className="modification-config mt-4">
         {/* Sliders - only show enabled ones */}
-        {config.sliders && Object.keys(config.sliders).map(sliderKey => {
+  {config.sliders && Object.keys(config.sliders).map(sliderKey => {
           const slider = config.sliders[sliderKey]
 
           // Only render if the slider exists (enabled sliders are included in config)
@@ -297,14 +297,16 @@ const ModificationBrowserModal = ({
           const isEnabled = slider.enabled !== false // If enabled is undefined, treat as enabled
           if (!isEnabled) return null
 
-      const currentValue = selectedOptions[sliderKey] || slider.min
+    const currentValue = selectedOptions[sliderKey] || slider.min
+      const sliderId = `slider-${sliderKey}`
 
           return (
             <div key={sliderKey} className="mb-4">
-              <label className="form-label text-capitalize">
+              <label className="form-label text-capitalize" htmlFor={sliderId}>
             {t('proposalUI.custom.choose','Choose')} {sliderKey}: <strong>{formatInches(currentValue)}</strong>
               </label>
               <CFormRange
+                id={sliderId}
                 min={slider.min}
                 max={slider.max}
                 step={slider.step || 1}
@@ -376,6 +378,7 @@ const ModificationBrowserModal = ({
                 ...prev,
                 quantity: Math.max(config.qtyRange.min, Math.min(config.qtyRange.max, Number(e.target.value)))
               }))}
+              aria-label="Quantity"
             />
           </div>
         )}
@@ -404,6 +407,7 @@ const ModificationBrowserModal = ({
                 ...prev,
                 uploadedFiles: Array.from(e.target.files)
               }))}
+              aria-label="Upload files for modification"
             />
           </div>
         )}
@@ -463,6 +467,7 @@ const ModificationBrowserModal = ({
                 className="me-2"
                 aria-label="Back"
                 title="Back"
+                style={{ minHeight: '44px' }}
               >
                 <CIcon icon={cilArrowLeft} className="me-1" />
                 <span>Back</span>
@@ -472,6 +477,9 @@ const ModificationBrowserModal = ({
               color="light"
               size="sm"
               onClick={onClose}
+              aria-label="Close"
+              title="Close"
+              style={{ minHeight: '44px' }}
             >
               <CIcon icon={cilX} />
             </CButton>
@@ -499,6 +507,7 @@ const ModificationBrowserModal = ({
           />
           <CFormInput
             placeholder="Search"
+            aria-label="Search modifications"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ paddingLeft: '40px' }}
@@ -677,6 +686,7 @@ const ModificationBrowserModal = ({
                         color="primary"
                         onClick={handleApplyModification}
                         disabled={!selectedTemplate}
+                        style={{ minHeight: '44px' }}
                       >
                         Add modification
                       </CButton>

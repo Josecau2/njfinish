@@ -48,10 +48,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Return dark color for light backgrounds, light color for dark backgrounds
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -146,11 +146,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             </CCol>
             <CCol xs="auto">
               <PermissionGate permission="customers:create">
-                <CButton 
-                  color="light" 
+                <CButton
+                  color="light"
                   className="shadow-sm px-4 fw-semibold"
                   onClick={handleNewCustomer}
-                  style={{ 
+                  style={{
                     borderRadius: '5px',
                     border: 'none',
                     transition: 'all 0.3s ease'
@@ -263,7 +263,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 sticky-col">
                       Location
                     </CTableHeaderCell>
-                    <CTableHeaderCell 
+                    <CTableHeaderCell
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('name')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -276,7 +276,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         </span>
                       </div>
                     </CTableHeaderCell>
-                    <CTableHeaderCell 
+                    <CTableHeaderCell
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('email')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -315,10 +315,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     sortedFilteredCustomers?.map((cust) => (
                       <CTableRow key={cust.id} style={{ transition: 'all 0.2s ease' }}>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="secondary" 
+                          <CBadge
+                            color="secondary"
                             className="px-3 py-2"
-                            style={{ 
+                            style={{
                               borderRadius: '15px',
                               fontSize: '11px',
                               fontWeight: '500'
@@ -338,10 +338,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           </span>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="info" 
+                          <CBadge
+                            color="info"
                             className="px-3 py-2"
-                            style={{ 
+                            style={{
                               borderRadius: '20px',
                               fontSize: '12px',
                               fontWeight: '500',
@@ -351,10 +351,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           </CBadge>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="success" 
+                          <CBadge
+                            color="success"
                             className="px-3 py-2"
-                            style={{ 
+                            style={{
                               borderRadius: '20px',
                               fontSize: '12px',
                               fontWeight: '500',
@@ -418,7 +418,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       Main
                     </CBadge>
                   </div>
-                  
+
                   <div className="card__meta">
                     <span>{cust.email || 'N/A'}</span>
                     <span>{cust.proposalCount || 0} Proposals</span>

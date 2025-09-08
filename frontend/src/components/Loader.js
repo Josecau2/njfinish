@@ -2,9 +2,9 @@ import React from 'react';
 
 const Loader = () => {
   return (
-    <div style={styles.container}>
-      <div style={styles.spinner}></div>
-      <p>Loading...</p>
+    <div style={styles.container} role="status" aria-live="polite" aria-busy="true">
+      <div style={styles.spinner} aria-hidden="true"></div>
+      <p style={styles.text}>Loading…</p>
     </div>
   );
 };
@@ -25,6 +25,7 @@ const styles = {
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   },
+  text: { marginTop: 8, fontSize: 14, color: '#6c757d' }
 };
 
 export default Loader;

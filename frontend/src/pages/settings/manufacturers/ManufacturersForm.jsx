@@ -45,7 +45,7 @@ import PageHeader from '../../../components/PageHeader';
 const FormSection = ({ title, icon, children, className = "", customization }) => {
   const headerBg = customization?.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   return (
     <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
       <CCardBody className="p-4">
@@ -67,18 +67,18 @@ const FormSection = ({ title, icon, children, className = "", customization }) =
       </CCardBody>
     </CCard>
   );
-};const CustomFormInput = ({ 
-  label, 
-  name, 
-  type = "text", 
-  required = false, 
+};const CustomFormInput = ({
+  label,
+  name,
+  type = "text",
+  required = false,
   icon = null,
   placeholder = "",
   value,
   onChange,
   isInvalid,
   feedback,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -107,10 +107,10 @@ const FormSection = ({ title, icon, children, className = "", customization }) =
   </div>
 );
 
-const CustomFormTextarea = ({ 
-  label, 
-  name, 
-  required = false, 
+const CustomFormTextarea = ({
+  label,
+  name,
+  required = false,
   icon = null,
   placeholder = "",
   rows = 4,
@@ -118,7 +118,7 @@ const CustomFormTextarea = ({
   onChange,
   isInvalid,
   feedback,
-  ...props 
+  ...props
 }) => (
   <div className="mb-3">
     <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
@@ -197,10 +197,10 @@ const ManufacturerForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);
-  
+
   const headerBg = customization.headerBg || '#667eea';
   const textColor = getContrastColor(headerBg);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -250,7 +250,7 @@ const ManufacturerForm = () => {
   const validateForm = () => {
     const errors = {};
     const required = ['name', 'email', 'phone', 'website', 'address', 'costMultiplier'];
-    
+
     required.forEach((field) => {
       if (!formData[field]?.toString().trim()) {
         errors[field] = t('settings.users.form.validation.required');
@@ -276,7 +276,7 @@ const ManufacturerForm = () => {
     e.preventDefault();
     const errors = validateForm();
     setValidationErrors(errors);
-    
+
     if (Object.keys(errors).length > 0) {
       setMessage({
   text: t('settings.manufacturers.create.messages.validationFix'),
@@ -291,7 +291,7 @@ const ManufacturerForm = () => {
     try {
       // Create FormData for file upload
       const formDataToSend = new FormData();
-      
+
       // Append form fields
       formDataToSend.append('name', formData.name);
       formDataToSend.append('email', formData.email);
@@ -303,12 +303,12 @@ const ManufacturerForm = () => {
       formDataToSend.append('instructions', formData.instructions);
       formDataToSend.append('assembledEtaDays', formData.assembledEtaDays || '');
       formDataToSend.append('unassembledEtaDays', formData.unassembledEtaDays || '');
-      
+
       // Append logo image if selected
       if (logoImage) {
         formDataToSend.append('manufacturerImage', logoImage);
       }
-      
+
       // Append catalog files if selected
       files.forEach((file) => {
         formDataToSend.append('catalogFiles', file);
@@ -321,7 +321,7 @@ const ManufacturerForm = () => {
   text: t('settings.manufacturers.create.messages.created'),
         type: 'success',
       });
-      
+
       // Reset form
       setFormData({
         name: '',
@@ -336,7 +336,7 @@ const ManufacturerForm = () => {
       setFiles([]);
       setLogoImage(null);
       setValidationErrors({});
-      
+
       // Redirect to manufacturers list after 2 seconds
       setTimeout(() => {
         navigate('/settings/manufacturers');
@@ -376,26 +376,26 @@ const ManufacturerForm = () => {
             .manufacturer-form .p-4 {
               padding: 1.5rem !important;
             }
-            
+
             .manufacturer-form .mb-4 {
               margin-bottom: 1.5rem !important;
             }
           }
-          
+
           @media (max-width: 576px) {
             .manufacturer-form .p-4 {
               padding: 1rem !important;
             }
-            
+
             .manufacturer-form h3 {
               font-size: 1.5rem !important;
             }
-            
+
             .manufacturer-form .btn {
               width: 100%;
               margin-bottom: 0.5rem;
             }
-            
+
             .manufacturer-form .btn:last-child {
               margin-bottom: 0;
             }
@@ -427,12 +427,14 @@ const ManufacturerForm = () => {
 
       {/* Alert Messages */}
       {message.text && (
-        <CAlert 
-          color={message.type} 
-          dismissible 
+        <CAlert
+          color={message.type}
+          dismissible
           onClose={() => setMessage({ text: '', type: '' })}
           className="border-0 shadow-sm mb-4"
           style={{ borderRadius: '12px' }}
+          role={message.type === 'danger' ? 'alert' : 'status'}
+          aria-live={message.type === 'danger' ? 'assertive' : 'polite'}
         >
           {message.text}
         </CAlert>
@@ -576,7 +578,7 @@ const ManufacturerForm = () => {
           <div className="mb-4">
             <CFormLabel className="fw-medium text-dark mb-3">{t('settings.manufacturers.fields.priceInfoType')}</CFormLabel>
             <div className="d-flex flex-column gap-2">
-              <div 
+              <div
                 className={`border rounded-3 p-3 cursor-pointer transition-all ${formData.isPriceMSRP ? 'border-primary bg-light' : 'border-light'}`}
                 style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
                 onClick={() => handlePriceTypeChange(true)}
@@ -592,7 +594,7 @@ const ManufacturerForm = () => {
                   {t('settings.manufacturers.fields.msrpOption')}
                 </label>
               </div>
-              <div 
+              <div
                 className={`border rounded-3 p-3 cursor-pointer transition-all ${!formData.isPriceMSRP ? 'border-primary bg-light' : 'border-light'}`}
                 style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
                 onClick={() => handlePriceTypeChange(false)}
@@ -672,7 +674,7 @@ const ManufacturerForm = () => {
         <CCard className="border-0 shadow-sm">
           <CCardBody className="p-4">
             <div className="d-flex gap-3 justify-content-end flex-wrap">
-              <CButton
+        <CButton
                 color="light"
                 size="lg"
                 onClick={() => window.history.back()}
@@ -680,13 +682,14 @@ const ManufacturerForm = () => {
                 style={{
                   borderRadius: '12px',
                   border: '1px solid #e3e6f0',
-                  transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          minHeight: '44px'
                 }}
               >
         <CIcon icon={cilArrowLeft} className="me-2" />
         {t('common.cancel')}
               </CButton>
-              <CButton
+        <CButton
                 type="submit"
                 color="success"
                 size="lg"
@@ -696,7 +699,8 @@ const ManufacturerForm = () => {
                   borderRadius: '12px',
                   border: 'none',
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          minHeight: '44px'
                 }}
               >
                 {loading ? (

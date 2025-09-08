@@ -168,8 +168,16 @@ const NotificationsPage = () => {
 
   const unreadCount = notifications.filter(n => !n.is_read).length
 
+  const onCardKeyDown = (e, url) => {
+    if (!url) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      window.location.href = url
+    }
+  }
+
   return (
-    <CContainer fluid className="py-4">
+    <CContainer fluid className="py-4" aria-busy={loading}>
       <CRow>
         <CCol>
           <CCard>
@@ -182,6 +190,9 @@ const NotificationsPage = () => {
                   size="sm"
                   onClick={handleRefresh}
                   disabled={refreshing}
+                  type="button"
+                  aria-label={refreshing ? 'Refreshing notifications' : 'Refresh notifications'}
+                  style={{ minHeight: '44px' }}
                 >
                   <CIcon icon={cilReload} className={refreshing ? 'fa-spin' : ''} />
                   {refreshing ? ' Refreshing...' : ' Refresh'}
@@ -191,6 +202,9 @@ const NotificationsPage = () => {
                     color="success"
                     size="sm"
                     onClick={handleMarkAllAsRead}
+                    type="button"
+                    aria-label={`Mark all notifications as read (${unreadCount} unread)`}
+                    style={{ minHeight: '44px' }}
                   >
                     <CIcon icon={cilCheckAlt} />
                     Mark All Read ({unreadCount})
@@ -202,7 +216,7 @@ const NotificationsPage = () => {
             <CCardBody>
               {/* Filter Buttons */}
               <div className="mb-3 d-flex flex-wrap gap-2 align-items-center">
-                <CButtonGroup>
+                <CButtonGroup role="group" aria-label="Filter notifications">
                   <CFormCheck
                     type="radio"
                     button={{ color: 'outline-primary', variant: 'outline' }}
@@ -248,6 +262,7 @@ const NotificationsPage = () => {
                     style={{ width: '220px' }}
                     value={typeFilter}
                     onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1) }}
+                    aria-label="Filter by type"
                   >
                     <option value=''>All types</option>
                     <option value='proposal_accepted'>Proposal accepted</option>
@@ -260,7 +275,7 @@ const NotificationsPage = () => {
 
               {/* Error Alert */}
               {error && (
-                <div className="mb-3">
+                <div className="mb-3" role="alert" aria-live="assertive">
                   <EmptyState title="Could not load notifications" subtitle={error} />
                 </div>
               )}
@@ -280,79 +295,93 @@ const NotificationsPage = () => {
                 />
               )}
 
-              {!loading && filteredNotifications.map((notification) => (
-                <CCard
-                  key={notification.id}
-                  className={`mb-3 notification-card ${!notification.is_read ? 'notification-unread' : ''}`}
-                  style={{
-                    borderLeft: !notification.is_read ? '4px solid #007bff' : '1px solid #dee2e6',
-                    backgroundColor: !notification.is_read ? '#f8f9fa' : 'white',
-                    cursor: notification.action_url ? 'pointer' : 'default'
-                  }}
-                  onClick={() => {
-                    if (notification.action_url) {
-                      window.location.href = notification.action_url
-                    }
-                  }}
-                >
-                  <CCardBody className="py-3">
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div className="d-flex align-items-start flex-grow-1">
-                        <div className="me-3 mt-1">
-                          <span style={{ fontSize: '1.5rem' }}>
-                            {getNotificationIcon(notification.type)}
-                          </span>
-                        </div>
-                        <div className="flex-grow-1">
-                          <div className="d-flex justify-content-between align-items-start mb-1">
-                            <h6 className="mb-1">
-                              {notification.title}
-                              {!notification.is_read && (
-                                <CBadge color="primary" className="ms-2">New</CBadge>
-                              )}
-                            </h6>
-                            <CBadge color={getPriorityColor(notification.priority)}>
-                              {notification.priority}
-                            </CBadge>
+              {!loading && filteredNotifications.map((notification) => {
+                const clickable = Boolean(notification.action_url)
+                return (
+                  <CCard
+                    key={notification.id}
+                    className={`mb-3 notification-card ${!notification.is_read ? 'notification-unread' : ''}`}
+                    style={{
+                      borderLeft: !notification.is_read ? '4px solid #007bff' : '1px solid #dee2e6',
+                      backgroundColor: !notification.is_read ? '#f8f9fa' : 'white',
+                      cursor: clickable ? 'pointer' : 'default'
+                    }}
+                    onClick={() => {
+                      if (clickable) {
+                        window.location.href = notification.action_url
+                      }
+                    }}
+                    role={clickable ? 'button' : undefined}
+                    tabIndex={clickable ? 0 : undefined}
+                    aria-label={clickable ? `Open notification: ${notification.title}` : undefined}
+                    onKeyDown={(e) => onCardKeyDown(e, notification.action_url)}
+                  >
+                    <CCardBody className="py-3">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div className="d-flex align-items-start flex-grow-1">
+                          <div className="me-3 mt-1" aria-hidden="true">
+                            <span style={{ fontSize: '1.5rem' }}>
+                              {getNotificationIcon(notification.type)}
+                            </span>
                           </div>
-                          <p className="text-muted mb-2">{notification.message}</p>
-                          <div className="d-flex justify-content-between align-items-center">
-                            <small className="text-muted">
-                              {formatDate(notification.createdAt)}
-                              {notification.createdByUser && (
-                                <> • by {notification.createdByUser.name}</>
-                              )}
-                            </small>
-                            <div>
-                              {isAdmin && !notification.is_read && (
-                                <CButton
-                                  size="sm"
-                                  variant="ghost"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleMarkAsRead(notification.id)
-                                  }}
-                                >
-                                  Mark as read
-                                </CButton>
-                              )}
+                          <div className="flex-grow-1">
+                            <div className="d-flex justify-content-between align-items-start mb-1">
+                              <h6 className="mb-1">
+                                {notification.title}
+                                {!notification.is_read && (
+                                  <>
+                                    <CBadge color="primary" className="ms-2" aria-label="Unread">New</CBadge>
+                                    <span className="visually-hidden">Unread</span>
+                                  </>
+                                )}
+                              </h6>
+                              <CBadge color={getPriorityColor(notification.priority)}>
+                                {notification.priority}
+                              </CBadge>
+                            </div>
+                            <p className="text-muted mb-2">{notification.message}</p>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <small className="text-muted">
+                                {formatDate(notification.createdAt)}
+                                {notification.createdByUser && (
+                                  <> • by {notification.createdByUser.name}</>
+                                )}
+                              </small>
+                              <div>
+                                {isAdmin && !notification.is_read && (
+                                  <CButton
+                                    size="sm"
+                                    variant="ghost"
+                                    color="primary"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleMarkAsRead(notification.id)
+                                    }}
+                                    type="button"
+                                    aria-label="Mark notification as read"
+                                    style={{ minHeight: '44px' }}
+                                  >
+                                    Mark as read
+                                  </CButton>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CCardBody>
-                </CCard>
-              ))}
+                    </CCardBody>
+                  </CCard>
+                )
+              })}
 
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-4">
-                  <CPagination>
+                  <CPagination aria-label="Notifications pagination" role="navigation">
                     <CPaginationItem
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage(currentPage - 1)}
+                      aria-label="Previous page"
                     >
                       Previous
                     </CPaginationItem>
@@ -362,6 +391,8 @@ const NotificationsPage = () => {
                         key={page}
                         active={page === currentPage}
                         onClick={() => setCurrentPage(page)}
+                        aria-current={page === currentPage ? 'page' : undefined}
+                        aria-label={`Go to page ${page}`}
                       >
                         {page}
                       </CPaginationItem>
@@ -370,6 +401,7 @@ const NotificationsPage = () => {
                     <CPaginationItem
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage(currentPage + 1)}
+                      aria-label="Next page"
                     >
                       Next
                     </CPaginationItem>

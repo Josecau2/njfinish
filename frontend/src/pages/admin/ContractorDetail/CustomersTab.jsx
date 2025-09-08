@@ -21,16 +21,7 @@ import {
   CSpinner,
   CAlert
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import {
-  cilSearch,
-  cilGroup,
-  cilUser,
-  cilPhone,
-  cilEnvelopeClosed,
-  cilLocationPin,
-  cilCalendar
-} from '@coreui/icons';
+import { Search, Users, User, Phone, Mail, MapPin, Calendar, ChevronUp, ChevronDown } from '@/icons-lucide';
 import { fetchContractorCustomers } from '../../../store/slices/contractorSlice';
 import PaginationComponent from '../../../components/common/PaginationComponent';
 import EmptyState from '../../../components/common/EmptyState';
@@ -39,14 +30,14 @@ import { notifyError } from '../../../helpers/notify';
 const CustomersTab = ({ contractor, groupId }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  
+
   const contractorsState = useSelector((state) => state.contractors) || {};
   const cc = contractorsState.contractorCustomers || {};
   const customers = cc.data || [];
   const pagination = cc.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
   const loading = !!cc.loading;
   const error = cc.error || null;
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,11 +47,11 @@ const CustomersTab = ({ contractor, groupId }) => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (groupId) {
-        dispatch(fetchContractorCustomers({ 
-          groupId, 
-          page: currentPage, 
-          limit: itemsPerPage, 
-          search: searchTerm 
+        dispatch(fetchContractorCustomers({
+          groupId,
+          page: currentPage,
+          limit: itemsPerPage,
+          search: searchTerm
         }));
       }
     }, 300); // 300ms debounce
@@ -93,7 +84,7 @@ const CustomersTab = ({ contractor, groupId }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       // Check if the date is valid
@@ -118,17 +109,17 @@ const CustomersTab = ({ contractor, groupId }) => {
 
   const formatAddress = (customer) => {
     const parts = [];
-    
+
     // Add street address
     if (customer.address) {
       parts.push(customer.address);
     }
-    
+
     // Add apt/suite if present
     if (customer.aptOrSuite) {
       parts.push(customer.aptOrSuite);
     }
-    
+
     // Create city, state zip line
     const cityStateZip = [];
     if (customer.city) {
@@ -140,11 +131,11 @@ const CustomersTab = ({ contractor, groupId }) => {
     if (customer.zipCode) {
       cityStateZip.push(customer.zipCode);
     }
-    
+
     if (cityStateZip.length > 0) {
       parts.push(cityStateZip.join(', '));
     }
-    
+
     return parts.length > 0 ? parts.join(', ') : null;
   };
 
@@ -161,12 +152,12 @@ const CustomersTab = ({ contractor, groupId }) => {
       filtered.sort((a, b) => {
         let aVal = a[sortConfig.key];
         let bVal = b[sortConfig.key];
-        
+
         if (typeof aVal === 'string') {
           aVal = aVal.toLowerCase();
           bVal = bVal.toLowerCase();
         }
-        
+
         if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
@@ -196,8 +187,8 @@ const CustomersTab = ({ contractor, groupId }) => {
       <CCol xs={12}>
         <CCard>
           <CCardHeader>
-              <strong>
-              <CIcon icon={cilGroup} className="me-2" />
+            <strong>
+              <Users size={16} className="me-2" aria-hidden="true" />
               {t('contractorsAdmin.detail.customers.header', { count: filteredAndSortedCustomers.length })}
             </strong>
           </CCardHeader>
@@ -212,12 +203,13 @@ const CustomersTab = ({ contractor, groupId }) => {
             <CRow className="mb-4">
               <CCol md={6}>
                 <CInputGroup>
-                  <CInputGroupText>
-                    <CIcon icon={cilSearch} />
+                  <CInputGroupText aria-hidden="true">
+                    <Search size={16} />
                   </CInputGroupText>
                   <CFormInput
                     type="text"
                     placeholder={t('contractorsAdmin.detail.customers.searchPlaceholder')}
+                    aria-label={t('contractorsAdmin.detail.customers.searchAria', 'Search contractor customers')}
                     value={searchTerm}
                     onChange={(e) => handleSearchChange(e.target.value)}
                   />
@@ -267,8 +259,8 @@ const CustomersTab = ({ contractor, groupId }) => {
             </CRow>
 
             {/* Desktop Table */}
-            <div className="table-responsive d-none d-md-block">
-              <CTable hover striped>
+            <div className="table-wrap d-none d-md-block">
+              <CTable hover striped className="table-modern">
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell
@@ -277,9 +269,11 @@ const CustomersTab = ({ contractor, groupId }) => {
                       onClick={() => handleSort('name')}
                     >
                       {t('customers.name')}
-                      {sortConfig.key === 'name' && (
-                        <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                      )}
+                      {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? (
+                        <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                      ) : (
+                        <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                      ))}
                     </CTableHeaderCell>
                     <CTableHeaderCell
                       scope="col"
@@ -287,9 +281,11 @@ const CustomersTab = ({ contractor, groupId }) => {
                       onClick={() => handleSort('email')}
                     >
                       {t('customers.email')}
-                      {sortConfig.key === 'email' && (
-                        <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                      )}
+                      {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? (
+                        <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                      ) : (
+                        <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                      ))}
                     </CTableHeaderCell>
                     <CTableHeaderCell scope="col">
                       {t('contractorsAdmin.detail.customers.table.phone')}
@@ -303,9 +299,11 @@ const CustomersTab = ({ contractor, groupId }) => {
                       onClick={() => handleSort('created_at')}
                     >
                       {t('contractorsAdmin.detail.customers.table.created')}
-                      {sortConfig.key === 'created_at' && (
-                        <CIcon icon={sortConfig.direction === 'asc' ? 'cilSortUp' : 'cilSortDown'} className="ms-1" size="sm" />
-                      )}
+                      {sortConfig.key === 'created_at' && (sortConfig.direction === 'asc' ? (
+                        <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                      ) : (
+                        <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                      ))}
                     </CTableHeaderCell>
                     <CTableHeaderCell scope="col">
                       {t('contractorsAdmin.detail.customers.table.status')}
@@ -324,7 +322,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                       <CTableRow key={customer.id} className="align-middle">
                         <CTableDataCell>
                           <div className="d-flex align-items-center">
-                            <CIcon icon={cilUser} className="me-2 text-muted" />
+                            <User size={16} className="me-2 text-muted" aria-hidden="true" />
                             <div>
                               <div className="fw-semibold">{customer.name}</div>
                               <small className="text-muted">ID: {customer.id}</small>
@@ -334,7 +332,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         <CTableDataCell>
                           {customer.email ? (
                             <div className="d-flex align-items-center">
-                              <CIcon icon={cilEnvelopeClosed} className="me-1 text-muted" size="sm" />
+                              <Mail size={14} className="me-1 text-muted" aria-hidden="true" />
                               <span>{customer.email}</span>
                             </div>
                           ) : (
@@ -344,7 +342,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         <CTableDataCell>
                           {customer.phone ? (
                             <div className="d-flex align-items-center">
-                              <CIcon icon={cilPhone} className="me-1 text-muted" size="sm" />
+                              <Phone size={14} className="me-1 text-muted" aria-hidden="true" />
                               <span>{formatPhone(customer.phone)}</span>
                             </div>
                           ) : (
@@ -354,7 +352,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         <CTableDataCell>
                           {formatAddress(customer) ? (
                             <div className="d-flex align-items-center">
-                              <CIcon icon={cilLocationPin} className="me-1 text-muted" size="sm" />
+                              <MapPin size={14} className="me-1 text-muted" aria-hidden="true" />
                               <small>{formatAddress(customer)}</small>
                             </div>
                           ) : (
@@ -363,7 +361,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         </CTableDataCell>
                         <CTableDataCell>
                           <small className="text-muted">
-                            <CIcon icon={cilCalendar} className="me-1" size="sm" />
+                            <Calendar size={14} className="me-1" aria-hidden="true" />
                             {formatDate(customer.created_at)}
                           </small>
                         </CTableDataCell>
@@ -391,7 +389,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         {/* Header */}
                         <div className="d-flex justify-content-between align-items-start mb-3">
                           <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                            <CIcon icon={cilUser} className="me-2 text-muted" size="lg" />
+                            <User size={20} className="me-2 text-muted" aria-hidden="true" />
                             <div className="flex-grow-1 min-width-0">
                               <div className="fw-semibold text-truncate" title={customer.name}>
                                 {customer.name}
@@ -410,7 +408,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                             <div className="small text-muted">{t('customers.email')}</div>
                             {customer.email ? (
                               <div className="d-flex align-items-center">
-                                <CIcon icon={cilEnvelopeClosed} className="me-1 text-muted" size="sm" />
+                                <Mail size={14} className="me-1 text-muted" aria-hidden="true" />
                                 <span className="text-truncate-mobile" title={customer.email}>
                                   {customer.email}
                                 </span>
@@ -423,7 +421,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                             <div className="small text-muted">{t('contractorsAdmin.detail.customers.table.phone')}</div>
                             {customer.phone ? (
                               <div className="d-flex align-items-center">
-                                <CIcon icon={cilPhone} className="me-1 text-muted" size="sm" />
+                                <Phone size={14} className="me-1 text-muted" aria-hidden="true" />
                                 <span>{formatPhone(customer.phone)}</span>
                               </div>
                             ) : (
@@ -433,7 +431,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           <div className="col-6">
                             <div className="small text-muted">{t('contractorsAdmin.detail.customers.table.created')}</div>
                             <small>
-                              <CIcon icon={cilCalendar} className="me-1" size="sm" />
+                              <Calendar size={14} className="me-1" aria-hidden="true" />
                               {formatDate(customer.created_at)}
                             </small>
                           </div>
@@ -444,7 +442,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           <div className="mb-2">
                             <div className="small text-muted">{t('contractorsAdmin.detail.customers.table.address')}</div>
                             <div className="d-flex align-items-start">
-                              <CIcon icon={cilLocationPin} className="me-1 text-muted mt-1" size="sm" />
+                              <MapPin size={14} className="me-1 text-muted mt-1" aria-hidden="true" />
                               <small className="flex-grow-1">{formatAddress(customer)}</small>
                             </div>
                           </div>

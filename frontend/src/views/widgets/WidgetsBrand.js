@@ -35,7 +35,14 @@ const WidgetsBrand = (props) => {
   }
 
   return (
-    <CRow className={props.className} xs={{ gutter: 4 }}>
+    <>
+      <style>{`
+        @media (max-width: 576px){
+          .widgets-brand .my-4 { margin-top: .5rem !important; margin-bottom: .5rem !important; }
+          .widgets-brand .card { min-height: 100px; }
+        }
+      `}</style>
+      <CRow className={`widgets-brand ${props.className || ''}`} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsD
           {...(props.withCharts && {
@@ -170,7 +177,8 @@ const WidgetsBrand = (props) => {
           ]}
         />
       </CCol>
-    </CRow>
+  </CRow>
+  </>
   )
 }
 

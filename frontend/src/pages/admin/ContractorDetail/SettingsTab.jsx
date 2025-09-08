@@ -11,20 +11,12 @@ import {
   CBadge,
   CAlert
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import {
-  cilSettings,
-  cilShieldAlt,
-  cilPeople,
-  cilCheckCircle,
-  cilXCircle,
-  cilInfo
-} from '@coreui/icons';
+import { Settings, Shield, Users, CheckCircle, XCircle, Info } from '@/icons-lucide';
 
 const SettingsTab = ({ contractor }) => {
   const { t } = useTranslation();
   const contractorSettings = contractor.contractor_settings || {};
-  
+
   // Parse modules if they're stored as JSON string
   let modules = contractor.modules || {};
   if (typeof modules === 'string') {
@@ -50,12 +42,12 @@ const SettingsTab = ({ contractor }) => {
   const formatBoolean = (value) => {
     return value ? (
       <CBadge color="success">
-        <CIcon icon={cilCheckCircle} className="me-1" size="sm" />
+  <CheckCircle size={14} className="me-1" aria-hidden="true" />
     {t('contractorsAdmin.detail.enabled')}
       </CBadge>
     ) : (
       <CBadge color="danger">
-        <CIcon icon={cilXCircle} className="me-1" size="sm" />
+  <XCircle size={14} className="me-1" aria-hidden="true" />
     {t('contractorsAdmin.detail.disabled')}
       </CBadge>
     );
@@ -85,22 +77,22 @@ const SettingsTab = ({ contractor }) => {
       {/* Module Settings */}
       <CCol md={6} className="mb-4">
         <CCard>
-          <CCardHeader>
+      <CCardHeader>
             <strong>
-              <CIcon icon={cilShieldAlt} className="me-2" />
+        <Shield size={16} className="me-2" aria-hidden="true" />
               {t('contractorsAdmin.detail.moduleAccess.title')}
             </strong>
           </CCardHeader>
           <CCardBody>
             {Object.keys(modules).length === 0 ? (
               <CAlert color="info">
-                <CIcon icon={cilInfo} className="me-2" />
+                <Info size={16} className="me-2" aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noModuleSettings')}
               </CAlert>
             ) : (
               <CListGroup flush>
                 {Object.entries(modules).map(([key, value]) => (
-                  <CListGroupItem 
+                  <CListGroupItem
                     key={key}
                     className="d-flex justify-content-between align-items-center"
                   >
@@ -126,22 +118,22 @@ const SettingsTab = ({ contractor }) => {
       {/* Contractor Settings */}
       <CCol md={6} className="mb-4">
         <CCard>
-          <CCardHeader>
+      <CCardHeader>
             <strong>
-              <CIcon icon={cilSettings} className="me-2" />
+        <Settings size={16} className="me-2" aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.title')}
             </strong>
           </CCardHeader>
           <CCardBody>
             {Object.keys(parsedContractorSettings).length === 0 ? (
               <CAlert color="info">
-                <CIcon icon={cilInfo} className="me-2" />
+                <Info size={16} className="me-2" aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noneConfigured')}
               </CAlert>
             ) : (
               <CListGroup flush>
                 {Object.entries(parsedContractorSettings).map(([key, value]) => (
-                  <CListGroupItem 
+                  <CListGroupItem
                     key={key}
                     className="d-flex justify-content-between align-items-center"
                   >
@@ -158,7 +150,7 @@ const SettingsTab = ({ contractor }) => {
                       </small>
                     </span>
                     <span>
-                      {typeof value === 'boolean' 
+                      {typeof value === 'boolean'
                         ? formatBoolean(value)
                         : typeof value === 'object'
                         ? <CBadge color="info">{t('contractorsAdmin.detail.settings.objectLabel')}</CBadge>
@@ -176,9 +168,9 @@ const SettingsTab = ({ contractor }) => {
       {/* Raw JSON Display */}
       <CCol xs={12}>
         <CCard>
-          <CCardHeader>
+      <CCardHeader>
             <strong>
-              <CIcon icon={cilInfo} className="me-2" />
+        <Info size={16} className="me-2" aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.raw.title')}
             </strong>
           </CCardHeader>

@@ -147,8 +147,17 @@ const ContractorDashboard = () => {
 
   return (
     <CContainer fluid>
+      <style>{`
+        /* Contractor dashboard mobile tweaks */
+        .contractor-dashboard .btn { min-height: 44px; }
+        .contractor-dashboard .quick-actions { flex-wrap: wrap; }
+        .contractor-dashboard .quick-actions .btn { flex: 1 1 48%; }
+        @media (max-width: 575.98px) {
+          .contractor-dashboard .card .fs-4 { font-size: 1.25rem; }
+        }
+      `}</style>
       <CRow>
-        <CCol xs={12}>
+        <CCol xs={12} className="contractor-dashboard">
           <CCard className="mb-4">
             <CCardHeader>
               <h4 className="mb-0">{t('dashboard.welcome', { group: groupName })}</h4>
@@ -206,11 +215,12 @@ const ContractorDashboard = () => {
                       <h6 className="mb-0">{t('dashboard.quickActions')}</h6>
                     </CCardHeader>
                     <CCardBody>
-                      <div className="d-flex flex-wrap gap-2">
+                      <div className="d-flex quick-actions gap-2">
                         {modulesList.includes('proposals') && (
                           <CButton
                             color="primary"
                             variant="outline"
+                            aria-label={t('dashboard.createProposal')}
                             onClick={() => navigate('/quotes/create')}
                           >
                             {t('dashboard.createProposal')}
@@ -220,6 +230,7 @@ const ContractorDashboard = () => {
                           <CButton
                             color="success"
                             variant="outline"
+                            aria-label={t('nav.addCustomer')}
                             onClick={() => navigate('/customers/add')}
                           >
                             {t('nav.addCustomer')}
@@ -228,6 +239,7 @@ const ContractorDashboard = () => {
                         <CButton
                           color="info"
                           variant="outline"
+                          aria-label={t('dashboard.viewProfile')}
                           onClick={() => navigate('/profile')}
                         >
                           {t('dashboard.viewProfile')}

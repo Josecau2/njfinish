@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
-  CCard, 
-  CCardBody, 
-  CCardHeader, 
+  CCard,
+  CCardBody,
+  CCardHeader,
   CTableDataCell,
-  CTable, 
-  CTableBody, 
-  CTableHead, 
-  CTableRow, 
+  CTable,
+  CTableBody,
+  CTableHead,
+  CTableRow,
   CTableHeaderCell,
   CFormSwitch,
   CContainer,
@@ -22,8 +22,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice';
 import { getContrastColor } from '../../../utils/colorUtils';
-import CIcon from '@coreui/icons-react';
-import { cilPencil, cilSearch, cilSettings, cilUser } from '@coreui/icons';
+import { Search, Settings, Users, User, Pencil } from '@/icons-lucide';
 import EditGroupModal from '../../../components/model/EditGroupModal';
 import {
   fetchMultiManufacturers,
@@ -62,7 +61,7 @@ const ManuMultipliers = () => {
   const mergedGroups = allGroups.map(group => {
     // Find if this group has a multiplier entry
     const multiplierEntry = usersGroup.find(mg => mg.user_group?.id === group.id);
-    
+
     return {
       id: multiplierEntry?.id || null, // ID from UserGroupMultiplier table (null if no entry exists)
       user_group: group, // Full group data
@@ -73,12 +72,12 @@ const ManuMultipliers = () => {
 
   const toggleEnabled = (group, currentEnabled) => {
     const updatedData = { enabled: !currentEnabled };
-    
+
     // If group doesn't have an ID (no multiplier entry exists), we need to create one
     if (!group.id) {
       updatedData.user_group_id = group.user_group.id;
       updatedData.multiplier = 1.0; // Default multiplier
-      
+
       // Create new multiplier entry
       dispatch(createMultiManufacturer(updatedData))
         .unwrap()
@@ -171,7 +170,7 @@ const ManuMultipliers = () => {
 
   const handleSave = (updatedData) => {
     if (!selectedGroup) return;
-    
+
     // If no ID exists, create new entry
     if (!selectedGroup.id) {
       updatedData.user_group_id = selectedGroup.user_group.id;
@@ -226,7 +225,7 @@ const ManuMultipliers = () => {
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center"
               style={{
                 width: '48px',
@@ -235,24 +234,24 @@ const ManuMultipliers = () => {
                 borderRadius: '12px'
               }}
             >
-              <CIcon icon={cilUser} style={{ fontSize: '24px', color: 'white' }} />
+              <Users style={{ width: 24, height: 24, color: 'white' }} aria-hidden="true" />
             </div>
             {t('settings.userGroups.multipliers.header')}
           </div>
         }
         subtitle={t('settings.userGroups.multipliers.subtitle')}
         rightContent={
-          <CBadge 
-            color="light" 
+          <CBadge
+            color="light"
             className="px-3 py-2"
-            style={{ 
+            style={{
               borderRadius: '5px',
               fontSize: '12px',
               fontWeight: '500',
               color: '#6c757d'
             }}
           >
-            <CIcon icon={cilUser} className="me-1" size="sm" />
+            <Users className="me-1" size={14} aria-hidden="true" />
             {mergedGroups.length} {t('settings.userGroups.multipliers.groups')}
           </CBadge>
         }
@@ -264,16 +263,16 @@ const ManuMultipliers = () => {
           <CCard className="border-0 shadow-sm h-100">
             <CCardBody className="text-center py-4">
               <div className="d-flex align-items-center justify-content-center mb-2">
-                <div 
+                <div
                   className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{ 
-                    width: '50px', 
-                    height: '50px', 
+                  style={{
+                    width: '50px',
+                    height: '50px',
                     backgroundColor: '#e6ffed',
                     color: '#28a745'
                   }}
                 >
-                  <CIcon icon={cilSettings} size="lg" />
+                  <Settings size={22} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-success">{enabledCount}</h4>
@@ -287,16 +286,16 @@ const ManuMultipliers = () => {
           <CCard className="border-0 shadow-sm h-100">
             <CCardBody className="text-center py-4">
               <div className="d-flex align-items-center justify-content-center mb-2">
-                <div 
+                <div
                   className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{ 
-                    width: '50px', 
-                    height: '50px', 
+                  style={{
+                    width: '50px',
+                    height: '50px',
                     backgroundColor: '#ffe6e6',
                     color: '#dc3545'
                   }}
                 >
-                  <CIcon icon={cilSettings} size="lg" />
+                  <Settings size={22} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-danger">{disabledCount}</h4>
@@ -310,16 +309,16 @@ const ManuMultipliers = () => {
           <CCard className="border-0 shadow-sm h-100">
             <CCardBody className="text-center py-4">
               <div className="d-flex align-items-center justify-content-center mb-2">
-                <div 
+                <div
                   className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                  style={{ 
-                    width: '50px', 
-                    height: '50px', 
+                  style={{
+                    width: '50px',
+                    height: '50px',
                     backgroundColor: `${customization.headerBg || '#667eea'}20`,
                     color: customization.headerBg || '#667eea'
                   }}
                 >
-                  <CIcon icon={cilUser} size="lg" />
+                  <User size={22} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-primary">{usersGroup.length}</h4>
@@ -338,7 +337,7 @@ const ManuMultipliers = () => {
             <CCol md={6} lg={4}>
               <CInputGroup>
                 <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                  <CIcon icon={cilSearch} />
+                  <Search aria-hidden="true" size={18} />
                 </CInputGroupText>
                 <CFormInput
                   type="text"
@@ -348,7 +347,7 @@ const ManuMultipliers = () => {
                     setFilterText(e.target.value);
                     setCurrentPage(1);
                   }}
-                  style={{ 
+                  style={{
                     border: '1px solid #e3e6f0',
                     borderRadius: '10px',
                     fontSize: '14px',
@@ -373,19 +372,19 @@ const ManuMultipliers = () => {
             <CTable hover responsive className="mb-0">
               <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
                 <CTableRow>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                  <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
                     <div className="d-flex align-items-center gap-2">
-                      <CIcon icon={cilUser} size="sm" />
+                      <Users size={16} aria-hidden="true" />
                       {t('settings.userGroups.multipliers.table.groupName')}
                     </div>
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                  <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
                     {t('settings.userGroups.multipliers.table.multiplier')}
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                  <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
                     {t('settings.userGroups.multipliers.table.status')}
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">
+                  <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3 text-center">
                     {t('settings.userGroups.multipliers.table.actions')}
                   </CTableHeaderCell>
                 </CTableRow>
@@ -395,7 +394,7 @@ const ManuMultipliers = () => {
                   <CTableRow>
                     <CTableDataCell colSpan="4" className="text-center py-5">
                       <div className="text-muted">
-                        <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+                        <Search size={28} className="mb-3 opacity-25" aria-hidden="true" />
                         <p className="mb-0">{t('settings.userGroups.multipliers.empty.title')}</p>
                         <small>{t('settings.userGroups.multipliers.empty.subtitle')}</small>
                       </div>
@@ -410,10 +409,10 @@ const ManuMultipliers = () => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                        <CBadge 
-                          color="primary" 
+                        <CBadge
+                          color="primary"
                           className="px-3 py-2"
-                          style={{ 
+                          style={{
                             borderRadius: '20px',
                             fontSize: '12px',
                             fontWeight: '600',
@@ -429,14 +428,15 @@ const ManuMultipliers = () => {
                           <CFormSwitch
                             checked={group.enabled === 1}
                             onChange={() => toggleEnabled(group, group.enabled)}
-                            style={{ 
+                            style={{
                               transform: 'scale(1.1)',
                             }}
+                            aria-label={group.enabled === 1 ? t('settings.userGroups.multipliers.status.setInactive') : t('settings.userGroups.multipliers.status.setActive')}
                           />
-                          <CBadge 
-                            color={group.enabled === 1 ? 'success' : 'secondary'} 
+                          <CBadge
+                            color={group.enabled === 1 ? 'success' : 'secondary'}
                             className="px-2 py-1"
-                            style={{ 
+                            style={{
                               borderRadius: '15px',
                               fontSize: '10px',
                               fontWeight: '500'
@@ -447,17 +447,19 @@ const ManuMultipliers = () => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
-                        <CButton
+            <CButton
                           color="light"
                           size="sm"
-                          className="p-2"
+                          className="p-2 icon-btn"
                           onClick={() => handleEdit(group)}
                           title={t('settings.userGroups.multipliers.actions.edit')}
                           aria-label={t('settings.userGroups.multipliers.actions.edit')}
                           style={{
                             borderRadius: '8px',
                             border: '1px solid #e3e6f0',
-                            transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              minHeight: '44px',
+              minWidth: '44px'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
@@ -468,11 +470,7 @@ const ManuMultipliers = () => {
                             e.currentTarget.style.borderColor = '#e3e6f0';
                           }}
                         >
-                          <CIcon
-                            icon={cilPencil}
-                            size="sm"
-                            style={{ color: customization.headerBg || '#667eea' }}
-                          />
+                          <Pencil size={16} style={{ color: customization.headerBg || '#667eea' }} aria-hidden="true" />
                         </CButton>
                       </CTableDataCell>
                     </CTableRow>
@@ -481,7 +479,7 @@ const ManuMultipliers = () => {
               </CTableBody>
             </CTable>
           </div>
-          
+
           {/* Pagination */}
               <PaginationComponent
                 currentPage={currentPage}

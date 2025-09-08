@@ -59,6 +59,9 @@ const TermsPage = () => {
 
   return (
     <>
+      <style>{`
+        .settings-terms .btn, .btn { min-height: 44px; }
+      `}</style>
       <PageHeader title={t('settings.terms.title', 'Terms & Conditions')} subtitle={t('settings.terms.subtitle','Edit terms and track acceptance')} />
       <CRow className="g-3">
         <CCol lg={6}>

@@ -11,11 +11,11 @@ const EmptyState = ({
   children,
 }) => {
   return (
-    <div className={`text-center py-4 ${className}`}>
+    <div className={`text-center py-4 ${className}`} role="status" aria-live="polite">
       <div className="mb-2" style={{ opacity: 0.35 }}>
         <CIcon icon={icon} size="xl" />
       </div>
-      <div className="fw-semibold">{title}</div>
+      <div className="fw-semibold" aria-atomic="true">{title}</div>
       <div className="text-muted small">{subtitle}</div>
       {children}
     </div>

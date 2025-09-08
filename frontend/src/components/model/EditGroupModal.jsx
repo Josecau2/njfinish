@@ -19,7 +19,7 @@ import {
 const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
     const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
-    
+
     const [formData, setFormData] = useState({
         name: '',
         multiplier: '',
@@ -71,12 +71,12 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
         <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center" scrollable>
             <CForm onSubmit={handleSubmit}>
                 <CModalBody className="p-0">
-                    <PageHeader 
+                    <PageHeader
                         title={t('settings.userGroups.multipliers.modal.title')}
                         cardClassName="mb-0 rounded-top-3"
                     />
                     <div className="p-4">
-                        {error && <CAlert color="danger">{error}</CAlert>}
+                        {error && <CAlert color="danger" role="alert" aria-live="assertive">{error}</CAlert>}
 
                     <CContainer fluid>
                         <CRow className="mb-3">
@@ -90,6 +90,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                                     readOnly
                                     placeholder={t('settings.userGroups.multipliers.modal.placeholders.name')}
                                     style={readOnlyStyle}
+                                    aria-label={t('settings.userGroups.multipliers.modal.labels.name')}
                                 />
                             </CCol>
                             <CCol xs={6} md={6}>
@@ -112,6 +113,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                                     }}
                                     placeholder={t('settings.userGroups.multipliers.modal.placeholders.multiplier')}
                                     style={inputStyle}
+                                    aria-label={t('settings.userGroups.multipliers.modal.labels.multiplier')}
                                 />
                             </CCol>
                         </CRow>
@@ -130,6 +132,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                                         name="enabled"
                                         checked={formData.enabled}
                                         onChange={handleChange}
+                                        aria-label={t('settings.userGroups.multipliers.modal.labels.enabled')}
                                     />
                                     <label
                                         className="form-check-label ms-2"
@@ -145,10 +148,10 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
                     </div>
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="secondary" variant="outline" onClick={onClose}>
+                    <CButton color="secondary" variant="outline" onClick={onClose} style={{ minHeight: '44px' }}>
                         {t('common.cancel')}
                     </CButton>
-                    <CButton color="primary" type="submit">
+                    <CButton color="primary" type="submit" style={{ minHeight: '44px' }}>
                         {t('common.save')}
                     </CButton>
                 </CModalFooter>

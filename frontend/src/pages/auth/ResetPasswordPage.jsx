@@ -47,12 +47,12 @@ const ResetPasswordPage = () => {
             &larr; Back to login
           </a> */}
                     {message && (
-                        <div className="alert alert-success" role="alert">
+                        <div className="alert alert-success" role="status" aria-live="polite">
                             {message}
                         </div>
                     )}
                     {error && (
-                        <div className="alert alert-danger" role="alert">
+                        <div className="alert alert-danger" role="alert" aria-live="assertive">
                             {error}
                         </div>
                     )}
@@ -64,13 +64,14 @@ const ResetPasswordPage = () => {
                             <input
                                 type="password"
                                 className="form-control"
+                                id="password"
                                 placeholder="New Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary w-100">Reset</button>
+                        <button type="submit" className="btn btn-primary w-100" style={{ minHeight: 44 }}>Reset</button>
                     </form>
 
                     {/* <div className="text-center mt-3">

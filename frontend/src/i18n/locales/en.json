@@ -316,11 +316,16 @@
       "customer": "Customer",
       "description": "Description",
       "manufacturer": "Manufacturer",
-      "status": "Status"
+      "status": "Status",
+      "payment": "Payment",
+      "actions": "Actions"
     },
     "empty": {
       "title": "No orders found",
       "subtitle": "Accepted & locked quotes will appear here"
+    },
+    "actions": {
+      "makePayment": "Make Payment"
     },
     "common": {
       "manufacturer": "Manufacturer"
@@ -373,6 +378,154 @@
         "subtitleDefault": "Your accepted and locked quotes",
         "subtitleForGroup": "Accepted & locked quotes for {{group}}"
       }
+    }
+  },
+  "payments": {
+    "title": {
+      "contractor": "My Payments",
+      "admin": "All Payments"
+    },
+    "subtitle": {
+      "contractor": "View your payment history and make payments",
+      "admin": "Manage all payments and payment configurations"
+    },
+    "status": {
+      "all": "All",
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "paid": "Paid",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "paymentRequired": "Payment Required"
+    },
+    "headers": {
+      "date": "Date",
+      "customer": "Customer",
+      "order": "Order",
+      "amount": "Amount",
+      "status": "Status",
+      "transaction": "Transaction ID",
+      "actions": "Actions"
+    },
+    "actions": {
+      "makePayment": "Make Payment"
+    },
+    "searchPlaceholder": "Search by customer, contractor, or transaction ID",
+    "searchAria": "Search payments",
+    "showingCount": "Showing {{count}} of {{total}}",
+    "empty": {
+      "title": "No payments found",
+      "subtitle": "Payments will appear here when created"
+    },
+    "openDetails": "Open payment details",
+    "create": {
+      "title": "Create Payment",
+      "button": "Create Payment",
+      "orderIdLabel": "Order ID",
+      "orderIdPlaceholder": "Enter order ID",
+      "invalidOrderId": "Please enter a valid order ID",
+      "amountTitle": "Payment Amount",
+      "amountLabel": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "invalidAmount": "Please enter a valid amount",
+      "success": "Payment created successfully",
+      "error": "Failed to create payment"
+    }
+  },
+  "payment": {
+    "title": "Make Payment",
+    "subtitle": "Complete your payment securely",
+    "details": {
+      "title": "Payment Details"
+    },
+    "order": "Order",
+    "customer": {
+      "title": "Customer Information",
+      "name": "Name",
+      "order": "Order Date"
+    },
+    "external": {
+      "title": "Secure Payment",
+      "description": "You will be redirected to our secure payment gateway to complete your transaction.",
+      "button": "Pay Now",
+      "security": "Your payment is processed securely through our certified payment partner."
+    },
+    "embed": {
+      "notConfigured": "Embedded payment form is not configured. Please contact support."
+    },
+    "gateway": {
+      "notConfigured": "Payment gateway is not configured. Please contact support."
+    },
+    "completed": {
+      "title": "Payment Completed",
+      "subtitle": "This payment has already been processed",
+      "message": "Payment Successfully Completed",
+      "details": "This payment was completed on"
+    },
+    "unavailable": {
+      "title": "Payment Unavailable",
+      "subtitle": "This payment cannot be processed at this time",
+      "message": "This payment is not available for processing. Status:"
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "message": "Your payment has been processed successfully.",
+      "continue": "Continue"
+    },
+    "error": {
+      "title": "Payment Failed",
+      "generic": "There was an error processing your payment. Please try again.",
+      "statusUpdate": "Payment was successful but there was an error updating the status. Please contact support."
+    },
+    "processing": "Processing payment...",
+    "transactionId": "Transaction ID"
+  },
+  "paymentConfig": {
+    "title": "Payment Configuration",
+    "subtitle": "Configure payment gateway settings and embedded payment forms",
+    "gateway": {
+      "title": "Payment Gateway Settings",
+      "provider": "Gateway Provider",
+      "url": "Gateway URL",
+      "urlPlaceholder": "https://your-payment-gateway.com/checkout",
+      "urlHelp": "The URL where customers will be redirected to make payments"
+    },
+    "providers": {
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "square": "Square",
+      "custom": "Custom"
+    },
+    "currencies": {
+      "label": "Supported Currencies",
+      "placeholder": "USD, EUR, CAD",
+      "help": "Separate multiple currencies with commas"
+    },
+    "embed": {
+      "title": "Embedded Payment Form Code",
+      "placeholder": "Paste your payment gateway's embed code here...",
+      "help": "Optional: HTML/JavaScript code to embed payment forms directly in your pages"
+    },
+    "advanced": {
+      "title": "Advanced Settings (JSON)",
+      "help": "Additional configuration options in JSON format"
+    },
+    "preview": {
+      "title": "Configuration Preview",
+      "current": "Current Configuration",
+      "notSet": "Not configured",
+      "embedConfigured": "Embedded payment form configured"
+    },
+    "save": {
+      "success": "Payment configuration saved successfully",
+      "error": "Failed to save payment configuration"
+    },
+    "test": {
+      "button": "Test Configuration",
+      "noUrl": "Please configure a gateway URL first",
+      "success": "Configuration appears valid. Please test with a real payment to confirm.",
+      "invalidUrl": "Invalid gateway URL"
     }
   },
   "contact": {

@@ -19,6 +19,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 const Login = () => {
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+      <style>{`.card .btn{ min-height:44px; }`}</style>
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>

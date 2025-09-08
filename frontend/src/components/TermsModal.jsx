@@ -14,16 +14,16 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
   // Enhanced contrast calculation function (same as PageHeader)
   const getContrastColor = (backgroundColor) => {
     if (!backgroundColor) return '#ffffff';
-    
+
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calculate luminance using WCAG formula
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Return high contrast colors
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -32,7 +32,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
   const getOptimalColors = (backgroundColor) => {
     const textColor = getContrastColor(backgroundColor);
     const isLight = textColor === '#2d3748';
-    
+
     return {
       text: textColor,
       subtitle: isLight ? 'rgba(45, 55, 72, 0.6)' : 'rgba(255, 255, 255, 0.6)',
@@ -90,7 +90,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
   // Check if scrolling is actually needed after content loads
   useEffect(() => {
     if (!requireScroll || !visible || !content) return
-    
+
     const checkScrollNeeded = () => {
       const element = modalBodyRef.current
       if (element) {
@@ -101,7 +101,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
         }
       }
     }
-    
+
     // Small delay to ensure content is rendered
     const timer = setTimeout(checkScrollNeeded, 100)
     return () => clearTimeout(timer)
@@ -145,22 +145,22 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
             color: ${optimalColors.text} !important;
             border-bottom: 1px solid rgba(0,0,0,0.125) !important;
           }
-          
+
           .modal .modal-header.terms-modal-header .modal-title {
             color: ${optimalColors.text} !important;
             font-weight: 600 !important;
           }
-          
+
           .modal .modal-header.terms-modal-header .btn-close {
             filter: ${optimalColors.text === '#ffffff' ? 'invert(1) grayscale(100%) brightness(200%)' : 'none'} !important;
           }
-          
+
           .terms-modal-primary-btn {
             background-color: ${optimalColors.button.primary.bg} !important;
             border-color: ${optimalColors.button.primary.border} !important;
             color: ${optimalColors.button.primary.color} !important;
           }
-          
+
           .terms-modal-primary-btn:hover,
           .terms-modal-primary-btn:focus,
           .terms-modal-primary-btn:active {
@@ -168,13 +168,13 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
             border-color: ${optimalColors.button.primary.border} !important;
             color: ${optimalColors.button.primary.hover.color} !important;
           }
-          
+
           .terms-modal-danger-btn {
             background-color: ${optimalColors.button.danger.bg} !important;
             border-color: ${optimalColors.button.danger.border} !important;
             color: ${optimalColors.button.danger.color} !important;
           }
-          
+
           .terms-modal-danger-btn:hover,
           .terms-modal-danger-btn:focus,
           .terms-modal-danger-btn:active {
@@ -185,29 +185,29 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
         `}
       </style>
       <CModal visible={visible} backdrop="static" keyboard={false} size="lg">
-        <CModalHeader 
-          closeButton={!isForced} 
+        <CModalHeader
+          closeButton={!isForced}
           className="terms-modal-header"
           style={{ background: backgroundColor, backgroundImage: 'none' }}
         >
           <CModalTitle>Terms & Conditions</CModalTitle>
         </CModalHeader>
-        <CModalBody 
+        <CModalBody
           ref={modalBodyRef}
-          style={{ maxHeight: 400, overflowY: 'auto', whiteSpace: 'pre-wrap' }} 
+          style={{ maxHeight: 400, overflowY: 'auto', whiteSpace: 'pre-wrap' }}
           onScroll={handleScroll}
         >
           {content || 'No terms available.'}
           {isForced && (
-            <div className="mt-3 p-3 bg-warning text-dark rounded">
+            <div className="mt-3 p-3 bg-warning text-dark rounded" role="status" aria-live="polite">
               <strong>Required:</strong> You must accept these terms to continue using the application.
             </div>
           )}
         </CModalBody>
         <CModalFooter>
-          {!isForced && <CButton color="secondary" disabled>{requireScroll ? 'Scroll to enable Accept' : 'Review terms'}</CButton>}
-          {isForced && <CButton className="terms-modal-danger-btn" onClick={onRejectTerms}>Reject & Logout</CButton>}
-          <CButton className="terms-modal-primary-btn" disabled={!canAccept} onClick={onAccept}>Accept</CButton>
+          {!isForced && <CButton color="secondary" disabled style={{ minHeight: '44px' }}>{requireScroll ? 'Scroll to enable Accept' : 'Review terms'}</CButton>}
+          {isForced && <CButton className="terms-modal-danger-btn" onClick={onRejectTerms} style={{ minHeight: '44px' }}>Reject & Logout</CButton>}
+          <CButton className="terms-modal-primary-btn" disabled={!canAccept} onClick={onAccept} style={{ minHeight: '44px' }}>Accept</CButton>
         </CModalFooter>
       </CModal>
     </>

@@ -38,7 +38,13 @@ const WidgetsDropdown = (props) => {
   }, [widgetChartRef1, widgetChartRef2])
 
   return (
-    <CRow className={props.className} xs={{ gutter: 4 }}>
+    <>
+      <style>{`
+        @media (max-width: 576px){
+          .widgets-dropdown .btn, .widgets-dropdown .btn > * { min-height: 44px; }
+        }
+      `}</style>
+      <CRow className={`widgets-dropdown ${props.className || ''}`} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="primary"
@@ -53,7 +59,12 @@ const WidgetsDropdown = (props) => {
           title="Users"
           action={
             <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+              <CDropdownToggle
+                color="transparent"
+                caret={false}
+                className="text-white p-0"
+                aria-label="Users widget options"
+              >
                 <CIcon icon={cilOptions} />
               </CDropdownToggle>
               <CDropdownMenu>
@@ -129,7 +140,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3}>
+  <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="info"
           value={
@@ -143,7 +154,12 @@ const WidgetsDropdown = (props) => {
           title="Income"
           action={
             <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+              <CDropdownToggle
+                color="transparent"
+                caret={false}
+                className="text-white p-0"
+                aria-label="Income widget options"
+              >
                 <CIcon icon={cilOptions} />
               </CDropdownToggle>
               <CDropdownMenu>
@@ -218,7 +234,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3}>
+  <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
           value={
@@ -232,7 +248,12 @@ const WidgetsDropdown = (props) => {
           title="Conversion Rate"
           action={
             <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+              <CDropdownToggle
+                color="transparent"
+                caret={false}
+                className="text-white p-0"
+                aria-label="Conversion widget options"
+              >
                 <CIcon icon={cilOptions} />
               </CDropdownToggle>
               <CDropdownMenu>
@@ -290,7 +311,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3}>
+  <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="danger"
           value={
@@ -304,7 +325,12 @@ const WidgetsDropdown = (props) => {
           title="Sessions"
           action={
             <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+              <CDropdownToggle
+                color="transparent"
+                caret={false}
+                className="text-white p-0"
+                aria-label="Sessions widget options"
+              >
                 <CIcon icon={cilOptions} />
               </CDropdownToggle>
               <CDropdownMenu>
@@ -385,6 +411,7 @@ const WidgetsDropdown = (props) => {
         />
       </CCol>
     </CRow>
+    </>
   )
 }
 

@@ -14,6 +14,8 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
         fontSize: '24px',
         transition: 'background-color 0.2s ease, color 0.2s ease',
         color: '#333',
+        minWidth: '44px',
+        minHeight: '44px',
     }
 
     const disabledButtonStyle = {
@@ -23,11 +25,12 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
     }
 
     return (
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }} aria-label="Pagination" role="group">
             <button
                 onClick={goPrev}
                 disabled={page === 1}
                 aria-label="Previous"
+        aria-disabled={page === 1}
                 style={page === 1 ? disabledButtonStyle : commonButtonStyle}
                 onMouseEnter={e => {
                     if (page !== 1) e.currentTarget.style.backgroundColor = '#e9ecef'
@@ -43,6 +46,7 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
                 onClick={goNext}
                 disabled={page === totalPages}
                 aria-label="Next"
+                aria-disabled={page === totalPages}
                 style={page === totalPages ? disabledButtonStyle : commonButtonStyle}
                 onMouseEnter={e => {
                     if (page !== totalPages) e.currentTarget.style.backgroundColor = '#e9ecef'

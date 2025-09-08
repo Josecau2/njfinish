@@ -91,6 +91,12 @@ export default defineConfig(() => {
           find: 'src/',
           replacement: `${path.resolve(__dirname, 'src')}/`,
         },
+        {
+          // Use a regex so only imports starting with '@/...' are aliased,
+          // avoiding collisions with scoped packages like '@reduxjs/...'
+          find: /^@\//,
+          replacement: `${path.resolve(__dirname, 'src')}/`,
+        },
       ],
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },

@@ -28,7 +28,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import PageHeader from '../../components/PageHeader';
-import { 
+import {
     cilLink,
     cilFolder,
     cilPlus,
@@ -38,8 +38,8 @@ import {
     cilGlobeAlt,
     cilHome,
     cilBook,
-    
-    
+
+
     cilDescription,
     cilChart,
     cilCloudUpload
@@ -47,16 +47,16 @@ import {
 import withContractorScope from '../../components/withContractorScope';
 
 // Externalized input components to prevent remount/focus loss on keystrokes
-const CustomFormInput = ({ 
-    label, 
-    name, 
-    type = "text", 
-    required = false, 
+const CustomFormInput = ({
+    label,
+    name,
+    type = "text",
+    required = false,
     icon = null,
     placeholder = "",
     value,
     onChange,
-    ...props 
+    ...props
 }) => (
     <div className="mb-3">
         <CFormLabel className="fw-medium text-dark mb-2">
@@ -65,8 +65,8 @@ const CustomFormInput = ({
         </CFormLabel>
         <CInputGroup>
             {icon && (
-                <CInputGroupText 
-                    style={{ 
+                <CInputGroupText
+                    style={{
                         background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                         border: '1px solid #e3e6f0',
                         borderRight: 'none',
@@ -96,15 +96,15 @@ const CustomFormInput = ({
     </div>
 );
 
-const CustomFormSelect = ({ 
-    label, 
-    name, 
-    required = false, 
+const CustomFormSelect = ({
+    label,
+    name,
+    required = false,
     icon = null,
     children,
     value,
     onChange,
-    ...props 
+    ...props
 }) => (
     <div className="mb-3">
         <CFormLabel className="fw-medium text-dark mb-2">
@@ -113,8 +113,8 @@ const CustomFormSelect = ({
         </CFormLabel>
         <CInputGroup>
             {icon && (
-                <CInputGroupText 
-                    style={{ 
+                <CInputGroupText
+                    style={{
                         background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                         border: '1px solid #e3e6f0',
                         borderRight: 'none',
@@ -158,10 +158,10 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
         const r = parseInt(hex.substr(0, 2), 16);
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
-        
+
         // Calculate luminance
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        
+
         // Return dark color for light backgrounds, light color for dark backgrounds
         return luminance > 0.5 ? '#2d3748' : '#ffffff';
     };
@@ -246,7 +246,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
         try {
             setLoading(true);
             const response = await axiosInstance.get('/api/resources?scope=contractor');
-            
+
             if (response.data.success) {
                 setLinks(response.data.data.links);
                 setFiles(response.data.data.files);
@@ -344,7 +344,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
 
     const ResourceCard = ({ title, icon, children, gradient, onAddClick, addButtonText, emptyStateIcon, emptyStateText, emptyStateSubtext, showAddButton = true }) => (
         <CCard className="border-0 shadow-sm mb-2 h-100" style={{ borderRadius: '16px' }}>
-            <CCardHeader 
+            <CCardHeader
                 className="border-0 pb-2"
                 style={{
                     background: gradient,
@@ -354,7 +354,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
             >
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div className="d-flex align-items-center">
-                        <div 
+                        <div
                             className="rounded-circle d-flex align-items-center justify-content-center me-3"
                             style={{
                                 width: '50px',
@@ -396,7 +396,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
 
     const EmptyState = ({ icon, title, subtitle, onAddClick, buttonText, showButton = true }) => (
         <div className="text-center py-5">
-            <div 
+            <div
                 className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
                 style={{
                     width: '80px',
@@ -428,16 +428,16 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
     );
 
     const ResourceItem = ({ item, isFile = false, onEdit, onDelete, onDownload, isContractor = false }) => (
-        <CListGroupItem 
+        <CListGroupItem
             className="border-0 px-4 py-3"
-            style={{ 
+            style={{
                 borderBottom: '1px solid #f1f5f9',
                 transition: 'all 0.2s ease'
             }}
         >
             <div className="d-flex justify-content-between align-items-start">
                 <div className="d-flex align-items-start flex-grow-1">
-                    <div 
+                    <div
                         className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
                         style={{
                             width: '40px',
@@ -453,9 +453,9 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             <h6 className="mb-0 fw-semibold text-dark text-truncate">
                                 {isFile ? (item.original_name || item.name) : item.title}
                             </h6>
-                            <CBadge 
-                                color={getTypeColor(item.type)} 
-                                shape="rounded-pill" 
+                            <CBadge
+                                color={getTypeColor(item.type)}
+                                shape="rounded-pill"
                                 className="small"
                             >
                                 {item.type}
@@ -485,8 +485,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             variant="ghost"
                             color="success"
                             onClick={() => onDownload(item)}
-                            style={{ 
-                                borderRadius: '8px', 
+                            style={{
+                                borderRadius: '8px',
                                 padding: '6px 8px',
                                 border: '1px solid transparent',
                                 transition: 'all 0.2s ease'
@@ -503,8 +503,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             variant="ghost"
                             color="info"
                             onClick={() => window.open(item.url, '_blank')}
-                            style={{ 
-                                borderRadius: '8px', 
+                            style={{
+                                borderRadius: '8px',
                                 padding: '6px 8px',
                                 border: '1px solid transparent',
                                 transition: 'all 0.2s ease'
@@ -521,8 +521,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             variant="ghost"
                             color="primary"
                             onClick={() => onEdit(item)}
-                            style={{ 
-                                borderRadius: '8px', 
+                            style={{
+                                borderRadius: '8px',
                                 padding: '6px 8px',
                                 border: '1px solid transparent',
                                 transition: 'all 0.2s ease'
@@ -539,8 +539,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             variant="ghost"
                             color="danger"
                             onClick={() => onDelete(item.id)}
-                            style={{ 
-                                borderRadius: '8px', 
+                            style={{
+                                borderRadius: '8px',
                                 padding: '6px 8px',
                                 border: '1px solid transparent',
                                 transition: 'all 0.2s ease'
@@ -556,18 +556,18 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
         </CListGroupItem>
     );
 
-    
+
 
     const ModalComponent = ({ visible, onClose, title, children, onSave, saveButtonText, isLoading }) => (
-        <CModal 
-            visible={visible} 
-            onClose={onClose} 
+        <CModal
+            visible={visible}
+            onClose={onClose}
             size="lg"
             className="modern-modal"
         >
-            <CModalHeader 
-                style={{ 
-                    borderRadius: '16px 16px 0 0', 
+            <CModalHeader
+                style={{
+                    borderRadius: '16px 16px 0 0',
                     background: customization.headerBg || '#667eea',
                     color: getContrastColor(customization.headerBg || '#667eea'),
                     border: 'none'
@@ -580,9 +580,9 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
             <CModalBody className="p-4" style={{ backgroundColor: '#fafbfc' }}>
                 {children}
             </CModalBody>
-            <CModalFooter 
-                style={{ 
-                    borderRadius: '0 0 16px 16px', 
+            <CModalFooter
+                style={{
+                    borderRadius: '0 0 16px 16px',
                     backgroundColor: '#fafbfc',
                     border: 'none',
                     padding: '1.5rem'
@@ -591,8 +591,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                 <CButton
                     color="light"
                     onClick={onClose}
-                    style={{ 
-                        borderRadius: '12px', 
+                    style={{
+                        borderRadius: '12px',
                         fontWeight: '600',
                         padding: '8px 20px',
                         border: '1px solid #e3e6f0'
@@ -627,45 +627,45 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
                         transform: translateY(-1px);
                     }
-                    
+
                     .modern-modal .modal-content {
                         border-radius: 16px !important;
                         border: none !important;
                         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
                     }
-                    
+
                     @media (max-width: 768px) {
                         .d-flex.justify-content-between.align-items-center.flex-wrap {
                             flex-direction: column;
                             align-items: flex-start !important;
                             gap: 1rem;
                         }
-                        
+
                         .d-flex.gap-1.ms-2.flex-shrink-0 {
                             margin-left: 0 !important;
                             margin-top: 0.5rem;
                         }
-                        
+
                         .min-width-0 {
                             min-width: 0;
                             width: 100%;
                         }
-                        
+
                         .text-truncate {
                             max-width: 200px;
                         }
                     }
-                    
+
                     @media (max-width: 576px) {
                         .px-4 {
                             padding-left: 1rem !important;
                             padding-right: 1rem !important;
                         }
-                        
+
                         .flex-wrap.gap-3 > div:first-child {
                             width: 100%;
                         }
-                        
+
                         .flex-wrap.gap-3 > div:last-child {
                             width: 100%;
                             text-align: center;
@@ -678,7 +678,7 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
             <PageHeader
                 title={
                     <div className="d-flex align-items-center gap-3">
-                        <div 
+                        <div
                             className="d-flex align-items-center justify-content-center"
                             style={{
                                 width: '48px',
@@ -708,6 +708,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                                     placeholder={t('resources.searchPlaceholder')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
+                                    aria-label={t('resources.searchPlaceholder')}
+                                    style={{ minHeight: '44px' }}
                                 />
                             </CInputGroup>
                         </CCol>
@@ -715,6 +717,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             <CFormSelect
                                 value={linkTypeFilter}
                                 onChange={(e) => setLinkTypeFilter(e.target.value)}
+                                aria-label={t('resources.allLinkTypes')}
+                                style={{ minHeight: '44px' }}
                             >
                                 <option value="all">{t('resources.allLinkTypes')}</option>
                                 {linkTypes.map(type => (
@@ -728,6 +732,8 @@ const Resources = ({ isContractor, contractorGroupId, contractorModules, contrac
                             <CFormSelect
                                 value={fileTypeFilter}
                                 onChange={(e) => setFileTypeFilter(e.target.value)}
+                                aria-label={t('resources.allFileTypes')}
+                                style={{ minHeight: '44px' }}
                             >
                                 <option value="all">{t('resources.allFileTypes')}</option>
                                 {fileTypes.map(type => (

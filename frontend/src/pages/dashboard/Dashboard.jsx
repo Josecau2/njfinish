@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice';
 import { useTranslation } from 'react-i18next';
+import { getFreshestToken } from '../../utils/authToken';
 import {
   CContainer,
   CRow,
@@ -86,16 +87,39 @@ const Dashboard = () => {
 
 
 
+  // Ensure token is present before dispatching dashboard API calls to avoid race
   useEffect(() => {
-    dispatch(fetchDashboardCounts());
-    dispatch(fetchLatestProposals());
+    let cancelled = false;
+    const kickoff = async () => {
+      let tok = getFreshestToken();
+      if (!tok) {
+        for (let i = 0; i < 6 && !tok; i++) {
+          // ~150ms max
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((r) => setTimeout(r, 25));
+          tok = getFreshestToken();
+        }
+      }
+      if (!cancelled && tok) {
+        dispatch(fetchDashboardCounts());
+        dispatch(fetchLatestProposals());
+      }
+    };
+    kickoff();
+    return () => { cancelled = true; };
   }, [dispatch]);
 
-
-
+  // Delay these calls slightly to avoid race condition with token synchronization
   useEffect(() => {
-    fetchLinks();
-    fetchFiles();
+    const timer = setTimeout(() => {
+      const token = getFreshestToken();
+      if (token) {
+        fetchLinks();
+        fetchFiles();
+      }
+    }, 100); // Small delay to ensure token is synchronized
+
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchLinks = async () => {
@@ -229,13 +253,29 @@ const Dashboard = () => {
 
   return (
     <CContainer fluid className="dashboard-container">
+      <style>{`
+        /* Dashboard scoped mobile tweaks */
+        .dashboard-container .btn { min-height: 44px; }
+        .dashboard-container .btn.btn-sm { min-height: 40px; }
+        .dashboard-container .dashboard-header-actions { flex-wrap: wrap; }
+        .dashboard-container .list-group-item { min-height: 44px; }
+        .dashboard-container .btn-view-all { min-height: 44px; }
+
+        @media (max-width: 575.98px) {
+          .dashboard-container .dashboard-header-actions { width: 100%; }
+          .dashboard-container .dashboard-header-actions .btn { flex: 1 1 48%; }
+          .dashboard-container .stat-card-number { font-size: 1.75rem; }
+        }
+      `}</style>
       <PageHeader
         title={t('dashboard.title', 'Dashboard')}
+        mobileLayout="stack"
         rightContent={
-          <div className="d-flex gap-2">
+          <div className="dashboard-header-actions d-flex gap-2">
             <CButton
               color="primary"
               className="btn-gradient-cyan"
+              aria-label={t('dashboard.newProposal') || 'Create new proposal'}
               onClick={handleCreateProposal}
             >
               {t('dashboard.newProposal')}
@@ -243,6 +283,7 @@ const Dashboard = () => {
             <CButton
               color="success"
               className="btn-gradient-green"
+              aria-label={t('dashboard.quickProposal') || 'Create quick proposal'}
               onClick={handleCreateQuickProposal}
             >
               {t('dashboard.quickProposal')}

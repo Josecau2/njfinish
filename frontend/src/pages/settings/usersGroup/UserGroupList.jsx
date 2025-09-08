@@ -19,8 +19,7 @@ import {
   CAlert,
   CContainer
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilPlus, cilPencil } from '@coreui/icons';
+import { Plus, Pencil, Users } from '@/icons-lucide';
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice';
 import { useNavigate } from 'react-router-dom';
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
@@ -43,7 +42,7 @@ const UserGroupList = () => {
 
   const handleModuleToggle = async (groupId, module, currentModules) => {
     setUpdatingModule(`${groupId}-${module}`);
-    
+
     try {
       // Handle modules as object, not array - with defensive defaults
       // Parse currentModules if it comes as a string
@@ -67,14 +66,14 @@ const UserGroupList = () => {
           resources: false
         };
       }
-      
+
       const newModules = {
         ...modulesObj,
         [module]: !modulesObj[module] // Toggle the boolean value
       };
 
-      await dispatch(updateUser({ 
-        id: groupId, 
+      await dispatch(updateUser({
+        id: groupId,
         data: { modules: newModules }
       })).unwrap();
 
@@ -118,10 +117,10 @@ const UserGroupList = () => {
         resources: false
       };
     }
-    
+
     const isEnabled = modules[module] === true;
     const isUpdating = updatingModule === `${group.id}-${module}`;
-    
+
     return (
       <CFormSwitch
         id={`${group.id}-${module}`}
@@ -160,13 +159,16 @@ const UserGroupList = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader className="d-flex justify-content-between align-items-center">
-            <strong>{t('settings.userGroups.header')}</strong>
-            <CButton 
-              color="primary" 
+            <strong className="d-flex align-items-center gap-2">
+              <Users size={18} aria-hidden="true" />
+              {t('settings.userGroups.header')}
+            </strong>
+            <CButton
+              color="primary"
               onClick={handleCreateGroup}
               className="d-flex align-items-center gap-2"
             >
-              <CIcon icon={cilPlus} size="sm" />
+              <Plus size={16} aria-hidden="true" />
               {t('settings.userGroups.actions.create')}
             </CButton>
           </CCardHeader>
@@ -177,8 +179,8 @@ const UserGroupList = () => {
               </CAlert>
             )}
             {/* Desktop table (hidden on small screens) */}
-            <div className="d-none d-md-block">
-            <CTable hover responsive>
+            <div className="d-none d-md-block table-wrap">
+            <CTable hover responsive className="table-modern">
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>{t('settings.userGroups.table.name')}</CTableHeaderCell>
@@ -205,10 +207,7 @@ const UserGroupList = () => {
                         {!group.name && <small className="text-muted d-block">ID: {group.id}</small>}
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge 
-                          color={group.group_type === 'contractor' ? 'info' : 'secondary'}
-                          shape="rounded-pill"
-                        >
+                        <CBadge color={group.group_type === 'contractor' ? 'info' : 'secondary'} shape="rounded-pill">
                           {group.group_type === 'contractor' ? t('settings.userGroups.types.contractor') : t('settings.userGroups.types.standard')}
                         </CBadge>
                       </CTableDataCell>
@@ -226,14 +225,16 @@ const UserGroupList = () => {
                       </CTableDataCell>
                       <CTableDataCell>
                         <CButton
-                          color="primary"
+                          color="light"
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditGroup(group.id)}
-                          className="me-2"
-                          title="Edit Group"
+                          className="icon-btn"
+                          title={t('settings.userGroups.actions.edit')}
+                          aria-label={t('settings.userGroups.actions.edit')}
+                          style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                         >
-                          <CIcon icon={cilPencil} size="sm" />
+                          <Pencil size={16} aria-hidden="true" />
                         </CButton>
                       </CTableDataCell>
                     </CTableRow>
@@ -282,15 +283,18 @@ const UserGroupList = () => {
                     </div>
 
                     <div className="d-flex justify-content-end mt-2">
-                      <CButton 
-                        color="primary" 
+                      <CButton
+                        color="light"
                         variant="outline"
-                        size="sm" 
+                        size="sm"
                         onClick={() => handleEditGroup(group.id)}
-                        title="Edit Group"
+                        title={t('settings.userGroups.actions.edit')}
+                        aria-label={t('settings.userGroups.actions.edit')}
+                        className="icon-btn"
+                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
                       >
-                        <CIcon icon={cilPencil} size="sm" className="me-1" />
-                        Edit
+                        <Pencil size={16} className="me-1" aria-hidden="true" />
+                        {t('common.edit') || 'Edit'}
                       </CButton>
                     </div>
                   </div>

@@ -5,7 +5,8 @@ import axiosInstance from '../../helpers/axiosInstance'
 export const fetchDashboardCounts = createAsyncThunk(
   'dashboard/fetchCounts',
   async () => {
-    const res = await axiosInstance.get('/api/dashboard/counts');
+  // Suppress global logout on a brief race (token not yet attached)
+  const res = await axiosInstance.get('/api/dashboard/counts', { __suppressAuthLogout: true });
     return res.data;
   }
 );
@@ -13,7 +14,8 @@ export const fetchDashboardCounts = createAsyncThunk(
 export const fetchLatestProposals = createAsyncThunk(
   'dashboard/fetchLatestProposals',
   async () => {
-    const res = await axiosInstance.get('/api/dashboard/latest-proposals');
+  // Suppress global logout on a brief race (token not yet attached)
+  const res = await axiosInstance.get('/api/dashboard/latest-proposals', { __suppressAuthLogout: true });
     return res.data;
   }
 );

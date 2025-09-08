@@ -280,7 +280,7 @@ const PdfLayoutCustomization = () => {
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center setting-icon-div"
               style={{
                 width: '48px',
@@ -297,13 +297,13 @@ const PdfLayoutCustomization = () => {
         subtitle={t('settings.customization.pdf.headerSubtitle')}
         rightContent={
           <div className="d-flex gap-2 preview-save-button">
-            <CButton 
-              color="light" 
+            <CButton
+              color="light"
               variant="outline"
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               onClick={() => setPreviewVisible(true)}
               disabled={loading}
-              style={{ 
+              style={{
                 borderRadius: '8px',
                 border: '2px solid white',
                 color: 'white',
@@ -315,12 +315,12 @@ const PdfLayoutCustomization = () => {
               <CIcon icon={cilGlobeAlt} className="me-2" />
               {t('settings.customization.pdf.buttons.preview')}
             </CButton>
-            <CButton 
-              color="light" 
+            <CButton
+              color="light"
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               onClick={handleSave}
               disabled={loading}
-              style={{ 
+              style={{
                 borderRadius: '8px',
                 border: 'none',
                 transition: 'all 0.3s ease'
@@ -346,12 +346,14 @@ const PdfLayoutCustomization = () => {
       {message.text && (
         <CCard className="border-0 shadow-sm mb-2">
           <CCardBody className="py-2">
-            <CAlert 
-              color={message.type} 
-              dismissible 
+            <CAlert
+              color={message.type}
+              dismissible
               onClose={clearMessage}
               className="mb-0"
-              style={{ 
+              role="status"
+              aria-live="polite"
+              style={{
                 border: 'none',
                 borderRadius: '8px'
               }}
@@ -367,14 +369,14 @@ const PdfLayoutCustomization = () => {
         {/* PDF Header & Footer Section */}
         <CCol lg={6}>
           <CCard className="border-0 shadow-sm h-100">
-            <div 
+            <div
               className="px-4 py-3 border-bottom"
               style={{ backgroundColor: '#f8f9fa' }}
             >
               <div className="d-flex align-items-center gap-3">
-                <div 
+                <div
                   className="d-flex align-items-center justify-content-center brand-logo"
-                 
+
                 >
                   <CIcon icon={cilDescription} style={{ color: 'white', fontSize: '14px' }} />
                 </div>
@@ -384,7 +386,7 @@ const PdfLayoutCustomization = () => {
                 </div>
               </div>
             </div>
-            
+
             <CCardBody className="p-4">
               <div className="mb-3">
                 <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.headerText')}</CFormLabel>
@@ -393,7 +395,7 @@ const PdfLayoutCustomization = () => {
                   value={formData.pdfHeader}
                   onChange={handleChange}
                   placeholder={t('settings.customization.pdf.placeholders.headerText')}
-                  style={{ 
+                  style={{
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',
@@ -410,7 +412,7 @@ const PdfLayoutCustomization = () => {
                   onChange={handleChange}
                   rows={4}
                   placeholder={t('settings.customization.pdf.placeholders.footerTerms')}
-                  style={{ 
+                  style={{
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',
@@ -422,8 +424,8 @@ const PdfLayoutCustomization = () => {
               {/* Color Settings */}
               <div className="mb-4">
                 <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                  <CBadge 
-                    color="info" 
+                  <CBadge
+                    color="info"
                     className="px-2 py-1"
                     style={{ borderRadius: '4px', fontSize: '10px' }}
                   >
@@ -431,7 +433,7 @@ const PdfLayoutCustomization = () => {
                   </CBadge>
                   {t('settings.customization.pdf.labels.headerColors')}
                 </h6>
-                
+
                 <CRow className="g-3">
                   <CCol sm={6}>
                     <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.pdf.labels.backgroundColor')}</CFormLabel>
@@ -450,10 +452,10 @@ const PdfLayoutCustomization = () => {
                           padding: '0'
                         }}
                       />
-                      <CBadge 
-                        color="light" 
+                      <CBadge
+                        color="light"
                         className="px-3 py-2"
-                        style={{ 
+                        style={{
                           fontFamily: 'monospace',
                           fontSize: '12px',
                           backgroundColor: '#f8f9fa',
@@ -482,10 +484,10 @@ const PdfLayoutCustomization = () => {
                           padding: '0'
                         }}
                       />
-                      <CBadge 
-                        color="light" 
+                      <CBadge
+                        color="light"
                         className="px-3 py-2"
-                        style={{ 
+                        style={{
                           fontFamily: 'monospace',
                           fontSize: '12px',
                           backgroundColor: '#f8f9fa',
@@ -506,14 +508,14 @@ const PdfLayoutCustomization = () => {
         {/* Company Information Section */}
         <CCol lg={6}>
           <CCard className="border-0 shadow-sm h-100">
-            <div 
+            <div
               className="px-4 py-3 border-bottom"
               style={{ backgroundColor: '#f8f9fa' }}
             >
               <div className="d-flex align-items-center gap-3">
-                <div 
+                <div
                   className="d-flex align-items-center justify-content-center brand-logo"
-                  
+
                 >
                   <CIcon icon={cilBuilding} style={{ color: 'white', fontSize: '14px' }} />
                 </div>
@@ -523,7 +525,7 @@ const PdfLayoutCustomization = () => {
                 </div>
               </div>
             </div>
-            
+
             <CCardBody className="p-4">
               <div className="mb-3">
                 <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.companyLogo')}</CFormLabel>
@@ -544,7 +546,7 @@ const PdfLayoutCustomization = () => {
                     className="position-absolute opacity-0 w-100 h-100"
                     style={{ zIndex: 2, cursor: 'pointer' }}
                   />
-                  <div 
+                  <div
                     className="d-flex align-items-center justify-content-center p-4 text-center"
                     style={{
                       border: `2px dashed ${dragActive ? '#667eea' : '#e3e6f0'}`,
@@ -569,7 +571,7 @@ const PdfLayoutCustomization = () => {
               {formData.logoPreview && (
                 <div className="mb-3">
                   <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.logoPreview')}</CFormLabel>
-                  <div 
+                  <div
                     className="d-flex align-items-center gap-3 p-3"
                     style={{
                       backgroundColor: '#f8f9fa',
@@ -577,9 +579,9 @@ const PdfLayoutCustomization = () => {
                       border: '1px solid #e9ecef'
                     }}
                   >
-                    <img 
-                      src={getLogoUrl(formData.logoPreview)} 
-                      alt={t('settings.customization.pdf.labels.logoPreview')} 
+                    <img
+                      src={getLogoUrl(formData.logoPreview)}
+                      alt={t('settings.customization.pdf.labels.logoPreview')}
                       style={{
                         height: '40px',
                         width: 'auto',
@@ -587,7 +589,7 @@ const PdfLayoutCustomization = () => {
                         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                       }}
                     />
-                    <CButton 
+                    <CButton
                       color="light"
                       size="sm"
                       onClick={removeLogo}
@@ -613,7 +615,7 @@ const PdfLayoutCustomization = () => {
                     value={formData.companyName}
                     onChange={handleChange}
                     placeholder={t('settings.customization.pdf.placeholders.companyName')}
-                    style={{ 
+                    style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -629,7 +631,7 @@ const PdfLayoutCustomization = () => {
                     value={formData.companyPhone}
                     onChange={handleChange}
                     placeholder={t('settings.customization.pdf.placeholders.phoneNumber')}
-                    style={{ 
+                    style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -648,7 +650,7 @@ const PdfLayoutCustomization = () => {
                     value={formData.companyEmail}
                     onChange={handleChange}
                     placeholder={t('settings.customization.pdf.placeholders.email')}
-                    style={{ 
+                    style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -663,7 +665,7 @@ const PdfLayoutCustomization = () => {
                     value={formData.companyWebsite}
                     onChange={handleChange}
                     placeholder={t('settings.customization.pdf.placeholders.website')}
-                    style={{ 
+                    style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -681,7 +683,7 @@ const PdfLayoutCustomization = () => {
                   onChange={handleChange}
                   rows={3}
                   placeholder={t('settings.customization.pdf.placeholders.address')}
-                  style={{ 
+                  style={{
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',

@@ -70,11 +70,15 @@ const LoginPage = () => {
       });
 
       const { token, userId, name, role, role_id, group_id, group } = response.data;
-      const user = { email, userId, name, role, role_id, group_id, group };
+      const user = { email, userId, name, role: String(role || '').toLowerCase(), role_id, group_id, group };
 
-  // Install token everywhere (hard reset) and persist user
-  installTokenEverywhere(token);
-  try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
+      // Install token everywhere (hard reset) and persist user
+      installTokenEverywhere(token);
+      try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
+
+      // Wait a brief moment to ensure token is fully installed before proceeding
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       // Notify other tabs
       try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
 
@@ -136,13 +140,13 @@ const LoginPage = () => {
           <p className="text-muted mb-4">{settings.subtitle}</p>
 
           {noticeMessage && (
-            <div className="alert alert-info" role="alert">
+            <div className="alert alert-info" role="status" aria-live="polite">
               {noticeMessage}
             </div>
           )}
 
           {errorMessage && (
-            <div className="alert alert-danger" role="alert">
+            <div className="alert alert-danger" role="alert" aria-live="assertive">
               {errorMessage}
             </div>
           )}
@@ -158,6 +162,8 @@ const LoginPage = () => {
                 placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                id="email"
+                aria-required="true"
                 required
               />
             </div>
@@ -173,13 +179,17 @@ const LoginPage = () => {
                   placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  id="password"
+                  aria-required="true"
                   required
                 />
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                   tabIndex={-1}
+                  style={{ minHeight: 44, minWidth: 44 }}
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -209,7 +219,7 @@ const LoginPage = () => {
             </div>
 
             <div className="d-grid">
-              <button type="submit" className="btn btn-primary btn-lg">
+              <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }}>
                 {t('auth.signIn')}
               </button>
             </div>

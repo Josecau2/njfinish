@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { hasPermission, isContractor, hasModuleAccess } from '../helpers/permissions';
 
@@ -13,22 +13,27 @@ import { hasPermission, isContractor, hasModuleAccess } from '../helpers/permiss
  * @param {boolean} props.adminOnly - Whether route is admin-only
  * @returns {ReactNode} - Child components or redirect
  */
-const RouteGuard = ({ 
-  children, 
-  permission, 
-  module, 
-  fallbackPath = '/', 
-  adminOnly = false 
+const RouteGuard = ({
+  children,
+  permission,
+  module,
+  fallbackPath = '/',
+  adminOnly = false
 }) => {
   const user = useSelector(state => state.auth?.user);
+  const location = useLocation();
 
-  // If no user, redirect to login (this should be handled by ProtectedRoute)
+  // If no user, set return_to and redirect to login (usually handled by ProtectedRoute)
   if (!user) {
+    try {
+      const here = `${location.pathname}${location.search || ''}${location.hash || ''}`;
+      sessionStorage.setItem('return_to', here || '/');
+    } catch {}
     return <Navigate to="/login" replace />;
   }
 
   // Check admin-only routes
-  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role
+  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role;
   if (adminOnly && !['admin', 'super_admin'].includes(role)) {
     return <Navigate to={fallbackPath} replace />;
   }

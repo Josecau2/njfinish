@@ -308,8 +308,8 @@ router.get('/login-customization', loginCustomizationController.getCustomization
 // Admin-only save endpoint
 router.post('/login-customization', verifyTokenWithGroup, requirePermission('admin:settings'), loginCustomizationController.saveCustomization);
 
-router.get('/dashboard/counts', proposalsController.getCounts);
-router.get('/dashboard/latest-proposals', proposalsController.getLatestProposals);
+router.get('/dashboard/counts', verifyTokenWithGroup, proposalsController.getCounts);
+router.get('/dashboard/latest-proposals', verifyTokenWithGroup, proposalsController.getLatestProposals);
 
 
 // Resources CRUD routes

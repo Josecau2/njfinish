@@ -23,9 +23,9 @@ import { addLocation } from '../../../store/slices/locationSlice';
 import { useDispatch } from 'react-redux';
 import CIcon from '@coreui/icons-react';
 import PageHeader from '../../../components/PageHeader';
-import { 
-  cilLocationPin, 
-  cilEnvelopeClosed, 
+import {
+  cilLocationPin,
+  cilEnvelopeClosed,
   cilPhone,
   cilHome,
   cilClock,
@@ -175,7 +175,7 @@ const LocationForm = () => {
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
-            <div 
+            <div
               className="d-flex align-items-center justify-content-center"
               style={{
                 width: '48px',
@@ -215,7 +215,7 @@ const LocationForm = () => {
             {/* Basic Information Section */}
             <div className="mb-4">
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div 
+                <div
                   className="d-flex align-items-center justify-content-center"
                   style={{
                     width: '32px',
@@ -229,7 +229,7 @@ const LocationForm = () => {
                 </div>
                 {t('settings.locations.form.titles.basicInfo')}
               </h5>
-              
+
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
@@ -295,7 +295,7 @@ const LocationForm = () => {
             {/* Contact Information Section */}
             <div className="mb-4">
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div 
+                <div
                   className="d-flex align-items-center justify-content-center"
                   style={{
                     width: '32px',
@@ -309,7 +309,7 @@ const LocationForm = () => {
                 </div>
                 {t('settings.locations.form.titles.contactInfo')}
               </h5>
-              
+
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
@@ -371,7 +371,7 @@ const LocationForm = () => {
                   )}
                 </CCol>
               </CRow>
-              
+
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
@@ -409,7 +409,7 @@ const LocationForm = () => {
             {/* Location & Time Settings Section */}
             <div className="mb-4">
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div 
+                <div
                   className="d-flex align-items-center justify-content-center"
                   style={{
                     width: '32px',
@@ -423,7 +423,7 @@ const LocationForm = () => {
                 </div>
                 {t('settings.locations.form.titles.locationTime')}
               </h5>
-              
+
               <CRow className="mb-3">
                 <CCol md={6}>
                   <CFormLabel className="fw-semibold text-dark">
@@ -484,7 +484,7 @@ const LocationForm = () => {
                   )}
                 </CCol>
               </CRow>
-              
+
               {currentTime && (
                 <CRow className="mb-3">
                   <CCol md={6}>
@@ -527,8 +527,10 @@ const LocationForm = () => {
                 style={{
                   border: '1px solid #e3e6f0',
                   borderRadius: '8px',
-                  color: '#6c757d'
+                  color: '#6c757d',
+                  minHeight: '44px'
                 }}
+                aria-label={t('common.cancel')}
               >
                 <CIcon icon={cilArrowLeft} className="me-2" />
                 {t('common.cancel')}
@@ -542,7 +544,8 @@ const LocationForm = () => {
                   border: 'none',
                   borderRadius: '8px',
                   background: loading ? '#6c757d' : 'linear-gradient(45deg, #28a745, #20c997)',
-                  boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)'
+                  boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
+                  minHeight: '44px'
                 }}
               >
                 {loading ? (

@@ -1366,8 +1366,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                 type="button"
                                                 className={`btn btn-sm ${isStylesCollapsed ? 'btn-primary' : 'btn-outline-primary'}`}
                                                 onClick={() => setIsStylesCollapsed(!isStylesCollapsed)}
-                                                style={{ padding: '0.25rem 0.75rem' }}
+                                                style={{ padding: '0.25rem 0.75rem', minHeight: 44, minWidth: 44 }}
                                                 disabled={readOnly}
+                                                aria-pressed={isStylesCollapsed}
+                                                aria-label={isStylesCollapsed ? t('proposalUI.expandImages') : t('proposalUI.compactView')}
                                             >
                                                 {isStylesCollapsed ? (
                                                     <>
@@ -1391,7 +1393,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
                                                         onClick={prevSlide}
                                                         disabled={!canGoPrev() || readOnly}
-                                                        style={{ padding: '0.25rem 0.4rem' }}
+                                                        style={{ padding: '0.25rem 0.4rem', minHeight: 44, minWidth: 44 }}
                                                         aria-label="Previous styles"
                                                     >
                                                         <CIcon icon={cilChevronLeft} size="sm" />
@@ -1401,7 +1403,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
                                                         onClick={nextSlide}
                                                         disabled={!canGoNext() || readOnly}
-                                                        style={{ padding: '0.25rem 0.4rem' }}
+                                                        style={{ padding: '0.25rem 0.4rem', minHeight: 44, minWidth: 44 }}
                                                         aria-label="Next styles"
                                                     >
                                                         <CIcon icon={cilChevronRight} size="sm" />

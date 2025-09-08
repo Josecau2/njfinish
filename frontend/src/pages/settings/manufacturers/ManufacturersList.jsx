@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { 
-  Building2, 
-  Mail, 
-  FileText, 
-  Search, 
-  Plus, 
-  Edit3, 
+import {
+  Building2,
+  Mail,
+  FileText,
+  Search,
+  Plus,
+  Edit3,
   Filter,
   SortAsc,
   SortDesc,
-  Factory
-} from 'lucide-react';
+  Factory,
+} from '@/icons-lucide';
 import { useNavigate } from 'react-router-dom';
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,10 +39,10 @@ const ManufacturersList = () => {
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Return dark color for light backgrounds, light color for dark backgrounds
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -215,7 +215,7 @@ const ManufacturersList = () => {
 
   return (
     <div style={cardStyles.container}>
-      <PageHeader 
+      <PageHeader
         title={
           <div className="d-flex align-items-center">
             <Factory className="me-2" size={24} />
@@ -227,11 +227,13 @@ const ManufacturersList = () => {
           <button
             className="btn btn-light shadow-sm px-4 fw-semibold"
             onClick={handleManuCreate}
-            style={{ 
+            style={{
               borderRadius: '5px',
               border: 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              minHeight: '44px'
             }}
+            aria-label={t('settings.manufacturers.add')}
           >
             <Plus className="me-2" size={16} />
             {t('settings.manufacturers.add')}
@@ -244,7 +246,7 @@ const ManufacturersList = () => {
         <div className="card-body">
           <div className="row align-items-end">
             <div className="col-lg-4 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2">
+              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSearch">
                 <Search size={14} className="me-1" />
                 {t('settings.manufacturers.search')}
               </label>
@@ -256,19 +258,22 @@ const ManufacturersList = () => {
                   placeholder={t('settings.manufacturers.searchPlaceholder')}
                   value={filterText}
                   onChange={handleFilterChange}
+                  id="manufacturerSearch"
+                  aria-label={t('settings.manufacturers.search')}
                   style={cardStyles.searchInput}
                 />
               </div>
             </div>
             <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2">
+              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSortBy">
                 <Filter size={14} className="me-1" />
                 {t('settings.manufacturers.sortBy')}
               </label>
-              <select 
+              <select
                 className="form-select"
-                value={sortBy} 
+                value={sortBy}
                 onChange={handleSortByChange}
+                id="manufacturerSortBy"
                 style={{
                   border: '1px solid #e3e6f0',
                   borderRadius: '10px',
@@ -283,14 +288,15 @@ const ManufacturersList = () => {
               </select>
             </div>
             <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2">
+              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSortOrder">
                 {sortDirection === 'asc' ? <SortAsc size={14} className="me-1" /> : <SortDesc size={14} className="me-1" />}
                 {t('settings.manufacturers.order')}
               </label>
-              <select 
-                className="form-select" 
-                value={sortDirection} 
+              <select
+                className="form-select"
+                value={sortDirection}
                 onChange={handleSortDirectionChange}
+                id="manufacturerSortOrder"
                 style={{
                   border: '1px solid #e3e6f0',
                   borderRadius: '10px',
@@ -304,7 +310,7 @@ const ManufacturersList = () => {
             </div>
             <div className="col-lg-2 col-md-6">
               <div className="d-flex justify-content-lg-end">
-                <span 
+                <span
                   className="badge bg-info"
                   style={{
                     ...cardStyles.badge,
@@ -361,8 +367,8 @@ const ManufacturersList = () => {
         <div className="row">
           {manufacturers.map((manufacturer) => (
             <div className="col-xl-6 col-lg-6 col-md-12 mb-4" key={manufacturer.id}>
-              <div 
-                className="card" 
+              <div
+                className="card"
                 style={cardStyles.manufacturerCard}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -378,6 +384,9 @@ const ManufacturersList = () => {
                   <button
                     style={cardStyles.editButton}
                     onClick={() => handleEdit(manufacturer.id)}
+                    className="icon-btn"
+                    aria-label={t('actions.editManufacturer', { name: manufacturer.name })}
+                    type="button"
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
                       e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
@@ -400,8 +409,8 @@ const ManufacturersList = () => {
                             : "/images/nologo.png"
                         }
                         alt={`${manufacturer.name} logo`}
-                        style={{ 
-                          maxWidth: '100%', 
+                        style={{
+                          maxWidth: '100%',
                           maxHeight: '100%',
                           objectFit: 'contain'
                         }}
@@ -414,10 +423,10 @@ const ManufacturersList = () => {
                       <div className="mb-3">
                         <h5 className="mb-1 fw-bold text-dark d-flex align-items-center">
                           <Building2 size={18} className="me-2 text-primary" />
-                          <span style={{ 
-                            overflow: 'hidden', 
-                            textOverflow: 'ellipsis', 
-                            whiteSpace: 'nowrap' 
+                          <span style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
                           }}>
                             {manufacturer.name}
                           </span>
@@ -427,11 +436,11 @@ const ManufacturersList = () => {
                       {/* Email */}
                       <div className="mb-3 d-flex align-items-center">
                         <Mail size={16} className="me-2 text-muted flex-shrink-0" />
-                        <span 
+                        <span
                           className="text-muted"
-                          style={{ 
-                            overflow: 'hidden', 
-                            textOverflow: 'ellipsis', 
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                             fontSize: '14px'
                           }}
@@ -443,7 +452,7 @@ const ManufacturersList = () => {
                       {/* Capacity */}
                       <div className="mb-3 d-flex align-items-center">
                         <FileText size={16} className="me-2 text-muted flex-shrink-0" />
-                        <span 
+                        <span
                           className="badge"
                           style={{
                             ...cardStyles.badge,
@@ -458,24 +467,25 @@ const ManufacturersList = () => {
 
                       {/* Status Toggle */}
                       <div className="d-flex align-items-center justify-content-between">
-                        <div className="form-check form-switch">
+            <div className="form-check form-switch">
                           <input
                             className="form-check-input"
                             type="checkbox"
                             id={`enabledSwitch${manufacturer.id}`}
                             checked={manufacturer.status}
                             onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
+              aria-label={manufacturer.status ? t('settings.manufacturers.labels.disable') : t('settings.manufacturers.labels.enable')}
                             style={{ cursor: 'pointer' }}
                           />
-                          <label 
-                            className="form-check-label fw-medium" 
+                          <label
+                            className="form-check-label fw-medium"
                             htmlFor={`enabledSwitch${manufacturer.id}`}
                             style={{ cursor: 'pointer', fontSize: '14px' }}
                           >
                             {manufacturer.status ? t('settings.manufacturers.labels.active') : t('settings.manufacturers.labels.inactive')}
                           </label>
                         </div>
-                        <span 
+                        <span
                           className={`badge ${manufacturer.status ? 'bg-success' : 'bg-secondary'}`}
                           style={cardStyles.badge}
                         >
