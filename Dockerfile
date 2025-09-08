@@ -41,7 +41,7 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm set -eux; \
         (npm ping || npm config set registry "${NPM_REGISTRY_FALLBACK}"); \
             for i in 1 2 3; do \
                 npm --version && node -v; \
-                npm ci && break || (echo "npm ci failed, retry $i/3" && sleep 25); \
+                npm ci --include=dev && break || (echo "npm ci failed, retry $i/3" && sleep 25); \
             done
 
 
