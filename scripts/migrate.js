@@ -23,10 +23,23 @@ const umzug = new Umzug({
     glob: ['scripts/migrations/*.js', { cwd: path.join(__dirname, '..') }],
     resolve: ({ name, path: filePath, context }) => {
       const migration = require(filePath);
+      // Validate shape; provide defensive no-op to avoid crash loops while surfacing warning once
+      const hasUp = migration && typeof migration.up === 'function';
+      const hasDown = migration && typeof migration.down === 'function';
+      if (!hasUp) {
+        console.warn(`[MIGRATE] Warning: migration ${name} has no exported up() function. Inserting no-op to preserve ordering.`);
+      }
       return {
         name,
-        up: async () => migration.up(context, sequelize.Sequelize),
-        down: async () => migration.down ? migration.down(context, sequelize.Sequelize) : Promise.resolve(),
+        up: async () => {
+          if (hasUp) return migration.up(context, sequelize.Sequelize);
+          // else no-op
+          return Promise.resolve();
+        },
+        down: async () => {
+          if (hasDown) return migration.down(context, sequelize.Sequelize);
+          return Promise.resolve();
+        },
       };
     },
   },
