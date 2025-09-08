@@ -1,4 +1,5 @@
-const bcrypt = require('bcryptjs');
+// Unified bcrypt usage (native module). Ensure image has build tools if needed.
+const bcrypt = require('bcrypt');
 
 exports.hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
