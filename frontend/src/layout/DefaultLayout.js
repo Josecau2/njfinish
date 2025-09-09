@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { getLatestTerms } from '../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../helpers/permissions'
 import { logout } from '../store/slices/authSlice'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
 
 // Import global style layers after CoreUI
@@ -22,8 +22,10 @@ const DefaultLayout = () => {
   const [forceTerms, setForceTerms] = useState(false)
   const [latestVersion, setLatestVersion] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [hasInitialized, setHasInitialized] = useState(false)
   const dispatch = useDispatch()
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Set compact density on mobile
   useEffect(() => {
@@ -41,10 +43,23 @@ const DefaultLayout = () => {
   }, [])
 
   useEffect(() => {
-    // Don't check terms until we have user data
+    // Handle initial app load vs logout scenarios
     if (!user) {
-      setLoading(true)
-      return
+      if (!hasInitialized) {
+        // Initial app load - user will be loaded by auth middleware
+        setLoading(true)
+        return
+      } else {
+        // User was logged out - navigate to login immediately
+        setLoading(false)
+        navigate('/login', { replace: true })
+        return
+      }
+    }
+
+    // Mark that we've seen a user (app has initialized)
+    if (!hasInitialized) {
+      setHasInitialized(true)
     }
 
     (async () => {
@@ -80,7 +95,7 @@ const DefaultLayout = () => {
         setLoading(false)
       }
     })()
-  }, [user, isAdmin])
+  }, [user, isAdmin, hasInitialized, navigate])
 
   const handleAccepted = () => {
     if (latestVersion) {
@@ -101,8 +116,8 @@ const DefaultLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname])
 
-  // Show loading while checking user status
-  if (loading || !user) {
+  // Show loading only during initial load or terms checking
+  if (loading) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
         <div className="text-center">
@@ -112,6 +127,12 @@ const DefaultLayout = () => {
         </div>
       </div>
     )
+  }
+
+  // If user is null and we're not loading, we shouldn't be here
+  // This should have been handled by the useEffect navigation
+  if (!user) {
+    return null
   }
 
   // If non-admin user must accept terms, block the entire app

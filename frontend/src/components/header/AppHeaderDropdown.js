@@ -12,17 +12,28 @@ import {
 import { LogOut, User as UserIcon } from '@/icons-lucide'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../store/slices/authSlice'; // Adjust the path as needed
+import { logout } from '../../store/slices/authSlice';
+import { clearAllTokens } from '../../utils/authToken';
+import { forceBrowserCleanup, forcePageReload } from '../../utils/browserCleanup';
 
 const AppHeaderDropdown = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  dispatch(logout());
-    navigate('/login');
+    // Step 1: Clear all tokens and memory cache
+    clearAllTokens();
+    
+    // Step 2: Dispatch logout action (clears Redux state and more storage)
+    dispatch(logout());
+    
+    // Step 3: Force complete browser cleanup
+    forceBrowserCleanup();
+    
+    // Step 4: Force page reload to login with cache busting
+    setTimeout(() => {
+      window.location.href = '/login?_t=' + Date.now() + '&_fresh=1';
+    }, 100);
   };
 
   return (

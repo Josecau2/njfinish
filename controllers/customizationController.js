@@ -97,16 +97,81 @@ exports.getCustomizationdeletelogo = async (req, res) => {
 
 
 exports.generatepdf = async (req, res) => {
-  const { getPuppeteer } = require('../utils/puppeteerLauncher');
-  const { html, options } = req.body;
-  const { puppeteer, launchOptions } = getPuppeteer();
-  const browser = await puppeteer.launch(launchOptions);
-  const page = await browser.newPage();
-  await page.setContent(html);
-  
-  const pdf = await page.pdf(options);
-  await browser.close();
-  
-  res.setHeader('Content-Type', 'application/pdf');
-  res.send(pdf);
+  try {
+    console.log('PDF Generation - Starting, checking imports...');
+    const { getPuppeteer } = require('../utils/puppeteerLauncher');
+    const { html, options } = req.body;
+
+    if (!html) {
+      return res.status(400).json({ error: 'HTML content is required' });
+    }
+
+    console.log('PDF Generation - Starting...');
+    
+    const result = getPuppeteer();
+    console.log('PDF Generation - getPuppeteer result:', {
+      hasPuppeteer: !!result.puppeteer,
+      launchOptions: result.launchOptions
+    });
+    
+    const { puppeteer, launchOptions } = result;
+    
+    console.log('PDF Generation - Launch options:', launchOptions);
+    
+    let browser;
+    try {
+      console.log('PDF Generation - About to launch browser with options:', launchOptions);
+      browser = await puppeteer.launch(launchOptions);
+      console.log('PDF Generation - Browser launched successfully');
+      
+      const page = await browser.newPage();
+      console.log('PDF Generation - New page created');
+      
+      // Set viewport and user agent for better rendering
+      await page.setViewport({ width: 1200, height: 800 });
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+      
+      await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
+      console.log('PDF Generation - HTML content set');
+      
+      // Default PDF options
+      const pdfOptions = {
+        format: 'A4',
+        margin: {
+          top: '20mm',
+          right: '20mm',
+          bottom: '20mm',
+          left: '20mm'
+        },
+        printBackground: true,
+        preferCSSPageSize: false,
+        ...options
+      };
+      
+      console.log('PDF Generation - Generating PDF with options:', pdfOptions);
+      const pdf = await page.pdf(pdfOptions);
+      console.log('PDF Generation - PDF generated successfully, size:', pdf.length);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
+      res.send(pdf);
+      
+    } catch (pageError) {
+      console.error('PDF Generation - Page/PDF error:', pageError);
+      throw pageError;
+    } finally {
+      if (browser) {
+        await browser.close();
+        console.log('PDF Generation - Browser closed');
+      }
+    }
+    
+  } catch (error) {
+    console.error('PDF Generation - Error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate PDF', 
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
 };

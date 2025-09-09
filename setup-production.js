@@ -1,11 +1,11 @@
 /**
  * Production Setup Script
- * 
+ *
  * This script sets up all essential data needed for the NJ Cabinets application
  * to work properly in production environment.
- * 
+ *
  * Compatible with Windows, Linux, and macOS
- * 
+ *
  * Run this script after database sync to ensure all required data exists.
  */
 
@@ -46,7 +46,7 @@ class ProductionSetup {
         const timestamp = new Date().toISOString();
         const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : type === 'success' ? '✅' : '📝';
         console.log(`${prefix} [${timestamp}] ${message}`);
-        
+
         // Also log to file in production
         if (process.env.NODE_ENV === 'production') {
             try {
@@ -66,10 +66,10 @@ class ProductionSetup {
 
     async createAdminUser() {
         this.log('Creating/updating admin user...');
-        
+
         try {
             const hashedPassword = await bcrypt.hash('admin123', 10);
-            
+
             const [adminUser, created] = await User.findOrCreate({
                 where: { email: 'joseca@symmetricalwolf.com' },
                 defaults: {
@@ -114,7 +114,7 @@ class ProductionSetup {
 
     async createAdminGroup() {
         this.log('Creating admin user group...');
-        
+
         try {
             const [adminGroup, created] = await UserGroup.findOrCreate({
                 where: { id: 2 },
@@ -167,7 +167,7 @@ class ProductionSetup {
 
     async createDefaultLocation() {
         this.log('Creating default location...');
-        
+
         try {
             const [defaultLocation, created] = await Location.findOrCreate({
                 where: { id: 1 },
@@ -202,7 +202,7 @@ class ProductionSetup {
 
     async createDefaultTaxes() {
         this.log('Creating default tax configurations...');
-        
+
         try {
             const defaultTaxes = [
                 { label: 'New Jersey Sales Tax', value: 6.625, isDefault: true },
@@ -233,7 +233,7 @@ class ProductionSetup {
 
     async createDefaultCustomizations() {
         this.log('Creating default customizations...');
-        
+
         try {
             // Login customization
             const [loginCustomization, loginCreated] = await LoginCustomization.findOrCreate({
@@ -305,7 +305,7 @@ class ProductionSetup {
 
     async createDefaultResources() {
         this.log('Creating default resource links...');
-        
+
         try {
             const defaultResources = [
                 {
@@ -354,11 +354,11 @@ class ProductionSetup {
 
     async ensureDirectories() {
         this.log('Ensuring required directories exist...');
-        
+
         try {
             const { checkProductionImageSetup } = require('./check-production-setup');
             const success = checkProductionImageSetup();
-            
+
             if (success) {
                 this.log('All required directories are ready', 'success');
             } else {
@@ -373,7 +373,7 @@ class ProductionSetup {
 
     async runMigrations() {
         this.log('Running image migrations...');
-        
+
         try {
             const { migrateManufacturerImages } = require('./migrate-manufacturer-images');
             await migrateManufacturerImages();
@@ -387,7 +387,7 @@ class ProductionSetup {
 
     async runFullSetup() {
         this.log('🚀 Starting automatic production setup...\n');
-        
+
         try {
             // Ensure database connection
             await sequelize.authenticate();
@@ -415,36 +415,36 @@ class ProductionSetup {
 
             if (this.results.errors.length === 0) {
                 this.log('✅ Production setup completed successfully!', 'success');
-                
+
                 // Only show credentials in production setup, not during build
                 if (process.env.SHOW_ADMIN_CREDENTIALS !== 'false') {
                     this.log('\n🔑 ADMIN CREDENTIALS: joseca@symmetricalwolf.com / admin123');
                     this.log('⚠️  Change password after first login!');
                 }
-                
-                imageLogger.log('PRODUCTION_SETUP', { 
-                    status: 'success', 
+
+                imageLogger.log('PRODUCTION_SETUP', {
+                    status: 'success',
                     timestamp: new Date().toISOString(),
-                    environment: process.env.NODE_ENV 
+                    environment: process.env.NODE_ENV
                 });
                 return true;
             } else {
                 this.log('⚠️ Production setup completed with some warnings.', 'warn');
-                imageLogger.log('PRODUCTION_SETUP', { 
-                    status: 'partial_success', 
+                imageLogger.log('PRODUCTION_SETUP', {
+                    status: 'partial_success',
                     errors: this.results.errors,
                     timestamp: new Date().toISOString(),
-                    environment: process.env.NODE_ENV 
+                    environment: process.env.NODE_ENV
                 });
                 return true; // Still return true for warnings, not hard failures
             }
 
         } catch (error) {
             this.log(`❌ Production setup failed: ${error.message}`, 'error');
-            imageLogger.logError('PRODUCTION_SETUP', error, { 
-                environment: process.env.NODE_ENV 
+            imageLogger.logError('PRODUCTION_SETUP', error, {
+                environment: process.env.NODE_ENV
             });
-            
+
             // In automatic build mode, don't fail the entire build for setup issues
             if (process.env.BUILD_MODE === 'automatic') {
                 this.log('⚠️ Continuing build despite setup issues...', 'warn');
@@ -457,7 +457,7 @@ class ProductionSetup {
     printSummary() {
         this.log('\n📊 PRODUCTION SETUP SUMMARY');
         this.log('='.repeat(50));
-        
+
         const steps = [
             { name: 'Admin User', status: this.results.admin },
             { name: 'Admin Group', status: this.results.adminGroup },
@@ -485,7 +485,7 @@ class ProductionSetup {
         this.log('   Email: joseca@symmetricalwolf.com');
         this.log('   Password: admin123');
         this.log('   Role: Admin');
-        
+
         this.log('\n🔒 SECURITY REMINDER:');
         this.log('   - Change the admin password after first login');
         this.log('   - Update the default location information');
@@ -499,21 +499,21 @@ async function runProductionSetup() {
     // Set build mode for automatic deployment
     process.env.BUILD_MODE = 'automatic';
     process.env.SHOW_ADMIN_CREDENTIALS = 'false';
-    
+
     const setup = new ProductionSetup();
-    
+
     try {
         const success = await setup.runFullSetup();
         process.exit(success ? 0 : 1);
     } catch (error) {
         console.error('❌ Fatal setup error:', error);
-        
+
         // In automatic build mode, don't fail the build for database connection issues
         if (process.env.BUILD_MODE === 'automatic' && error.name === 'ConnectionError') {
             console.log('⚠️ Database not ready during build. Setup will run on first app start.');
             process.exit(0);
         }
-        
+
         process.exit(1);
     } finally {
         try {

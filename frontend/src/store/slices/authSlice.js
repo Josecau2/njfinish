@@ -29,22 +29,57 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      // Clear tokens from all locations
-      try { localStorage.removeItem('token'); } catch {}
-      try { sessionStorage.removeItem('token'); } catch {}
-      try { localStorage.removeItem('user'); } catch {}
-      try { sessionStorage.removeItem('user'); } catch {}
-      // Clear other auth-related items but don't wipe everything
-      const keysToRemove = ['persist:auth', 'persist:user'];
-      keysToRemove.forEach(key => {
+      
+      // Clear ALL possible token storage locations
+      const storageKeys = [
+        'token', 'user', 'auth', 'persist:auth', 'persist:user', 
+        'persist:root', 'authToken', 'userToken', 'jwtToken',
+        'accessToken', 'refreshToken', 'sessionToken'
+      ];
+      
+      // Clear from localStorage
+      storageKeys.forEach(key => {
         try { localStorage.removeItem(key); } catch {}
+      });
+      
+      // Clear from sessionStorage  
+      storageKeys.forEach(key => {
         try { sessionStorage.removeItem(key); } catch {}
       });
+      
+      // Clear all cookies that might contain tokens
+      const cookiesToClear = [
+        'token', 'auth', 'session', 'jwt', 'access_token', 
+        'refresh_token', 'user', 'authToken', 'sessionToken'
+      ];
+      
+      cookiesToClear.forEach(name => {
+        try {
+          if (typeof document !== 'undefined') {
+            // Clear cookie for current domain and path
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+            // Also try without domain specification
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`;
+          }
+        } catch {}
+      });
+      
+      // Clear any axios default headers
       try {
-        if (typeof document !== 'undefined') {
-          document.cookie = 'token=; Max-Age=0; path=/';
-          document.cookie = 'auth=; Max-Age=0; path=/';
+        if (typeof window !== 'undefined' && window.axios) {
+          delete window.axios.defaults.headers.common['Authorization'];
+          delete window.axios.defaults.headers['Authorization'];
         }
+      } catch {}
+      
+      // Notify other tabs of logout
+      try {
+        window.localStorage.setItem('__auth_logout__', String(Date.now()));
+        // Remove the notification after a brief moment
+        setTimeout(() => {
+          try { window.localStorage.removeItem('__auth_logout__'); } catch {}
+        }, 1000);
       } catch {}
     },
   },

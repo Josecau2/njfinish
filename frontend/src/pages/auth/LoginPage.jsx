@@ -72,12 +72,26 @@ const LoginPage = () => {
       const { token, userId, name, role, role_id, group_id, group } = response.data;
       const user = { email, userId, name, role: String(role || '').toLowerCase(), role_id, group_id, group };
 
+      // Force complete token cleanup before installing new token
+      // This ensures no stale tokens interfere with the new session
+      try {
+        // Clear any existing tokens first
+        localStorage.clear(); // Complete clean slate
+        sessionStorage.clear(); // Complete clean slate
+      } catch {}
+
       // Install token everywhere (hard reset) and persist user
       installTokenEverywhere(token);
       try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
 
       // Wait a brief moment to ensure token is fully installed before proceeding
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify token was installed correctly
+      const verifyToken = localStorage.getItem('token');
+      if (!verifyToken || verifyToken !== token) {
+        throw new Error('Token installation failed');
+      }
 
       // Notify other tabs
       try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}

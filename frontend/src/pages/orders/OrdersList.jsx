@@ -13,10 +13,11 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilSearch, cilCreditCard } from '@coreui/icons'
+import { cilSearch, cilCreditCard, cilCloudDownload } from '@coreui/icons'
 import PageHeader from '../../components/PageHeader'
 import { FaShoppingCart } from 'react-icons/fa'
 import PaginationComponent from '../../components/common/PaginationComponent'
+import PrintPaymentReceiptModal from '../../components/model/PrintPaymentReceiptModal'
 import { fetchOrders } from '../../store/slices/ordersSlice'
 import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { fetchPayments } from '../../store/slices/paymentsSlice'
@@ -33,6 +34,11 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const [page, setPage] = useState(1)
   const perPage = 10
   const navigate = useNavigate()
+  
+  // Receipt modal state
+  const [receiptModalVisible, setReceiptModalVisible] = useState(false)
+  const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)
+  const [selectedPaymentForReceipt, setSelectedPaymentForReceipt] = useState(null)
 
   // Resolve manufacturer name from order snapshot first; fall back to legacy manufacturersData if present
   const resolveManuName = (item) => {
@@ -219,7 +225,8 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
           status: 'paid',
           label: t('payments.status.paid', 'Paid'),
           color: 'success',
-          showButton: false
+          showButton: false,
+          paidAt: payment.paidAt
         }
       case 'pending':
         return {
@@ -260,6 +267,18 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
       // If no payment exists, go to payments page to potentially create one
       navigate('/payments')
     }
+  }
+
+  const handleDownloadReceipt = (order, payment) => {
+    setSelectedOrderForReceipt(order)
+    setSelectedPaymentForReceipt(payment)
+    setReceiptModalVisible(true)
+  }
+
+  const closeReceiptModal = () => {
+    setReceiptModalVisible(false)
+    setSelectedOrderForReceipt(null)
+    setSelectedPaymentForReceipt(null)
   }
 
   const openDetails = (orderId) => {
@@ -366,24 +385,48 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge color={paymentInfo.color} shape="rounded-pill">
-                          {paymentInfo.label}
-                        </CBadge>
+                        <div className="d-flex flex-column">
+                          <CBadge color={paymentInfo.color} shape="rounded-pill" className="align-self-start">
+                            {paymentInfo.label}
+                          </CBadge>
+                          {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                            <small className="text-muted" style={{ fontSize: 11 }}>
+                              {t('payments.appliedOn','Applied on')} {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                            </small>
+                          )}
+                        </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        {paymentInfo.showButton && (
-                          <CButton
-                            color="primary"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleMakePayment(item.id)
-                            }}
-                          >
-                            <CIcon icon={cilCreditCard} className="me-1" size="sm" />
-                            {t('orders.actions.makePayment', 'Make Payment')}
-                          </CButton>
-                        )}
+                        <div className="d-flex gap-2">
+                          {paymentInfo.showButton && (
+                            <CButton
+                              color="primary"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleMakePayment(item.id)
+                              }}
+                            >
+                              <CIcon icon={cilCreditCard} className="me-1" size="sm" />
+                              {t('orders.actions.makePayment', 'Make Payment')}
+                            </CButton>
+                          )}
+                          {paymentInfo.status === 'paid' && (
+                            <CButton
+                              color="success"
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                const payment = getOrderPayment(item.id)
+                                handleDownloadReceipt(item, payment)
+                              }}
+                            >
+                              <CIcon icon={cilCloudDownload} className="me-1" size="sm" />
+                              {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                            </CButton>
+                          )}
+                        </div>
                       </CTableDataCell>
                     </CTableRow>
                   )
@@ -429,9 +472,16 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                       <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
                         {item.status || 'accepted'}
                       </CBadge>
-                      <CBadge color={paymentInfo.color} shape="rounded-pill" size="sm">
-                        {paymentInfo.label}
-                      </CBadge>
+                      <div className="d-flex flex-column">
+                        <CBadge color={paymentInfo.color} shape="rounded-pill" size="sm" className="align-self-start">
+                          {paymentInfo.label}
+                        </CBadge>
+                        {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                          <small className="text-muted" style={{ fontSize: 10 }}>
+                            {t('payments.appliedOn','Applied on')} {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                          </small>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="card__meta">
@@ -445,19 +495,36 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                   <div className="card__content text-muted">
                     {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
                   </div>
-                  {paymentInfo.showButton && (
-                    <div className="card__actions">
-                      <CButton
-                        color="primary"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleMakePayment(item.id)
-                        }}
-                      >
-                        <CIcon icon={cilCreditCard} className="me-1" size="sm" />
-                        {t('orders.actions.makePayment', 'Make Payment')}
-                      </CButton>
+                  {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
+                    <div className="card__actions d-flex gap-2 flex-wrap">
+                      {paymentInfo.showButton && (
+                        <CButton
+                          color="primary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleMakePayment(item.id)
+                          }}
+                        >
+                          <CIcon icon={cilCreditCard} className="me-1" size="sm" />
+                          {t('orders.actions.makePayment', 'Make Payment')}
+                        </CButton>
+                      )}
+                      {paymentInfo.status === 'paid' && (
+                        <CButton
+                          color="success"
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const payment = getOrderPayment(item.id)
+                            handleDownloadReceipt(item, payment)
+                          }}
+                        >
+                          <CIcon icon={cilCloudDownload} className="me-1" size="sm" />
+                          {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                        </CButton>
+                      )}
                     </div>
                   )}
                 </article>
@@ -475,6 +542,14 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
           itemsPerPage={perPage}
         />
       </div>
+
+      {/* Payment Receipt Modal */}
+      <PrintPaymentReceiptModal
+        show={receiptModalVisible}
+        onClose={closeReceiptModal}
+        payment={selectedPaymentForReceipt}
+        order={selectedOrderForReceipt}
+      />
     </CContainer>
   )
 }

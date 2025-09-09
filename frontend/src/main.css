@@ -363,7 +363,7 @@
 
 /* Modal Enhancements */
 .modal-xl {
-  max-width: 1200px;
+  max-width: min(1200px, 95vw); /* Responsive max-width that scales with viewport */
 }
 
 .modal-content {
@@ -409,6 +409,51 @@
 .specs-modal .modal-backdrop,
 .modal-backdrop.show {
   z-index: 9998 !important;
+}
+
+/* Ensure ALL modals sit above other overlays including sidebar, mobile actions, etc. */
+/* This fixes the issue where modals become unclickable due to z-index conflicts */
+.modal {
+  z-index: 9999 !important;
+}
+.modal .modal-dialog {
+  z-index: 9999 !important;
+  position: relative !important;
+  margin: auto !important;
+  pointer-events: auto !important;
+}
+.modal .modal-content {
+  z-index: 9999 !important;
+  position: relative !important;
+  pointer-events: auto !important;
+}
+.modal-backdrop,
+.modal-backdrop.show {
+  z-index: 9998 !important;
+}
+
+/* Ensure modals are displayed and clickable when visible */
+.modal.show {
+  display: block !important;
+}
+
+/* Ensure all modal dialogs have proper transform and positioning */
+.modal.show .modal-dialog {
+  transform: translate(0, 0) !important;
+  pointer-events: auto !important;
+}
+
+/* Fix for any transform or positioning issues that might make modals unclickable */
+.modal-content {
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+/* Make sure modal body and header are clickable */
+.modal-header,
+.modal-body,
+.modal-footer {
+  pointer-events: auto !important;
 }
 
 /* Ensure modal shows properly when visible */

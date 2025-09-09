@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react';
 import { cilSearch, cilCreditCard, cilPlus } from '../../icons';
 import PageHeader from '../../components/PageHeader';
 import PaginationComponent from '../../components/common/PaginationComponent';
-import { fetchPayments, createPayment } from '../../store/slices/paymentsSlice';
+import { fetchPayments, createPayment, applyPayment } from '../../store/slices/paymentsSlice';
 
 // Mobile-friendly payment tabs styles
 const paymentTabsStyles = `
@@ -116,6 +116,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { payments, pagination, loading, error } = useSelector((state) => state.payments);
+  const user = useSelector((s) => s.auth.user);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
@@ -370,9 +371,16 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                       }).format(payment.amount)}
                     </CTableDataCell>
                     <CTableDataCell>
-                      <CBadge color={getStatusColor(payment.status)} shape="rounded-pill">
-                        {getStatusLabel(payment.status)}
-                      </CBadge>
+                      <div className="d-flex flex-column gap-1">
+                        <CBadge color={getStatusColor(payment.status)} shape="rounded-pill" className="align-self-start">
+                          {getStatusLabel(payment.status)}
+                        </CBadge>
+                        {payment.status === 'completed' && payment.paidAt && (
+                          <small className="text-muted" style={{ fontSize: 11 }}>
+                            {t('payments.appliedOn','Applied on')} {new Date(payment.paidAt).toLocaleDateString()}
+                          </small>
+                        )}
+                      </div>
                     </CTableDataCell>
                     <CTableDataCell className="text-muted">
                       {payment.transactionId || t('common.na')}
@@ -388,6 +396,85 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                           }}
                         >
                           {t('payments.actions.makePayment', 'Make Payment')}
+                        </CButton>
+                      )}
+                      {user?.role?.toLowerCase() === 'admin' && payment.status !== 'completed' && (
+                        <CButton
+                          color="success"
+                          size="sm"
+                          className="ms-2"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            
+                            // Show payment method selection dialog
+                            const { value: paymentMethod } = await Swal.fire({
+                              title: t('payments.apply.confirmTitle','Apply Payment?'),
+                              html: `
+                                <p>${t('payments.apply.confirmText','This will mark the payment as completed.')}</p>
+                                <div class="mt-3">
+                                  <label for="paymentMethod" class="form-label">${t('payments.apply.methodLabel','Payment Method')}:</label>
+                                  <select id="paymentMethod" class="form-select">
+                                    <option value="">Select payment method</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="debit_card">Debit Card</option>
+                                    <option value="credit_card">Credit Card</option>
+                                    <option value="check">Check</option>
+                                    <option value="other">Other</option>
+                                  </select>
+                                </div>
+                                <div class="mt-2" id="checkNumberDiv" style="display: none;">
+                                  <label for="checkNumber" class="form-label">Check Number:</label>
+                                  <input type="text" id="checkNumber" class="form-control" placeholder="Enter check number">
+                                </div>
+                              `,
+                              icon: 'question',
+                              showCancelButton: true,
+                              confirmButtonText: t('payments.apply.confirmYes','Yes, apply it'),
+                              cancelButtonText: t('common.cancel','Cancel'),
+                              preConfirm: () => {
+                                const method = document.getElementById('paymentMethod').value;
+                                const checkNumber = document.getElementById('checkNumber').value;
+                                
+                                if (!method) {
+                                  Swal.showValidationMessage('Please select a payment method');
+                                  return false;
+                                }
+                                
+                                if (method === 'check' && !checkNumber.trim()) {
+                                  Swal.showValidationMessage('Please enter a check number');
+                                  return false;
+                                }
+                                
+                                return method === 'check' ? `check #${checkNumber}` : method;
+                              },
+                              didOpen: () => {
+                                const select = document.getElementById('paymentMethod');
+                                const checkDiv = document.getElementById('checkNumberDiv');
+                                
+                                select.addEventListener('change', () => {
+                                  if (select.value === 'check') {
+                                    checkDiv.style.display = 'block';
+                                  } else {
+                                    checkDiv.style.display = 'none';
+                                  }
+                                });
+                              }
+                            });
+                            
+                            if (paymentMethod) {
+                              try {
+                                await dispatch(applyPayment({ 
+                                  id: payment.id, 
+                                  paymentMethod: paymentMethod 
+                                })).unwrap();
+                                Swal.fire(t('common.success','Success'), t('payments.apply.success','Payment applied'), 'success');
+                              } catch (err) {
+                                Swal.fire(t('common.error','Error'), err.message || t('payments.apply.error','Failed to apply'), 'error');
+                              }
+                            }
+                          }}
+                        >
+                          {t('payments.apply.button','Apply')}
                         </CButton>
                       )}
                     </CTableDataCell>

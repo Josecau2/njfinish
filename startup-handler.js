@@ -1,6 +1,6 @@
 /**
  * App Startup Handler
- * 
+ *
  * This module ensures that production setup runs automatically when the app starts
  * if it hasn't been run yet or if the database is empty.
  */
@@ -50,17 +50,17 @@ class AppStartupHandler {
             }
 
             console.log('🔧 Running initial production setup...');
-            
+
             // Import and run production setup
             const { ProductionSetup } = require('./setup-production');
             const setup = new ProductionSetup();
-            
+
             // Set environment flags for startup mode
             process.env.BUILD_MODE = 'startup';
             process.env.SHOW_ADMIN_CREDENTIALS = 'true';
-            
+
             const success = await setup.runFullSetup();
-            
+
             if (success) {
                 try {
                     fs.writeFileSync(this.setupMarkerFile, new Date().toISOString());
@@ -73,21 +73,21 @@ class AppStartupHandler {
                     }
                 }
             }
-            
+
             return success;
-            
+
         } catch (error) {
             if (error && error.code === 'EACCES') {
                 console.warn('⚠️  Startup setup encountered EACCES (marker write). Continuing without marker.');
             } else {
                 console.error('❌ Startup setup failed:', error.message);
             }
-            
+
             // Don't fail app startup if setup fails - app might still work
             if (error.name === 'ConnectionError') {
                 console.log('⚠️ Database connection failed. App will start but may need manual setup.');
             }
-            
+
             return false;
         }
     }

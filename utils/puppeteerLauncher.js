@@ -32,8 +32,10 @@ function findExecutable() {
 
   // 3) Windows dev paths
   const winCandidates = [
-    'C\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    process.env.PROGRAMFILES + '\\Google\\Chrome\\Application\\chrome.exe',
+    process.env['PROGRAMFILES(X86)'] + '\\Google\\Chrome\\Application\\chrome.exe'
   ];
 
   const all = process.platform === 'win32' ? winCandidates : candidates;

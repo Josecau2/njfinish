@@ -57,6 +57,22 @@ export const updatePaymentStatus = createAsyncThunk(
   }
 );
 
+// Manually apply (complete) a payment
+export const applyPayment = createAsyncThunk(
+  'payments/applyPayment',
+  async ({ id, transactionId, paymentMethod }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/api/payments/${id}/apply`, { 
+        transactionId, 
+        paymentMethod 
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { error: error.message });
+    }
+  }
+);
+
 export const deletePayment = createAsyncThunk(
   'payments/deletePayment',
   async (id, { rejectWithValue }) => {
@@ -207,6 +223,12 @@ const paymentsSlice = createSlice({
         if (state.currentPayment?.id === action.payload.id) {
           state.currentPayment = action.payload;
         }
+      })
+      // Apply payment (manual completion)
+      .addCase(applyPayment.fulfilled, (state, action) => {
+        const index = state.payments.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) state.payments[index] = action.payload;
+        if (state.currentPayment?.id === action.payload.id) state.currentPayment = action.payload;
       })
 
       // Delete payment

@@ -14,55 +14,67 @@ import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
 import PublicProposalPage from './pages/public/PublicProposalPage'
 import AppInitializer from './components/AppInitializer'
-import { setSidebarShow } from './store/slices/sidebarSlice'
+import SessionRefresher from './components/SessionRefresher'
+import { setSidebarShow, syncSidebarWithScreenSize } from './store/slices/sidebarSlice'
 import { useDispatch } from 'react-redux'
 import { debounce } from 'lodash'
-
+import { addLogoutListener } from './utils/browserCleanup'
 
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 
 const App = () => {
-
   const dispatch = useDispatch()
+  const lastSize = useRef(window.innerWidth <= 768 ? 'mobile' : 'desktop')
+  const isInitialized = useRef(false)
 
-  const lastSize = useRef(window.innerWidth <= 768 ? 'mobile' : 'desktop');
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768
       const newSize = isMobile ? 'mobile' : 'desktop'
 
-      if (newSize !== lastSize.current) {
+      if (newSize !== lastSize.current || !isInitialized.current) {
         lastSize.current = newSize
-        dispatch(setSidebarShow(!isMobile)) // ✅ Show on desktop, hide on mobile
-  // Toggle compact density tokens on <html>
-  const html = document.documentElement
-  if (isMobile) html.setAttribute('data-density', 'compact')
-  else html.removeAttribute('data-density')
+        isInitialized.current = true
+
+        // Use the new sync action for better state management
+        dispatch(syncSidebarWithScreenSize())
+
+        // Toggle compact density tokens on <html>
+        const html = document.documentElement
+        if (isMobile) {
+          html.setAttribute('data-density', 'compact')
+        } else {
+          html.removeAttribute('data-density')
+        }
       }
     }
 
-    const debouncedResize = debounce(handleResize, 150)
+    const debouncedResize = debounce(handleResize, 100)
     window.addEventListener('resize', debouncedResize)
 
-  // Initial check (call only once)
-  handleResize()
-  // Initialize density on first load
-  const html = document.documentElement
-  if (window.innerWidth <= 768) html.setAttribute('data-density', 'compact')
+    // Initial check - call immediately and mark as initialized
+    handleResize()
 
     return () => {
       window.removeEventListener('resize', debouncedResize)
     }
   }, [dispatch])
 
+  // Add logout listener for cross-tab logout detection
+  useEffect(() => {
+    const cleanup = addLogoutListener()
+    return cleanup
+  }, [])
+
 
 
 
   return (
-    <Router>
-      <Suspense fallback={<div className="text-center pt-5"><CSpinner color="primary" /></div>}>
-        <Routes>
+    <SessionRefresher>
+      <Router>
+        <Suspense fallback={<div className="text-center pt-5"><CSpinner color="primary" /></div>}>
+          <Routes>
           {/* Public Routes */}
           <Route
             path="/login"
@@ -131,6 +143,7 @@ const App = () => {
         </Routes>
       </Suspense>
     </Router>
+    </SessionRefresher>
   )
 }
 

@@ -226,7 +226,7 @@ html, body {
     padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0)); /* Avoid browser chrome */
   }
 
-  /* Make modals full-screen on mobile */
+  /* Make modals full-screen on mobile with exceptions for specific modals */
   .modal.fade .modal-dialog {
     transform: translateY(100%);
   }
@@ -240,6 +240,71 @@ html, body {
     height: 100%;
     border-radius: 0;
     border: none;
+  }
+
+  /* Quote Preview Modal specific mobile optimizations */
+  .modal.show .modal-dialog:has([data-testid="quote-preview"]),
+  .modal.show .modal-dialog:has(.quote-preview-content) {
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+
+  .modal-content:has([data-testid="quote-preview"]),
+  .modal-content:has(.quote-preview-content) {
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Quote Preview Modal Body - mobile optimization */
+  .modal-content:has([data-testid="quote-preview"]) .modal-body,
+  .modal-content:has(.quote-preview-content) .modal-body {
+    flex: 1 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  /* Quote Preview container mobile optimization */
+  .modal-content:has([data-testid="quote-preview"]) .modal-body > div,
+  .modal-content:has(.quote-preview-content) .modal-body > div {
+    height: 100% !important;
+    max-height: calc(100vh - 120px) !important; /* Account for header and footer */
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+  }
+
+  /* Quote Preview content scaling for mobile */
+  .modal-content:has([data-testid="quote-preview"]) .modal-body [style*="transform: scale"],
+  .modal-content:has(.quote-preview-content) .modal-body [style*="transform: scale"] {
+    margin: 0 auto !important; /* Center the scaled content */
+  }
+
+  /* Improve touch targets for mobile */
+  .modal-content:has([data-testid="quote-preview"]) .modal-footer .btn,
+  .modal-content:has(.quote-preview-content) .modal-footer .btn {
+    min-height: 44px !important; /* Improve touch target size */
+    margin-bottom: 8px !important;
+  }
+
+  /* Mobile header improvements for quote preview */
+  .modal-content:has([data-testid="quote-preview"]) .page-header,
+  .modal-content:has(.quote-preview-content) .page-header {
+    padding: 12px 16px !important; /* Better mobile spacing */
+    min-height: 56px !important; /* Consistent header height */
+  }
+}
+
+/* Mobile landscape specific optimizations for Quote Preview */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal-content:has([data-testid="quote-preview"]) .modal-body > div,
+  .modal-content:has(.quote-preview-content) .modal-body > div {
+    max-height: calc(100vh - 100px) !important; /* Reduce header/footer space in landscape */
+  }
+  
+  .modal-content:has([data-testid="quote-preview"]) .page-header,
+  .modal-content:has(.quote-preview-content) .page-header {
+    padding: 8px 16px !important; /* Reduce header padding in landscape */
+    min-height: 48px !important;
   }
 }
 
@@ -262,6 +327,43 @@ html, body {
   .modal-body {
     max-height: calc(90vh - 120px); /* Account for header and footer */
     overflow-y: auto;
+  }
+}
+
+/* Desktop responsive modal sizes for better screen utilization */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  /* Medium desktop screens */
+  .modal-xl {
+    max-width: 95vw; /* Use more viewport width on smaller desktop screens */
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1599.98px) {
+  /* Large desktop screens */
+  .modal-xl {
+    max-width: 90vw; /* Responsive scaling for large screens */
+  }
+}
+
+@media (min-width: 1600px) {
+  /* Extra large desktop screens */
+  .modal-xl {
+    max-width: 85vw; /* Scale down slightly on very large screens for better proportions */
+  }
+}
+
+/* Quote Preview Modal specific responsive improvements */
+@media (min-width: 992px) {
+  /* Ensure quote preview content scales properly on desktop */
+  .modal-xl .modal-body {
+    min-height: 400px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  /* Quote preview container should be fully responsive */
+  .modal-xl .modal-body > div[style*="maxHeight"] {
+    max-height: 85vh !important;
   }
 }
 

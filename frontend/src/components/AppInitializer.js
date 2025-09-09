@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axiosInstance from '../helpers/axiosInstance'
 import { setCustomization } from '../store/slices/customizationSlice'
+import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
 import { CSpinner } from '@coreui/react'
 
 const AppInitializer = ({ children }) => {
@@ -9,6 +10,11 @@ const AppInitializer = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL
+
+  // Ensure sidebar state is correct when app initializes after login
+  useEffect(() => {
+    dispatch(syncSidebarWithScreenSize())
+  }, [dispatch])
 
   // Update document title and favicon when customization changes
   useEffect(() => {

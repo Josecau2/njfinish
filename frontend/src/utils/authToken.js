@@ -24,13 +24,38 @@ function decodePayload(token) {
     return null;
   }
 }
+
+// Force clear all tokens and memory cache
+export function clearAllTokens() {
+  // Clear memory cache immediately
+  memoryToken = null;
+  
+  // Clear all possible token storage locations
+  const storageKeys = [
+    'token', 'user', 'auth', 'persist:auth', 'persist:user', 
+    'persist:root', 'authToken', 'userToken', 'jwtToken',
+    'accessToken', 'refreshToken', 'sessionToken'
+  ];
+  
+  // Clear from localStorage
+  storageKeys.forEach(key => {
+    try { localStorage.removeItem(key); } catch {}
+  });
+  
+  // Clear from sessionStorage  
+  storageKeys.forEach(key => {
+    try { sessionStorage.removeItem(key); } catch {}
+  });
+  
+  if (import.meta?.env?.DEV) {
+    console.debug('[CLEAR_ALL] All tokens and memory cache cleared');
+  }
+}
+
 export function installTokenEverywhere(newToken) {
   try {
-    // Remove stale copies first
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
-    // Clear memory cache first to avoid stale references
-    memoryToken = null;
+    // First, completely clear everything to ensure fresh state
+    clearAllTokens();
 
     // Write fresh token redundantly
     if (newToken) {

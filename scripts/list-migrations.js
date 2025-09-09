@@ -15,7 +15,7 @@ if (fs.existsSync(scriptsMigrationsPath)) {
   const scriptFiles = fs.readdirSync(scriptsMigrationsPath)
     .filter(f => f.endsWith('.js'))
     .sort();
-  
+
   console.log(`Found ${scriptFiles.length} migration files:`);
   scriptFiles.forEach((file, index) => {
     console.log(`  ${index + 1}. ${file}`);
@@ -33,7 +33,7 @@ if (fs.existsSync(rootMigrationsPath)) {
   const rootFiles = fs.readdirSync(rootMigrationsPath)
     .filter(f => f.endsWith('.js'))
     .sort();
-  
+
   console.log(`Found ${rootFiles.length} migration files:`);
   rootFiles.forEach((file, index) => {
     console.log(`  ${index + 1}. ${file}`);

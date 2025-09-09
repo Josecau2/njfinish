@@ -50,13 +50,31 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const [previewScale, setPreviewScale] = useState(1);
     const [contentHeight, setContentHeight] = useState(0);
     const [containerPadding, setContainerPadding] = useState(20);
+    const [modalSize, setModalSize] = useState('xl');
     const BASE_PAGE_WIDTH_PX = 794; // ~210mm @96dpi
+
+    // Calculate responsive modal size based on viewport
+    const calculateModalSize = () => {
+        const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+        if (vw < 576) return 'sm';     // Mobile phones
+        if (vw < 768) return 'lg';     // Large mobile/small tablets
+        if (vw < 992) return 'xl';     // Tablets
+        if (vw < 1400) return 'xl';    // Small desktop
+        return 'xl';                   // Large desktop
+    };
 
     const recomputePreviewScale = () => {
         try {
             const container = previewContainerRef.current;
             const content = previewContentRef.current;
             if (!container || !content) return;
+            
+            // Update modal size based on viewport
+            const newModalSize = calculateModalSize();
+            if (newModalSize !== modalSize) {
+                setModalSize(newModalSize);
+            }
+            
             // Dynamic padding based on viewport width (min 12px, max 32px)
             const vw = window.innerWidth || document.documentElement.clientWidth || 0;
             const dynamicPadding = Math.max(12, Math.min(32, Math.round(vw * 0.04)));
@@ -68,8 +86,31 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             const padRight = parseFloat(styles.paddingRight || '0');
             const availableWidth = (container.clientWidth || 0) - padLeft - padRight;
             if (!availableWidth || availableWidth <= 0) return;
-            const scale = Math.min(1, availableWidth / BASE_PAGE_WIDTH_PX);
+            
+            // Better scaling calculation that accounts for different viewport sizes
+            let scale = availableWidth / BASE_PAGE_WIDTH_PX;
+            
+            // Mobile-specific scaling improvements
+            if (vw < 576) {
+                // Mobile phones: prioritize readability over full width
+                scale = Math.min(scale, 0.8);
+                scale = Math.max(scale, 0.4); // Ensure minimum readability
+            } else if (vw < 768) {
+                // Large mobile/small tablets
+                scale = Math.min(scale, 0.9);
+                scale = Math.max(scale, 0.5);
+            } else if (vw < 1200) {
+                // Tablets and small desktop: never scale above 100%
+                scale = Math.min(scale, 1);
+                scale = Math.max(scale, 0.6);
+            } else {
+                // Large screens: allow slight zoom
+                scale = Math.min(scale, 1.2);
+                scale = Math.max(scale, 0.7);
+            }
+            
             setPreviewScale(scale);
+            
             // Measure full content height to compute scaled wrapper height
             const naturalHeight = content.scrollHeight || content.offsetHeight || 0;
             setContentHeight(naturalHeight);
@@ -87,6 +128,18 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         return () => window.removeEventListener('resize', r);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showPreview, previewHtml]);
+
+    // Initialize modal size on component mount and handle resize
+    useEffect(() => {
+        const updateModalSize = () => {
+            const newSize = calculateModalSize();
+            setModalSize(newSize);
+        };
+        
+        updateModalSize();
+        window.addEventListener('resize', updateModalSize);
+        return () => window.removeEventListener('resize', updateModalSize);
+    }, []);
 
     // Also observe DOM mutations inside the preview to keep height in sync
     useEffect(() => {
@@ -995,22 +1048,28 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             <CModal
                 visible={showPreview}
                 onClose={() => setShowPreview(false)}
-                size="xl"
+                size={modalSize}
                 alignment="center"
                 scrollable
+                data-testid="quote-preview"
             >
                 <PageHeader
                     title={t('proposalCommon.previewTitle', 'Quote Preview')}
                     onClose={() => setShowPreview(false)}
                 />
-                <CModalBody style={{ padding: 0 }}>
+                <CModalBody style={{ padding: 0 }} className="quote-preview-content">
                     <div
                         ref={previewContainerRef}
                         style={{
-                            maxHeight: '80vh',
+                            maxHeight: window.innerWidth < 768 
+                                ? 'calc(100vh - 120px)' // Mobile: Account for header and footer
+                                : window.innerWidth < 992 
+                                    ? '75vh' // Tablet 
+                                    : '80vh', // Desktop
                             overflow: 'auto',
                             background: '#f8f9fa',
                             padding: containerPadding,
+                            height: window.innerWidth < 768 ? 'calc(100vh - 120px)' : 'auto',
                         }}
                     >
                         {/* Scaled stage wrapper keeps scroll height correct */}

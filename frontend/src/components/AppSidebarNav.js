@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
+// Sidebar nav with auto-collapse on navigation when not pinned (desktop only)
 import { useSelector, useDispatch } from 'react-redux'
 
 
@@ -15,6 +16,7 @@ export const AppSidebarNav = ({ items, fontColor }) => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
   const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
+  const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
   const isMobile = () => window.innerWidth < 768
   const navigate = useNavigate()
   const location = useLocation()
@@ -64,6 +66,11 @@ export const AppSidebarNav = ({ items, fontColor }) => {
               navigate(to)
               if (window.innerWidth < 768) {
                 dispatch(setSidebarShow(false))
+              } else {
+                // Desktop: if NOT pinned, collapse back to narrow after navigation
+                if (!sidebarPinned) {
+                  dispatch(setSidebarUnfoldable(true))
+                }
               }
             }}
             onKeyDown={(e) => {
@@ -72,6 +79,8 @@ export const AppSidebarNav = ({ items, fontColor }) => {
                 navigate(to)
                 if (window.innerWidth < 768) {
                   dispatch(setSidebarShow(false))
+                } else if (!sidebarPinned) {
+                  dispatch(setSidebarUnfoldable(true))
                 }
               }
             }}

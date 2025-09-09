@@ -229,6 +229,46 @@ router.put('/:id/status', verifyTokenWithGroup, requirePermission('payments:upda
   }
 });
 
+// Apply (complete) a payment manually (admin action)
+router.put('/:id/apply', verifyTokenWithGroup, requirePermission('payments:update'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { transactionId, paymentMethod } = req.body || {};
+
+    const payment = await Payment.findByPk(id);
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    if (payment.status === 'completed') {
+      return res.json(payment); // already applied
+    }
+
+    await payment.update({
+      status: 'completed',
+      paidAt: new Date(),
+      transactionId: transactionId || payment.transactionId,
+      paymentMethod: paymentMethod || payment.paymentMethod,
+    });
+
+    const updatedPayment = await Payment.findByPk(id, {
+      include: [
+        {
+          model: Order,
+          as: 'order',
+          include: [
+            { model: User, as: 'creator', attributes: ['id', 'name', 'email'] },
+            { model: UserGroup, as: 'ownerGroup', attributes: ['id', 'name'] },
+          ],
+        },
+        { model: User, as: 'creator', attributes: ['id', 'name', 'email'] },
+      ],
+    });
+
+    res.json(updatedPayment);
+  } catch (error) {
+    console.error('Error applying payment:', error);
+    res.status(500).json({ error: 'Failed to apply payment' });
+  }
+});
+
 // Payment webhook endpoint (for third-party payment confirmations)
 router.post('/webhook', async (req, res) => {
   try {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CCloseButton,
@@ -15,13 +15,14 @@ import { logo } from 'src/assets/brand/logo'
 import { sygnet } from 'src/assets/brand/sygnet'
 // sidebar nav config
 import useNavItems from '../_nav'
-import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
-import { BsTypeH6 } from 'react-icons/bs'
+import { setSidebarShow, setSidebarUnfoldable, setSidebarPinned } from '../store/slices/sidebarSlice'
+import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
   const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
+  const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
   const navItems = useNavItems()
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL;
@@ -46,6 +47,25 @@ const AppSidebar = () => {
       document.removeEventListener('touchstart', handleOutside, true)
     }
   }, [sidebarShow, dispatch])
+  // Hover handlers (desktop only). When collapsed (unfoldable=true) and NOT pinned, expand on hover.
+  const handleMouseEnter = useCallback(() => {
+    if (window.innerWidth < 992) return
+    if (sidebarPinned) return
+    // Only expand if currently narrow/collapsed
+    if (unfoldable) {
+      dispatch(setSidebarUnfoldable(false))
+    }
+  }, [dispatch, unfoldable, sidebarPinned])
+
+  const handleMouseLeave = useCallback(() => {
+    if (window.innerWidth < 992) return
+    if (sidebarPinned) return
+    // Collapse back after leaving if it was auto-expanded
+    if (!unfoldable) {
+      dispatch(setSidebarUnfoldable(true))
+    }
+  }, [dispatch, unfoldable, sidebarPinned])
+
   return (
     <>
       {/* Mobile-optimized sidebar CSS */}
@@ -149,13 +169,13 @@ const AppSidebar = () => {
           }
         }
 
-        /* Desktop styles */
+    /* Desktop styles */
         @media (min-width: 992px) {
           .modern-sidebar {
             transform: translateX(0);
             position: fixed;
             height: 100vh;
-            overflow-y: auto;
+      overflow-y: auto; /* allow scrolling when content exceeds viewport */
           }
 
           .modern-sidebar.sidebar-narrow {
@@ -169,6 +189,28 @@ const AppSidebar = () => {
           .modern-sidebar__footer {
             display: flex;
             position: relative;
+          }
+          /* Smooth width transition for expand / collapse */
+          .modern-sidebar { transition: width .18s ease, box-shadow .18s ease; }
+          .modern-sidebar.sidebar-narrow { overflow: hidden; }
+          .modern-sidebar.expanded-temp { box-shadow: 2px 0 8px rgba(0,0,0,.15); }
+        }
+
+        /* Fix for stuck sidebar issue - ensure proper initialization */
+        .modern-sidebar {
+          will-change: transform;
+        }
+
+        /* Ensure sidebar is properly shown/hidden based on state */
+        @media (min-width: 992px) {
+          .modern-sidebar:not(.show) {
+            transform: translateX(0) !important; /* Always show on desktop */
+          }
+        }
+
+        @media (max-width: 991.98px) {
+          .modern-sidebar:not(.show) {
+            transform: translateX(-100%) !important; /* Always hide on mobile when not shown */
           }
         }
 
@@ -203,11 +245,24 @@ const AppSidebar = () => {
             padding-bottom: 2rem;
           }
         }
+
+        /* Pin button adaptive styles */
+        .sidebar-footer-pin-btn { transition: all .18s ease; display:flex; align-items:center; gap:.35rem; }
+        .sidebar-footer-pin-btn .pin-label { display:inline; }
+        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn {
+          width:40px; min-width:40px; padding:.55rem .5rem; justify-content:center;
+        }
+        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn .pin-label { display:none; }
+        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn { font-size:0; }
+        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn svg { font-size:16px; }
+  /* Center pin button horizontally when collapsed */
+  .modern-sidebar.sidebar-narrow .modern-sidebar__footer .d-flex { justify-content: center; }
+  .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn { margin-left:0 !important; margin-right:0 !important; }
       `}</style>
 
       <CSidebar
         ref={sidebarRef}
-        className={`modern-sidebar border-end ${sidebarShow ? 'show' : ''} ${unfoldable ? 'sidebar-narrow' : ''}`}
+        className={`modern-sidebar border-end ${sidebarShow ? 'show' : ''} ${unfoldable ? 'sidebar-narrow' : ''} ${(!unfoldable && !sidebarPinned) ? 'expanded-temp' : ''}`}
         colorScheme="dark"
         position="fixed"
         unfoldable={unfoldable}
@@ -215,6 +270,8 @@ const AppSidebar = () => {
         onVisibleChange={(visible) => {
           dispatch(setSidebarShow(visible))
         }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         style={{
           backgroundColor: customization.sidebarBg,
           color: customization.sidebarFontColor,
@@ -290,9 +347,26 @@ const AppSidebar = () => {
         )}
 
         <CSidebarFooter className="modern-sidebar__footer border-top d-none d-lg-flex">
-          <CSidebarToggler
-            onClick={() => dispatch(setSidebarUnfoldable(!unfoldable))}
-          />
+          {/* Single Pin / Unpin control replaces old toggler; when pinned, force expanded */}
+          <div className="d-flex align-items-center w-100 px-2">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-light ms-auto sidebar-footer-pin-btn"
+              onClick={() => {
+                const next = !sidebarPinned
+                dispatch(setSidebarPinned(next))
+                if (next) {
+                  // Ensure expanded when pinning
+                  if (unfoldable) dispatch(setSidebarUnfoldable(false))
+                }
+              }}
+              title={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
+              aria-label={sidebarPinned ? 'Unpin sidebar' : 'Pin sidebar'}
+            >
+              {sidebarPinned ? <BsPinAngleFill /> : <BsPinAngle />}
+              <span className="pin-label">{sidebarPinned ? 'Unpin' : 'Pin'}</span>
+            </button>
+          </div>
         </CSidebarFooter>
       </CSidebar>
     </>
