@@ -7,6 +7,7 @@
     "build:secure": "vite build && node scripts/security-cleaner.js",
     "build:fast": "vite build --config vite.config.dev.mjs",
     "build:analyze": "node scripts/build-analyzer.js",
+  "fetch:fonts": "node scripts/fetch-inter-fonts.mjs",
     "clean": "rimraf build node_modules/.vite",
     "clean:deps": "rimraf node_modules package-lock.json && npm install",
     "lint": "eslint",
