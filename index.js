@@ -1,16 +1,26 @@
-const app = require('./app');
 require('dotenv').config();
+
+// Temporary global console suppression while deploying.
+// Set KEEP_LOGS=true to re-enable standard logging without code changes.
+if (process.env.KEEP_LOGS !== 'true') {
+  const noop = () => {};
+  // Preserve errors and warnings, silence noisy info/debug logs.
+  console.log = noop;
+  console.info = noop;
+  console.debug = noop;
+  // Optionally silence warns too – comment out if you want warnings.
+  console.warn = noop;
+}
+
+const app = require('./app');
 const http = require('http');
 
-
-const httpServer = http.createServer((req, res) => {
-  // Redirect HTTP request to HTTPS
-  // const redirectUrl = `https://${req.headers.host}${req.url}`;
-  // res.writeHead(301, { Location: redirectUrl });
-  // res.end();
-});
+// (If needed later) HTTP → HTTPS redirect logic placeholder left intentionally minimal.
+const httpServer = http.createServer(() => {});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  if (process.env.KEEP_LOGS === 'true') {
+    console.log(`Server running on port ${PORT}`);
+  }
 });

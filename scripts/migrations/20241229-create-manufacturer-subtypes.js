@@ -2,8 +2,18 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Create manufacturer_sub_types table
-    await queryInterface.createTable('manufacturer_sub_types', {
+    // Helper to check table existence (prevents errors & preserves data if rerun)
+    const tableExists = async (name) => {
+      const [rows] = await queryInterface.sequelize.query(
+        "SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?",
+        { replacements: [name] }
+      );
+      return rows.length > 0;
+    };
+
+    // Create manufacturer_sub_types table (only if missing)
+    if (!(await tableExists('manufacturer_sub_types'))) {
+      await queryInterface.createTable('manufacturer_sub_types', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -58,10 +68,22 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
-    });
+      });
 
-    // Create catalog_sub_type_assignments table
-    await queryInterface.createTable('catalog_sub_type_assignments', {
+      // Add indexes only if table was just created
+      await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id'], {
+        name: 'idx_manufacturer_sub_types_manufacturer_id'
+      });
+
+      await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id', 'name'], {
+        name: 'idx_manufacturer_sub_types_manufacturer_name',
+        unique: true
+      });
+    }
+
+    // Create catalog_sub_type_assignments table (only if missing)
+    if (!(await tableExists('catalog_sub_type_assignments'))) {
+      await queryInterface.createTable('catalog_sub_type_assignments', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -109,30 +131,22 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
-    });
+      });
 
-    // Add indexes for better performance
-    await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id'], {
-      name: 'idx_manufacturer_sub_types_manufacturer_id'
-    });
+      // Indexes only if table was just created
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id'], {
+        name: 'idx_catalog_sub_type_assignments_catalog_data_id'
+      });
 
-    await queryInterface.addIndex('manufacturer_sub_types', ['manufacturer_id', 'name'], {
-      name: 'idx_manufacturer_sub_types_manufacturer_name',
-      unique: true
-    });
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['sub_type_id'], {
+        name: 'idx_catalog_sub_type_assignments_sub_type_id'
+      });
 
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id'], {
-      name: 'idx_catalog_sub_type_assignments_catalog_data_id'
-    });
-
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['sub_type_id'], {
-      name: 'idx_catalog_sub_type_assignments_sub_type_id'
-    });
-
-    await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id', 'sub_type_id'], {
-      name: 'idx_catalog_sub_type_assignments_unique',
-      unique: true
-    });
+      await queryInterface.addIndex('catalog_sub_type_assignments', ['catalog_data_id', 'sub_type_id'], {
+        name: 'idx_catalog_sub_type_assignments_unique',
+        unique: true
+      });
+    }
   },
 
   down: async (queryInterface, Sequelize) => {
