@@ -63,6 +63,10 @@ ENV NODE_ENV=production \
     NPM_CONFIG_LOGLEVEL=warn \
     NPM_CONFIG_FUND=false \
     NPM_CONFIG_AUDIT=false
+## Install lightweight MySQL client utilities (mysqldump) for production backups
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json* ./
 # Prod-only deps; cache npm downloads across builds

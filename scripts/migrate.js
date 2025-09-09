@@ -54,6 +54,11 @@ async function run() {
   // Optional backup before migrations in production
   if (env.DB_BACKUP_ON_MIGRATE && process.env.NODE_ENV === 'production' && cmd === 'up') {
     try {
+      // Check mysqldump availability first
+      await new Promise((resolve, reject) => {
+        const check = spawn('sh', ['-lc', 'command -v mysqldump >/dev/null 2>&1']);
+        check.on('exit', (code) => code === 0 ? resolve() : reject(new Error('mysqldump-missing')));
+      });
       const ts = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
       const backupDir = process.env.BACKUP_DIR || '/app/backups';
       const file = `${backupDir}/backup-${process.env.DB_NAME || 'db'}-${ts}.sql`;
@@ -63,7 +68,11 @@ async function run() {
         proc.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`mysqldump exit ${code}`)));
       });
     } catch (e) {
-      console.warn('Database backup failed or mysqldump not available. Proceeding without backup.', e.message);
+      if (e.message === 'mysqldump-missing') {
+        console.warn('[MIGRATE] Skipping backup: mysqldump not installed. Set DB_BACKUP_ON_MIGRATE=false to silence.');
+      } else {
+        console.warn('Database backup failed. Proceeding without backup.', e.message);
+      }
     }
   }
   if (cmd === 'up') {
