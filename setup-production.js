@@ -522,6 +522,7 @@ async function runProductionSetup() {
             // Ignore connection close errors during build
         }
     }
+}
 
 // Run setup if this file is executed directly
 if (require.main === module) {
