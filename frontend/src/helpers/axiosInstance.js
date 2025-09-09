@@ -2,7 +2,31 @@ import axios from 'axios';
 import { installTokenEverywhere, getFreshestToken } from '../utils/authToken';
 
 // Normalize base URL: strip trailing "/api" and extra slashes
-const rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+let rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+// Explicit production hostname fallback if env not set at build
+try {
+  if (rawBase.includes('localhost') && typeof window === 'undefined') {
+    // SSR/Build time: allow hard-coded production default
+    rawBase = 'https://app.nj.contractors';
+  }
+} catch {}
+
+// Runtime safety: if we fell back to localhost but we're clearly on a production host, override.
+try {
+  if (rawBase.includes('localhost') && typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host && host !== 'localhost' && host !== '127.0.0.1') {
+      // Prefer explicit production domain if matches expected pattern
+      if (host === 'app.nj.contractors') {
+        rawBase = 'https://app.nj.contractors';
+      } else {
+        rawBase = window.location.origin;
+      }
+    }
+  }
+} catch {}
+
 const base = rawBase
   .replace(/\/api\/?$/, '')
   .replace(/\/+$/, '');
