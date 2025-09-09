@@ -1,31 +1,42 @@
 import axios from 'axios';
 import { installTokenEverywhere, getFreshestToken } from '../utils/authToken';
 
-// Normalize base URL: strip trailing "/api" and extra slashes
-let rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// Determine raw base WITHOUT embedding a localhost literal in production bundles.
+// Priority: explicit VITE_API_URL > runtime window.origin (non-dev) > dev fallback.
+let rawBase = import.meta.env.VITE_API_URL || '';
 
-// Explicit production hostname fallback if env not set at build
+// If not provided at build time and we are in the browser, infer.
 try {
-  if (rawBase.includes('localhost') && typeof window === 'undefined') {
-    // SSR/Build time: allow hard-coded production default
-    rawBase = 'https://app.nj.contractors';
-  }
-} catch {}
-
-// Runtime safety: if we fell back to localhost but we're clearly on a production host, override.
-try {
-  if (rawBase.includes('localhost') && typeof window !== 'undefined') {
+  if (!rawBase && typeof window !== 'undefined') {
     const host = window.location.hostname;
+    // Use origin if we're not on a dev host.
     if (host && host !== 'localhost' && host !== '127.0.0.1') {
-      // Prefer explicit production domain if matches expected pattern
-      if (host === 'app.nj.contractors') {
-        rawBase = 'https://app.nj.contractors';
-      } else {
-        rawBase = window.location.origin;
-      }
+      rawBase = window.location.origin;
     }
   }
 } catch {}
+
+// Dev-only convenience fallback (never leaks into prod if Vite replaces DEV flag correctly)
+if (!rawBase && import.meta.env.DEV) {
+  rawBase = 'http://localhost:8080';
+}
+
+// Final safety: if we still have a localhost base while running on a non-local host, switch to origin.
+try {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (rawBase.includes('localhost') && host && host !== 'localhost' && host !== '127.0.0.1') {
+      console.warn('[axiosInstance] Overriding localhost base to window.origin at runtime. Check missing VITE_API_URL in build.');
+      rawBase = window.location.origin;
+    }
+  }
+} catch {}
+
+// Fail-fast (console error) in production if base is still empty.
+if (!rawBase) {
+  // eslint-disable-next-line no-console
+  console.error('[axiosInstance] API base URL could not be resolved. Set VITE_API_URL or investigate build config.');
+}
 
 const base = rawBase
   .replace(/\/api\/?$/, '')
