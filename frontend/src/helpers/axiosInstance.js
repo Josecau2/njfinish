@@ -118,11 +118,7 @@ api.interceptors.request.use(async (config) => {
     try { config.signal = activeAbortController.signal; } catch {}
 
     // Compact one-line debug to see auth per request quickly
-    const authTail = config.headers?.Authorization ? String(config.headers.Authorization).slice(-10) : 'none';
-    const expMs = t ? compactDecodeExp(t) : 0;
-    const expIso = expMs ? new Date(expMs).toISOString() : 'n/a';
-    const isExp = expMs ? Date.now() >= expMs : false;
-    console.info(`[HTTP] ${String(config.method || 'get').toUpperCase()} ${base}${config.url} auth=${authTail==='none'?'no':'yes'} tail=${authTail} exp=${expIso} expired=${isExp}`);
+  // (Removed verbose per-request logging)
   } catch {}
 
   return config;
@@ -135,7 +131,7 @@ api.interceptors.response.use(
     if (rt && typeof window !== 'undefined') {
       // Use installTokenEverywhere to ensure token is stored in both localStorage and sessionStorage
       installTokenEverywhere(rt);
-      console.debug('[AUTH] Token refreshed from server');
+  if (import.meta?.env?.DEV) console.debug('[AUTH] Token refreshed');
     }
     return res;
   },
@@ -143,10 +139,7 @@ api.interceptors.response.use(
     const s = err?.response?.status;
     const originalConfig = err?.config || {};
     // Compact response debug
-    try {
-      const tail = originalConfig.headers?.Authorization ? String(originalConfig.headers.Authorization).slice(-10) : 'none';
-      console.info(`[HTTP] ${s || 'ERR'} ${String(originalConfig.method || 'get').toUpperCase()} ${base}${originalConfig.url} auth=${tail==='none'?'no':'yes'} tail=${tail}`);
-    } catch {}
+  // (Removed verbose response logging)
 
     if (s === 401 || s === 403) {
       handleUnauthorized(originalConfig);

@@ -3,6 +3,7 @@ import { CModal, CModalBody, CModalHeader, CModalTitle, CModalFooter, CButton } 
 import { useDispatch, useSelector } from 'react-redux'
 import { getLatestTerms, acceptTerms } from '../helpers/termsApi'
 import { logout } from '../store/slices/authSlice'
+import { useTranslation } from 'react-i18next'
 
 const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced = false }) => {
   const [content, setContent] = useState('')
@@ -10,6 +11,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
   const dispatch = useDispatch()
   const modalBodyRef = useRef(null)
   const customization = useSelector((state) => state.customization)
+  const { t } = useTranslation()
 
   // Enhanced contrast calculation function (same as PageHeader)
   const getContrastColor = (backgroundColor) => {
@@ -190,24 +192,24 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
           className="terms-modal-header"
           style={{ background: backgroundColor, backgroundImage: 'none' }}
         >
-          <CModalTitle>Terms & Conditions</CModalTitle>
+      <CModalTitle>{t('termsModal.title')}</CModalTitle>
         </CModalHeader>
         <CModalBody
           ref={modalBodyRef}
           style={{ maxHeight: 400, overflowY: 'auto', whiteSpace: 'pre-wrap' }}
           onScroll={handleScroll}
         >
-          {content || 'No terms available.'}
+      {content || t('termsModal.empty')}
           {isForced && (
             <div className="mt-3 p-3 bg-warning text-dark rounded" role="status" aria-live="polite">
-              <strong>Required:</strong> You must accept these terms to continue using the application.
+        <strong>{t('termsModal.forced.requiredLabel')}</strong> {t('termsModal.forced.requiredMessage')}
             </div>
           )}
         </CModalBody>
         <CModalFooter>
-          {!isForced && <CButton color="secondary" disabled style={{ minHeight: '44px' }}>{requireScroll ? 'Scroll to enable Accept' : 'Review terms'}</CButton>}
-          {isForced && <CButton className="terms-modal-danger-btn" onClick={onRejectTerms} style={{ minHeight: '44px' }}>Reject & Logout</CButton>}
-          <CButton className="terms-modal-primary-btn" disabled={!canAccept} onClick={onAccept} style={{ minHeight: '44px' }}>Accept</CButton>
+      {!isForced && <CButton color="secondary" disabled style={{ minHeight: '44px' }}>{requireScroll ? t('termsModal.scrollPrompt') : t('termsModal.reviewPrompt')}</CButton>}
+      {isForced && <CButton className="terms-modal-danger-btn" onClick={onRejectTerms} style={{ minHeight: '44px' }}>{t('termsModal.rejectAndLogout')}</CButton>}
+      <CButton className="terms-modal-primary-btn" disabled={!canAccept} onClick={onAccept} style={{ minHeight: '44px' }}>{t('termsModal.accept')}</CButton>
         </CModalFooter>
       </CModal>
     </>

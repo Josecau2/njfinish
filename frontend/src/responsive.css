@@ -300,7 +300,7 @@ html, body {
   .modal-content:has(.quote-preview-content) .modal-body > div {
     max-height: calc(100vh - 100px) !important; /* Reduce header/footer space in landscape */
   }
-  
+
   .modal-content:has([data-testid="quote-preview"]) .page-header,
   .modal-content:has(.quote-preview-content) .page-header {
     padding: 8px 16px !important; /* Reduce header padding in landscape */
@@ -360,7 +360,7 @@ html, body {
     max-height: 85vh;
     overflow-y: auto;
   }
-  
+
   /* Quote preview container should be fully responsive */
   .modal-xl .modal-body > div[style*="maxHeight"] {
     max-height: 85vh !important;

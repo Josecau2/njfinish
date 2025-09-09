@@ -5,32 +5,14 @@ export const fetchOrders = createAsyncThunk(
   'orders/fetchOrders',
   async ({ mineOnly = false } = {}, { rejectWithValue }) => {
     try {
-      console.log('📋 [DEBUG] fetchOrders thunk called:', {
-        mineOnly,
-        timestamp: new Date().toISOString()
-      });
-
       const params = new URLSearchParams()
       if (mineOnly) params.append('mine', 'true')
       const url = `/api/orders${params.toString() ? `?${params.toString()}` : ''}`
-
-      console.log('📡 [DEBUG] Making orders API request:', { url });
-
       const { data } = await axiosInstance.get(url)
-
-      console.log('✅ [DEBUG] Orders API response:', {
-        success: data?.success,
-        ordersCount: data?.data?.length || 0,
-        orders: data?.data
-      });
-
       return data
     } catch (error) {
-      console.error('❌ [DEBUG] fetchOrders error:', {
-        error: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
+      // Optionally keep a minimal error (can be removed if fully silent desired)
+      if (import.meta?.env?.DEV) console.error('fetchOrders error:', error.message)
       return rejectWithValue(error.response?.data || error.message)
     }
   }

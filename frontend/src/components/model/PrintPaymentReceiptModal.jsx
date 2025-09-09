@@ -1,35 +1,36 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   CModal,
-  CModalHeader,
-  CModalTitle,
   CModalBody,
   CModalFooter,
   CButton,
   CSpinner,
   CAlert
 } from '@coreui/react';
+import PageHeader from '../PageHeader';
 import axiosInstance from '../../helpers/axiosInstance';
 
 const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const customization = useSelector((state) => state.customization);
+  const { t } = useTranslation();
 
   // Enhanced contrast calculation function (same as PageHeader)
   const getContrastColor = (backgroundColor) => {
     if (!backgroundColor) return '#ffffff';
-    
+
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calculate luminance using WCAG formula
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Return high contrast colors
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
@@ -48,6 +49,40 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
     } catch (_) { /* ignore and fallback */ }
     return '#007bff';
   };
+
+  // Get customization colors
+  const backgroundColor = resolveBackground(customization?.headerBg);
+  const textColor = getContrastColor(backgroundColor);
+
+  // Get optimal colors for different elements (same as PageHeader)
+  const getOptimalColors = (backgroundColor) => {
+    const textColor = getContrastColor(backgroundColor);
+    const isLight = textColor === '#2d3748';
+
+    return {
+      text: textColor,
+      subtitle: isLight ? 'rgba(45, 55, 72, 0.6)' : 'rgba(255, 255, 255, 0.6)',
+      button: {
+        primary: {
+          bg: backgroundColor,
+          color: textColor,
+          border: backgroundColor,
+          hover: {
+            bg: backgroundColor,
+            color: textColor
+          }
+        }
+      }
+    };
+  };
+
+  const optimalColors = getOptimalColors(backgroundColor);
+
+  // Minimal dynamic styles (PageHeader supplies global button/header overrides)
+  const dynamicStyles = `
+    .receipt-modal-customized .modal-content { border: 1px solid ${backgroundColor}20 !important; }
+    .receipt-modal-customized .modal-body strong { color: ${backgroundColor} !important; }
+  `;
 
   const generateHTMLTemplate = (paymentData, orderData, customizationColors) => {
     const primaryColor = resolveBackground(customizationColors?.headerBg);
@@ -82,7 +117,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       return `${companyInitials}${dateStr}${orderData.id}`;
     };
 
-    // Generate receipt number 
+    // Generate receipt number
     const generateReceiptNumber = (paymentData) => {
       const paymentDate = new Date(paymentData.paidAt || paymentData.createdAt);
       const dateStr = paymentDate.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
@@ -90,24 +125,24 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
     };
 
     const formatPaymentMethod = (method) => {
-      if (!method) return 'Not specified';
-      
+      if (!method) return t('paymentReceipt.paymentMethod.notSpecified');
+
       // Handle different payment method formats
       if (method.startsWith('check #')) {
-        return `Check #${method.replace('check #', '')}`;
+        return `${t('paymentReceipt.paymentMethod.check')} #${method.replace('check #', '')}`;
       }
-      
+
       switch (method.toLowerCase()) {
         case 'cash':
-          return 'Cash';
+          return t('paymentReceipt.paymentMethod.cash');
         case 'debit_card':
-          return 'Debit Card';
+          return t('paymentReceipt.paymentMethod.debitCard');
         case 'credit_card':
-          return 'Credit Card';
+          return t('paymentReceipt.paymentMethod.creditCard');
         case 'check':
-          return 'Check';
+          return t('paymentReceipt.paymentMethod.check');
         case 'other':
-          return 'Other';
+          return t('paymentReceipt.paymentMethod.other');
         default:
           return method;
       }
@@ -119,7 +154,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Receipt</title>
+    <title>${t('paymentReceipt.title')}</title>
     <style>
         * {
             margin: 0;
@@ -297,42 +332,42 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
     <div class="container">
         <div class="header">
             <h1>${logoText}</h1>
-            <h2>Payment Receipt</h2>
+            <h2>${t('paymentReceipt.title')}</h2>
         </div>
 
         <div class="receipt-info">
             <div>
-                <h3>Receipt Information</h3>
-                <p><strong>Receipt #:</strong> ${generateReceiptNumber(paymentData)}</p>
-                <p><strong>Payment Date:</strong> ${formatDate(paymentData.paidAt || paymentData.createdAt)}</p>
-                <p><strong>Payment Method:</strong> ${formatPaymentMethod(paymentData.paymentMethod)}</p>
-                ${paymentData.transactionId ? `<p><strong>Transaction ID:</strong> ${paymentData.transactionId}</p>` : ''}
+                <h3>${t('paymentReceipt.receiptInformation')}</h3>
+                <p><strong>${t('paymentReceipt.receiptNumber')}:</strong> ${generateReceiptNumber(paymentData)}</p>
+                <p><strong>${t('paymentReceipt.paymentDate')}:</strong> ${formatDate(paymentData.paidAt || paymentData.createdAt)}</p>
+                <p><strong>${t('paymentReceipt.paymentMethod.label')}:</strong> ${formatPaymentMethod(paymentData.paymentMethod)}</p>
+                ${paymentData.transactionId ? `<p><strong>${t('paymentReceipt.transactionId')}:</strong> ${paymentData.transactionId}</p>` : ''}
             </div>
             <div>
-                <h3>Order Information</h3>
-                <p><strong>Order #:</strong> ${generateOrderNumber(orderData)}</p>
-                <p><strong>Order Date:</strong> ${formatDate(orderData.createdAt)}</p>
-                <p><strong>Customer:</strong> ${orderData.User?.firstName || ''} ${orderData.User?.lastName || ''}</p>
-                ${orderData.User?.email ? `<p><strong>Email:</strong> ${orderData.User.email}</p>` : ''}
+                <h3>${t('paymentReceipt.orderInformation')}</h3>
+                <p><strong>${t('paymentReceipt.orderNumber')}:</strong> ${generateOrderNumber(orderData)}</p>
+                <p><strong>${t('paymentReceipt.orderDate')}:</strong> ${formatDate(orderData.createdAt)}</p>
+                <p><strong>${t('paymentReceipt.customer')}:</strong> ${orderData.User?.firstName || ''} ${orderData.User?.lastName || ''}</p>
+                ${orderData.User?.email ? `<p><strong>${t('paymentReceipt.email')}:</strong> ${orderData.User.email}</p>` : ''}
             </div>
         </div>
 
         <div class="payment-details">
-            <h3>Payment Details</h3>
+            <h3>${t('paymentReceipt.paymentDetails')}</h3>
             <table class="payment-table">
                 <thead>
                     <tr>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th class="amount">Amount</th>
+                        <th>${t('paymentReceipt.description')}</th>
+                        <th>${t('paymentReceipt.status')}</th>
+                        <th class="amount">${t('paymentReceipt.amount')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Payment for Order #${generateOrderNumber(orderData)}</td>
+                        <td>${t('paymentReceipt.paymentForOrder')} #${generateOrderNumber(orderData)}</td>
                         <td>
                             <span class="status-badge ${paymentData.status === 'completed' ? 'status-completed' : 'status-pending'}">
-                                ${paymentData.status}
+                                ${t(`paymentReceipt.statusValues.${paymentData.status}`, { defaultValue: paymentData.status })}
                             </span>
                         </td>
                         <td class="amount">${formatCurrency(paymentData.amount)}</td>
@@ -342,21 +377,21 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
         </div>
 
         <div class="total-section">
-            <h3>Total Payment</h3>
+            <h3>${t('paymentReceipt.totalPayment')}</h3>
             <div class="amount">${formatCurrency(paymentData.amount)}</div>
         </div>
 
         ${orderData.description ? `
         <div class="order-info">
-            <h3>Order Details</h3>
+            <h3>${t('paymentReceipt.orderDetails')}</h3>
             <p>${orderData.description}</p>
         </div>
         ` : ''}
 
         <div class="footer">
-            <p>This is an official payment receipt from ${logoText}.</p>
-            <p>Generated on ${formatDate(new Date())}</p>
-            <p>Thank you for your business!</p>
+            <p>${t('paymentReceipt.officialReceipt', { company: logoText })}</p>
+            <p>${t('paymentReceipt.generatedOn', { date: formatDate(new Date()) })}</p>
+            <p>${t('paymentReceipt.thankYou')}</p>
         </div>
     </div>
 </body>
@@ -391,12 +426,12 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       // Generate receipt number for filename
       const receiptDate = new Date(payment.paidAt || payment.createdAt);
       const dateStr = receiptDate.toISOString().slice(0, 10).replace(/-/g, '');
       const receiptNumber = `RCP${dateStr}${payment.id}`;
-      
+
       link.download = `payment-receipt-${receiptNumber}.pdf`;
       document.body.appendChild(link);
       link.click();
@@ -406,73 +441,84 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       onClose();
     } catch (error) {
       console.error('Error generating payment receipt:', error);
-      setError('Failed to generate payment receipt. Please try again.');
+      setError(t('paymentReceipt.errors.generateFailed'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <CModal visible={show} onClose={onClose} size="lg">
-      <CModalHeader>
-        <CModalTitle>Print Payment Receipt</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        {error && (
-          <CAlert color="danger" className="mb-3">
-            {error}
-          </CAlert>
-        )}
-        <p>Generate a PDF receipt for payment #{payment?.id}?</p>
-        <div className="mt-3">
-          <strong>Payment Amount:</strong> ${payment?.amount ? Number(payment.amount).toFixed(2) : '0.00'}
-          <br />
-          <strong>Order:</strong> #{order?.id}
-          <br />
-          <strong>Status:</strong> {payment?.status}
-          <br />
-          {payment?.paymentMethod && (
-            <>
-              <strong>Payment Method:</strong> {(() => {
-                const method = payment.paymentMethod;
-                if (method.startsWith('check #')) {
-                  return `Check #${method.replace('check #', '')}`;
-                }
-                switch (method.toLowerCase()) {
-                  case 'cash': return 'Cash';
-                  case 'debit_card': return 'Debit Card';
-                  case 'credit_card': return 'Credit Card';
-                  case 'check': return 'Check';
-                  case 'other': return 'Other';
-                  default: return method;
-                }
-              })()}
-              <br />
-            </>
+    <>
+      <style>{dynamicStyles}</style>
+      <CModal visible={show} onClose={onClose} size="lg" className="receipt-modal-customized">
+        <CModalBody>
+          <PageHeader
+            title={t('paymentReceipt.modal.title')}
+            subtitle={t('paymentReceipt.modal.confirmGenerate', { paymentId: payment?.id })}
+            mobileLayout="compact"
+            badges={[
+              payment?.status ? {
+                text: t(`paymentReceipt.statusValues.${payment.status}`, { defaultValue: payment.status }),
+                variant: payment.status === 'completed' ? 'success' : 'secondary'
+              } : null
+            ]}
+            cardClassName="mb-3"
+          />
+          {error && (
+            <CAlert color="danger" className="mb-3">
+              {error}
+            </CAlert>
           )}
-          {payment?.paidAt && (
-            <>
-              <strong>Paid Date:</strong> {new Date(payment.paidAt).toLocaleDateString()}
-            </>
-          )}
-        </div>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={onClose} disabled={isLoading}>
-          Cancel
-        </CButton>
-        <CButton color="primary" onClick={downloadReceipt} disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <CSpinner size="sm" className="me-2" />
-              Generating...
-            </>
-          ) : (
-            'Download Receipt'
-          )}
-        </CButton>
-      </CModalFooter>
-    </CModal>
+          <div className="mt-3">
+            <strong>{t('paymentReceipt.modal.paymentAmount')}:</strong> ${payment?.amount ? Number(payment.amount).toFixed(2) : '0.00'}
+            <br />
+            <strong>{t('paymentReceipt.modal.order')}:</strong> #{order?.id}
+            <br />
+            <strong>{t('paymentReceipt.modal.status')}:</strong> {t(`paymentReceipt.statusValues.${payment?.status}`, { defaultValue: payment?.status })}
+            <br />
+            {payment?.paymentMethod && (
+              <>
+                <strong>{t('paymentReceipt.modal.paymentMethod')}:</strong> {(() => {
+                  const method = payment.paymentMethod;
+                  if (method.startsWith('check #')) {
+                    return `${t('paymentReceipt.paymentMethod.check')} #${method.replace('check #', '')}`;
+                  }
+                  switch (method.toLowerCase()) {
+                    case 'cash': return t('paymentReceipt.paymentMethod.cash');
+                    case 'debit_card': return t('paymentReceipt.paymentMethod.debitCard');
+                    case 'credit_card': return t('paymentReceipt.paymentMethod.creditCard');
+                    case 'check': return t('paymentReceipt.paymentMethod.check');
+                    case 'other': return t('paymentReceipt.paymentMethod.other');
+                    default: return method;
+                  }
+                })()}
+                <br />
+              </>
+            )}
+            {payment?.paidAt && (
+              <>
+                <strong>{t('paymentReceipt.modal.paidDate')}:</strong> {new Date(payment.paidAt).toLocaleDateString()}
+              </>
+            )}
+          </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={onClose} disabled={isLoading}>
+            {t('common.cancel')}
+          </CButton>
+          <CButton color="primary" onClick={downloadReceipt} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <CSpinner size="sm" className="me-2" />
+                {t('paymentReceipt.modal.generating')}
+              </>
+            ) : (
+              t('paymentReceipt.modal.downloadReceipt')
+            )}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+    </>
   );
 };
 

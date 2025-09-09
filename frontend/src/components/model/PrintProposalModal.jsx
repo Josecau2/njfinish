@@ -68,13 +68,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             const container = previewContainerRef.current;
             const content = previewContentRef.current;
             if (!container || !content) return;
-            
+
             // Update modal size based on viewport
             const newModalSize = calculateModalSize();
             if (newModalSize !== modalSize) {
                 setModalSize(newModalSize);
             }
-            
+
             // Dynamic padding based on viewport width (min 12px, max 32px)
             const vw = window.innerWidth || document.documentElement.clientWidth || 0;
             const dynamicPadding = Math.max(12, Math.min(32, Math.round(vw * 0.04)));
@@ -86,10 +86,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             const padRight = parseFloat(styles.paddingRight || '0');
             const availableWidth = (container.clientWidth || 0) - padLeft - padRight;
             if (!availableWidth || availableWidth <= 0) return;
-            
+
             // Better scaling calculation that accounts for different viewport sizes
             let scale = availableWidth / BASE_PAGE_WIDTH_PX;
-            
+
             // Mobile-specific scaling improvements
             if (vw < 576) {
                 // Mobile phones: prioritize readability over full width
@@ -108,9 +108,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 scale = Math.min(scale, 1.2);
                 scale = Math.max(scale, 0.7);
             }
-            
+
             setPreviewScale(scale);
-            
+
             // Measure full content height to compute scaled wrapper height
             const naturalHeight = content.scrollHeight || content.offsetHeight || 0;
             setContentHeight(naturalHeight);
@@ -135,7 +135,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             const newSize = calculateModalSize();
             setModalSize(newSize);
         };
-        
+
         updateModalSize();
         window.addEventListener('resize', updateModalSize);
         return () => window.removeEventListener('resize', updateModalSize);
@@ -222,7 +222,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     } = pdfCustomization || {};
 
     const proposalSummary = {
-        description: formData?.description || 'kitchen project',
+        description: formData?.description || t('proposalDoc.defaultProjectDescription', { defaultValue: 'Kitchen Project' }),
         customer: formData?.customerName || '',
         date: new Date().toLocaleDateString(i18n.language || 'en-US'),
     };
@@ -912,15 +912,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     })) || [];
 
     const columnOptions = [
-        { value: 'no', label: 'No.' },
-        { value: 'qty', label: 'Qty', isFixed: true },
-        { value: 'item', label: 'Item' },
-        { value: 'assembled', label: 'Assembled' },
-        { value: 'hingeSide', label: 'Hinge Side' },
-        { value: 'exposedSide', label: 'Exposed Side' },
-        { value: 'price', label: 'Price', isFixed: true },
-        { value: 'assemblyCost', label: 'Assembly Cost' },
-        { value: 'total', label: 'Total' },
+        { value: 'no', label: t('proposalColumns.no') },
+        { value: 'qty', label: t('proposalColumns.qty'), isFixed: true },
+        { value: 'item', label: t('proposalColumns.item') },
+        { value: 'assembled', label: t('proposalColumns.assembled') },
+        { value: 'hingeSide', label: t('proposalColumns.hingeSide') },
+        { value: 'exposedSide', label: t('proposalColumns.exposedSide') },
+        { value: 'price', label: t('proposalColumns.price'), isFixed: true },
+        { value: 'assemblyCost', label: t('proposalColumns.assemblyCost') },
+        { value: 'total', label: t('proposalColumns.total') },
     ];
 
     return (
@@ -1061,10 +1061,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     <div
                         ref={previewContainerRef}
                         style={{
-                            maxHeight: window.innerWidth < 768 
+                            maxHeight: window.innerWidth < 768
                                 ? 'calc(100vh - 120px)' // Mobile: Account for header and footer
-                                : window.innerWidth < 992 
-                                    ? '75vh' // Tablet 
+                                : window.innerWidth < 992
+                                    ? '75vh' // Tablet
                                     : '80vh', // Desktop
                             overflow: 'auto',
                             background: '#f8f9fa',

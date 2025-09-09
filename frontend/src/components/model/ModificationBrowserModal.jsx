@@ -455,7 +455,7 @@ const ModificationBrowserModal = ({
     >
       {/* Header using PageHeader component */}
       <PageHeader
-        title="Modifications"
+        title={t('modificationBrowser.title')}
         mobileLayout="inline"
         rightContent={
           <div className="d-flex align-items-center gap-2">
@@ -465,20 +465,20 @@ const ModificationBrowserModal = ({
                 size="sm"
                 onClick={handleBack}
                 className="me-2"
-                aria-label="Back"
-                title="Back"
+                aria-label={t('modificationBrowser.buttons.back')}
+                title={t('modificationBrowser.buttons.back')}
                 style={{ minHeight: '44px' }}
               >
                 <CIcon icon={cilArrowLeft} className="me-1" />
-                <span>Back</span>
+                <span>{t('modificationBrowser.buttons.back')}</span>
               </CButton>
             )}
             <CButton
               color="light"
               size="sm"
               onClick={onClose}
-              aria-label="Close"
-              title="Close"
+              aria-label={t('modificationBrowser.buttons.close')}
+              title={t('modificationBrowser.buttons.close')}
               style={{ minHeight: '44px' }}
             >
               <CIcon icon={cilX} />
@@ -506,8 +506,8 @@ const ModificationBrowserModal = ({
             }}
           />
           <CFormInput
-            placeholder="Search"
-            aria-label="Search modifications"
+            placeholder={t('modificationBrowser.search.placeholder')}
+            aria-label={t('modificationBrowser.search.placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ paddingLeft: '40px' }}
@@ -517,15 +517,15 @@ const ModificationBrowserModal = ({
         {loading ? (
           <div className="text-center py-5">
             <CSpinner color="primary" />
-            <p className="mt-2 text-muted">Loading modifications...</p>
+            <p className="mt-2 text-muted">{t('modificationBrowser.loading')}</p>
           </div>
         ) : gallery.length === 0 ? (
           <div className="text-center py-5">
             <div className="text-muted">
               <CIcon icon={cilMagnifyingGlass} size="4xl" className="mb-3" />
-              <h5>No Modifications Available</h5>
-              <p>No modifications have been assigned to this catalog item.</p>
-              <p className="small">Contact your administrator to set up modifications for this item.</p>
+              <h5>{t('modificationBrowser.empty.title')}</h5>
+              <p>{t('modificationBrowser.empty.subtitle')}</p>
+              <p className="small">{t('modificationBrowser.empty.hint')}</p>
             </div>
           </div>
         ) : (
@@ -553,11 +553,11 @@ const ModificationBrowserModal = ({
                         )}
                         <h6 className="card-title mb-1 fs-6">{category.name}</h6>
                         <p className="text-muted small mb-2">
-                          {category.templates?.length || 0} modification{(category.templates?.length || 0) !== 1 ? 's' : ''}
+                          {category.templates?.length || 0} {/* TODO pluralization */} modification{(category.templates?.length || 0) !== 1 ? 's' : ''}
                         </p>
                         <div className="mt-auto">
                           <CBadge color="primary" className="px-2 py-1 small">
-                            Browse →
+                            {t('modificationBrowser.category.browse')}
                           </CBadge>
                         </div>
                       </CCardBody>
@@ -592,7 +592,7 @@ const ModificationBrowserModal = ({
                         <div className="d-flex justify-content-between align-items-start mb-1">
                           <h6 className="card-title mb-0 fs-6">{template.name}</h6>
                           <CBadge color={template.isReady ? 'success' : 'warning'} className="small">
-                            {template.isReady ? 'Ready' : 'Draft'}
+                            {template.isReady ? t('modificationBrowser.template.status.ready') : t('modificationBrowser.template.status.draft')}
                           </CBadge>
                         </div>
                         {template.descriptions?.customer && (
@@ -602,13 +602,13 @@ const ModificationBrowserModal = ({
                           <p className="mb-2 small">
                             <strong>${Number(template.effectivePrice).toFixed(2)}</strong>
                             {template.overridePrice && (
-                              <small className="text-muted ms-1">(Override)</small>
+                              <small className="text-muted ms-1">{t('modificationBrowser.template.price.overrideShort')}</small>
                             )}
                           </p>
                         )}
                         <div className="mt-auto">
                           <CBadge color="primary" className="px-2 py-1 small">
-                            Configure →
+                            {t('modificationBrowser.template.configure')}
                           </CBadge>
                         </div>
                       </CCardBody>
@@ -633,10 +633,10 @@ const ModificationBrowserModal = ({
                           <h4 className="mb-0">${Number(selectedTemplate.effectivePrice).toFixed(2)}</h4>
                         )}
                         {selectedTemplate.overridePrice && (
-                          <small className="text-muted">Override price</small>
+                          <small className="text-muted">{t('modificationBrowser.template.price.overrideLabel')}</small>
                         )}
                         <CBadge color={selectedTemplate.isReady ? 'success' : 'warning'} className="ms-2">
-                          {selectedTemplate.isReady ? 'Ready' : 'Draft'}
+                          {selectedTemplate.isReady ? t('modificationBrowser.template.status.ready') : t('modificationBrowser.template.status.draft')}
                         </CBadge>
                       </div>
                     </div>
@@ -656,7 +656,7 @@ const ModificationBrowserModal = ({
                     {/* Lead time notice */}
                     <div className="alert alert-warning mb-3 py-2" role="alert">
                       <small>
-                        <strong>Please Note:</strong> This item has an extended lead time of 8 days.
+                        <strong>{t('modificationBrowser.leadTime.noticeTitle')}</strong> {t('modificationBrowser.leadTime.noticeText', { days: 8 })}
                       </small>
                     </div>
 
@@ -666,7 +666,7 @@ const ModificationBrowserModal = ({
                     {/* Default quantity if not configured or not enabled */}
                     {(!selectedTemplate.fieldsConfig?.qtyRange || selectedTemplate.fieldsConfig.qtyRange.enabled === false) && (
                       <div className="mb-3">
-                        <label className="form-label">Qty</label>
+                        <label className="form-label">{t('modificationBrowser.qty.label')}</label>
                         <CFormInput
                           type="number"
                           min={1}
@@ -688,7 +688,7 @@ const ModificationBrowserModal = ({
                         disabled={!selectedTemplate}
                         style={{ minHeight: '44px' }}
                       >
-                        Add modification
+                        {t('modificationBrowser.actions.addModification')}
                       </CButton>
                     </div>
                   </CCardBody>

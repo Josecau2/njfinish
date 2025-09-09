@@ -129,6 +129,57 @@
       }
     }
   },
+  "paymentReceipt": {
+    "title": "Payment Receipt",
+    "modal": {
+      "title": "Print Payment Receipt",
+      "confirmGenerate": "Generate a PDF receipt for payment #{{paymentId}}?",
+      "paymentAmount": "Payment Amount",
+      "order": "Order",
+      "status": "Status",
+      "paymentMethod": "Payment Method",
+      "paidDate": "Paid Date",
+      "generating": "Generating...",
+      "downloadReceipt": "Download Receipt"
+    },
+    "receiptInformation": "Receipt Information",
+    "receiptNumber": "Receipt #",
+    "paymentDate": "Payment Date",
+    "transactionId": "Transaction ID",
+    "orderInformation": "Order Information",
+    "orderNumber": "Order #",
+    "orderDate": "Order Date",
+    "customer": "Customer",
+    "email": "Email",
+    "paymentDetails": "Payment Details",
+    "description": "Description",
+    "status": "Status",
+    "amount": "Amount",
+    "paymentForOrder": "Payment for Order",
+    "totalPayment": "Total Payment",
+    "orderDetails": "Order Details",
+    "officialReceipt": "This is an official payment receipt from {{company}}.",
+    "generatedOn": "Generated on {{date}}",
+    "thankYou": "Thank you for your business!",
+    "paymentMethod": {
+      "label": "Payment Method",
+      "notSpecified": "Not specified",
+      "cash": "Cash",
+      "debitCard": "Debit Card",
+      "creditCard": "Credit Card",
+      "check": "Check",
+      "other": "Other"
+    },
+    "errors": {
+      "generateFailed": "Failed to generate payment receipt. Please try again."
+    },
+    "statusValues": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    }
+  },
   "creating": "Creating...",
   "noDescription": "No description",
   "new": "New",
@@ -308,6 +359,92 @@
   "contactUs": "Contact Us",
   "terms": "Terms & Conditions"
   },
+  "termsModal": {
+    "title": "Terms & Conditions",
+    "empty": "No terms available.",
+    "forced": {
+      "requiredLabel": "Required:",
+      "requiredMessage": "You must accept these terms to continue using the application."
+    },
+    "scrollPrompt": "Scroll to enable Accept",
+    "reviewPrompt": "Review terms",
+    "rejectAndLogout": "Reject & Logout",
+    "accept": "Accept"
+  },
+  "modificationBrowser": {
+    "title": "Modifications",
+    "breadcrumb": { "root": "All" },
+    "buttons": { "back": "Back", "close": "Close" },
+    "search": { "placeholder": "Search" },
+    "loading": "Loading modifications...",
+    "empty": {
+      "title": "No Modifications Available",
+      "subtitle": "No modifications have been assigned to this catalog item.",
+      "hint": "Contact your administrator to set up modifications for this item."
+    },
+    "category": { "browse": "Browse →" },
+    "template": {
+      "configure": "Configure →",
+      "status": { "ready": "Ready", "draft": "Draft" },
+      "price": { "overrideShort": "(Override)", "overrideLabel": "Override price" }
+    },
+    "leadTime": { "noticeTitle": "Please Note:", "noticeText": "This item has an extended lead time of {{days}} days." },
+    "qty": { "label": "Qty" },
+    "actions": { "addModification": "Add modification" },
+    "config": {
+      "sideSelection": "Side Selection",
+      "side": { "left": "Left", "right": "Right" },
+      "notes": { "label": "Notes", "empty": "No additional notes configured for this modification." },
+      "fileUpload": { "defaultTitle": "File Upload", "aria": "Upload files for modification" }
+    }
+  },
+  "modificationModal": {
+    "title": "Modification",
+    "type": {
+      "existing": "Select existing modification",
+      "custom": "Add custom modification",
+      "ariaLabel": "Modification type"
+    },
+    "existing": {
+      "selectLabel": "Select existing modification",
+      "selectPlaceholder": "Select modification",
+      "noneAvailable": "No modifications available",
+      "qtyPlaceholder": "Modification Qty",
+      "notePlaceholder": "Note (Optional)",
+      "instructionsHelper": "If needed, provide custom instructions for applying the modification",
+      "validation": { "codeRequired": "Modification code is required" }
+    },
+    "custom": {
+      "namePlaceholder": "Enter Custom Modification",
+      "qtyPlaceholder": "Qty",
+      "pricePlaceholder": "Price",
+      "taxable": "Taxable",
+      "notePlaceholder": "Note (Optional)",
+      "instructionsHelper": "If needed, provide custom instructions for applying the modification"
+    },
+    "actions": { "cancel": "Cancel", "save": "Save" }
+  },
+  "editManufacturerModal": {
+    "title": "Edit Manufacturer",
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "multiplier": "Multiplier",
+      "enabled": "Enabled"
+    },
+    "placeholders": {
+      "name": "Manufacturer name",
+      "email": "Manufacturer email",
+      "multiplier": "Enter multiplier"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    }
+  },
+  "paymentModal": {
+    "placeholder": "Payment modal placeholder. Use PaymentPage routes."
+  },
   "orders": {
     "searchPlaceholder": "Search by customer",
     "showingCount": "Showing {{count}} of {{total}}",
@@ -431,6 +568,23 @@
       "invalidAmount": "Please enter a valid amount",
       "success": "Payment created successfully",
       "error": "Failed to create payment"
+    },
+    "appliedOn": "Applied on",
+    "apply": {
+      "confirmTitle": "Apply Payment?",
+      "confirmText": "This will mark the payment as completed.",
+      "methodLabel": "Payment Method",
+      "confirmYes": "Yes, apply it",
+      "selectMethodPlaceholder": "Select payment method",
+      "checkNumberLabel": "Check Number",
+      "checkNumberPlaceholder": "Enter check number",
+      "validation": {
+        "selectMethod": "Please select a payment method",
+        "checkNumber": "Please enter a check number"
+      }
+    },
+    "mobile": {
+      "orderNumber": "Order #{{id}}"
     }
   },
   "payment": {
@@ -478,8 +632,15 @@
       "generic": "There was an error processing your payment. Please try again.",
       "statusUpdate": "Payment was successful but there was an error updating the status. Please contact support."
     },
-    "processing": "Processing payment...",
-    "transactionId": "Transaction ID"
+  "processing": "Processing payment...",
+  "transactionId": "Transaction ID",
+  "test": {
+      "dispatchSuccess": "Dispatch paymentSuccess",
+      "dispatchError": "Dispatch paymentError",
+      "simulatedFailure": "Simulated failure",
+      "transactionIdLabel": "Transaction ID"
+  },
+  "formRegion": "Payment form"
   },
   "paymentConfig": {
     "title": "Payment Configuration",
@@ -526,6 +687,14 @@
       "noUrl": "Please configure a gateway URL first",
       "success": "Configuration appears valid. Please test with a real payment to confirm.",
       "invalidUrl": "Invalid gateway URL"
+    }
+  },
+  "demo": {
+    "styleMerger": {
+      "title": "Style Merger Demo",
+      "subtitle": "Visual-only demo of the style merger UI",
+      "header": "Demo",
+      "description": "This is a placeholder demo page. No business logic. Use it to validate responsive patterns, spacing, and a11y."
     }
   },
   "contact": {
@@ -1228,6 +1397,7 @@
   "fallbackCompanyName": "Company Name",
   "greeting": "Dear {{name}}:",
   "descriptionIntro": "We are glad you are using our services, here is your design and pricing info:",
+  "defaultProjectDescription": "Kitchen Project",
   "summary": {
     "description": "Description",
     "date": "Date"
@@ -1269,6 +1439,8 @@
   "printTitle": "Print Quote",
   "showProposalItems": "Show Quote Items",
   "showGroupItems": "Show Group Items",
+  "preview": "Preview",
+  "previewTitle": "Quote Preview",
   "downloadPdf": "Download PDF",
   "downloading": "Downloading...",
   "validation": {

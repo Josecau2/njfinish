@@ -74,7 +74,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
 
     // Proposal data
     const proposalSummary = {
-        description: formData?.description || 'kitchen project',
+        description: formData?.description || t('proposalDoc.defaultProjectDescription', { defaultValue: 'Kitchen Project' }),
         customer: formData?.customerName || '',
         date: new Date().toLocaleDateString(i18n.language || 'en-US'),
     };
@@ -595,14 +595,11 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
         enableReinitialize: true,
         validationSchema: Yup.object({
             email: Yup.string()
-                .email('Invalid email')
-                .required('Email is required'),
-            body: Yup.string().required('Email body is required'),
-            versions: Yup.array().min(1, 'Select at least one version'),
-            selectedColumns: Yup.array().min(
-                1,
-                'Select at least one column'
-            ),
+                .email(t('proposalCommon.validation.invalidEmail'))
+                .required(t('proposalCommon.validation.emailRequired')),
+            body: Yup.string().required(t('proposalCommon.validation.bodyRequired')),
+            versions: Yup.array().min(1, t('proposalCommon.validation.selectAtLeastOneVersion')),
+            selectedColumns: Yup.array().min(1, t('proposalCommon.validation.selectAtLeastOneColumn')),
         }),
         onSubmit: async (values) => {
             try {

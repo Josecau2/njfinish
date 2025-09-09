@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     CModal,
     CModalHeader,
@@ -14,6 +15,7 @@ import {
 import { Save, X } from '@/icons'
 
 const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
+    const { t } = useTranslation()
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -76,7 +78,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                             }
                         `}</style>
                         <CModalHeader className="border-bottom-0 pb-0">
-                                <CModalTitle className="fw-semibold fs-4">Edit Manufacturer</CModalTitle>
+                                <CModalTitle className="fw-semibold fs-4">{t('editManufacturerModal.title')}</CModalTitle>
                         </CModalHeader>
 
                         <CForm onSubmit={handleSubmit} className="edit-manufacturer-modal">
@@ -84,33 +86,33 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                     {error && <CAlert color="danger">{error}</CAlert>}
 
                     <div className="mb-4">
-                        <CFormLabel htmlFor="name" className="fw-medium">Name</CFormLabel>
+                        <CFormLabel htmlFor="name" className="fw-medium">{t('editManufacturerModal.labels.name')}</CFormLabel>
                         <CFormInput
                             type="text"
                             id="name"
                             name="name"
                             value={formData.name}
-                            placeholder="Manufacturer name"
+                            placeholder={t('editManufacturerModal.placeholders.name')}
                             readOnly
                             style={readOnlyStyle}
                         />
                     </div>
 
                     <div className="mb-4">
-                        <CFormLabel htmlFor="email" className="fw-medium">Email</CFormLabel>
+                        <CFormLabel htmlFor="email" className="fw-medium">{t('editManufacturerModal.labels.email')}</CFormLabel>
                         <CFormInput
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
-                            placeholder="Manufacturer email"
+                            placeholder={t('editManufacturerModal.placeholders.email')}
                             readOnly
                             style={readOnlyStyle}
                         />
                     </div>
 
                     <div className="mb-4">
-                        <CFormLabel htmlFor="multiplier" className="fw-medium">Multiplier</CFormLabel>
+                        <CFormLabel htmlFor="multiplier" className="fw-medium">{t('editManufacturerModal.labels.multiplier')}</CFormLabel>
                         <CFormInput
                             type="number"
                             step="0.01"
@@ -128,7 +130,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                                     }))
                                 }
                               }}
-                            placeholder="Enter multiplier"
+                            placeholder={t('editManufacturerModal.placeholders.multiplier')}
                             style={inputStyle}
                         />
                     </div>
@@ -143,7 +145,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                             onChange={handleChange}
                         />
                         <label className="form-check-label ms-2" htmlFor="enabled">
-                            Enabled
+                            {t('editManufacturerModal.labels.enabled')}
                         </label>
                     </div>
                 </CModalBody>
@@ -151,11 +153,11 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                 <CModalFooter className="border-top pt-3">
                     <CButton color="secondary" variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
                         {/* <X size={16} className="me-2" /> */}
-                        Cancel
+                        {t('editManufacturerModal.actions.cancel')}
                     </CButton>
                     <CButton color="primary" type="submit" aria-label="Save manufacturer changes">
                         {/* <Save size={16} className="me-2" /> */}
-                        Save Changes
+                        {t('editManufacturerModal.actions.save')}
                     </CButton>
                 </CModalFooter>
             </CForm>

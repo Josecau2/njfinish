@@ -29,24 +29,24 @@ function decodePayload(token) {
 export function clearAllTokens() {
   // Clear memory cache immediately
   memoryToken = null;
-  
+
   // Clear all possible token storage locations
   const storageKeys = [
-    'token', 'user', 'auth', 'persist:auth', 'persist:user', 
+    'token', 'user', 'auth', 'persist:auth', 'persist:user',
     'persist:root', 'authToken', 'userToken', 'jwtToken',
     'accessToken', 'refreshToken', 'sessionToken'
   ];
-  
+
   // Clear from localStorage
   storageKeys.forEach(key => {
     try { localStorage.removeItem(key); } catch {}
   });
-  
-  // Clear from sessionStorage  
+
+  // Clear from sessionStorage
   storageKeys.forEach(key => {
     try { sessionStorage.removeItem(key); } catch {}
   });
-  
+
   if (import.meta?.env?.DEV) {
     console.debug('[CLEAR_ALL] All tokens and memory cache cleared');
   }

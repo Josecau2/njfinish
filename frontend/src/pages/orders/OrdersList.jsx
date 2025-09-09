@@ -34,7 +34,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const [page, setPage] = useState(1)
   const perPage = 10
   const navigate = useNavigate()
-  
+
   // Receipt modal state
   const [receiptModalVisible, setReceiptModalVisible] = useState(false)
   const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)

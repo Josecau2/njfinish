@@ -29,7 +29,7 @@ const PaymentTest = () => {
   };
 
   const handleDispatchError = () => {
-    const detail = { message: 'Simulated failure' };
+  const detail = { message: t('payment.test.simulatedFailure', 'Simulated failure') };
     window.dispatchEvent(new CustomEvent('paymentError', { detail }));
   };
 
@@ -52,16 +52,16 @@ const PaymentTest = () => {
               </CAlert>
               <CForm className="mt-3">
                 <div className="mb-3">
-                  <CFormLabel htmlFor="txn">Transaction ID</CFormLabel>
+                  <CFormLabel htmlFor="txn">{t('payment.test.transactionIdLabel', 'Transaction ID')}</CFormLabel>
                   <CFormInput id="txn" value={txn} onChange={(e) => setTxn(e.target.value)} />
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
-                  <CButton color="success" onClick={handleDispatchSuccess} aria-label="Dispatch paymentSuccess">
+                  <CButton color="success" onClick={handleDispatchSuccess} aria-label={t('payment.test.dispatchSuccess','Dispatch paymentSuccess')}>
                     <CIcon icon={cilCreditCard} className="me-2" />
-                    Dispatch paymentSuccess
+                    {t('payment.test.dispatchSuccess','Dispatch paymentSuccess')}
                   </CButton>
-                  <CButton color="danger" variant="outline" onClick={handleDispatchError} aria-label="Dispatch paymentError">
-                    Dispatch paymentError
+                  <CButton color="danger" variant="outline" onClick={handleDispatchError} aria-label={t('payment.test.dispatchError','Dispatch paymentError')}>
+                    {t('payment.test.dispatchError','Dispatch paymentError')}
                   </CButton>
                   <CButton color="secondary" variant="outline" onClick={() => navigate(-1)} aria-label={t('common.goBack','Go Back')}>
                     <CIcon icon={cilArrowLeft} className="me-2" />

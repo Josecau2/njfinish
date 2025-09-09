@@ -15,8 +15,11 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilSearch, cilCreditCard, cilPlus } from '../../icons';
+import { FaCreditCard } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 import PageHeader from '../../components/PageHeader';
 import PaginationComponent from '../../components/common/PaginationComponent';
+import withContractorScope from '../../components/withContractorScope';
 import { fetchPayments, createPayment, applyPayment } from '../../store/slices/paymentsSlice';
 
 // Mobile-friendly payment tabs styles
@@ -107,9 +110,6 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(styleElement);
   }
 }
-import { FaCreditCard } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import withContractorScope from '../../components/withContractorScope';
 
 const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) => {
   const { t } = useTranslation();
@@ -168,6 +168,8 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
         return t('payments.status.failed', 'Failed');
       case 'cancelled':
         return t('payments.status.cancelled', 'Cancelled');
+      case 'all':
+        return t('payments.status.all', 'All');
       default:
         return status;
     }
@@ -274,7 +276,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
       {/* Status filter tabs */}
       <div className="payment-tabs" role="tablist">
         <div className="payment-tabs__container">
-          {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
+      {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
             <label key={status} className={`payment-tab ${statusFilter === status ? 'payment-tab--active' : ''}`}>
               <input
                 type="radio"
@@ -282,11 +284,11 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                 value={status}
                 checked={statusFilter === status}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                aria-label={t(`payments.status.${status}`, status)}
+        aria-label={t(`payments.status.${status}`, status === 'all' ? 'All' : status)}
                 className="payment-tab__input"
               />
               <span className="payment-tab__text">
-                {t(`payments.status.${status}`, status === 'all' ? 'All' : status)}
+        {t(`payments.status.${status}`, status === 'all' ? t('payments.status.all','All') : status)}
               </span>
             </label>
           ))}
@@ -405,28 +407,29 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                           className="ms-2"
                           onClick={async (e) => {
                             e.stopPropagation();
-                            
+
                             // Show payment method selection dialog
+                            const html = `
+                              <p>${t('payments.apply.confirmText','This will mark the payment as completed.')}</p>
+                              <div class="mt-3">
+                                <label for="paymentMethod" class="form-label">${t('payments.apply.methodLabel','Payment Method')}:</label>
+                                <select id="paymentMethod" class="form-select">
+                                  <option value="">${t('payments.apply.selectMethodPlaceholder','Select payment method')}</option>
+                                  <option value="cash">${t('paymentReceipt.paymentMethod.cash','Cash')}</option>
+                                  <option value="debit_card">${t('paymentReceipt.paymentMethod.debitCard','Debit Card')}</option>
+                                  <option value="credit_card">${t('paymentReceipt.paymentMethod.creditCard','Credit Card')}</option>
+                                  <option value="check">${t('paymentReceipt.paymentMethod.check','Check')}</option>
+                                  <option value="other">${t('paymentReceipt.paymentMethod.other','Other')}</option>
+                                </select>
+                              </div>
+                              <div class="mt-2" id="checkNumberDiv" style="display: none;">
+                                <label for="checkNumber" class="form-label">${t('payments.apply.checkNumberLabel','Check Number')}:</label>
+                                <input type="text" id="checkNumber" class="form-control" placeholder="${t('payments.apply.checkNumberPlaceholder','Enter check number')}">
+                              </div>`;
+
                             const { value: paymentMethod } = await Swal.fire({
                               title: t('payments.apply.confirmTitle','Apply Payment?'),
-                              html: `
-                                <p>${t('payments.apply.confirmText','This will mark the payment as completed.')}</p>
-                                <div class="mt-3">
-                                  <label for="paymentMethod" class="form-label">${t('payments.apply.methodLabel','Payment Method')}:</label>
-                                  <select id="paymentMethod" class="form-select">
-                                    <option value="">Select payment method</option>
-                                    <option value="cash">Cash</option>
-                                    <option value="debit_card">Debit Card</option>
-                                    <option value="credit_card">Credit Card</option>
-                                    <option value="check">Check</option>
-                                    <option value="other">Other</option>
-                                  </select>
-                                </div>
-                                <div class="mt-2" id="checkNumberDiv" style="display: none;">
-                                  <label for="checkNumber" class="form-label">Check Number:</label>
-                                  <input type="text" id="checkNumber" class="form-control" placeholder="Enter check number">
-                                </div>
-                              `,
+                              html,
                               icon: 'question',
                               showCancelButton: true,
                               confirmButtonText: t('payments.apply.confirmYes','Yes, apply it'),
@@ -434,23 +437,23 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                               preConfirm: () => {
                                 const method = document.getElementById('paymentMethod').value;
                                 const checkNumber = document.getElementById('checkNumber').value;
-                                
+
                                 if (!method) {
-                                  Swal.showValidationMessage('Please select a payment method');
+                                  Swal.showValidationMessage(t('payments.apply.validation.selectMethod','Please select a payment method'));
                                   return false;
                                 }
-                                
+
                                 if (method === 'check' && !checkNumber.trim()) {
-                                  Swal.showValidationMessage('Please enter a check number');
+                                  Swal.showValidationMessage(t('payments.apply.validation.checkNumber','Please enter a check number'));
                                   return false;
                                 }
-                                
+
                                 return method === 'check' ? `check #${checkNumber}` : method;
                               },
                               didOpen: () => {
                                 const select = document.getElementById('paymentMethod');
                                 const checkDiv = document.getElementById('checkNumberDiv');
-                                
+
                                 select.addEventListener('change', () => {
                                   if (select.value === 'check') {
                                     checkDiv.style.display = 'block';
@@ -460,12 +463,12 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                                 });
                               }
                             });
-                            
+
                             if (paymentMethod) {
                               try {
-                                await dispatch(applyPayment({ 
-                                  id: payment.id, 
-                                  paymentMethod: paymentMethod 
+                                await dispatch(applyPayment({
+                                  id: payment.id,
+                                  paymentMethod: paymentMethod
                                 })).unwrap();
                                 Swal.fire(t('common.success','Success'), t('payments.apply.success','Payment applied'), 'success');
                               } catch (err) {
@@ -524,7 +527,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                       currency: payment.currency || 'USD'
                     }).format(payment.amount)}
                   </span>
-                  <span>Order #{payment.orderId}</span>
+                  <span>{t('payments.mobile.orderNumber','Order #{{id}}',{id: payment.orderId})}</span>
                 </div>
                 {payment.transactionId && (
                   <div className="card__content text-muted">

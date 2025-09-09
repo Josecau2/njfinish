@@ -29,30 +29,30 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      
+
       // Clear ALL possible token storage locations
       const storageKeys = [
-        'token', 'user', 'auth', 'persist:auth', 'persist:user', 
+        'token', 'user', 'auth', 'persist:auth', 'persist:user',
         'persist:root', 'authToken', 'userToken', 'jwtToken',
         'accessToken', 'refreshToken', 'sessionToken'
       ];
-      
+
       // Clear from localStorage
       storageKeys.forEach(key => {
         try { localStorage.removeItem(key); } catch {}
       });
-      
-      // Clear from sessionStorage  
+
+      // Clear from sessionStorage
       storageKeys.forEach(key => {
         try { sessionStorage.removeItem(key); } catch {}
       });
-      
+
       // Clear all cookies that might contain tokens
       const cookiesToClear = [
-        'token', 'auth', 'session', 'jwt', 'access_token', 
+        'token', 'auth', 'session', 'jwt', 'access_token',
         'refresh_token', 'user', 'authToken', 'sessionToken'
       ];
-      
+
       cookiesToClear.forEach(name => {
         try {
           if (typeof document !== 'undefined') {
@@ -64,7 +64,7 @@ const authSlice = createSlice({
           }
         } catch {}
       });
-      
+
       // Clear any axios default headers
       try {
         if (typeof window !== 'undefined' && window.axios) {
@@ -72,7 +72,7 @@ const authSlice = createSlice({
           delete window.axios.defaults.headers['Authorization'];
         }
       } catch {}
-      
+
       // Notify other tabs of logout
       try {
         window.localStorage.setItem('__auth_logout__', String(Date.now()));

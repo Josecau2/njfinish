@@ -1,0 +1,1416 @@
+{
+  "generatedAt": "2025-09-09T15:16:27.337Z",
+  "totalPages": 81,
+  "unusedCandidates": [
+    {
+      "page": "pages/admin/contact/AdminContactSettings.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/contact/AdminContactSettings",
+        "./pages/admin/contact/AdminContactSettings",
+        "import('./pages/admin/contact/AdminContactSettings')",
+        "import('pages/admin/contact/AdminContactSettings')"
+      ]
+    },
+    {
+      "page": "pages/admin/contact/AdminMessages.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/contact/AdminMessages",
+        "./pages/admin/contact/AdminMessages",
+        "import('./pages/admin/contact/AdminMessages')",
+        "import('pages/admin/contact/AdminMessages')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/CustomersTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/CustomersTab",
+        "./pages/admin/ContractorDetail/CustomersTab",
+        "import('./pages/admin/ContractorDetail/CustomersTab')",
+        "import('pages/admin/ContractorDetail/CustomersTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/OverviewTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/OverviewTab",
+        "./pages/admin/ContractorDetail/OverviewTab",
+        "import('./pages/admin/ContractorDetail/OverviewTab')",
+        "import('pages/admin/ContractorDetail/OverviewTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/ProposalsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/ProposalsTab",
+        "./pages/admin/ContractorDetail/ProposalsTab",
+        "import('./pages/admin/ContractorDetail/ProposalsTab')",
+        "import('pages/admin/ContractorDetail/ProposalsTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/SettingsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/SettingsTab",
+        "./pages/admin/ContractorDetail/SettingsTab",
+        "import('./pages/admin/ContractorDetail/SettingsTab')",
+        "import('pages/admin/ContractorDetail/SettingsTab')"
+      ]
+    },
+    {
+      "page": "pages/contractor/ContractorDashboard.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/contractor/ContractorDashboard",
+        "./pages/contractor/ContractorDashboard",
+        "import('./pages/contractor/ContractorDashboard')",
+        "import('pages/contractor/ContractorDashboard')"
+      ]
+    },
+    {
+      "page": "pages/customers/AddCustomerForm.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/AddCustomerForm",
+        "./pages/customers/AddCustomerForm",
+        "import('./pages/customers/AddCustomerForm')",
+        "import('pages/customers/AddCustomerForm')"
+      ]
+    },
+    {
+      "page": "pages/customers/Customers_broken.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/Customers_broken",
+        "./pages/customers/Customers_broken",
+        "import('./pages/customers/Customers_broken')",
+        "import('pages/customers/Customers_broken')"
+      ]
+    },
+    {
+      "page": "pages/customers/Customers_fixed.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/Customers_fixed",
+        "./pages/customers/Customers_fixed",
+        "import('./pages/customers/Customers_fixed')",
+        "import('pages/customers/Customers_fixed')"
+      ]
+    },
+    {
+      "page": "pages/demo/StyleMergerDemo.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/demo/StyleMergerDemo",
+        "./pages/demo/StyleMergerDemo",
+        "import('./pages/demo/StyleMergerDemo')",
+        "import('pages/demo/StyleMergerDemo')"
+      ]
+    },
+    {
+      "page": "pages/orders/OrdersList.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/orders/OrdersList",
+        "./pages/orders/OrdersList",
+        "import('./pages/orders/OrdersList')",
+        "import('pages/orders/OrdersList')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/CustomerInfo.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/CustomerInfo",
+        "./pages/proposals/CreateProposal/CustomerInfo",
+        "import('./pages/proposals/CreateProposal/CustomerInfo')",
+        "import('pages/proposals/CreateProposal/CustomerInfo')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/DesignUpload.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/DesignUpload",
+        "./pages/proposals/CreateProposal/DesignUpload",
+        "import('./pages/proposals/CreateProposal/DesignUpload')",
+        "import('pages/proposals/CreateProposal/DesignUpload')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/FileUploadSection .jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/FileUploadSection ",
+        "./pages/proposals/CreateProposal/FileUploadSection ",
+        "import('./pages/proposals/CreateProposal/FileUploadSection ')",
+        "import('pages/proposals/CreateProposal/FileUploadSection ')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/FileUploadSection",
+        "./pages/proposals/CreateProposal/FileUploadSection",
+        "import('./pages/proposals/CreateProposal/FileUploadSection')",
+        "import('pages/proposals/CreateProposal/FileUploadSection')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ManufacturerSelect",
+        "./pages/proposals/CreateProposal/ManufacturerSelect",
+        "import('./pages/proposals/CreateProposal/ManufacturerSelect')",
+        "import('pages/proposals/CreateProposal/ManufacturerSelect')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ProposalEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ProposalEditor",
+        "./pages/proposals/CreateProposal/ProposalEditor",
+        "import('./pages/proposals/CreateProposal/ProposalEditor')",
+        "import('pages/proposals/CreateProposal/ProposalEditor')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ProposalSummary",
+        "./pages/proposals/CreateProposal/ProposalSummary",
+        "import('./pages/proposals/CreateProposal/ProposalSummary')",
+        "import('pages/proposals/CreateProposal/ProposalSummary')"
+      ]
+    },
+    {
+      "page": "pages/proposals/ProposalEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/ProposalEditor",
+        "./pages/proposals/ProposalEditor",
+        "import('./pages/proposals/ProposalEditor')",
+        "import('pages/proposals/ProposalEditor')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/CreateQuote.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/CreateQuote",
+        "./pages/quotes/Create/CreateQuote",
+        "import('./pages/quotes/Create/CreateQuote')",
+        "import('pages/quotes/Create/CreateQuote')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/QuoteEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/QuoteEditor",
+        "./pages/quotes/Create/QuoteEditor",
+        "import('./pages/quotes/Create/QuoteEditor')",
+        "import('pages/quotes/Create/QuoteEditor')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/step4Snapshot.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/step4Snapshot",
+        "./pages/quotes/Create/step4Snapshot",
+        "import('./pages/quotes/Create/step4Snapshot')",
+        "import('pages/quotes/Create/step4Snapshot')"
+      ]
+    },
+    {
+      "page": "pages/quotes/CreateQuote/QuoteEditorWrapper.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/CreateQuote/QuoteEditorWrapper",
+        "./pages/quotes/CreateQuote/QuoteEditorWrapper",
+        "import('./pages/quotes/CreateQuote/QuoteEditorWrapper')",
+        "import('pages/quotes/CreateQuote/QuoteEditorWrapper')"
+      ]
+    },
+    {
+      "page": "pages/settings/globalMods/GlobalModsPage.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/globalMods/GlobalModsPage",
+        "./pages/settings/globalMods/GlobalModsPage",
+        "import('./pages/settings/globalMods/GlobalModsPage')",
+        "import('pages/settings/globalMods/GlobalModsPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/CatalogMappingTab",
+        "./pages/settings/manufacturers/tabs/CatalogMappingTab",
+        "import('./pages/settings/manufacturers/tabs/CatalogMappingTab')",
+        "import('pages/settings/manufacturers/tabs/CatalogMappingTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/EditManufacturerTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/EditManufacturerTab",
+        "./pages/settings/manufacturers/tabs/EditManufacturerTab",
+        "import('./pages/settings/manufacturers/tabs/EditManufacturerTab')",
+        "import('pages/settings/manufacturers/tabs/EditManufacturerTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/FilesHistoryTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/FilesHistoryTab",
+        "./pages/settings/manufacturers/tabs/FilesHistoryTab",
+        "import('./pages/settings/manufacturers/tabs/FilesHistoryTab')",
+        "import('pages/settings/manufacturers/tabs/FilesHistoryTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/SettingsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/SettingsTab",
+        "./pages/settings/manufacturers/tabs/SettingsTab",
+        "import('./pages/settings/manufacturers/tabs/SettingsTab')",
+        "import('pages/settings/manufacturers/tabs/SettingsTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/StylePicturesTab",
+        "./pages/settings/manufacturers/tabs/StylePicturesTab",
+        "import('./pages/settings/manufacturers/tabs/StylePicturesTab')",
+        "import('pages/settings/manufacturers/tabs/StylePicturesTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/TypesTab",
+        "./pages/settings/manufacturers/tabs/TypesTab",
+        "import('./pages/settings/manufacturers/tabs/TypesTab')",
+        "import('pages/settings/manufacturers/tabs/TypesTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/multipliers/AddManuMultiplier.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/multipliers/AddManuMultiplier",
+        "./pages/settings/multipliers/AddManuMultiplier",
+        "import('./pages/settings/multipliers/AddManuMultiplier')",
+        "import('pages/settings/multipliers/AddManuMultiplier')"
+      ]
+    },
+    {
+      "page": "pages/settings/multipliers/EditManuMultiplier.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/multipliers/EditManuMultiplier",
+        "./pages/settings/multipliers/EditManuMultiplier",
+        "import('./pages/settings/multipliers/EditManuMultiplier')",
+        "import('pages/settings/multipliers/EditManuMultiplier')"
+      ]
+    }
+  ],
+  "all": [
+    {
+      "page": "pages/admin/contact/AdminContactSettings.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/contact/AdminContactSettings",
+        "./pages/admin/contact/AdminContactSettings",
+        "import('./pages/admin/contact/AdminContactSettings')",
+        "import('pages/admin/contact/AdminContactSettings')"
+      ]
+    },
+    {
+      "page": "pages/admin/contact/AdminMessages.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/contact/AdminMessages",
+        "./pages/admin/contact/AdminMessages",
+        "import('./pages/admin/contact/AdminMessages')",
+        "import('pages/admin/contact/AdminMessages')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/CustomersTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/CustomersTab",
+        "./pages/admin/ContractorDetail/CustomersTab",
+        "import('./pages/admin/ContractorDetail/CustomersTab')",
+        "import('pages/admin/ContractorDetail/CustomersTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/OverviewTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/OverviewTab",
+        "./pages/admin/ContractorDetail/OverviewTab",
+        "import('./pages/admin/ContractorDetail/OverviewTab')",
+        "import('pages/admin/ContractorDetail/OverviewTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/ProposalsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/ProposalsTab",
+        "./pages/admin/ContractorDetail/ProposalsTab",
+        "import('./pages/admin/ContractorDetail/ProposalsTab')",
+        "import('pages/admin/ContractorDetail/ProposalsTab')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail/SettingsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/admin/ContractorDetail/SettingsTab",
+        "./pages/admin/ContractorDetail/SettingsTab",
+        "import('./pages/admin/ContractorDetail/SettingsTab')",
+        "import('pages/admin/ContractorDetail/SettingsTab')"
+      ]
+    },
+    {
+      "page": "pages/contractor/ContractorDashboard.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/contractor/ContractorDashboard",
+        "./pages/contractor/ContractorDashboard",
+        "import('./pages/contractor/ContractorDashboard')",
+        "import('pages/contractor/ContractorDashboard')"
+      ]
+    },
+    {
+      "page": "pages/customers/AddCustomerForm.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/AddCustomerForm",
+        "./pages/customers/AddCustomerForm",
+        "import('./pages/customers/AddCustomerForm')",
+        "import('pages/customers/AddCustomerForm')"
+      ]
+    },
+    {
+      "page": "pages/customers/Customers_broken.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/Customers_broken",
+        "./pages/customers/Customers_broken",
+        "import('./pages/customers/Customers_broken')",
+        "import('pages/customers/Customers_broken')"
+      ]
+    },
+    {
+      "page": "pages/customers/Customers_fixed.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/customers/Customers_fixed",
+        "./pages/customers/Customers_fixed",
+        "import('./pages/customers/Customers_fixed')",
+        "import('pages/customers/Customers_fixed')"
+      ]
+    },
+    {
+      "page": "pages/demo/StyleMergerDemo.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/demo/StyleMergerDemo",
+        "./pages/demo/StyleMergerDemo",
+        "import('./pages/demo/StyleMergerDemo')",
+        "import('pages/demo/StyleMergerDemo')"
+      ]
+    },
+    {
+      "page": "pages/orders/OrdersList.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/orders/OrdersList",
+        "./pages/orders/OrdersList",
+        "import('./pages/orders/OrdersList')",
+        "import('pages/orders/OrdersList')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/CustomerInfo.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/CustomerInfo",
+        "./pages/proposals/CreateProposal/CustomerInfo",
+        "import('./pages/proposals/CreateProposal/CustomerInfo')",
+        "import('pages/proposals/CreateProposal/CustomerInfo')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/DesignUpload.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/DesignUpload",
+        "./pages/proposals/CreateProposal/DesignUpload",
+        "import('./pages/proposals/CreateProposal/DesignUpload')",
+        "import('pages/proposals/CreateProposal/DesignUpload')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/FileUploadSection .jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/FileUploadSection ",
+        "./pages/proposals/CreateProposal/FileUploadSection ",
+        "import('./pages/proposals/CreateProposal/FileUploadSection ')",
+        "import('pages/proposals/CreateProposal/FileUploadSection ')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/FileUploadSection",
+        "./pages/proposals/CreateProposal/FileUploadSection",
+        "import('./pages/proposals/CreateProposal/FileUploadSection')",
+        "import('pages/proposals/CreateProposal/FileUploadSection')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ManufacturerSelect",
+        "./pages/proposals/CreateProposal/ManufacturerSelect",
+        "import('./pages/proposals/CreateProposal/ManufacturerSelect')",
+        "import('pages/proposals/CreateProposal/ManufacturerSelect')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ProposalEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ProposalEditor",
+        "./pages/proposals/CreateProposal/ProposalEditor",
+        "import('./pages/proposals/CreateProposal/ProposalEditor')",
+        "import('pages/proposals/CreateProposal/ProposalEditor')"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/CreateProposal/ProposalSummary",
+        "./pages/proposals/CreateProposal/ProposalSummary",
+        "import('./pages/proposals/CreateProposal/ProposalSummary')",
+        "import('pages/proposals/CreateProposal/ProposalSummary')"
+      ]
+    },
+    {
+      "page": "pages/proposals/ProposalEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/proposals/ProposalEditor",
+        "./pages/proposals/ProposalEditor",
+        "import('./pages/proposals/ProposalEditor')",
+        "import('pages/proposals/ProposalEditor')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/CreateQuote.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/CreateQuote",
+        "./pages/quotes/Create/CreateQuote",
+        "import('./pages/quotes/Create/CreateQuote')",
+        "import('pages/quotes/Create/CreateQuote')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/QuoteEditor.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/QuoteEditor",
+        "./pages/quotes/Create/QuoteEditor",
+        "import('./pages/quotes/Create/QuoteEditor')",
+        "import('pages/quotes/Create/QuoteEditor')"
+      ]
+    },
+    {
+      "page": "pages/quotes/Create/step4Snapshot.js",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/Create/step4Snapshot",
+        "./pages/quotes/Create/step4Snapshot",
+        "import('./pages/quotes/Create/step4Snapshot')",
+        "import('pages/quotes/Create/step4Snapshot')"
+      ]
+    },
+    {
+      "page": "pages/quotes/CreateQuote/QuoteEditorWrapper.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/quotes/CreateQuote/QuoteEditorWrapper",
+        "./pages/quotes/CreateQuote/QuoteEditorWrapper",
+        "import('./pages/quotes/CreateQuote/QuoteEditorWrapper')",
+        "import('pages/quotes/CreateQuote/QuoteEditorWrapper')"
+      ]
+    },
+    {
+      "page": "pages/settings/globalMods/GlobalModsPage.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/globalMods/GlobalModsPage",
+        "./pages/settings/globalMods/GlobalModsPage",
+        "import('./pages/settings/globalMods/GlobalModsPage')",
+        "import('pages/settings/globalMods/GlobalModsPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/CatalogMappingTab",
+        "./pages/settings/manufacturers/tabs/CatalogMappingTab",
+        "import('./pages/settings/manufacturers/tabs/CatalogMappingTab')",
+        "import('pages/settings/manufacturers/tabs/CatalogMappingTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/EditManufacturerTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/EditManufacturerTab",
+        "./pages/settings/manufacturers/tabs/EditManufacturerTab",
+        "import('./pages/settings/manufacturers/tabs/EditManufacturerTab')",
+        "import('pages/settings/manufacturers/tabs/EditManufacturerTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/FilesHistoryTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/FilesHistoryTab",
+        "./pages/settings/manufacturers/tabs/FilesHistoryTab",
+        "import('./pages/settings/manufacturers/tabs/FilesHistoryTab')",
+        "import('pages/settings/manufacturers/tabs/FilesHistoryTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/SettingsTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/SettingsTab",
+        "./pages/settings/manufacturers/tabs/SettingsTab",
+        "import('./pages/settings/manufacturers/tabs/SettingsTab')",
+        "import('pages/settings/manufacturers/tabs/SettingsTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/StylePicturesTab",
+        "./pages/settings/manufacturers/tabs/StylePicturesTab",
+        "import('./pages/settings/manufacturers/tabs/StylePicturesTab')",
+        "import('pages/settings/manufacturers/tabs/StylePicturesTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/manufacturers/tabs/TypesTab",
+        "./pages/settings/manufacturers/tabs/TypesTab",
+        "import('./pages/settings/manufacturers/tabs/TypesTab')",
+        "import('pages/settings/manufacturers/tabs/TypesTab')"
+      ]
+    },
+    {
+      "page": "pages/settings/multipliers/AddManuMultiplier.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/multipliers/AddManuMultiplier",
+        "./pages/settings/multipliers/AddManuMultiplier",
+        "import('./pages/settings/multipliers/AddManuMultiplier')",
+        "import('pages/settings/multipliers/AddManuMultiplier')"
+      ]
+    },
+    {
+      "page": "pages/settings/multipliers/EditManuMultiplier.jsx",
+      "references": 0,
+      "sampleRef": null,
+      "patterns": [
+        "pages/settings/multipliers/EditManuMultiplier",
+        "./pages/settings/multipliers/EditManuMultiplier",
+        "import('./pages/settings/multipliers/EditManuMultiplier')",
+        "import('pages/settings/multipliers/EditManuMultiplier')"
+      ]
+    },
+    {
+      "page": "pages/admin/ContractorDetail.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/admin/ContractorDetail"
+      },
+      "patterns": [
+        "pages/admin/ContractorDetail",
+        "./pages/admin/ContractorDetail",
+        "import('./pages/admin/ContractorDetail')",
+        "import('pages/admin/ContractorDetail')"
+      ]
+    },
+    {
+      "page": "pages/admin/Contractors.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/admin/Contractors"
+      },
+      "patterns": [
+        "pages/admin/Contractors",
+        "./pages/admin/Contractors",
+        "import('./pages/admin/Contractors')",
+        "import('pages/admin/Contractors')"
+      ]
+    },
+    {
+      "page": "pages/auth/ForgotPasswordPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "App.js",
+        "pattern": "pages/auth/ForgotPasswordPage"
+      },
+      "patterns": [
+        "pages/auth/ForgotPasswordPage",
+        "./pages/auth/ForgotPasswordPage",
+        "import('./pages/auth/ForgotPasswordPage')",
+        "import('pages/auth/ForgotPasswordPage')"
+      ]
+    },
+    {
+      "page": "pages/auth/LoginPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "App.js",
+        "pattern": "pages/auth/LoginPage"
+      },
+      "patterns": [
+        "pages/auth/LoginPage",
+        "./pages/auth/LoginPage",
+        "import('./pages/auth/LoginPage')",
+        "import('pages/auth/LoginPage')"
+      ]
+    },
+    {
+      "page": "pages/auth/ResetPasswordPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "App.js",
+        "pattern": "pages/auth/ResetPasswordPage"
+      },
+      "patterns": [
+        "pages/auth/ResetPasswordPage",
+        "./pages/auth/ResetPasswordPage",
+        "import('./pages/auth/ResetPasswordPage')",
+        "import('pages/auth/ResetPasswordPage')"
+      ]
+    },
+    {
+      "page": "pages/auth/SignupPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "App.js",
+        "pattern": "pages/auth/SignupPage"
+      },
+      "patterns": [
+        "pages/auth/SignupPage",
+        "./pages/auth/SignupPage",
+        "import('./pages/auth/SignupPage')",
+        "import('pages/auth/SignupPage')"
+      ]
+    },
+    {
+      "page": "pages/calender/index.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/calender"
+      },
+      "patterns": [
+        "pages/calender/index",
+        "./pages/calender/index",
+        "import('./pages/calender/index')",
+        "import('pages/calender/index')",
+        "pages/calender",
+        "./pages/calender"
+      ]
+    },
+    {
+      "page": "pages/contact/ContactUs.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/contact/ContactUs"
+      },
+      "patterns": [
+        "pages/contact/ContactUs",
+        "./pages/contact/ContactUs",
+        "import('./pages/contact/ContactUs')",
+        "import('pages/contact/ContactUs')"
+      ]
+    },
+    {
+      "page": "pages/contracts/index.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/contracts"
+      },
+      "patterns": [
+        "pages/contracts/index",
+        "./pages/contracts/index",
+        "import('./pages/contracts/index')",
+        "import('pages/contracts/index')",
+        "pages/contracts",
+        "./pages/contracts"
+      ]
+    },
+    {
+      "page": "pages/customers/CustomerForm.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/customers/CustomerForm"
+      },
+      "patterns": [
+        "pages/customers/CustomerForm",
+        "./pages/customers/CustomerForm",
+        "import('./pages/customers/CustomerForm')",
+        "import('pages/customers/CustomerForm')"
+      ]
+    },
+    {
+      "page": "pages/customers/Customers.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/customers/Customers"
+      },
+      "patterns": [
+        "pages/customers/Customers",
+        "./pages/customers/Customers",
+        "import('./pages/customers/Customers')",
+        "import('pages/customers/Customers')"
+      ]
+    },
+    {
+      "page": "pages/customers/EditCustomerPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/customers/EditCustomerPage"
+      },
+      "patterns": [
+        "pages/customers/EditCustomerPage",
+        "./pages/customers/EditCustomerPage",
+        "import('./pages/customers/EditCustomerPage')",
+        "import('pages/customers/EditCustomerPage')"
+      ]
+    },
+    {
+      "page": "pages/dashboard/Dashboard.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/dashboard/Dashboard"
+      },
+      "patterns": [
+        "pages/dashboard/Dashboard",
+        "./pages/dashboard/Dashboard",
+        "import('./pages/dashboard/Dashboard')",
+        "import('pages/dashboard/Dashboard')"
+      ]
+    },
+    {
+      "page": "pages/orders/AdminOrders.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/orders/AdminOrders"
+      },
+      "patterns": [
+        "pages/orders/AdminOrders",
+        "./pages/orders/AdminOrders",
+        "import('./pages/orders/AdminOrders')",
+        "import('pages/orders/AdminOrders')"
+      ]
+    },
+    {
+      "page": "pages/orders/MyOrders.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/orders/MyOrders"
+      },
+      "patterns": [
+        "pages/orders/MyOrders",
+        "./pages/orders/MyOrders",
+        "import('./pages/orders/MyOrders')",
+        "import('pages/orders/MyOrders')"
+      ]
+    },
+    {
+      "page": "pages/orders/OrderDetails.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/orders/OrderDetails"
+      },
+      "patterns": [
+        "pages/orders/OrderDetails",
+        "./pages/orders/OrderDetails",
+        "import('./pages/orders/OrderDetails')",
+        "import('pages/orders/OrderDetails')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentCancel.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentCancel"
+      },
+      "patterns": [
+        "pages/payments/PaymentCancel",
+        "./pages/payments/PaymentCancel",
+        "import('./pages/payments/PaymentCancel')",
+        "import('pages/payments/PaymentCancel')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentConfiguration.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentConfiguration"
+      },
+      "patterns": [
+        "pages/payments/PaymentConfiguration",
+        "./pages/payments/PaymentConfiguration",
+        "import('./pages/payments/PaymentConfiguration')",
+        "import('pages/payments/PaymentConfiguration')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentPage"
+      },
+      "patterns": [
+        "pages/payments/PaymentPage",
+        "./pages/payments/PaymentPage",
+        "import('./pages/payments/PaymentPage')",
+        "import('pages/payments/PaymentPage')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentsList.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentsList"
+      },
+      "patterns": [
+        "pages/payments/PaymentsList",
+        "./pages/payments/PaymentsList",
+        "import('./pages/payments/PaymentsList')",
+        "import('pages/payments/PaymentsList')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentSuccess.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentSuccess"
+      },
+      "patterns": [
+        "pages/payments/PaymentSuccess",
+        "./pages/payments/PaymentSuccess",
+        "import('./pages/payments/PaymentSuccess')",
+        "import('pages/payments/PaymentSuccess')"
+      ]
+    },
+    {
+      "page": "pages/payments/PaymentTest.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/payments/PaymentTest"
+      },
+      "patterns": [
+        "pages/payments/PaymentTest",
+        "./pages/payments/PaymentTest",
+        "import('./pages/payments/PaymentTest')",
+        "import('pages/payments/PaymentTest')"
+      ]
+    },
+    {
+      "page": "pages/profile/index.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/profile"
+      },
+      "patterns": [
+        "pages/profile/index",
+        "./pages/profile/index",
+        "import('./pages/profile/index')",
+        "import('pages/profile/index')",
+        "pages/profile",
+        "./pages/profile"
+      ]
+    },
+    {
+      "page": "pages/proposals/CreateProposalForm.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/proposals/CreateProposalForm"
+      },
+      "patterns": [
+        "pages/proposals/CreateProposalForm",
+        "./pages/proposals/CreateProposalForm",
+        "import('./pages/proposals/CreateProposalForm')",
+        "import('pages/proposals/CreateProposalForm')"
+      ]
+    },
+    {
+      "page": "pages/proposals/EditProposal.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/proposals/EditProposal"
+      },
+      "patterns": [
+        "pages/proposals/EditProposal",
+        "./pages/proposals/EditProposal",
+        "import('./pages/proposals/EditProposal')",
+        "import('pages/proposals/EditProposal')"
+      ]
+    },
+    {
+      "page": "pages/proposals/EditProposal/EditProposal.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/proposals/EditProposal/EditProposal"
+      },
+      "patterns": [
+        "pages/proposals/EditProposal/EditProposal",
+        "./pages/proposals/EditProposal/EditProposal",
+        "import('./pages/proposals/EditProposal/EditProposal')",
+        "import('pages/proposals/EditProposal/EditProposal')"
+      ]
+    },
+    {
+      "page": "pages/proposals/Proposals.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/proposals/Proposals"
+      },
+      "patterns": [
+        "pages/proposals/Proposals",
+        "./pages/proposals/Proposals",
+        "import('./pages/proposals/Proposals')",
+        "import('pages/proposals/Proposals')"
+      ]
+    },
+    {
+      "page": "pages/public/PublicProposalPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "App.js",
+        "pattern": "pages/public/PublicProposalPage"
+      },
+      "patterns": [
+        "pages/public/PublicProposalPage",
+        "./pages/public/PublicProposalPage",
+        "import('./pages/public/PublicProposalPage')",
+        "import('pages/public/PublicProposalPage')"
+      ]
+    },
+    {
+      "page": "pages/Resources/index.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/Resources"
+      },
+      "patterns": [
+        "pages/Resources/index",
+        "./pages/Resources/index",
+        "import('./pages/Resources/index')",
+        "import('pages/Resources/index')",
+        "pages/Resources",
+        "./pages/Resources"
+      ]
+    },
+    {
+      "page": "pages/settings/customization/CustomizationPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/customization/CustomizationPage"
+      },
+      "patterns": [
+        "pages/settings/customization/CustomizationPage",
+        "./pages/settings/customization/CustomizationPage",
+        "import('./pages/settings/customization/CustomizationPage')",
+        "import('pages/settings/customization/CustomizationPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/customization/index.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/customization"
+      },
+      "patterns": [
+        "pages/settings/customization/index",
+        "./pages/settings/customization/index",
+        "import('./pages/settings/customization/index')",
+        "import('pages/settings/customization/index')",
+        "pages/settings/customization",
+        "./pages/settings/customization"
+      ]
+    },
+    {
+      "page": "pages/settings/customization/LoginCustomizerPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/customization/LoginCustomizerPage"
+      },
+      "patterns": [
+        "pages/settings/customization/LoginCustomizerPage",
+        "./pages/settings/customization/LoginCustomizerPage",
+        "import('./pages/settings/customization/LoginCustomizerPage')",
+        "import('pages/settings/customization/LoginCustomizerPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/customization/PdfLayoutCustomization.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/customization/PdfLayoutCustomization"
+      },
+      "patterns": [
+        "pages/settings/customization/PdfLayoutCustomization",
+        "./pages/settings/customization/PdfLayoutCustomization",
+        "import('./pages/settings/customization/PdfLayoutCustomization')",
+        "import('pages/settings/customization/PdfLayoutCustomization')"
+      ]
+    },
+    {
+      "page": "pages/settings/locations/CreateLocation.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/locations/CreateLocation"
+      },
+      "patterns": [
+        "pages/settings/locations/CreateLocation",
+        "./pages/settings/locations/CreateLocation",
+        "import('./pages/settings/locations/CreateLocation')",
+        "import('pages/settings/locations/CreateLocation')"
+      ]
+    },
+    {
+      "page": "pages/settings/locations/EditLocation.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/locations/EditLocation"
+      },
+      "patterns": [
+        "pages/settings/locations/EditLocation",
+        "./pages/settings/locations/EditLocation",
+        "import('./pages/settings/locations/EditLocation')",
+        "import('pages/settings/locations/EditLocation')"
+      ]
+    },
+    {
+      "page": "pages/settings/locations/LocationList.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/locations/LocationList"
+      },
+      "patterns": [
+        "pages/settings/locations/LocationList",
+        "./pages/settings/locations/LocationList",
+        "import('./pages/settings/locations/LocationList')",
+        "import('pages/settings/locations/LocationList')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/EditManufacturer.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/manufacturers/EditManufacturer"
+      },
+      "patterns": [
+        "pages/settings/manufacturers/EditManufacturer",
+        "./pages/settings/manufacturers/EditManufacturer",
+        "import('./pages/settings/manufacturers/EditManufacturer')",
+        "import('pages/settings/manufacturers/EditManufacturer')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/ManufacturersForm.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/manufacturers/ManufacturersForm"
+      },
+      "patterns": [
+        "pages/settings/manufacturers/ManufacturersForm",
+        "./pages/settings/manufacturers/ManufacturersForm",
+        "import('./pages/settings/manufacturers/ManufacturersForm')",
+        "import('pages/settings/manufacturers/ManufacturersForm')"
+      ]
+    },
+    {
+      "page": "pages/settings/manufacturers/ManufacturersList.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/manufacturers/ManufacturersList"
+      },
+      "patterns": [
+        "pages/settings/manufacturers/ManufacturersList",
+        "./pages/settings/manufacturers/ManufacturersList",
+        "import('./pages/settings/manufacturers/ManufacturersList')",
+        "import('pages/settings/manufacturers/ManufacturersList')"
+      ]
+    },
+    {
+      "page": "pages/settings/multipliers/ManuMultipliers.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/multipliers/ManuMultipliers"
+      },
+      "patterns": [
+        "pages/settings/multipliers/ManuMultipliers",
+        "./pages/settings/multipliers/ManuMultipliers",
+        "import('./pages/settings/multipliers/ManuMultipliers')",
+        "import('pages/settings/multipliers/ManuMultipliers')"
+      ]
+    },
+    {
+      "page": "pages/settings/taxes/TaxesPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/taxes/TaxesPage"
+      },
+      "patterns": [
+        "pages/settings/taxes/TaxesPage",
+        "./pages/settings/taxes/TaxesPage",
+        "import('./pages/settings/taxes/TaxesPage')",
+        "import('pages/settings/taxes/TaxesPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/terms/TermsPage.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/terms/TermsPage"
+      },
+      "patterns": [
+        "pages/settings/terms/TermsPage",
+        "./pages/settings/terms/TermsPage",
+        "import('./pages/settings/terms/TermsPage')",
+        "import('pages/settings/terms/TermsPage')"
+      ]
+    },
+    {
+      "page": "pages/settings/users/CreateUser.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/users/CreateUser"
+      },
+      "patterns": [
+        "pages/settings/users/CreateUser",
+        "./pages/settings/users/CreateUser",
+        "import('./pages/settings/users/CreateUser')",
+        "import('pages/settings/users/CreateUser')"
+      ]
+    },
+    {
+      "page": "pages/settings/users/EditUser.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/users/EditUser"
+      },
+      "patterns": [
+        "pages/settings/users/EditUser",
+        "./pages/settings/users/EditUser",
+        "import('./pages/settings/users/EditUser')",
+        "import('pages/settings/users/EditUser')"
+      ]
+    },
+    {
+      "page": "pages/settings/users/UserList.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/users/UserList"
+      },
+      "patterns": [
+        "pages/settings/users/UserList",
+        "./pages/settings/users/UserList",
+        "import('./pages/settings/users/UserList')",
+        "import('pages/settings/users/UserList')"
+      ]
+    },
+    {
+      "page": "pages/settings/usersGroup/CreateUserGroup.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/usersGroup/CreateUserGroup"
+      },
+      "patterns": [
+        "pages/settings/usersGroup/CreateUserGroup",
+        "./pages/settings/usersGroup/CreateUserGroup",
+        "import('./pages/settings/usersGroup/CreateUserGroup')",
+        "import('pages/settings/usersGroup/CreateUserGroup')"
+      ]
+    },
+    {
+      "page": "pages/settings/usersGroup/EditUserGroup.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/usersGroup/EditUserGroup"
+      },
+      "patterns": [
+        "pages/settings/usersGroup/EditUserGroup",
+        "./pages/settings/usersGroup/EditUserGroup",
+        "import('./pages/settings/usersGroup/EditUserGroup')",
+        "import('pages/settings/usersGroup/EditUserGroup')"
+      ]
+    },
+    {
+      "page": "pages/settings/usersGroup/UserGroupList.jsx",
+      "references": 1,
+      "sampleRef": {
+        "file": "routes.js",
+        "pattern": "pages/settings/usersGroup/UserGroupList"
+      },
+      "patterns": [
+        "pages/settings/usersGroup/UserGroupList",
+        "./pages/settings/usersGroup/UserGroupList",
+        "import('./pages/settings/usersGroup/UserGroupList')",
+        "import('pages/settings/usersGroup/UserGroupList')"
+      ]
+    }
+  ]
+}

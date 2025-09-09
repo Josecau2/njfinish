@@ -1,5 +1,6 @@
 // ModificationModalEdit.jsx
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { isAdmin } from '../../helpers/permissions'
 import { getContrastColor } from '../../utils/colorUtils'
@@ -46,6 +47,7 @@ const ModificationModalEdit = ({
 }) => {
     // console.log('catalogData modification: ', catalogData);
     // console.log('catalogData itemModificationID: ', itemModificationID);
+    const { t } = useTranslation();
     const authUser = useSelector((state) => state.auth?.user);
     const isUserAdmin = isAdmin(authUser);
     const customization = useSelector((state) => state.customization);
@@ -59,13 +61,13 @@ const ModificationModalEdit = ({
             alignment="center"
             size="lg"
         >
-            <PageHeader title="Modification" />
+            <PageHeader title={t('modificationModal.title')} />
 
             <CModalBody style={{ padding: '2rem', borderRadius: '0 0 8px 8px' }}>
-                <div className="mb-4 d-flex gap-4 align-items-center" role="radiogroup" aria-label="Modification type">
+        <div className="mb-4 d-flex gap-4 align-items-center" role="radiogroup" aria-label={t('modificationModal.type.ariaLabel')}>
                     <CFormCheck
                         type="radio"
-                        label={<span style={{ fontSize: '1.1rem' }}>Select existing modification</span>}
+            label={<span style={{ fontSize: '1.1rem' }}>{t('modificationModal.type.existing')}</span>}
                         name="modType"
                         value="existing"
                         checked={modificationType === 'existing'}
@@ -74,7 +76,7 @@ const ModificationModalEdit = ({
                     />
                     <CFormCheck
                         type="radio"
-                        label={<span style={{ fontSize: '1.1rem' }}>Add custom modification</span>}
+            label={<span style={{ fontSize: '1.1rem' }}>{t('modificationModal.type.custom')}</span>}
                         name="modType"
                         value="custom"
                         checked={modificationType === 'custom'}
@@ -87,15 +89,14 @@ const ModificationModalEdit = ({
                     <>
                         <div className="mb-3">
                             <CFormSelect
-                                aria-label="Select existing modification"
+                                aria-label={t('modificationModal.existing.selectLabel')}
                                 value={selectedExistingMod || ''}
                                 onChange={e => setSelectedExistingMod(e.target.value)}
                                 required
                                 invalid={validationAttempted && !selectedExistingMod}
-                                feedbackInvalid="Modification code is required"
-                                aria-label="Select existing modification"
+                                feedbackInvalid={t('modificationModal.existing.validation.codeRequired')}
                             >
-                                <option value="" disabled>Select modification</option>
+                                <option value="" disabled>{t('modificationModal.existing.selectPlaceholder')}</option>
                                 {Array.isArray(catalogData) && catalogData.length > 0 ? (
                                     catalogData.map(mod => (
                                         <option key={mod.id} value={mod.id}>
@@ -103,7 +104,7 @@ const ModificationModalEdit = ({
                                         </option>
                                     ))
                                 ) : (
-                                    <option disabled>No modifications available</option>
+                                    <option disabled>{t('modificationModal.existing.noneAvailable')}</option>
                                 )}
 
                             </CFormSelect>
@@ -116,7 +117,7 @@ const ModificationModalEdit = ({
                                 const val = Math.max(1, Number(e.target.value))
                                 setExistingModQty(val)
                             }}
-                            placeholder="Modification Qty"
+                            placeholder={t('modificationModal.existing.qtyPlaceholder')}
                             className="mb-3"
                             min={1}
                             required
@@ -127,10 +128,10 @@ const ModificationModalEdit = ({
                             type="text"
                             value={existingModNote}
                             onChange={(e) => setExistingModNote(e.target.value)}
-                            placeholder="Note (Optional)"
+                            placeholder={t('modificationModal.existing.notePlaceholder')}
                         aria-label="Existing modification note"
                         />
-                        <div className="text-muted mb-1 p-1">If needed, provide custom instructions for applying the modification</div>
+                        <div className="text-muted mb-1 p-1">{t('modificationModal.existing.instructionsHelper')}</div>
                     </>
                 )}
 
@@ -141,11 +142,11 @@ const ModificationModalEdit = ({
                                 type="text"
                                 value={customModName}
                                 onChange={(e) => setCustomModName(e.target.value)}
-                                placeholder="Enter Custom Modification"
+                                placeholder={t('modificationModal.custom.namePlaceholder')}
                                 required
                                 invalid={validationAttempted && !customModName}
-                                feedbackInvalid="Modification code is required"
-                                aria-label="Custom modification name"
+                                feedbackInvalid={t('modificationModal.existing.validation.codeRequired')}
+                                aria-label={t('modificationModal.custom.namePlaceholder')}
                             />
                         </div>
 
@@ -157,7 +158,7 @@ const ModificationModalEdit = ({
                                     const val = Math.max(1, Number(e.target.value))
                                     setCustomModQty(val)
                                 }}
-                                placeholder="Qty"
+                                placeholder={t('modificationModal.custom.qtyPlaceholder')}
                                 min={1}
                                 style={{ width: '100px' }}
                                 aria-label="Quantity"
@@ -167,7 +168,7 @@ const ModificationModalEdit = ({
                                 type="number"
                                 value={customModPrice}
                                 onChange={(e) => setCustomModPrice(Number(e.target.value))}
-                                placeholder="Price"
+                                placeholder={t('modificationModal.custom.pricePlaceholder')}
                                 min={0}
                                 className="flex-grow-1"
                                 style={{ width: '100px' }}
@@ -182,8 +183,8 @@ const ModificationModalEdit = ({
                                     onChange={(e) => { if (isUserAdmin) setCustomModTaxable(e.target.checked); }}
                                     disabled={!isUserAdmin}
                                     style={{ transform: 'scale(1.4)' }}
-                                    label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>Taxable</span>}
-                                    aria-label="Taxable"
+                                    label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>{t('modificationModal.custom.taxable')}</span>}
+                                    aria-label={t('modificationModal.custom.taxable')}
                                 />
                             </div>
                         </div>
@@ -192,10 +193,10 @@ const ModificationModalEdit = ({
                             type="text"
                             value={customModNote}
                             onChange={(e) => setCustomModNote(e.target.value)}
-                            placeholder="Note (Optional)"
+                            placeholder={t('modificationModal.custom.notePlaceholder')}
                         aria-label="Custom modification note"
                         />
-                        <div className="text-muted mb-5 p-1">If needed, provide custom instructions for applying the modification</div>
+                        <div className="text-muted mb-5 p-1">{t('modificationModal.custom.instructionsHelper')}</div>
                         {/* <div className="text-primary">
                             Price of custom modifications is unknown and will be provided by manufacturer upon receiving the order.
                         </div> */}
@@ -204,8 +205,8 @@ const ModificationModalEdit = ({
             </CModalBody>
 
             <CModalFooter>
-                <CButton color="secondary" onClick={onClose} style={{ minHeight: '44px' }}>Cancel</CButton>
-                <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg, minHeight: '44px' }} onClick={onSave}>Save</CButton>
+                <CButton color="secondary" onClick={onClose} style={{ minHeight: '44px' }}>{t('modificationModal.actions.cancel')}</CButton>
+                <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg, minHeight: '44px' }} onClick={onSave}>{t('modificationModal.actions.save')}</CButton>
             </CModalFooter>
         </CModal>
     )

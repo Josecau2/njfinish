@@ -62,9 +62,9 @@ export const applyPayment = createAsyncThunk(
   'payments/applyPayment',
   async ({ id, transactionId, paymentMethod }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/payments/${id}/apply`, { 
-        transactionId, 
-        paymentMethod 
+      const response = await axiosInstance.put(`/api/payments/${id}/apply`, {
+        transactionId,
+        paymentMethod
       });
       return response.data;
     } catch (error) {
