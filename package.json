@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "npm run build:frontend && npm run setup:production",
-    "build:frontend": "vite build --config frontend/vite.config.mjs",
+    "build:frontend": "vite build --mode production --config frontend/vite.config.mjs",
     "build:secure": "vite build --config frontend/vite.config.mjs && node frontend/scripts/security-cleaner.js",
     "build:fast": "vite build --config frontend/vite.config.dev.mjs",
     "build:analyze": "node frontend/scripts/build-analyzer.js",

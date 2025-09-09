@@ -3,8 +3,8 @@
   "version": "5.4.0",
   "private": true,
   "scripts": {
-    "build": "vite build",
-    "build:secure": "vite build && node scripts/security-cleaner.js",
+    "build": "vite build --mode production",
+    "build:secure": "vite build --mode production && node scripts/security-cleaner.js",
     "build:fast": "vite build --config vite.config.dev.mjs",
     "build:analyze": "node scripts/build-analyzer.js",
   "fetch:fonts": "node scripts/fetch-inter-fonts.mjs",
