@@ -10,7 +10,35 @@ const path = require('path');
 
 class AppStartupHandler {
     constructor() {
-        this.setupMarkerFile = path.join(__dirname, '.production-setup-complete');
+        // Allow override via env
+        const override = process.env.STARTUP_MARKER_PATH;
+        const primary = override || path.join(__dirname, '.production-setup-complete');
+        // Fallback to a known writable directory (uploads or tmp) if EACCES encountered
+        this._candidatePaths = [
+            primary,
+            path.join(__dirname, 'uploads', '.production-setup-complete'),
+            path.join('/tmp', '.production-setup-complete')
+        ];
+        this.setupMarkerFile = this._resolveWritableMarker();
+    }
+
+    _resolveWritableMarker() {
+        const fs = require('fs');
+        for (const p of this._candidatePaths) {
+            try {
+                const dir = path.dirname(p);
+                fs.mkdirSync(dir, { recursive: true });
+                // test write
+                const testFile = p + '.test';
+                fs.writeFileSync(testFile, 'ok');
+                fs.unlinkSync(testFile);
+                return p;
+            } catch (e) {
+                // try next
+            }
+        }
+        // As a last resort, return first path (will cause warnings but not crash)
+        return this._candidatePaths[0];
     }
 
     async checkAndRunSetup() {
@@ -34,15 +62,26 @@ class AppStartupHandler {
             const success = await setup.runFullSetup();
             
             if (success) {
-                // Create marker file to indicate setup is complete
-                fs.writeFileSync(this.setupMarkerFile, new Date().toISOString());
-                console.log('✅ Initial production setup completed successfully');
+                try {
+                    fs.writeFileSync(this.setupMarkerFile, new Date().toISOString());
+                    console.log('✅ Initial production setup completed successfully');
+                } catch (e) {
+                    if (e.code === 'EACCES') {
+                        console.warn(`⚠️  Could not write setup marker (EACCES) at ${this.setupMarkerFile}. Startup will re-run setup steps next boot.`);
+                    } else {
+                        console.warn(`⚠️  Failed to write setup marker at ${this.setupMarkerFile}: ${e.message}`);
+                    }
+                }
             }
             
             return success;
             
         } catch (error) {
-            console.error('❌ Startup setup failed:', error.message);
+            if (error && error.code === 'EACCES') {
+                console.warn('⚠️  Startup setup encountered EACCES (marker write). Continuing without marker.');
+            } else {
+                console.error('❌ Startup setup failed:', error.message);
+            }
             
             // Don't fail app startup if setup fails - app might still work
             if (error.name === 'ConnectionError') {
