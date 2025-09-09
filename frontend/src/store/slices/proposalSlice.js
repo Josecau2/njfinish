@@ -5,46 +5,20 @@ export const sendFormDataToBackend = createAsyncThunk(
     'proposal/sendFormDataToBackend',
     async (payload, { rejectWithValue }) => {
         try {
-            console.log('🚀 [DEBUG] sendFormDataToBackend thunk called:', {
-                action: payload?.action,
-                proposalId: payload?.formData?.id,
-                customerId: payload?.formData?.customerId,
-                customerName: payload?.formData?.customerName,
-                status: payload?.formData?.status,
-                payloadSize: JSON.stringify(payload).length,
-                timestamp: new Date().toISOString()
-            });
+            
 
             const { formData } = payload;
             const endpoint = formData.id ? '/api/update-proposals' : '/api/create-proposals';
 
-            console.log('📡 [DEBUG] Making API request:', {
-                endpoint,
-                method: 'POST',
-                isUpdate: !!formData.id,
-                proposalId: formData.id || 'new'
-            });
+            
 
             const response = await axiosInstance.post(endpoint, payload);
 
-            console.log('📥 [DEBUG] API response received:', {
-                status: response.status,
-                success: response.data?.success,
-                message: response.data?.message,
-                dataId: response.data?.data?.id,
-                timestamp: new Date().toISOString()
-            });
+            
 
             return response.data;
         } catch (error) {
-            console.error('❌ [DEBUG] sendFormDataToBackend thunk error:', {
-                endpoint: error.config?.url,
-                status: error.response?.status,
-                message: error.response?.data?.message || error.message,
-                proposalId: payload?.formData?.id,
-                action: payload?.action,
-                timestamp: new Date().toISOString()
-            });
+            
             return rejectWithValue(error.response?.data || error.message);
         }
     }
@@ -121,8 +95,6 @@ export const deleteFormData = createAsyncThunk(
     }
 );
 
-
-
 export const updateProposalStatus = createAsyncThunk(
     'proposal/updateProposalStatus',
     async ({ id, action, status }, { rejectWithValue }) => {
@@ -139,40 +111,19 @@ export const acceptProposal = createAsyncThunk(
     'proposal/acceptProposal',
     async ({ id, externalSignerName, externalSignerEmail }, { rejectWithValue }) => {
         try {
-            console.log('🚀 [DEBUG] acceptProposal thunk called:', {
-                id,
-                externalSignerName,
-                externalSignerEmail,
-                timestamp: new Date().toISOString()
-            });
+            
 
             const requestBody = {};
             if (externalSignerName) requestBody.external_signer_name = externalSignerName;
             if (externalSignerEmail) requestBody.external_signer_email = externalSignerEmail;
 
-            console.log('📡 [DEBUG] Making API request to accept proposal:', {
-                url: `/api/quotes/${id}/accept`,
-                requestBody
-            });
+            
 
             const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody);
 
-            console.log('✅ [DEBUG] API response received:', {
-                status: response.status,
-                success: response.data?.success,
-                message: response.data?.message,
-                data: response.data?.data
-            });
-
             return response.data;
         } catch (error) {
-            console.error('❌ [DEBUG] acceptProposal thunk error:', {
-                error: error.message,
-                response: error.response?.data,
-                status: error.response?.status,
-                id,
-                timestamp: new Date().toISOString()
-            });
+            
             return rejectWithValue(error.response?.data || error.message);
         }
     }
@@ -361,8 +312,6 @@ const formDataSlice = createSlice({
             });
     },
 });
-
-
 
 export const { resetFormDataState, clearCurrentProposal } = formDataSlice.actions;
 export default formDataSlice.reducer;

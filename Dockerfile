@@ -63,10 +63,27 @@ ENV NODE_ENV=production \
     NPM_CONFIG_LOGLEVEL=warn \
     NPM_CONFIG_FUND=false \
     NPM_CONFIG_AUDIT=false
-## Install lightweight MySQL client utilities (mysqldump) for production backups
+
+# Install system dependencies including Chromium for Puppeteer PDF generation
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends default-mysql-client \
+    && apt-get install -y --no-install-recommends \
+        default-mysql-client \
+        chromium \
+        fonts-liberation \
+        libatk-bridge2.0-0 \
+        libdrm2 \
+        libxkbcommon0 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxrandr2 \
+        libgbm1 \
+        libxss1 \
+        libasound2 \
     && rm -rf /var/lib/apt/lists/*
+
+# Configure Puppeteer to use installed Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json* ./
 # Prod-only deps; cache npm downloads across builds

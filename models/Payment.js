@@ -11,7 +11,8 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Orders',
+      // Align with actual table naming convention (lowercase plural)
+      model: 'orders',
       key: 'id',
     },
     onDelete: 'CASCADE',
@@ -49,7 +50,7 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: 'users',
       key: 'id',
     },
   },

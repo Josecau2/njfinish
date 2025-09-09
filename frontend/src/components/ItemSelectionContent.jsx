@@ -11,6 +11,7 @@ import axiosInstance from '../helpers/axiosInstance';
 import { setTableItems as setTableItemsRedux } from '../store/slices/selectedVersionSlice';
 import { setSelectVersionNew } from '../store/slices/selectVersionNewSlice';
 import { isAdmin } from '../helpers/permissions';
+import { isShowroomModeActive, getShowroomMultiplier, addShowroomSettingsListener } from '../utils/showroomUtils';
 import './ItemSelectionContent.css';
 
 const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion }) => {
@@ -66,6 +67,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [modificationItems, setModificationItems] = useState('');
     const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
     const [manufacturerCostMultiplier, setManufacturerCostMultiplier] = useState(1.0);
+    const [showroomMultiplier, setShowroomMultiplier] = useState(1.0);
+    const [showroomActive, setShowroomActive] = useState(false);
     const [stylesMeta, setStylesMeta] = useState([]);
     const [fetchedCollections, setFetchedCollections] = useState([]);
     const [collectionsLoading, setCollectionsLoading] = useState(true);
@@ -106,6 +109,21 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             }
         };
         fetchUserMultiplier();
+    }, []);
+
+    // Initialize and listen for showroom mode changes
+    useEffect(() => {
+        // Set initial values
+        setShowroomActive(isShowroomModeActive());
+        setShowroomMultiplier(getShowroomMultiplier());
+
+        // Listen for changes
+        const cleanup = addShowroomSettingsListener(({ mode, multiplier }) => {
+            setShowroomActive(mode);
+            setShowroomMultiplier(multiplier);
+        });
+
+        return cleanup;
     }, []);
 
     // Force taxable ON for non-admins
@@ -382,20 +400,22 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             deliveryFee,
             taxRatePct
         });
-    }, [filteredItems, customItems, isAssembled, discountPercent, manufacturerCostMultiplier, userGroupMultiplier, taxes, selectVersion?.manufacturerData?.deliveryFee]);
+    }, [filteredItems, customItems, isAssembled, discountPercent, manufacturerCostMultiplier, userGroupMultiplier, showroomActive, showroomMultiplier, taxes, selectVersion?.manufacturerData?.deliveryFee]);
 
     // Pure calculator that returns detailed cents totals for a given style
     const computeTotalsForStyle = (stylePrice, styleId) => {
         try {
-            // Start with current custom items total (unchanged by style switch)
-            const customItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+            // Start with current custom items total (affected by showroom multiplier)
+            const baseCustomItemsTotal = customItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+            const customItemsTotal = showroomActive ? baseCustomItemsTotal * showroomMultiplier : baseCustomItemsTotal;
 
-            // Calculate modifications total (unchanged by style switch)
-            const modificationsTotal = filteredItems.reduce((sum, item) => {
+            // Calculate modifications total (affected by showroom multiplier)
+            const baseModificationsTotal = filteredItems.reduce((sum, item) => {
                 if (!Array.isArray(item?.modifications) || item.modifications.length === 0) return sum;
                 const mods = item.modifications.reduce((modSum, mod) => modSum + Number(mod.price || 0) * Number(mod.qty || 1), 0);
                 return sum + mods;
             }, 0);
+            const modificationsTotal = showroomActive ? baseModificationsTotal * showroomMultiplier : baseModificationsTotal;
 
             // For cabinet items, we need to look up actual prices in the new style
             let cabinetPartsTotal = 0;
@@ -415,7 +435,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             eligible += 1;
                             const basePrice = Number(match.price) || 0;
                             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
-                            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                            const userGroupAdjustedPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+                            const finalPrice = showroomActive ? userGroupAdjustedPrice * showroomMultiplier : userGroupAdjustedPrice;
                             const qty = Number(item.qty || 1);
                             cabinetPartsTotal += finalPrice * qty;
                             if (isAssembled && item?.includeAssemblyFee) {
@@ -425,11 +446,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     const feePrice = parseFloat(assemblyCost.price || 0);
                                     const feeType = assemblyCost.type;
                                     if (feeType === 'flat' || feeType === 'fixed') {
-                                        assemblyFee = feePrice;
+                                        assemblyFee = showroomActive ? feePrice * showroomMultiplier : feePrice;
                                     } else if (feeType === 'percentage') {
                                         assemblyFee = (finalPrice * feePrice) / 100;
                                     } else {
-                                        assemblyFee = feePrice;
+                                        assemblyFee = showroomActive ? feePrice * showroomMultiplier : feePrice;
                                     }
                                 }
                                 assemblyFeeTotal += assemblyFee * qty;
@@ -440,18 +461,21 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     // Fallback to style price ratio method
                     const newStylePrice = Number(stylePrice || 0);
                     const manufacturerAdjustedStylePrice = newStylePrice * Number(manufacturerCostMultiplier || 1);
-                    const finalStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const userGroupAdjustedStylePrice = manufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const finalStylePrice = showroomActive ? userGroupAdjustedStylePrice * showroomMultiplier : userGroupAdjustedStylePrice;
                     const totalItemCount = filteredItems.reduce((sum, item) => sum + Number(item.qty || 1), 0);
                     cabinetPartsTotal = finalStylePrice * totalItemCount;
                     eligible = filteredItems.length > 0 ? 1 : 0;
 
                     const currentStylePrice = Number(selectedStyleData?.price || 0);
                     const currentManufacturerAdjustedStylePrice = currentStylePrice * Number(manufacturerCostMultiplier || 1);
-                    const currentFinalStylePrice = currentManufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const currentUserGroupAdjustedStylePrice = currentManufacturerAdjustedStylePrice * Number(userGroupMultiplier || 1);
+                    const currentFinalStylePrice = showroomActive ? currentUserGroupAdjustedStylePrice * showroomMultiplier : currentUserGroupAdjustedStylePrice;
                     const priceRatio = currentFinalStylePrice > 0 ? finalStylePrice / currentFinalStylePrice : 1;
                     const currentAssemblyTotal = isAssembled
                         ? filteredItems.reduce((sum, item) => {
-                            const unitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                            const baseUnitFee = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+                            const unitFee = showroomActive ? baseUnitFee * showroomMultiplier : baseUnitFee;
                             const qty = Number(item?.qty || 1);
                             return sum + unitFee * qty;
                         }, 0)
@@ -656,9 +680,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         if (item && item.style === selectedStyleData?.style) {
             const basePrice = Number(item.price) || 0;
 
-            // Apply manufacturer cost multiplier first, then user group multiplier
+            // Apply multiplier chain: manufacturer → user group → showroom
             const manufacturerAdjustedPrice = basePrice * Number(manufacturerCostMultiplier || 1);
-            const finalPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+            const userGroupAdjustedPrice = manufacturerAdjustedPrice * Number(userGroupMultiplier || 1);
+            const finalPrice = showroomActive ? userGroupAdjustedPrice * showroomMultiplier : userGroupAdjustedPrice;
 
             // Calculate assembly fee AFTER all multipliers are applied
             const assemblyCost = item.styleVariantsAssemblyCost;
@@ -669,13 +694,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 const feeType = assemblyCost.type;
 
                 if (feeType === 'flat' || feeType === 'fixed') {
-                    assemblyFee = feePrice;
+                    // Fixed fees are also affected by showroom multiplier
+                    assemblyFee = showroomActive ? feePrice * showroomMultiplier : feePrice;
                 } else if (feeType === 'percentage') {
-                    // percentage based on final price after all multipliers
+                    // percentage based on final price after all multipliers (including showroom)
                     assemblyFee = (finalPrice * feePrice) / 100;
                 } else {
                     // Fallback for legacy data without type - treat as fixed fee
-                    assemblyFee = feePrice;
+                    assemblyFee = showroomActive ? feePrice * showroomMultiplier : feePrice;
                 }
             }
 
@@ -693,6 +719,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 manufacturerAdjustedPrice: manufacturerAdjustedPrice,
                 appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),
                 appliedUserGroupMultiplier: Number(userGroupMultiplier || 1),
+                appliedShowroomMultiplier: showroomActive ? showroomMultiplier : 1,
                 price: finalPrice,
                 assemblyFee,
                 // Ensure assembly fee is considered immediately (was undefined so totals skipped it)

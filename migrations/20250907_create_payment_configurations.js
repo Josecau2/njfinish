@@ -1,6 +1,8 @@
 // Migration to create payment_configurations table
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    const [tables] = await queryInterface.sequelize.query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'payment_configurations'");
+    if (Array.isArray(tables) && tables.length) return;
     await queryInterface.createTable('payment_configurations', {
       id: {
         type: Sequelize.INTEGER,
@@ -58,9 +60,9 @@ module.exports = {
       },
     });
 
-    // Add indexes
-    await queryInterface.addIndex('payment_configurations', ['isActive'], { name: 'idx_payment_config_active' });
-    await queryInterface.addIndex('payment_configurations', ['gatewayProvider'], { name: 'idx_payment_config_provider' });
+  const safeAdd = async (cols, opts) => { try { await queryInterface.addIndex('payment_configurations', cols, opts);} catch(e){ if(!/exists|duplicate/i.test(e.message)) throw e; } };
+  await safeAdd(['isActive'], { name: 'idx_payment_config_active' });
+  await safeAdd(['gatewayProvider'], { name: 'idx_payment_config_provider' });
   },
 
   down: async (queryInterface, Sequelize) => {

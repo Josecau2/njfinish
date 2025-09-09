@@ -10,7 +10,7 @@ module.exports = {
       return rows.length > 0;
     };
 
-    if (!(await tableExists('manufacturer_sub_types'))) {
+  if (!(await tableExists('manufacturer_sub_types'))) {
       await queryInterface.createTable('manufacturer_sub_types', {
       id: {
         type: Sequelize.INTEGER,
@@ -78,7 +78,7 @@ module.exports = {
       });
     }
 
-    if (!(await tableExists('catalog_sub_type_assignments'))) {
+  if (!(await tableExists('catalog_sub_type_assignments'))) {
       await queryInterface.createTable('catalog_sub_type_assignments', {
       id: {
         type: Sequelize.INTEGER,

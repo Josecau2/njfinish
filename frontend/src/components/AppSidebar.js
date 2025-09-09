@@ -17,6 +17,8 @@ import { sygnet } from 'src/assets/brand/sygnet'
 import useNavItems from '../_nav'
 import { setSidebarShow, setSidebarUnfoldable, setSidebarPinned } from '../store/slices/sidebarSlice'
 import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs'
+import { isAdmin } from '../helpers/permissions'
+import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -25,8 +27,15 @@ const AppSidebar = () => {
   const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
   const navItems = useNavItems()
   const customization = useSelector((state) => state.customization)
+  const authUser = useSelector((state) => state.auth?.user)
   const api_url = import.meta.env.VITE_API_URL;
   const sidebarRef = useRef(null)
+
+  // Get user data for admin check
+  const user = authUser || (() => {
+    const userData = localStorage.getItem('user')
+    return userData ? JSON.parse(userData) : null
+  })();
 
   // Close sidebar on outside click for mobile screens
   useEffect(() => {
@@ -347,6 +356,9 @@ const AppSidebar = () => {
         )}
 
         <CSidebarFooter className="modern-sidebar__footer border-top d-none d-lg-flex">
+          {/* Showroom Mode Toggle - Admin only (above pin button) */}
+          {isAdmin(user) && <ShowroomModeToggle compact collapsed={unfoldable} />}
+
           {/* Single Pin / Unpin control replaces old toggler; when pinned, force expanded */}
           <div className="d-flex align-items-center w-100 px-2">
             <button

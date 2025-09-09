@@ -2,6 +2,8 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    const [tables] = await queryInterface.sequelize.query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders'");
+    if (Array.isArray(tables) && tables.length) return; // already created elsewhere
     await queryInterface.createTable('orders', {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       proposal_id: { type: Sequelize.INTEGER, allowNull: false },

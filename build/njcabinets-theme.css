@@ -1,0 +1,9 @@
+/* Base theme overrides */
+body {
+	font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* Utility class to enforce Inter explicitly where needed */
+.font-inter { font-family: 'Inter', sans-serif !important; }

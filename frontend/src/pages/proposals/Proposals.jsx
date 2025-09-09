@@ -264,28 +264,16 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   };
 
   const handleAcceptProposal = (proposal) => {
-    console.log('🎯 [DEBUG] handleAcceptProposal called from Proposals.jsx:', {
-      proposalId: proposal?.id,
-      proposalStatus: proposal?.status,
-      isLocked: proposal?.is_locked,
-      timestamp: new Date().toISOString()
-    });
     setSelectedProposalForAcceptance(proposal);
     setShowAcceptanceModal(true);
   };
 
   const handleAcceptanceComplete = () => {
-    console.log('🔄 [DEBUG] handleAcceptanceComplete called:', {
-      isContractor,
-      contractorGroupId,
-      timestamp: new Date().toISOString()
-    });
     // Refresh proposals list (for counts) and redirect to Orders so users immediately see the new order
     const groupId = isContractor ? contractorGroupId : null;
     dispatch(getProposal(groupId));
     setSelectedProposalForAcceptance(null);
     const ordersPath = isContractor ? '/my-orders' : '/orders';
-    console.log('🔀 [DEBUG] Redirecting to:', ordersPath);
     navigate(ordersPath);
   };
 

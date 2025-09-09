@@ -1,6 +1,9 @@
 // Migration to create payments table
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    // Idempotent guard: skip if table already exists
+    const [tables] = await queryInterface.sequelize.query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'payments'");
+    if (Array.isArray(tables) && tables.length) return;
     await queryInterface.createTable('payments', {
       id: {
         type: Sequelize.INTEGER,
@@ -63,10 +66,13 @@ module.exports = {
       },
     });
 
-    // Add indexes
-    await queryInterface.addIndex('payments', ['orderId'], { name: 'idx_payments_order_id' });
-    await queryInterface.addIndex('payments', ['status'], { name: 'idx_payments_status' });
-    await queryInterface.addIndex('payments', ['transactionId'], { name: 'idx_payments_transaction_id' });
+    // Add indexes (silently ignore if they somehow already exist)
+    const safeAdd = async (cols, opts) => {
+      try { await queryInterface.addIndex('payments', cols, opts); } catch(e){ if(!/exists|duplicate/i.test(e.message)) throw e; }
+    };
+    await safeAdd(['orderId'], { name: 'idx_payments_order_id' });
+    await safeAdd(['status'], { name: 'idx_payments_status' });
+    await safeAdd(['transactionId'], { name: 'idx_payments_transaction_id' });
   },
 
   down: async (queryInterface, Sequelize) => {

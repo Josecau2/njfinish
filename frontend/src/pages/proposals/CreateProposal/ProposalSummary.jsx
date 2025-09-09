@@ -114,20 +114,16 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     try {
       // First, validate sub-type requirements if there are items and a manufacturer
       if (selectedVersion?.items && selectedVersion.items.length > 0 && formData.manufacturerId) {
-        console.log('🔍 [DEBUG] Validating sub-type requirements before acceptance in ProposalSummary');
-
         const validation = await validateProposalSubTypeRequirements(
           selectedVersion.items,
           formData.manufacturerId
         );
 
         if (!validation.isValid) {
-          console.warn('⚠️ [DEBUG] Sub-type validation failed in ProposalSummary:', validation.missingRequirements);
+          if (import.meta?.env?.DEV) console.warn('Sub-type validation failed in ProposalSummary:', validation.missingRequirements);
           await showSubTypeValidationError(validation.missingRequirements, Swal);
           return;
         }
-
-        console.log('✅ [DEBUG] Sub-type validation passed in ProposalSummary');
       }
 
       const result = await Swal.fire({
@@ -149,11 +145,8 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
       if (result.isConfirmed) {
         setIsSubmitting(true);
 
-        console.log('🎯 [DEBUG] handleAcceptOrder: Starting two-step create-then-accept process');
-
         try {
           // Step 1: First create the proposal (save as draft)
-          console.log('📝 [DEBUG] Step 1: Creating proposal first');
           const createPayload = {
             action: '0', // Save as draft first
             formData: { ...formData, type: '0' },
@@ -166,21 +159,17 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
           }
 
           const newProposalId = createResponse.payload.data?.id;
-          console.log('✅ [DEBUG] Step 1 complete: Quote created with ID:', newProposalId);
 
           if (!newProposalId) {
             throw new Error('Quote created but no ID returned');
           }
 
           // Step 2: Now accept the newly created proposal using the acceptance API
-          console.log('🎯 [DEBUG] Step 2: Accepting the newly created quote');
-
           const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {
             // No additional data needed for internal acceptance
           });
 
           if (acceptResponse.data.success) {
-            console.log('✅ [DEBUG] Step 2 complete: Quote accepted and converted to order');
             Swal.fire(t('common.success','Success'), t('proposals.success.acceptConverted','Quote accepted and converted to order!'), 'success');
             // Navigate away to prevent duplicate submissions
             navigate('/orders'); // Navigate to orders since it's now an accepted quote
@@ -189,7 +178,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
           }
 
         } catch (error) {
-          console.error('❌ [DEBUG] Error in handleAcceptOrder:', {
+          if (import.meta?.env?.DEV) console.error('Error in handleAcceptOrder:', {
             error: error.message,
             response: error.response?.data,
             stack: error.stack,

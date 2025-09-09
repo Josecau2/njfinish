@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -12,9 +12,10 @@ import {
     CFormSwitch,
     CFormLabel,
 } from '@coreui/react';
-import Select from 'react-select';
+// Removed react-select; using checkboxes for column & version selection
 import axiosInstance from '../../helpers/axiosInstance';
 import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
+import { isShowroomModeActive, getShowroomMultiplier } from '../../utils/showroomUtils';
 import PageHeader from '../PageHeader';
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
@@ -52,6 +53,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const [containerPadding, setContainerPadding] = useState(20);
     const [modalSize, setModalSize] = useState('xl');
     const BASE_PAGE_WIDTH_PX = 794; // ~210mm @96dpi
+    const previewIframeRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     // Calculate responsive modal size based on viewport
     const calculateModalSize = () => {
@@ -119,8 +122,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         }
     };
 
-    // Recompute scale when preview opens, html changes, or on resize
-    useEffect(() => {
+    // Recompute scale immediately when preview opens using layout effect for first paint accuracy
+    useLayoutEffect(() => {
         if (!showPreview) return;
         const r = () => recomputePreviewScale();
         r();
@@ -134,6 +137,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         const updateModalSize = () => {
             const newSize = calculateModalSize();
             setModalSize(newSize);
+            setIsMobile(window.innerWidth < 576);
         };
 
         updateModalSize();
@@ -198,6 +202,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         fetchPdfCustomization();
     }, [show]); // Only refetch when modal is shown
 
+    // Refresh preview when async customization loads
+    useEffect(() => {
+        if (showPreview) {
+            const htmlContent = generateHTMLTemplate(formik.values);
+            setPreviewHtml(htmlContent);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pdfCustomization]);
+
     useEffect(() => {
         if (!show) return; // Don't fetch if modal is not shown
 
@@ -208,6 +221,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             fetchManufacturerName(manufacturerData.manufacturer);
         }
     }, [show, formData?.manufacturersData?.[0]?.manufacturer, formData?.manufacturersData?.[0]?.selectedStyle]); // More specific dependencies
+
+    // Refresh preview when style/manufacturer meta loads
+    useEffect(() => {
+        if (showPreview) {
+            const htmlContent = generateHTMLTemplate(formik.values);
+            setPreviewHtml(htmlContent);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [styleData, manufacturerNameData]);
 
     const {
         companyName,
@@ -229,15 +251,19 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     const summary = formData?.manufacturersData?.[0]?.summary || {};
 
+    // Apply showroom multiplier to pricing if active
+    const showroomActive = isShowroomModeActive();
+    const showroomMultiplier = showroomActive ? getShowroomMultiplier() : 1.0;
+
     const priceSummary = formData?.manufacturersData?.[0]?.items?.length
         ? {
-            cabinets: summary.cabinets || 0,
-            assemblyFee: summary.assemblyFee || 0,
-            modifications: summary.modificationsCost || 0,
-            styleTotal: summary.styleTotal || 0,
-            total: summary.total || 0,
-            tax: summary.taxAmount || 0,
-            grandTotal: summary.grandTotal || 0,
+            cabinets: (summary.cabinets || 0) * showroomMultiplier,
+            assemblyFee: (summary.assemblyFee || 0) * showroomMultiplier,
+            modifications: (summary.modificationsCost || 0) * showroomMultiplier,
+            styleTotal: (summary.styleTotal || 0) * showroomMultiplier,
+            total: (summary.total || 0) * showroomMultiplier,
+            tax: (summary.taxAmount || 0) * showroomMultiplier,
+            grandTotal: (summary.grandTotal || 0) * showroomMultiplier,
         }
         : {
             cabinets: 0,
@@ -256,12 +282,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const proposalItems = items.map((item) => ({
         qty: item.qty || 0,
         code: item.code || '',
+        item: item.description ? `${item.code} - ${item.description}` : item.code || '',
+    description: item.description || '',
         assembled: item.isRowAssembled ? t('common.yes') : t('common.no'),
         hingeSide: item.hingeSide || t('common.na'),
         exposedSide: item.exposedSide || t('common.na'),
-        price: parseFloat(item.price) || 0,
-        assemblyCost: item.includeAssemblyFee ? parseFloat(item.assemblyFee) || 0 : 0,
-        total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
+        price: (parseFloat(item.price) || 0) * showroomMultiplier,
+        assemblyCost: item.includeAssemblyFee ? ((parseFloat(item.assemblyFee) || 0) * showroomMultiplier) : 0,
+        total: item.includeAssemblyFee ? ((parseFloat(item.total) || 0) * showroomMultiplier) : ((parseFloat(item.price) || 0) * showroomMultiplier),
         modifications: item.modifications || {}
     }));
 
@@ -279,22 +307,21 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         // Debug: Log the manufacturer data structure to understand what's available
         console.log('PrintProposal manufacturerData:', manufacturerData);
 
-        // Get the manufacturer name - try multiple possible paths
+        // Get the manufacturer name - broaden possible shapes
+        // Possible shapes observed / anticipated:
+        // manufacturerData: { manufacturerData: { name }, manufacturer: <id|object>, name }
+        // manufacturerNameData: { name } OR { manufacturer: { name } }
         let manufacturerName = '';
-        if (manufacturerData?.manufacturerData?.name) {
-            manufacturerName = manufacturerData.manufacturerData.name;
-        } else if (manufacturerData?.name) {
-            manufacturerName = manufacturerData.name;
-        } else if (manufacturerData?.manufacturer?.name) {
-            manufacturerName = manufacturerData.manufacturer.name;
-        } else if (manufacturerNameData?.name) {
-            // Use fetched manufacturer data
-            manufacturerName = manufacturerNameData.name;
-        } else if (formData?.manufacturerData?.name) {
-            manufacturerName = formData.manufacturerData.name;
-        } else if (selectVersionNew?.manufacturerData?.name) {
-            manufacturerName = selectVersionNew.manufacturerData.name;
-        }
+        const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId;
+        manufacturerName =
+            manufacturerData?.manufacturerData?.name ||
+            manufacturerData?.name ||
+            manufacturerData?.manufacturer?.name ||
+            manufacturerNameData?.name ||
+            manufacturerNameData?.manufacturer?.name ||
+            formData?.manufacturerData?.name ||
+            selectVersionNew?.manufacturerData?.name ||
+            '';
 
         // For style name, we need to check multiple possible sources
         let styleName = '';
@@ -318,6 +345,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     console.log('PrintProposal extracted names:', { manufacturerName, styleName });
     const selectedCols = values.selectedColumns;
+
+        // Build dynamic table headers based on selected columns
         const columnHeaders = selectedCols.map(col => {
             const colName = col === 'no' ? t('proposalColumns.no') :
                 col === 'qty' ? t('proposalColumns.qty') :
@@ -328,25 +357,67 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                                     col === 'price' ? t('proposalColumns.price') :
                                         col === 'assemblyCost' ? t('proposalColumns.assemblyCost') :
                                             col === 'total' ? t('proposalColumns.total') : col;
-            return `<th>${colName}</th>`;
+            const rightAlign = ['price', 'assemblyCost', 'total'].includes(col) ? 'text-align: right;' : '';
+            return `<th style="border: 1px solid #dee2e6; padding: 0.75rem; ${rightAlign}">${colName}</th>`;
         }).join('');
 
+        // Escape helper for descriptions
+        const escapeHtml = (str = '') => str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        // Build dynamic item rows (with description row & modifications rows)
         const proposalItemRows = proposalItems.map((item, index) => {
-            const cells = selectedCols.map(col => {
+            const rowCells = selectedCols.map(col => {
                 switch (col) {
-                    case 'no': return `<td>${index + 1}</td>`;
-                    case 'item': return `<td>${item.item}</td>`;
-                    case 'qty': return `<td>${item.qty}</td>`;
-                    case 'assembled': return `<td>${item.assembled}</td>`;
-                    case 'hingeSide': return `<td>${shortLabel(item.hingeSide)}</td>`;
-                    case 'exposedSide': return `<td>${shortLabel(item.exposedSide)}</td>`;
-                    case 'price': return `<td>$${item.price.toFixed(2)}</td>`;
-                    case 'assemblyCost': return `<td>$${item.assemblyCost.toFixed(2)}</td>`;
-                    case 'total': return `<td>$${item.total.toFixed(2)}</td>`;
-                    default: return '<td></td>';
+                    case 'no': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${index + 1}</td>`;
+                    case 'qty': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.qty}</td>`;
+                    case 'item': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.code || ''}</td>`;
+                    case 'assembled': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.assembled}</td>`;
+                    case 'hingeSide': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide)}</td>`;
+                    case 'exposedSide': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide)}</td>`;
+                    case 'price': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.price.toFixed(2)}</td>`;
+                    case 'assemblyCost': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.assemblyCost.toFixed(2)}</td>`;
+                    case 'total': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.total.toFixed(2)}</td>`;
+                    default: return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>`;
                 }
             }).join('');
-            return `<tr>${cells}</tr>`;
+
+            // Optional description row spanning all columns
+            const descriptionRow = item.description
+                ? `<tr class="item-description-row"><td colspan="${selectedCols.length}" style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; font-size: 10px; color: #555; background:#fff; font-style: italic;">${escapeHtml(item.description)}</td></tr>`
+                : '';
+
+            // Modifications rows (if any) for this item
+            let modificationsRows = '';
+            const mods = Array.isArray(item.modifications) ? item.modifications : [];
+            if (mods.length > 0) {
+                const modsHeader = `<tr class="mods-header-row"><td colspan="${selectedCols.length}" style="padding: 0.5rem 0.75rem; background:#f9f9f9; font-style: italic; font-weight:600;">${t('proposalDoc.modifications')}</td></tr>`;
+                const modsLines = mods.map(mod => {
+                    const modTotal = (parseFloat(mod.price) || 0) * (mod.qty || 0);
+                    const modCells = selectedCols.map(col => {
+                        switch (col) {
+                            case 'no': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;">-</td>`;
+                            case 'qty': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;">${mod.qty || ''}</td>`;
+                            case 'item': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;">${mod.name || ''}</td>`;
+                            case 'assembled': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
+                            case 'hingeSide': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
+                            case 'exposedSide': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
+                            case 'price': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>`;
+                            case 'assemblyCost': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
+                            case 'total': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${modTotal.toFixed(2)}</td>`;
+                            default: return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
+                        }
+                    }).join('');
+                    return `<tr>${modCells}</tr>`;
+                }).join('');
+                modificationsRows = modsHeader + modsLines;
+            }
+
+            return `<tr>${rowCells}</tr>${descriptionRow}${modificationsRows}`;
         }).join('');
 
     return `
@@ -380,12 +451,12 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            padding: 2rem;
+            align-items: center; /* vertically center both logo & info */
+            margin-bottom: 28px;
+            padding: 1.5rem 2rem; /* symmetrical top/bottom */
             background-color: ${headerBgColor};
             color: ${headerTxtColor};
-            min-height: 120px;
+            min-height: 110px;
             overflow: hidden;
         }
 
@@ -431,6 +502,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             margin-bottom: 3px;
             word-wrap: break-word;
         }
+
+        .company-info div:last-child { margin-bottom: 0; }
 
         .content-wrapper {
             padding: 2rem;
@@ -690,22 +763,18 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         </table>
 
         <!-- Style and Manufacturer Information -->
-        ${styleName || manufacturerName ? `
+    ${ (styleName || manufacturerName || manufacturerData?.manufacturer) ? `
         <div class="style-info">
             <h4>${t('proposalDoc.styleInformation', 'Style Information')}</h4>
             <div class="style-details">
-                ${manufacturerName ? `
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.manufacturer', 'Manufacturer')}:</div>
-                    <div class="style-detail-value">${manufacturerName}</div>
+            <div class="style-detail-value">${manufacturerName || (manufacturerId ? t('common.loading', 'Loading...') : t('common.na'))}</div>
                 </div>
-                ` : ''}
-                ${styleName ? `
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.styleName', 'Style')}:</div>
-                    <div class="style-detail-value">${styleName}</div>
+                    <div class="style-detail-value">${styleName || t('common.na')}</div>
                 </div>
-                ` : ''}
             </div>
         </div>
         ` : ''}
@@ -715,68 +784,17 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         <div class="section-header">${t('proposalDoc.sections.proposalItems')}</div>
         <table class="items-table">
             <thead>
-                <tr style="background-color: #f8f9fa;">
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.no')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.qty')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.item')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.assembled')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.hingeSide')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem;">${t('proposalColumns.exposedSide')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">${t('proposalColumns.price')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">${t('proposalColumns.assemblyCost')}</th>
-                    <th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">${t('proposalColumns.total')}</th>
-                </tr>
+                <tr style="background-color: #f8f9fa;">${columnHeaders}</tr>
             </thead>
             <tbody>
-                <!-- Category Row -->
                 <tr class="category-row">
-                    <td colspan="9" style="padding: 0.75rem; background-color: #f8f9fa; font-style: italic;"><strong>${t('proposalColumns.items')}</strong></td>
+                    <td colspan="${selectedCols.length}" style="padding:0.75rem; background-color:#f8f9fa; font-style: italic;"><strong>${t('proposalColumns.items')}</strong></td>
                 </tr>
-                <!-- Dynamically inserted rows -->
-                ${proposalItems
-                        .map((item, index) => {
-                            const itemRow = `
-                        <tr>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${index + 1}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.qty}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.code || ''}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.assembled}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide)}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide)}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${parseFloat(item.price).toFixed(2)}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
-                            <td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${parseFloat(item.total).toFixed(2)}</td>
-                        </tr>
-                        `;
-                            const modRows = item.modifications && item.modifications.length > 0
-                                ? `
-                            <tr>
-                                <td colspan="9" style="padding: 0.75rem; background-color: #f9f9f9; font-style: italic;"><strong>${t('proposalDoc.modifications')}</strong></td>
-                            </tr>
-                            ${item.modifications
-                                    .map((mod, modIdx) => {
-                                        const modTotal = (parseFloat(mod.price) || 0) * (mod.qty || 0);
-                                        return `
-                                        <tr>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">-</td>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${mod.qty || ''}</td>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;">${mod.name || ''}</td>
-                                            <td colspan="3" style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>
-                                            <td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${modTotal.toFixed(2)}</td>
-                                        </tr>
-                                    `;
-                                    })
-                                    .join('')}
-                            `
-                                : '';
-                            return itemRow + modRows;
-                        })
-                        .join('')}
+                ${proposalItemRows}
             </tbody>
         </table>
         <!-- Price Summary -->
+        ${values.showPriceSummary ? `
         <div class="price-summary">
             <table>
                 <tr>
@@ -809,6 +827,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 </tr>
             </table>
         </div>
+        ` : ''}
         ` : ''}
 
         ${formData?.selectedCatalog?.length > 0 ? `
@@ -881,11 +900,73 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         }
     };
 
+    const printQuote = (values) => {
+        try {
+            const htmlContent = generateHTMLTemplate(values);
+
+            // Create a new window/iframe for printing
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(htmlContent);
+                printWindow.document.close();
+
+                // Wait for content to load then print
+                printWindow.onload = () => {
+                    printWindow.print();
+                    printWindow.close();
+                };
+            } else {
+                // Fallback: create hidden iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.position = 'absolute';
+                iframe.style.left = '-9999px';
+                iframe.style.width = '1px';
+                iframe.style.height = '1px';
+
+                document.body.appendChild(iframe);
+
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(htmlContent);
+                iframe.contentDocument.close();
+
+                iframe.onload = () => {
+                    iframe.contentWindow.print();
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 1000);
+                };
+            }
+        } catch (error) {
+            console.error('Error printing quote:', error);
+        }
+    };
+
     const showPreviewModal = (values) => {
         const htmlContent = generateHTMLTemplate(values);
-        setPreviewHtml(htmlContent);
+        // Open modal first so refs mount, then inject HTML & force immediate scale recalculation
         setShowPreview(true);
+        setPreviewHtml(htmlContent);
+        // Use double rAF to ensure DOM nodes are in place & painted before measuring
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            recomputePreviewScale();
+        }));
     };
+
+    // Keep iframe height synced once content loads (using srcDoc prop below)
+    useEffect(() => {
+        if (!showPreview) return;
+        const iframe = previewIframeRef.current;
+        if (!iframe) return;
+        const adjust = () => {
+            try {
+                const body = iframe.contentDocument?.body;
+                if (body) iframe.style.height = body.scrollHeight + 'px';
+            } catch(_) { /* ignore */ }
+        };
+        iframe.addEventListener('load', adjust);
+        const t = setTimeout(adjust, 150); // fallback adjust
+        return () => { iframe.removeEventListener('load', adjust); clearTimeout(t); };
+    }, [previewHtml, showPreview]);
 
 
 
@@ -895,6 +976,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         initialValues: {
             showProposalItems: true,
             showGroupItems: true,
+            showPriceSummary: true,
             selectedVersions: [],
             selectedColumns: ['no', 'qty', 'item', 'assembled', 'hingeSide', 'exposedSide', 'price', 'assemblyCost', 'total'],
         },
@@ -904,6 +986,21 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             setSubmitting(false);
         }
     });
+
+    // Auto-update preview when columns change
+    useEffect(() => {
+        if (showPreview) {
+            const htmlContent = generateHTMLTemplate(formik.values);
+            setPreviewHtml(htmlContent);
+        }
+    }, [
+        formik.values.selectedColumns,
+        formik.values.showProposalItems,
+        formik.values.showGroupItems,
+        formik.values.showPriceSummary,
+        showPreview,
+        formData
+    ]);
 
     // Version and column options (same as before)
     const versionOptions = formData?.manufacturersData?.map((item) => ({
@@ -918,131 +1015,249 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         { value: 'assembled', label: t('proposalColumns.assembled') },
         { value: 'hingeSide', label: t('proposalColumns.hingeSide') },
         { value: 'exposedSide', label: t('proposalColumns.exposedSide') },
-        { value: 'price', label: t('proposalColumns.price'), isFixed: true },
+    // Removed isFixed so price can now be deselected and the list can show without pricing
+    { value: 'price', label: t('proposalColumns.price') },
         { value: 'assemblyCost', label: t('proposalColumns.assemblyCost') },
         { value: 'total', label: t('proposalColumns.total') },
     ];
 
     return (
         <>
-            <CModal visible={show} onClose={onClose} size="lg" alignment="center" scrollable>
+            <CModal
+                visible={show}
+                onClose={onClose}
+                size={isMobile ? 'fullscreen' : 'lg'}
+                alignment="center"
+                scrollable
+                className={isMobile ? 'print-quote-mobile-modal' : ''}
+            >
                 <PageHeader
                     title={t('proposalCommon.printTitle')}
                     onClose={onClose}
                 />
                 <form onSubmit={formik.handleSubmit}>
                     <CModalBody className="pt-0">
-                        {/* Same form content as before */}
-                        <div className="mb-4 p-3 bg-light rounded">
-                            <div className="d-flex gap-4">
-                                <div className="d-flex align-items-center">
+                        {/* Switch Group */}
+                        <div className="mb-4 p-3 bg-light rounded" style={{ border: '1px solid #e3e6ea' }}>
+                            <div className="fw-semibold text-uppercase small mb-2" style={{ letterSpacing: '.5px' }}>{t('proposalCommon.visibilityOptions', 'Visibility Options')}</div>
+                            <div className="row g-3">
+                                <div className="col-12 col-md-4 d-flex align-items-center">
                                     <CFormSwitch
                                         id="showProposalItems"
                                         label={<span className="fw-medium">{t('proposalCommon.showProposalItems')}</span>}
                                         checked={formik.values.showProposalItems}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) => {
+                                            formik.handleChange(e);
+                                            if (showPreview) {
+                                                const htmlContent = generateHTMLTemplate(formik.values);
+                                                setPreviewHtml(htmlContent);
+                                            }
+                                        }}
                                         className="me-2"
                                     />
                                 </div>
-                                <div className="d-flex align-items-center">
+                                <div className="col-12 col-md-4 d-flex align-items-center">
                                     <CFormSwitch
                                         id="showGroupItems"
                                         label={<span className="fw-medium">{t('proposalCommon.showGroupItems')}</span>}
                                         checked={formik.values.showGroupItems}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) => {
+                                            formik.handleChange(e);
+                                            if (showPreview) {
+                                                const htmlContent = generateHTMLTemplate(formik.values);
+                                                setPreviewHtml(htmlContent);
+                                            }
+                                        }}
+                                        className="me-2"
+                                    />
+                                </div>
+                                <div className="col-12 col-md-4 d-flex align-items-center">
+                                    <CFormSwitch
+                                        id="showPriceSummary"
+                                        label={<span className="fw-medium">{t('proposalCommon.showPriceSummary', 'Show Price Summary')}</span>}
+                                        checked={formik.values.showPriceSummary}
+                                        onChange={(e) => {
+                                            formik.handleChange(e);
+                                            if (showPreview) {
+                                                const htmlContent = generateHTMLTemplate(formik.values);
+                                                setPreviewHtml(htmlContent);
+                                            }
+                                        }}
                                         className="me-2"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {!isContractor && (
-                            <div className="mb-4">
-                                <div className="d-flex justify-content-between align-items-center mb-2">
-                                    <CFormLabel htmlFor="selectedVersions" className="fw-medium">
+                        {!isContractor && versionOptions.length > 0 && (
+                            <div className="mb-4 p-3 border rounded" style={{ border: '1px solid #e3e6ea' }}>
+                                <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                    <CFormLabel htmlFor="selectedVersions" className="fw-medium mb-0">
                                         {t('proposalCommon.selectVersion')}
                                     </CFormLabel>
-                                </div>
-                                <Select
-                                    id="selectedVersions"
-                                    name="selectedVersions"
-                                    options={versionOptions}
-                                    isMulti
-                                    value={versionOptions.filter(option =>
-                                        formik.values.selectedVersions.includes(option.value)
+                                    {versionOptions.length > 1 && (
+                                        <div className="small d-flex gap-2">
+                                            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => {
+                                                const all = versionOptions.map(v => v.value);
+                                                formik.setFieldValue('selectedVersions', all);
+                                                if (showPreview) setPreviewHtml(generateHTMLTemplate({ ...formik.values, selectedVersions: all }));
+                                            }}>{t('common.selectAll', 'Select All')}</button>
+                                            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => {
+                                                formik.setFieldValue('selectedVersions', []);
+                                                if (showPreview) setPreviewHtml(generateHTMLTemplate({ ...formik.values, selectedVersions: [] }));
+                                            }}>{t('common.clear', 'Clear')}</button>
+                                        </div>
                                     )}
-                                    onChange={(selected) => {
-                                        formik.setFieldValue(
-                                            'selectedVersions',
-                                            selected ? selected.map(option => option.value) : []
+                                </div>
+                                <div className={isMobile ? 'd-flex flex-column gap-2' : 'row g-2'} role="group" aria-label={t('proposalCommon.selectVersion')}>
+                                    {versionOptions.map(opt => {
+                                        const checked = formik.values.selectedVersions.includes(opt.value);
+                                        return (
+                                            <div key={opt.value} className={isMobile ? '' : 'col-6 col-md-4'}>
+                                                <label className={`d-flex align-items-center rounded border p-2 small ${isMobile ? 'w-100' : ''}`}
+                                                       style={{ gap: '8px', background: checked ? '#eef6ff' : '#fff', cursor: 'pointer', minHeight: 42 }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        value={opt.value}
+                                                        checked={checked}
+                                                        onChange={(e) => {
+                                                            let next = [...formik.values.selectedVersions];
+                                                            if (e.target.checked) next.push(opt.value); else next = next.filter(v => v !== opt.value);
+                                                            formik.setFieldValue('selectedVersions', next);
+                                                            if (showPreview) {
+                                                                const updatedValues = { ...formik.values, selectedVersions: next };
+                                                                setPreviewHtml(generateHTMLTemplate(updatedValues));
+                                                            }
+                                                        }}
+                                                        style={{ marginRight: 4 }}
+                                                    />
+                                                    <span className="text-truncate" style={{ maxWidth: '100%' }}>{opt.label}</span>
+                                                </label>
+                                            </div>
                                         );
-                                    }}
-                                    className="basic-multi-select"
-                                    classNamePrefix="select"
-                                    placeholder={t('proposalCommon.selectVersionsPlaceholder')}
-                                />
+                                    })}
+                                </div>
                             </div>
                         )}
 
-                        <div className="mb-3">
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                <CFormLabel htmlFor="selectedColumns" className="fw-medium">
+                        <div className="mb-3 p-3 border rounded" style={{ border: '1px solid #e3e6ea' }}>
+                            <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                <CFormLabel htmlFor="selectedColumns" className="fw-medium mb-0">
                                     {t('proposalCommon.selectColumns')}
                                 </CFormLabel>
+                                <div className="small d-flex gap-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-secondary"
+                                        onClick={() => {
+                                            const all = columnOptions.map(c => c.value);
+                                            formik.setFieldValue('selectedColumns', all);
+                                            if (showPreview) setPreviewHtml(generateHTMLTemplate({ ...formik.values, selectedColumns: all }));
+                                        }}
+                                    >{t('common.selectAll', 'Select All')}</button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-secondary"
+                                        onClick={() => {
+                                            // Keep first column (no) as a minimum fallback
+                                            const min = ['no'];
+                                            formik.setFieldValue('selectedColumns', min);
+                                            if (showPreview) setPreviewHtml(generateHTMLTemplate({ ...formik.values, selectedColumns: min }));
+                                        }}
+                                    >{t('common.clear', 'Clear')}</button>
+                                </div>
                             </div>
-                            <Select
-                                id="selectedColumns"
-                                name="selectedColumns"
-                                options={columnOptions}
-                                isMulti
-                                value={columnOptions.filter(option =>
-                                    formik.values.selectedColumns.includes(option.value)
-                                )}
-                                onChange={(selected) => {
-                                    const fixedColumns = columnOptions
-                                        .filter(opt => opt.isFixed)
-                                        .map(opt => opt.value);
-                                    const selectedValues = selected
-                                        ? [...fixedColumns, ...selected.map(option => option.value)]
-                                        : fixedColumns;
-                                    formik.setFieldValue('selectedColumns', [...new Set(selectedValues)]);
-                                }}
-                                classNamePrefix="select"
-                                placeholder={t('proposalCommon.selectColumnsPlaceholder')}
-                            />
+                            <div className={isMobile ? 'd-flex flex-column gap-2' : 'row g-2'} role="group" aria-label={t('proposalCommon.selectColumns')}>
+                                {columnOptions.map(opt => {
+                                    const checked = formik.values.selectedColumns.includes(opt.value);
+                                    return (
+                                        <div key={opt.value} className={isMobile ? '' : 'col-6 col-md-4'}>
+                                            <label className={`d-flex align-items-center rounded border p-2 small ${isMobile ? 'w-100' : ''}`}
+                                                   style={{ gap: '8px', background: checked ? '#eef6ff' : '#fff', cursor: 'pointer', minHeight: 42 }}>
+                                                <input
+                                                    type="checkbox"
+                                                    value={opt.value}
+                                                    checked={checked}
+                                                    onChange={(e) => {
+                                                        let next = [...formik.values.selectedColumns];
+                                                        if (e.target.checked) {
+                                                            next.push(opt.value);
+                                                        } else {
+                                                            next = next.filter(c => c !== opt.value);
+                                                        }
+                                                        if (next.length === 0) return; // ensure at least one column
+                                                        formik.setFieldValue('selectedColumns', next);
+                                                        if (showPreview) {
+                                                            const updatedValues = { ...formik.values, selectedColumns: next };
+                                                            setPreviewHtml(generateHTMLTemplate(updatedValues));
+                                                        }
+                                                    }}
+                                                    style={{ marginRight: 4 }}
+                                                />
+                                                <span className="text-truncate" style={{ maxWidth: '100%' }}>{opt.label}</span>
+                                            </label>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </CModalBody>
 
-                    <CModalFooter className="border-top-0 pt-0">
-                        <CButton
-                            color="secondary"
-                            onClick={onClose}
-                            variant="outline"
-                            className="px-4"
-                        >
-                            {t('common.cancel')}
-                        </CButton>
-                        <CButton
-                            color="info"
-                            onClick={() => showPreviewModal(formik.values)}
-                            variant="outline"
-                            className="px-4"
-                        >
-                            <i className="cil-magnifying-glass me-2"></i>
-                            {t('proposalCommon.preview', 'Preview')}
-                        </CButton>
-                        <CButton
-                            color="primary"
-                            type="submit"
-                            className="px-4"
-                            disabled={isLoading}
-                        >
-                            <i className="cil-cloud-download me-2"></i>
-                            {isLoading ? t('proposalCommon.downloading') : t('proposalCommon.downloadPdf')}
-                        </CButton>
+                    <CModalFooter className={`border-top-0 pt-0 ${isMobile ? 'flex-column gap-2' : ''}`}>
+                        <div className={`d-flex ${isMobile ? 'w-100 flex-column gap-2' : 'align-items-center gap-2'}`} style={{ width: '100%' }}>
+                            <div className={`d-flex ${isMobile ? 'w-100 flex-column gap-2' : 'gap-2 ms-auto'}`}>
+                                <CButton
+                                    color="secondary"
+                                    onClick={onClose}
+                                    variant="outline"
+                                    className={isMobile ? 'w-100' : 'px-4'}
+                                >
+                                    {t('common.cancel')}
+                                </CButton>
+                                {!isMobile && (
+                                    <CButton
+                                        color="info"
+                                        onClick={() => showPreviewModal(formik.values)}
+                                        variant="outline"
+                                        className="px-4"
+                                    >
+                                        <i className="cil-magnifying-glass me-2"></i>
+                                        {t('proposalCommon.preview', 'Preview')}
+                                    </CButton>
+                                )}
+                                <CButton
+                                    color="success"
+                                    onClick={() => printQuote(formik.values)}
+                                    variant="outline"
+                                    className={isMobile ? 'w-100' : 'px-4'}
+                                >
+                                    <i className="cil-print me-2"></i>
+                                    {t('proposalCommon.print', 'Print')}
+                                </CButton>
+                                <CButton
+                                    color="primary"
+                                    type="submit"
+                                    className={isMobile ? 'w-100' : 'px-4'}
+                                    disabled={isLoading}
+                                >
+                                    <i className="cil-cloud-download me-2"></i>
+                                    {isLoading ? t('proposalCommon.downloading') : t('proposalCommon.downloadPdf')}
+                                </CButton>
+                            </div>
+                        </div>
                     </CModalFooter>
                 </form>
             </CModal>
+                        {isMobile && (
+                                <style>{`
+                                    .print-quote-mobile-modal .modal-content {border-radius:0; min-height:100vh;}
+                                    .print-quote-mobile-modal .modal-body {max-height: calc(100vh - 160px); overflow-y:auto;}
+                                    .print-quote-mobile-modal .modal-footer {position:sticky; bottom:0; background:#fff; box-shadow:0 -2px 4px rgba(0,0,0,0.06);}
+                                    @media (max-width:575.98px){
+                                        .print-quote-mobile-modal .btn {font-size:0.95rem;}
+                                    }
+                                `}</style>
+                        )}
 
             {/* Preview Modal */}
             <CModal
@@ -1062,39 +1277,27 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         ref={previewContainerRef}
                         style={{
                             maxHeight: window.innerWidth < 768
-                                ? 'calc(100vh - 120px)' // Mobile: Account for header and footer
+                                ? 'calc(100vh - 120px)'
                                 : window.innerWidth < 992
-                                    ? '75vh' // Tablet
-                                    : '80vh', // Desktop
+                                    ? '75vh'
+                                    : '80vh',
                             overflow: 'auto',
                             background: '#f8f9fa',
                             padding: containerPadding,
-                            height: window.innerWidth < 768 ? 'calc(100vh - 120px)' : 'auto',
                         }}
                     >
-                        {/* Scaled stage wrapper keeps scroll height correct */}
-                        <div
-                            style={{
-                                width: Math.floor(BASE_PAGE_WIDTH_PX * previewScale),
-                                height: Math.round((contentHeight || 0) * previewScale),
-                                position: 'relative',
-                                margin: '0 auto',
-                            }}
-                        >
-                            {/* Natural-size content scaled to fit container width */}
-                            <div
-                                ref={previewContentRef}
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <iframe
+                                ref={previewIframeRef}
+                                title="quote-preview-frame"
+                                srcDoc={previewHtml || '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'}
                                 style={{
                                     width: BASE_PAGE_WIDTH_PX,
-                                    transform: `scale(${previewScale})`,
-                                    transformOrigin: 'top left',
-                                    position: 'absolute',
-                                    left: 0,
-                                    top: 0,
+                                    minHeight: '1120px',
+                                    border: '1px solid #d0d7de',
                                     background: 'white',
                                     boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                                 }}
-                                dangerouslySetInnerHTML={{ __html: previewHtml }}
                             />
                         </div>
                     </div>
@@ -1106,6 +1309,15 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         variant="outline"
                     >
                         {t('common.close')}
+                    </CButton>
+                    <CButton
+                        color="success"
+                        variant="outline"
+                        onClick={() => {
+                            printQuote(formik.values);
+                        }}
+                    >
+                        <i className="cil-print me-2" />{t('proposalCommon.print', 'Print')}
                     </CButton>
                     <CButton
                         color="primary"

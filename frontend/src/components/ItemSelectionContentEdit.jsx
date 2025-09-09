@@ -13,6 +13,7 @@ import axiosInstance from '../helpers/axiosInstance';
 import { setTableItemsEdit as setTableItemsRedux } from '../store/slices/selectedVersionEditSlice';
 import { setSelectVersionNewEdit } from '../store/slices/selectVersionNewEditSlice';
 import { isAdmin } from '../helpers/permissions';
+import { isShowroomModeActive, getShowroomMultiplier, addShowroomSettingsListener } from '../utils/showroomUtils';
 import './ItemSelectionContent.css';
 
 
@@ -62,6 +63,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [discountPercent, setDiscountPercent] = useState(0);
     const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
     const [manufacturerCostMultiplier, setManufacturerCostMultiplier] = useState(1.0);
+    const [showroomMultiplier, setShowroomMultiplier] = useState(1.0);
+    const [showroomActive, setShowroomActive] = useState(false);
     const [userMultiplierFetched, setUserMultiplierFetched] = useState(false);
     const [manuMultiplierFetched, setManuMultiplierFetched] = useState(false);
     const [pricingReady, setPricingReady] = useState(false);
@@ -187,9 +190,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const itemsFingerprint = useMemo(() => {
         const items = filteredItems.map(item => `${item.code}:${item.qty}:${JSON.stringify(item.modifications || [])}`).join('|');
         const customs = customItems.map(item => `${item.name}:${item.price}:${item.taxable}`).join('|');
-        const factors = `${userGroupMultiplier}:${manufacturerCostMultiplier}:${discountPercent}:${isAssembled}`;
+        const factors = `${userGroupMultiplier}:${manufacturerCostMultiplier}:${discountPercent}:${isAssembled}:${showroomActive}:${showroomMultiplier}`;
         return `${items}#${customs}#${factors}`;
-    }, [filteredItems, customItems, userGroupMultiplier, manufacturerCostMultiplier, discountPercent, isAssembled]);
+    }, [filteredItems, customItems, userGroupMultiplier, manufacturerCostMultiplier, discountPercent, isAssembled, showroomActive, showroomMultiplier]);
 
     const hasEligibleInStyle = useCallback((styleId) => {
         const currentManufacturerId = formData?.manufacturersData?.[0]?.manufacturer;
@@ -315,6 +318,21 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         fetchUserMultiplier();
     }, []);
 
+    // Initialize and listen for showroom mode changes
+    useEffect(() => {
+        // Set initial values
+        setShowroomActive(isShowroomModeActive());
+        setShowroomMultiplier(getShowroomMultiplier());
+
+        // Listen for changes
+        const cleanup = addShowroomSettingsListener(({ mode, multiplier }) => {
+            setShowroomActive(mode);
+            setShowroomMultiplier(multiplier);
+        });
+
+        return cleanup;
+    }, []);
+
     // Removed timer-based fallback to avoid delays; pricing readiness will be set by idempotent effects
 
     // Force taxable ON for non-admins
@@ -330,7 +348,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         }
     }, [isUserAdmin]);
 
-    // Fallback: Ensure BOTH multipliers are applied when editing an existing proposal
+    // Fallback: Ensure ALL multipliers are applied when editing an existing proposal
     // Runs after items are loaded and both multipliers are fetched
     useEffect(() => {
         if (!userMultiplierFetched || !manuMultiplierFetched) return;
@@ -341,10 +359,14 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         const needsUpdate = tableItems.some(item => {
             const appliedUser = item.appliedMultiplier || item.appliedUserGroupMultiplier || 1.0;
             const appliedManu = item.appliedManufacturerMultiplier || 1.0;
-            const base = item.originalPrice || (appliedUser > 0 || appliedManu > 0 ? (Number(item.price) / (appliedManu * appliedUser)) : Number(item.price));
-            const expected = Number(base) * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1);
+            const appliedShowroom = item.appliedShowroomMultiplier || 1.0;
+            const base = item.originalPrice || (appliedUser > 0 || appliedManu > 0 ? (Number(item.price) / (appliedManu * appliedUser * appliedShowroom)) : Number(item.price));
+            const expectedShowroom = showroomActive ? showroomMultiplier : 1.0;
+            const expected = Number(base) * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1) * expectedShowroom;
             const priceMismatch = Math.abs(Number(item.price) - expected) > 0.01;
-            const multiplierMismatch = Math.abs(appliedUser - Number(userGroupMultiplier || 1)) > 0.001 || Math.abs(appliedManu - Number(manufacturerCostMultiplier || 1)) > 0.001;
+            const multiplierMismatch = Math.abs(appliedUser - Number(userGroupMultiplier || 1)) > 0.001 ||
+                                     Math.abs(appliedManu - Number(manufacturerCostMultiplier || 1)) > 0.001 ||
+                                     Math.abs(appliedShowroom - expectedShowroom) > 0.001;
             return priceMismatch || multiplierMismatch;
         });
 
@@ -356,18 +378,23 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         const updatedItems = tableItems.map(item => {
             const appliedUser = item.appliedMultiplier || item.appliedUserGroupMultiplier || 1.0;
             const appliedManu = item.appliedManufacturerMultiplier || 1.0;
-            const base = item.originalPrice || (appliedUser > 0 || appliedManu > 0 ? (Number(item.price) / (appliedManu * appliedUser)) : Number(item.price));
-            const correctPrice = Number(base) * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1);
+            const appliedShowroom = item.appliedShowroomMultiplier || 1.0;
+            const base = item.originalPrice || (appliedUser > 0 || appliedManu > 0 ? (Number(item.price) / (appliedManu * appliedUser * appliedShowroom)) : Number(item.price));
+            const expectedShowroom = showroomActive ? showroomMultiplier : 1.0;
+            const correctPrice = Number(base) * Number(manufacturerCostMultiplier || 1) * Number(userGroupMultiplier || 1) * expectedShowroom;
             const unitAssembly = item?.includeAssemblyFee ? Number(item?.assemblyFee || 0) : 0;
+            const adjustedUnitAssembly = showroomActive ? unitAssembly * showroomMultiplier : unitAssembly;
             const qty = Number(item?.qty || 1);
             return {
                 ...item,
                 originalPrice: Number(base),
                 appliedManufacturerMultiplier: Number(manufacturerCostMultiplier || 1),
                 appliedUserGroupMultiplier: Number(userGroupMultiplier || 1),
+                appliedShowroomMultiplier: expectedShowroom,
                 appliedMultiplier: Number(userGroupMultiplier || 1),
                 price: correctPrice,
-                total: (qty * correctPrice) + (unitAssembly * qty),
+                assemblyFee: adjustedUnitAssembly,
+                total: (qty * correctPrice) + (adjustedUnitAssembly * qty),
             };
         });
 
@@ -387,7 +414,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             setSelectedVersion({ ...selectVersion, items: updatedItems });
         }
         setPricingReady(true);
-    }, [userMultiplierFetched, manuMultiplierFetched, userGroupMultiplier, manufacturerCostMultiplier, tableItems, dispatch, selectVersion?.versionName, setSelectedVersion, setFormData]);
+    }, [userMultiplierFetched, manuMultiplierFetched, userGroupMultiplier, manufacturerCostMultiplier, showroomActive, showroomMultiplier, tableItems, dispatch, selectVersion?.versionName, setSelectedVersion, setFormData]);
 
     // Apply BOTH multipliers idempotently when fetched or when items change
     useEffect(() => {
@@ -470,8 +497,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         try {
             // Since prices already include multiplier, don't apply it again
             const cabinetPartsTotal = versionItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const customItemsTotal = customItems.reduce((sum, item) => sum + (item.price * userGroupMultiplier), 0); // Only apply to custom items
-            const modificationsTotal = totalModificationsCost;
+            // Apply user group multiplier and showroom multiplier to custom items
+            const baseCustomItemsTotal = customItems.reduce((sum, item) => sum + (item.price * userGroupMultiplier), 0);
+            const customItemsTotal = showroomActive ? baseCustomItemsTotal * showroomMultiplier : baseCustomItemsTotal;
+            // Apply showroom multiplier to modifications
+            const baseModificationsTotal = totalModificationsCost;
+            const modificationsTotal = showroomActive ? baseModificationsTotal * showroomMultiplier : baseModificationsTotal;
 
             const assemblyFeeTotal = isAssembled
                 ? versionItems.reduce((sum, item) => {
@@ -489,8 +520,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const styleTotal = cabinetPartsTotal + assemblyFeeTotal + customItemsTotal + modificationsTotal;
 
             // (debug logs removed)
-            const cabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
-                versionItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0)
+            const baseCabinets = customItems?.reduce((sum, item) => sum + item.price, 0) +
+                versionItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+            const cabinets = baseCabinets; // Already includes showroom multiplier from pricing calculations
             const discountAmount = (styleTotal * discountPercent) / 100;
             const totalAfterDiscount = styleTotal - discountAmount;
             const totalWithDelivery = totalAfterDiscount + deliveryFee;
@@ -501,7 +533,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             const nextSummary = {
                 cabinets: parseFloat((Number(cabinets) || 0).toFixed(2)),
                 assemblyFee: parseFloat((Number(assemblyFeeTotal) || 0).toFixed(2)),
-                modificationsCost: parseFloat((Number(totalModificationsCost) || 0).toFixed(2)),
+                modificationsCost: parseFloat((Number(modificationsTotal) || 0).toFixed(2)),
                 deliveryFee: parseFloat((Number(deliveryFee) || 0).toFixed(2)),
                 styleTotal: parseFloat((Number(styleTotal) || 0).toFixed(2)),
                 discountPercent: Number(discountPercent) || 0,

@@ -18,19 +18,11 @@ export const validateProposalSubTypeRequirements = async (items, manufacturerId)
       exposedSide: item.exposedSide
     }));
 
-    console.log('🔍 [DEBUG] Validating sub-type requirements:', {
-      manufacturerId,
-      itemCount: catalogItems.length,
-      items: catalogItems
-    });
-
     // Call backend validation
     const response = await axiosInstance.post('/api/sub-types/validate-requirements', {
       items: catalogItems,
       manufacturerId: manufacturerId
     });
-
-    console.log('✅ [DEBUG] Sub-type validation response:', response.data);
 
     return {
       isValid: response.data.isValid,
@@ -38,7 +30,7 @@ export const validateProposalSubTypeRequirements = async (items, manufacturerId)
     };
 
   } catch (error) {
-    console.error('❌ [DEBUG] Error validating sub-type requirements:', error);
+    if (import.meta?.env?.DEV) console.error('Error validating sub-type requirements:', error);
 
     // If validation fails, assume valid to not block acceptance
     // (Backend will still validate and block if needed)
@@ -112,19 +104,11 @@ export const checkSubTypeRequirements = async (items, manufacturerId) => {
       exposedSide: item.exposedSide
     }));
 
-    console.log('🔍 [DEBUG] Checking sub-type requirements:', {
-      manufacturerId,
-      itemCount: catalogItems.length,
-      items: catalogItems
-    });
-
     // Call backend to get requirements info
     const response = await axiosInstance.post('/api/sub-types/validate-requirements', {
       items: catalogItems,
       manufacturerId: manufacturerId
     });
-
-    console.log('✅ [DEBUG] Sub-type requirements response:', response.data);
 
     // Analyze the response to determine what columns are needed
     // Check both missing requirements AND all requirements to keep columns visible
@@ -182,7 +166,7 @@ export const checkSubTypeRequirements = async (items, manufacturerId) => {
     };
 
   } catch (error) {
-    console.error('❌ [DEBUG] Error checking sub-type requirements:', error);
+    if (import.meta?.env?.DEV) console.error('Error checking sub-type requirements:', error);
 
     // Return false to not show columns if there's an error
     return {

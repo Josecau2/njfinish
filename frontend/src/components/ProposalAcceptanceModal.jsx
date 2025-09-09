@@ -37,13 +37,6 @@ const ProposalAcceptanceModal = ({
   const [error, setError] = useState('');
 
   const handleAccept = async () => {
-    console.log('🎯 [DEBUG] ProposalAcceptanceModal handleAccept called:', {
-      proposalId: proposal?.id,
-      isExternalAcceptance,
-      externalSignerName,
-      externalSignerEmail,
-      timestamp: new Date().toISOString()
-    });
 
     setError('');
 
@@ -76,11 +69,7 @@ const ProposalAcceptanceModal = ({
         }
       }
 
-      console.log('📤 [DEBUG] Dispatching acceptProposal with data:', acceptanceData);
-
       const result = await dispatch(acceptProposal(acceptanceData)).unwrap();
-
-      console.log('✅ [DEBUG] acceptProposal succeeded:', result);
 
       Swal.fire({
         title: t('common.success'),
@@ -88,18 +77,10 @@ const ProposalAcceptanceModal = ({
         icon: 'success',
         timer: 2000
       });
-
-      console.log('🔄 [DEBUG] Calling onAcceptanceComplete');
       onAcceptanceComplete?.();
       onClose();
 
     } catch (error) {
-  console.error('❌ [DEBUG] Acceptance error:', {
-    error: error.message || error,
-    proposalId: proposal?.id,
-    stack: error.stack,
-    timestamp: new Date().toISOString()
-  });
   setError(error.message || t('proposalAcceptance.errors.failedAccept'));
     } finally {
       setIsSubmitting(false);
