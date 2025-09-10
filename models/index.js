@@ -28,9 +28,31 @@ const CatalogSubTypeAssignment = require('./CatalogSubTypeAssignment');
 const Payment = require('./Payment');
 const PaymentConfiguration = require('./PaymentConfiguration');
 
+// New models
+const Category = require('./Category');
+const Menu = require('./Menu');
+const Modifier = require('./Modifier');
+const ProposalItem = require('./ProposalItem');
+const ProposalSection = require('./ProposalSection');
+const ProposalSectionItem = require('./ProposalSectionItem');
+const ResourceFile = require('./ResourceFile');
+const ManufacturerMultiplier = require('./ManufacturerMultiplier');
+const GlobalModificationCategory = require('./GlobalModificationCategory');
+const GlobalModificationTemplate = require('./GlobalModificationTemplate');
+const GlobalModificationAssignment = require('./GlobalModificationAssignment');
+
 const ManufacturerAssemblyCost = require('./ManufacturerAssemblyCost');
 const ManufacturerHingesDetails = require('./ManufacturerHingesDetails');
 const ManufacturerModificationDetails = require('./ManufacturerModificationDetails');
+
+// Missing model files
+const Categories = require('./Categories');
+const Customizations = require('./Customizations');
+const GlobalModificationCategories = require('./GlobalModificationCategories');
+const LoginCustomizations = require('./LoginCustomizations');
+const ManufacturerAssemblyCosts = require('./ManufacturerAssemblyCosts');
+const ManufacturerCatalogFiles = require('./ManufacturerCatalogFiles');
+const PdfCustomizations = require('./PdfCustomizations');
 
 // Associations
 Manufacturer.hasMany(ManufacturerCatalogData, {
@@ -192,6 +214,27 @@ CatalogSubTypeAssignment.belongsTo(ManufacturerSubType, { foreignKey: 'sub_type_
 ManufacturerCatalogData.hasMany(CatalogSubTypeAssignment, { foreignKey: 'catalog_data_id', as: 'subTypeAssignments' });
 ManufacturerSubType.hasMany(CatalogSubTypeAssignment, { foreignKey: 'sub_type_id', as: 'catalogAssignments' });
 
+// Proposal sections and items associations
+Proposals.hasMany(ProposalSection, { foreignKey: 'proposal_id', as: 'sections' });
+ProposalSection.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
+
+ProposalSection.hasMany(ProposalItem, { foreignKey: 'section_id', as: 'items' });
+ProposalItem.belongsTo(ProposalSection, { foreignKey: 'section_id', as: 'section' });
+
+Proposals.hasMany(ProposalItem, { foreignKey: 'proposal_id', as: 'items' });
+ProposalItem.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' });
+
+ProposalSectionItem.belongsTo(ProposalSection, { foreignKey: 'section_id', as: 'section' });
+ProposalSectionItem.belongsTo(ProposalItem, { foreignKey: 'item_id', as: 'item' });
+
+// Global modification associations
+GlobalModificationTemplate.belongsTo(GlobalModificationCategory, { foreignKey: 'category_id', as: 'category' });
+GlobalModificationCategory.hasMany(GlobalModificationTemplate, { foreignKey: 'category_id', as: 'templates' });
+
+// Manufacturer multiplier associations
+ManufacturerMultiplier.belongsTo(Manufacturer, { foreignKey: 'manufacturer_id', as: 'manufacturer' });
+Manufacturer.hasMany(ManufacturerMultiplier, { foreignKey: 'manufacturer_id', as: 'multipliers' });
+
 
 module.exports = {
     Manufacturer,
@@ -202,7 +245,7 @@ module.exports = {
     UserRole,
     Collection,
     Proposals,
-  Order,
+    Order,
     Customer,
     UserGroup,
     UserGroupMultiplier,
@@ -212,14 +255,38 @@ module.exports = {
     Notification,
     ActivityLog,
     ResourceLink,
-  ProposalSession,
-  ContactInfo,
-  ContactThread,
-  ContactMessage,
-  Terms,
-  TermsAcceptance,
-  ManufacturerSubType,
-  CatalogSubTypeAssignment,
-  Payment,
-  PaymentConfiguration
+    ProposalSession,
+    ContactInfo,
+    ContactThread,
+    ContactMessage,
+    Terms,
+    TermsAcceptance,
+    ManufacturerSubType,
+    CatalogSubTypeAssignment,
+    Payment,
+    PaymentConfiguration,
+    // New models
+    Category,
+    Menu,
+    Modifier,
+    ProposalItem,
+    ProposalSection,
+    ProposalSectionItem,
+    ResourceFile,
+    ManufacturerMultiplier,
+    GlobalModificationCategory,
+    GlobalModificationTemplate,
+    GlobalModificationAssignment,
+    // Assembly and modification models
+    ManufacturerAssemblyCost,
+    ManufacturerHingesDetails,
+    ManufacturerModificationDetails,
+    // Additional missing models
+    Categories,
+    Customizations,
+    GlobalModificationCategories,
+    LoginCustomizations,
+    ManufacturerAssemblyCosts,
+    ManufacturerCatalogFiles,
+    PdfCustomizations
 };

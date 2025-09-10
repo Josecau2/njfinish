@@ -1353,6 +1353,71 @@ const fetchManufacturerAssemblyCostDetails = async (req, res) => {
     }
 };
 
+// Fetch assembly costs by types for a specific manufacturer
+const fetchAssemblyCostsByTypes = async (req, res) => {
+    const { id } = req.params; // manufacturer ID
+
+    try {
+        // First check if manufacturer exists
+        const manufacturer = await Manufacturer.findByPk(id);
+        if (!manufacturer) {
+            return res.status(404).json({ error: 'Manufacturer not found' });
+        }
+
+        // Get all catalog data for this manufacturer to get the types with assembly costs
+        const catalogDataWithCosts = await ManufacturerCatalogData.findAll({
+            where: { manufacturerId: id },
+            include: [{
+                model: ManufacturerAssemblyCost,
+                as: 'styleVariantsAssemblyCost',
+                required: false // Left join to get all catalog data, even without costs
+            }],
+            attributes: ['id', 'type', 'code', 'description']
+        });
+
+        // Group by type and calculate assembly cost information
+        const costsByType = {};
+
+        catalogDataWithCosts.forEach(item => {
+            const type = item.type;
+
+            if (!costsByType[type]) {
+                costsByType[type] = {
+                    type: type,
+                    assemblyCosts: []
+                };
+            }
+
+            // If this item has assembly costs, process them
+            const assemblyCost = item.styleVariantsAssemblyCost;
+            if (assemblyCost) {
+                // Check if we already have this assembly type for this item type
+                const existingCost = costsByType[type].assemblyCosts.find(
+                    existing => existing.assemblyType === assemblyCost.type
+                );
+
+                if (existingCost) {
+                    // Update existing entry - increment count of items with this cost
+                    existingCost.itemsWithCost += 1;
+                    // For now, we'll keep the first price found
+                } else {
+                    // Add new assembly cost entry
+                    costsByType[type].assemblyCosts.push({
+                        assemblyType: assemblyCost.type,
+                        price: parseFloat(assemblyCost.price || 0),
+                        itemsWithCost: 1
+                    });
+                }
+            }
+        });
+
+        res.json(costsByType);
+    } catch (error) {
+        console.error('Error fetching assembly costs by types:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 
 
 // In manufacturerController.js
@@ -2404,6 +2469,7 @@ module.exports = {
     getItemsByStyleCatalogId,
     // new endpoints will be appended below exports update
     fetchManufacturerAssemblyCostDetails,
+    fetchAssemblyCostsByTypes,
     fetchManufacturerHingesDetails,
     fetchManufacturerItemsModification,
     saveAssemblyCost,

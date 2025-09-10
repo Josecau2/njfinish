@@ -135,6 +135,31 @@ const Proposal = sequelize.define('proposal', {
         defaultValue: false,
         comment: 'Locks prices after acceptance'
     },
+    order_snapshot: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: 'Snapshot of order data when proposal is accepted'
+    },
+    locked_pricing: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: 'Locked pricing information'
+    },
+    locked_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        comment: 'Timestamp when pricing was locked'
+    },
+    locked_by_user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'User who locked the pricing'
+    },
+    migrated_to_sections: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        comment: 'Flag indicating if proposal has been migrated to sections structure'
+    },
 
 }, {
     timestamps: true,

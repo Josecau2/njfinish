@@ -57,6 +57,82 @@ const Order = sequelize.define('order', {
     type: DataTypes.JSON,
     allowNull: true,
     comment: 'Static snapshot of pricing, items, and computed totals at accept time'
+  },
+  parts_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Parts cost in cents'
+  },
+  assembly_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Assembly cost in cents'
+  },
+  mods_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Modifications cost in cents'
+  },
+  subtotal_before_discount_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Subtotal before discount in cents'
+  },
+  discount_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Discount amount in cents'
+  },
+  delivery_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Delivery cost in cents'
+  },
+  tax_cents: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Tax amount in cents'
+  },
+  tax_rate_pct: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+    comment: 'Tax rate percentage'
+  },
+  discount_pct: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+    comment: 'Discount percentage'
+  },
+  m_cost: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    comment: 'Manufacturing cost'
+  },
+  m_markup: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+    comment: 'Manufacturing markup percentage'
+  },
+  currency: {
+    type: DataTypes.STRING(3),
+    allowNull: true,
+    defaultValue: 'USD',
+    comment: 'Currency code'
+  },
+  created_by_user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'User who created the order'
+  },
+  locked_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Timestamp when order was locked'
+  },
+  locked_by_user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'User who locked the order'
   }
 }, {
   timestamps: true,
