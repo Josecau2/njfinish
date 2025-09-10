@@ -15,7 +15,6 @@ import {
 // Removed react-select; using checkboxes for column & version selection
 import axiosInstance from '../../helpers/axiosInstance';
 import { generateProposalPdfTemplate } from '../../helpers/pdfTemplateGenerator';
-import { isShowroomModeActive, getShowroomMultiplier } from '../../utils/showroomUtils';
 import PageHeader from '../PageHeader';
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
@@ -251,19 +250,16 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     const summary = formData?.manufacturersData?.[0]?.summary || {};
 
-    // Apply showroom multiplier to pricing if active
-    const showroomActive = isShowroomModeActive();
-    const showroomMultiplier = showroomActive ? getShowroomMultiplier() : 1.0;
-
+    // PDF generation should use original prices without showroom multiplier
     const priceSummary = formData?.manufacturersData?.[0]?.items?.length
         ? {
-            cabinets: (summary.cabinets || 0) * showroomMultiplier,
-            assemblyFee: (summary.assemblyFee || 0) * showroomMultiplier,
-            modifications: (summary.modificationsCost || 0) * showroomMultiplier,
-            styleTotal: (summary.styleTotal || 0) * showroomMultiplier,
-            total: (summary.total || 0) * showroomMultiplier,
-            tax: (summary.taxAmount || 0) * showroomMultiplier,
-            grandTotal: (summary.grandTotal || 0) * showroomMultiplier,
+            cabinets: summary.cabinets || 0,
+            assemblyFee: summary.assemblyFee || 0,
+            modifications: summary.modificationsCost || 0,
+            styleTotal: summary.styleTotal || 0,
+            total: summary.total || 0,
+            tax: summary.taxAmount || 0,
+            grandTotal: summary.grandTotal || 0,
         }
         : {
             cabinets: 0,
@@ -287,9 +283,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         assembled: item.isRowAssembled ? t('common.yes') : t('common.no'),
         hingeSide: item.hingeSide || t('common.na'),
         exposedSide: item.exposedSide || t('common.na'),
-        price: (parseFloat(item.price) || 0) * showroomMultiplier,
-        assemblyCost: item.includeAssemblyFee ? ((parseFloat(item.assemblyFee) || 0) * showroomMultiplier) : 0,
-        total: item.includeAssemblyFee ? ((parseFloat(item.total) || 0) * showroomMultiplier) : ((parseFloat(item.price) || 0) * showroomMultiplier),
+        price: parseFloat(item.price) || 0,
+        assemblyCost: item.includeAssemblyFee ? (parseFloat(item.assemblyFee) || 0) : 0,
+        total: item.includeAssemblyFee ? (parseFloat(item.total) || 0) : (parseFloat(item.price) || 0),
         modifications: item.modifications || {}
     }));
 

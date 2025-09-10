@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const tableInfo = await queryInterface.describeTable('proposals');
-    
+
     // Add order_snapshot column if it doesn't exist
     if (!tableInfo.order_snapshot) {
       await queryInterface.addColumn('proposals', 'order_snapshot', {

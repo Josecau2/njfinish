@@ -47,6 +47,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [isAssembled, setIsAssembled] = useState(true);
     const [discountPercent, setDiscountPercent] = useState(0);
     const { taxes, loading } = useSelector((state) => state.taxes);
+    const taxesReady = useMemo(() => !loading && Array.isArray(taxes) && taxes.length > 0, [loading, taxes]);
     const authUser = useSelector((state) => state.auth?.user);
     const customization = useSelector((state) => state.customization);
     const headerBg = customization.headerBg || '#000000';
@@ -69,6 +70,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [manufacturerCostMultiplier, setManufacturerCostMultiplier] = useState(1.0);
     const [showroomMultiplier, setShowroomMultiplier] = useState(1.0);
     const [showroomActive, setShowroomActive] = useState(false);
+    // Readiness flags to avoid UI flicker until pricing context is complete
+    const [userMultiplierFetched, setUserMultiplierFetched] = useState(false);
+    const [manuMultiplierFetched, setManuMultiplierFetched] = useState(false);
+    const [preloadingComplete, setPreloadingComplete] = useState(false);
+    const [pricingReady, setPricingReady] = useState(false);
     const [stylesMeta, setStylesMeta] = useState([]);
     const [fetchedCollections, setFetchedCollections] = useState([]);
     const [collectionsLoading, setCollectionsLoading] = useState(true);
@@ -106,7 +112,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             } catch (err) {
                 // keep default 1.0
                 // console.warn('Multiplier fetch failed', err?.message || err);
-            }
+            } finally { setUserMultiplierFetched(true); }
         };
         fetchUserMultiplier();
     }, []);
@@ -207,16 +213,20 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     const filtered = res.data.styles.filter(s => String(s?.style || '').trim().length > 0);
                     setStylesMeta(filtered);
                     setManufacturerCostMultiplier(Number(res.data.manufacturerCostMultiplier || 1.0));
+                    setManuMultiplierFetched(true);
                 } else if (Array.isArray(res.data)) {
                     // Fallback for old format
                     const filtered = res.data.filter(s => String(s?.style || '').trim().length > 0);
                     setStylesMeta(filtered);
+                    setManuMultiplierFetched(true);
                 } else {
                     setStylesMeta([]);
+                    setManuMultiplierFetched(true);
                 }
             } catch (e) {
                 console.error('Error fetching styles meta:', e);
                 setStylesMeta([]);
+                setManuMultiplierFetched(true);
             } finally {
                 setCollectionsLoading(false);
             }
@@ -231,6 +241,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             if (!manufacturerId || !stylesMeta.length) return;
 
             // Preload catalog data for all styles in parallel
+            setPreloadingComplete(false);
             const preloadPromises = stylesMeta.map(async (style) => {
                 const cacheKey = `${manufacturerId}:${style.id}`;
 
@@ -253,10 +264,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
             // Wait for all preloads to complete
             await Promise.allSettled(preloadPromises);
+            setPreloadingComplete(true);
         };
 
         preloadStylesCatalogData();
     }, [selectVersion?.manufacturerData?.id, stylesMeta]);
+
+    // Centralized readiness gating to avoid flicker
+    useEffect(() => {
+        setPricingReady(Boolean(userMultiplierFetched && manuMultiplierFetched && taxesReady && preloadingComplete));
+    }, [userMultiplierFetched, manuMultiplierFetched, taxesReady, preloadingComplete]);
 
     // Fetch items for selected style lazily (by representative catalog id), with cache
     useEffect(() => {
@@ -395,7 +412,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             discountPercent,
             multipliers: {
                 manufacturer: manufacturerCostMultiplier,
-                userGroup: userGroupMultiplier
+                userGroup: userGroupMultiplier,
+                showroomActive,
+                showroomMultiplier
             },
             deliveryFee,
             taxRatePct
@@ -1695,34 +1714,41 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     </div>
                 </>
             )}
-            <hr />            <CatalogTable
-                catalogData={fetchedCollections}
-                handleCatalogSelect={handleCatalogSelect}
-                addOnTop={addOnTop}
-                setAddOnTop={setAddOnTop}
-                handleCopy={handleCopy}
-                groupEnabled={groupEnabled}
-                setGroupEnabled={setGroupEnabled}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                updateQty={updateQty}
-                handleOpenModificationModal={handleOpenModificationModal}
-                handleDelete={handleDelete}
-                updateModification={updateModification}
-                setModificationsMap={setModificationsMap}
-                modificationsMap={modificationsMap}
-                handleDeleteModification={handleDeleteModification}
-                formatPrice={formatPrice}
-                selectVersion={selectVersion}
-                isAssembled={isAssembled}
-                selectedStyleData={selectedStyleData}
-                toggleRowAssembly={toggleRowAssembly}
-                updateHingeSide={updateHingeSide}
-                updateExposedSide={updateExposedSide}
-                items={filteredItems}
-                headerBg={headerBg}
-                textColor={textColor}
-            />
+            <hr />
+            {!pricingReady ? (
+                <div className="alert alert-info my-3" role="status">
+                    {t('proposalUI.applyingPricing', 'Applying pricing, please wait...')}
+                </div>
+            ) : (
+                <CatalogTable
+                    catalogData={fetchedCollections}
+                    handleCatalogSelect={handleCatalogSelect}
+                    addOnTop={addOnTop}
+                    setAddOnTop={setAddOnTop}
+                    handleCopy={handleCopy}
+                    groupEnabled={groupEnabled}
+                    setGroupEnabled={setGroupEnabled}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    updateQty={updateQty}
+                    handleOpenModificationModal={handleOpenModificationModal}
+                    handleDelete={handleDelete}
+                    updateModification={updateModification}
+                    setModificationsMap={setModificationsMap}
+                    modificationsMap={modificationsMap}
+                    handleDeleteModification={handleDeleteModification}
+                    formatPrice={formatPrice}
+                    selectVersion={selectVersion}
+                    isAssembled={isAssembled}
+                    selectedStyleData={selectedStyleData}
+                    toggleRowAssembly={toggleRowAssembly}
+                    updateHingeSide={updateHingeSide}
+                    updateExposedSide={updateExposedSide}
+                    items={filteredItems}
+                    headerBg={headerBg}
+                    textColor={textColor}
+                />
+            )}
 
             {copied && (
                 <div
@@ -1874,6 +1900,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             )}
 
             {/* Totals Summary */}
+            {pricingReady && (
             <div className="mt-5 mb-5 d-flex justify-content-center totals-summary-mobile">
                 <div className="summary-panel">
                     <table className="table">
@@ -1952,6 +1979,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </table>
                 </div>
             </div>
+            )}
 
             <ModificationBrowserModal
                 visible={modificationModalVisible}

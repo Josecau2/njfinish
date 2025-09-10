@@ -74,6 +74,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
     const { taxes, loading } = useSelector((state) => state.taxes);
+    const taxesReady = useMemo(() => !loading && Array.isArray(taxes) && taxes.length > 0, [loading, taxes]);
     const authFailedRef = useRef(false);
     const [customItemError, setCustomItemError] = useState('');
     const [unavailableCount, setUnavailableCount] = useState(0);
@@ -335,6 +336,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     // Removed timer-based fallback to avoid delays; pricing readiness will be set by idempotent effects
 
+    // Centralized readiness: UI becomes interactive only when all prerequisites are ready
+    useEffect(() => {
+        const ready = userMultiplierFetched && manuMultiplierFetched && taxesReady && preloadingComplete;
+        if (ready !== pricingReady) setPricingReady(ready);
+    }, [userMultiplierFetched, manuMultiplierFetched, taxesReady, preloadingComplete, pricingReady]);
+
     // Force taxable ON for non-admins
     useEffect(() => {
         if (!isUserAdmin && customItemTaxable !== true) {
@@ -371,7 +378,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         });
 
         if (!needsUpdate) {
-            setPricingReady(true);
             return;
         }
 
@@ -413,7 +419,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         if (setSelectedVersion && selectVersion) {
             setSelectedVersion({ ...selectVersion, items: updatedItems });
         }
-        setPricingReady(true);
+    // readiness handled by centralized effect
     }, [userMultiplierFetched, manuMultiplierFetched, userGroupMultiplier, manufacturerCostMultiplier, showroomActive, showroomMultiplier, tableItems, dispatch, selectVersion?.versionName, setSelectedVersion, setFormData]);
 
     // Apply BOTH multipliers idempotently when fetched or when items change
@@ -455,7 +461,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
             || (Number(item.appliedUserGroupMultiplier || 1) !== Number(tableItems[index]?.appliedUserGroupMultiplier || 1))
         );
 
-        if (hasChanges) {
+    if (hasChanges) {
             setTableItemsEdit(updatedItems);
             dispatch(setTableItemsRedux(updatedItems));
             setFormData(prev => {
@@ -472,7 +478,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 setSelectedVersion({ ...selectVersion, items: updatedItems });
             }
         }
-        setPricingReady(true);
+    // readiness handled by centralized effect
     }, [userMultiplierFetched, manuMultiplierFetched, userGroupMultiplier, manufacturerCostMultiplier, tableItems, dispatch, selectVersion?.versionName, setSelectedVersion, setFormData]);
 
     // console.log('tableItems', tableItems);
@@ -588,7 +594,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
         } catch (error) {
             // Error calculating totals
         }
-    }, [versionItems, customItems, totalModificationsCost, isAssembled, discountPercent, defaultTaxValue, selectVersion?.versionName, selectVersion?.selectedStyle, userGroupMultiplier]);
+    }, [versionItems, customItems, totalModificationsCost, isAssembled, discountPercent, defaultTaxValue, selectVersion?.versionName, selectVersion?.selectedStyle, userGroupMultiplier, showroomActive, showroomMultiplier, selectVersion?.manufacturerData?.deliveryFee]);
 
     useEffect(() => {
         updateManufacturerData();

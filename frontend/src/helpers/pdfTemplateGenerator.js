@@ -16,7 +16,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
 
     // Construct logo URL consistently
     const api_url = import.meta.env.VITE_API_URL;
-    const logoUrl = headerLogo 
+    const logoUrl = headerLogo
         ? `${api_url}/uploads/manufacturer_catalogs/${headerLogo}`
         : null;
 
@@ -74,7 +74,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             'total': t('proposalColumns.total')
         };
 
-        return values.selectedColumns.map(col => 
+        return values.selectedColumns.map(col =>
             `<th style="border: 1px solid #ccc; padding: 5px;">${columnMap[col] || col}</th>`
         ).join('');
     };
@@ -98,7 +98,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             }).join('');
 
             const itemRow = `<tr>${cells}</tr>`;
-            
+
             // Add modifications if they exist
             const modRows = item.modifications && item.modifications.length > 0
                 ? `
@@ -112,9 +112,9 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
                             case 'no': return `<td style="border: 1px solid #ccc; padding: 5px;">-</td>`;
                             case 'qty': return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.qty || ''}</td>`;
                             case 'item': return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.name || ''}</td>`;
-                            case 'assembled': 
-                            case 'hingeSide': 
-                            case 'exposedSide': 
+                            case 'assembled':
+                            case 'hingeSide':
+                            case 'exposedSide':
                             case 'assemblyCost': return `<td style="border: 1px solid #ccc; padding: 5px;"></td>`;
                             case 'price': return `<td style="border: 1px solid #ccc; padding: 5px;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>`;
                             case 'total': return `<td style="border: 1px solid #ccc; padding: 5px;">$${modTotal.toFixed(2)}</td>`;
@@ -125,7 +125,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
                 }).join('')}
                 `
                 : '';
-            
+
             return itemRow + modRows;
         }).join('');
     };
@@ -141,13 +141,13 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             margin: 20mm;
             size: A4;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
             font-size: 12px;
@@ -253,7 +253,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
         .category-row {
             background-color: #e6e6e6 !important;
             font-weight: bold;
-        }   
+        }
 
         .text-right {
             text-align: right;
@@ -319,7 +319,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
+
             .page-break {
                 page-break-before: always;
             }
@@ -330,8 +330,8 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
     <!-- Header Section -->
     <div class="header">
         <div>
-            ${logoUrl ? 
-                `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">` : 
+            ${logoUrl ?
+                `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">` :
                 `<div class="company-name">${companyName || t('proposalDoc.fallbackCompanyName')}</div>`
             }
         </div>
@@ -387,7 +387,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             ${generateTableRows()}
         </tbody>
     </table>
-    
+
     <!-- Price Summary -->
     <div class="price-summary">
         <table>
