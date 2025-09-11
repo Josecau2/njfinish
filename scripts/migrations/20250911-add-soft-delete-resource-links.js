@@ -16,7 +16,14 @@ module.exports = {
     if (await hasTable('resource_links')) {
       if (!(await hasColumn('resource_links','is_deleted'))) {
         try {
-          await sequelize.query("ALTER TABLE resource_links ADD COLUMN is_deleted TINYINT(1) NOT NULL DEFAULT 0 AFTER visible_to_group_ids");
+          // Determine safest placement: prefer AFTER visible_to_group_ids if it exists, else after visible_to_group_types, else no ordering
+          let positionClause = '';
+          if (await hasColumn('resource_links','visible_to_group_ids')) {
+            positionClause = ' AFTER visible_to_group_ids';
+          } else if (await hasColumn('resource_links','visible_to_group_types')) {
+            positionClause = ' AFTER visible_to_group_types';
+          } // else leave blank to append at end
+          await sequelize.query(`ALTER TABLE resource_links ADD COLUMN is_deleted TINYINT(1) NOT NULL DEFAULT 0${positionClause}`);
           console.log('[MIGRATE] Added is_deleted to resource_links');
         } catch(e){ if(!/Duplicate column/.test(e.message)) throw e; }
       }
@@ -27,7 +34,13 @@ module.exports = {
     if (await hasTable('resource_files')) {
       if (!(await hasColumn('resource_files','is_deleted'))) {
         try {
-          await sequelize.query("ALTER TABLE resource_files ADD COLUMN is_deleted TINYINT(1) NOT NULL DEFAULT 0 AFTER mime_type");
+          let positionClause = '';
+            if (await hasColumn('resource_files','mime_type')) {
+              positionClause = ' AFTER mime_type';
+            } else if (await hasColumn('resource_files','file_type')) {
+              positionClause = ' AFTER file_type';
+            }
+          await sequelize.query(`ALTER TABLE resource_files ADD COLUMN is_deleted TINYINT(1) NOT NULL DEFAULT 0${positionClause}`);
           console.log('[MIGRATE] Added is_deleted to resource_files (backfill)');
         } catch(e){ if(!/Duplicate column/.test(e.message)) throw e; }
       }
