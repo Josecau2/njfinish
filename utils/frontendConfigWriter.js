@@ -69,6 +69,10 @@ const cleanupDefaultFavicon = (customLogoPath) => {
 const FRONTEND_CONFIG_PATH = path.join(__dirname, '../frontend/src/config/customization.js')
 const FRONTEND_ASSETS_PATH = path.join(__dirname, '../frontend/public/assets/customization')
 const BUILD_ASSETS_PATH = path.join(__dirname, '../build/assets/customization')
+const RUNTIME_FILE_PUBLIC = path.join(FRONTEND_ASSETS_PATH, 'runtime-customization.js')
+const RUNTIME_FILE_BUILD = path.join(BUILD_ASSETS_PATH, 'runtime-customization.js')
+const FALLBACK_ICON_PUBLIC = path.join(__dirname, '../frontend/public/assets/fallback-icon.svg')
+const FALLBACK_ICON_BUILD = path.join(__dirname, '../build/assets/fallback-icon.svg')
 
 /**
  * Ensures the assets directories exist
@@ -81,6 +85,22 @@ const ensureAssetsDirectory = () => {
   if (!fs.existsSync(BUILD_ASSETS_PATH)) {
     fs.mkdirSync(BUILD_ASSETS_PATH, { recursive: true })
     console.log('📁 Created build assets directory:', BUILD_ASSETS_PATH)
+  }
+  // Ensure fallback icon exists (lightweight inline SVG)
+  const fallbackSvg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <rect width="192" height="192" rx="24" fill="#0e1446"/>\n  <path d="M52 128L76 64H92L116 128H100L94 112H74L68 128H52ZM78.6 100H89.4L84 84.2L78.6 100Z" fill="#0dcaf0"/>\n  <circle cx="148" cy="44" r="20" fill="#0dcaf0" stroke="white" stroke-width="4"/>\n</svg>`
+  try {
+    if (!fs.existsSync(FALLBACK_ICON_PUBLIC)) {
+      fs.writeFileSync(FALLBACK_ICON_PUBLIC, fallbackSvg, 'utf8')
+      console.log('🛡️  Created fallback icon (public)')
+    }
+    if (!fs.existsSync(FALLBACK_ICON_BUILD)) {
+      // copy or write
+      fs.mkdirSync(path.dirname(FALLBACK_ICON_BUILD), { recursive: true })
+      fs.writeFileSync(FALLBACK_ICON_BUILD, fallbackSvg, 'utf8')
+      console.log('🛡️  Created fallback icon (build)')
+    }
+  } catch (e) {
+    console.warn('⚠️  Could not ensure fallback icon:', e.message)
   }
 }
 
@@ -147,6 +167,21 @@ export default EMBEDDED_CUSTOMIZATION`
 }
 
 /**
+ * Generates an out-of-bundle runtime customization JS file so production
+ * can update branding instantly without a full frontend rebuild.
+ */
+const generateRuntimeFile = (customizationData) => {
+  try {
+    const content = `// Auto-generated at ${new Date().toISOString()}\nwindow.RUNTIME_CUSTOMIZATION = ${JSON.stringify(customizationData)};\nwindow.RUNTIME_CUSTOMIZATION_VERSION = '${Date.now()}';\n`;
+    fs.writeFileSync(RUNTIME_FILE_PUBLIC, content, 'utf8')
+    fs.writeFileSync(RUNTIME_FILE_BUILD, content, 'utf8')
+    console.log('⚡ runtime-customization.js updated (public & build)')
+  } catch (e) {
+    console.warn('⚠️  Failed writing runtime customization file:', e.message)
+  }
+}
+
+/**
  * Main function to update frontend customization
  * @param {Object} uiCustomization - UI customization data (colors, logo, text)
  * @param {Object} loginCustomization - Login page customization data
@@ -208,6 +243,8 @@ const updateFrontendCustomization = async (uiCustomization = {}, loginCustomizat
 
     // Generate the config file
     generateConfigFile(combinedCustomization)
+  // Generate runtime JS (instant update without rebuild)
+  generateRuntimeFile(combinedCustomization)
 
     console.log('🎉 Frontend customization update complete!')
     return combinedCustomization
@@ -247,4 +284,5 @@ module.exports = {
   FRONTEND_CONFIG_PATH,
   FRONTEND_ASSETS_PATH,
   BUILD_ASSETS_PATH
+  , RUNTIME_FILE_PUBLIC, RUNTIME_FILE_BUILD
 }

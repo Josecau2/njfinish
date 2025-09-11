@@ -17,9 +17,15 @@ const AppInitializer = ({ children }) => {
 
   // Load embedded customization immediately on mount
   useEffect(() => {
-    // 🚀 INSTANT LOAD: Load embedded customization synchronously
-    dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
-    console.log('✅ Embedded customization loaded instantly:', EMBEDDED_CUSTOMIZATION)
+    // Prefer runtime customization if injected (hot updates without rebuild)
+    const runtime = (typeof window !== 'undefined' && window.RUNTIME_CUSTOMIZATION) ? window.RUNTIME_CUSTOMIZATION : null
+    if (runtime) {
+      dispatch(setCustomization(runtime))
+      console.log('⚡ Runtime customization applied:', runtime)
+    } else {
+      dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
+      console.log('✅ Embedded customization loaded:', EMBEDDED_CUSTOMIZATION)
+    }
   }, [dispatch])
 
   // Ensure sidebar state is correct when app initializes after login
