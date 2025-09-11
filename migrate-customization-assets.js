@@ -4,12 +4,13 @@ const path = require('path')
 /**
  * Migration script to copy existing customization assets to build directory
  * This ensures persistence across Docker rebuilds for existing installations
+ * Runs automatically during Docker container startup
  */
 const migrateCustomizationAssets = () => {
   console.log('🔄 Migrating existing customization assets to build directory...')
 
-  const frontendAssetsPath = path.join(__dirname, '../frontend/public/assets/customization')
-  const buildAssetsPath = path.join(__dirname, '../build/assets/customization')
+  const frontendAssetsPath = path.join(__dirname, 'frontend/public/assets/customization')
+  const buildAssetsPath = path.join(__dirname, 'build/assets/customization')
 
   // Ensure build assets directory exists
   if (!fs.existsSync(buildAssetsPath)) {

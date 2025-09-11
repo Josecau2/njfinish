@@ -51,6 +51,15 @@ class AppStartupHandler {
 
             console.log('🔧 Running initial production setup...');
 
+            // Run customization assets migration first
+            try {
+                const { migrateCustomizationAssets } = require('./migrate-customization-assets');
+                await migrateCustomizationAssets();
+            } catch (error) {
+                console.warn('⚠️ Customization assets migration failed:', error.message);
+                // Don't fail startup for this
+            }
+
             // Import and run production setup
             const { ProductionSetup } = require('./setup-production');
             const setup = new ProductionSetup();
