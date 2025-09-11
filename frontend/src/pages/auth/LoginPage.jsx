@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
 import { installTokenEverywhere } from '../../utils/authToken';
+import { EMBEDDED_CUSTOMIZATION } from '../../config/customization';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,8 @@ const LoginPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
-  const [customization, setCustomization] = useState(null);
+  // 🚀 INSTANT LOAD: Initialize with embedded customization directly (no flickering!)
+  const [customization] = useState(EMBEDDED_CUSTOMIZATION);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -25,21 +27,9 @@ const LoginPage = () => {
   const [noticeMessage, setNoticeMessage] = useState('');
 
   useEffect(() => {
-    const fetchCustomization = async () => {
-      try {
-        const res = await axios.get(`${api_url}/api/login-customization`);
-        if (res.data.customization) {
-          setCustomization(res.data.customization);
-        }
-      } catch (err) {
-        console.error('Failed to load customization settings:', err);
-      }
-    };
-
     // Force light mode on login page
     localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
-
-    fetchCustomization();
+    console.log('✅ Embedded login customization loaded instantly:', EMBEDDED_CUSTOMIZATION);
   }, []);
 
   // Detect redirect reasons (e.g., session expired) and show a banner
@@ -112,17 +102,18 @@ const LoginPage = () => {
     }
   };
 
-  const settings = customization || {
-    logo: "",
-  title: t('auth.signIn'),
-  subtitle: t('auth.enterCredentials'),
-    backgroundColor: "#0e1446",
-    showForgotPassword: true,
-    showKeepLoggedIn: true,
-  rightTitle: t('common.appName'),
-  rightSubtitle: t('auth.rightSubtitle'),
-  rightTagline: t('common.dealerPortal'),
-  rightDescription: t('auth.rightDescription'),
+  const settings = {
+    // Use embedded customization directly (no fallbacks needed since it's guaranteed to exist)
+    logo: customization.loginLogo,
+    title: customization.loginTitle,
+    subtitle: customization.loginSubtitle,
+    backgroundColor: customization.loginBackgroundColor,
+    showForgotPassword: customization.showForgotPassword,
+    showKeepLoggedIn: customization.showKeepLoggedIn,
+    rightTitle: customization.rightTitle,
+    rightSubtitle: customization.rightSubtitle,
+    rightTagline: customization.rightTagline,
+    rightDescription: customization.rightDescription,
   };
 
   // Compute optimal text colors for the right panel based on background
@@ -145,7 +136,7 @@ const LoginPage = () => {
       {/* Right Panel - Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
-          {settings.logo && (
+          {settings.logo && settings.logo.trim() && (
             <div className="text-center mb-4">
               <img src={settings.logo} alt="Logo" style={{ height: 50 }} />
             </div>

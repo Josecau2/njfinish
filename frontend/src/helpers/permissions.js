@@ -14,7 +14,7 @@ export const USER_ROLES = {
 // Available modules for contractors
 export const CONTRACTOR_MODULES = {
   proposals: 'proposals',
-  customers: 'customers', 
+  customers: 'customers',
   resources: 'resources',
   calendar: 'calendar'
 };
@@ -55,7 +55,7 @@ export const PERMISSIONS = {
   'resources:create': ['admin', 'super_admin'],
   'resources:update': ['admin', 'super_admin'],
   'resources:delete': ['admin', 'super_admin'],
-  
+
   // Manufacturer permissions
   'manufacturers:read': ['sales', 'manager', 'admin', 'super_admin'], // Everyone can read manufacturer catalog data
   'manufacturers:create': ['admin', 'super_admin'],
@@ -71,12 +71,12 @@ export const PERMISSIONS = {
  */
 export const hasPermission = (user, permission) => {
   if (!user) return false;
-  
+
   // ADMIN USERS HAVE ACCESS TO EVERYTHING - NO RESTRICTIONS
   if (isAdmin(user)) {
     return true;
   }
-  
+
   // First check if user is a contractor by group_type (most reliable)
   const isContractorByGroup = user.group && user.group.group_type === 'contractor';
   const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role;
@@ -84,7 +84,7 @@ export const hasPermission = (user, permission) => {
   // Handle contractor permissions FIRST (before checking empty role)
   if (isContractorByGroup) {
     let userModules = user.group.modules || {};
-    
+
     // Handle modules that might be stored as strings
     if (typeof userModules === 'string') {
       try {
@@ -94,31 +94,31 @@ export const hasPermission = (user, permission) => {
         return false;
       }
     }
-    
+
     // Explicit contractor permissions - grant ALL operations for enabled modules
     if (userModules.proposals === true && [
       'proposals:read', 'proposals:create', 'proposals:update', 'proposals:status_change'
     ].includes(permission)) {
       return true;
     }
-    
+
     if (userModules.customers === true && [
-      'customers:read', 'customers:create', 'customers:update'
+      'customers:read', 'customers:create', 'customers:update', 'customers:delete'
     ].includes(permission)) {
       return true;
     }
-    
+
     if (userModules.resources === true && [
       'resources:read', 'resources:create', 'resources:update'
     ].includes(permission)) {
       return true;
     }
-    
+
     // All contractors can read manufacturer catalog data
     if (permission === 'manufacturers:read') {
       return true;
     }
-    
+
     // Fallback: check if permission starts with module name
     if (permission.startsWith('customers:') && userModules.customers === true) {
       return true;
@@ -147,7 +147,7 @@ export const hasPermission = (user, permission) => {
  */
 export const isContractor = (user) => {
   // Check both role and group_type to handle cases where role might be empty
-  return user && ((user.role && user.role.toLowerCase() === 'contractor') || 
+  return user && ((user.role && user.role.toLowerCase() === 'contractor') ||
                   (user.group && user.group.group_type === 'contractor'));
 };
 
@@ -169,9 +169,9 @@ export const isAdmin = (user) => {
  */
 export const getContractorModules = (user) => {
   if (!isContractor(user)) return [];
-  
+
   let modules = user.group?.modules || {};
-  
+
   // Handle modules that might be stored as strings
   if (typeof modules === 'string') {
     try {
@@ -181,7 +181,7 @@ export const getContractorModules = (user) => {
       return [];
     }
   }
-  
+
   // Convert object to array of enabled module names
   return Object.keys(modules).filter(key => modules[key] === true);
 };
@@ -195,7 +195,7 @@ export const getContractorModules = (user) => {
 export const hasModuleAccess = (user, module) => {
   // ADMIN USERS HAVE ACCESS TO ALL MODULES
   if (isAdmin(user)) return true;
-  
+
   if (!isContractor(user)) return false;
   return getContractorModules(user).includes(module);
 };
@@ -277,7 +277,7 @@ export const canPerformAction = (user, action, resource, item = null) => {
   // Map singular resources used in UI to plural keys used in PERMISSIONS
   const normalizedResource = resource && resource.endsWith('s') ? resource : `${resource}s`;
   const permission = `${normalizedResource}:${action}`;
-  
+
   // Check basic permission first
   if (!hasPermission(user, permission)) {
     return false;

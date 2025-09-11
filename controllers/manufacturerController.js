@@ -1411,10 +1411,16 @@ const fetchAssemblyCostsByTypes = async (req, res) => {
             }
         });
 
-        res.json(costsByType);
+        res.json({
+            success: true,
+            data: costsByType
+        });
     } catch (error) {
         console.error('Error fetching assembly costs by types:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
     }
 };
 
@@ -1501,9 +1507,9 @@ const getManufacturerTypes = async (req, res) => {
 
 const saveAssemblyCost = async (req, res) => {
     try {
-    const { catalogDataId, type, price, applyTo, manufacturerId, itemType } = req.body;
+    const { catalogDataId, type, price, applyTo, manufacturerId, itemType, selectedTypes } = req.body;
 
-        if (!catalogDataId || !type || !price) {
+        if (!catalogDataId || !type || price === null || price === undefined || price === '') {
             return res.status(400).json({ success: false, message: 'Missing required fields.' });
         }
 
@@ -1553,6 +1559,45 @@ const saveAssemblyCost = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: `Assembly cost applied to ${results.length} items of type "${itemType}".`,
+                data: results
+            });
+        }
+
+        if (applyTo === 'types') {
+            // Apply to all items with the selected types
+            if (!selectedTypes || !Array.isArray(selectedTypes) || selectedTypes.length === 0) {
+                return res.status(400).json({ success: false, message: 'Selected types array is required for multiple types application.' });
+            }
+
+            const catalogItems = await ManufacturerCatalogData.findAll({
+                where: {
+                    manufacturerId,
+                    type: { [Op.in]: selectedTypes }
+                },
+            });
+
+            const results = [];
+            for (const item of catalogItems) {
+                let cost = await ManufacturerAssemblyCost.findOne({
+                    where: { catalogDataId: item.id },
+                });
+
+                if (cost) {
+                    await cost.update({ type, price });
+                } else {
+                    cost = await ManufacturerAssemblyCost.create({
+                        catalogDataId: item.id,
+                        type,
+                        price
+                    });
+                }
+
+                results.push(cost);
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Assembly cost applied to ${results.length} items across ${selectedTypes.length} selected types.`,
                 data: results
             });
         }

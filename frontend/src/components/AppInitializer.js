@@ -4,12 +4,22 @@ import axiosInstance from '../helpers/axiosInstance'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
 import { CSpinner } from '@coreui/react'
+import { EMBEDDED_CUSTOMIZATION } from '../config/customization'
+import { getLogoUrl } from '../utils/logoUtils'
+import { getCacheBustingUrl, preloadLogo, clearLogoCache } from '../utils/cacheUtils'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false since embedded config loads instantly
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL
+
+  // Load embedded customization immediately on mount
+  useEffect(() => {
+    // 🚀 INSTANT LOAD: Load embedded customization synchronously
+    dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
+    console.log('✅ Embedded customization loaded instantly:', EMBEDDED_CUSTOMIZATION)
+  }, [dispatch])
 
   // Ensure sidebar state is correct when app initializes after login
   useEffect(() => {
@@ -33,27 +43,51 @@ const AppInitializer = ({ children }) => {
       }
     }
 
+    // 🗑️ CLEAN SLATE: Remove all existing favicon links first
+    const existingFavicons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+    existingFavicons.forEach(link => link.remove())
+
     // Update favicon if logo image is available
     if (customization.logoImage) {
-      const favicon = document.querySelector('link[rel="shortcut icon"]') || document.querySelector('link[rel="icon"]')
-      if (favicon) {
-        favicon.href = `${api_url}${customization.logoImage}`
-      } else {
-        // Create favicon if it doesn't exist
-        const newFavicon = document.createElement('link')
-        newFavicon.rel = 'shortcut icon'
-        newFavicon.href = `${api_url}${customization.logoImage}`
-        document.head.appendChild(newFavicon)
-      }
+      const logoUrl = getLogoUrl(customization.logoImage, api_url)
 
-      // Also create/update standard icon link
-      let iconLink = document.querySelector('link[rel="icon"]')
-      if (!iconLink) {
-        iconLink = document.createElement('link')
+      // Clear any cached logo data first
+      clearLogoCache()
+
+      // Add cache-busting parameter to ensure fresh load
+      const cacheBustUrl = getCacheBustingUrl(logoUrl)
+
+      console.log('🔄 Setting custom favicon:', cacheBustUrl)
+
+      // Preload the logo to avoid flickering, then set favicon
+      preloadLogo(logoUrl).then(() => {
+        // Create new favicon with cache busting
+        const favicon = document.createElement('link')
+        favicon.rel = 'shortcut icon'
+        favicon.type = 'image/png'
+        favicon.href = cacheBustUrl
+        document.head.appendChild(favicon)
+
+        // Also create standard icon link
+        const iconLink = document.createElement('link')
         iconLink.rel = 'icon'
+        iconLink.type = 'image/png'
+        iconLink.href = cacheBustUrl
         document.head.appendChild(iconLink)
-      }
-      iconLink.href = `${api_url}${customization.logoImage}`
+
+        console.log('✅ Custom logo set as favicon after preload')
+      }).catch(() => {
+        console.warn('⚠️ Logo preload failed, setting favicon anyway')
+        // Set favicon even if preload fails
+        const favicon = document.createElement('link')
+        favicon.rel = 'shortcut icon'
+        favicon.type = 'image/png'
+        favicon.href = cacheBustUrl
+        document.head.appendChild(favicon)
+      })
+    } else {
+      // If no custom logo, explicitly remove favicons (don't fallback to default)
+      console.log('🚫 No custom logo - removing all favicons')
     }
   }, [customization.logoText, customization.logoImage, api_url])
 
@@ -79,39 +113,27 @@ const AppInitializer = ({ children }) => {
 
 
 
+  // Optional: Background sync with server for development validation
   useEffect(() => {
-    const fetchCustomization = async () => {
-      try {
-        const res = await axiosInstance.get('/api/settings/customization')
+    const backgroundSync = async () => {
+      if (process.env.NODE_ENV === 'development') {
+        try {
+          const res = await axiosInstance.get('/api/settings/customization')
+          const serverLastUpdated = res.data?.updatedAt
+          const embeddedLastUpdated = EMBEDDED_CUSTOMIZATION.lastUpdated
 
-        if (res.data && Object.keys(res.data).length > 0) {
-          dispatch(setCustomization(res.data))
-        } else {
-          dispatch(setCustomization({
-            headerBg: '#ffffff',
-            headerFontColor: '#333333',
-            sidebarBg: '#212631',
-            sidebarFontColor: '#ffffff',
-            logoText: 'NJ Cabinets',
-            logoImage: null,
-          }))
+          if (serverLastUpdated && embeddedLastUpdated &&
+              new Date(serverLastUpdated) > new Date(embeddedLastUpdated)) {
+            console.warn('⚠️  Server customization is newer than embedded config. Consider rebuilding frontend.')
+          }
+        } catch (syncError) {
+          console.log('ℹ️  Background sync failed (this is normal):', syncError.message)
         }
-      } catch (err) {
-        console.error('Customization load error:', err)
-        dispatch(setCustomization({
-          headerBg: '#ffffff',
-          headerFontColor: '#333333',
-          sidebarBg: '#212631',
-          sidebarFontColor: '#ffffff',
-          logoText: 'NJ Cabinets',
-          logoImage: null,
-        }))
-      } finally {
-        setLoading(false)
       }
     }
 
-    fetchCustomization()
+    // Run background sync after a delay to not block initial render
+    setTimeout(backgroundSync, 1000)
   }, [dispatch])
 
   if (loading) {

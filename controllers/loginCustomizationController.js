@@ -1,5 +1,7 @@
 // controllers/loginCustomizationController.js
 const LoginCustomization = require('../models/LoginCustomization');
+const { updateFrontendCustomization } = require('../utils/frontendConfigWriter');
+const Customization = require('../models/Customization');
 
 exports.saveCustomization = async (req, res) => {
   try {
@@ -11,6 +13,22 @@ exports.saveCustomization = async (req, res) => {
       await customization.update(data);
     } else {
       customization = await LoginCustomization.create(data);
+    }
+
+    // Get UI customization for combined frontend config
+    const uiCustomization = await Customization.findOne();
+
+    // Update frontend configuration immediately
+    try {
+      await updateFrontendCustomization(
+        uiCustomization?.dataValues || {},
+        customization.dataValues,
+        { login: null } // Login logo handling would be added here if needed
+      );
+      console.log('✅ Frontend login customization updated successfully');
+    } catch (frontendError) {
+      console.error('❌ Frontend customization update failed:', frontendError);
+      // Don't fail the main request, but log the error
     }
 
     return res.status(200).json({ message: 'Customization saved successfully', customization });

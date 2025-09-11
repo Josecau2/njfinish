@@ -26,6 +26,8 @@
     "db:migrate:status": "node scripts/migrate.js status",
     "db:migrate:list": "node scripts/list-migrations.js",
     "db:migrate:check": "node scripts/check-migrations.js",
+  "db:migrate:docker": "node scripts/docker-migrate.js up",
+  "db:migrate:docker:status": "node scripts/docker-migrate.js status",
     "setup:production": "npm run build:backend && node check-production-setup.js && node setup-production.js && node verify-production-images.js",
     "verify:production": "node verify-production-images.js",
     "check:production": "node check-production-setup.js",

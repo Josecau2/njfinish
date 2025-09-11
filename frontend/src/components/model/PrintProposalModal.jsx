@@ -253,13 +253,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     // PDF generation should use original prices without showroom multiplier
     const priceSummary = formData?.manufacturersData?.[0]?.items?.length
         ? {
-            cabinets: summary.cabinets || 0,
-            assemblyFee: summary.assemblyFee || 0,
-            modifications: summary.modificationsCost || 0,
-            styleTotal: summary.styleTotal || 0,
-            total: summary.total || 0,
-            tax: summary.taxAmount || 0,
-            grandTotal: summary.grandTotal || 0,
+            cabinets: Number(summary.cabinets) || 0,
+            assemblyFee: Number(summary.assemblyFee) || 0,
+            modifications: Number(summary.modificationsCost) || 0,
+            styleTotal: Number(summary.styleTotal) || 0,
+            total: Number(summary.total) || 0,
+            tax: Number(summary.taxAmount) || 0,
+            grandTotal: Number(summary.grandTotal) || 0,
         }
         : {
             cabinets: 0,
@@ -292,6 +292,12 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
     // Generate HTML template
     const generateHTMLTemplate = (values) => {
+        // Helper function to safely format numbers
+        const safeToFixed = (value, decimals = 2) => {
+            const num = Number(value);
+            return isNaN(num) ? '0.00' : num.toFixed(decimals);
+        };
+
         const logoUrl = headerLogo ? `${api_url}${headerLogo}` : null;
         const customerName = formData?.customerName || formData?.customer?.name || '';
         const designerName = formData?.designerData?.name || '';
@@ -375,9 +381,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     case 'assembled': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.assembled}</td>`;
                     case 'hingeSide': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide)}</td>`;
                     case 'exposedSide': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide)}</td>`;
-                    case 'price': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.price.toFixed(2)}</td>`;
-                    case 'assemblyCost': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.assemblyCost.toFixed(2)}</td>`;
-                    case 'total': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${item.total.toFixed(2)}</td>`;
+                    case 'price': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.price)}</td>`;
+                    case 'assemblyCost': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.assemblyCost)}</td>`;
+                    case 'total': return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.total)}</td>`;
                     default: return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>`;
                 }
             }).join('');
@@ -402,9 +408,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             case 'assembled': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
                             case 'hingeSide': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
                             case 'exposedSide': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
-                            case 'price': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>`;
+                            case 'price': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${safeToFixed(parseFloat(mod.price) || 0)}</td>`;
                             case 'assemblyCost': return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
-                            case 'total': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${modTotal.toFixed(2)}</td>`;
+                            case 'total': return `<td style="border: 1px solid #dee2e6; padding:0.75rem; text-align:right;">$${safeToFixed(modTotal)}</td>`;
                             default: return `<td style="border: 1px solid #dee2e6; padding:0.75rem;"></td>`;
                         }
                     }).join('');
@@ -795,31 +801,31 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             <table>
                 <tr>
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.cabinets')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.cabinets.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.cabinets)}</strong></td>
                 </tr>
                 <tr>
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.assembly')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.assemblyFee.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.assemblyFee)}</strong></td>
                 </tr>
                 <tr>
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.modifications')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.modifications.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.modifications)}</strong></td>
                 </tr>
                 <tr class="total-row">
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.styleTotal')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.styleTotal.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.styleTotal)}</strong></td>
                 </tr>
                 <tr>
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.total')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.total.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.total)}</strong></td>
                 </tr>
                 <tr class="total-row">
                     <td class="text-left"><strong>${t('proposalDoc.priceSummary.tax')}</strong></td>
-                    <td class="text-right"><strong>$${priceSummary.tax.toFixed(2)}</strong></td>
+                    <td class="text-right"><strong>$${safeToFixed(priceSummary.tax)}</strong></td>
                 </tr>
                 <tr class="grand-total">
                     <td class="text-left">${t('proposalDoc.priceSummary.grandTotal')}</td>
-                    <td class="text-right">$${priceSummary.grandTotal.toFixed(2)}</td>
+                    <td class="text-right">$${safeToFixed(priceSummary.grandTotal)}</td>
                 </tr>
             </table>
         </div>
@@ -844,7 +850,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     <td>${item.itemName || ''}</td>
                     <td>${item.quantity || 0}</td>
                     <td>$${item.unitPrice || 0}</td>
-                    <td>$${(item.unitPrice * item.quantity).toFixed(2)}</td>
+                    <td>$${safeToFixed(item.unitPrice * item.quantity)}</td>
                 </tr>
                 `).join('')}
             </tbody>

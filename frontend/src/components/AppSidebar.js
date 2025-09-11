@@ -19,6 +19,7 @@ import { setSidebarShow, setSidebarUnfoldable, setSidebarPinned } from '../store
 import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs'
 import { isAdmin } from '../helpers/permissions'
 import ShowroomModeToggle from './showroom/ShowroomModeToggle'
+import { getLogoUrl } from '../utils/logoUtils'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -30,6 +31,19 @@ const AppSidebar = () => {
   const authUser = useSelector((state) => state.auth?.user)
   const api_url = import.meta.env.VITE_API_URL;
   const sidebarRef = useRef(null)
+
+  // Debug logo URL generation
+  useEffect(() => {
+    if (customization.logoImage) {
+      const logoUrl = getLogoUrl(customization.logoImage, api_url)
+      console.log('🖼️ Sidebar logo debug:', {
+        logoImagePath: customization.logoImage,
+        apiUrl: api_url,
+        generatedUrl: logoUrl,
+        isEmbedded: customization.logoImage.startsWith('/assets/')
+      })
+    }
+  }, [customization.logoImage, api_url])
 
   // Get user data for admin check
   const user = authUser || (() => {
@@ -305,7 +319,7 @@ const AppSidebar = () => {
               <>
                 {/* Full sidebar logo - visible when expanded */}
                 <img
-                  src={`${api_url}${customization.logoImage}`}
+                  src={getLogoUrl(customization.logoImage, api_url)}
                   alt="Logo"
                   className="sidebar-brand-full"
                   style={{
@@ -313,10 +327,12 @@ const AppSidebar = () => {
                     maxWidth: 160,
                     objectFit: 'contain',
                   }}
+                  onLoad={() => console.log('✅ Logo loaded successfully:', getLogoUrl(customization.logoImage, api_url))}
+                  onError={(e) => console.error('❌ Logo failed to load:', getLogoUrl(customization.logoImage, api_url), e)}
                 />
                 {/* Collapsed sidebar logo - visible when collapsed */}
                 <img
-                  src={`${api_url}${customization.logoImage}`}
+                  src={getLogoUrl(customization.logoImage, api_url)}
                   alt="Logo"
                   className="sidebar-brand-narrow"
                   style={{
@@ -324,6 +340,8 @@ const AppSidebar = () => {
                     maxWidth: 28,
                     objectFit: 'contain',
                   }}
+                  onLoad={() => console.log('✅ Narrow logo loaded successfully:', getLogoUrl(customization.logoImage, api_url))}
+                  onError={(e) => console.error('❌ Narrow logo failed to load:', getLogoUrl(customization.logoImage, api_url), e)}
                 />
               </>
             ) : (

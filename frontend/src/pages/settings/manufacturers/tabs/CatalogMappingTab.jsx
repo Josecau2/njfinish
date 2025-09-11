@@ -97,6 +97,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const currentItems = filteredCatalogData;
 
   const [showAssemblyModal, setShowAssemblyModal] = useState(false);
+  const [isAssemblyCostSaving, setIsAssemblyCostSaving] = useState(false);
   const [showHingesModal, setShowHingesModal] = useState(false);
   const [showModificationModal, setShowModificationModal] = useState(false);
   // Main Modification Management Modal
@@ -1994,15 +1995,24 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   // };
 
   const saveAssemblyCost = async () => {
+    if (isAssemblyCostSaving) return; // Prevent multiple submissions
+
     try {
+      setIsAssemblyCostSaving(true);
+
       // Validation
       if (assemblyData.applyTo === 'type' && !assemblyData.selectedItemType) {
-        alert('Please select an item type when applying by type.');
+        Swal.fire('Validation Error', 'Please select an item type when applying by type.', 'warning');
         return;
       }
 
       if (assemblyData.applyTo === 'types' && assemblyData.selectedTypes.length === 0) {
-        alert('Please select at least one item type when applying by types.');
+        Swal.fire('Validation Error', 'Please select at least one item type when applying by types.', 'warning');
+        return;
+      }
+
+      if (!assemblyData.type || assemblyData.price === '' || assemblyData.price === null || assemblyData.price === undefined) {
+        Swal.fire('Validation Error', 'Please fill in both Type and Price fields.', 'warning');
         return;
       }
 
@@ -2025,12 +2035,43 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       }
 
       await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
+
+      // Refresh the assembly costs data to show updated badges
+      await fetchAssemblyCostsByTypes();
+
+      // Close modal and show success message
       setShowAssemblyModal(false);
+
+      // Show success message based on application scope
+      const price = parseFloat(assemblyData.price) || 0;
+      const priceText = price === 0 ? 'No assembly cost (0$)' : `$${price.toFixed(2)} assembly cost`;
+      let successMessage = '';
+      switch (assemblyData.applyTo) {
+        case 'one':
+          successMessage = `${priceText} applied to item "${selectedCatalogItem.code}"`;
+          break;
+        case 'type':
+          successMessage = `${priceText} applied to all items of type "${assemblyData.selectedItemType}"`;
+          break;
+        case 'types':
+          successMessage = `${priceText} applied to ${assemblyData.selectedTypes.length} selected types`;
+          break;
+        case 'all':
+          successMessage = `${priceText} applied to all items`;
+          break;
+        default:
+          successMessage = 'Assembly cost saved successfully';
+      }
+
+      Swal.fire('Success', successMessage, 'success');
 
       // Refresh the catalog data to show updated assembly costs
       fetchCatalogData();
     } catch (error) {
       console.error('Failed to save assembly cost:', error);
+      Swal.fire('Error', 'Failed to save assembly cost. Please try again.', 'error');
+    } finally {
+      setIsAssemblyCostSaving(false);
     }
   };
 
@@ -3479,13 +3520,38 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
 
-      <CModal visible={showAssemblyModal} onClose={() => setShowAssemblyModal(false)}>
+      <CModal visible={showAssemblyModal} onClose={() => !isAssemblyCostSaving && setShowAssemblyModal(false)}>
         <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
-        <CModalBody>
+        <CModalBody style={{ position: 'relative' }}>
+          {isAssemblyCostSaving && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                borderRadius: '8px'
+              }}
+            >
+              <div className="text-center">
+                <div className="spinner-border text-primary mb-2" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <div>Applying assembly cost...</div>
+              </div>
+            </div>
+          )}
           <CFormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</CFormLabel>
           <CFormSelect
             value={assemblyData.type}
             onChange={(e) => setAssemblyData({ ...assemblyData, type: e.target.value })}
+            disabled={isAssemblyCostSaving}
           >
             <option value="">{t('settings.manufacturers.catalogMapping.assembly.selectType')}</option>
             <option value="percentage">{t('settings.manufacturers.catalogMapping.assembly.percentage')}</option>
@@ -3495,15 +3561,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.price')}</CFormLabel>
           <CFormInput
             type="number"
+            min="0"
+            step="0.01"
             value={assemblyData.price}
             onChange={(e) => setAssemblyData({ ...assemblyData, price: e.target.value })}
-            placeholder={t('settings.manufacturers.catalogMapping.placeholders.price')}
+            placeholder="Enter price (0 for no assembly cost)"
+            disabled={isAssemblyCostSaving}
           />
 
           <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.applyTo')}</CFormLabel>
           <CFormSelect
             value={assemblyData.applyTo}
             onChange={(e) => setAssemblyData({ ...assemblyData, applyTo: e.target.value })}
+            disabled={isAssemblyCostSaving}
           >
             <option value="one">{t('settings.manufacturers.catalogMapping.assembly.applyOne')}</option>
             <option value="type">{t('settings.manufacturers.catalogMapping.assembly.applyType')}</option>
@@ -3511,20 +3581,79 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
           </CFormSelect>
 
+          {assemblyData.applyTo === 'one' && selectedCatalogItem && selectedCatalogItem.type && assemblyCostsByType[selectedCatalogItem.type]?.assemblyCosts?.length > 0 && (
+            <div className="mt-3 p-3 bg-light rounded">
+              <small className="fw-bold text-muted">Existing Assembly Costs for "{selectedCatalogItem.code}" ({selectedCatalogItem.type}):</small>
+              <div className="mt-2">
+                {assemblyCostsByType[selectedCatalogItem.type].assemblyCosts.map((cost, idx) => (
+                  <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} me-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
+                    {cost.assemblyType}: ${cost.price.toFixed(2)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
+            <div className="mt-3 p-3 bg-light rounded">
+              <small className="fw-bold text-muted">Existing Assembly Costs by Type:</small>
+              <div className="mt-2">
+                {availableTypes.map((typeItem) => {
+                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
+                  if (typeAssemblyCosts.length === 0) return null;
+
+                  return (
+                    <div key={typeItem.type} className="d-flex justify-content-between align-items-center mb-1">
+                      <small className="text-muted">{typeItem.type}:</small>
+                      <div>
+                        {typeAssemblyCosts.map((cost, idx) => (
+                          <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
+                            ${cost.price.toFixed(2)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {assemblyData.applyTo === 'type' && (
             <>
               <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.selectItemType')}</CFormLabel>
-              <CFormSelect
-                value={assemblyData.selectedItemType}
-                onChange={(e) => setAssemblyData({ ...assemblyData, selectedItemType: e.target.value })}
-              >
-                <option value="">{t('settings.manufacturers.catalogMapping.assembly.chooseType')}</option>
-                {availableTypes.map((typeItem) => (
-                  <option key={typeItem.type} value={typeItem.type}>
-                    {typeItem.type} ({typeItem.count} items)
-                  </option>
-                ))}
-              </CFormSelect>
+              <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                {availableTypes.map((typeItem) => {
+                  const isSelected = assemblyData.selectedItemType === typeItem.type;
+                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
+
+                  return (
+                    <div key={typeItem.type} className="form-check mb-2">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="singleTypeSelection"
+                        id={`single-type-${typeItem.type}`}
+                        checked={isSelected}
+                        onChange={() => setAssemblyData({ ...assemblyData, selectedItemType: typeItem.type })}
+                      />
+                      <label className="form-check-label d-flex justify-content-between align-items-center w-100" htmlFor={`single-type-${typeItem.type}`}>
+                        <div>
+                          <div className="fw-bold">{typeItem.type}</div>
+                          <small className="text-muted">{typeItem.count} items</small>
+                        </div>
+                        <div>
+                          {typeAssemblyCosts.map((cost, idx) => (
+                            <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
+                              ${cost.price.toFixed(2)}
+                            </span>
+                          ))}
+                        </div>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           )}
 
@@ -3564,7 +3693,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </div>
                         <div>
                           {typeAssemblyCosts.map((cost, idx) => (
-                            <span key={idx} className="badge bg-info ms-1" title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
+                            <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
                               ${cost.price.toFixed(2)}
                             </span>
                           ))}
@@ -3611,11 +3740,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CModalBody>
 
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowAssemblyModal(false)}>
+          <CButton
+            color="secondary"
+            onClick={() => setShowAssemblyModal(false)}
+            disabled={isAssemblyCostSaving}
+          >
             {t('common.cancel')}
           </CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveAssemblyCost}>
-            {t('common.save')}
+          <CButton
+            style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+            onClick={saveAssemblyCost}
+            disabled={isAssemblyCostSaving}
+          >
+            {isAssemblyCostSaving ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Applying...
+              </>
+            ) : (
+              t('common.save')
+            )}
           </CButton>
         </CModalFooter>
       </CModal>

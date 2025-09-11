@@ -17,7 +17,7 @@ const getLinks = async (req, res) => {
         }
 
         // Build where clause with group visibility
-        let whereClause = {};
+    let whereClause = { is_deleted: false };
 
         // Apply group visibility filtering
         if (user.group_id && user.group && user.group.group_type === 'contractor') {
@@ -120,7 +120,7 @@ const updateLink = async (req, res) => {
 
         // Find the existing link
         const existingLink = await ResourceLink.findOne({
-            where: { id },
+            where: { id, is_deleted: false },
         });
 
         if (!existingLink) {
@@ -155,7 +155,7 @@ const deleteLink = async (req, res) => {
 
         // Find the existing link
         const existingLink = await ResourceLink.findOne({
-            where: { id },
+            where: { id, is_deleted: false },
         });
 
         if (!existingLink) {

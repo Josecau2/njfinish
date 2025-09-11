@@ -28,9 +28,16 @@ const ResourceLink = sequelize.define('resource_link', {
     type: DataTypes.JSON, // Array of specific group IDs, optional
     allowNull: true,
   },
+  is_deleted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: 'Soft delete flag'
+  },
 }, {
   timestamps: true,
   tableName: 'resource_links',
+  underscored: true,
 });
 
 module.exports = ResourceLink;
