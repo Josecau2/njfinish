@@ -4,7 +4,8 @@ import axiosInstance from '../helpers/axiosInstance'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
 import { CSpinner } from '@coreui/react'
-import { EMBEDDED_CUSTOMIZATION } from '../config/customization'
+// Use index fallback wrapper so build succeeds even if customization.js is git-ignored
+import { EMBEDDED_CUSTOMIZATION } from '../config'
 import { getLogoUrl } from '../utils/logoUtils'
 import { getCacheBustingUrl, preloadLogo, clearLogoCache } from '../utils/cacheUtils'
 
