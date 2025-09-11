@@ -35,7 +35,7 @@ const cleanupDefaultFavicon = (customLogoPath) => {
     fs.copyFileSync(customLogoPath, customFaviconPath)
     console.log('🔄 Custom logo set as favicon.ico')
 
-    // Update manifest.json to reference the custom logo
+    // Update manifest.json to reference the custom logo with SVG fallback
     if (fs.existsSync(manifestPath)) {
       const manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
       manifestData.icons = [
@@ -48,10 +48,16 @@ const cleanupDefaultFavicon = (customLogoPath) => {
           "src": "./assets/customization/logo.png",
           "sizes": "192x192",
           "type": "image/png"
+        },
+        {
+          "src": "./assets/fallback-icon.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml",
+          "purpose": "any"
         }
       ]
       fs.writeFileSync(manifestPath, JSON.stringify(manifestData, null, 2))
-      console.log('📱 Updated manifest.json with custom logo')
+      console.log('📱 Updated manifest.json with custom logo and SVG fallback')
     }
 
   } catch (error) {
