@@ -48,6 +48,15 @@ const AppInitializer = ({ children }) => {
     const existingFavicons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
     existingFavicons.forEach(link => link.remove())
 
+    const setFaviconHref = (href) => {
+      const create = (rel) => { const l = document.createElement('link'); l.rel = rel; l.type = 'image/png'; l.href = href; document.head.appendChild(l); };
+      create('icon');
+      create('shortcut icon');
+    };
+
+    // Data URI fallback (simple house icon SVG -> PNG-like via svg data). Lightweight.
+    const FALLBACK_FAVICON = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#1f2937"/><path d="M12 30L32 14l20 16v22a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V30Z" fill="#ffffff" stroke="#ffffff" stroke-width="2"/><path d="M26 54V36h12v18" fill="#ffffff"/></svg>`);
+
     // Update favicon if logo image is available
     if (customization.logoImage) {
       const logoUrl = getLogoUrl(customization.logoImage, api_url)
@@ -62,33 +71,15 @@ const AppInitializer = ({ children }) => {
 
       // Preload the logo to avoid flickering, then set favicon
       preloadLogo(logoUrl).then(() => {
-        // Create new favicon with cache busting
-        const favicon = document.createElement('link')
-        favicon.rel = 'shortcut icon'
-        favicon.type = 'image/png'
-        favicon.href = cacheBustUrl
-        document.head.appendChild(favicon)
-
-        // Also create standard icon link
-        const iconLink = document.createElement('link')
-        iconLink.rel = 'icon'
-        iconLink.type = 'image/png'
-        iconLink.href = cacheBustUrl
-        document.head.appendChild(iconLink)
-
+        setFaviconHref(cacheBustUrl)
         console.log('✅ Custom logo set as favicon after preload')
       }).catch(() => {
-        console.warn('⚠️ Logo preload failed, setting favicon anyway')
-        // Set favicon even if preload fails
-        const favicon = document.createElement('link')
-        favicon.rel = 'shortcut icon'
-        favicon.type = 'image/png'
-        favicon.href = cacheBustUrl
-        document.head.appendChild(favicon)
+        console.warn('⚠️ Logo preload failed, using fallback house icon')
+        setFaviconHref(FALLBACK_FAVICON)
       })
     } else {
-      // If no custom logo, explicitly remove favicons (don't fallback to default)
-      console.log('🚫 No custom logo - removing all favicons')
+      console.log('ℹ️ No custom logo - applying fallback favicon')
+      setFaviconHref(FALLBACK_FAVICON)
     }
   }, [customization.logoText, customization.logoImage, api_url])
 
