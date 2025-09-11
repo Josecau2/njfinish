@@ -68,19 +68,24 @@ const cleanupDefaultFavicon = (customLogoPath) => {
 // Paths configuration
 const FRONTEND_CONFIG_PATH = path.join(__dirname, '../frontend/src/config/customization.js')
 const FRONTEND_ASSETS_PATH = path.join(__dirname, '../frontend/public/assets/customization')
+const BUILD_ASSETS_PATH = path.join(__dirname, '../build/assets/customization')
 
 /**
- * Ensures the assets directory exists
+ * Ensures the assets directories exist
  */
 const ensureAssetsDirectory = () => {
   if (!fs.existsSync(FRONTEND_ASSETS_PATH)) {
     fs.mkdirSync(FRONTEND_ASSETS_PATH, { recursive: true })
     console.log('📁 Created frontend assets directory:', FRONTEND_ASSETS_PATH)
   }
+  if (!fs.existsSync(BUILD_ASSETS_PATH)) {
+    fs.mkdirSync(BUILD_ASSETS_PATH, { recursive: true })
+    console.log('📁 Created build assets directory:', BUILD_ASSETS_PATH)
+  }
 }
 
 /**
- * Copies a logo file to the frontend assets directory
+ * Copies a logo file to both frontend and build assets directories
  * @param {string} sourcePath - Path to the source logo file
  * @param {string} targetFilename - Target filename (e.g., 'logo.png', 'login-logo.png')
  * @returns {string} - Relative path for frontend use
@@ -89,11 +94,17 @@ const copyLogoAsset = (sourcePath, targetFilename) => {
   try {
     ensureAssetsDirectory()
 
-    const targetPath = path.join(FRONTEND_ASSETS_PATH, targetFilename)
+    const frontendTargetPath = path.join(FRONTEND_ASSETS_PATH, targetFilename)
+    const buildTargetPath = path.join(BUILD_ASSETS_PATH, targetFilename)
 
     if (fs.existsSync(sourcePath)) {
-      fs.copyFileSync(sourcePath, targetPath)
-      console.log(`📋 Copied logo asset: ${sourcePath} → ${targetPath}`)
+      // Copy to frontend/public/assets/customization (for development)
+      fs.copyFileSync(sourcePath, frontendTargetPath)
+      console.log(`📋 Copied logo asset to frontend: ${sourcePath} → ${frontendTargetPath}`)
+      
+      // Copy to build/assets/customization (for production/Docker persistence)
+      fs.copyFileSync(sourcePath, buildTargetPath)
+      console.log(`📋 Copied logo asset to build: ${sourcePath} → ${buildTargetPath}`)
 
       // 🗑️ Clean up default favicon when custom logo is uploaded
       if (targetFilename === 'logo.png') {
@@ -208,17 +219,22 @@ const updateFrontendCustomization = async (uiCustomization = {}, loginCustomizat
 }
 
 /**
- * Removes a logo asset from frontend
+ * Removes a logo asset from both frontend and build directories
  * @param {string} logoType - 'logo' or 'login-logo'
  */
 const removeLogoAsset = (logoType) => {
   const filename = logoType === 'login-logo' ? 'login-logo.png' : 'logo.png'
-  const targetPath = path.join(FRONTEND_ASSETS_PATH, filename)
+  const frontendTargetPath = path.join(FRONTEND_ASSETS_PATH, filename)
+  const buildTargetPath = path.join(BUILD_ASSETS_PATH, filename)
 
   try {
-    if (fs.existsSync(targetPath)) {
-      fs.unlinkSync(targetPath)
-      console.log(`🗑️  Removed logo asset: ${targetPath}`)
+    if (fs.existsSync(frontendTargetPath)) {
+      fs.unlinkSync(frontendTargetPath)
+      console.log(`🗑️  Removed logo asset from frontend: ${frontendTargetPath}`)
+    }
+    if (fs.existsSync(buildTargetPath)) {
+      fs.unlinkSync(buildTargetPath)
+      console.log(`🗑️  Removed logo asset from build: ${buildTargetPath}`)
     }
   } catch (error) {
     console.error(`❌ Error removing logo asset:`, error)
@@ -229,5 +245,6 @@ module.exports = {
   updateFrontendCustomization,
   removeLogoAsset,
   FRONTEND_CONFIG_PATH,
-  FRONTEND_ASSETS_PATH
+  FRONTEND_ASSETS_PATH,
+  BUILD_ASSETS_PATH
 }

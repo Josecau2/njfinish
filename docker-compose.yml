@@ -51,6 +51,7 @@ services:
     volumes:
       - /srv/njcabinets/uploads:/app/uploads
       - /srv/njcabinets/backups:/app/backups
+      - /srv/njcabinets/customization:/app/build/assets/customization  # Persist logo/branding across rebuilds
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8080', r=>process.exit(r.statusCode<500?0:1)).on('error', ()=>process.exit(1))\""]
       interval: 15s
@@ -120,26 +121,27 @@ services:
     volumes:
       - /srv/njcabinets/uploads:/host/uploads
       - /srv/njcabinets/backups:/host/backups
+      - /srv/njcabinets/customization:/host/customization
     entrypoint: ["/bin/sh", "-lc"]
     command: >
       set -e;
       echo "==> Ensuring host directories exist...";
-      mkdir -p /host/uploads /host/backups \
+      mkdir -p /host/uploads /host/backups /host/customization \
         /host/uploads/images \
         /host/uploads/logos \
         /host/uploads/manufacturer_catalogs \
         /host/uploads/types;
       echo "==> Before:";
-      ls -ld /host/uploads /host/backups || true;
+      ls -ld /host/uploads /host/backups /host/customization || true;
       echo "==> Attempt chown to 1000:1000 (node user)...";
-      if chown -R 1000:1000 /host/uploads /host/backups 2>/dev/null; then
+      if chown -R 1000:1000 /host/uploads /host/backups /host/customization 2>/dev/null; then
         echo "chown succeeded";
       else
         echo "chown failed (likely FS limitation). Falling back to chmod 0777";
-        chmod -R 0777 /host/uploads /host/backups || true;
+        chmod -R 0777 /host/uploads /host/backups /host/customization || true;
       fi;
       echo "==> After:";
-      ls -ld /host/uploads /host/backups;
+      ls -ld /host/uploads /host/backups /host/customization;
     restart: "no"
 
 volumes:
