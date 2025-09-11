@@ -20,7 +20,7 @@ const ResourceLink = sequelize.define('resource_link', {
     allowNull: false,
   },
   visible_to_group_types: {
-    type: DataTypes.JSON, // Array of group types: ['admin', 'contractor'] 
+    type: DataTypes.JSON, // Array of group types: ['admin', 'contractor']
     allowNull: true,
     defaultValue: ['admin'] // Default to admin only
   },
