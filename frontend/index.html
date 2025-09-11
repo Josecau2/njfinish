@@ -12,7 +12,7 @@
     <meta http-equiv="Expires" content="0">
     <title>NJ Cabinets</title>
     <link rel="manifest" href="/manifest.json">
-    <!-- 🚫 Default favicon removed - will be dynamically set by AppInitializer when custom logo is available -->
+    <link rel="shortcut icon" href="/favicon.ico">
   <!-- Local Inter font (self-hosted) -->
   <link rel="stylesheet" href="/fonts/inter.css">
   </head>
@@ -21,16 +21,6 @@
       You need to enable JavaScript to run this app
     </noscript>
     <div id="root"></div>
-    <!-- Runtime customization (updates without full rebuild); safe if missing -->
-    <script>
-      (function(){
-        var s=document.createElement('script');
-        s.src='/assets/customization/runtime-customization.js?_=' + Date.now();
-        s.onload=function(){console.log('runtime customization loaded');};
-        s.onerror=function(){console.warn('no runtime customization override');};
-        document.head.appendChild(s);
-      })();
-    </script>
     <script type="module" src="/src/index.js"></script>
     <!-- built files will be auto injected -->
   </body>

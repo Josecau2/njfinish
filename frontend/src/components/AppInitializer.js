@@ -4,10 +4,8 @@ import axiosInstance from '../helpers/axiosInstance'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
 import { CSpinner } from '@coreui/react'
-// Use index fallback wrapper so build succeeds even if customization.js is git-ignored
-import { EMBEDDED_CUSTOMIZATION } from '../config'
+import { EMBEDDED_CUSTOMIZATION } from '../config/customization'
 import { getLogoUrl } from '../utils/logoUtils'
-import { getCacheBustingUrl, preloadLogo, clearLogoCache } from '../utils/cacheUtils'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
@@ -17,15 +15,9 @@ const AppInitializer = ({ children }) => {
 
   // Load embedded customization immediately on mount
   useEffect(() => {
-    // Prefer runtime customization if injected (hot updates without rebuild)
-    const runtime = (typeof window !== 'undefined' && window.RUNTIME_CUSTOMIZATION) ? window.RUNTIME_CUSTOMIZATION : null
-    if (runtime) {
-      dispatch(setCustomization(runtime))
-      console.log('⚡ Runtime customization applied:', runtime)
-    } else {
-      dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
-      console.log('✅ Embedded customization loaded:', EMBEDDED_CUSTOMIZATION)
-    }
+    // 🚀 INSTANT LOAD: Load embedded customization synchronously
+    dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
+    console.log('✅ Embedded customization loaded instantly:', EMBEDDED_CUSTOMIZATION)
   }, [dispatch])
 
   // Ensure sidebar state is correct when app initializes after login
@@ -50,51 +42,29 @@ const AppInitializer = ({ children }) => {
       }
     }
 
-    // 🗑️ CLEAN SLATE: Remove all existing favicon links first
-    const existingFavicons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
-    existingFavicons.forEach(link => link.remove())
-
     // Update favicon if logo image is available
     if (customization.logoImage) {
       const logoUrl = getLogoUrl(customization.logoImage, api_url)
 
-      // Clear any cached logo data first
-      clearLogoCache()
+      const favicon = document.querySelector('link[rel="shortcut icon"]') || document.querySelector('link[rel="icon"]')
+      if (favicon) {
+        favicon.href = logoUrl
+      } else {
+        // Create favicon if it doesn't exist
+        const newFavicon = document.createElement('link')
+        newFavicon.rel = 'shortcut icon'
+        newFavicon.href = logoUrl
+        document.head.appendChild(newFavicon)
+      }
 
-      // Add cache-busting parameter to ensure fresh load
-      const cacheBustUrl = getCacheBustingUrl(logoUrl)
-
-      console.log('🔄 Setting custom favicon:', cacheBustUrl)
-
-      // Preload the logo to avoid flickering, then set favicon
-      preloadLogo(logoUrl).then(() => {
-        // Create new favicon with cache busting
-        const favicon = document.createElement('link')
-        favicon.rel = 'shortcut icon'
-        favicon.type = 'image/png'
-        favicon.href = cacheBustUrl
-        document.head.appendChild(favicon)
-
-        // Also create standard icon link
-        const iconLink = document.createElement('link')
+      // Also create/update standard icon link
+      let iconLink = document.querySelector('link[rel="icon"]')
+      if (!iconLink) {
+        iconLink = document.createElement('link')
         iconLink.rel = 'icon'
-        iconLink.type = 'image/png'
-        iconLink.href = cacheBustUrl
         document.head.appendChild(iconLink)
-
-        console.log('✅ Custom logo set as favicon after preload')
-      }).catch(() => {
-        console.warn('⚠️ Logo preload failed, setting favicon anyway')
-        // Set favicon even if preload fails
-        const favicon = document.createElement('link')
-        favicon.rel = 'shortcut icon'
-        favicon.type = 'image/png'
-        favicon.href = cacheBustUrl
-        document.head.appendChild(favicon)
-      })
-    } else {
-      // If no custom logo, explicitly remove favicons (don't fallback to default)
-      console.log('🚫 No custom logo - removing all favicons')
+      }
+      iconLink.href = logoUrl
     }
   }, [customization.logoText, customization.logoImage, api_url])
 

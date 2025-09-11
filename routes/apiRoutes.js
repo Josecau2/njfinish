@@ -14,7 +14,6 @@ const upload = require('../middleware/upload');
 const emailController = require('../controllers/emailController');
 const loginCustomizationController = require('../controllers/loginCustomizationController');
 const resourcesController = require('../controllers/resourcesController');
-const embeddedCustomizationController = require('../controllers/embeddedCustomizationController');
 const { uploadImage } = require('../controllers/uploadController');
 const calenderController = require('../controllers/calenderController');
 const contractorController = require('../controllers/contractorController');
@@ -326,9 +325,6 @@ router.post('/resources/files', verifyTokenWithGroup, resourceUpload.single('fil
 router.put('/resources/files/:id', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.updateFile);
 router.delete('/resources/files/:id', verifyTokenWithGroup, resourcesController.deleteFile);
 router.get('/resources/files/download/:id', resourcesController.downloadFile);
-
-// Dynamic embedded customization fetch (avoids needing a rebuild for color/logo changes)
-router.get('/customization/embedded', embeddedCustomizationController.getEmbedded);
 
 // Upload images for sample images and category cards (admin only)
 router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
 import { installTokenEverywhere } from '../../utils/authToken';
-import { EMBEDDED_CUSTOMIZATION } from '../../config';
+import { EMBEDDED_CUSTOMIZATION } from '../../config/customization';
 
 const LoginPage = () => {
   const dispatch = useDispatch();

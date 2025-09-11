@@ -153,15 +153,6 @@ async function run() {
 
       if (finalPending.length === 0) {
         console.log('✅ All migrations successfully applied!');
-        
-        // Run customization assets migration after successful database migrations
-        try {
-          console.log('\n📋 Migrating customization assets...');
-          const { migrateCustomizationAssets } = require('../migrate-customization-assets');
-          migrateCustomizationAssets();
-        } catch (error) {
-          console.warn('⚠️ Customization assets migration failed (non-fatal):', error.message);
-        }
       } else {
         console.log('⚠️  Some migrations are still pending');
       }
