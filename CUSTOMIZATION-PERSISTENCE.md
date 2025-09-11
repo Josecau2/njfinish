@@ -28,7 +28,7 @@ volumes:
 ```
 /srv/njcabinets/
 ├── uploads/           # General file uploads
-├── backups/           # Database backups  
+├── backups/           # Database backups
 └── customization/     # Logos and branding assets
     ├── logo.png       # Main application logo
     └── login-logo.png # Login page logo (if different)

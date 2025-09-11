@@ -43,7 +43,7 @@ const migrateCustomizationAssets = () => {
   })
 
   console.log(`✅ Migration complete! Copied ${copiedCount} customization assets to build directory`)
-  
+
   if (copiedCount > 0) {
     console.log('🎉 Your customization assets are now persistent across Docker rebuilds!')
   }

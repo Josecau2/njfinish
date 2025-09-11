@@ -101,7 +101,7 @@ const copyLogoAsset = (sourcePath, targetFilename) => {
       // Copy to frontend/public/assets/customization (for development)
       fs.copyFileSync(sourcePath, frontendTargetPath)
       console.log(`📋 Copied logo asset to frontend: ${sourcePath} → ${frontendTargetPath}`)
-      
+
       // Copy to build/assets/customization (for production/Docker persistence)
       fs.copyFileSync(sourcePath, buildTargetPath)
       console.log(`📋 Copied logo asset to build: ${sourcePath} → ${buildTargetPath}`)
