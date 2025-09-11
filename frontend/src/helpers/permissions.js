@@ -103,7 +103,7 @@ export const hasPermission = (user, permission) => {
     }
 
     if (userModules.customers === true && [
-      'customers:read', 'customers:create', 'customers:update', 'customers:delete'
+      'customers:read', 'customers:create', 'customers:update'
     ].includes(permission)) {
       return true;
     }

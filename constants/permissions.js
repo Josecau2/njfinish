@@ -94,10 +94,7 @@ const DEFAULT_PERMISSIONS = {
     customers: [
       PERMISSIONS.CUSTOMERS.READ,
       PERMISSIONS.CUSTOMERS.CREATE,
-  PERMISSIONS.CUSTOMERS.UPDATE,
-  // Allow contractors to soft-delete (status=0) ONLY their own customers.
-  // Controller enforces created_by_user_id + group scoping so no cross-group impact.
-  PERMISSIONS.CUSTOMERS.DELETE
+      PERMISSIONS.CUSTOMERS.UPDATE
     ],
 
     // When resources module is enabled

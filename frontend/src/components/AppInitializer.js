@@ -4,21 +4,12 @@ import axiosInstance from '../helpers/axiosInstance'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
 import { CSpinner } from '@coreui/react'
-import { EMBEDDED_CUSTOMIZATION } from '../config/customization'
-import { getLogoUrl } from '../utils/logoUtils'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false) // Start with false since embedded config loads instantly
+  const [loading, setLoading] = useState(true)
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL
-
-  // Load embedded customization immediately on mount
-  useEffect(() => {
-    // 🚀 INSTANT LOAD: Load embedded customization synchronously
-    dispatch(setCustomization(EMBEDDED_CUSTOMIZATION))
-    console.log('✅ Embedded customization loaded instantly:', EMBEDDED_CUSTOMIZATION)
-  }, [dispatch])
 
   // Ensure sidebar state is correct when app initializes after login
   useEffect(() => {
@@ -44,16 +35,14 @@ const AppInitializer = ({ children }) => {
 
     // Update favicon if logo image is available
     if (customization.logoImage) {
-      const logoUrl = getLogoUrl(customization.logoImage, api_url)
-
       const favicon = document.querySelector('link[rel="shortcut icon"]') || document.querySelector('link[rel="icon"]')
       if (favicon) {
-        favicon.href = logoUrl
+        favicon.href = `${api_url}${customization.logoImage}`
       } else {
         // Create favicon if it doesn't exist
         const newFavicon = document.createElement('link')
         newFavicon.rel = 'shortcut icon'
-        newFavicon.href = logoUrl
+        newFavicon.href = `${api_url}${customization.logoImage}`
         document.head.appendChild(newFavicon)
       }
 
@@ -64,7 +53,7 @@ const AppInitializer = ({ children }) => {
         iconLink.rel = 'icon'
         document.head.appendChild(iconLink)
       }
-      iconLink.href = logoUrl
+      iconLink.href = `${api_url}${customization.logoImage}`
     }
   }, [customization.logoText, customization.logoImage, api_url])
 
@@ -90,27 +79,39 @@ const AppInitializer = ({ children }) => {
 
 
 
-  // Optional: Background sync with server for development validation
   useEffect(() => {
-    const backgroundSync = async () => {
-      if (process.env.NODE_ENV === 'development') {
-        try {
-          const res = await axiosInstance.get('/api/settings/customization')
-          const serverLastUpdated = res.data?.updatedAt
-          const embeddedLastUpdated = EMBEDDED_CUSTOMIZATION.lastUpdated
+    const fetchCustomization = async () => {
+      try {
+        const res = await axiosInstance.get('/api/settings/customization')
 
-          if (serverLastUpdated && embeddedLastUpdated &&
-              new Date(serverLastUpdated) > new Date(embeddedLastUpdated)) {
-            console.warn('⚠️  Server customization is newer than embedded config. Consider rebuilding frontend.')
-          }
-        } catch (syncError) {
-          console.log('ℹ️  Background sync failed (this is normal):', syncError.message)
+        if (res.data && Object.keys(res.data).length > 0) {
+          dispatch(setCustomization(res.data))
+        } else {
+          dispatch(setCustomization({
+            headerBg: '#ffffff',
+            headerFontColor: '#333333',
+            sidebarBg: '#212631',
+            sidebarFontColor: '#ffffff',
+            logoText: 'NJ Cabinets',
+            logoImage: null,
+          }))
         }
+      } catch (err) {
+        console.error('Customization load error:', err)
+        dispatch(setCustomization({
+          headerBg: '#ffffff',
+          headerFontColor: '#333333',
+          sidebarBg: '#212631',
+          sidebarFontColor: '#ffffff',
+          logoText: 'NJ Cabinets',
+          logoImage: null,
+        }))
+      } finally {
+        setLoading(false)
       }
     }
 
-    // Run background sync after a delay to not block initial render
-    setTimeout(backgroundSync, 1000)
+    fetchCustomization()
   }, [dispatch])
 
   if (loading) {

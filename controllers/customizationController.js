@@ -1,7 +1,5 @@
 const Customization = require('../models/Customization')
 const PdfCustomization = require('../models/PdfCustomization')
-const { updateFrontendCustomization } = require('../utils/frontendConfigWriter')
-const LoginCustomization = require('../models/LoginCustomization')
 
 exports.getCustomization = async (req, res) => {
   try {
@@ -16,11 +14,9 @@ exports.getCustomization = async (req, res) => {
 exports.saveCustomization = async (req, res) => {
   try {
     let logoImagePath = null
-    let logoFilePath = null
 
     if (req.file) {
       logoImagePath = `/uploads/images/${req.file.filename}`
-      logoFilePath = req.file.path // Full path for copying to frontend
     }
 
     const payload = {
@@ -32,33 +28,13 @@ exports.saveCustomization = async (req, res) => {
     }
 
     const existing = await Customization.findOne()
-    let uiCustomization
-
     if (existing) {
       await existing.update(payload)
-      uiCustomization = { ...existing.dataValues, ...payload }
-    } else {
-      const created = await Customization.create(payload)
-      uiCustomization = created.dataValues
+      return res.json({ success: true, updated: true })
     }
 
-    // Get login customization for combined frontend config
-    const loginCustomization = await LoginCustomization.findOne({ where: { id: 1 } })
-
-    // Update frontend configuration immediately
-    try {
-      await updateFrontendCustomization(
-        uiCustomization,
-        loginCustomization?.dataValues || {},
-        { main: logoFilePath }
-      )
-      console.log('✅ Frontend customization updated successfully')
-    } catch (frontendError) {
-      console.error('❌ Frontend customization update failed:', frontendError)
-      // Don't fail the main request, but log the error
-    }
-
-    res.json({ success: true, updated: !!existing, created: !existing })
+    await Customization.create(payload)
+    res.json({ success: true, created: true })
   } catch (err) {
     console.error('Error saving customization:', err)
     res.status(500).json({ error: 'Failed to save customization' })
