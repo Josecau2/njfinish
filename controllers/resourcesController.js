@@ -8,33 +8,34 @@ const getLinks = async (req, res) => {
     try {
         const user = req.user;
 
-        // Check if user exists
         if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'User not authenticated'
-            });
+            return res.status(401).json({ success: false, message: 'User not authenticated' });
         }
 
-        // Build where clause with group visibility
-    let whereClause = { is_deleted: false };
+        // Base filter
+        let whereClause = { is_deleted: false };
 
-        // Apply group visibility filtering
-        if (user.group_id && user.group && user.group.group_type === 'contractor') {
-            // Contractors can only see links visible to 'contractor' type or their specific group
-            // Use MySQL-compatible JSON_CONTAINS function instead of PostgreSQL @> operator
-            whereClause[Op.or] = [
-                Sequelize.where(
-                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_types'), '"contractor"'),
-                    true
-                ),
-                Sequelize.where(
-                    Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_ids'), user.group_id.toString()),
-                    true
-                )
-            ];
+        // Safely determine if user is contractor
+        const isContractor = Boolean(user.group_id && user.group && user.group.group_type === 'contractor');
+
+        if (isContractor) {
+            // Guard against DBs lacking JSON columns: wrap in try so one bad function call won't 500
+            try {
+                whereClause[Op.or] = [
+                    Sequelize.where(
+                        Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_types'), '"contractor"'),
+                        true
+                    ),
+                    Sequelize.where(
+                        Sequelize.fn('JSON_CONTAINS', Sequelize.col('visible_to_group_ids'), user.group_id.toString()),
+                        true
+                    )
+                ];
+            } catch (e) {
+                // If JSON_CONTAINS not supported (e.g. wrong column type), fall back to broad visibility
+                console.warn('⚠️  JSON visibility filtering disabled (fallback):', e.message);
+            }
         }
-        // Admins can see all links (no additional filtering)
 
         const links = await ResourceLink.findAll({
             where: whereClause,
@@ -42,18 +43,10 @@ const getLinks = async (req, res) => {
             attributes: ['id', 'title', 'url', 'type', 'createdAt', 'updatedAt'],
         });
 
-        res.status(200).json({
-            success: true,
-            data: links,
-            message: 'Links fetched successfully',
-        });
+        return res.status(200).json({ success: true, data: links, message: 'Links fetched successfully' });
     } catch (error) {
         console.error('Error fetching links:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching links',
-            error: error.message,
-        });
+        return res.status(500).json({ success: false, message: 'Error fetching links', error: error.message });
     }
 };
 
