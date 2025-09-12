@@ -103,6 +103,7 @@ const SignupPage = () => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
+                  autoComplete="new-password"
                   required
                 />
                 <button

@@ -40,7 +40,8 @@ try {
         const b64 = (p.replace(/-/g, '+').replace(/_/g, '/')) + pad
         const payload = JSON.parse(atob(b64))
         const now = Math.floor(Date.now() / 1000)
-        if (payload?.exp && payload.exp <= now) {
+        if (payload?.exp && payload.exp <= now && !window.__SESSION_EXPIRY_HANDLED__) {
+          window.__SESSION_EXPIRY_HANDLED__ = true;
           store.dispatch(logout())
           try {
             Swal.fire({
@@ -55,6 +56,8 @@ try {
           } catch {}
           if (window.location.pathname !== '/login') {
             window.location.replace('/login')
+          } else {
+            try { delete window.__SESSION_EXPIRY_HANDLED__; } catch {}
           }
         }
       } catch {}

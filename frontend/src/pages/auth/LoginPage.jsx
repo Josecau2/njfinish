@@ -187,6 +187,7 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   id="password"
                   aria-required="true"
+                  autoComplete="current-password"
                   required
                 />
                 <button

@@ -86,9 +86,12 @@ export function addLogoutListener() {
   if (typeof window !== 'undefined') {
     const handleStorageChange = (e) => {
       if (e.key === '__auth_logout__' && e.newValue) {
-        // Another tab logged out, force cleanup and reload
+        // Another tab logged out, force cleanup
         forceBrowserCleanup();
-        forcePageReload();
+        // Avoid reload loop if already on login page
+        if (window.location.pathname !== '/login') {
+          forcePageReload();
+        }
       }
     };
 

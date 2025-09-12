@@ -73,13 +73,20 @@ const authSlice = createSlice({
         }
       } catch {}
 
-      // Notify other tabs of logout
+      // Notify other tabs of logout (safely; avoid ping-pong loops)
       try {
-        window.localStorage.setItem('__auth_logout__', String(Date.now()));
-        // Remove the notification after a brief moment
-        setTimeout(() => {
-          try { window.localStorage.removeItem('__auth_logout__'); } catch {}
-        }, 1000);
+        if (typeof window !== 'undefined') {
+          const suppress = window.__SUPPRESS_LOGOUT_BROADCAST__;
+          const onLogin = window.location && window.location.pathname === '/login';
+          if (!suppress && !onLogin) {
+            window.localStorage.setItem('__auth_logout__', String(Date.now()));
+            // Mark last broadcast timestamp to throttle bursts
+            window.__LAST_LOGOUT_BROADCAST_TS__ = Date.now();
+            setTimeout(() => {
+              try { window.localStorage.removeItem('__auth_logout__'); } catch {}
+            }, 1000);
+          }
+        }
       } catch {}
     },
   },

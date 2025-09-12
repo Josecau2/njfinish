@@ -15,18 +15,22 @@ const SessionRefresher = ({ children }) => {
 
     // If URL has logout or fresh parameters, ensure complete cleanup
     if (isFreshLogin || isLogoutReload) {
+      // Prevent cross-tab broadcast loop while performing silent cleanup
+      try { window.__SUPPRESS_LOGOUT_BROADCAST__ = true; } catch {}
       clearAllTokens();
-      dispatch(logout());
+      dispatch(logout()); // silent due to suppress flag
+      try { delete window.__SUPPRESS_LOGOUT_BROADCAST__; } catch {}
 
       // Clean up URL parameters
-      const url = new URL(window.location);
-      url.searchParams.delete('_fresh');
-      url.searchParams.delete('_logout');
-      url.searchParams.delete('_t');
-
-      if (url.search !== window.location.search) {
-        window.history.replaceState({}, '', url);
-      }
+      try {
+        const url = new URL(window.location);
+        url.searchParams.delete('_fresh');
+        url.searchParams.delete('_logout');
+        url.searchParams.delete('_t');
+        if (url.search !== window.location.search) {
+          window.history.replaceState({}, '', url);
+        }
+      } catch {}
     }
 
     // Check for stale tokens on app start
@@ -43,15 +47,21 @@ const SessionRefresher = ({ children }) => {
           if (timeUntilExpiry < 300) {
             console.log('[SESSION_REFRESHER] Token expiring soon, forcing fresh login');
             clearAllTokens();
+            try { window.__SUPPRESS_LOGOUT_BROADCAST__ = true; } catch {}
             dispatch(logout());
-            window.location.href = '/login?_fresh=1';
+            try { delete window.__SUPPRESS_LOGOUT_BROADCAST__; } catch {}
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login?_fresh=1';
+            }
             return;
           }
         } catch (error) {
           // Invalid token format, clear it
           console.log('[SESSION_REFRESHER] Invalid token format, clearing');
           clearAllTokens();
+          try { window.__SUPPRESS_LOGOUT_BROADCAST__ = true; } catch {}
           dispatch(logout());
+          try { delete window.__SUPPRESS_LOGOUT_BROADCAST__; } catch {}
         }
       }
     };
