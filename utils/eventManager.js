@@ -76,6 +76,14 @@ class EventManager extends EventEmitter {
     async sendAcceptanceNotifications(eventData) {
         try {
             console.log('📧 Creating acceptance notifications...');
+
+            // Idempotency guard: avoid creating duplicate notifications for same proposal acceptance
+            if (!this._acceptanceNotificationCache) this._acceptanceNotificationCache = new Set();
+            const cacheKey = `proposal.accepted:${eventData.proposalId}`;
+            if (this._acceptanceNotificationCache.has(cacheKey)) {
+                console.log('⚠️ Skipping duplicate acceptance notification for proposal', eventData.proposalId);
+                return;
+            }
             
             // Get admin users who should be notified
             const adminUsers = await notificationController.getAdminUsers();
@@ -107,6 +115,7 @@ class EventManager extends EventEmitter {
             // Create notifications for all admin users
             const adminUserIds = adminUsers.map(user => user.id);
             await notificationController.createNotificationsForUsers(adminUserIds, notificationData);
+            this._acceptanceNotificationCache.add(cacheKey);
 
             console.log(`✅ Created notifications for ${adminUsers.length} admin users`);
 

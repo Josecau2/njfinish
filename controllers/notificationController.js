@@ -1,10 +1,13 @@
 const { Op } = require('sequelize');
 const { Notification, User } = require('../models');
 
-// Utility: get admin users to notify
+// Utility: get admin users to notify (case-insensitive + common variants)
 async function getAdminUsers() {
-  // Basic admin detection by role column. Adjust if you later add role mapping.
-  const admins = await User.findAll({ where: { role: 'Admin', isDeleted: { [Op.not]: true } }, attributes: ['id', 'name', 'email'] });
+  const roleVariants = ['Admin', 'admin', 'ADMIN'];
+  const admins = await User.findAll({
+    where: { role: { [Op.in]: roleVariants }, isDeleted: { [Op.not]: true } },
+    attributes: ['id', 'name', 'email']
+  });
   return admins;
 }
 
