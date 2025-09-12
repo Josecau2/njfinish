@@ -23,7 +23,7 @@ import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/ma
 import { fetchPayments } from '../../store/slices/paymentsSlice'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
-import { toast } from 'react-toastify'
+import Swal from 'sweetalert2'
 
 const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, mineOnly = false }) => {
   const { t } = useTranslation()
@@ -278,7 +278,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         // Calculate payment amount from order total
         const amount = order.grand_total_cents ? (order.grand_total_cents / 100) : 0
         if (amount <= 0) {
-          toast.error('Cannot create payment: Order total is invalid')
+          Swal.fire('Error', 'Cannot create payment: Order total is invalid', 'error')
           return
         }
 
@@ -299,7 +299,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         }
       } catch (error) {
         console.error('Failed to create payment for order:', error)
-        toast.error('Failed to create payment. Please try again.')
+        Swal.fire('Error', 'Failed to create payment. Please try again.', 'error')
         // Fallback to payments list
         navigate('/payments')
       }
