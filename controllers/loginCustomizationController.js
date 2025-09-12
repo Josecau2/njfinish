@@ -1,5 +1,6 @@
 // controllers/loginCustomizationController.js
 const LoginCustomization = require('../models/LoginCustomization');
+const { writeFrontendLoginCustomization } = require('../utils/frontendLoginConfigWriter');
 
 exports.saveCustomization = async (req, res) => {
   try {
@@ -11,6 +12,12 @@ exports.saveCustomization = async (req, res) => {
       await customization.update(data);
     } else {
       customization = await LoginCustomization.create(data);
+    }
+
+    try {
+      await writeFrontendLoginCustomization(customization.toJSON())
+    } catch (e) {
+      console.error('Failed persisting static login customization:', e)
     }
 
     return res.status(200).json({ message: 'Customization saved successfully', customization });

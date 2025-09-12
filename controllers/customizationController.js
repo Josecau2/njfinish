@@ -1,5 +1,6 @@
 const Customization = require('../models/Customization')
 const PdfCustomization = require('../models/PdfCustomization')
+const { writeFrontendCustomization } = require('../utils/frontendConfigWriter')
 
 exports.getCustomization = async (req, res) => {
   try {
@@ -28,13 +29,23 @@ exports.saveCustomization = async (req, res) => {
     }
 
     const existing = await Customization.findOne()
+    let isUpdate = false
     if (existing) {
       await existing.update(payload)
-      return res.json({ success: true, updated: true })
+      isUpdate = true
+    } else {
+      await Customization.create(payload)
     }
 
-    await Customization.create(payload)
-    res.json({ success: true, created: true })
+    // Persist latest customization to frontend static config to avoid flicker on reload
+    try {
+      // Merge DB payload with any existing generated config (handled in writer)
+      await writeFrontendCustomization(payload)
+    } catch (persistErr) {
+      console.error('Failed to write frontend customization config:', persistErr)
+    }
+
+    return res.json({ success: true, updated: isUpdate, created: !isUpdate })
   } catch (err) {
     console.error('Error saving customization:', err)
     res.status(500).json({ error: 'Failed to save customization' })

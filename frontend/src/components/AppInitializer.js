@@ -7,7 +7,8 @@ import { CSpinner } from '@coreui/react'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(true)
+  // Start as not loading because we already have a static config for first paint
+  const [loading, setLoading] = useState(false)
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL
 
@@ -80,47 +81,20 @@ const AppInitializer = ({ children }) => {
 
 
   useEffect(() => {
-    const fetchCustomization = async () => {
+    // Fire and forget refresh – does not block initial render.
+    const refresh = async () => {
       try {
         const res = await axiosInstance.get('/api/settings/customization')
-
         if (res.data && Object.keys(res.data).length > 0) {
           dispatch(setCustomization(res.data))
-        } else {
-          dispatch(setCustomization({
-            headerBg: '#ffffff',
-            headerFontColor: '#333333',
-            sidebarBg: '#212631',
-            sidebarFontColor: '#ffffff',
-            logoText: 'NJ Cabinets',
-            logoImage: null,
-          }))
         }
-      } catch (err) {
-        console.error('Customization load error:', err)
-        dispatch(setCustomization({
-          headerBg: '#ffffff',
-          headerFontColor: '#333333',
-          sidebarBg: '#212631',
-          sidebarFontColor: '#ffffff',
-          logoText: 'NJ Cabinets',
-          logoImage: null,
-        }))
-      } finally {
-        setLoading(false)
+      } catch (e) {
+        // Silent fail – we already have static config
+        console.warn('Non-blocking customization refresh failed:', e?.message)
       }
     }
-
-    fetchCustomization()
+    refresh()
   }, [dispatch])
-
-  if (loading) {
-    return (
-      <div className="text-center pt-5" role="status" aria-live="polite">
-        <CSpinner color="primary" aria-label="Loading application" />
-      </div>
-    )
-  }
 
   return children
 }

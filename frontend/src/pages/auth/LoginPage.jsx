@@ -7,6 +7,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
+import { LOGIN_CUSTOMIZATION } from '../../config/loginCustomization';
 import { installTokenEverywhere } from '../../utils/authToken';
 
 const LoginPage = () => {
@@ -16,7 +17,8 @@ const LoginPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
-  const [customization, setCustomization] = useState(null);
+  // Seed with generated static config to avoid flash while fetching dynamic one
+  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -29,10 +31,10 @@ const LoginPage = () => {
       try {
         const res = await axios.get(`${api_url}/api/login-customization`);
         if (res.data.customization) {
-          setCustomization(res.data.customization);
+          setCustomization(prev => ({ ...prev, ...res.data.customization }));
         }
       } catch (err) {
-        console.error('Failed to load customization settings:', err);
+        console.warn('Non-blocking login customization fetch failed:', err?.message);
       }
     };
 
@@ -112,18 +114,7 @@ const LoginPage = () => {
     }
   };
 
-  const settings = customization || {
-    logo: "",
-  title: t('auth.signIn'),
-  subtitle: t('auth.enterCredentials'),
-    backgroundColor: "#0e1446",
-    showForgotPassword: true,
-    showKeepLoggedIn: true,
-  rightTitle: t('common.appName'),
-  rightSubtitle: t('auth.rightSubtitle'),
-  rightTagline: t('common.dealerPortal'),
-  rightDescription: t('auth.rightDescription'),
-  };
+  const settings = customization;
 
   // Compute optimal text colors for the right panel based on background
   const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446');

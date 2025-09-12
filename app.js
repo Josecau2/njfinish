@@ -107,6 +107,27 @@ const syncPromise = syncOptions ? sequelize.sync(syncOptions) : Promise.resolve(
 syncPromise.then(async () => {
   console.log('Database synced');
 
+  // On startup, persist latest customization + login customization to frontend static config
+  try {
+    const { writeFrontendCustomization } = require('./utils/frontendConfigWriter');
+    const { writeFrontendLoginCustomization } = require('./utils/frontendLoginConfigWriter');
+    const Customization = require('./models/Customization');
+    const LoginCustomization = require('./models/LoginCustomization');
+
+    const latestApp = await Customization.findOne({ order: [['updatedAt', 'DESC']] });
+    if (latestApp) {
+      await writeFrontendCustomization(latestApp.toJSON());
+      console.log('[Startup] Persisted app customization to static config');
+    }
+    const latestLogin = await LoginCustomization.findOne({ order: [['updatedAt', 'DESC']] });
+    if (latestLogin) {
+      await writeFrontendLoginCustomization(latestLogin.toJSON());
+      console.log('[Startup] Persisted login customization to static config');
+    }
+  } catch (e) {
+    console.warn('Startup customization persistence failed:', e?.message);
+  }
+
   // Run production setup automatically if needed
   if (process.env.NODE_ENV === 'production') {
     await startupHandler.checkAndRunSetup();

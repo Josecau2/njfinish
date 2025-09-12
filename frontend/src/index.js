@@ -5,6 +5,8 @@ import 'core-js'
 import './i18n'
 
 import App from './App'
+import { CUSTOMIZATION_CONFIG } from './config/customization'
+import { LOGIN_CUSTOMIZATION } from './config/loginCustomization'
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
 import Swal from 'sweetalert2'
 import i18n from './i18n'
@@ -63,6 +65,23 @@ try {
     } catch {}
   }
 } catch {}
+
+// Apply static customization immediately (before React mounts) to avoid flicker
+try {
+  const root = document.documentElement
+  const c = CUSTOMIZATION_CONFIG || {}
+  if (c.headerBg) root.style.setProperty('--header-bg', c.headerBg)
+  if (c.headerFontColor) root.style.setProperty('--header-fg', c.headerFontColor)
+  if (c.sidebarBg) root.style.setProperty('--sidebar-bg', c.sidebarBg)
+  if (c.sidebarFontColor) root.style.setProperty('--sidebar-fg', c.sidebarFontColor)
+  // Login background (if on /login)
+  if (window.location.pathname === '/login') {
+    const lc = LOGIN_CUSTOMIZATION || {}
+    if (lc.backgroundColor) root.style.setProperty('--login-bg', lc.backgroundColor)
+  }
+} catch (e) {
+  console.warn('Early customization application failed:', e?.message)
+}
 
 // Removed proactive /api/me keep-alive pings to avoid token refresh gymnastics
 
