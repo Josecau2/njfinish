@@ -25,7 +25,7 @@ export const PERMISSIONS = {
   'customers:read': ['sales', 'manager', 'admin', 'super_admin'],
   'customers:create': ['sales', 'manager', 'admin', 'super_admin'],
   'customers:update': ['sales', 'manager', 'admin', 'super_admin'],
-  'customers:delete': ['manager', 'admin', 'super_admin'],
+  'customers:delete': ['sales', 'manager', 'admin', 'super_admin'],
 
   // Proposal permissions
   'proposals:read': ['sales', 'manager', 'admin', 'super_admin'],

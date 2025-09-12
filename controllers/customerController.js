@@ -13,7 +13,7 @@ const fetchCustomer = async (req, res) => {
 
     // Build where clause
     let whereClause = { status: 1 };
-    
+
     // Apply user/group scoping
     if (user.group_id && user.group && user.group.group_type === 'contractor') {
       // Contractors can only see their own customers (user-specific)
@@ -69,16 +69,16 @@ const fetchCustomer = async (req, res) => {
 const fetchSingleCustomer = async (req, res) => {
   const customerId = req.params.id;
   const user = req.user;
-  
+
   try {
     // Build where clause with contractor scoping
     let whereClause = { id: customerId };
-    
+
     // Apply user scoping for contractors
     if (user.group_id && user.group && user.group.group_type === 'contractor') {
       whereClause.created_by_user_id = user.id;
     }
-    
+
     const customer = await Customer.findOne({ where: whereClause });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
@@ -189,11 +189,11 @@ const updateCustomer = async (req, res) => {
     }
 
     const customer = await Customer.findOne({ where: whereClause });
-    
+
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found or access denied' });
     }
-    
+
   // Update fields
   const before = customer.toJSON();
     customer.name = name;
@@ -210,7 +210,7 @@ const updateCustomer = async (req, res) => {
     customer.customerType = customerType;
     customer.leadSource = leadSource;
     customer.defaultDiscount = defaultDiscount;
-    
+
     await customer.save();
 
     // Audit: customer.update
@@ -234,40 +234,28 @@ const updateCustomer = async (req, res) => {
 
 
 const deleteCustomer = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // Get the customer ID from the request parameters
   const user = req.user;
 
   try {
-    // Fetch the customer first (only active ones)
-    const customer = await Customer.findOne({ where: { id, status: 1 } });
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
+    // Build where clause with contractor scoping
+    let whereClause = { id };
+    if (user.group_id && user.group && user.group.group_type === 'contractor') {
+      whereClause.created_by_user_id = user.id;
     }
 
-    // Admin / super_admin can delete any customer
-    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+    // Update the status of the customer to 0 where the customer ID matches and group matches
+    const updatedCustomer = await Customer.update(
+      { status: 0 }, // Set status to 0
+      { where: whereClause } // Find the customer with the specified ID and group
+    );
 
-    if (!isAdmin) {
-      // Must belong to a contractor group
-      if (!user.group_id || !user.group || user.group.group_type !== 'contractor') {
-        return res.status(403).json({ message: 'Access denied: not a contractor user' });
-      }
-
-      // Enforce same group ownership
-      if (String(customer.group_id) !== String(user.group_id)) {
-        return res.status(403).json({ message: 'Access denied: different contractor group' });
-      }
-
-      // Enforce that only the creator can delete their own customer
-      if (String(customer.created_by_user_id) !== String(user.id)) {
-        return res.status(403).json({ message: 'Access denied: only the creator can delete this customer' });
-      }
+    // If no customer was found to update
+    if (updatedCustomer[0] === 0) {
+      return res.status(404).json({ message: 'Customer not found or access denied' });
     }
 
-    // Soft delete by status flag (paranoid already provides deleted_at if using destroy). Keeping existing pattern.
-    customer.status = 0;
-    await customer.save();
-
+    // Audit: customer.delete
     await logActivity({
       actorId: user.id,
       action: 'customer.delete',
@@ -276,10 +264,12 @@ const deleteCustomer = async (req, res) => {
       diff: { before: { status: 1 }, after: { status: 0 } }
     });
 
-    return res.json({ message: 'Customer deleted successfully' });
+    // Send success response
+    res.json({ message: 'Customer status updated successfully' });
+
   } catch (error) {
-    console.error('Delete customer error:', error);
-    return res.status(500).json({ message: 'Error deleting customer', error });
+    console.error(error);
+    return res.status(500).json({ message: 'Error updating customer status', error });
   }
 };
 
