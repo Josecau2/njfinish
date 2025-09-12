@@ -234,28 +234,40 @@ const updateCustomer = async (req, res) => {
 
 
 const deleteCustomer = async (req, res) => {
-  const { id } = req.params; // Get the customer ID from the request parameters
+  const { id } = req.params;
   const user = req.user;
 
   try {
-    // Build where clause with contractor scoping
-    let whereClause = { id };
-    if (user.group_id && user.group && user.group.group_type === 'contractor') {
-      whereClause.created_by_user_id = user.id;
+    // Fetch the customer first (only active ones)
+    const customer = await Customer.findOne({ where: { id, status: 1 } });
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
     }
 
-    // Update the status of the customer to 0 where the customer ID matches and group matches
-    const updatedCustomer = await Customer.update(
-      { status: 0 }, // Set status to 0
-      { where: whereClause } // Find the customer with the specified ID and group
-    );
+    // Admin / super_admin can delete any customer
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
 
-    // If no customer was found to update
-    if (updatedCustomer[0] === 0) {
-      return res.status(404).json({ message: 'Customer not found or access denied' });
+    if (!isAdmin) {
+      // Must belong to a contractor group
+      if (!user.group_id || !user.group || user.group.group_type !== 'contractor') {
+        return res.status(403).json({ message: 'Access denied: not a contractor user' });
+      }
+
+      // Enforce same group ownership
+      if (String(customer.group_id) !== String(user.group_id)) {
+        return res.status(403).json({ message: 'Access denied: different contractor group' });
+      }
+
+      // Enforce that only the creator can delete their own customer
+      if (String(customer.created_by_user_id) !== String(user.id)) {
+        return res.status(403).json({ message: 'Access denied: only the creator can delete this customer' });
+      }
     }
 
-    // Audit: customer.delete
+    // Soft delete by status flag (paranoid already provides deleted_at if using destroy). Keeping existing pattern.
+    customer.status = 0;
+    await customer.save();
+
     await logActivity({
       actorId: user.id,
       action: 'customer.delete',
@@ -264,12 +276,10 @@ const deleteCustomer = async (req, res) => {
       diff: { before: { status: 1 }, after: { status: 0 } }
     });
 
-    // Send success response
-    res.json({ message: 'Customer status updated successfully' });
-
+    return res.json({ message: 'Customer deleted successfully' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error updating customer status', error });
+    console.error('Delete customer error:', error);
+    return res.status(500).json({ message: 'Error deleting customer', error });
   }
 };
 
