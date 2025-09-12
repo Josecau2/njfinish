@@ -88,9 +88,9 @@ const ForgotPasswordPage = () => {
         <div className="text-center px-5">
           {/* <img src="/logo.png" alt="TailAdmin" className="mb-3" style={{ height: '60px' }} /> */}
           <h2>NJ Cabinets</h2>
-          <p className="text-light">Configure - Price - Quote</p>
+          {false && <p className="text-light"></p>}
           <p className="text-light">Dealer Portal</p>
-          <p className="text-light">Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.</p>
+          {false && <p className="text-light"></p>}
   </div>
       </div>
     </div>
