@@ -5,8 +5,11 @@ import 'core-js'
 import './i18n'
 
 import App from './App'
-import { CUSTOMIZATION_CONFIG } from './config/customization'
-import { LOGIN_CUSTOMIZATION } from './config/loginCustomization'
+// Prefer pre-injected globals (set in index.html) to prevent flicker
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from './config/customization'
+import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from './config/loginCustomization'
+const CUSTOMIZATION_CONFIG = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
+const LOGIN_CUSTOMIZATION = (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
 import Swal from 'sweetalert2'
 import i18n from './i18n'

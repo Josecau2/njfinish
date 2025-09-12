@@ -10,7 +10,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>NJ Cabinets</title>
+  <title>NJ Cabinets</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/favicon.ico">
   <!-- Local Inter font (self-hosted) -->
@@ -20,6 +20,43 @@
     <noscript>
       You need to enable JavaScript to run this app
     </noscript>
+    <script>
+      // Inline customization bootstrap (generated at runtime if files exist)
+      (function(){
+        try {
+          // These JSON files are written whenever customization is saved & at server startup
+          var xhr1 = new XMLHttpRequest();
+          xhr1.open('GET', '/assets/customization/app-customization.json', false); // sync small request
+          xhr1.send(null);
+          if (xhr1.status === 200) {
+            try { window.__APP_CUSTOMIZATION__ = JSON.parse(xhr1.responseText); } catch {}
+          }
+          var xhr2 = new XMLHttpRequest();
+            xhr2.open('GET', '/assets/customization/login-customization.json', false);
+            xhr2.send(null);
+            if (xhr2.status === 200) {
+              try { window.__LOGIN_CUSTOMIZATION__ = JSON.parse(xhr2.responseText); } catch {}
+            }
+          // Apply critical colors immediately
+          var root = document.documentElement;
+          var c = window.__APP_CUSTOMIZATION__ || {};
+          if (c.headerBg) root.style.setProperty('--header-bg', c.headerBg);
+          if (c.headerFontColor) root.style.setProperty('--header-fg', c.headerFontColor);
+          if (c.sidebarBg) root.style.setProperty('--sidebar-bg', c.sidebarBg);
+          if (c.sidebarFontColor) root.style.setProperty('--sidebar-fg', c.sidebarFontColor);
+          if (location.pathname === '/login') {
+            var lc = window.__LOGIN_CUSTOMIZATION__ || {};
+            if (lc.backgroundColor) root.style.setProperty('--login-bg', lc.backgroundColor);
+            // Also set page title if provided
+            if (lc.rightTitle && document.title && document.title === 'NJ Cabinets') {
+              document.title = lc.rightTitle;
+            }
+          } else if (c.logoText && document.title === 'NJ Cabinets') {
+            document.title = c.logoText;
+          }
+        } catch (e) { /* silent */ }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/index.js"></script>
     <!-- built files will be auto injected -->

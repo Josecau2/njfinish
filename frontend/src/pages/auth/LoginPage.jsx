@@ -7,7 +7,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
-import { LOGIN_CUSTOMIZATION } from '../../config/loginCustomization';
+import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization';
+const LOGIN_CUSTOMIZATION = (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION;
 import { installTokenEverywhere } from '../../utils/authToken';
 
 const LoginPage = () => {

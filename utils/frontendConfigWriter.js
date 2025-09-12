@@ -5,6 +5,7 @@ const path = require('path')
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend')
 const CONFIG_PATH = path.join(FRONTEND_DIR, 'src', 'config', 'customization.js')
 const ASSETS_DIR = path.join(FRONTEND_DIR, 'public', 'assets', 'customization')
+const RAW_JSON_PATH = path.join(FRONTEND_DIR, 'public', 'assets', 'customization', 'app-customization.json')
 
 // Default fallback (matches shape used in slice)
 const FALLBACK = {
@@ -69,6 +70,12 @@ async function writeFrontendCustomization(input) {
   const cfg = buildConfigObject(input)
   ensureDir(path.dirname(CONFIG_PATH))
   fs.writeFileSync(CONFIG_PATH, generateFileContents(cfg), 'utf-8')
+  try {
+    ensureDir(ASSETS_DIR)
+    fs.writeFileSync(RAW_JSON_PATH, JSON.stringify(cfg), 'utf-8')
+  } catch (e) {
+    console.warn('Could not write raw app customization JSON:', e?.message)
+  }
   return cfg
 }
 

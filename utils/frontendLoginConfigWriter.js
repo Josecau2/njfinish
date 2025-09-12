@@ -4,6 +4,7 @@ const path = require('path')
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend')
 const CONFIG_PATH = path.join(FRONTEND_DIR, 'src', 'config', 'loginCustomization.js')
 const ASSETS_DIR = path.join(FRONTEND_DIR, 'public', 'assets', 'customization')
+const RAW_JSON_PATH = path.join(ASSETS_DIR, 'login-customization.json')
 
 const FALLBACK = {
   logo: '',
@@ -57,6 +58,12 @@ async function writeFrontendLoginCustomization(input) {
   const cfg = buildConfig(input)
   ensureDir(path.dirname(CONFIG_PATH))
   fs.writeFileSync(CONFIG_PATH, fileContents(cfg), 'utf-8')
+  try {
+    ensureDir(ASSETS_DIR)
+    fs.writeFileSync(RAW_JSON_PATH, JSON.stringify(cfg), 'utf-8')
+  } catch (e) {
+    console.warn('Could not write raw login customization JSON:', e?.message)
+  }
   return cfg
 }
 
