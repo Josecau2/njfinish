@@ -22,6 +22,8 @@ import { fetchOrders } from '../../store/slices/ordersSlice'
 import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { fetchPayments } from '../../store/slices/paymentsSlice'
 import { useNavigate } from 'react-router-dom'
+import axiosInstance from '../../helpers/axiosInstance'
+import { toast } from 'react-toastify'
 
 const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, mineOnly = false }) => {
   const { t } = useTranslation()
@@ -259,13 +261,48 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     }
   }
 
-  const handleMakePayment = (orderId) => {
+  const handleMakePayment = async (orderId) => {
     const payment = getOrderPayment(orderId)
     if (payment) {
       navigate(`/payments/${payment.id}/pay`)
     } else {
-      // If no payment exists, go to payments page to potentially create one
-      navigate('/payments')
+      // If no payment exists, create one automatically for this order
+      try {
+        const order = orders.find(o => o.id === orderId)
+        if (!order) {
+          console.error('Order not found for payment creation:', orderId)
+          navigate('/payments')
+          return
+        }
+
+        // Calculate payment amount from order total
+        const amount = order.grand_total_cents ? (order.grand_total_cents / 100) : 0
+        if (amount <= 0) {
+          toast.error('Cannot create payment: Order total is invalid')
+          return
+        }
+
+        // Create payment via API
+        const response = await axiosInstance.post('/api/payments', {
+          orderId: orderId,
+          amount: amount,
+          currency: 'USD'
+        })
+
+        if (response.data && response.data.id) {
+          // Navigate to the newly created payment
+          navigate(`/payments/${response.data.id}/pay`)
+          // Refresh payments list in the background
+          dispatch(fetchPayments({ page: 1 }))
+        } else {
+          throw new Error('Invalid payment creation response')
+        }
+      } catch (error) {
+        console.error('Failed to create payment for order:', error)
+        toast.error('Failed to create payment. Please try again.')
+        // Fallback to payments list
+        navigate('/payments')
+      }
     }
   }
 

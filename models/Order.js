@@ -144,4 +144,40 @@ const Order = sequelize.define('order', {
   ]
 });
 
+// Auto-create payment when order is created
+Order.addHook('afterCreate', async (order, options) => {
+  try {
+    // Only create payment if order has a valid total
+    if (order.grand_total_cents && order.grand_total_cents > 0) {
+      const { Payment } = require('./index');
+      
+      // Check if payment already exists
+      const existingPayment = await Payment.findOne({
+        where: { orderId: order.id }
+      });
+
+      if (!existingPayment) {
+        const amount = order.grand_total_cents / 100; // Convert cents to dollars
+        
+        await Payment.create({
+          orderId: order.id,
+          amount: amount,
+          currency: order.currency || 'USD',
+          status: 'pending',
+          createdBy: order.accepted_by_user_id || order.created_by_user_id
+        });
+
+        console.log('✅ Auto-created payment for order:', {
+          orderId: order.id,
+          amount: amount,
+          currency: order.currency || 'USD'
+        });
+      }
+    }
+  } catch (error) {
+    // Don't fail order creation if payment creation fails
+    console.error('❌ Failed to auto-create payment for order:', order.id, error.message);
+  }
+});
+
 module.exports = Order;
