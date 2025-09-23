@@ -97,6 +97,7 @@ COPY config ./config
 COPY middleware ./middleware
 COPY constants ./constants
 COPY utils ./utils
+COPY services ./services
 COPY scripts ./scripts
 COPY migrations ./migrations
 COPY *.js ./
