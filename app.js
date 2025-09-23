@@ -121,8 +121,20 @@ syncPromise.then(async () => {
     }
     const latestLogin = await LoginCustomization.findOne({ order: [['updatedAt', 'DESC']] });
     if (latestLogin) {
-      await writeFrontendLoginCustomization(latestLogin.toJSON());
+      const loginConfig = latestLogin.toJSON();
+      await writeFrontendLoginCustomization(loginConfig);
       console.log('[Startup] Persisted login customization to static config');
+      try {
+        const { extractEmailSettings } = require('./services/loginCustomizationCache');
+        const { applyTransportConfig } = require('./utils/mail');
+        const emailSettings = extractEmailSettings(loginConfig);
+        const result = applyTransportConfig(emailSettings);
+        if (!result.success) {
+          console.warn('[Startup] SMTP settings incomplete; email sending remains disabled.');
+        }
+      } catch (smtpError) {
+        console.warn('[Startup] Failed to apply SMTP settings:', smtpError?.message || smtpError);
+      }
     }
   } catch (e) {
     console.warn('Startup customization persistence failed:', e?.message);

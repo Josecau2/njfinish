@@ -114,4 +114,4 @@ RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/ma
 
 USER node
 EXPOSE 8080
-CMD ["sh", "-lc", "node scripts/wait-for-db.js && node create-safe-global-migration.js && node index.js"]
+CMD ["sh", "-lc", "node scripts/wait-for-db.js && node scripts/migrate.js up && node create-safe-global-migration.js && node index.js"]

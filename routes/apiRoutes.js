@@ -319,6 +319,7 @@ router.get('/designers', userGroupController.getDesingers);
 router.get('/login-customization', loginCustomizationController.getCustomization);
 // Admin-only save endpoint
 router.post('/login-customization', verifyTokenWithGroup, requirePermission('admin:settings'), loginCustomizationController.saveCustomization);
+router.post('/login-customization/test-email', verifyTokenWithGroup, requirePermission('admin:settings'), loginCustomizationController.testEmail);
 
 router.get('/dashboard/counts', verifyTokenWithGroup, proposalsController.getCounts);
 router.get('/dashboard/latest-proposals', verifyTokenWithGroup, proposalsController.getLatestProposals);
@@ -386,5 +387,6 @@ router.post('/catalog-items/requirements', verifyTokenWithGroup, sanitizeBodyStr
 
 
 module.exports = router;
+
 
 

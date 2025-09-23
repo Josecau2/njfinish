@@ -1344,6 +1344,30 @@
             "adminEmailBody": "Ingrese el contenido del correo del administrador"
           }
         },
+        "smtp": {
+          "title": "Configuración de correo y SMTP",
+          "subtitle": "Configura cómo se envían los restablecimientos de contraseña y las cotizaciones desde NJ Cabinets.",
+          "host": "Servidor SMTP",
+          "port": "Puerto",
+          "secure": "Usar TLS (STARTTLS)",
+          "user": "Usuario SMTP",
+          "pass": "Contraseña o contraseña de aplicación",
+          "from": "Nombre y correo del remitente",
+          "placeholders": {
+            "host": "smtp.gmail.com",
+            "port": "587",
+            "user": "support@nj.contractors",
+            "pass": "Contraseña de aplicación",
+            "from": "NJ Contractors <support@nj.contractors>"
+          },
+          "testLabel": "Enviar correo de prueba",
+          "testPlaceholder": "tu@ejemplo.com",
+          "testButton": "Enviar correo de prueba",
+          "testing": "Enviando...",
+          "testSuccess": "Correo de prueba enviado a {{email}}.",
+          "testFailed": "No se pudo enviar el correo de prueba. Verifica los datos SMTP.",
+          "testMissingEmail": "Ingresa un correo de destino antes de enviar la prueba."
+        },
         "previewBadge": "Los cambios serán visibles en la vista previa",
         "previewTitle": "Vista previa de la página de inicio",
         "closePreview": "Cerrar vista previa"

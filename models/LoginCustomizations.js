@@ -71,6 +71,36 @@ const LoginCustomizations = sequelize.define('LoginCustomizations', {
     allowNull: true,
     field: 'request_access_lead_body',
   },
+  smtpHost: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'smtp_host'
+  },
+  smtpPort: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'smtp_port'
+  },
+  smtpSecure: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    field: 'smtp_secure'
+  },
+  smtpUser: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'smtp_user'
+  },
+  smtpPass: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'smtp_pass'
+  },
+  emailFrom: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'email_from'
+  },
 }, {
   timestamps: true,
   tableName: 'login_customizations',
@@ -79,3 +109,4 @@ const LoginCustomizations = sequelize.define('LoginCustomizations', {
 });
 
 module.exports = LoginCustomizations;
+

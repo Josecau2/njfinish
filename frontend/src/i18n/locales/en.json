@@ -1999,6 +1999,30 @@
             "adminEmailBody": "Enter admin email body content"
           }
         },
+        "smtp": {
+          "title": "Email & SMTP Settings",
+          "subtitle": "Configure how password resets and quotes are delivered from NJ Cabinets.",
+          "host": "SMTP host",
+          "port": "Port",
+          "secure": "Use TLS (STARTTLS)",
+          "user": "SMTP username",
+          "pass": "SMTP password or app password",
+          "from": "From name & email",
+          "placeholders": {
+            "host": "smtp.gmail.com",
+            "port": "587",
+            "user": "support@nj.contractors",
+            "pass": "App password",
+            "from": "NJ Contractors <support@nj.contractors>"
+          },
+          "testLabel": "Send test email",
+          "testPlaceholder": "you@example.com",
+          "testButton": "Send test email",
+          "testing": "Sending...",
+          "testSuccess": "Test email sent to {{email}}.",
+          "testFailed": "Unable to send test email. Please verify your SMTP details.",
+          "testMissingEmail": "Enter a recipient email before sending a test."
+        },
         "previewBadge": "Changes will be visible in preview",
         "previewTitle": "Login Page Preview",
         "closePreview": "Close Preview"

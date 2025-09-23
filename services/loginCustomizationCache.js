@@ -29,6 +29,21 @@ const coerceString = (value, fallback = '') => {
   return String(value);
 };
 
+const coerceInteger = (value, fallback = null) => {
+  if (value === null || value === undefined || value === '') return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const coerceBoolean = (value, fallback = false) => {
+  if (value === null || value === undefined || value === '') return fallback;
+  if (typeof value === 'boolean') return value;
+  const normalized = String(value).trim().toLowerCase();
+  if (['true', '1', 'yes', 'y', 'on'].includes(normalized)) return true;
+  if (['false', '0', 'no', 'n', 'off'].includes(normalized)) return false;
+  return fallback;
+};
+
 const compileCustomization = (raw = {}) => {
   const defaults = cloneLoginCustomizationDefaults();
   const merged = { ...defaults, ...raw };
@@ -41,6 +56,14 @@ const compileCustomization = (raw = {}) => {
   merged.requestAccessAdminBody = coerceString(raw.requestAccessAdminBody, defaults.requestAccessAdminBody);
   merged.requestAccessLeadSubject = coerceString(raw.requestAccessLeadSubject, defaults.requestAccessLeadSubject);
   merged.requestAccessLeadBody = coerceString(raw.requestAccessLeadBody, defaults.requestAccessLeadBody);
+  merged.smtpHost = coerceString(merged.smtpHost, defaults.smtpHost);
+  const rawPort = Object.prototype.hasOwnProperty.call(raw, 'smtpPort') ? raw.smtpPort : merged.smtpPort;
+  merged.smtpPort = rawPort === '' ? '' : coerceInteger(rawPort, defaults.smtpPort);
+  const secureSource = Object.prototype.hasOwnProperty.call(raw, 'smtpSecure') ? raw.smtpSecure : merged.smtpSecure;
+  merged.smtpSecure = coerceBoolean(secureSource, defaults.smtpSecure);
+  merged.smtpUser = coerceString(merged.smtpUser, defaults.smtpUser);
+  merged.smtpPass = coerceString(merged.smtpPass, defaults.smtpPass);
+  merged.emailFrom = coerceString(merged.emailFrom, defaults.emailFrom);
   return merged;
 };
 
@@ -49,6 +72,19 @@ const stripRuntimeFields = (customization = {}) => {
   delete copy._generated;
   delete copy._version;
   return copy;
+};
+
+const extractEmailSettings = (customization = {}) => {
+  const compiled = compileCustomization(customization);
+  const normalizedPort = compiled.smtpPort === null || compiled.smtpPort === undefined ? '' : compiled.smtpPort;
+  return {
+    smtpHost: coerceString(compiled.smtpHost, ''),
+    smtpPort: normalizedPort,
+    smtpSecure: coerceBoolean(compiled.smtpSecure, false),
+    smtpUser: coerceString(compiled.smtpUser, ''),
+    smtpPass: coerceString(compiled.smtpPass, ''),
+    emailFrom: coerceString(compiled.emailFrom, ''),
+  };
 };
 
 async function fetchCustomizationFromDb() {
@@ -93,5 +129,10 @@ module.exports = {
   refreshLoginCustomization,
   getRequestAccessConfig,
   compileCustomization,
-  stripRuntimeFields
+  stripRuntimeFields,
+  extractEmailSettings
 };
+
+
+
+

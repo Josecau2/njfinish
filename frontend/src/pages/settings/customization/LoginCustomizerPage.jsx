@@ -48,7 +48,13 @@ const DEFAULT_SETTINGS = {
   requestAccessAdminSubject: "New Access Request Submitted",
   requestAccessAdminBody: "You have a new access request from {{name}} ({{email}}).{{companyLine}}{{messageBlock}}",
   requestAccessLeadSubject: "We received your request",
-  requestAccessLeadBody: "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n— The NJ Cabinets Team",
+  requestAccessLeadBody: "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n- The NJ Cabinets Team",
+  smtpHost: "",
+  smtpPort: "",
+  smtpSecure: false,
+  smtpUser: "",
+  smtpPass: "",
+  emailFrom: "",
 };
 
 const LoginCustomizerPage = () => {
@@ -61,6 +67,8 @@ const LoginCustomizerPage = () => {
     ...DEFAULT_SETTINGS,
     requestAccessBenefits: [...DEFAULT_SETTINGS.requestAccessBenefits],
   }));
+  const [testEmail, setTestEmail] = useState('');
+  const [testingEmail, setTestingEmail] = useState(false);
 
   const normalizeSettings = (incoming = {}) => {
     const merged = {
@@ -68,6 +76,7 @@ const LoginCustomizerPage = () => {
       requestAccessBenefits: [...DEFAULT_SETTINGS.requestAccessBenefits],
       ...incoming,
     };
+
     const rawBenefits = incoming.requestAccessBenefits ?? merged.requestAccessBenefits;
     merged.requestAccessBenefits = Array.isArray(rawBenefits)
       ? rawBenefits.map((item) => String(item || '').trim()).filter(Boolean)
@@ -75,6 +84,18 @@ const LoginCustomizerPage = () => {
           .split(/\r?\n/)
           .map((line) => line.trim())
           .filter(Boolean);
+
+    const coerceField = (value) => (value === undefined || value === null ? '' : String(value));
+    merged.smtpHost = coerceField(incoming.smtpHost ?? merged.smtpHost);
+    const rawPort = incoming.smtpPort ?? merged.smtpPort;
+    merged.smtpPort = rawPort === undefined || rawPort === null || rawPort === '' ? '' : String(rawPort);
+    merged.smtpSecure = incoming.smtpSecure !== undefined
+      ? Boolean(incoming.smtpSecure)
+      : Boolean(merged.smtpSecure);
+    merged.smtpUser = coerceField(incoming.smtpUser ?? merged.smtpUser);
+    merged.smtpPass = coerceField(incoming.smtpPass ?? merged.smtpPass);
+    merged.emailFrom = coerceField(incoming.emailFrom ?? merged.emailFrom);
+
     return merged;
   };
 
@@ -86,12 +107,26 @@ const LoginCustomizerPage = () => {
     setSettings((prev) => ({ ...prev, requestAccessBenefits: lines }));
   };
 
-  const buildPayload = () => ({
-    ...settings,
-    requestAccessBenefits: (settings.requestAccessBenefits || [])
+  const buildPayload = () => {
+    const sanitizedBenefits = (settings.requestAccessBenefits || [])
       .map((item) => String(item || '').trim())
-      .filter(Boolean),
-  });
+      .filter(Boolean);
+
+    const trimmed = (value) => (value === undefined || value === null ? '' : String(value).trim());
+
+    return {
+      ...settings,
+      requestAccessBenefits: sanitizedBenefits,
+      smtpHost: trimmed(settings.smtpHost),
+      smtpPort: settings.smtpPort === '' || settings.smtpPort === null || settings.smtpPort === undefined
+        ? ''
+        : String(settings.smtpPort).trim(),
+      smtpSecure: Boolean(settings.smtpSecure),
+      smtpUser: trimmed(settings.smtpUser),
+      smtpPass: settings.smtpPass === undefined || settings.smtpPass === null ? '' : String(settings.smtpPass),
+      emailFrom: trimmed(settings.emailFrom),
+    };
+  };
 
   useEffect(() => {
     const fetchCustomization = async () => {
@@ -127,6 +162,29 @@ const LoginCustomizerPage = () => {
       Swal.fire(t('common.error'), t('settings.customization.login.alerts.saveFailed'), 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    const recipient = (testEmail || '').trim();
+    if (!recipient) {
+      Swal.fire(t('common.error'), t('settings.customization.login.smtp.testMissingEmail'), 'error');
+      return;
+    }
+
+    try {
+      setTestingEmail(true);
+      const payload = buildPayload();
+      await axiosInstance.post('/api/login-customization/test-email', {
+        email: recipient,
+        settings: payload,
+      });
+      await Swal.fire(t('common.success'), t('settings.customization.login.smtp.testSuccess', { email: recipient }), 'success');
+    } catch (err) {
+      const message = err?.response?.data?.message || err?.message || t('settings.customization.login.smtp.testFailed');
+      Swal.fire(t('common.error'), message, 'error');
+    } finally {
+      setTestingEmail(false);
     }
   };
 
@@ -393,6 +451,110 @@ const LoginCustomizerPage = () => {
                         }}
                       />
                       {getCharCount(settings.rightDescription, 500)}
+                    </div>
+                  </div>
+                </CCol>
+              </CRow>
+
+              <CRow className="mt-4">
+                <CCol lg={12}>
+                  <div className="mb-4">
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                      <div
+                        className="d-flex align-items-center justify-content-center"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          backgroundColor: '#f0f4ff',
+                          borderRadius: '8px',
+                        }}
+                      >
+                        <CIcon icon={cilSettings} style={{ color: '#2b6cb0', fontSize: '16px' }} />
+                      </div>
+                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.smtp.title')}</h5>
+                    </div>
+                    <p className="text-muted mb-4">{t('settings.customization.login.smtp.subtitle')}</p>
+                    <CRow className="g-3">
+                      <CCol md={6}>
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.host')}</CFormLabel>
+                        <CFormInput
+                          value={settings.smtpHost}
+                          onChange={(e) => handleChange('smtpHost', e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.placeholders.host')}
+                        />
+                      </CCol>
+                      <CCol md={3}>
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.port')}</CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={settings.smtpPort}
+                          onChange={(e) => handleChange('smtpPort', e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.placeholders.port')}
+                        />
+                      </CCol>
+                      <CCol md={3} className="d-flex align-items-end">
+                        <CFormCheck
+                          className="mb-3"
+                          label={t('settings.customization.login.smtp.secure')}
+                          checked={Boolean(settings.smtpSecure)}
+                          onChange={(e) => handleChange('smtpSecure', e.target.checked)}
+                        />
+                      </CCol>
+                      <CCol md={6}>
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.user')}</CFormLabel>
+                        <CFormInput
+                          value={settings.smtpUser}
+                          onChange={(e) => handleChange('smtpUser', e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.placeholders.user')}
+                          autoComplete="username"
+                        />
+                      </CCol>
+                      <CCol md={6}>
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.pass')}</CFormLabel>
+                        <CFormInput
+                          type="password"
+                          value={settings.smtpPass}
+                          onChange={(e) => handleChange('smtpPass', e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.placeholders.pass')}
+                          autoComplete="new-password"
+                        />
+                      </CCol>
+                      <CCol md={6}>
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.from')}</CFormLabel>
+                        <CFormInput
+                          value={settings.emailFrom}
+                          onChange={(e) => handleChange('emailFrom', e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.placeholders.from')}
+                        />
+                      </CCol>
+                    </CRow>
+                    <hr className="my-4" />
+                    <div className="d-flex flex-column flex-md-row align-items-md-end gap-3">
+                      <div className="flex-grow-1">
+                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.testLabel')}</CFormLabel>
+                        <CFormInput
+                          value={testEmail}
+                          onChange={(e) => setTestEmail(e.target.value)}
+                          placeholder={t('settings.customization.login.smtp.testPlaceholder')}
+                        />
+                      </div>
+                      <div>
+                        <CButton
+                          color="primary"
+                          className="mt-3 mt-md-0"
+                          disabled={testingEmail}
+                          onClick={handleSendTestEmail}
+                        >
+                          {testingEmail ? (
+                            <>
+                              <CSpinner size="sm" className="me-2" />
+                              {t('settings.customization.login.smtp.testing')}
+                            </>
+                          ) : (
+                            t('settings.customization.login.smtp.testButton')
+                          )}
+                        </CButton>
+                      </div>
                     </div>
                   </div>
                 </CCol>

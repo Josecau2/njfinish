@@ -16,9 +16,7 @@ export const LOGIN_CUSTOMIZATION = {
   "requestAccessSubtitle": "Interested in partnering with NJ Cabinets?",
   "requestAccessDescription": "Tell us a bit about your business and we'll follow up with onboarding details.",
   "requestAccessBenefits": [
-    "Generate accurate cabinet quotes in minutes",
-    "Submit and track orders from one dashboard",
-    "Collaborate directly with our support specialists"
+    "[\"[\\\"Generate accurate cabinet quotes in minutes\\\",\\\"Submit and track orders from one dashboard\\\",\\\"Collaborate directly with our support specialists\\\"]\"]"
   ],
   "requestAccessSuccessMessage": "Thank you! We've received your request and will be in touch soon.",
   "requestAccessAdminSubject": "New Access Request Submitted",
@@ -27,8 +25,8 @@ export const LOGIN_CUSTOMIZATION = {
   "requestAccessLeadBody": "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n— The NJ Cabinets Team",
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
-  "updatedAt": "2025-09-22T20:12:03.000Z",
-  "_generated": "2025-09-23T15:16:03.645Z",
+  "updatedAt": "2025-09-23T20:17:00.000Z",
+  "_generated": "2025-09-23T20:23:16.693Z",
   "_version": "1.0.0"
 }
 
