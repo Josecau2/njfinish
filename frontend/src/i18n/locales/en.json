@@ -1976,7 +1976,7 @@
         "requestAccess": {
           "title": "Request Access Page",
           "pageTitle": "Page title",
-          "subtitle": "Subtitle", 
+          "subtitle": "Subtitle",
           "description": "Description",
           "benefits": "Benefits (one per line)",
           "benefitsHint": "These appear as bullet points on the request access page.",
@@ -1984,7 +1984,7 @@
           "successMessage": "Success message",
           "leadEmailSubject": "Lead email subject",
           "leadEmailBody": "Lead email body",
-          "adminEmailSubject": "Admin email subject", 
+          "adminEmailSubject": "Admin email subject",
           "adminEmailBody": "Admin email body",
           "placeholdersAvailable": "Placeholders available:",
           "placeholders": {

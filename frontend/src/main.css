@@ -883,7 +883,15 @@
     border-radius: 8px;
   }
 
-  /* Notification Bell dropdown: mobile-only fixed layout to keep within viewport */
+  /* Notification Bell dropdown: proper positioning for all screen sizes */
+  .notification-mobile-dropdown {
+    z-index: 1080 !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow-y: auto !important;
+  }
+
+  /* Mobile: fixed positioning to escape header container */
   @media (max-width: 767.98px) {
     .notification-mobile-dropdown {
       position: fixed !important;
@@ -893,11 +901,34 @@
       width: auto !important;
       max-width: none !important;
       margin: 0 !important;
-      z-index: 1080;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
       max-height: calc(100vh - 96px) !important; /* within viewport */
-      overflow-y: auto !important;
+    }
+  }
+
+  /* Desktop: ensure dropdown extends beyond header container */
+  @media (min-width: 768px) {
+    .notification-mobile-dropdown {
+      position: absolute !important;
+      right: 0 !important;
+      left: auto !important;
+      width: 350px !important;
+      max-height: 400px !important;
+      margin-top: 8px !important;
+      transform: none !important;
+    }
+
+    /* Ensure header container allows dropdown overflow */
+    .modern-header,
+    .modern-header__container,
+    .header,
+    [class*="header"] {
+      overflow: visible !important;
+    }
+
+    /* Specifically target the CoreUI header nav to allow overflow */
+    .header .navbar-nav,
+    .modern-header__nav {
+      overflow: visible !important;
     }
   }
 
