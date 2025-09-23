@@ -3,18 +3,18 @@
 // DO NOT edit manually - changes will be overwritten
 
 export const CUSTOMIZATION_CONFIG = {
-  "logoText": "Cabinets",
+  "logoText": "NJ Cabinets Demo",
   "logoImage": "/assets/customization/logo.png",
-  "headerBg": "#000000",
-  "headerFontColor": "#ffffff",
-  "sidebarBg": "#0f0f0f",
-  "sidebarFontColor": "#ffffff",
-  "logoBg": "#000000",
+  "headerBg": "#1E293B",
+  "headerFontColor": "#F8FAFC",
+  "sidebarBg": "#0F172A",
+  "sidebarFontColor": "#E2E8F0",
+  "logoBg": "#2563EB",
   "companyName": "",
   "id": 1,
-  "createdAt": "2025-08-19T03:05:51.000Z",
-  "updatedAt": "2025-09-12T16:33:56.000Z",
-  "_generated": "2025-09-12T16:48:12.572Z",
+  "createdAt": "2025-09-22T19:51:25.000Z",
+  "updatedAt": "2025-09-23T00:24:24.000Z",
+  "_generated": "2025-09-23T15:16:03.642Z",
   "_version": "1.0.0"
 }
 

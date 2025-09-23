@@ -7,20 +7,20 @@ async function createAdminUser() {
     // Ensure database connection
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
-    
+
     // Hash the password
     const hashedPassword = await bcrypt.hash('admin123', 10);
     console.log('Password hashed successfully');
-    
+
     // Check if user exists
     const existingUser = await User.findOne({ where: { email: 'joseca@symmetricalwolf.com' } });
-    
+
     if (existingUser) {
       // Update existing user
       await existingUser.update({
         password: hashedPassword,
         role: 'Admin',
-        role_id: 2,
+        role_id: 1, // Use actual Admin role ID from user_roles table
         isActive: 'true'
       });
       console.log('✅ User password updated successfully for joseca@symmetricalwolf.com');
@@ -32,7 +32,7 @@ async function createAdminUser() {
         email: 'joseca@symmetricalwolf.com',
         password: hashedPassword,
         role: 'Admin',
-        role_id: 2,
+        role_id: 1, // Use actual Admin role ID from user_roles table
         location: '1',
         isSalesRep: false,
         isDeleted: false,

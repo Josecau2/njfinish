@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 const ResetPasswordPage = () => {
     const api_url = import.meta.env.VITE_API_URL;
@@ -43,9 +43,6 @@ const ResetPasswordPage = () => {
             {/* Left Panel */}
             <div className="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
                 <div className="w-100" style={{ maxWidth: '400px' }}>
-                    {/* <a href="/" className="text-decoration-none mb-4 d-inline-block">
-            &larr; Back to login
-          </a> */}
                     {message && (
                         <div className="alert alert-success" role="status" aria-live="polite">
                             {message}
@@ -75,10 +72,9 @@ const ResetPasswordPage = () => {
                         <button type="submit" className="btn btn-primary w-100" style={{ minHeight: 44 }}>Reset</button>
                     </form>
 
-                    {/* <div className="text-center mt-3">
-                        <span className="text-muted">Remember your password? </span>
-                        <a href="/login">Sign In</a>
-                    </div> */}
+                    <div className="text-center mt-3">
+                        <Link to="/login" className="text-decoration-none">Back to login</Link>
+                    </div>
                 </div>
             </div>
 

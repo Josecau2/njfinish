@@ -49,6 +49,7 @@ export const PERMISSIONS = {
   'admin:users': ['admin', 'super_admin'],
   'admin:groups': ['admin', 'super_admin'],
   'admin:manufacturers': ['admin', 'super_admin'],
+  'admin:leads': ['admin', 'super_admin'],
 
   // Resources permissions
   'resources:read': ['sales', 'manager', 'admin', 'super_admin'],
@@ -323,3 +324,8 @@ export const canAccessNavItem = (user, navItem) => {
   if (!navItem.permission) return true;
   return hasPermission(user, navItem.permission);
 };
+
+
+
+
+

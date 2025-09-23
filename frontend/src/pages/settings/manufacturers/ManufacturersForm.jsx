@@ -152,7 +152,7 @@ const FileUploadCard = ({ title, icon, accept, multiple = false, onChange, selec
     <CFormLabel className="fw-medium text-dark mb-2">{title}</CFormLabel>
     <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
       <CIcon icon={icon} size="xl" className="text-muted mb-2" />
-      <p className="text-muted mb-2">Click to browse or drag and drop files here</p>
+      <p className="text-muted mb-2">{t('common.clickToBrowse')}</p>
       <CFormInput
         type="file"
         accept={accept}
@@ -173,7 +173,7 @@ const FileUploadCard = ({ title, icon, accept, multiple = false, onChange, selec
         <div className="mt-3">
           {Array.isArray(selectedFiles) ? (
             selectedFiles.length === 0 ? (
-              <span className="text-danger small">No files selected</span>
+              <span className="text-danger small">{t('common.noFilesSelected')}</span>
             ) : (
               <div className="text-success small">
                 <CIcon icon={cilCloudUpload} className="me-1" />

@@ -1,4 +1,3 @@
-const nodemailer = require('nodemailer');
 const { getPuppeteer } = require('../utils/puppeteerLauncher');
 
 const PdfPrinter = require('pdfmake');
@@ -17,16 +16,7 @@ const fonts = {
 const printer = new PdfPrinter(fonts);
 
 // Nodemailer transporter
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // Use 587 if needed
-    secure: true, // true for port 465, false for 587
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASS,
-    },
-});
-
+const { sendMail } = require('../utils/mail');
 
 // // Send Proposal Email with PDF attachment
 // exports.sendProposalEmail = async (req, res) => {
@@ -191,8 +181,7 @@ exports.sendProposalEmail = async (req, res) => {
         // });
 
         // Send email with PDF attachment
-        transporter.sendMail({
-            from: process.env.GMAIL_USER,
+        await sendMail({
             to: email,
             subject: 'Your Proposal',
             html: body,

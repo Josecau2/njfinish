@@ -54,6 +54,7 @@ const Resources = React.lazy(() => import('../src/pages/Resources'))
 const Calender = React.lazy(() => import('./pages/calender'))
 const Contractors = React.lazy(() => import('./pages/admin/Contractors'))
 const ContractorDetail = React.lazy(() => import('./pages/admin/ContractorDetail'))
+const LeadsPage = React.lazy(() => import('./pages/admin/LeadsPage'))
 const NotificationsPage = React.lazy(() => import('./views/notifications/NotificationsPage'))
 const AdminProposalView = React.lazy(() => import('./views/proposals/AdminProposalView'))
 const ContactUs = React.lazy(() => import('./pages/contact/ContactUs'))
@@ -135,6 +136,7 @@ const routes = [
   { path: '/admin/contractors/:groupId', name: 'Contractor Detail (redirect)', element: RedirectToNoisyContractorDetail, adminOnly: true },
   { path: '/:noise1/:noise2/admin/contractors/:groupId', name: 'Contractor Detail (noisy)', element: ContractorDetail, adminOnly: true },
   { path: '/admin/notifications', name: 'Notifications', element: NotificationsPage, permission: 'admin:notifications' },
+  { path: '/admin/leads', name: 'Leads', element: LeadsPage, permission: 'admin:leads' },
   // General notifications page for all authenticated users (contractors included)
   { path: '/notifications', name: 'Notifications', element: NotificationsPage },
   { path: '/quotes/:proposalId/admin-view', name: 'Admin Quote View (redirect)', element: RedirectToNoisyAdminProposalView, permission: 'admin:proposals_view' },
@@ -145,4 +147,5 @@ const routes = [
 ]
 
 export default routes
+
 

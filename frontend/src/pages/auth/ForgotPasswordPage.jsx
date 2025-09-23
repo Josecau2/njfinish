@@ -1,50 +1,116 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { useTranslation } from 'react-i18next'
+import { getOptimalColors } from '../../utils/colorUtils'
+import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
+
+const LOGIN_CUSTOMIZATION =
+  (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
 
 const ForgotPasswordPage = () => {
-  const api_url = import.meta.env.VITE_API_URL;
-  const [email, setEmail] = useState('');
-  const navigate = useNavigate();
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const { t } = useTranslation()
+  const api_url = import.meta.env.VITE_API_URL
+  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const copy = {
+    title: t('auth.forgotPassword.title'),
+    subtitle: t('auth.forgotPassword.subtitle'),
+    success: t('auth.forgotPassword.success'),
+    error: t('auth.forgotPassword.error'),
+    submit: t('auth.forgotPassword.submit'),
+    submitting: t('auth.forgotPassword.submitting'),
+    remember: t('auth.forgotPassword.remember'),
+    signIn: t('auth.signIn'),
+    emailLabel: t('auth.forgotPassword.emailLabel'),
+    emailPlaceholder: t('auth.forgotPassword.emailPlaceholder'),
+    logoAlt: t('auth.logoAlt'),
+  }
+  const requiredAsterisk = <span className="text-danger">*</span>
+
+  useEffect(() => {
+    const fetchCustomization = async () => {
+      try {
+        const res = await axios.get(`${api_url}/api/login-customization`)
+        if (res.data.customization) {
+          setCustomization((prev) => ({ ...prev, ...res.data.customization }))
+        }
+      } catch (err) {
+        console.warn('Non-blocking login customization fetch failed:', err?.message)
+      }
+    }
+
+    // Force light mode on auth pages
+    try {
+      localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
+    } catch (e) {}
+
+    fetchCustomization()
+  }, [api_url])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    setMessage('');
-    setError('');
+    setMessage('')
+    setError('')
+    setIsSubmitting(true)
 
     try {
       const res = await fetch(`${api_url}/api/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
+      const feedback = data.message || copy.success
 
       if (res.ok) {
-        setMessage(data.message || 'Reset link sent to your email.');
-        // navigate('/login');
+        setMessage(feedback)
       } else {
-        setError(data.message || 'Something went wrong.');
+        setError(feedback)
       }
     } catch (err) {
-      setError('Error sending reset link.');
+      console.error('Forgot password request failed:', err)
+      setError(copy.error)
+    } finally {
+      setIsSubmitting(false)
     }
-  };
+  }
 
+  const settings = customization
+  const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446')
 
   return (
-    <div className="container-fluid vh-100 d-flex p-0">
-      {/* Left Panel */}
-      <div className="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
-        <div className="w-100" style={{ maxWidth: '400px' }}>
-          {/* <a href="/" className="text-decoration-none mb-4 d-inline-block">
-            &larr; Back to login
-          </a> */}
-          <h2 className="fw-bold mb-2">Forgot Password</h2>
-          <p className="mb-4 text-muted">Enter your email and we'll send you a link to reset your password.</p>
+    <div className="login-page-wrapper">
+      {/* Left Panel - Illustration and Branding (matches Login/Request Access) */}
+      <div className="login-left-panel" style={{ backgroundColor: settings.backgroundColor }}>
+        <div className="login-left-content">
+          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
+            {settings.rightTitle}
+          </h1>
+          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
+            {settings.rightSubtitle}
+          </p>
+          <p style={{ color: rightPanelColors.subtitle }}>{settings.rightDescription}</p>
+        </div>
+      </div>
+
+      {/* Right Panel - Forgot Password Form */}
+      <div className="login-right-panel">
+        <div className="login-form-container">
+          {settings.logo && (
+            <div className="text-center mb-4">
+              <img src={settings.logo} alt={copy.logoAlt} style={{ height: 50 }} />
+            </div>
+          )}
+          <h2 className="fw-bold mb-2">{copy.title}</h2>
+          <p className="mb-4 text-muted">{copy.subtitle}</p>
+
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
               {message}
@@ -56,45 +122,47 @@ const ForgotPasswordPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="mb-3">
-              <label htmlFor="email" className="form-label fw-semibold">Email address <span className="text-danger">*</span></label>
+              <label htmlFor="email" className="form-label fw-medium">
+                {copy.emailLabel} {requiredAsterisk}
+              </label>
               <input
                 type="email"
-                className="form-control"
-                placeholder="you@example.com"
+                className="form-control form-control-lg"
+                placeholder={copy.emailPlaceholder}
                 value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
                 id="email"
                 aria-required="true"
+                autoComplete="email"
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-100" style={{ minHeight: 44 }}>
-              Send Reset Link
-            </button>
+            <div className="d-grid">
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ minHeight: 44 }}
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                {isSubmitting ? copy.submitting : copy.submit}
+              </button>
+            </div>
           </form>
 
-          <div className="text-center mt-3">
-            <span className="text-muted">Remember your password? </span>
-            <a href="/login">Sign In</a>
+          <div className="text-center mt-4">
+            <span className="text-muted">{copy.remember}</span>
+            <Link to="/login" className="fw-semibold text-decoration-none">
+              {copy.signIn}
+            </Link>
           </div>
         </div>
       </div>
-
-  {/* Right Panel */}
-      <div className="col-md-6 text-white d-flex flex-column justify-content-center align-items-center login-right-panel">
-        <div className="text-center px-5">
-          {/* <img src="/logo.png" alt="TailAdmin" className="mb-3" style={{ height: '60px' }} /> */}
-          <h2>NJ Cabinets</h2>
-          {false && <p className="text-light"></p>}
-          <p className="text-light">Dealer Portal</p>
-          {false && <p className="text-light"></p>}
-  </div>
-      </div>
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPasswordPage;
+export default ForgotPasswordPage

@@ -3,18 +3,9 @@ const jwt = require('jsonwebtoken');
 const { UserGroup, UserRole, UserGroupMultiplier ,User} = require('../models/index');
 const { logActivity } = require('../utils/activityLogger');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
 const { getGroupPermissions } = require('../constants/permissions');
 require('dotenv').config();
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASS,
-  },
-});
 
 
 

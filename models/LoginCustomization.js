@@ -8,7 +8,7 @@ const LoginCustomization = sequelize.define('LoginCustomization', {
     autoIncrement: true
   },
   logo: {
-    type: DataTypes.TEXT, // base64 or URL
+    type: DataTypes.TEXT,
     allowNull: true
   },
   title: {
@@ -46,6 +46,51 @@ const LoginCustomization = sequelize.define('LoginCustomization', {
   rightDescription: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  requestAccessTitle: {
+    type: DataTypes.STRING(191),
+    allowNull: true,
+    field: 'request_access_title'
+  },
+  requestAccessSubtitle: {
+    type: DataTypes.STRING(191),
+    allowNull: true,
+    field: 'request_access_subtitle'
+  },
+  requestAccessDescription: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'request_access_description'
+  },
+  requestAccessBenefits: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    field: 'request_access_benefits'
+  },
+  requestAccessSuccessMessage: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'request_access_success_message'
+  },
+  requestAccessAdminSubject: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'request_access_admin_subject'
+  },
+  requestAccessAdminBody: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'request_access_admin_body'
+  },
+  requestAccessLeadSubject: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'request_access_lead_subject'
+  },
+  requestAccessLeadBody: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'request_access_lead_body'
   }
 }, {
   timestamps: true,

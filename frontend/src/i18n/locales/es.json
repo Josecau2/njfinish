@@ -41,7 +41,50 @@
     "loadMore": "Cargar más",
     "code": "Código",
     "image": "Imagen",
-    "currentAssignments": "Asignaciones actuales"
+    "currentAssignments": "Asignaciones actuales",
+    "status": "Estado",
+    "date": "Fecha",
+    "designDate": "Fecha de Diseño",
+    "measurementDate": "Fecha de Medición",
+    "editVersionName": "Editar Nombre de Versión",
+    "confirmDelete": "Confirmar Eliminación",
+    "areYouSureDelete": "¿Está seguro de que desea eliminar esta versión?",
+    "loadingUserGroups": "Cargando grupos de usuarios...",
+    "clickToBrowse": "Haga clic para navegar o arrastre y suelte archivos aquí",
+    "noFilesSelected": "No se seleccionaron archivos",
+    "pleaseSelectManufacturer": "Por favor seleccione un fabricante para ver los tipos.",
+    "type": "Tipo",
+    "actions": "Acciones",
+    "currentTypeName": "Nombre del Tipo Actual",
+    "newTypeName": "Nuevo Nombre del Tipo",
+    "newTypeCategory": "Nueva Categoría del Tipo",
+    "renameTypeDescription": "Cambiar el nombre del tipo para todos los elementos de este fabricante. Esto afectará todos los elementos del catálogo que actualmente usan este tipo.",
+    "editManufacturer": "Editar Fabricante",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "multiplier": "Multiplicador",
+    "enterManufacturerName": "Ingrese el nombre del fabricante",
+    "enterManufacturerEmail": "Ingrese el correo del fabricante",
+    "enterMultiplier": "Ingrese el multiplicador",
+    "allTypes": "Todos los Tipos",
+    "allStyles": "Todos los Estilos",
+    "price": "Precio",
+    "template": "Plantilla",
+    "scope": "Alcance",
+    "all": "Todos",
+    "assemblyFeeSaved": "Costo de ensamblaje guardado exitosamente",
+    "rollbackCatalogUpload": "Revertir carga reciente del catálogo",
+    "globalModsForItem": "Modificaciones globales para el elemento",
+    "includeDrafts": "Incluir borradores",
+    "optional": "opcional",
+    "enterPrice": "Ingrese el precio (0 para sin costo de ensamblaje)",
+    "perPage": "por página",
+    "warning": "Advertencia",
+    "filterByStyle": "Filtrar por estilo...",
+    "filterByType": "Filtrar por tipo...",
+    "leaveEmptyKeepExisting": "Dejar vacío para mantener el existente",
+    "egSevenToFourteenDays": "ej., 7-14 días",
+    "egThreeToSevenDays": "ej., 3-7 días"
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -177,7 +220,7 @@
     "password": "Contraseña",
     "keepMeLoggedIn": "Mantener sesión iniciada",
     "keepLoggedIn": "Mantener sesión iniciada",
-    "forgotPassword": "¿Olvidó su contraseña?",
+    "forgotPasswordLink": "¿Olvidó su contraseña?",
     "enterCredentials": "¡Ingrese su correo y contraseña para iniciar sesión!",
     "emailPlaceholder": "tú@ejemplo.com",
     "passwordPlaceholder": "Ingrese su contraseña",
@@ -185,7 +228,50 @@
     "sessionExpired": "Tu sesión expiró. Vuelve a iniciar sesión.",
     "loginRequired": "Por favor inicia sesión para continuar.",
     "rightSubtitle": "Configurar - Precios - Cotizar",
-    "rightDescription": "Gestione el flujo de punta a punta, desde la cotización de gabinetes hasta pedidos y devoluciones con nuestro software de automatización de ventas para la industria de cocinas. Una solución B2B flexible y basada en componentes que puede integrarse con su inventario, contabilidad y otros sistemas."
+    "rightDescription": "Gestione el flujo de punta a punta, desde la cotización de gabinetes hasta pedidos y devoluciones con nuestro software de automatización de ventas para la industria de cocinas. Una solución B2B flexible y basada en componentes que puede integrarse con su inventario, contabilidad y otros sistemas.",
+    "logoAlt": "Logotipo de la empresa",
+    "requestAccess": {
+      "title": "Solicitar acceso",
+      "subtitle": "Cuéntanos quién eres y te enviaremos los detalles de incorporación.",
+      "description": "",
+      "success": "¡Gracias! Hemos recibido tu solicitud y nos pondremos en contacto pronto.",
+      "submit": "Solicitar acceso",
+      "submitting": "Enviando...",
+      "submitError": "No pudimos enviar tu solicitud en este momento. Inténtalo nuevamente.",
+      "benefitsHeading": "Por qué los equipos eligen nuestro portal:",
+      "alreadyHaveAccess": "¿Ya tienes acceso?",
+      "fields": {
+        "firstNameLabel": "Nombre",
+        "firstNamePlaceholder": "Tu nombre",
+        "lastNameLabel": "Apellido",
+        "lastNamePlaceholder": "Tu apellido",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "tu@ejemplo.com",
+        "phoneLabel": "Teléfono",
+        "phonePlaceholder": "(555) 123-4567",
+        "cityLabel": "Ciudad",
+        "cityPlaceholder": "Tu ciudad",
+        "stateLabel": "Estado",
+        "statePlaceholder": "Estado",
+        "zipLabel": "Código postal",
+        "zipPlaceholder": "CP",
+        "companyLabel": "Empresa",
+        "companyPlaceholder": "Tu empresa (opcional)",
+        "messageLabel": "Mensaje",
+        "messagePlaceholder": "Cuéntanos un poco sobre tu negocio y cómo podemos ayudar."
+      }
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Ingresa tu correo y te enviaremos un enlace para restablecerla.",
+      "success": "Si existe una cuenta con ese correo, se ha enviado un enlace de restablecimiento.",
+      "error": "No pudimos enviar el correo de restablecimiento en este momento. Inténtalo más tarde.",
+      "submit": "Enviar enlace de restablecimiento",
+      "submitting": "Enviando...",
+      "remember": "¿Recordaste tu contraseña?",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "tu@ejemplo.com"
+    }
   },
   "nav": {
     "dashboard": "Panel",
@@ -196,6 +282,9 @@
     "createProposal": "Crear cotización",
     "createQuote": "Crear cotización",
     "contracts": "Contratos",
+    "orders": "Pedidos",
+    "myOrders": "Mis pedidos",
+    "payments": "Pagos",
     "customers": "Clientes",
     "viewCustomers": "Ver clientes",
     "addCustomer": "Agregar cliente",
@@ -203,8 +292,8 @@
     "calendar": "Calendario",
     "admin": "Admin",
     "contractors": "Contratistas",
+    "leads": "Prospectos",
     "notifications": "Notificaciones",
-    "payment": "Pagos",
     "settings": "Ajustes",
     "userManagement": "Gestión de usuarios",
     "users": "Usuarios",
@@ -218,7 +307,9 @@
     "pdfLayout": "Diseño de PDF",
     "loginPage": "Página de inicio de sesión",
     "uiCustomization": "Personalización de UI",
-    "contactUs": "Contáctenos"
+    "contactUs": "Contáctenos",
+    "terms": "Términos y condiciones",
+    "paymentConfig": "Configuración de pagos"
   },
   "termsModal": {
     "title": "Términos y Condiciones",
@@ -1227,6 +1318,32 @@
         "form": { "title": "Ajustes del formulario de inicio", "loginTitle": "Título de inicio de sesión", "loginSubtitle": "Subtítulo de inicio de sesión", "backgroundColor": "Color de fondo", "placeholders": { "title": "Ingrese el título de inicio de sesión", "subtitle": "Ingrese el subtítulo de inicio de sesión" } },
         "options": { "title": "Opciones de inicio", "showForgot": "Mostrar enlace de ¿Olvidó su contraseña?", "showForgotHint": "Mostrar la opción de recuperación para usuarios", "showKeep": "Mostrar Mantener sesión iniciada", "showKeepHint": "Permitir a los usuarios permanecer conectados más tiempo" },
         "rightPanel": { "title": "Contenido del panel derecho", "panelTitle": "Título del panel", "panelSubtitle": "Subtítulo del panel", "tagline": "Lema", "description": "Descripción", "placeholders": { "title": "Ingrese el título del panel", "subtitle": "Ingrese el subtítulo del panel", "tagline": "Ingrese el lema", "description": "Ingrese una descripción detallada" } },
+        "requestAccess": {
+          "title": "Página de solicitud de acceso",
+          "pageTitle": "Título de la página",
+          "subtitle": "Subtítulo",
+          "description": "Descripción",
+          "benefits": "Beneficios (uno por línea)",
+          "benefitsHint": "Estos aparecen como viñetas en la página de solicitud de acceso.",
+          "requestEmails": "Correos de solicitud de acceso",
+          "successMessage": "Mensaje de éxito",
+          "leadEmailSubject": "Asunto del correo del prospecto",
+          "leadEmailBody": "Cuerpo del correo del prospecto",
+          "adminEmailSubject": "Asunto del correo del administrador",
+          "adminEmailBody": "Cuerpo del correo del administrador",
+          "placeholdersAvailable": "Marcadores de posición disponibles:",
+          "placeholders": {
+            "pageTitle": "Ingrese el título de la página",
+            "subtitle": "Ingrese el subtítulo",
+            "description": "Ingrese la descripción de la página",
+            "benefits": "Ingrese los beneficios (uno por línea)",
+            "successMessage": "Ingrese el mensaje de éxito",
+            "leadEmailSubject": "Ingrese el asunto del correo del prospecto",
+            "leadEmailBody": "Ingrese el contenido del correo del prospecto",
+            "adminEmailSubject": "Ingrese el asunto del correo del administrador",
+            "adminEmailBody": "Ingrese el contenido del correo del administrador"
+          }
+        },
         "previewBadge": "Los cambios serán visibles en la vista previa",
         "previewTitle": "Vista previa de la página de inicio",
         "closePreview": "Cerrar vista previa"
@@ -1565,6 +1682,84 @@
       "advanced": { "title": "Configuración avanzada", "customSettings": "Configuración personalizada", "customPlaceholder": "JSON con configuración adicional del gateway", "supportedMethods": "Métodos soportados", "methodsHelp": "Métodos de pago habilitados" },
       "actions": { "save": "Guardar configuración", "test": "Probar configuración", "reset": "Restablecer", "export": "Exportar configuración", "import": "Importar configuración" },
       "toast": { "saved": "Configuración guardada exitosamente", "testSuccess": "Prueba exitosa", "testFailed": "Prueba fallida", "exportSuccess": "Configuración exportada", "importSuccess": "Configuración importada" }
+    }
+  }
+,
+  "leadsPage": {
+    "title": "Leads de solicitud de acceso",
+    "filters": {
+      "status": {
+        "label": "Filtro de estado",
+        "options": {
+          "all": "Todos los estados"
+        }
+      },
+      "searchPlaceholder": "Buscar nombre, correo, teléfono o empresa"
+    },
+    "table": {
+      "noResults": "Ningún lead coincide con tus filtros.",
+      "columns": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "location": "Ubicación",
+        "company": "Empresa",
+        "submitted": "Enviado",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "details": "Detalles"
+      }
+    },
+    "alerts": {
+      "fetchError": "No se pudieron cargar los leads. Inténtalo nuevamente.",
+      "statusUpdated": "Estado del lead actualizado.",
+      "statusUpdateFailed": "No se pudo actualizar el estado del lead en este momento.",
+      "noteSaved": "Nota agregada al lead.",
+      "noteSaveFailed": "No se pudo guardar la nota en este momento."
+    },
+    "status": {
+      "new": "Nuevo",
+      "reviewing": "En revisión",
+      "contacted": "Contactado",
+      "closed": "Cerrado",
+      "unknown": "Desconocido"
+    },
+    "modal": {
+      "title": "Detalles del lead",
+      "contact": {
+        "heading": "Contacto",
+        "fullName": "Nombre completo",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo",
+        "phone": "Teléfono",
+        "city": "Ciudad",
+        "state": "Estado",
+        "zip": "Código postal",
+        "company": "Empresa",
+        "companyMissing": "Empresa no proporcionada"
+      },
+      "status": {
+        "heading": "Estado",
+        "submittedAt": "Enviado {{date}}",
+        "submittedUnknown": "Fecha de envío no disponible"
+      },
+      "message": {
+        "heading": "Mensaje",
+        "empty": "No se proporcionó un mensaje adicional."
+      },
+      "notes": {
+        "heading": "Notas internas",
+        "defaultAuthor": "Administrador",
+        "empty": "Todavía no hay notas internas."
+      },
+      "addNote": {
+        "heading": "Agregar nota",
+        "placeholder": "Añade una nota interna...",
+        "submit": "Guardar nota"
+      }
     }
   }
 }

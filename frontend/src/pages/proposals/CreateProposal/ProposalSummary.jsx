@@ -736,31 +736,33 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
               )}
 
               <hr />
-              <div className="button-group">
-                <CButton
-                  color="secondary"
-                  variant="outline"
-                  onClick={handleSaveOrder}
-                  style={{ minWidth: '140px' }}
-                >
-                  {t('common.save')}
-                </CButton>
-                <CButton
-                  color="success"
-                  onClick={handleAcceptOrder}
-                  disabled={isSubmitting}
-                  style={{ minWidth: '140px' }}
-                >
-                  {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
-                </CButton>
-                <CButton
-                  color="danger"
-                  variant="outline"
-                  onClick={handleRejectOrder}
-                  style={{ minWidth: '140px' }}
-                >
-                  {t('proposals.create.summary.rejectAndArchive')}
-                </CButton>
+              <div className="proposal-actions">
+                <div className="proposal-actions-grid">
+                  <CButton
+                    color="secondary"
+                    variant="outline"
+                    onClick={handleSaveOrder}
+                    className="proposal-action-btn"
+                  >
+                    {t('common.save')}
+                  </CButton>
+                  <CButton
+                    color="success"
+                    onClick={handleAcceptOrder}
+                    disabled={isSubmitting}
+                    className="proposal-action-btn proposal-primary-action"
+                  >
+                    {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
+                  </CButton>
+                  <CButton
+                    color="danger"
+                    variant="outline"
+                    onClick={handleRejectOrder}
+                    className="proposal-action-btn"
+                  >
+                    {t('proposals.create.summary.rejectAndArchive')}
+                  </CButton>
+                </div>
               </div>
             </>
           )}

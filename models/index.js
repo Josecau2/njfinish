@@ -53,6 +53,7 @@ const LoginCustomizations = require('./LoginCustomizations');
 const ManufacturerAssemblyCosts = require('./ManufacturerAssemblyCosts');
 const ManufacturerCatalogFiles = require('./ManufacturerCatalogFiles');
 const PdfCustomizations = require('./PdfCustomizations');
+const Lead = require('./Lead');
 
 // Associations
 Manufacturer.hasMany(ManufacturerCatalogData, {
@@ -288,5 +289,6 @@ module.exports = {
     LoginCustomizations,
     ManufacturerAssemblyCosts,
     ManufacturerCatalogFiles,
-    PdfCustomizations
+    PdfCustomizations,
+    Lead
 };

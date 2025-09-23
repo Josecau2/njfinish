@@ -161,8 +161,9 @@ const DefaultLayout = () => {
         .modern-layout {
           min-height: 100vh;
           position: relative;
-          /* Guard against any accidental horizontal overflow on desktop */
+          /* Guard against any accidental horizontal overflow */
           overflow-x: hidden;
+          max-width: 100vw;
         }
 
         .modern-layout__wrapper {
@@ -199,6 +200,22 @@ const DefaultLayout = () => {
         @media (min-width: 768px) and (max-width: 991.98px) {
           .modern-layout__main {
             padding: 0.75rem;
+          }
+        }
+
+        /* Tablet adjustments - sidebar is relative positioned, so no margin needed */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+          .modern-layout__wrapper {
+            margin-left: 0 !important;
+          }
+
+          .modern-layout {
+            display: flex;
+          }
+
+          .modern-layout__wrapper {
+            flex: 1;
+            min-width: 0; /* Prevents flex child from overflowing */
           }
         }
 

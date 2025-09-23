@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { CSpinner } from '@coreui/react'
 import './scss/style.scss'
 import './scss/examples.scss'
@@ -9,6 +9,7 @@ import './styles/header-override.css'
 import LoginPage from './pages/auth/LoginPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'
+import RequestAccessPage from './pages/auth/RequestAccessPage'
 import SignupPage from './pages/auth/SignupPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
@@ -85,12 +86,16 @@ const App = () => {
             }
           />
           <Route
-            path="/reset-password"
+            path="/forgot-password"
             element={
               <PublicRoute>
                 <ForgotPasswordPage />
               </PublicRoute>
             }
+          />
+          <Route
+            path="/reset-password"
+            element={<Navigate to="/forgot-password" replace />}
           />
           <Route
             path="/signup"
@@ -100,6 +105,15 @@ const App = () => {
               </PublicRoute>
             }
           />
+          <Route
+            path="/request-access"
+            element={
+              <PublicRoute>
+                <RequestAccessPage />
+              </PublicRoute>
+            }
+          />
+
           <Route
             path="/reset-password/:token"
             element={
@@ -148,3 +162,4 @@ const App = () => {
 }
 
 export default App
+

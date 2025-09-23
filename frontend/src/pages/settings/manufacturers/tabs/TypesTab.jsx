@@ -594,7 +594,7 @@ const TypesTab = ({ manufacturer }) => {
   if (!manufacturer) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-        <CAlert color="warning">Please select a manufacturer to view types.</CAlert>
+        <CAlert color="warning">{t('common.pleaseSelectManufacturer')}</CAlert>
       </div>
     );
   }
@@ -902,10 +902,10 @@ const TypesTab = ({ manufacturer }) => {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </CTableHeaderCell>
-                  <CTableHeaderCell>Image</CTableHeaderCell>
-                  <CTableHeaderCell>Type</CTableHeaderCell>
-                  <CTableHeaderCell>Description</CTableHeaderCell>
-                  <CTableHeaderCell>Actions</CTableHeaderCell>
+                  <CTableHeaderCell>{t('common.image')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('common.type')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('common.description')}</CTableHeaderCell>
+                  <CTableHeaderCell>{t('common.actions')}</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -1378,7 +1378,7 @@ const TypesTab = ({ manufacturer }) => {
 
             <div className="row g-3">
               <div className="col-md-6">
-                <CFormLabel>Type</CFormLabel>
+                <CFormLabel>{t('common.type')}</CFormLabel>
                 <CFormInput
                   type="text"
                   value={bulkEditForm.type}
@@ -1388,7 +1388,7 @@ const TypesTab = ({ manufacturer }) => {
               </div>
 
               <div className="col-12">
-                <CFormLabel>Description</CFormLabel>
+                <CFormLabel>{t('common.description')}</CFormLabel>
                 <CFormTextarea
                   value={bulkEditForm.description}
                   onChange={(e) => setBulkEditForm({...bulkEditForm, description: e.target.value})}

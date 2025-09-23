@@ -43,7 +43,50 @@
   "description": "Description",
   "code": "Code",
   "image": "Image",
-  "currentAssignments": "Current Assignments"
+  "currentAssignments": "Current Assignments",
+  "status": "Status",
+  "date": "Date",
+  "designDate": "Design Date",
+  "measurementDate": "Measurement Date",
+  "editVersionName": "Edit Version Name",
+  "confirmDelete": "Confirm Delete",
+  "areYouSureDelete": "Are you sure you want to delete this version?",
+  "loadingUserGroups": "Loading user groups...",
+  "clickToBrowse": "Click to browse or drag and drop files here",
+  "noFilesSelected": "No files selected",
+  "pleaseSelectManufacturer": "Please select a manufacturer to view types.",
+  "type": "Type",
+  "actions": "Actions",
+  "currentTypeName": "Current Type Name",
+  "newTypeName": "New Type Name",
+  "newTypeCategory": "New Type Category",
+  "renameTypeDescription": "Rename the type for all items of this manufacturer. This will affect all catalog items currently using this type.",
+  "editManufacturer": "Edit Manufacturer",
+  "name": "Name",
+  "email": "Email",
+  "multiplier": "Multiplier",
+  "enterManufacturerName": "Enter manufacturer name",
+  "enterManufacturerEmail": "Enter manufacturer email",
+  "enterMultiplier": "Enter multiplier",
+  "allTypes": "All Types",
+  "allStyles": "All Styles",
+  "price": "Price",
+  "template": "Template",
+  "scope": "Scope",
+  "all": "All",
+  "assemblyFeeSaved": "Assembly cost saved successfully",
+  "rollbackCatalogUpload": "Rollback recent catalog upload",
+  "globalModsForItem": "Global Mods for item",
+  "includeDrafts": "Include drafts",
+  "optional": "optional",
+  "enterPrice": "Enter price (0 for no assembly cost)",
+  "perPage": "per page",
+  "warning": "Warning",
+  "filterByStyle": "Filter by style...",
+  "filterByType": "Filter by type...",
+  "leaveEmptyKeepExisting": "Leave empty to keep existing",
+  "egSevenToFourteenDays": "e.g., 7-14 days",
+  "egThreeToSevenDays": "e.g., 3-7 days"
   },
   "globalMods": {
     "modal": {
@@ -319,7 +362,7 @@
     "password": "Password",
     "keepMeLoggedIn": "Keep me logged in",
     "keepLoggedIn": "Keep me logged in",
-    "forgotPassword": "Forgot password?",
+    "forgotPasswordLink": "Forgot password?",
     "enterCredentials": "Enter your email and password to sign in!",
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "Enter your password",
@@ -327,37 +370,88 @@
     "sessionExpired": "Your session expired. Please sign in again.",
     "loginRequired": "Please sign in to continue.",
     "rightSubtitle": "Configure - Price - Quote",
-    "rightDescription": "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems."
+    "rightDescription": "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.",
+    "logoAlt": "Company logo",
+    "requestAccess": {
+      "title": "Request Access",
+      "subtitle": "Let us know who you are and we'll follow up with onboarding details.",
+      "description": "",
+      "success": "Thank you! We've received your request and will be in touch soon.",
+      "submit": "Request Access",
+      "submitting": "Submitting...",
+      "submitError": "We could not submit your request right now. Please try again later.",
+      "benefitsHeading": "Why teams choose our portal:",
+      "alreadyHaveAccess": "Already have access?",
+      "fields": {
+        "firstNameLabel": "First Name",
+        "firstNamePlaceholder": "Your first name",
+        "lastNameLabel": "Last Name",
+        "lastNamePlaceholder": "Your last name",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "you@example.com",
+        "phoneLabel": "Phone",
+        "phonePlaceholder": "(555) 123-4567",
+        "cityLabel": "City",
+        "cityPlaceholder": "Your city",
+        "stateLabel": "State",
+        "statePlaceholder": "State",
+        "zipLabel": "Zip Code",
+        "zipPlaceholder": "ZIP",
+        "companyLabel": "Company",
+        "companyPlaceholder": "Your company (optional)",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Tell us a bit about your business and how we can help."
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email and we'll send you a link to reset your password.",
+      "success": "If an account exists for that email, a reset link has been sent.",
+      "error": "We could not send the reset email right now. Please try again shortly.",
+      "submit": "Send Reset Link",
+      "submitting": "Sending...",
+      "remember": "Remember your password?",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
     "proposals": "Quotes",
+    "quotes": "Quotes",
     "viewProposals": "View Quotes",
+    "viewQuotes": "View Quotes",
     "createProposal": "Create Quote",
+    "createQuote": "Create Quote",
     "contracts": "Contracts",
+    "orders": "Orders",
+    "myOrders": "My Orders",
+    "payments": "Payments",
     "customers": "Customers",
-  "viewCustomers": "View Customers",
+    "viewCustomers": "View Customers",
     "addCustomer": "Add Customer",
     "resources": "Resources",
     "calendar": "Calendar",
     "admin": "Admin",
     "contractors": "Contractors",
+    "leads": "Leads",
     "notifications": "Notifications",
-  "settings": "Settings",
-  "userManagement": "User Management",
-  "users": "Users",
-  "userGroups": "User Groups",
-  "manufacturers": "Manufacturers",
-  "multipliers": "Multipliers",
-  "locations": "Locations",
-  "taxes": "Taxes",
-  "customization": "Customization",
-  "general": "General",
-  "pdfLayout": "PDF Layout",
-  "loginPage": "Login Page",
-  "uiCustomization": "UI Customization",
-  "contactUs": "Contact Us",
-  "terms": "Terms & Conditions"
+    "settings": "Settings",
+    "userManagement": "User Management",
+    "users": "Users",
+    "userGroups": "User Groups",
+    "manufacturers": "Manufacturers",
+    "multipliers": "Multipliers",
+    "locations": "Locations",
+    "taxes": "Taxes",
+    "customization": "Customization",
+    "general": "General",
+    "pdfLayout": "PDF Layout",
+    "loginPage": "Login Page",
+    "uiCustomization": "UI Customization",
+    "contactUs": "Contact Us",
+    "terms": "Terms & Conditions",
+    "paymentConfig": "Payment Configuration"
   },
   "termsModal": {
     "title": "Terms & Conditions",
@@ -1879,6 +1973,32 @@
             "description": "Enter detailed description"
           }
         },
+        "requestAccess": {
+          "title": "Request Access Page",
+          "pageTitle": "Page title",
+          "subtitle": "Subtitle", 
+          "description": "Description",
+          "benefits": "Benefits (one per line)",
+          "benefitsHint": "These appear as bullet points on the request access page.",
+          "requestEmails": "Request Access Emails",
+          "successMessage": "Success message",
+          "leadEmailSubject": "Lead email subject",
+          "leadEmailBody": "Lead email body",
+          "adminEmailSubject": "Admin email subject", 
+          "adminEmailBody": "Admin email body",
+          "placeholdersAvailable": "Placeholders available:",
+          "placeholders": {
+            "pageTitle": "Enter page title",
+            "subtitle": "Enter subtitle",
+            "description": "Enter page description",
+            "benefits": "Enter benefits (one per line)",
+            "successMessage": "Enter success message",
+            "leadEmailSubject": "Enter lead email subject",
+            "leadEmailBody": "Enter lead email body content",
+            "adminEmailSubject": "Enter admin email subject",
+            "adminEmailBody": "Enter admin email body content"
+          }
+        },
         "previewBadge": "Changes will be visible in preview",
         "previewTitle": "Login Page Preview",
         "closePreview": "Close Preview"
@@ -2851,6 +2971,84 @@
             "deleteFailed": "Failed to delete category"
           }
         }
+      }
+    }
+  }
+,
+  "leadsPage": {
+    "title": "Request Access Leads",
+    "filters": {
+      "status": {
+        "label": "Status filter",
+        "options": {
+          "all": "All statuses"
+        }
+      },
+      "searchPlaceholder": "Search name, email, phone, or company"
+    },
+    "table": {
+      "noResults": "No leads match your filters.",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "location": "Location",
+        "company": "Company",
+        "submitted": "Submitted",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "details": "Details"
+      }
+    },
+    "alerts": {
+      "fetchError": "Could not load leads. Please try again.",
+      "statusUpdated": "Lead status updated.",
+      "statusUpdateFailed": "Unable to update lead status right now.",
+      "noteSaved": "Note added to lead.",
+      "noteSaveFailed": "Unable to save note right now."
+    },
+    "status": {
+      "new": "New",
+      "reviewing": "Reviewing",
+      "contacted": "Contacted",
+      "closed": "Closed",
+      "unknown": "Unknown"
+    },
+    "modal": {
+      "title": "Lead details",
+      "contact": {
+        "heading": "Contact",
+        "fullName": "Full Name",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "city": "City",
+        "state": "State",
+        "zip": "Zip Code",
+        "company": "Company",
+        "companyMissing": "Company not provided"
+      },
+      "status": {
+        "heading": "Status",
+        "submittedAt": "Submitted {{date}}",
+        "submittedUnknown": "Submitted date unavailable"
+      },
+      "message": {
+        "heading": "Message",
+        "empty": "No additional message provided."
+      },
+      "notes": {
+        "heading": "Internal Notes",
+        "defaultAuthor": "Admin",
+        "empty": "No internal notes yet."
+      },
+      "addNote": {
+        "heading": "Add Note",
+        "placeholder": "Add an internal note...",
+        "submit": "Save note"
       }
     }
   }

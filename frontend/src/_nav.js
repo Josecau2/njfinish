@@ -181,6 +181,9 @@ const useNavItems = () => {
         if (hasPermission(user, 'admin:notifications')) {
           adminItems.push({ component: CNavItem, name: t('nav.notifications'), to: '/admin/notifications' });
         }
+        if (hasPermission(user, 'admin:leads')) {
+          adminItems.push({ component: CNavItem, name: t('nav.leads', 'Leads'), to: '/admin/leads' });
+        }
 
         if (adminItems.length > 0) {
           navigationItems.push({
@@ -297,3 +300,4 @@ const useNavItems = () => {
 };
 
 export default useNavItems;
+

@@ -2,20 +2,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, UserRole, UserGroup } = require('../models/index');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
+const { sendMail } = require('../utils/mail');
 require('dotenv').config();
 
 // Centralized token lifetime (default to long-lived sessions)
 const TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASS,
-  },
-});
 
 // Signup controller
 exports.signup = async (req, res) => {
@@ -190,30 +182,40 @@ exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.json({ message: 'If an account exists for that email, a reset link has been sent.' });
+    }
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiry = Date.now() + 3600000; // 1 hour
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiry = Date.now() + 3600000; // 1 hour
 
     user.resetToken = token;
     user.resetTokenExpiry = new Date(expiry);
     await user.save();
 
-    const resetLink = `${process.env.APP_URL}/reset-password/${token}`;
+    // Build reset link using APP_URL if available; otherwise fall back to request host
+    const appBaseUrl = process.env.APP_URL && process.env.APP_URL.trim() !== ''
+      ? process.env.APP_URL.trim()
+      : `${req.protocol}://${req.get('host')}`;
+    const resetLink = `${appBaseUrl}/reset-password/${token}`;
 
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: user.email,
-      subject: 'Password Reset Request',
-      html: `
-        <p>You requested a password reset.</p>
-        <p>Click the link below to reset your password:</p>
-        <a href="${resetLink}">${resetLink}</a>
-        <p>This link is valid for 1 hour.</p>
-      `,
-    });
+    try {
+      await sendMail({
+        to: user.email,
+        subject: 'Password Reset Request',
+        text: `You requested a password reset.\n\nOpen this link to reset your password: ${resetLink}\n\nThis link is valid for 1 hour.`,
+        html: `
+          <p>You requested a password reset.</p>
+          <p>Click the link below to reset your password:</p>
+          <p><a href="${resetLink}">${resetLink}</a></p>
+          <p style="color:#6b7280;font-size:12px;margin-top:16px;">This link is valid for 1 hour.</p>
+        `,
+      });
+    } catch (mailErr) {
+      console.error('Password reset email send failed:', mailErr);
+    }
 
-    res.json({ message: 'Password reset link sent to your email.' });
+    return res.json({ message: 'If an account exists for that email, a reset link has been sent.' });
   } catch (err) {
     console.error('Forgot Password Error:', err);
     res.status(500).json({ message: 'Internal server error' });
@@ -617,3 +619,4 @@ exports.getUserRole = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };
+

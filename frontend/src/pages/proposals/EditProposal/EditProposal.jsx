@@ -615,7 +615,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                           )}
                         </CCol>
                         <CCol xs={12} sm={6} lg={4}>
-                          <CFormLabel htmlFor="status">Status</CFormLabel>
+                          <CFormLabel htmlFor="status">{t('common.status')}</CFormLabel>
                           <CreatableSelect
                             isClearable
                             options={statusOptions}
@@ -629,7 +629,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                         </CCol>
                         <CCol xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
-                            <CFormLabel htmlFor="date">Date</CFormLabel>
+                            <CFormLabel htmlFor="date">{t('common.date')}</CFormLabel>
                             <DatePicker
                               id="date"
                               selected={values.date ? new Date(values.date) : new Date()}
@@ -653,7 +653,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                         </CCol>
                         <CCol xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
-                            <CFormLabel htmlFor="designDate">Design Date</CFormLabel>
+                            <CFormLabel htmlFor="designDate">{t('common.designDate')}</CFormLabel>
                             <DatePicker
                               id="designDate"
                               selected={values.designDate ? new Date(values.designDate) : null}
@@ -677,7 +677,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                         </CCol>
                         <CCol xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
-                            <CFormLabel htmlFor="measurementDate">Measurement Date</CFormLabel>
+                            <CFormLabel htmlFor="measurementDate">{t('common.measurementDate')}</CFormLabel>
                             <DatePicker
                               id="measurementDate"
                               selected={values.measurementDate ? new Date(values.measurementDate) : null}
@@ -943,9 +943,9 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
 
                   {/* Action Buttons */}
                   <div className="proposal-actions">
-                    <div className="d-flex justify-content-center align-items-center flex-wrap gap-3">
+                    <div className="proposal-actions-grid">
                       {isViewOnly ? (
-                        <div className="w-100">
+                        <div className="w-100" style={{ gridColumn: '1 / -1' }}>
                           <CAlert color="success" className="text-center">
                             <h5 className="alert-heading mb-3">
                               <FaCheckCircle className="me-2" />
@@ -965,14 +965,14 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                             color="secondary"
                             variant="outline"
                             onClick={handleSaveOrder}
-                            className="btn mobile-form-btn"
+                            className="proposal-action-btn"
                           >
                             Save
                           </CButton>
                           <CButton
                             color="success"
                             onClick={handleAcceptOrder}
-                            className="btn mobile-form-btn"
+                            className="proposal-action-btn proposal-primary-action"
                             disabled={isAccepted}
                             title={isAccepted ? 'Already accepted' : undefined}
                           >
@@ -982,7 +982,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
                             color="danger"
                             variant="outline"
                             onClick={handleRejectOrder}
-                            className="btn mobile-form-btn"
+                            className="proposal-action-btn"
                           >
                             Reject and Archive
                           </CButton>
@@ -1009,7 +1009,7 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
           className="modal-lg"
         >
           <CModalHeader closeButton>
-            <CModalTitle>Edit Version Name</CModalTitle>
+            <CModalTitle>{t('common.editVersionName')}</CModalTitle>
           </CModalHeader>
           <CModalBody>
             <CFormInput
@@ -1037,9 +1037,9 @@ const EditProposal = ({ isContractor, contractorGroupId, contractorModules, cont
           className="modal-sm"
         >
           <CModalHeader closeButton>
-            <CModalTitle>Confirm Delete</CModalTitle>
+            <CModalTitle>{t('common.confirmDelete')}</CModalTitle>
           </CModalHeader>
-          <CModalBody>Are you sure you want to delete this version?</CModalBody>
+          <CModalBody>{t('common.areYouSureDelete')}</CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setDeleteModalOpen(false)}>
               Cancel

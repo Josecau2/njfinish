@@ -138,7 +138,7 @@ const UserGroupList = () => {
       <CContainer className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
         <div className="text-center">
           <CSpinner />
-          <p className="mt-2 text-muted">Loading user groups...</p>
+          <p className="mt-2 text-muted">{t('common.loadingUserGroups')}</p>
         </div>
       </CContainer>
     );

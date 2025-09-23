@@ -22,7 +22,8 @@ const PERMISSIONS = {
     MANUFACTURERS: 'admin:manufacturers',
     SETTINGS: 'admin:settings',
     REPORTS: 'admin:reports',
-    SYSTEM: 'admin:system'
+    SYSTEM: 'admin:system',
+    LEADS: 'admin:leads'
   },
 
   // Contractor Dashboard Permissions
@@ -111,15 +112,6 @@ const DEFAULT_PERMISSIONS = {
   }
 };
 
-/**
- * Generate permissions array for a contractor group based on module toggles
- * @param {Object} modules - Module toggles from UserGroup.modules
- * @param {boolean} modules.dashboard - Dashboard module enabled
- * @param {boolean} modules.proposals - Proposals module enabled
- * @param {boolean} modules.customers - Customers module enabled
- * @param {boolean} modules.resources - Resources module enabled
- * @returns {Array} Array of permission strings
- */
 function getContractorPermissions(modules = {}) {
   const permissions = [];
 
@@ -142,12 +134,6 @@ function getContractorPermissions(modules = {}) {
   return permissions;
 }
 
-/**
- * Get all permissions for a user group
- * @param {string} groupType - 'standard' or 'contractor'
- * @param {Object} modules - Module toggles (only used for contractor groups)
- * @returns {Array} Array of permission strings
- */
 function getGroupPermissions(groupType = 'standard', modules = null) {
   if (groupType === 'contractor' && modules) {
     return getContractorPermissions(modules);
@@ -156,32 +142,14 @@ function getGroupPermissions(groupType = 'standard', modules = null) {
   return DEFAULT_PERMISSIONS.standard;
 }
 
-/**
- * Check if a permission array includes a specific permission
- * @param {Array} userPermissions - User's permissions array
- * @param {string} requiredPermission - Permission to check
- * @returns {boolean} Whether user has the permission
- */
 function hasPermission(userPermissions = [], requiredPermission) {
   return userPermissions.includes(requiredPermission);
 }
 
-/**
- * Check if a permission array includes any of the specified permissions
- * @param {Array} userPermissions - User's permissions array
- * @param {Array} requiredPermissions - Permissions to check (any one required)
- * @returns {boolean} Whether user has at least one permission
- */
 function hasAnyPermission(userPermissions = [], requiredPermissions = []) {
   return requiredPermissions.some(permission => userPermissions.includes(permission));
 }
 
-/**
- * Check if a permission array includes all of the specified permissions
- * @param {Array} userPermissions - User's permissions array
- * @param {Array} requiredPermissions - Permissions to check (all required)
- * @returns {boolean} Whether user has all permissions
- */
 function hasAllPermissions(userPermissions = [], requiredPermissions = []) {
   return requiredPermissions.every(permission => userPermissions.includes(permission));
 }

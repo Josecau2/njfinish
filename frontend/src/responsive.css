@@ -1,5 +1,21 @@
 /* Responsive Design & Modern UI Overrides */
 
+/* Global overflow guards to prevent horizontal scroll */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Prevent any container from exceeding viewport width */
+* {
+  box-sizing: border-box !important;
+}
+
+.container, .container-fluid, .container-xl, .container-lg, .container-md, .container-sm {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
 /* 1. Global Reset & Root Variables
 -------------------------------------------------- */
 :root {
@@ -2048,6 +2064,37 @@ html, body {
     margin-bottom: 0.25rem !important;
   }
 
+  /* Assembly toggle mobile layout - prevent overflow */
+  .style-selection-mobile .current-style-info .d-flex.align-items-center {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Specific styling for assembly toggle container */
+  .style-selection-mobile .current-style-info .d-flex.align-items-center:last-child {
+    gap: 0.5rem !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Make assembly switch smaller and prevent overflow */
+  .style-selection-mobile .form-switch {
+    flex-shrink: 0 !important;
+    margin-left: 0.5rem !important;
+  }
+
+  /* Constrain the assembly text to prevent overflow */
+  .style-selection-mobile .current-style-info .d-flex.align-items-center:last-child span {
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    margin-right: 0.5rem !important;
+  }
+
   /* Other styles mobile layout */
   .style-selection-mobile .other-styles-section {
     padding: 1.5rem !important;
@@ -2625,6 +2672,113 @@ html, body {
 }
 
 
+/* ============ Proposal Actions Unified Layout ============ */
+.proposal-actions {
+  padding-top: 1rem !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+.proposal-actions-grid {
+  display: grid !important;
+  gap: 0.75rem !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+  width: 100% !important;
+  max-width: 880px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Mobile: single column, full width buttons */
+@media (max-width: 575.98px) {
+  .proposal-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tablet: two columns, primary can span 2 */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .proposal-actions-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+  }
+  .proposal-actions-grid .proposal-primary-action {
+    grid-column: 1 / -1 !important; /* primary spans both columns */
+  }
+}
+
+/* Desktop: three columns side by side, centered container */
+@media (min-width: 992px) {
+  .proposal-actions-grid {
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+  }
+}
+
+.proposal-action-btn {
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* Visual emphasis for primary action */
+.proposal-primary-action {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+}
+
+/* ============ Global Mobile Overflow Guards ============ */
+/* Additional protection against layout breaks */
+.u-no-overflow {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+.u-full-width {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Responsive utility classes */
+.u-mobile-only {
+  display: none !important;
+}
+
+.u-desktop-only {
+  display: block !important;
+}
+
+@media (max-width: 767.98px) {
+  .u-mobile-only {
+    display: block !important;
+  }
+
+  .u-desktop-only {
+    display: none !important;
+  }
+
+  /* Force all flex containers to behave on mobile */
+  .d-flex, .d-inline-flex {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Prevent tables from breaking layout */
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Tablet-specific overflow protection */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  /* Ensure flex layouts don't break on tablets */
+  .d-flex {
+    flex-wrap: wrap !important;
+  }
+
+  /* Force sidebar and content to work together */
+  .modern-layout {
+    overflow-x: hidden !important;
+  }
+}
 /* ======================
    Mobile Compact Tokens
    and Quote Card Layout

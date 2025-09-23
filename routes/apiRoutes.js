@@ -20,11 +20,12 @@ const contractorController = require('../controllers/contractorController');
 const notificationController = require('../controllers/notificationController');
 const resourceUpload = require('../middleware/resourceUpload');
 const contactController = require('../controllers/contactController');
+const leadController = require('../controllers/leadController');
 const termsController = require('../controllers/termsController');
 const globalModsController = require('../controllers/globalModificationsController');
 const { fullAccessControl, requirePermission } = require('../middleware/accessControl');
 const { verifyTokenWithGroup, enforceGroupScoping } = require('../middleware/auth');
-const { rateLimitAccept } = require('../middleware/rateLimiter');
+const { createRateLimiter, rateLimitAccept } = require('../middleware/rateLimiter');
 const { validateIdParam, sanitizeBodyStrings } = require('../middleware/validators');
 const proposalSessionController = require('../controllers/proposalSessionController');
 
@@ -32,11 +33,21 @@ const proposalSessionController = require('../controllers/proposalSessionControl
 
 const router = express.Router();
 
+const requestAccessLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  keyGenerator: (req) => `request-access:${req.ip}`
+});
+
 // Auth route
 router.post('/login', authController.login);
 router.post('/signup', authController.signup);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
+router.post('/request-access', requestAccessLimiter, sanitizeBodyStrings(5000), leadController.submitLead);
+router.get('/admin/leads', verifyTokenWithGroup, requirePermission('admin:leads'), leadController.listLeads);
+router.patch('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);
+router.put('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);
 
 // Lightweight auth ping to roll a fresh access token without heavy payloads
 router.get('/auth/ping', verifyTokenWithGroup, (req, res) => {
@@ -375,3 +386,5 @@ router.post('/catalog-items/requirements', verifyTokenWithGroup, sanitizeBodyStr
 
 
 module.exports = router;
+
+

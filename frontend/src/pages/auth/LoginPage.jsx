@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -219,9 +219,9 @@ const LoginPage = () => {
                 </div>
               )}
               {settings.showForgotPassword && (
-                <a href="/reset-password" className="small text-decoration-none">
-                  {t('auth.forgotPassword')}
-                </a>
+                <Link to="/forgot-password" className="small text-decoration-none">
+                  {t('auth.forgotPasswordLink')}
+                </Link>
               )}
             </div>
 
@@ -231,6 +231,10 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
+          <div className="text-center mt-4">
+            <span className="text-muted">Don't have an account? </span>
+            <Link to="/request-access" className="fw-semibold text-decoration-none">Request Access</Link>
+          </div>
         </div>
       </div>
     </div>
@@ -238,3 +242,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
