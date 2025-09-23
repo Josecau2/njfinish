@@ -20,7 +20,7 @@ const collectBenefitStrings = (input, target) => {
     return;
   }
 
-  const str = String(input || '').trim();
+  let str = String(input || '').trim();
   if (!str) return;
 
   if (str.startsWith('[')) {
@@ -34,6 +34,14 @@ const collectBenefitStrings = (input, target) => {
       // fall back to newline splitting if JSON parsing fails
     }
   }
+
+  if (str.startsWith('"')) {
+    str = str.slice(1);
+  }
+  if (str.endsWith('"')) {
+    str = str.slice(0, -1);
+  }
+  str = str.trim();
 
   str
     .split(/\r?\n/)

@@ -26,12 +26,25 @@ const mapEmailSettingsForPersistence = (settings = {}) => ({
 
 exports.saveCustomization = async (req, res) => {
   try {
-    const normalized = compileCustomization(req.body || {});
+    const existingRecord = await LoginCustomization.findOne({ where: { id: 1 } });
+    const mergedInput = {
+      ...(existingRecord ? existingRecord.toJSON() : {}),
+      ...(req.body || {}),
+    };
+
+    const normalized = compileCustomization(mergedInput);
     const payload = stripRuntimeFields(normalized);
     const emailSettings = extractEmailSettings(normalized);
-    const dbPayload = { ...payload, ...mapEmailSettingsForPersistence(emailSettings) };
+    const dbPayload = {
+      ...payload,
+      ...mapEmailSettingsForPersistence(emailSettings),
+    };
 
-    let customization = await LoginCustomization.findOne({ where: { id: 1 } });
+    delete dbPayload.id;
+    delete dbPayload.createdAt;
+    delete dbPayload.updatedAt;
+
+    let customization = existingRecord;
 
     if (customization) {
       await customization.update(dbPayload);
