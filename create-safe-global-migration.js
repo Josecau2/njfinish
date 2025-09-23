@@ -1,4 +1,4 @@
-nod#!/usr/bin/env node
+#!/usr/bin/env node
 /**
  * Production-Ready Global Migration Script
  *
