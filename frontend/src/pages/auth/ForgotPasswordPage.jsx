@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
@@ -11,7 +10,7 @@ const LOGIN_CUSTOMIZATION =
 const ForgotPasswordPage = () => {
   const { t } = useTranslation()
   const api_url = import.meta.env.VITE_API_URL
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
+  const [customization] = useState(LOGIN_CUSTOMIZATION)
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -33,24 +32,12 @@ const ForgotPasswordPage = () => {
   const requiredAsterisk = <span className="text-danger">*</span>
 
   useEffect(() => {
-    const fetchCustomization = async () => {
-      try {
-        const res = await axios.get(`${api_url}/api/login-customization`)
-        if (res.data.customization) {
-          setCustomization((prev) => ({ ...prev, ...res.data.customization }))
-        }
-      } catch (err) {
-        console.warn('Non-blocking login customization fetch failed:', err?.message)
-      }
-    }
-
-    // Force light mode on auth pages
     try {
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
-    } catch (e) {}
-
-    fetchCustomization()
-  }, [api_url])
+    } catch (_) {
+      // ignore storage failures
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

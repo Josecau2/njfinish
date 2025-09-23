@@ -23,7 +23,7 @@ const EMPTY_FORM = {
 const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
+  const [customization] = useState(LOGIN_CUSTOMIZATION)
   const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -65,23 +65,12 @@ const RequestAccessPage = () => {
   const requiredAsterisk = <span className="text-danger">*</span>
 
   useEffect(() => {
-    const fetchCustomization = async () => {
-      try {
-        const res = await axios.get(`${apiUrl}/api/login-customization`)
-        if (res.data.customization) {
-          setCustomization((prev) => ({ ...prev, ...res.data.customization }))
-        }
-      } catch (err) {
-        console.warn('Non-blocking login customization fetch failed:', err?.message)
-      }
-    }
-
     try {
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
-    } catch (err) {}
-
-    fetchCustomization()
-  }, [apiUrl])
+    } catch (_) {
+      // ignore storage failures
+    }
+  }, [])
 
   const handleChange = (event) => {
     const { name, value } = event.target

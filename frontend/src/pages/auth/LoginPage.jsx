@@ -18,8 +18,8 @@ const LoginPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
-  // Seed with generated static config to avoid flash while fetching dynamic one
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION);
+  // Seed with generated static config; server keeps this file updated so no runtime fetch is needed
+  const [customization] = useState(LOGIN_CUSTOMIZATION);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,21 +28,11 @@ const LoginPage = () => {
   const [noticeMessage, setNoticeMessage] = useState('');
 
   useEffect(() => {
-    const fetchCustomization = async () => {
-      try {
-        const res = await axios.get(`${api_url}/api/login-customization`);
-        if (res.data.customization) {
-          setCustomization(prev => ({ ...prev, ...res.data.customization }));
-        }
-      } catch (err) {
-        console.warn('Non-blocking login customization fetch failed:', err?.message);
-      }
-    };
-
-    // Force light mode on login page
-    localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
-
-    fetchCustomization();
+    try {
+      localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
+    } catch (_) {
+      // ignore storage failures
+    }
   }, []);
 
   // Detect redirect reasons (e.g., session expired) and show a banner

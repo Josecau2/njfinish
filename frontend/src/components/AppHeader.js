@@ -264,7 +264,13 @@ const AppHeader = () => {
               <div className="modern-header__vr" style={{ background: `${optimalTextColor}33` }}></div>
             </CNavItem>
 
-            <CDropdown variant="nav-item" placement="bottom-end" className="modern-header__nav-item">
+            <CDropdown
+              variant="nav-item"
+              placement="bottom-end"
+              className="modern-header__nav-item header-dropdown"
+              offset={[0, 12]}
+              portal
+            >
               <CDropdownToggle
                 caret={false}
                 className="modern-header__dropdown-toggle nav-link border-0 bg-transparent"
@@ -278,7 +284,10 @@ const AppHeader = () => {
                   <CIcon icon={cilSun} size="lg" style={{ color: optimalTextColor }} />
                 )}
               </CDropdownToggle>
-              <CDropdownMenu>
+              <CDropdownMenu
+                className="header-dropdown__menu theme-dropdown__menu"
+                style={{ minWidth: '200px' }}
+              >
                 <CDropdownItem
                   active={colorMode === 'light'}
                   className="d-flex align-items-center"

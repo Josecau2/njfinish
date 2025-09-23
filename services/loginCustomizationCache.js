@@ -5,22 +5,54 @@ let cachedCustomization = null;
 let lastFetched = 0;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+const collectBenefitStrings = (input, target) => {
+  if (input === undefined || input === null) {
+    return;
+  }
+
+  if (Array.isArray(input)) {
+    input.forEach((item) => collectBenefitStrings(item, target));
+    return;
+  }
+
+  if (typeof input === 'object') {
+    collectBenefitStrings(Object.values(input), target);
+    return;
+  }
+
+  const str = String(input || '').trim();
+  if (!str) return;
+
+  if (str.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(str);
+      if (Array.isArray(parsed)) {
+        collectBenefitStrings(parsed, target);
+        return;
+      }
+    } catch (err) {
+      // fall back to newline splitting if JSON parsing fails
+    }
+  }
+
+  str
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .forEach((item) => target.push(item));
+};
+
 const normalizeBenefits = (value, fallback) => {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item || '').trim()).filter(Boolean);
+  const result = [];
+  collectBenefitStrings(value, result);
+
+  if (result.length > 0) {
+    return result;
   }
-  if (typeof value === 'string') {
-    return value
-      .split(/\r?\n/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-  if (value && typeof value === 'object') {
-    return Object.values(value)
-      .map((item) => String(item || '').trim())
-      .filter(Boolean);
-  }
-  return Array.isArray(fallback) ? [...fallback] : [];
+
+  const fallbackResult = [];
+  collectBenefitStrings(fallback, fallbackResult);
+  return fallbackResult;
 };
 
 const coerceString = (value, fallback = '') => {

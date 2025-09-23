@@ -269,7 +269,7 @@ const NotificationBell = () => {
       </CDropdownToggle>
 
       <CDropdownMenu
-        className="notification-mobile-dropdown notification-bell__menu"
+        className="notification-mobile-dropdown header-dropdown__menu notification-bell__menu"
         style={{
           width: 'clamp(260px, 85vw, 350px)',
           maxHeight: 'min(400px, calc(100vh - 96px))',

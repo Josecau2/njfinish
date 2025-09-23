@@ -37,10 +37,15 @@ const AppHeaderDropdown = () => {
   };
 
   return (
-    <CDropdown variant="nav-item">
+    <CDropdown
+      variant="nav-item"
+      placement="bottom-end"
+      className="modern-header__nav-item header-dropdown"
+      offset={[0, 12]}
+      portal
+    >
       <CDropdownToggle
-        placement="bottom-end"
-        className="py-0 pe-0 d-flex align-items-center justify-content-center"
+        className="modern-header__dropdown-toggle nav-link border-0 bg-transparent position-relative d-flex align-items-center justify-content-center"
         caret={false}
         aria-label="Account menu"
       >
@@ -60,7 +65,10 @@ const AppHeaderDropdown = () => {
           <UserIcon size={20} aria-hidden />
         </CAvatar>
       </CDropdownToggle>
-      <CDropdownMenu className="pt-0" placement="bottom-end">
+      <CDropdownMenu
+        className="pt-0 header-dropdown__menu profile-dropdown__menu shadow-sm"
+        style={{ minWidth: '220px' }}
+      >
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
