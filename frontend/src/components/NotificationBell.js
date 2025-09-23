@@ -236,11 +236,14 @@ const NotificationBell = () => {
       alignment="end"
       visible={isOpen}
       onToggle={handleToggle}
+      offset={[0, 12]}
+      portal
+      className="modern-header__nav-item notification-bell"
     >
       <CDropdownToggle
         caret={false}
-        className="position-relative"
-  style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px' }}
+        className="modern-header__dropdown-toggle nav-link border-0 bg-transparent position-relative d-flex align-items-center justify-content-center"
+        style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px' }}
         aria-label={unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'}
       >
         <CIcon
@@ -266,16 +269,12 @@ const NotificationBell = () => {
       </CDropdownToggle>
 
       <CDropdownMenu
-        className="notification-mobile-dropdown"
-        // Let Popper keep it in viewport on desktop
-        // eslint-disable-next-line react/forbid-component-props
-        popper="true"
-        // eslint-disable-next-line react/forbid-component-props
-        placement="bottom-end"
+        className="notification-mobile-dropdown notification-bell__menu"
         style={{
-          width: '350px',
-          maxHeight: '400px',
-          overflowY: 'auto'
+          width: 'clamp(260px, 85vw, 350px)',
+          maxHeight: 'min(400px, calc(100vh - 96px))',
+          overflowY: 'auto',
+          zIndex: 2050
         }}
         aria-label="Notifications list"
       >

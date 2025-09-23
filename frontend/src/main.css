@@ -885,36 +885,25 @@
 
   /* Notification Bell dropdown: proper positioning for all screen sizes */
   .notification-mobile-dropdown {
-    z-index: 1080 !important;
+    z-index: 2050 !important;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    overflow-y: auto !important;
+    width: clamp(260px, 85vw, 350px);
+    max-height: min(400px, calc(100vh - 96px));
+    overflow-y: auto;
+    background-color: var(--cui-body-bg, #ffffff);
   }
 
-  /* Mobile: fixed positioning to escape header container */
   @media (max-width: 767.98px) {
     .notification-mobile-dropdown {
-      position: fixed !important;
-      top: calc(56px + env(safe-area-inset-top, 0px)) !important; /* below header, account for notch */
-      left: max(10px, env(safe-area-inset-left, 0px)) !important;
-      right: max(10px, env(safe-area-inset-right, 0px)) !important;
-      width: auto !important;
-      max-width: none !important;
-      margin: 0 !important;
-      max-height: calc(100vh - 96px) !important; /* within viewport */
+      width: calc(100vw - 1.5rem);
+      max-width: calc(100vw - 1.5rem);
     }
   }
 
-  /* Desktop: ensure dropdown extends beyond header container */
   @media (min-width: 768px) {
     .notification-mobile-dropdown {
-      position: absolute !important;
-      right: 0 !important;
-      left: auto !important;
-      width: 350px !important;
-      max-height: 400px !important;
-      margin-top: 8px !important;
-      transform: none !important;
+      max-width: 350px;
     }
 
     /* Ensure header container allows dropdown overflow */

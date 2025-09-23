@@ -26,16 +26,16 @@ async function diagnoseSMTPConfig() {
   try {
     console.log('🧪 Testing mail utility...');
     const { sendMail, transporter } = require('./utils/mail');
-    
+
     console.log('✅ Mail utility loaded successfully');
-    
+
     // Test SMTP connection
     console.log('🔌 Testing SMTP connection...');
     const isReady = await transporter.verify();
-    
+
     if (isReady) {
       console.log('✅ SMTP connection successful');
-      
+
       // Send test email
       console.log('📤 Sending test email...');
       const testResult = await sendMail({
@@ -51,18 +51,18 @@ async function diagnoseSMTPConfig() {
           </div>
         `
       });
-      
+
       console.log('✅ Test email sent successfully!');
       console.log(`Message ID: ${testResult.messageId}`);
-      
+
     } else {
       console.log('❌ SMTP connection failed');
     }
-    
+
   } catch (error) {
     console.log('❌ SMTP test failed:');
     console.log(`Error: ${error.message}`);
-    
+
     if (error.code === 'EAUTH') {
       console.log('');
       console.log('🔐 Authentication Error - Possible Solutions:');
@@ -84,7 +84,7 @@ async function diagnoseSMTPConfig() {
       console.log('3. Try using IP address instead of hostname');
     }
   }
-  
+
   console.log('');
   console.log('🎯 Next Steps if SMTP is working:');
   console.log('1. Check email spam/junk folder');

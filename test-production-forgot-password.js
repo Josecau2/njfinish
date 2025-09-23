@@ -47,7 +47,7 @@ async function testProductionForgotPassword() {
 
   } catch (error) {
     console.log('❌ Request failed:');
-    
+
     if (error.code === 'ECONNREFUSED') {
       console.log('Cannot connect to production server');
       console.log('The server might be down or unreachable');
