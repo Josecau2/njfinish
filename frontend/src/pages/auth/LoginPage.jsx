@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -7,8 +7,11 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
+import { resolveAssetUrl } from '../../utils/assetUtils';
 import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization';
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization';
 const LOGIN_CUSTOMIZATION = (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION;
+const APP_CUSTOMIZATION = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION;
 import { installTokenEverywhere } from '../../utils/authToken';
 
 const LoginPage = () => {
@@ -20,6 +23,10 @@ const LoginPage = () => {
 
   // Seed with generated static config; server keeps this file updated so no runtime fetch is needed
   const [customization] = useState(LOGIN_CUSTOMIZATION);
+  const rawLogo = customization.logo || APP_CUSTOMIZATION.logoImage || '';
+  const brandLogo = useMemo(() => resolveAssetUrl(rawLogo, api_url), [rawLogo, api_url]);
+  const logoHeight = Number(customization.logoHeight) || 60;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -127,9 +134,9 @@ const LoginPage = () => {
       {/* Right Panel - Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
-          {settings.logo && (
+          {brandLogo && (
             <div className="text-center mb-4">
-              <img src={settings.logo} alt="Logo" style={{ height: 50 }} />
+              <img src={brandLogo} alt="Logo" style={{ height: logoHeight, objectFit: 'contain' }} />
             </div>
           )}
           <h2 className="mb-2 fw-bold">{settings.title}</h2>
@@ -232,4 +239,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 

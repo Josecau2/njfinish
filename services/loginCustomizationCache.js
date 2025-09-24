@@ -104,6 +104,7 @@ const compileCustomization = (raw = {}) => {
   merged.smtpUser = coerceString(merged.smtpUser, defaults.smtpUser);
   merged.smtpPass = coerceString(merged.smtpPass, defaults.smtpPass);
   merged.emailFrom = coerceString(merged.emailFrom, defaults.emailFrom);
+  merged.logoHeight = coerceInteger(raw.logoHeight ?? merged.logoHeight, defaults.logoHeight);
   return merged;
 };
 

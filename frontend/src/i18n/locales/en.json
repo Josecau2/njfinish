@@ -1953,6 +1953,10 @@
             "subtitle": "Enter login subtitle"
           }
         },
+        "logoSize": {
+          "label": "Login logo size",
+          "aria": "Adjust login logo size"
+        },
         "options": {
           "title": "Login Options",
           "showForgot": "Show Forgot Password Link",

@@ -4,9 +4,12 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization'
 
 const LOGIN_CUSTOMIZATION =
   (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
+const APP_CUSTOMIZATION =
+  (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
 
 const EMPTY_FORM = {
   firstName: '',
@@ -24,6 +27,8 @@ const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
   const [customization] = useState(LOGIN_CUSTOMIZATION)
+  const brandLogo = customization.logo || APP_CUSTOMIZATION.logoImage || ''
+  const logoHeight = Number(customization.logoHeight) || 60
   const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -137,9 +142,9 @@ const RequestAccessPage = () => {
 
       <div className="login-right-panel">
         <div className="login-form-container">
-          {settings.logo && (
+          {brandLogo && (
             <div className="text-center mb-4">
-              <img src={settings.logo} alt={copy.logoAlt} style={{ height: 50 }} />
+              <img src={brandLogo} alt={copy.logoAlt} style={{ height: logoHeight, objectFit: 'contain' }} />
             </div>
           )}
           <h2 className="mb-2 fw-bold">{pageTitle}</h2>

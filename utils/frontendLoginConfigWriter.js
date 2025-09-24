@@ -9,14 +9,40 @@ const RAW_JSON_PATH = path.join(ASSETS_DIR, 'login-customization.json');
 
 const SENSITIVE_KEYS = ['smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'emailFrom'];
 
+let defaultAppLogo = '';
+try {
+  const { CUSTOMIZATION_CONFIG } = require('../frontend/src/config/customization');
+  defaultAppLogo = CUSTOMIZATION_CONFIG?.logoImage || '';
+} catch (err) {
+  defaultAppLogo = '';
+}
+
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 function maybePersistLogo(rawLogo) {
-  if (!rawLogo) return '';
+  if (!rawLogo) return defaultAppLogo || '';
   if (rawLogo.startsWith('/assets/')) return rawLogo;
-  if (!rawLogo.startsWith('data:')) return rawLogo;
+  if (!rawLogo.startsWith('data:')) {
+    if (rawLogo.startsWith('/uploads/')) {
+      const uploadSource = path.join(__dirname, '..', rawLogo.replace(/^\//, ''));
+      const ext = path.extname(uploadSource) || '.png';
+      ensureDir(ASSETS_DIR);
+      const target = path.join(ASSETS_DIR, `login-logo${ext}`);
+      try {
+        if (fs.existsSync(uploadSource)) {
+          fs.copyFileSync(uploadSource, target);
+          return `/assets/customization/login-logo${ext}`;
+        }
+        console.warn('Login logo source not found:', uploadSource);
+      } catch (err) {
+        console.warn('Could not copy login logo from uploads:', err?.message);
+      }
+      return defaultAppLogo || rawLogo;
+    }
+    return rawLogo;
+  };
   const match = rawLogo.match(/^data:(image\/(png|jpeg|jpg|svg\+xml));base64,(.+)$/);
   if (!match) return '';
   const extMap = {
@@ -42,7 +68,9 @@ function maybePersistLogo(rawLogo) {
 
 function buildConfig(input = {}) {
   const merged = compileCustomization(input);
-  merged.logo = maybePersistLogo(input.logo || merged.logo);
+  const logoSource = input.logo || merged.logo || defaultAppLogo;
+  const processedLogo = maybePersistLogo(logoSource);
+  merged.logo = processedLogo || defaultAppLogo || logoSource || '';
   return { ...merged, _generated: new Date().toISOString(), _version: '1.0.0' };
 }
 
@@ -80,4 +108,4 @@ async function writeFrontendLoginCustomization(input) {
   return cfg;
 }
 
-module.exports = { writeFrontendLoginCustomization };
+module.exports = { writeFrontendLoginCustomization, _getDefaultAppLogo: () => defaultAppLogo };

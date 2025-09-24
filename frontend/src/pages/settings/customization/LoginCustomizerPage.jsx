@@ -15,11 +15,13 @@ import {
   CContainer,
   CSpinner,
   CInputGroup,
+  CFormRange,
 } from "@coreui/react";
 import CIcon from '@coreui/icons-react';
 import { cilSettings, cilPaintBucket, cilText, cilColorPalette, cilSave } from '@coreui/icons';
 import axiosInstance from "../../../helpers/axiosInstance";
 import LoginPreview from "../../../components/LoginPreview";
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../../config/customization';
 import { FaCog, FaPalette } from "react-icons/fa";
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +29,7 @@ import PageHeader from '../../../components/PageHeader';
 
 const DEFAULT_SETTINGS = {
   logo: "",
+  logoHeight: 60,
   title: "Sign In",
   subtitle: "Enter your email and password to sign in!",
   backgroundColor: "#0e1446",
@@ -58,6 +61,7 @@ const DEFAULT_SETTINGS = {
 };
 
 const LoginCustomizerPage = () => {
+  const APP_CUSTOMIZATION = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION;
   const { t } = useTranslation();
 
   const [showPreview, setShowPreview] = useState(false);
@@ -76,6 +80,9 @@ const LoginCustomizerPage = () => {
       requestAccessBenefits: [...DEFAULT_SETTINGS.requestAccessBenefits],
       ...incoming,
     };
+
+    merged.logo = incoming.logo || merged.logo || APP_CUSTOMIZATION.logoImage || '';
+    merged.logoHeight = Number(incoming.logoHeight ?? merged.logoHeight) || DEFAULT_SETTINGS.logoHeight;
 
     const rawBenefits = incoming.requestAccessBenefits ?? merged.requestAccessBenefits;
     merged.requestAccessBenefits = Array.isArray(rawBenefits)
@@ -117,6 +124,8 @@ const LoginCustomizerPage = () => {
     return {
       ...settings,
       requestAccessBenefits: sanitizedBenefits,
+      logo: settings.logo || APP_CUSTOMIZATION.logoImage || '',
+      logoHeight: Number(settings.logoHeight) || DEFAULT_SETTINGS.logoHeight,
       smtpHost: trimmed(settings.smtpHost),
       smtpPort: settings.smtpPort === '' || settings.smtpPort === null || settings.smtpPort === undefined
         ? ''
@@ -333,6 +342,21 @@ const LoginCustomizerPage = () => {
                           }}
                         />
                       </CInputGroup>
+                    </div>
+
+                    <div className="mb-4">
+                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.logoSize.label')}</CFormLabel>
+                      <div className="d-flex flex-column flex-md-row align-items-md-center gap-3">
+                        <CFormRange
+                          min={32}
+                          max={160}
+                          step={1}
+                          value={Number(settings.logoHeight) || 60}
+                          onChange={(e) => handleChange('logoHeight', Number(e.target.value))}
+                          aria-label={t('settings.customization.login.logoSize.aria')}
+                        />
+                        <span className="fw-semibold text-muted" style={{ minWidth: '60px' }}>{Math.round(Number(settings.logoHeight) || 60)}px</span>
+                      </div>
                     </div>
 
                     <div className="mb-4">

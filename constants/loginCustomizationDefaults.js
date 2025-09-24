@@ -29,6 +29,7 @@ const LOGIN_CUSTOMIZATION_DEFAULTS = {
   rightSubtitle: 'CABINET PORTAL',
   rightTagline: 'Dealer Portal',
   rightDescription: 'Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.',
+  logoHeight: 60,
   requestAccessTitle: 'Request Access',
   requestAccessSubtitle: 'Interested in partnering with NJ Cabinets?',
   requestAccessDescription: 'Tell us a bit about your business and we\'ll follow up with onboarding details.',

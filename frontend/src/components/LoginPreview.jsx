@@ -1,12 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from 'react-redux';
 import { getContrastColor, getOptimalColors } from '../utils/colorUtils';
+import { resolveAssetUrl } from '../utils/assetUtils';
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../config/customization';
 import { Eye, EyeOff } from '@/icons-lucide';
 
 const LoginPreview = ({ config }) => {
   const [activeView, setActiveView] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
-  const customization = useSelector((state) => state.customization);
+  const appCustomization = useSelector((state) => state.customization);
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const resolvedAppCustomization = appCustomization && Object.keys(appCustomization).length
+    ? appCustomization
+    : FALLBACK_APP_CUSTOMIZATION;
 
   useEffect(() => {
     if (activeView === 'forgot' && !config.showForgotPassword) {
@@ -14,12 +20,15 @@ const LoginPreview = ({ config }) => {
     }
   }, [activeView, config.showForgotPassword]);
 
-  const headerBg = customization.headerBg || '#667eea';
+  const headerBg = config.headerBg || '#667eea';
   const buttonTextColor = getContrastColor(headerBg);
   const marketingColors = useMemo(
     () => getOptimalColors(config.backgroundColor || '#0e1446'),
     [config.backgroundColor]
   );
+  const rawLogo = config.logo || resolvedAppCustomization.logoImage || '';
+  const brandLogo = useMemo(() => resolveAssetUrl(rawLogo, apiUrl), [rawLogo, apiUrl]);
+  const logoHeight = Number(config.logoHeight) || Number(resolvedAppCustomization.logoHeight) || 60;
 
   const previewOptions = useMemo(() => [
     { key: 'login', label: 'Login' },
@@ -64,12 +73,12 @@ const LoginPreview = ({ config }) => {
 
   const renderLoginForm = () => (
     <div className="w-100" style={{ maxWidth: '400px' }}>
-      {config.logo && (
+      {brandLogo && (
         <img
-          src={config.logo}
+          src={brandLogo}
           alt="Logo preview"
           className="mb-4"
-          style={{ height: '60px', objectFit: 'contain' }}
+          style={{ height: logoHeight, objectFit: 'contain' }}
         />
       )}
       <h2 className="mb-1 fw-bold">{config.title}</h2>
@@ -128,12 +137,12 @@ const LoginPreview = ({ config }) => {
 
   const renderForgotPasswordForm = () => (
     <div className="w-100" style={{ maxWidth: '400px' }}>
-      {config.logo && (
+      {brandLogo && (
         <img
-          src={config.logo}
+          src={brandLogo}
           alt="Logo preview"
           className="mb-4"
-          style={{ height: '60px', objectFit: 'contain' }}
+          style={{ height: logoHeight, objectFit: 'contain' }}
         />
       )}
       <h2 className="fw-bold mb-2">Forgot your password?</h2>
@@ -160,12 +169,12 @@ const LoginPreview = ({ config }) => {
 
   const renderRequestAccessForm = () => (
     <div className="w-100" style={{ maxWidth: '520px' }}>
-      {config.logo && (
+      {brandLogo && (
         <img
-          src={config.logo}
+          src={brandLogo}
           alt="Logo preview"
           className="mb-4"
-          style={{ height: '60px', objectFit: 'contain' }}
+          style={{ height: logoHeight, objectFit: 'contain' }}
         />
       )}
       <h2 className="fw-bold mb-2">{config.requestAccessTitle || 'Request Access'}</h2>
@@ -279,3 +288,4 @@ const LoginPreview = ({ config }) => {
 };
 
 export default LoginPreview;
+
