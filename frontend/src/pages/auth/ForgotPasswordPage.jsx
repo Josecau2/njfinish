@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import axios from 'axios'
 import { getOptimalColors } from '../../utils/colorUtils'
 import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
 import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization'
@@ -13,13 +14,28 @@ const APP_CUSTOMIZATION =
 const ForgotPasswordPage = () => {
   const { t } = useTranslation()
   const api_url = import.meta.env.VITE_API_URL
-  const [customization] = useState(LOGIN_CUSTOMIZATION)
+  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
   const brandLogo = customization.logo || APP_CUSTOMIZATION.logoImage || ''
   const logoHeight = Number(customization.logoHeight) || 60
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Load latest customization from server
+  useEffect(() => {
+    const loadCustomization = async () => {
+      try {
+        const response = await axios.get(`${api_url}/api/login-customization`)
+        if (response.data?.customization) {
+          setCustomization(response.data.customization)
+        }
+      } catch (error) {
+        console.warn('Failed to load login customization:', error)
+      }
+    }
+    loadCustomization()
+  }, [api_url])
 
   const copy = {
     title: t('auth.forgotPassword.title'),

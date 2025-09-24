@@ -21,8 +21,8 @@ const LoginPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
-  // Seed with generated static config; server keeps this file updated so no runtime fetch is needed
-  const [customization] = useState(LOGIN_CUSTOMIZATION);
+  // Load customization dynamically to ensure saved changes are always reflected
+  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION);
   const rawLogo = customization.logo || APP_CUSTOMIZATION.logoImage || '';
   const brandLogo = useMemo(() => resolveAssetUrl(rawLogo, api_url), [rawLogo, api_url]);
   const logoHeight = Number(customization.logoHeight) || 60;
@@ -33,6 +33,22 @@ const LoginPage = () => {
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [noticeMessage, setNoticeMessage] = useState('');
+
+  // Load latest customization from server on mount
+  useEffect(() => {
+    const loadCustomization = async () => {
+      try {
+        const response = await axios.get(`${api_url}/api/login-customization`);
+        if (response.data?.customization) {
+          setCustomization(response.data.customization);
+        }
+      } catch (error) {
+        console.warn('Failed to load login customization, using fallback:', error);
+        // Keep using the static fallback
+      }
+    };
+    loadCustomization();
+  }, [api_url]);
 
   useEffect(() => {
     try {

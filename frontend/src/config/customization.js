@@ -11,10 +11,10 @@ export const CUSTOMIZATION_CONFIG = {
   "sidebarFontColor": "#E2E8F0",
   "logoBg": "#2563EB",
   "companyName": "",
-  "id": "1",
+  "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
   "updatedAt": "2025-09-24T01:54:55.000Z",
-  "_generated": "2025-09-24T01:56:27.365Z",
+  "_generated": "2025-09-24T02:14:20.990Z",
   "_version": "1.0.0"
 }
 

@@ -26,13 +26,28 @@ const EMPTY_FORM = {
 const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
-  const [customization] = useState(LOGIN_CUSTOMIZATION)
+  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
   const brandLogo = customization.logo || APP_CUSTOMIZATION.logoImage || ''
   const logoHeight = Number(customization.logoHeight) || 60
   const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
+  // Load latest customization from server
+  useEffect(() => {
+    const loadCustomization = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/login-customization`)
+        if (response.data?.customization) {
+          setCustomization(response.data.customization)
+        }
+      } catch (error) {
+        console.warn('Failed to load login customization:', error)
+      }
+    }
+    loadCustomization()
+  }, [apiUrl])
 
   const copy = {
     title: t('auth.requestAccess.title'),

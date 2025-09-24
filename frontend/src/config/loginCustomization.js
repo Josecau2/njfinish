@@ -9,10 +9,10 @@ export const LOGIN_CUSTOMIZATION = {
   "showForgotPassword": true,
   "showKeepLoggedIn": true,
   "rightTitle": "CONTRACTOR PORTAL",
-  "rightSubtitle": "See Your Cabinet Price in Seconds!1",
+  "rightSubtitle": "See Your Cabinet Price in Seconds!",
   "rightTagline": "NJ CONTRACTORS",
-  "rightDescription": "tkkasdasd is this ok",
-  "logoHeight": 119,
+  "rightDescription": "kore",
+  "logoHeight": 60,
   "requestAccessTitle": "Request Access",
   "requestAccessSubtitle": "Interested in partnering with NJ Cabinets?",
   "requestAccessDescription": "Tell us a bit about your business and we'll follow up with onboarding details.",
@@ -28,8 +28,8 @@ export const LOGIN_CUSTOMIZATION = {
   "requestAccessLeadBody": "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n— The NJ Cabinets Team",
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
-  "updatedAt": "2025-09-24T01:31:55.000Z",
-  "_generated": "2025-09-24T01:56:37.564Z",
+  "updatedAt": "2025-09-24T02:14:41.000Z",
+  "_generated": "2025-09-24T02:16:58.062Z",
   "_version": "1.0.0"
 }
 
