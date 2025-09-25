@@ -891,7 +891,7 @@ const updateProposal = async (req, res) => {
                 }
 
                 // Create the order with comprehensive data
-                await Order.create({
+                const createdOrder = await Order.create({
                     proposal_id: existingProposal.id,
                     owner_group_id: existingProposal.owner_group_id || null,
                     customer_id: customerId || existingProposal.customerId || null,
@@ -907,6 +907,40 @@ const updateProposal = async (req, res) => {
                 });
 
                 console.log('✅ [DEBUG] Order created successfully via updateProposal for proposal:', id);
+
+                // Attempt to auto-email manufacturer with saved configuration (mode/subject/template)
+                let manufacturerEmailResult = null;
+                try {
+                    const eventManager = require('../utils/eventManager');
+                    const noSend = String(req.query?.noSend || req.body?.noSend).toLowerCase() === '1' || String(req.body?.noSend).toLowerCase() === 'true';
+                    manufacturerEmailResult = await eventManager.autoEmailManufacturerOnAccept({ proposalId: existingProposal.id }, { noSend });
+                } catch (e) {
+                    manufacturerEmailResult = { attempted: true, sent: false, error: e?.message || String(e) };
+                }
+
+                // Emit proposal.accepted event for notifications; suppress manufacturer email to avoid duplicate send
+                try {
+                    const eventData = {
+                        proposalId: existingProposal.id,
+                        ownerGroupId: existingProposal.owner_group_id,
+                        total: normalizedSnapshot?.summary?.grandTotal || null,
+                        customerSummary: {
+                            id: customerId || existingProposal.customerId || null,
+                            name: customerName || null,
+                            email: null
+                        },
+                        acceptedBy: user.id,
+                        acceptedAt: formData.accepted_at,
+                        isExternalAcceptance: false,
+                        suppressManufacturerEmail: true
+                    };
+                    process.emit('proposal.accepted', eventData);
+                } catch (_) {}
+
+                // Stash for response augmentation below
+                if (!res.locals) res.locals = {};
+                res.locals.createdOrderId = createdOrder?.id || null;
+                res.locals.manufacturerEmailResult = manufacturerEmailResult;
             } catch (orderErr) {
                 console.error('❌ [DEBUG] Order creation failed in updateProposal:', {
                     error: orderErr.message,
@@ -997,7 +1031,13 @@ const updateProposal = async (req, res) => {
             diff: { before, after: updatedProposal.toJSON(), action }
         });
 
-        res.status(200).json({ success: true, data: updatedProposal });
+        // Augment response with manufacturerEmail result/orderId when acceptance path was used
+        const extra = {};
+        if (action === 'accept') {
+            if (res.locals?.manufacturerEmailResult !== undefined) extra.manufacturerEmail = res.locals.manufacturerEmailResult;
+            if (res.locals?.createdOrderId) extra.orderId = res.locals.createdOrderId;
+        }
+        res.status(200).json({ success: true, data: updatedProposal, ...extra });
     } catch (error) {
         console.error('Error updating proposal:', error);
         res.status(500).json({ success: false, message: 'Internal server error', error: error });
@@ -1223,7 +1263,7 @@ const updateProposalStatus = async (req, res) => {
                 }
 
                 // Create the order
-                await Order.create({
+                const createdOrder = await Order.create({
                     proposal_id: fullProposal.id,
                     owner_group_id: fullProposal.owner_group_id || null,
                     customer_id: fullProposal.customerId || null,
@@ -1239,6 +1279,39 @@ const updateProposalStatus = async (req, res) => {
                 });
 
                 console.log('✅ [DEBUG] Order created successfully via updateProposalStatus for proposal:', id);
+
+                // Attempt manufacturer email send using saved configuration
+                let manufacturerEmailResult = null;
+                try {
+                    const eventManager = require('../utils/eventManager');
+                    const noSend = String(req.query?.noSend || req.body?.noSend).toLowerCase() === '1' || String(req.body?.noSend).toLowerCase() === 'true';
+                    manufacturerEmailResult = await eventManager.autoEmailManufacturerOnAccept({ proposalId: id }, { noSend });
+                } catch (e) {
+                    manufacturerEmailResult = { attempted: true, sent: false, error: e?.message || String(e) };
+                }
+
+                // Emit event (notifications/analytics); suppress manufacturer email to avoid duplicate send
+                try {
+                    const eventData = {
+                        proposalId: id,
+                        ownerGroupId: fullProposal.owner_group_id,
+                        total: normalizedSnapshot?.summary?.grandTotal || null,
+                        customerSummary: {
+                            id: fullProposal.customer?.id,
+                            name: fullProposal.customer?.name,
+                            email: fullProposal.customer?.email
+                        },
+                        acceptedBy: user.id,
+                        acceptedAt: updateData.accepted_at,
+                        isExternalAcceptance: false,
+                        suppressManufacturerEmail: true
+                    };
+                    process.emit('proposal.accepted', eventData);
+                } catch (_) {}
+
+                if (!res.locals) res.locals = {};
+                res.locals.createdOrderId = createdOrder?.id || null;
+                res.locals.manufacturerEmailResult = manufacturerEmailResult;
             } catch (orderErr) {
                 console.error('❌ [DEBUG] Order creation failed in updateProposalStatus:', {
                     error: orderErr.message,
@@ -1257,11 +1330,12 @@ const updateProposalStatus = async (req, res) => {
             diff: { before, after: proposal.toJSON(), action, newStatus }
         });
 
-        res.status(200).json({
-            success: true,
-            data: proposal,
-            message: `Proposal status updated to ${newStatus}`
-        });
+        const extra = {};
+        if (action === 'accept') {
+            if (res.locals?.manufacturerEmailResult !== undefined) extra.manufacturerEmail = res.locals.manufacturerEmailResult;
+            if (res.locals?.createdOrderId) extra.orderId = res.locals.createdOrderId;
+        }
+        res.status(200).json({ success: true, data: proposal, message: `Proposal status updated to ${newStatus}` , ...extra});
     } catch (error) {
         console.error('Error updating proposal status:', error);
         res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
@@ -1844,7 +1918,7 @@ const acceptProposal = async (req, res) => {
             console.error('❌ [DEBUG] Order verification/creation fallback failed:', { error: verifyErr.message, stack: verifyErr.stack });
         }
 
-        // Emit proposal.accepted domain event
+        // Emit proposal.accepted domain event (allow caller to suppress manufacturer email from event path)
         const eventData = {
             proposalId: proposal.id,
             ownerGroupId: proposal.owner_group_id,
@@ -1856,12 +1930,25 @@ const acceptProposal = async (req, res) => {
             },
             acceptedBy: acceptedBy,
             acceptedAt: acceptanceData.accepted_at,
-            isExternalAcceptance: isExternalAcceptance
+            isExternalAcceptance: isExternalAcceptance,
+            // We'll send manufacturer email directly here to capture status in response
+            // and prevent duplicate send via the event listener.
+            suppressManufacturerEmail: true
         };
 
         console.log('🎉 [DEBUG] Emitting proposal.accepted event:', eventData);
 
-        // Emit event (using process.emit for in-process events)
+        // Send manufacturer order email directly so we can report status back to client
+        let manufacturerEmailResult = null;
+        try {
+            const eventManager = require('../utils/eventManager');
+            const noSend = String(req.query?.noSend || req.body?.noSend).toLowerCase() === '1' || String(req.body?.noSend).toLowerCase() === 'true';
+            manufacturerEmailResult = await eventManager.autoEmailManufacturerOnAccept({ proposalId: proposal.id }, { noSend });
+        } catch (e) {
+            manufacturerEmailResult = { attempted: true, sent: false, error: e?.message || String(e) };
+        }
+
+        // Emit event (using process.emit for in-process events). We suppress manufacturer email inside handler via flag above.
         process.emit('proposal.accepted', eventData);
 
         console.log('✅ [DEBUG] Proposal acceptance completed successfully');
@@ -1874,7 +1961,8 @@ const acceptProposal = async (req, res) => {
             orderId: (res.locals && res.locals.createdOrder) ? res.locals.createdOrder.id : null,
             order: (res.locals && res.locals.createdOrder) ? res.locals.createdOrder : null,
             data: proposal,
-            eventData: eventData
+            eventData: eventData,
+            manufacturerEmail: manufacturerEmailResult
         });
 
     } catch (error) {

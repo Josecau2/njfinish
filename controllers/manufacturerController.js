@@ -17,6 +17,32 @@ const imageLogger = require('../utils/imageLogger');
 const { v4: uuidv4 } = require('uuid');
 const Sequelize = require('sequelize');
 const { Op } = Sequelize;
+const { DataTypes } = require('sequelize');
+
+// Ensure manufacturers table has email settings columns in environments without migrations
+async function ensureManufacturersSchema() {
+    try {
+        const qi = sequelize.getQueryInterface();
+        const table = await qi.describeTable('manufacturers').catch(() => null);
+        if (!table) return; // model sync elsewhere
+        const adds = [];
+        if (!table.order_email_subject) {
+            adds.push(qi.addColumn('manufacturers', 'order_email_subject', { type: DataTypes.STRING(255), allowNull: true }));
+        }
+        if (!table.order_email_template) {
+            adds.push(qi.addColumn('manufacturers', 'order_email_template', { type: DataTypes.TEXT, allowNull: true }));
+        }
+        if (!table.order_email_mode) {
+            adds.push(qi.addColumn('manufacturers', 'order_email_mode', { type: DataTypes.STRING(16), allowNull: true, defaultValue: 'pdf' }));
+        }
+        if (!table.auto_email_on_accept) {
+            adds.push(qi.addColumn('manufacturers', 'auto_email_on_accept', { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: true }));
+        }
+        if (adds.length) await Promise.all(adds);
+    } catch (e) {
+        console.warn('manufacturerController.ensureManufacturersSchema warning:', e?.message || e);
+    }
+}
 
 
 const fetchManufacturer = async (req, res) => {
@@ -39,6 +65,7 @@ const addManufacturer = async (req, res) => {
     const isDev = process.env.NODE_ENV !== 'production';
 
     try {
+        await ensureManufacturersSchema();
         upload.fields([
             { name: 'catalogFiles', maxCount: 10 },
             { name: 'manufacturerImage', maxCount: 1 }
@@ -58,7 +85,12 @@ const addManufacturer = async (req, res) => {
                 costMultiplier,
                 instructions,
                 assembledEtaDays,
-                unassembledEtaDays
+                unassembledEtaDays,
+                // New email settings
+                orderEmailSubject,
+                orderEmailTemplate,
+                orderEmailMode,
+                autoEmailOnAccept
             } = req.body;
 
             if (!name || !email || !phone || !address || !website || !costMultiplier) {
@@ -90,7 +122,11 @@ const addManufacturer = async (req, res) => {
                     instructions: instructions || '',
                     assembledEtaDays: assembledEtaDays || null,
                     unassembledEtaDays: unassembledEtaDays || null,
-                    image: imagePath
+                    image: imagePath,
+                    orderEmailSubject: orderEmailSubject || null,
+                    orderEmailTemplate: orderEmailTemplate || null,
+                    orderEmailMode: ['pdf','plain','both'].includes(String(orderEmailMode||'').toLowerCase()) ? String(orderEmailMode).toLowerCase() : 'pdf',
+                    autoEmailOnAccept: String(autoEmailOnAccept).toLowerCase() === 'false' ? false : true
                 });
 
                 if (catalogFiles.length > 0) {
@@ -242,6 +278,7 @@ const fetchManufacturerById = async (req, res) => {
 const updateManufacturer = async (req, res) => {
     const manufacturerId = req.params.id;
 
+    await ensureManufacturersSchema();
     upload.fields([
         { name: 'catalogFiles', maxCount: 10 },
         { name: 'manufacturerImage', maxCount: 1 }
@@ -261,7 +298,12 @@ const updateManufacturer = async (req, res) => {
             instructions,
             assembledEtaDays,
             unassembledEtaDays,
-            deliveryFee
+            deliveryFee,
+            // New email settings
+            orderEmailSubject,
+            orderEmailTemplate,
+            orderEmailMode,
+            autoEmailOnAccept
         } = req.body;
 
         console.log('Received ETA fields:', {
@@ -320,7 +362,11 @@ const updateManufacturer = async (req, res) => {
                 assembledEtaDays: assembledEtaDays || null,
                 unassembledEtaDays: unassembledEtaDays || null,
                 deliveryFee: deliveryFee ? parseFloat(deliveryFee) : null,
-                image: imagePath || manufacturer.image
+                image: imagePath || manufacturer.image,
+                orderEmailSubject: orderEmailSubject || manufacturer.orderEmailSubject || null,
+                orderEmailTemplate: orderEmailTemplate || manufacturer.orderEmailTemplate || null,
+                orderEmailMode: ['pdf','plain','both'].includes(String(orderEmailMode||'').toLowerCase()) ? String(orderEmailMode).toLowerCase() : (manufacturer.orderEmailMode || 'pdf'),
+                autoEmailOnAccept: String(autoEmailOnAccept).toLowerCase() === 'false' ? false : (String(autoEmailOnAccept).toLowerCase() === 'true' ? true : (manufacturer.autoEmailOnAccept ?? true))
             };
 
             console.log('Updating manufacturer with data:', updateData);

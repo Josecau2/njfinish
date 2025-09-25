@@ -43,6 +43,10 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     assembledEtaDays: '',
     unassembledEtaDays: '',
     deliveryFee: '',
+    orderEmailSubject: '',
+    orderEmailTemplate: '',
+    orderEmailMode: 'pdf',
+    autoEmailOnAccept: true,
   });
   const [files, setFiles] = useState([]);
   const [logoImage, setLogoImage] = useState(null);
@@ -63,6 +67,10 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         assembledEtaDays: manufacturer.assembledEtaDays || '',
         unassembledEtaDays: manufacturer.unassembledEtaDays || '',
         deliveryFee: manufacturer.deliveryFee || '',
+        orderEmailSubject: manufacturer.orderEmailSubject || '',
+        orderEmailTemplate: manufacturer.orderEmailTemplate || '',
+        orderEmailMode: manufacturer.orderEmailMode || 'pdf',
+        autoEmailOnAccept: manufacturer.autoEmailOnAccept ?? true,
       });
     }
   }, [manufacturer]);
@@ -290,6 +298,39 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       />
                     </div>
                   )}
+                </div>
+              </CCardBody>
+            </CCard>
+
+            <CCard className="mb-4">
+              <CCardBody>
+                <CRow>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="orderEmailSubject">Manufacturer Email Subject</CFormLabel>
+                      <CFormInput id="orderEmailSubject" name="orderEmailSubject" value={formData.orderEmailSubject} onChange={handleChange} />
+                    </div>
+                  </CCol>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="orderEmailMode">Send Mode</CFormLabel>
+                      <select id="orderEmailMode" name="orderEmailMode" className="form-select" value={formData.orderEmailMode} onChange={handleChange}>
+                        <option value="pdf">PDF only</option>
+                        <option value="plain">Plain text only</option>
+                        <option value="both">Both</option>
+                      </select>
+                      <div className="form-text">Choose whether to send a PDF, a plain email, or both.</div>
+                    </div>
+                  </CCol>
+                </CRow>
+                <div className="mb-3">
+                  <CFormLabel htmlFor="orderEmailTemplate">Manufacturer Email Template (no prices)</CFormLabel>
+                  <CFormTextarea id="orderEmailTemplate" name="orderEmailTemplate" rows={6} value={formData.orderEmailTemplate} onChange={handleChange} placeholder="Dear Manufacturer, Please find the attached order PDF. ..." />
+                  <CFormText>Simple HTML allowed. Keep it minimal; prices are not included.</CFormText>
+                </div>
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" role="switch" id="autoEmailOnAccept" name="autoEmailOnAccept" checked={!!formData.autoEmailOnAccept} onChange={(e)=> setFormData(prev=> ({...prev, autoEmailOnAccept: e.target.checked}))} />
+                  <label className="form-check-label" htmlFor="autoEmailOnAccept">Automatically email manufacturer on acceptance</label>
                 </div>
               </CCardBody>
             </CCard>

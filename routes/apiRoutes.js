@@ -310,6 +310,28 @@ const ordersController = require('../controllers/ordersController');
 router.get('/orders', verifyTokenWithGroup, ordersController.listOrders);
 router.get('/orders/:id', verifyTokenWithGroup, validateIdParam('id'), ordersController.getOrder);
 
+// Admin-only: resend manufacturer email for a given order id
+router.post('/orders/:id/resend-manufacturer-email', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), async (req, res) => {
+	try {
+		const orderId = req.params.id;
+		const Order = require('../models/Order');
+		const order = await Order.findByPk(orderId);
+		if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+		const eventManager = require('../utils/eventManager');
+		// Optional dry-run: return pdfBytes without sending email
+		if (String(req.query.noSend).toLowerCase() === '1' || String(req.body?.noSend).toLowerCase() === 'true') {
+			const snapshot = typeof order.snapshot === 'string' ? (() => { try { return JSON.parse(order.snapshot); } catch (_) { return null; } })() : order.snapshot;
+			if (!snapshot) return res.status(400).json({ success: false, message: 'Order has no snapshot' });
+			const pdf = await eventManager.generateNoPricePdf(snapshot);
+			return res.status(200).json({ success: true, pdfBytes: pdf?.length || 0 });
+		}
+		const result = await eventManager.autoEmailManufacturerOnAccept({ proposalId: order.proposal_id });
+		return res.status(200).json({ success: !!result?.sent, message: result?.sent ? 'Resent successfully' : 'Resend attempted', result });
+	} catch (e) {
+		return res.status(500).json({ success: false, message: e.message });
+	}
+});
+
 router.get('/settings/customization', customizationController.getCustomization)
 router.post('/settings/customization', upload.single('logoImage'), customizationController.saveCustomization)
 

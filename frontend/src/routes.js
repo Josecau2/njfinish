@@ -10,6 +10,25 @@ import {
   RedirectToNoisyAdminProposalView,
 } from './components/NoisyRedirects'
 
+// Small helper to make lazy imports resilient to transient fetch failures in dev
+const lazyWithRetry = (importer, retries = 2, interval = 350) =>
+  React.lazy(() =>
+    new Promise((resolve, reject) => {
+      const attempt = (n) => {
+        importer()
+          .then(resolve)
+          .catch((err) => {
+            if (n <= 0) {
+              reject(err)
+            } else {
+              setTimeout(() => attempt(n - 1), interval)
+            }
+          })
+      }
+      attempt(retries)
+    })
+  )
+
 // Pages (Lazy loaded)
 const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'))
 const Customers = React.lazy(() => import('./pages/customers/Customers'))
@@ -39,9 +58,9 @@ const LoginCustomizerPage = React.lazy(() => import('./pages/settings/customizat
 const Contracts = React.lazy(() => import('./pages/contracts'))
 const UiCustomization = React.lazy(() => import('./pages/settings/customization'))
 const TermsPage = React.lazy(() => import('./pages/settings/terms/TermsPage'))
-const AdminOrders = React.lazy(() => import('./pages/orders/AdminOrders'))
-const MyOrders = React.lazy(() => import('./pages/orders/MyOrders'))
-const OrderDetails = React.lazy(() => import('./pages/orders/OrderDetails'))
+const AdminOrders = lazyWithRetry(() => import('./pages/orders/AdminOrders.jsx'))
+const MyOrders = lazyWithRetry(() => import('./pages/orders/MyOrders.jsx'))
+const OrderDetails = lazyWithRetry(() => import('./pages/orders/OrderDetails.jsx'))
 const PaymentsList = React.lazy(() => import('./pages/payments/PaymentsList'))
 const PaymentConfiguration = React.lazy(() => import('./pages/payments/PaymentConfiguration'))
 const PaymentPage = React.lazy(() => import('./pages/payments/PaymentPage'))
@@ -50,7 +69,8 @@ const PaymentCancel = React.lazy(() => import('./pages/payments/PaymentCancel'))
 const PaymentTest = React.lazy(() => import('./pages/payments/PaymentTest'))
 
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
-const Resources = React.lazy(() => import('../src/pages/Resources'))
+// Fix incorrect import path for Resources (was '../src/pages/Resources')
+const Resources = React.lazy(() => import('./pages/Resources'))
 const Calender = React.lazy(() => import('./pages/calender'))
 const Contractors = React.lazy(() => import('./pages/admin/Contractors'))
 const ContractorDetail = React.lazy(() => import('./pages/admin/ContractorDetail'))

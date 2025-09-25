@@ -59,6 +59,33 @@ const Manufacturer = sequelize.define('Manufacturer', {
     field: 'delivery_fee',
     comment: 'Delivery fee charged by manufacturer'
   },
+  // Email settings for auto-sending orders to manufacturer
+  orderEmailSubject: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'order_email_subject',
+    comment: 'Subject template for manufacturer order emails'
+  },
+  orderEmailTemplate: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'order_email_template',
+    comment: 'HTML/plain template for manufacturer order emails (no prices)'
+  },
+  orderEmailMode: {
+    type: DataTypes.STRING(16),
+    allowNull: true,
+    defaultValue: 'pdf', // 'pdf' | 'plain' | 'both'
+    field: 'order_email_mode',
+    comment: 'Send mode: pdf | plain | both'
+  },
+  autoEmailOnAccept: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: true,
+    field: 'auto_email_on_accept',
+    comment: 'If true, auto-email manufacturer when order is created'
+  },
   status: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

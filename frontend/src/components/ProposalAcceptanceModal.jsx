@@ -77,6 +77,17 @@ const ProposalAcceptanceModal = ({
         icon: 'success',
         timer: 2000
       });
+
+      // If backend reports manufacturer email not sent, show a warning with reason
+      if (result?.manufacturerEmail && !result.manufacturerEmail.sent) {
+        const reason = result.manufacturerEmail.error || result.manufacturerEmail.reason || t('common.unknownError');
+        Swal.fire({
+          title: t('common.warning'),
+          text: t('proposals.toast.manufacturerEmailFailed', 'Manufacturer email was not sent') + (reason ? `: ${reason}` : ''),
+          icon: 'warning',
+          timer: 4000
+        });
+      }
       onAcceptanceComplete?.();
       onClose();
 

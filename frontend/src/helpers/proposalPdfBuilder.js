@@ -237,7 +237,13 @@ export const buildProposalPdfHtml = ({
     showPriceSummary = true,
     selectedVersions = [],
     includeCatalog = true,
+    suppressPrices = false,
   } = options;
+
+  // If suppressPrices, remove price-related columns and hide summaries/catalog pricing
+  const effectiveColumns = Array.isArray(selectedColumns)
+    ? selectedColumns.filter((c) => (suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true))
+    : DEFAULT_COLUMNS.filter((c) => (suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true));
 
   let manufacturersData = formData?.manufacturersData;
   if (typeof manufacturersData === 'string') {
@@ -287,8 +293,8 @@ export const buildProposalPdfHtml = ({
     code: item.code || item.itemNumber || '',
   }));
 
-  const columnHeaders = buildColumnHeaders(selectedColumns, t);
-  const proposalItemRows = buildItemRows(proposalItems, selectedColumns, t, shortLabel);
+  const columnHeaders = buildColumnHeaders(effectiveColumns, t);
+  const proposalItemRows = buildItemRows(proposalItems, effectiveColumns, t, shortLabel);
 
   const {
     companyName,
@@ -578,22 +584,22 @@ export const buildProposalPdfHtml = ({
         ` : ''}
 
         ${(showProposalItems && proposalItems.length > 0) ? `
-        <div class="section-header">${t('proposalDoc.sections.proposalItems', 'Proposal Items')}</div>
+    <div class="section-header">${t('proposalDoc.sections.proposalItems', 'Proposal Items')}</div>
         <table class="items-table">
             <thead>
-                <tr style="background-color: #f8f9fa;">${columnHeaders}</tr>
+        <tr style="background-color: #f8f9fa;">${columnHeaders}</tr>
             </thead>
             <tbody>
                 <tr class="category-row">
-                    <td colspan="${selectedColumns.length}" style="padding:0.75rem; background-color:#f8f9fa; font-style: italic;"><strong>${t('proposalColumns.items', 'Items')}</strong></td>
+          <td colspan="${effectiveColumns.length}" style="padding:0.75rem; background-color:#f8f9fa; font-style: italic;"><strong>${t('proposalColumns.items', 'Items')}</strong></td>
                 </tr>
                 ${proposalItemRows}
             </tbody>
         </table>
-        ${showPriceSummary ? buildPriceSummary(priceSummary, t) : ''}
+    ${suppressPrices ? '' : (showPriceSummary ? buildPriceSummary(priceSummary, t) : '')}
         ` : ''}
 
-        ${(includeCatalog && selectedCatalog.length > 0) ? `
+    ${((includeCatalog && !suppressPrices) && selectedCatalog.length > 0) ? `
         <div class="section-header">${t('proposalDoc.sections.catalogItems', 'Catalog Items')}</div>
         <table class="items-table">
             <thead>
