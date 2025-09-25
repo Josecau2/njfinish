@@ -241,3 +241,130 @@ Implementation references:
 Verification scripts:
 - `node scripts/test-orders-permissions.js` (requires ADMIN_JWT and CONTRACTOR_JWT)
 - `node scripts/test-quotes-permissions.js` (requires ADMIN_JWT, CONTRACTOR_JWT, STAFF_JWT)
+
+## Migrations (Umzug + Sequelize) — Required Conventions
+
+These rules prevent common breakages during container builds and ensure migrations are idempotent and reversible.
+
+1) Function signature and parameters
+- Always export functions with the exact Sequelize/Umzug signature:
+    ```js
+    module.exports = {
+        async up(queryInterface, Sequelize) { /* ... */ },
+        async down(queryInterface, Sequelize) { /* ... */ }
+    }
+    ```
+- Do NOT call `sequelize.getQueryInterface()` or import/instantiate Sequelize inside migrations. Use the provided `queryInterface` and `Sequelize` parameters only.
+
+2) DataTypes source
+- Use `Sequelize.DataTypes` (from the provided parameter), e.g.:
+    ```js
+    const { DataTypes } = Sequelize;
+    await queryInterface.addColumn('manufacturers', 'autoEmailOnAccept', {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    });
+    ```
+- Do NOT import DataTypes from `sequelize` directly.
+
+3) Idempotency and safe checks
+- Before adding/removing columns, describe the table and check current schema:
+    ```js
+    const table = await queryInterface.describeTable('manufacturers').catch(() => null);
+    if (!table) return; // Table missing in some envs — skip safely
+    if (!table.orderEmailSubject) {
+        await queryInterface.addColumn('manufacturers', 'orderEmailSubject', {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+        });
+    }
+    ```
+- For `down`, also check existence before removing to avoid throwing on partially-migrated envs:
+    ```js
+    if (table.orderEmailSubject) {
+        await queryInterface.removeColumn('manufacturers', 'orderEmailSubject');
+    }
+    ```
+
+4) Reversibility
+- Every `up` change should have a corresponding `down` reversal when practical (e.g., remove columns that were added). Keep both directions idempotent with `describeTable` checks.
+
+5) File naming and ordering
+- Place files under `scripts/migrations/` with sortable names, e.g. `20251005-XXXX-description.js` or `YYYYMMDDHHmm-description.js`.
+- Umzug runs in filename order; use a timestamp prefix to guarantee correct sequencing.
+
+6) Avoid risky operations on large tables
+- Adding non-null columns without defaults can lock tables. Prefer:
+    - Add as nullable + default, backfill in batches (if needed), then alter to non-null.
+    - Or keep nullable when acceptable for flexibility.
+
+7) Do not import application models
+- Migrations must not import anything from `models/` or use model instances. Use only `queryInterface` and `Sequelize.DataTypes`.
+
+8) Local testing and verification
+- Run migrations locally via `node scripts/migrate.js up` and verify schema with `node check-schema.js` or `node check-table-structures.js`.
+- Rerunnable: `up` should be a no-op on a database that already has the changes.
+
+9) Backup notes during migration
+- Our migration runner performs a pre-migration backup with `mysqldump` using `--no-tablespaces` to avoid requiring the `PROCESS` privilege. This is handled automatically in `scripts/migrate.js`.
+
+10) Minimal template to copy
+```js
+'use strict';
+
+module.exports = {
+    async up(queryInterface, Sequelize) {
+        const { DataTypes } = Sequelize;
+        const table = await queryInterface.describeTable('manufacturers').catch(() => null);
+        if (!table) return; // safe early exit if table missing
+
+        if (!table.orderEmailSubject) {
+            await queryInterface.addColumn('manufacturers', 'orderEmailSubject', {
+                type: DataTypes.STRING(255),
+                allowNull: true,
+            });
+        }
+        if (!table.orderEmailTemplate) {
+            await queryInterface.addColumn('manufacturers', 'orderEmailTemplate', {
+                type: DataTypes.TEXT('long'),
+                allowNull: true,
+            });
+        }
+        if (!table.orderEmailMode) {
+            await queryInterface.addColumn('manufacturers', 'orderEmailMode', {
+                type: DataTypes.ENUM('pdf', 'plain', 'both'),
+                allowNull: false,
+                defaultValue: 'pdf',
+            });
+        }
+        if (!table.autoEmailOnAccept) {
+            await queryInterface.addColumn('manufacturers', 'autoEmailOnAccept', {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            });
+        }
+    },
+
+    async down(queryInterface, Sequelize) {
+        const table = await queryInterface.describeTable('manufacturers').catch(() => null);
+        if (!table) return;
+
+        if (table.autoEmailOnAccept) {
+            await queryInterface.removeColumn('manufacturers', 'autoEmailOnAccept');
+        }
+        if (table.orderEmailMode) {
+            await queryInterface.removeColumn('manufacturers', 'orderEmailMode');
+        }
+        if (table.orderEmailTemplate) {
+            await queryInterface.removeColumn('manufacturers', 'orderEmailTemplate');
+        }
+        if (table.orderEmailSubject) {
+            await queryInterface.removeColumn('manufacturers', 'orderEmailSubject');
+        }
+    }
+};
+```
+
+Following these conventions will prevent runtime errors like "Cannot read properties of undefined (reading 'describeTable')" and privilege-related backup failures, and will keep migrations safe across dev/prod environments.
