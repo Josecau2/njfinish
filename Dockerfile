@@ -13,7 +13,7 @@ ARG NPM_REGISTRY_FALLBACK=https://registry.npmmirror.com
 # Improve network reliability inside the builder
 # - Ensure CA certificates exist (TLS)
 # - Prefer IPv4 DNS resolution (often more reliable in DCs)
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata && rm -rf /var/lib/apt/lists/* && ln -fs /usr/share/zoneinfo/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 ENV NODE_OPTIONS=--dns-result-order=ipv4first \
     npm_config_registry=${NPM_REGISTRY} \
     npm_config_fetch_timeout=600000 \
@@ -45,6 +45,7 @@ RUN set -eux; \
 
 
 # Copy frontend source (entire folder to support .js/.mjs/.ts configs)
+# Copy frontend source (include public assets so customization JSON exists at build time)
 COPY frontend/ ./frontend/
 
 # Build frontend with optimizations
@@ -79,6 +80,7 @@ RUN apt-get update \
         libgbm1 \
         libxss1 \
         libasound2 \
+        tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure Puppeteer to use installed Chromium
@@ -104,6 +106,8 @@ COPY migrations ./migrations
 COPY server ./server
 # Include runtime brand assets served from /public/brand
 COPY public ./public
+ # Ensure brand directory exists early (before switching user) so later runtime write succeeds
+RUN mkdir -p /app/public/brand
 COPY *.js ./
 
 # copy the built frontend from the builder (Vite outDir -> /app/frontend/build). App serves from /app/build
@@ -114,14 +118,19 @@ COPY --from=builder /app/frontend/public/fonts ./build/fonts
 # Ensure uploads/backups/logs exist and are writable by node user
 # Avoid slow recursive chown of the whole /app; only chown the writable dirs
 RUN mkdir -p \
-    /app/uploads \
     /app/uploads/images \
     /app/uploads/logos \
     /app/uploads/manufacturer_catalogs \
     /app/utils/logs \
     /app/backups \
     /app/public/brand && \
-    chown -R node:node /app/uploads /app/backups /app/utils/logs /app/public/brand
+    chown -R node:node /app/uploads /app/backups /app/utils/logs /app/public/brand || true
+
+# Environment hints for app runtime (explicit static dir)
+ENV STATIC_DIR=/app/build TZ=UTC
+
+# Basic container health check: ensure server responds and brand inline is present
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 CMD node -e "const http=require('http');http.get({host:'127.0.0.1',port:8080,path:'/'},res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{if(d.includes('window.__BRAND__'))process.exit(0);process.exit(1);});}).on('error',()=>process.exit(1));"
 
 USER node
 EXPOSE 8080
