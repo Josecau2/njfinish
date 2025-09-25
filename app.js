@@ -32,12 +32,16 @@ app.use((req, res, next) => {
   // Content Security Policy (allow listed origins for images and API/connect)
   const originList = (env.CORS_ALLOWED_ORIGINS || []).join(' ');
   const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
-  const connectSrc = `connect-src 'self' ${originList} ws: wss:`.trim();
+  // Allow Cloudflare Web Analytics beacons
+  const cfScriptSrc = 'https://static.cloudflareinsights.com';
+  const cfConnectSrc = 'https://cloudflareinsights.com';
+  const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc}`.trim();
   res.setHeader(
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      // Permit Cloudflare Insights analytics script
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${cfScriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
       imgSrc,
       "font-src 'self' data:",
