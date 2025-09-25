@@ -46,7 +46,10 @@ function buildBrandFromLegacy() {
       logoDataURI,
       colors,
       // Pass through the login object as-is (already normalized by writer)
-      login: { ...(loginCfg || {}) },
+      login: { ...(loginCfg || {}),
+        showForgotPassword: typeof loginCfg.showForgotPassword === 'boolean' ? loginCfg.showForgotPassword : true,
+        showKeepLoggedIn: typeof loginCfg.showKeepLoggedIn === 'boolean' ? loginCfg.showKeepLoggedIn : true,
+      },
       app: {
         logoText: appCfg.logoText,
         logoImage: appCfg.logoImage,

@@ -145,6 +145,8 @@ async function regenerateBrandSnapshot() {
       title: loginData.title || '',
       subtitle: loginData.subtitle || '',
       backgroundColor: loginData.backgroundColor || '',
+      showForgotPassword: typeof loginData.showForgotPassword === 'boolean' ? loginData.showForgotPassword : true,
+      showKeepLoggedIn: typeof loginData.showKeepLoggedIn === 'boolean' ? loginData.showKeepLoggedIn : true,
       leftTitle: loginData.rightTitle || '',
       leftSubtitle: loginData.rightSubtitle || '',
       rightTitle: loginData.rightTitle || '',

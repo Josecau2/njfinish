@@ -146,6 +146,8 @@ async function materializeBranding(brand = {}) {
       rightTitle: brand.login?.rightTitle || brand.login?.leftTitle || '',
       rightSubtitle: brand.login?.rightSubtitle || brand.login?.leftSubtitle || '',
       rightDescription: brand.login?.rightDescription || '',
+      showForgotPassword: typeof brand.login?.showForgotPassword === 'boolean' ? brand.login.showForgotPassword : true,
+      showKeepLoggedIn: typeof brand.login?.showKeepLoggedIn === 'boolean' ? brand.login.showKeepLoggedIn : true,
       logo: logoDataURI,
       logoHeight: brand.login?.logoHeight || 60,
       requestAccessTitle: brand.login?.requestAccessTitle || '',

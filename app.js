@@ -108,6 +108,11 @@ app.use(express.static(STATIC_DIR, {
 
 function serveSpaWithBrand(req, res) {
   try {
+    // Ensure the SPA shell is never cached so brand/customization updates are reflected immediately
+    res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
     const html = fs.readFileSync(INDEX_HTML_PATH, 'utf8');
     res.send(withBrandInline(html));
   } catch (err) {
