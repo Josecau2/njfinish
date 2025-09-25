@@ -113,8 +113,15 @@ COPY --from=builder /app/frontend/public/fonts ./build/fonts
 
 # Ensure uploads/backups/logs exist and are writable by node user
 # Avoid slow recursive chown of the whole /app; only chown the writable dirs
-RUN mkdir -p /app/uploads /app/uploads/images /app/uploads/logos /app/uploads/manufacturer_catalogs /app/utils/logs /app/backups && \
-    chown -R node:node /app/uploads /app/backups /app/utils/logs
+RUN mkdir -p \
+    /app/uploads \
+    /app/uploads/images \
+    /app/uploads/logos \
+    /app/uploads/manufacturer_catalogs \
+    /app/utils/logs \
+    /app/backups \
+    /app/public/brand && \
+    chown -R node:node /app/uploads /app/backups /app/utils/logs /app/public/brand
 
 USER node
 EXPOSE 8080
