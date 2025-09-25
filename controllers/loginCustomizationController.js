@@ -1,5 +1,6 @@
 const LoginCustomization = require('../models/LoginCustomization');
 const { writeFrontendLoginCustomization } = require('../utils/frontendLoginConfigWriter');
+const { regenerateBrandSnapshot } = require('../server/branding/regenerateBrandSnapshot');
 const { compileCustomization, stripRuntimeFields, refreshLoginCustomization, extractEmailSettings } = require('../services/loginCustomizationCache');
 const { applyTransportConfig, createTestTransporter } = require('../utils/mail');
 
@@ -56,6 +57,12 @@ exports.saveCustomization = async (req, res) => {
       await writeFrontendLoginCustomization(normalized);
     } catch (e) {
       console.error('Failed persisting static login customization:', e);
+    }
+
+    try {
+      await regenerateBrandSnapshot();
+    } catch (brandErr) {
+      console.error('Failed to regenerate brand snapshot after login customization save:', brandErr);
     }
 
     await refreshLoginCustomization();
@@ -128,3 +135,5 @@ exports.testEmail = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+

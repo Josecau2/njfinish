@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branding System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .test-result {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        .warning { border-left: 4px solid #ffc107; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .logo-test {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Login Branding System Test</h1>
+    <p>This page tests the branding system to ensure login customizations are working correctly.</p>
+
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Brand Data</h2>
+        <div id="brand-data"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🖼️ Logo Test</h2>
+        <div class="logo-test" id="logo-test">
+            <p>Testing logo display...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Color Swatches</h2>
+        <div id="color-swatches"></div>
+    </div>
+
+    <script>
+        function runTests() {
+            const results = [];
+            const resultsContainer = document.getElementById('test-results');
+            const brandDataContainer = document.getElementById('brand-data');
+            const logoTestContainer = document.getElementById('logo-test');
+            const colorSwatchesContainer = document.getElementById('color-swatches');
+
+            // Test 1: Check if window.__BRAND__ exists
+            console.log('🔍 Testing window.__BRAND__ availability...');
+            if (typeof window.__BRAND__ !== 'undefined') {
+                results.push({
+                    test: 'window.__BRAND__ availability',
+                    status: 'success',
+                    message: 'window.__BRAND__ is available'
+                });
+
+                // Display brand data
+                brandDataContainer.innerHTML = `<pre>${JSON.stringify(window.__BRAND__, null, 2)}</pre>`;
+
+                // Test logo
+                const logoImg = document.createElement('img');
+                logoImg.src = window.__BRAND__.logoDataURI;
+                logoImg.alt = window.__BRAND__.logoAlt || 'Brand Logo';
+                logoImg.style.maxWidth = '200px';
+                logoImg.style.height = 'auto';
+                logoImg.onload = () => {
+                    logoTestContainer.innerHTML = '<h3>✅ Logo loaded successfully</h3>';
+                    logoTestContainer.appendChild(logoImg);
+                };
+                logoImg.onerror = () => {
+                    logoTestContainer.innerHTML = '<h3>❌ Logo failed to load</h3>';
+                };
+
+                // Test colors
+                if (window.__BRAND__.colors) {
+                    let colorHTML = '';
+                    Object.entries(window.__BRAND__.colors).forEach(([name, color]) => {
+                        colorHTML += `
+                            <div style="display: inline-block; margin: 10px; text-align: center;">
+                                <div style="width: 60px; height: 60px; background-color: ${color}; border: 1px solid #ccc; border-radius: 4px;"></div>
+                                <div style="font-size: 12px; margin-top: 5px;">${name}<br><code>${color}</code></div>
+                            </div>
+                        `;
+                    });
+                    colorSwatchesContainer.innerHTML = colorHTML;
+                } else {
+                    colorSwatchesContainer.innerHTML = '<p>No color data found</p>';
+                }
+
+            } else {
+                results.push({
+                    test: 'window.__BRAND__ availability',
+                    status: 'error',
+                    message: 'window.__BRAND__ is not available'
+                });
+                brandDataContainer.innerHTML = '<p class="error">window.__BRAND__ is not defined</p>';
+            }
+
+            // Test 2: Check CSS custom properties
+            console.log('🔍 Testing CSS custom properties...');
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            const cssVars = [
+                '--brand-header-bg',
+                '--brand-header-text',
+                '--brand-sidebar-bg',
+                '--brand-sidebar-text',
+                '--brand-logo-bg'
+            ];
+
+            let cssVarsFound = 0;
+            cssVars.forEach(varName => {
+                const value = computedStyle.getPropertyValue(varName).trim();
+                if (value) {
+                    cssVarsFound++;
+                }
+            });
+
+            if (cssVarsFound > 0) {
+                results.push({
+                    test: 'CSS custom properties',
+                    status: 'success',
+                    message: `${cssVarsFound} CSS custom properties found`
+                });
+            } else {
+                results.push({
+                    test: 'CSS custom properties',
+                    status: 'warning',
+                    message: 'No brand CSS custom properties found'
+                });
+            }
+
+            // Test 3: Check login customization
+            console.log('🔍 Testing login customization data...');
+            if (typeof window.__LOGIN_CUSTOMIZATION__ !== 'undefined') {
+                results.push({
+                    test: 'Login customization data',
+                    status: 'success',
+                    message: 'window.__LOGIN_CUSTOMIZATION__ is available'
+                });
+            } else {
+                results.push({
+                    test: 'Login customization data',
+                    status: 'warning',
+                    message: 'window.__LOGIN_CUSTOMIZATION__ not found'
+                });
+            }
+
+            // Test 4: Check app customization
+            console.log('🔍 Testing app customization data...');
+            if (typeof window.__APP_CUSTOMIZATION__ !== 'undefined') {
+                results.push({
+                    test: 'App customization data',
+                    status: 'success',
+                    message: 'window.__APP_CUSTOMIZATION__ is available'
+                });
+            } else {
+                results.push({
+                    test: 'App customization data',
+                    status: 'warning',
+                    message: 'window.__APP_CUSTOMIZATION__ not found'
+                });
+            }
+
+            // Display results
+            let resultsHTML = '';
+            results.forEach(result => {
+                resultsHTML += `
+                    <div class="test-result ${result.status}">
+                        <strong>${result.test}:</strong> ${result.message}
+                    </div>
+                `;
+            });
+            resultsContainer.innerHTML = resultsHTML;
+
+            // Summary
+            const successCount = results.filter(r => r.status === 'success').length;
+            const totalTests = results.length;
+
+            console.log(`🎉 Tests completed: ${successCount}/${totalTests} passed`);
+
+            // Auto-refresh test (optional)
+            setTimeout(() => {
+                const refreshButton = document.createElement('button');
+                refreshButton.textContent = '🔄 Refresh Test';
+                refreshButton.onclick = () => location.reload();
+                refreshButton.style.marginTop = '20px';
+                refreshButton.style.padding = '10px 20px';
+                refreshButton.style.fontSize = '16px';
+                resultsContainer.appendChild(refreshButton);
+            }, 1000);
+        }
+
+        // Run tests when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runTests);
+        } else {
+            runTests();
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 const Customization = require('../models/Customization')
 const PdfCustomization = require('../models/PdfCustomization')
-const { writeFrontendCustomization } = require('../utils/frontendConfigWriter')
+const { regenerateBrandSnapshot } = require('../server/branding/regenerateBrandSnapshot')
 
 exports.getCustomization = async (req, res) => {
   try {
@@ -37,12 +37,10 @@ exports.saveCustomization = async (req, res) => {
       await Customization.create(payload)
     }
 
-    // Persist latest customization to frontend static config to avoid flicker on reload
     try {
-      // Merge DB payload with any existing generated config (handled in writer)
-      await writeFrontendCustomization(payload)
+      await regenerateBrandSnapshot()
     } catch (persistErr) {
-      console.error('Failed to write frontend customization config:', persistErr)
+      console.error('Failed to regenerate brand snapshot:', persistErr)
     }
 
     return res.json({ success: true, updated: isUpdate, created: !isUpdate })
@@ -98,6 +96,11 @@ exports.getCustomizationdeletelogo = async (req, res) => {
 
     customization.logoImage = null; // or '' if you prefer
     await customization.save();
+    try {
+      await regenerateBrandSnapshot()
+    } catch (persistErr) {
+      console.error('Failed to regenerate brand snapshot after logo deletion:', persistErr)
+    }
 
     res.json({ success: true, message: 'Logo image deleted', customization });
   } catch (err) {
@@ -186,3 +189,5 @@ exports.generatepdf = async (req, res) => {
     });
   }
 };
+
+

@@ -1,129 +1,97 @@
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import axios from 'axios'
 import { getOptimalColors } from '../../utils/colorUtils'
-import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
-import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization'
+import BrandLogo from '../../components/BrandLogo'
+import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
 
-const LOGIN_CUSTOMIZATION =
-  (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
-const APP_CUSTOMIZATION =
-  (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
+const EMPTY_FORM = {
+  email: '',
+}
 
 const ForgotPasswordPage = () => {
   const { t } = useTranslation()
   const api_url = import.meta.env.VITE_API_URL
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
-  const brandLogo = customization.logo || APP_CUSTOMIZATION.logoImage || ''
-  const logoHeight = Number(customization.logoHeight) || 60
-  const [email, setEmail] = useState('')
+  const brand = getBrand()
+  const loginBrand = getLoginBrand()
+  const brandColors = getBrandColors()
+  const logoHeight = Number(loginBrand.logoHeight) || 60
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446'
+  const rightPanelColors = getOptimalColors(loginBackground)
+
+  const [form, setForm] = useState({ ...EMPTY_FORM })
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Load latest customization from server
-  useEffect(() => {
-    const loadCustomization = async () => {
-      try {
-        const response = await axios.get(`${api_url}/api/login-customization`)
-        if (response.data?.customization) {
-          setCustomization(response.data.customization)
-        }
-      } catch (error) {
-        console.warn('Failed to load login customization:', error)
-      }
-    }
-    loadCustomization()
-  }, [api_url])
-
-  const copy = {
-    title: t('auth.forgotPassword.title'),
-    subtitle: t('auth.forgotPassword.subtitle'),
-    success: t('auth.forgotPassword.success'),
-    error: t('auth.forgotPassword.error'),
-    submit: t('auth.forgotPassword.submit'),
-    submitting: t('auth.forgotPassword.submitting'),
-    remember: t('auth.forgotPassword.remember'),
-    signIn: t('auth.signIn'),
-    emailLabel: t('auth.forgotPassword.emailLabel'),
-    emailPlaceholder: t('auth.forgotPassword.emailPlaceholder'),
-    logoAlt: t('auth.logoAlt'),
-  }
-  const requiredAsterisk = <span className="text-danger">*</span>
 
   useEffect(() => {
     try {
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
     } catch (_) {
-      // ignore storage failures
+      // ignore
     }
   }, [])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setIsSubmitting(true)
     setMessage('')
     setError('')
-    setIsSubmitting(true)
 
     try {
-      const res = await fetch(`${api_url}/api/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await res.json()
-      const feedback = data.message || copy.success
-
-      if (res.ok) {
-        setMessage(feedback)
-      } else {
-        setError(feedback)
+      const trimmedEmail = form.email.trim()
+      if (!trimmedEmail) {
+        setError(t('auth.emailRequired') || 'Email is required')
+        setIsSubmitting(false)
+        return
       }
+
+      const res = await axios.post(`${api_url}/api/forgot-password`, { email: trimmedEmail })
+      const data = res?.data || {}
+      setMessage(data.message || t('auth.resetLinkSent') || 'Password reset instructions sent.')
+      setForm({ ...EMPTY_FORM })
     } catch (err) {
-      console.error('Forgot password request failed:', err)
-      setError(copy.error)
+      const errorMsg = err?.response?.data?.message || t('auth.requestFailed') || 'Unable to process your request.'
+      setError(errorMsg)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const settings = customization
-  const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446')
-
   return (
     <div className="login-page-wrapper">
-      {/* Left Panel - Illustration and Branding (matches Login/Request Access) */}
-      <div className="login-left-panel" style={{ backgroundColor: settings.backgroundColor }}>
+      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
           <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
-            {settings.rightTitle}
+            {loginBrand.rightTitle || brand.logoAlt || t('auth.resetHeading')}
           </h1>
           <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
-            {settings.rightSubtitle}
+            {loginBrand.rightSubtitle || t('auth.resetSubheading') || 'We will send a reset link to your email.'}
           </p>
-          <p style={{ color: rightPanelColors.subtitle }}>{settings.rightDescription}</p>
+          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription || ''}</p>
         </div>
       </div>
 
-      {/* Right Panel - Forgot Password Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
-          {brandLogo && (
-            <div className="text-center mb-4">
-              <img src={brandLogo} alt={copy.logoAlt} style={{ height: logoHeight, objectFit: 'contain' }} />
-            </div>
-          )}
-          <h2 className="fw-bold mb-2">{copy.title}</h2>
-          <p className="mb-4 text-muted">{copy.subtitle}</p>
+          <div className="text-center mb-4">
+            <BrandLogo size={logoHeight} />
+          </div>
+          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.resetTitle') || 'Reset Password'}</h2>
+          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.resetDescription') || 'Enter your email to receive reset instructions.'}</p>
 
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
               {message}
             </div>
           )}
+
           {error && (
             <div className="alert alert-danger" role="alert" aria-live="assertive">
               {error}
@@ -133,38 +101,30 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-3">
               <label htmlFor="email" className="form-label fw-medium">
-                {copy.emailLabel} {requiredAsterisk}
+                {t('auth.email')} <span className="text-danger">*</span>
               </label>
               <input
                 type="email"
                 className="form-control form-control-lg"
-                placeholder={copy.emailPlaceholder}
-                value={email}
-                required
-                onChange={(e) => setEmail(e.target.value)}
                 id="email"
-                aria-required="true"
-                autoComplete="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder={t('auth.emailPlaceholder')}
+                required
               />
             </div>
 
             <div className="d-grid">
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                style={{ minHeight: 44 }}
-                disabled={isSubmitting}
-                aria-busy={isSubmitting}
-              >
-                {isSubmitting ? copy.submitting : copy.submit}
+              <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }} disabled={isSubmitting}>
+                {isSubmitting ? t('auth.sending') || 'Sending…' : t('auth.sendResetLink') || 'Send Reset Link'}
               </button>
             </div>
           </form>
 
           <div className="text-center mt-4">
-            <span className="text-muted">{copy.remember}</span>
-            <Link to="/login" className="fw-semibold text-decoration-none">
-              {copy.signIn}
+            <Link to="/login" className="text-decoration-none">
+              {t('auth.backToLogin') || 'Back to sign in'}
             </Link>
           </div>
         </div>

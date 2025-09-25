@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
@@ -8,6 +9,8 @@ const sequelize = require('./config/db');
 const path = require('path');
 const env = require('./config/env');
 const startupHandler = require('./startup-handler');
+const { withBrandInline } = require('./server/middleware/withBrandInline');
+const { regenerateBrandSnapshot } = require('./server/branding/regenerateBrandSnapshot');
 
 // Initialize event manager for domain events
 require('./utils/eventManager');
@@ -87,16 +90,32 @@ app.use('/uploads/manufacturer_catalogs', express.static(path.resolve(__dirname,
 
 // Serve SPA static assets from configurable directory (defaults to /app/build)
 const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, 'build');
-app.use(express.static(STATIC_DIR));
+const BRAND_ASSET_DIR = path.join(process.cwd(), 'public', 'brand');
+const INDEX_HTML_PATH = path.resolve(STATIC_DIR, 'index.html');
+app.use('/brand', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, must-revalidate');
+  next();
+}, express.static(BRAND_ASSET_DIR));
+
+// Serve static assets but exclude index.html so we can handle it with brand injection
+app.use(express.static(STATIC_DIR, {
+  index: false  // Prevent serving index.html automatically
+}));
+
+function serveSpaWithBrand(req, res) {
+  try {
+    const html = fs.readFileSync(INDEX_HTML_PATH, 'utf8');
+    res.send(withBrandInline(html));
+  } catch (err) {
+    console.error('Failed to serve SPA shell:', err);
+    res.status(500).send('Unable to load application shell');
+  }
+}
 
 // Fallback route to serve index.html for non-API requests (React Router)
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(STATIC_DIR, 'index.html'));
-});
+app.get('/', serveSpaWithBrand);
 
-app.get(/^(?!\/api).*$/, (req, res) => {
-  res.sendFile(path.resolve(STATIC_DIR, 'index.html'));
-});
+app.get(/^(?!\/api).*$/, serveSpaWithBrand);
 
 // Guarded sync: default none in production. 'create' creates missing tables; 'alter' only in dev.
 const syncMode = env.DB_SYNC_MODE; // none|create|alter
@@ -136,6 +155,13 @@ syncPromise.then(async () => {
         console.warn('[Startup] Failed to apply SMTP settings:', smtpError?.message || smtpError);
       }
     }
+    try {
+      await regenerateBrandSnapshot();
+      console.log('[Startup] Regenerated brand snapshot inline assets');
+    } catch (brandErr) {
+      console.warn('Startup brand snapshot regeneration failed:', brandErr?.message || brandErr);
+    }
+
   } catch (e) {
     console.warn('Startup customization persistence failed:', e?.message);
   }

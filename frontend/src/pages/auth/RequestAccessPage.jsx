@@ -3,13 +3,9 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
-import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization'
-import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization'
+import BrandLogo from '../../components/BrandLogo'
+import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
 
-const LOGIN_CUSTOMIZATION =
-  (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
-const APP_CUSTOMIZATION =
-  (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
 
 const EMPTY_FORM = {
   firstName: '',
@@ -26,28 +22,17 @@ const EMPTY_FORM = {
 const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION)
-  const brandLogo = customization.logo || APP_CUSTOMIZATION.logoImage || ''
-  const logoHeight = Number(customization.logoHeight) || 60
+  const brand = getBrand()
+  const loginBrand = getLoginBrand()
+  const brandColors = getBrandColors()
+  const logoHeight = Number(loginBrand.logoHeight) || 60
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446'
+
   const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
-  // Load latest customization from server
-  useEffect(() => {
-    const loadCustomization = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/login-customization`)
-        if (response.data?.customization) {
-          setCustomization(response.data.customization)
-        }
-      } catch (error) {
-        console.warn('Failed to load login customization:', error)
-      }
-    }
-    loadCustomization()
-  }, [apiUrl])
 
   const copy = {
     title: t('auth.requestAccess.title'),
@@ -98,18 +83,17 @@ const RequestAccessPage = () => {
     setForm((prev) => ({ ...prev, [name]: nextValue }))
   }
 
-  const settings = customization
-  const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446')
-  const benefits = Array.isArray(settings.requestAccessBenefits)
-    ? settings.requestAccessBenefits
-    : String(settings.requestAccessBenefits || '')
+  const rightPanelColors = getOptimalColors(loginBackground)
+  const benefits = Array.isArray(loginBrand.requestAccessBenefits)
+    ? loginBrand.requestAccessBenefits
+    : String(loginBrand.requestAccessBenefits || '')
         .split(/\r?\n/)
         .map((line) => line.trim())
         .filter(Boolean)
-  const pageTitle = settings.requestAccessTitle || copy.title
-  const pageSubtitle = settings.requestAccessSubtitle || copy.subtitle
-  const pageDescription = settings.requestAccessDescription || copy.description
-  const successCopy = settings.requestAccessSuccessMessage || copy.success
+  const pageTitle = loginBrand.requestAccessTitle || copy.title
+  const pageSubtitle = loginBrand.requestAccessSubtitle || copy.subtitle
+  const pageDescription = loginBrand.requestAccessDescription || copy.description
+  const successCopy = loginBrand.requestAccessSuccessMessage || copy.success
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -143,25 +127,23 @@ const RequestAccessPage = () => {
 
   return (
     <div className="login-page-wrapper">
-      <div className="login-left-panel" style={{ backgroundColor: settings.backgroundColor }}>
+      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
           <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
-            {settings.rightTitle}
+            {loginBrand.rightTitle}
           </h1>
           <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
-            {settings.rightSubtitle}
+            {loginBrand.rightSubtitle}
           </p>
-          <p style={{ color: rightPanelColors.subtitle }}>{settings.rightDescription}</p>
+          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
         </div>
       </div>
 
       <div className="login-right-panel">
         <div className="login-form-container">
-          {brandLogo && (
-            <div className="text-center mb-4">
-              <img src={brandLogo} alt={copy.logoAlt} style={{ height: logoHeight, objectFit: 'contain' }} />
-            </div>
-          )}
+          <div className="text-center mb-4">
+            <BrandLogo size={logoHeight} />
+          </div>
           <h2 className="mb-2 fw-bold">{pageTitle}</h2>
           <p className="text-muted mb-2 small">{pageSubtitle}</p>
           {pageDescription && <p className="text-muted small">{pageDescription}</p>}

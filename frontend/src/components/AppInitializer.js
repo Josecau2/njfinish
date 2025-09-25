@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axiosInstance from '../helpers/axiosInstance'
+import { getBrand } from '../brand/useBrand'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
-import { CSpinner } from '@coreui/react'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
-  // Start as not loading because we already have a static config for first paint
-  const [loading, setLoading] = useState(false)
   const customization = useSelector((state) => state.customization)
   const api_url = import.meta.env.VITE_API_URL
 
@@ -19,42 +17,56 @@ const AppInitializer = ({ children }) => {
 
   // Update document title and favicon when customization changes
   useEffect(() => {
-    if (customization.logoText) {
-      document.title = customization.logoText
+    const brand = getBrand()
 
-      // Update meta tags for better SEO
-      const metaTitle = document.querySelector('meta[property="og:title"]')
+    const titleText = customization.logoText || brand.logoAlt
+    if (titleText) {
+      document.title = titleText
+
+      const metaTitle = document.querySelector("meta[property='og:title']")
       if (metaTitle) {
-        metaTitle.content = customization.logoText
+        metaTitle.content = titleText
       }
 
-      const metaSiteName = document.querySelector('meta[property="og:site_name"]')
+      const metaSiteName = document.querySelector("meta[property='og:site_name']")
       if (metaSiteName) {
-        metaSiteName.content = customization.logoText
+        metaSiteName.content = titleText
       }
     }
 
-    // Update favicon if logo image is available
-    if (customization.logoImage) {
-      const favicon = document.querySelector('link[rel="shortcut icon"]') || document.querySelector('link[rel="icon"]')
+    const faviconHref = (() => {
+      const image = customization.logoImage
+      if (image) {
+        if (image.startsWith('data:') || image.startsWith('http')) {
+          return image
+        }
+        return `${api_url}${image}`
+      }
+      if (brand.logoDataURI) {
+        return brand.logoDataURI
+      }
+      return null
+    })()
+
+    if (faviconHref) {
+      const favicon = document.querySelector("link[rel='shortcut icon']") || document.querySelector("link[rel='icon']")
+
       if (favicon) {
-        favicon.href = `${api_url}${customization.logoImage}`
+        favicon.href = faviconHref
       } else {
-        // Create favicon if it doesn't exist
-        const newFavicon = document.createElement('link')
-        newFavicon.rel = 'shortcut icon'
-        newFavicon.href = `${api_url}${customization.logoImage}`
+        const newFavicon = document.createElement("link")
+        newFavicon.rel = "shortcut icon"
+        newFavicon.href = faviconHref
         document.head.appendChild(newFavicon)
       }
 
-      // Also create/update standard icon link
-      let iconLink = document.querySelector('link[rel="icon"]')
+      let iconLink = document.querySelector("link[rel='icon']")
       if (!iconLink) {
-        iconLink = document.createElement('link')
-        iconLink.rel = 'icon'
+        iconLink = document.createElement("link")
+        iconLink.rel = "icon"
         document.head.appendChild(iconLink)
       }
-      iconLink.href = `${api_url}${customization.logoImage}`
+      iconLink.href = faviconHref
     }
   }, [customization.logoText, customization.logoImage, api_url])
 
@@ -69,13 +81,25 @@ const AppInitializer = ({ children }) => {
     return () => window.removeEventListener('resize', applyDensity)
   }, [])
 
-  // Expose customization colors as CSS variables for theming
+  // Expose brand colors as CSS variables for theming
   useEffect(() => {
     const root = document.documentElement
-    if (customization?.headerBg) root.style.setProperty('--header-bg', customization.headerBg)
-    if (customization?.headerFontColor) root.style.setProperty('--header-fg', customization.headerFontColor)
-    if (customization?.sidebarBg) root.style.setProperty('--sidebar-bg', customization.sidebarBg)
-    if (customization?.sidebarFontColor) root.style.setProperty('--sidebar-fg', customization.sidebarFontColor)
+    if (customization?.headerBg) {
+      root.style.setProperty('--brand-header-bg', customization.headerBg)
+      root.style.setProperty('--header-bg', customization.headerBg)
+    }
+    if (customization?.headerFontColor) {
+      root.style.setProperty('--brand-header-text', customization.headerFontColor)
+      root.style.setProperty('--header-fg', customization.headerFontColor)
+    }
+    if (customization?.sidebarBg) {
+      root.style.setProperty('--brand-sidebar-bg', customization.sidebarBg)
+      root.style.setProperty('--sidebar-bg', customization.sidebarBg)
+    }
+    if (customization?.sidebarFontColor) {
+      root.style.setProperty('--brand-sidebar-text', customization.sidebarFontColor)
+      root.style.setProperty('--sidebar-fg', customization.sidebarFontColor)
+    }
   }, [customization?.headerBg, customization?.headerFontColor, customization?.sidebarBg, customization?.sidebarFontColor])
 
 

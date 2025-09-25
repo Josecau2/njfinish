@@ -43,12 +43,12 @@ const fileFilter = (req, file, cb) => {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'text/csv'
     ];
-    // Allowed image mime types for general uploads
-    const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const imageFields = ['manufacturerImage', 'styleImage', 'logoImage', 'logo', 'typeImage'];
+    const isImage = file?.mimetype?.startsWith('image/');
 
     if (
-        ['manufacturerImage', 'styleImage', 'logoImage','logo', 'typeImage'].includes(file.fieldname) &&
-        imageTypes.includes(file.mimetype)
+        imageFields.includes(file.fieldname) &&
+        isImage
     ) {
         cb(null, true);
     } else if (
@@ -56,7 +56,7 @@ const fileFilter = (req, file, cb) => {
     ) {
         cb(null, true);
     } else {
-    cb(new Error('Invalid file type. Only images (jpeg, png, webp, gif) or catalog files (csv, xls, xlsx, pdf) are allowed.'));
+    cb(new Error('Invalid file type. Only image uploads or catalog files (csv, xls, xlsx, pdf) are allowed.'));
     }
 };
 
@@ -75,13 +75,13 @@ const upload = multer({
 const imageUpload = multer({
     storage,
     fileFilter: (req, file, cb) => {
-        const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        const imageFields = ['manufacturerImage', 'styleImage', 'logoImage', 'logo'];
+        const isImage = file?.mimetype?.startsWith('image/');
         
-        if (['manufacturerImage', 'styleImage', 'logoImage', 'logo'].includes(file.fieldname) &&
-            imageTypes.includes(file.mimetype)) {
+        if (imageFields.includes(file.fieldname) && isImage) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid image file type. Only JPEG, PNG, WebP, and GIF are allowed.'));
+            cb(new Error('Invalid image file type. Only image uploads are allowed.'));
         }
     },
     limits: {

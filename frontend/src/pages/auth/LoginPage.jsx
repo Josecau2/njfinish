@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -7,11 +7,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
-import { resolveAssetUrl } from '../../utils/assetUtils';
-import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from '../../config/loginCustomization';
-import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../config/customization';
-const LOGIN_CUSTOMIZATION = (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION;
-const APP_CUSTOMIZATION = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION;
+import BrandLogo from '../../components/BrandLogo';
+import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
 import { installTokenEverywhere } from '../../utils/authToken';
 
 const LoginPage = () => {
@@ -21,11 +18,11 @@ const LoginPage = () => {
   const api_url = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
 
-  // Load customization dynamically to ensure saved changes are always reflected
-  const [customization, setCustomization] = useState(LOGIN_CUSTOMIZATION);
-  const rawLogo = customization.logo || APP_CUSTOMIZATION.logoImage || '';
-  const brandLogo = useMemo(() => resolveAssetUrl(rawLogo, api_url), [rawLogo, api_url]);
-  const logoHeight = Number(customization.logoHeight) || 60;
+  const brand = getBrand();
+  const loginBrand = getLoginBrand();
+  const brandColors = getBrandColors();
+  const logoHeight = Number(loginBrand.logoHeight) || 60;
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,21 +31,6 @@ const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [noticeMessage, setNoticeMessage] = useState('');
 
-  // Load latest customization from server on mount
-  useEffect(() => {
-    const loadCustomization = async () => {
-      try {
-        const response = await axios.get(`${api_url}/api/login-customization`);
-        if (response.data?.customization) {
-          setCustomization(response.data.customization);
-        }
-      } catch (error) {
-        console.warn('Failed to load login customization, using fallback:', error);
-        // Keep using the static fallback
-      }
-    };
-    loadCustomization();
-  }, [api_url]);
 
   useEffect(() => {
     try {
@@ -128,35 +110,32 @@ const LoginPage = () => {
     }
   };
 
-  const settings = customization;
 
   // Compute optimal text colors for the right panel based on background
-  const rightPanelColors = getOptimalColors(settings.backgroundColor || '#0e1446');
+  const rightPanelColors = getOptimalColors(loginBackground);
 
   return (
     <div className="login-page-wrapper">
       {/* Left Panel - Illustration and Branding */}
       <div
         className="login-left-panel"
-        style={{ backgroundColor: settings.backgroundColor }}
+        style={{ backgroundColor: loginBackground }}
       >
         <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>{settings.rightTitle}</h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>{settings.rightSubtitle}</p>
-          <p style={{ color: rightPanelColors.subtitle }}>{settings.rightDescription}</p>
+          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>{loginBrand.rightTitle}</h1>
+          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightSubtitle}</p>
+          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
         </div>
       </div>
 
       {/* Right Panel - Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
-          {brandLogo && (
-            <div className="text-center mb-4">
-              <img src={brandLogo} alt="Logo" style={{ height: logoHeight, objectFit: 'contain' }} />
-            </div>
-          )}
-          <h2 className="mb-2 fw-bold">{settings.title}</h2>
-          <p className="text-muted mb-4">{settings.subtitle}</p>
+          <div className="text-center mb-4">
+            <BrandLogo size={logoHeight} />
+          </div>
+          <h2 className="mb-2 fw-bold">{loginBrand.title}</h2>
+          <p className="text-muted mb-4">{loginBrand.subtitle}</p>
 
           {noticeMessage && (
             <div className="alert alert-info" role="status" aria-live="polite">
@@ -217,7 +196,7 @@ const LoginPage = () => {
             </div>
 
             <div className="d-flex justify-content-between align-items-center mb-4">
-              {settings.showKeepLoggedIn && (
+              {loginBrand.showKeepLoggedIn && (
                 <div className="form-check">
                   <input
                     className="form-check-input"
@@ -231,7 +210,7 @@ const LoginPage = () => {
                   </label>
                 </div>
               )}
-              {settings.showForgotPassword && (
+              {loginBrand.showForgotPassword && (
                 <Link to="/forgot-password" className="small text-decoration-none">
                   {t('auth.forgotPasswordLink')}
                 </Link>
@@ -255,5 +234,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 

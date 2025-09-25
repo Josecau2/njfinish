@@ -5,11 +5,8 @@ import 'core-js'
 import './i18n'
 
 import App from './App'
+import { getBrand } from './brand/useBrand'
 // Prefer pre-injected globals (set in index.html) to prevent flicker
-import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from './config/customization'
-import { LOGIN_CUSTOMIZATION as FALLBACK_LOGIN_CUSTOMIZATION } from './config/loginCustomization'
-const CUSTOMIZATION_CONFIG = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
-const LOGIN_CUSTOMIZATION = (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) || FALLBACK_LOGIN_CUSTOMIZATION
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
 import Swal from 'sweetalert2'
 import i18n from './i18n'
@@ -75,15 +72,17 @@ try {
 // Apply static customization immediately (before React mounts) to avoid flicker
 try {
   const root = document.documentElement
-  const c = CUSTOMIZATION_CONFIG || {}
-  if (c.headerBg) root.style.setProperty('--header-bg', c.headerBg)
-  if (c.headerFontColor) root.style.setProperty('--header-fg', c.headerFontColor)
-  if (c.sidebarBg) root.style.setProperty('--sidebar-bg', c.sidebarBg)
-  if (c.sidebarFontColor) root.style.setProperty('--sidebar-fg', c.sidebarFontColor)
-  // Login background (if on /login)
-  if (window.location.pathname === '/login') {
-    const lc = LOGIN_CUSTOMIZATION || {}
-    if (lc.backgroundColor) root.style.setProperty('--login-bg', lc.backgroundColor)
+  const brand = getBrand() || {}
+  const colors = brand.colors || {}
+  const loginBrand = brand.login || {}
+
+  if (colors.headerBg) root.style.setProperty('--header-bg', colors.headerBg)
+  if (colors.headerText) root.style.setProperty('--header-fg', colors.headerText)
+  if (colors.sidebarBg) root.style.setProperty('--sidebar-bg', colors.sidebarBg)
+  if (colors.sidebarText) root.style.setProperty('--sidebar-fg', colors.sidebarText)
+
+  if (window.location.pathname === '/login' && loginBrand.backgroundColor) {
+    root.style.setProperty('--login-bg', loginBrand.backgroundColor)
   }
 } catch (e) {
   console.warn('Early customization application failed:', e?.message)

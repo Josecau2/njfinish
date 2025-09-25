@@ -29,7 +29,6 @@ import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import NotificationBell from './NotificationBell'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
-import { setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 import LanguageSwitcher from './LanguageSwitcher'
 
 const AppHeader = () => {
@@ -38,20 +37,12 @@ const AppHeader = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
-  const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
-  const loggedInUser = JSON.parse(localStorage.getItem('user'));
-  const loggedInUserName = loggedInUser?.name;
-
-  // Get first name for mobile display
-  const getDisplayName = (fullName, isMobile = false) => {
-    if (!fullName) return '';
-    if (!isMobile) return fullName;
-    // For mobile, show only first name or first 12 characters
-    const firstName = fullName.split(' ')[0];
-    return firstName.length > 12 ? firstName.substring(0, 12) + '...' : firstName;
-  };
+  // Intentionally remove user name/brand from header for a cleaner look
 
   const customization = useSelector((state) => state.customization)
+  const headerBg = customization.headerBg || '#0f172a'
+  const headerTextColor = customization.headerFontColor || getContrastColor(headerBg)
+  // Brand title intentionally hidden per design
 
   // Function to calculate luminance and determine contrast color
   const getContrastColor = (backgroundColor) => {
@@ -68,8 +59,6 @@ const AppHeader = () => {
     return luminance > 0.5 ? '#2d3748' : '#ffffff';
   };
 
-  // Get the optimal text color for contrast
-  const optimalTextColor = getContrastColor(customization.headerBg || '#ffffff');
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -96,6 +85,18 @@ const AppHeader = () => {
           align-items: center;
           min-height: 60px;
           padding: 0 1rem;
+        }
+
+        .modern-header__logo {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-right: 1rem;
+        }
+
+        .modern-header__brand-name {
+          font-weight: 600;
+          color: inherit;
         }
 
         .modern-header__toggler {
@@ -228,40 +229,26 @@ const AppHeader = () => {
         className="modern-header header toolbar toolbar--sticky"
         ref={headerRef}
         style={{
-          backgroundColor: customization.headerBg,
-          color: optimalTextColor,
+          backgroundColor: headerBg,
+          color: headerTextColor,
         }}
       >
         <CContainer fluid className="modern-header__container">
-          {/* Desktop Only: setSidebarUnfoldable */}
-          <CHeaderToggler
-            onClick={() => dispatch(setSidebarUnfoldable(!unfoldable))}
-            className="modern-header__toggler d-none d-lg-flex"
-            style={{ color: optimalTextColor }}
-          >
-            <CIcon icon={cilMenu} size="lg" style={{ color: optimalTextColor }} />
-            <div className="modern-header__divider" style={{ background: `${optimalTextColor}33` }} />
-            <span className="modern-header__name" style={{ color: optimalTextColor }}>
-              {getDisplayName(loggedInUserName, false)}
-            </span>
-          </CHeaderToggler>
+          {/* Logo and brand name removed: only the menu icon should remain */}
+          {/* Desktop toggler removed — hamburger visible only on mobile */}
 
           {/* Mobile Only: setSidebarShow */}
           <CHeaderToggler
             onClick={() => dispatch(setSidebarShow(!sidebarShow))}
             className="modern-header__toggler d-flex d-lg-none"
-            style={{ color: optimalTextColor }}
+            style={{ color: headerTextColor }}
           >
-            <CIcon icon={cilMenu} size="lg" style={{ color: optimalTextColor }} />
-            <div className="modern-header__divider" style={{ background: `${optimalTextColor}33` }} />
-            <span className="modern-header__name" style={{ color: optimalTextColor }}>
-              {getDisplayName(loggedInUserName, true)}
-            </span>
+            <CIcon icon={cilMenu} size="lg" style={{ color: headerTextColor }} />
           </CHeaderToggler>
 
           <CHeaderNav className="modern-header__nav">
             <CNavItem className="modern-header__nav-item">
-              <div className="modern-header__vr" style={{ background: `${optimalTextColor}33` }}></div>
+              <div className="modern-header__vr" style={{ background: `${headerTextColor}33` }}></div>
             </CNavItem>
 
             <CDropdown
@@ -274,14 +261,14 @@ const AppHeader = () => {
               <CDropdownToggle
                 caret={false}
                 className="modern-header__dropdown-toggle nav-link border-0 bg-transparent"
-                style={{ color: optimalTextColor }}
+                style={{ color: headerTextColor }}
               >
                 {colorMode === 'dark' ? (
-                  <CIcon icon={cilMoon} size="lg" style={{ color: optimalTextColor }} />
+                  <CIcon icon={cilMoon} size="lg" style={{ color: headerTextColor }} />
                 ) : colorMode === 'auto' ? (
-                  <CIcon icon={cilContrast} size="lg" style={{ color: optimalTextColor }} />
+                  <CIcon icon={cilContrast} size="lg" style={{ color: headerTextColor }} />
                 ) : (
-                  <CIcon icon={cilSun} size="lg" style={{ color: optimalTextColor }} />
+                  <CIcon icon={cilSun} size="lg" style={{ color: headerTextColor }} />
                 )}
               </CDropdownToggle>
               <CDropdownMenu
@@ -319,7 +306,7 @@ const AppHeader = () => {
             </CDropdown>
 
             <CNavItem className="modern-header__nav-item">
-              <div className="modern-header__vr" style={{ background: `${optimalTextColor}33` }}></div>
+              <div className="modern-header__vr" style={{ background: `${headerTextColor}33` }}></div>
             </CNavItem>
 
             <CNavItem className="modern-header__nav-item">
@@ -329,7 +316,7 @@ const AppHeader = () => {
             <NotificationBell />
 
             <CNavItem className="modern-header__nav-item">
-              <div className="modern-header__vr" style={{ background: `${optimalTextColor}33` }}></div>
+              <div className="modern-header__vr" style={{ background: `${headerTextColor}33` }}></div>
             </CNavItem>
 
             <AppHeaderDropdown />

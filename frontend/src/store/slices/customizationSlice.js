@@ -1,16 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { CUSTOMIZATION_CONFIG } from '../../config/customization'
 
-// Use generated static config as initial state to avoid flicker before API load
+const brandSnapshot = (typeof window !== 'undefined' && window.__BRAND__) || {}
+const brandColors = brandSnapshot.colors || {}
+const brandApp = brandSnapshot.app || {}
+
 const initialState = {
-  headerBg: CUSTOMIZATION_CONFIG.headerBg || '#ffffff',
-  headerFontColor: CUSTOMIZATION_CONFIG.headerFontColor || '#333333',
-  sidebarBg: CUSTOMIZATION_CONFIG.sidebarBg || '#2e2e2e',
-  sidebarFontColor: CUSTOMIZATION_CONFIG.sidebarFontColor || '#ffffff',
-  logoText: CUSTOMIZATION_CONFIG.logoText || 'NJ Cabinets',
-  logoImage: CUSTOMIZATION_CONFIG.logoImage || null,
-  logoBg: CUSTOMIZATION_CONFIG.logoBg || '#000000',
-  companyName: CUSTOMIZATION_CONFIG.companyName || ''
+  headerBg: brandColors.headerBg || '#ffffff',
+  headerFontColor: brandColors.headerText || '#333333',
+  sidebarBg: brandColors.sidebarBg || '#2e2e2e',
+  sidebarFontColor: brandColors.sidebarText || '#ffffff',
+  logoText: brandApp.logoText || brandSnapshot.logoAlt || 'NJ Cabinets',
+  logoImage: brandSnapshot.logoDataURI || brandApp.logoImage || null,
+  logoBg: brandColors.logoBg || '#000000',
+  companyName: brandApp.companyName || '',
 }
 
 const customizationSlice = createSlice({
@@ -25,3 +27,4 @@ const customizationSlice = createSlice({
 
 export const { setCustomization } = customizationSlice.actions
 export default customizationSlice.reducer
+export { initialState as initialCustomizationState }
