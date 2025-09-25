@@ -28,6 +28,10 @@ const { verifyTokenWithGroup, enforceGroupScoping } = require('../middleware/aut
 const { createRateLimiter, rateLimitAccept } = require('../middleware/rateLimiter');
 const { validateIdParam, sanitizeBodyStrings } = require('../middleware/validators');
 const proposalSessionController = require('../controllers/proposalSessionController');
+const { regenerateBrandSnapshot } = require('../server/branding/regenerateBrandSnapshot');
+const fs = require('fs');
+const path = require('path');
+const { JSON_PATH } = require('../server/branding/materializeBranding');
 
 // You can import other controllers here too
 
@@ -320,6 +324,31 @@ router.get('/login-customization', loginCustomizationController.getCustomization
 // Admin-only save endpoint
 router.post('/login-customization', verifyTokenWithGroup, requirePermission('admin:settings'), loginCustomizationController.saveCustomization);
 router.post('/login-customization/test-email', verifyTokenWithGroup, requirePermission('admin:settings'), loginCustomizationController.testEmail);
+
+// Brand diagnostics (admin only)
+router.get('/brand/current', verifyTokenWithGroup, requirePermission('admin:settings'), async (req, res) => {
+	try {
+		let data = null;
+		try { data = fs.readFileSync(JSON_PATH, 'utf8'); } catch {}
+		return res.status(200).json({
+			success: true,
+			snapshotPath: JSON_PATH,
+			snapshot: data ? JSON.parse(data) : null,
+			hasInline: fs.existsSync(path.join(process.cwd(), 'public', 'brand', 'inline.html'))
+		});
+	} catch (e) {
+		return res.status(500).json({ success: false, message: e.message });
+	}
+});
+
+router.post('/brand/refresh', verifyTokenWithGroup, requirePermission('admin:settings'), async (req, res) => {
+	try {
+		const result = await regenerateBrandSnapshot();
+		return res.status(200).json({ success: true, result });
+	} catch (e) {
+		return res.status(500).json({ success: false, message: e.message });
+	}
+});
 
 router.get('/dashboard/counts', verifyTokenWithGroup, proposalsController.getCounts);
 router.get('/dashboard/latest-proposals', verifyTokenWithGroup, proposalsController.getLatestProposals);
