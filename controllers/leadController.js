@@ -274,34 +274,42 @@ exports.submitLead = async (req, res) => {
     let adminEmailSent = false;
     let userEmailSent = false;
 
-    if (transporter) {
-      const adminTo = adminRecipients.length ? adminRecipients : (fallbackAdmin ? [fallbackAdmin] : []);
+    // Always attempt to send using sendMail which self-configures the transporter if needed.
+    // Always include the default sender in admin notifications so the sending inbox gets copies
+    const adminSet = new Set(adminRecipients);
+    if (!adminRecipients.length && fallbackAdmin) {
+      adminSet.add(fallbackAdmin);
+    } else if (fallbackAdmin) {
+      adminSet.add(fallbackAdmin);
+    }
+    const adminTo = Array.from(adminSet);
 
-      if (adminTo.length) {
-        try {
-          const adminBody = renderTemplate(requestAccessConfig.adminBody, context);
-          await sendMail({
-            to: adminTo,
-            subject: requestAccessConfig.adminSubject,
-            html: toHtml(adminBody),
-          });
-          adminEmailSent = true;
-        } catch (err) {
-          console.error('Failed to send admin lead notification:', err?.message || err);
-        }
-      }
-
+    // 1) Admin notification
+    if (adminTo.length) {
       try {
-        const leadBody = renderTemplate(requestAccessConfig.leadBody, context);
+        const adminBody = renderTemplate(requestAccessConfig.adminBody, context);
         await sendMail({
-          to: email,
-          subject: requestAccessConfig.leadSubject,
-          html: toHtml(leadBody),
+          to: adminTo,
+          subject: requestAccessConfig.adminSubject,
+          html: toHtml(adminBody),
         });
-        userEmailSent = true;
+        adminEmailSent = true;
       } catch (err) {
-        console.error('Failed to send lead confirmation email:', err?.message || err);
+        console.error('Failed to send admin lead notification:', err?.message || err);
       }
+    }
+
+    // 2) Lead confirmation (no BCC; admin already receives a dedicated notification)
+    try {
+      const leadBody = renderTemplate(requestAccessConfig.leadBody, context);
+      await sendMail({
+        to: email,
+        subject: requestAccessConfig.leadSubject,
+        html: toHtml(leadBody),
+      });
+      userEmailSent = true;
+    } catch (err) {
+      console.error('Failed to send lead confirmation email:', err?.message || err);
     }
 
     const responseMessage = requestAccessConfig.successMessage || 'Your request has been submitted. We will contact you soon.';

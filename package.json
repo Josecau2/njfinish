@@ -31,6 +31,11 @@
     "check:production": "node check-production-setup.js",
     "debug:orders:db": "node scripts/debug-list-orders.js --limit 20",
     "debug:orders:api": "node scripts/debug-fetch-orders.js"
+    ,
+    "test:email-quote": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js",
+    "test:email-quote:full": "npm run build:frontend && npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js",
+    "test:email-quote:to:joseca": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js --to joseca@symmetricalwolf.com",
+    "send:email-quote:to:joseca": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js --to joseca@symmetricalwolf.com --send"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^44.3.0",

@@ -147,10 +147,16 @@ exports.sendProposalEmail = async (req, res) => {
             versions,
             sendCopy,
             htmlContent, // New field for HTML content
+            noSend, // optional test flag to skip actual email and return pdf size
         } = req.body;
 
     // Initialize Puppeteer (prefers system Chromium / puppeteer-core if available)
-    const { puppeteer, launchOptions } = getPuppeteer();
+        if (!htmlContent || String(htmlContent).trim().length < 100) {
+            // If frontend payload was truncated or missing, fail fast with an explicit message
+            return res.status(400).json({ success: false, error: 'Invalid or empty htmlContent received' });
+        }
+
+        const { puppeteer, launchOptions } = getPuppeteer();
     const browser = await puppeteer.launch(launchOptions);
         const page = await browser.newPage();
 
@@ -170,6 +176,29 @@ exports.sendProposalEmail = async (req, res) => {
         });
 
         await browser.close();
+
+        let pdfBytes = 0;
+        if (Buffer.isBuffer(pdfBuffer)) {
+            pdfBytes = pdfBuffer.length;
+        } else if (pdfBuffer && typeof pdfBuffer.byteLength === 'number') {
+            // Covers Uint8Array and ArrayBuffer
+            pdfBytes = pdfBuffer.byteLength;
+        } else if (pdfBuffer && typeof pdfBuffer.length === 'number') {
+            pdfBytes = pdfBuffer.length;
+        }
+
+        // Optional debug logging to troubleshoot empty PDFs when called via frontend route
+        if (process.env.DEBUG_EMAIL_PDF === '1') {
+            try {
+                console.error(`[EMAIL PDF] Incoming htmlContent length=${htmlContent ? String(htmlContent).length : 0}`);
+                console.error(`[EMAIL PDF] Generated pdfBytes=${pdfBytes}`);
+            } catch {}
+        }
+
+        // In test mode or when explicitly requested, do not actually send the email.
+        if (noSend || process.env.EMAIL_DRY_RUN === '1') {
+            return res.status(200).json({ success: true, message: 'PDF generated (email skipped)', skippedSend: true, pdfBytes });
+        }
 
         // Set up Nodemailer transporter
         // const transporter = nodemailer.createTransport({
@@ -194,7 +223,7 @@ exports.sendProposalEmail = async (req, res) => {
             ],
         });
 
-        return res.status(200).json({ success: true, message: 'Email sent successfully' });
+        return res.status(200).json({ success: true, message: 'Email sent successfully', pdfBytes });
     } catch (error) {
         console.error('Error sending proposal email:', error);
         return res.status(500).json({ success: false, error: 'Failed to send email' });

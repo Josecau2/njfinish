@@ -5,16 +5,16 @@
 export const CUSTOMIZATION_CONFIG = {
   "logoText": "NJ Cabinets Demo",
   "logoImage": "/assets/customization/logo.png",
-  "headerBg": "#832121",
+  "headerBg": "#000000",
   "headerFontColor": "#F8FAFC",
-  "sidebarBg": "#7e4e4e",
-  "sidebarFontColor": "#5b6d86",
-  "logoBg": "#9f4141",
+  "sidebarBg": "#000000",
+  "sidebarFontColor": "#ffffff",
+  "logoBg": "#000000",
   "companyName": "",
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
-  "updatedAt": "2025-09-25T01:07:12.000Z",
-  "_generated": "2025-09-25T01:37:51.649Z",
+  "updatedAt": "2025-09-25T17:18:12.000Z",
+  "_generated": "2025-09-25T17:28:03.028Z",
   "_version": "1.0.0"
 }
 

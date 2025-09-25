@@ -1,0 +1,324 @@
+
+        <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Proposal</title>
+    <style>
+        @page {
+            margin: 20mm;
+            size: A4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 2px solid #0d6efd;
+            background-color: #0d6efd;
+        }
+
+        .logo {
+            max-width: 120px;
+            max-height: 80px;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .company-info {
+            text-align: right;
+            line-height: 1.6;
+            color: #FFFFFF;
+        }
+
+        .company-info div {
+            margin-bottom: 2px;
+        }
+
+        .content-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .greeting {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .description {
+            font-size: 12px;
+            margin-bottom: 25px;
+            color: #666;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .summary-table th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .summary-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .section-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 25px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .items-table th {
+            background-color: #f8f9fa;
+            padding: 10px 8px;
+            border: 1px solid #dee2e6;
+            font-weight: bold;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .items-table td {
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            font-size: 10px;
+        }
+
+        .items-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .category-row {
+            background-color: #e6e6e6 !important;
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .main-footer-div {
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .price-summary {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .price-summary table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .price-summary td {
+            padding: 0.25rem 0;
+        }
+
+        .price-summary .text-left {
+            text-align: left;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .price-summary .text-right {
+            text-align: right;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .price-summary .total-row {
+            font-weight: bold;
+            border-bottom: 1px solid #ced4da;
+            padding-top: 0.25rem;
+        }
+
+        .price-summary .grand-total {
+            font-weight: bold;
+            font-size: 1.05rem;
+            color: #1a1a1a;
+            padding-top: 0.75rem;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="company-name">NJ Cabinets</div>
+        </div>
+        <div class="header-right">
+            <div class="company-info">
+                <div><strong>NJ Cabinets</strong></div>
+                <div>(555) 123-4567</div>
+                <div>sales@example.com</div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="greeting">
+            [object Object]
+        </div>
+
+        <div class="description">
+            Thank you for the opportunity to present this proposal. Below you will find a detailed summary of the recommended products and pricing.
+        </div>
+
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Designer</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Kitchen Project – Sample</td>
+                    <td>N/A</td>
+                    <td>Jane Doe</td>
+                    <td>9/25/2025</td>
+                </tr>
+            </tbody>
+        </table>
+
+        
+
+        
+        <div class="section-header">Proposal Items</div>
+        <table class="items-table">
+            <thead>
+                <tr style="background-color: #f8f9fa;"><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">No.</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">Qty</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">Item</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">Assembled</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">Hinge Side</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; ">Exposed Side</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">Price</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">Assembly Cost</th><th style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">Total</th></tr>
+            </thead>
+            <tbody>
+                <tr class="category-row">
+                    <td colspan="9" style="padding:0.75rem; background-color:#f8f9fa; font-style: italic;"><strong>Items</strong></td>
+                </tr>
+                <tr><td style="border: 1px solid #dee2e6; padding: 0.75rem;">1</td><td style="border: 1px solid #dee2e6; padding: 0.75rem;">2</td><td style="border: 1px solid #dee2e6; padding: 0.75rem;">W0930</td><td style="border: 1px solid #dee2e6; padding: 0.75rem;">Yes</td><td style="border: 1px solid #dee2e6; padding: 0.75rem;">L</td><td style="border: 1px solid #dee2e6; padding: 0.75rem;">R</td><td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$125.00</td><td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$0.00</td><td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$125.00</td></tr><tr class="item-description-row"><td colspan="9" style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; font-size: 10px; color: #555; background:#fff; font-style: italic;">Wall cabinet 9x30</td></tr><tr class="mods-header-row"><td colspan="9" style="padding: 0.5rem 0.75rem; background:#f9f9f9; font-style: italic; font-weight:600;">Modifications</td></tr><tr class="mod-row"><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">-</td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">2</td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">Drill shelf pegs</td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$5.00</td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td><td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$10.00</td></tr>
+            </tbody>
+        </table>
+        
+        <div class="price-summary">
+            <table>
+                <tr>
+                    <td class="text-left"><strong>Cabinets & Parts:</strong></td>
+                    <td class="text-right"><strong>$250.00</strong></td>
+                </tr>
+                <tr>
+                    <td class="text-left"><strong>Assembly fee:</strong></td>
+                    <td class="text-right"><strong>$40.00</strong></td>
+                </tr>
+                <tr>
+                    <td class="text-left"><strong>Modifications:</strong></td>
+                    <td class="text-right"><strong>$10.00</strong></td>
+                </tr>
+                <tr class="total-row">
+                    <td class="text-left"><strong>Style Total:</strong></td>
+                    <td class="text-right"><strong>$300.00</strong></td>
+                </tr>
+                <tr>
+                    <td class="text-left"><strong>Total:</strong></td>
+                    <td class="text-right"><strong>$300.00</strong></td>
+                </tr>
+                <tr class="total-row">
+                    <td class="text-left"><strong>Tax:</strong></td>
+                    <td class="text-right"><strong>$24.00</strong></td>
+                </tr>
+                <tr class="grand-total">
+                    <td class="text-left">Grand Total</td>
+                    <td class="text-right">$324.00</td>
+                </tr>
+            </table>
+        </div>
+    
+        
+
+        
+        <div class="section-header">Catalog Items</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>Handle A</td>
+                    <td>10</td>
+                    <td>$3.25</td>
+                    <td>$32.50</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+
+        
+    </div>
+</body>
+</html>
+        

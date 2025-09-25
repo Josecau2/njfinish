@@ -1,25 +1,27 @@
 {
-  "version": 1758764887027,
+  "version": 1758821283038,
   "colors": {
-    "headerBg": "#832121",
+    "headerBg": "#000000",
     "headerText": "#F8FAFC",
-    "sidebarBg": "#7e4e4e",
-    "sidebarText": "#5b6d86",
+    "sidebarBg": "#000000",
+    "sidebarText": "#ffffff",
     "text": "#0f172a",
     "accent": "#2563eb",
     "surface": "#f8fafc",
-    "logoBg": "#9f4141"
+    "logoBg": "#000000"
   },
   "logoAlt": "NJ Cabinets Demo",
   "login": {
     "title": "Sign In",
     "subtitle": "Enter your email and password to sign in!",
-    "backgroundColor": "#f61313",
-    "leftTitle": "CONTRACTOR PORTAL 11",
-    "leftSubtitle": "See Your Cabinet Price in Seconds!!",
-    "rightTitle": "CONTRACTOR PORTAL 11",
-    "rightSubtitle": "See Your Cabinet Price in Seconds!!",
-    "rightDescription": "LETS TRY THIS",
+    "backgroundColor": "#181616",
+    "showForgotPassword": true,
+    "showKeepLoggedIn": true,
+    "leftTitle": "CONTRACTOR PORTAL KITCHEN",
+    "leftSubtitle": "See Your Cabinet Price in Seconds!! WILD HORSES",
+    "rightTitle": "CONTRACTOR PORTAL KITCHEN",
+    "rightSubtitle": "See Your Cabinet Price in Seconds!! WILD HORSES",
+    "rightDescription": "LETS TRY THIS number 145676 WILD HORSES",
     "logoHeight": 60,
     "requestAccessTitle": "Request Access",
     "requestAccessSubtitle": "Interested in partnering with NJ Cabinets?",
@@ -34,7 +36,7 @@
   "app": {
     "logoText": "NJ Cabinets Demo",
     "logoImage": "/uploads/images/logoImage-1758762402655-186039703.png",
-    "logoBg": "#9f4141",
+    "logoBg": "#000000",
     "companyName": ""
   },
   "logo": {

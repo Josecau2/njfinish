@@ -38,9 +38,17 @@ const { JSON_PATH } = require('../server/branding/materializeBranding');
 const router = express.Router();
 
 const requestAccessLimiter = createRateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
-  keyGenerator: (req) => `request-access:${req.ip}`
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 5,
+	keyGenerator: (req) => `request-access:${req.ip}`
+});
+
+// Rate limiter to prevent abuse of the proposal email endpoint
+const proposalEmailLimiter = createRateLimiter({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 10,
+	// Prefer user-scoped limiting; fallback to IP if unauthenticated
+	keyGenerator: (req) => `proposal-email:${req.user?.id || req.ip}`,
 });
 
 // Auth route
@@ -312,7 +320,15 @@ router.post('/generate-pdf', customizationController.generatepdf)
 
 
 
-router.post('/proposals/send-email', sanitizeBodyStrings(), emailController.sendProposalEmail);
+// Authenticated endpoint to generate a PDF and email a proposal
+router.post(
+	'/proposals/send-email',
+	verifyTokenWithGroup,
+	proposalEmailLimiter,
+	// Do not truncate HTML at all; sanitizer will still trim but not slice when maxLen=0
+	sanitizeBodyStrings(0),
+	emailController.sendProposalEmail
+);
 
 
 //fetch desinger

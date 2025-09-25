@@ -13,7 +13,8 @@
     "lint": "eslint",
     "serve": "vite preview",
     "start": "vite",
-    "test:pricing": "node ./scripts/simulatePricingTest.mjs"
+    "test:pricing": "node ./scripts/simulatePricingTest.mjs",
+    "test:pdf": "node ./scripts/test-proposal-pdf.mjs"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^44.3.0",
