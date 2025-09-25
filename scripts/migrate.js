@@ -64,7 +64,8 @@ async function run() {
       const file = `${backupDir}/backup-${process.env.DB_NAME || 'db'}-${ts}.sql`;
       console.log(`Backing up database to ${file} ...`);
       await new Promise((resolve, reject) => {
-        const proc = spawn('sh', ['-lc', `mysqldump -h ${process.env.DB_HOST} -P ${process.env.DB_PORT || 3306} -u${process.env.DB_USER} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${file}`], { stdio: 'inherit' });
+        // --no-tablespaces avoids PROCESS privilege requirement on some MySQL/MariaDB setups
+        const proc = spawn('sh', ['-lc', `mysqldump --no-tablespaces -h ${process.env.DB_HOST} -P ${process.env.DB_PORT || 3306} -u${process.env.DB_USER} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${file}`], { stdio: 'inherit' });
         proc.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`mysqldump exit ${code}`)));
       });
     } catch (e) {

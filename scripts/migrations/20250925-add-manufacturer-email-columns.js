@@ -1,9 +1,10 @@
 // Idempotent migration: add email columns for manufacturer auto-email settings if missing
 /* eslint-disable no-console */
-const { DataTypes } = require('sequelize');
 
 module.exports = {
-  up: async ({ context: queryInterface, sequelize }) => {
+  // Our migrate runner calls with (queryInterface, Sequelize)
+  up: async (queryInterface, Sequelize) => {
+    const { DataTypes } = Sequelize;
     const table = 'manufacturers';
     const tableInfo = await queryInterface.describeTable(table).catch(() => null);
     if (!tableInfo) {
@@ -30,7 +31,7 @@ module.exports = {
       console.log(`[migrate] ${table} already has email columns`);
     }
   },
-  down: async ({ context: queryInterface }) => {
+  down: async (queryInterface) => {
     const table = 'manufacturers';
     const tableInfo = await queryInterface.describeTable(table).catch(() => null);
     if (!tableInfo) return;
