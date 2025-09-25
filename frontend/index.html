@@ -21,22 +21,26 @@
       You need to enable JavaScript to run this app
     </noscript>
     <script>
-      // Inline customization bootstrap (generated at runtime if files exist)
+      // Inline customization bootstrap for dev. In production, server injects values in <head>.
       (function(){
         try {
-          // These JSON files are written whenever customization is saved & at server startup
-          var xhr1 = new XMLHttpRequest();
-          xhr1.open('GET', '/assets/customization/app-customization.json', false); // sync small request
-          xhr1.send(null);
-          if (xhr1.status === 200) {
-            try { window.__APP_CUSTOMIZATION__ = JSON.parse(xhr1.responseText); } catch {}
+          // Only load fallback JSON if server did NOT inject customization already
+          if (typeof window.__APP_CUSTOMIZATION__ === 'undefined') {
+            var xhr1 = new XMLHttpRequest();
+            xhr1.open('GET', '/assets/customization/app-customization.json?_=' + Date.now(), false); // sync small request
+            xhr1.send(null);
+            if (xhr1.status === 200) {
+              try { window.__APP_CUSTOMIZATION__ = JSON.parse(xhr1.responseText); } catch {}
+            }
           }
-          var xhr2 = new XMLHttpRequest();
-            xhr2.open('GET', '/assets/customization/login-customization.json', false);
+          if (typeof window.__LOGIN_CUSTOMIZATION__ === 'undefined') {
+            var xhr2 = new XMLHttpRequest();
+            xhr2.open('GET', '/assets/customization/login-customization.json?_=' + Date.now(), false);
             xhr2.send(null);
             if (xhr2.status === 200) {
               try { window.__LOGIN_CUSTOMIZATION__ = JSON.parse(xhr2.responseText); } catch {}
             }
+          }
           // Apply critical colors immediately
           var root = document.documentElement;
           var c = window.__APP_CUSTOMIZATION__ || {};
