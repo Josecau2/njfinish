@@ -100,6 +100,10 @@ COPY utils ./utils
 COPY services ./services
 COPY scripts ./scripts
 COPY migrations ./migrations
+# Include server-side utilities (branding middleware, generators, etc.)
+COPY server ./server
+# Include runtime brand assets served from /public/brand
+COPY public ./public
 COPY *.js ./
 
 # copy the built frontend from the builder (Vite outDir -> /app/frontend/build). App serves from /app/build
