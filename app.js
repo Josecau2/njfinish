@@ -34,7 +34,7 @@ app.use((req, res, next) => {
   const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
   // Allow Cloudflare Web Analytics beacons
   const cfScriptSrc = 'https://static.cloudflareinsights.com';
-  const cfConnectSrc = 'https://cloudflareinsights.com';
+  const cfConnectSrc = 'https://cloudflareinsights.com https://*.cloudflareinsights.com';
   const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc}`.trim();
   res.setHeader(
     'Content-Security-Policy',
