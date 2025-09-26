@@ -40,6 +40,27 @@ module.exports = {
       });
       resourceCategories = await queryInterface.describeTable('resource_categories');
     }
+    // Ensure required columns exist on existing table
+    if (resourceCategories) {
+      if (!resourceCategories.parent_id) {
+        await queryInterface.addColumn('resource_categories', 'parent_id', { type: DataTypes.INTEGER, allowNull: true });
+      }
+      if (!resourceCategories.slug) {
+        await queryInterface.addColumn('resource_categories', 'slug', { type: DataTypes.STRING(160), allowNull: false });
+      }
+      if (!resourceCategories.is_pinned) {
+        await queryInterface.addColumn('resource_categories', 'is_pinned', { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false });
+      }
+      if (!resourceCategories.pinned_order) {
+        await queryInterface.addColumn('resource_categories', 'pinned_order', { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 });
+      }
+      if (!resourceCategories.created_at) {
+        await queryInterface.addColumn('resource_categories', 'created_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      if (!resourceCategories.updated_at) {
+        await queryInterface.addColumn('resource_categories', 'updated_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+    }
     await ensureIndex('resource_categories', 'resource_categories_parent_idx', ['parent_id']);
     await ensureIndex('resource_categories', 'resource_categories_slug_idx', ['slug'], { unique: true });
     await ensureIndex('resource_categories', 'resource_categories_pinned_idx', ['is_pinned', 'pinned_order']);
@@ -67,6 +88,38 @@ module.exports = {
         created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
         updated_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
       });
+      resourceLinks = await queryInterface.describeTable('resource_links');
+    }
+    // Ensure required columns exist on existing table before indexing
+    if (resourceLinks) {
+      if (!resourceLinks.category_id) {
+        await queryInterface.addColumn('resource_links', 'category_id', { type: DataTypes.INTEGER, allowNull: true });
+      }
+      if (!resourceLinks.is_pinned) {
+        await queryInterface.addColumn('resource_links', 'is_pinned', { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false });
+      }
+      if (!resourceLinks.pinned_order) {
+        await queryInterface.addColumn('resource_links', 'pinned_order', { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 });
+      }
+      if (!resourceLinks.status) {
+        await queryInterface.addColumn('resource_links', 'status', { type: DataTypes.STRING(32), allowNull: false, defaultValue: 'active' });
+      }
+      if (!resourceLinks.visible_to_group_types) {
+        await queryInterface.addColumn('resource_links', 'visible_to_group_types', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceLinks.visible_to_group_ids) {
+        await queryInterface.addColumn('resource_links', 'visible_to_group_ids', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceLinks.metadata) {
+        await queryInterface.addColumn('resource_links', 'metadata', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceLinks.created_at) {
+        await queryInterface.addColumn('resource_links', 'created_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      if (!resourceLinks.updated_at) {
+        await queryInterface.addColumn('resource_links', 'updated_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      // Refresh description after alterations
       resourceLinks = await queryInterface.describeTable('resource_links');
     }
     await ensureIndex('resource_links', 'resource_links_category_idx', ['category_id']);
@@ -102,6 +155,38 @@ module.exports = {
       });
       resourceFiles = await queryInterface.describeTable('resource_files');
     }
+    // Ensure required columns exist on existing table before indexing
+    if (resourceFiles) {
+      if (!resourceFiles.category_id) {
+        await queryInterface.addColumn('resource_files', 'category_id', { type: DataTypes.INTEGER, allowNull: true });
+      }
+      if (!resourceFiles.is_pinned) {
+        await queryInterface.addColumn('resource_files', 'is_pinned', { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false });
+      }
+      if (!resourceFiles.pinned_order) {
+        await queryInterface.addColumn('resource_files', 'pinned_order', { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 });
+      }
+      if (!resourceFiles.visible_to_group_types) {
+        await queryInterface.addColumn('resource_files', 'visible_to_group_types', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceFiles.visible_to_group_ids) {
+        await queryInterface.addColumn('resource_files', 'visible_to_group_ids', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceFiles.metadata) {
+        await queryInterface.addColumn('resource_files', 'metadata', { type: DataTypes.JSON, allowNull: true });
+      }
+      if (!resourceFiles.status) {
+        await queryInterface.addColumn('resource_files', 'status', { type: DataTypes.STRING(32), allowNull: false, defaultValue: 'active' });
+      }
+      if (!resourceFiles.created_at) {
+        await queryInterface.addColumn('resource_files', 'created_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      if (!resourceFiles.updated_at) {
+        await queryInterface.addColumn('resource_files', 'updated_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      // Refresh description after alterations
+      resourceFiles = await queryInterface.describeTable('resource_files');
+    }
     await ensureIndex('resource_files', 'resource_files_category_idx', ['category_id']);
     await ensureIndex('resource_files', 'resource_files_pinned_idx', ['is_pinned', 'pinned_order']);
 
@@ -129,6 +214,35 @@ module.exports = {
         created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
         updated_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
       });
+      resourceAnnouncements = await queryInterface.describeTable('resource_announcements');
+    }
+    // Ensure required columns exist on existing table before indexing
+    if (resourceAnnouncements) {
+      if (!resourceAnnouncements.category_id) {
+        await queryInterface.addColumn('resource_announcements', 'category_id', { type: DataTypes.INTEGER, allowNull: true });
+      }
+      if (!resourceAnnouncements.is_pinned) {
+        await queryInterface.addColumn('resource_announcements', 'is_pinned', { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false });
+      }
+      if (!resourceAnnouncements.pinned_order) {
+        await queryInterface.addColumn('resource_announcements', 'pinned_order', { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 });
+      }
+      if (!resourceAnnouncements.status) {
+        await queryInterface.addColumn('resource_announcements', 'status', { type: DataTypes.STRING(32), allowNull: false, defaultValue: 'published' });
+      }
+      if (!resourceAnnouncements.publish_at) {
+        await queryInterface.addColumn('resource_announcements', 'publish_at', { type: DataTypes.DATE, allowNull: true });
+      }
+      if (!resourceAnnouncements.expire_at) {
+        await queryInterface.addColumn('resource_announcements', 'expire_at', { type: DataTypes.DATE, allowNull: true });
+      }
+      if (!resourceAnnouncements.created_at) {
+        await queryInterface.addColumn('resource_announcements', 'created_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      if (!resourceAnnouncements.updated_at) {
+        await queryInterface.addColumn('resource_announcements', 'updated_at', { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW });
+      }
+      // Refresh description after alterations
       resourceAnnouncements = await queryInterface.describeTable('resource_announcements');
     }
     await ensureIndex('resource_announcements', 'resource_announcements_category_idx', ['category_id']);
