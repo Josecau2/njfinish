@@ -120,6 +120,7 @@ COPY --from=builder /app/frontend/public/fonts ./build/fonts
 RUN mkdir -p \
     /app/uploads/images \
     /app/uploads/logos \
+    /app/uploads/resources \
     /app/uploads/manufacturer_catalogs \
     /app/utils/logs \
     /app/backups \
