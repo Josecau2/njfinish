@@ -18,6 +18,8 @@ const CatalogUploadBackup = require('./CatalogUploadBackup');
 const Notification = require('./Notification');
 const ActivityLog = require('./ActivityLog');
 const ResourceLink = require('./ResourceLink');
+const ResourceCategory = require('./ResourceCategory');
+const ResourceAnnouncement = require('./ResourceAnnouncement');
 const ContactInfo = require('./ContactInfo');
 const ContactThread = require('./ContactThread');
 const ContactMessage = require('./ContactMessage');
@@ -193,6 +195,19 @@ Order.hasMany(Payment, { foreignKey: 'orderId', as: 'payments' });
 Payment.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 Payment.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 
+// Resource hierarchy associations
+ResourceCategory.hasMany(ResourceCategory, { foreignKey: 'parent_id', as: 'children' });
+ResourceCategory.belongsTo(ResourceCategory, { foreignKey: 'parent_id', as: 'parent' });
+
+ResourceCategory.hasMany(ResourceFile, { foreignKey: 'category_id', as: 'files' });
+ResourceFile.belongsTo(ResourceCategory, { foreignKey: 'category_id', as: 'category' });
+
+ResourceCategory.hasMany(ResourceLink, { foreignKey: 'category_id', as: 'links' });
+ResourceLink.belongsTo(ResourceCategory, { foreignKey: 'category_id', as: 'category' });
+
+ResourceCategory.hasMany(ResourceAnnouncement, { foreignKey: 'category_id', as: 'announcements' });
+ResourceAnnouncement.belongsTo(ResourceCategory, { foreignKey: 'category_id', as: 'category' });
+
 // Contact messaging associations
 ContactThread.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
 User.hasMany(ContactThread, { foreignKey: 'user_id', as: 'contactThreads' });
@@ -256,6 +271,8 @@ module.exports = {
     Notification,
     ActivityLog,
     ResourceLink,
+    ResourceCategory,
+    ResourceAnnouncement,
     ProposalSession,
     ContactInfo,
     ContactThread,

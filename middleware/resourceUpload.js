@@ -39,7 +39,17 @@ const fileFilter = (req, file, cb) => {
     'image/gif',
     'image/webp',
     'video/mp4',
+    'video/webm',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/x-ms-wmv',
+    'video/mpeg',
     'audio/mpeg',
+    'audio/wav',
+    'audio/x-wav',
+    'audio/ogg',
+    'audio/mp4',
+    'audio/webm',
   ];
   if (allowed.includes(file.mimetype)) {
     cb(null, true);

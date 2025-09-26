@@ -1,34 +1,26 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const ResourceLink = sequelize.define('resource_link', {
+const ResourceAnnouncement = sequelize.define('resource_announcement', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
   title: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(180),
     allowNull: false,
   },
-  url: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  summary: {
+    type: DataTypes.STRING(280),
+    allowNull: true,
   },
-  type: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: DataTypes.TEXT,
+  body: {
+    type: DataTypes.TEXT('long'),
     allowNull: true,
   },
   category_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  thumbnail_url: {
-    type: DataTypes.STRING(512),
     allowNull: true,
   },
   is_pinned: {
@@ -41,8 +33,12 @@ const ResourceLink = sequelize.define('resource_link', {
     allowNull: true,
     defaultValue: 0,
   },
-  tags: {
-    type: DataTypes.JSON,
+  publish_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  expire_at: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
   cta_label: {
@@ -56,25 +52,32 @@ const ResourceLink = sequelize.define('resource_link', {
   status: {
     type: DataTypes.STRING(32),
     allowNull: false,
-    defaultValue: 'active',
-  },
-  metadata: {
-    type: DataTypes.JSON,
-    allowNull: true,
+    defaultValue: 'published',
   },
   visible_to_group_types: {
     type: DataTypes.JSON,
     allowNull: true,
-    defaultValue: ['admin']
   },
   visible_to_group_ids: {
     type: DataTypes.JSON,
     allowNull: true,
   },
+  metadata: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  updated_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 }, {
   timestamps: true,
-  tableName: 'resource_links',
+  tableName: 'resource_announcements',
   underscored: true,
 });
 
-module.exports = ResourceLink;
+module.exports = ResourceAnnouncement;

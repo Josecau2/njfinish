@@ -23,6 +23,29 @@ function logExpiredOnce(req, scope = 'auth') {
   } catch (_) {}
 }
 
+exports.attachTokenFromQuery = (options = {}) => {
+  const primary = options.param || 'token';
+  const extras = options.extraParams || options.fallbackParams || [];
+  const candidates = [primary, ...(Array.isArray(extras) ? extras : [extras])].filter(Boolean);
+
+  return (req, res, next) => {
+    if (!req.headers.authorization) {
+      for (const key of candidates) {
+        if (!key) continue;
+        let candidate = req.query?.[key];
+        if (Array.isArray(candidate)) {
+          candidate = candidate[0];
+        }
+        if (typeof candidate === 'string' && candidate.trim()) {
+          req.headers.authorization = `Bearer ${candidate.trim()}`;
+          break;
+        }
+      }
+    }
+    next();
+  };
+};
+
 exports.verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization || '';
   const token = /^Bearer\s/i.test(authHeader) ? authHeader.split(' ')[1].trim() : null;

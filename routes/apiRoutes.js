@@ -24,7 +24,7 @@ const leadController = require('../controllers/leadController');
 const termsController = require('../controllers/termsController');
 const globalModsController = require('../controllers/globalModificationsController');
 const { fullAccessControl, requirePermission } = require('../middleware/accessControl');
-const { verifyTokenWithGroup, enforceGroupScoping } = require('../middleware/auth');
+const { verifyTokenWithGroup, enforceGroupScoping, attachTokenFromQuery } = require('../middleware/auth');
 const { createRateLimiter, rateLimitAccept } = require('../middleware/rateLimiter');
 const { validateIdParam, sanitizeBodyStrings } = require('../middleware/validators');
 const proposalSessionController = require('../controllers/proposalSessionController');
@@ -442,6 +442,17 @@ router.get('/dashboard/latest-proposals', verifyTokenWithGroup, proposalsControl
 
 // Resources CRUD routes
 router.get('/resources', verifyTokenWithGroup, resourcesController.getResources); // Contractor-scoped endpoint
+router.get('/resources/categories', verifyTokenWithGroup, resourcesController.getCategories);
+router.post('/resources/categories', verifyTokenWithGroup, resourcesController.createCategory);
+router.put('/resources/categories/:id', verifyTokenWithGroup, resourcesController.updateCategory);
+router.post('/resources/categories/scaffold', verifyTokenWithGroup, resourcesController.scaffoldCategories);
+router.delete('/resources/categories/:id', verifyTokenWithGroup, resourcesController.deleteCategory);
+
+router.get('/resources/announcements', verifyTokenWithGroup, resourcesController.getAnnouncements);
+router.post('/resources/announcements', verifyTokenWithGroup, resourcesController.createAnnouncement);
+router.put('/resources/announcements/:id', verifyTokenWithGroup, resourcesController.updateAnnouncement);
+router.delete('/resources/announcements/:id', verifyTokenWithGroup, resourcesController.deleteAnnouncement);
+
 router.get('/resources/links', verifyTokenWithGroup, resourcesController.getLinks);
 router.post('/resources/links', verifyTokenWithGroup, resourcesController.saveLink);
 router.put('/resources/links/:id', verifyTokenWithGroup, resourcesController.updateLink);
@@ -451,7 +462,7 @@ router.get('/resources/files', verifyTokenWithGroup, resourcesController.getFile
 router.post('/resources/files', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.saveFile);
 router.put('/resources/files/:id', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.updateFile);
 router.delete('/resources/files/:id', verifyTokenWithGroup, resourcesController.deleteFile);
-router.get('/resources/files/download/:id', resourcesController.downloadFile);
+router.get('/resources/files/download/:id', attachTokenFromQuery(), verifyTokenWithGroup, resourcesController.downloadFile);
 
 // Upload images for sample images and category cards (admin only)
 router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);
