@@ -133,12 +133,18 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
           .split(/\r?\n/)
           .map((line) => (line.length ? line : '&nbsp;'))
           .join('<br />');
+        const proposalNum = formData?.proposal_number;
+        const subject = proposalNum ? `Your Quote ${proposalNum}` : 'Your Proposal';
+        const attachmentFilename = proposalNum ? `Quote-${proposalNum}.pdf` : 'Proposal.pdf';
+
         await axiosInstance.post('/api/proposals/send-email', {
           email: values.email,
           body: htmlBody,
           sendCopy: values.sendCopy,
           updateCustomerEmail: values.updateCustomerEmail,
           htmlContent,
+          subject,
+          attachmentFilename,
         });
         setLoading(false);
         onClose();

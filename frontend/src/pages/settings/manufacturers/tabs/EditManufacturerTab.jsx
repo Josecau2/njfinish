@@ -309,6 +309,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     <div className="mb-3">
                       <CFormLabel htmlFor="orderEmailSubject">Manufacturer Email Subject</CFormLabel>
                       <CFormInput id="orderEmailSubject" name="orderEmailSubject" value={formData.orderEmailSubject} onChange={handleChange} />
+                      <CFormText>
+                        You can include the order number by adding {"{orderNumber}"} in the subject. Example: "New order {"{orderNumber}"} for ABC Cabinets".
+                      </CFormText>
                     </div>
                   </CCol>
                   <CCol md={6}>

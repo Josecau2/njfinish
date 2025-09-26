@@ -323,6 +323,23 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     navigate(`${base}/${orderId}`)
   }
 
+  // Derive a displayable order number with safe fallbacks
+  const getDisplayOrderNumber = (order) => {
+    if (!order) return null
+    // Prefer persisted normalized field
+    if (order.order_number) return order.order_number
+    // Try snapshot.info.orderNumber
+    try {
+      const snap = typeof order.snapshot === 'string' ? JSON.parse(order.snapshot) : order.snapshot
+      const num = snap?.info?.orderNumber
+      if (num) return num
+    } catch (_) {
+      // ignore JSON errors
+    }
+    // Final fallback to raw id
+    return `#${order.id}`
+  }
+
   const renderCustomerCell = (item) => {
     // Enhanced customer name resolution with multiple fallbacks
     const getCustomerName = () => {
@@ -386,6 +403,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
             <CTableHead>
               <CTableRow>
                 <CTableHeaderCell className="sticky-col">{t('orders.headers.date', 'Date')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('orders.headers.orderNumber', 'Order #')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.customer', 'Customer')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.description', 'Description')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('orders.headers.manufacturer', 'Manufacturer')}</CTableHeaderCell>
@@ -397,7 +415,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
             <CTableBody>
               {paged.length === 0 ? (
                 <CTableRow>
-                  <CTableDataCell colSpan={7} className="text-center py-5">
+                  <CTableDataCell colSpan={8} className="text-center py-5">
                     <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
                     <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
                     <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
@@ -411,6 +429,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                       <CTableDataCell className="sticky-col">
                         {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}
                       </CTableDataCell>
+                      <CTableDataCell>{getDisplayOrderNumber(item)}</CTableDataCell>
                       <CTableDataCell>{renderCustomerCell(item)}</CTableDataCell>
                       <CTableDataCell className="text-muted">
                         {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
@@ -527,6 +546,9 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
                     </span>
                     <span>
                       {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
+                    </span>
+                    <span>
+                      {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
                     </span>
                   </div>
                   <div className="card__content text-muted">

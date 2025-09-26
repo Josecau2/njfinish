@@ -167,7 +167,7 @@ class EventManager extends EventEmitter {
                                 ${cell(esc(it.exposedSide || na))}
                         </tr>`;
                 }).join('');
-                return `<!doctype html><html><head><meta charset="utf-8"/><title>Order for ${esc(info.manufacturerName || m.name || 'Manufacturer')}</title>
+            return `<!doctype html><html><head><meta charset="utf-8"/><title>Order ${esc(info.orderNumber || '')} for ${esc(info.manufacturerName || m.name || 'Manufacturer')}</title>
                 <style>
                         body{font-family:Arial,Helvetica,sans-serif;color:#333;font-size:12px}
                         h1{font-size:18px;margin:0 0 6px}
@@ -177,9 +177,10 @@ class EventManager extends EventEmitter {
                         th,td{font-size:12px}
                 </style>
                 </head><body>
-                    <h1>Order Details</h1>
+                    <h1>Order ${esc(info.orderNumber || '')}</h1>
                     <div class="summary">
                         <div><strong>Customer:</strong> ${esc(info.customerName || 'N/A')}</div>
+                        <div><strong>Order #:</strong> ${esc(info.orderNumber || 'N/A')}</div>
                         <div><strong>Description:</strong> ${esc(info.description || 'N/A')}</div>
                         <div><strong>Accepted At:</strong> ${esc(info.acceptedAt || info.dateAccepted || '')}</div>
                         <div><strong>Manufacturer:</strong> ${esc(info.manufacturerName || m.name || '')}</div>
@@ -232,15 +233,40 @@ class EventManager extends EventEmitter {
             const to = manufacturer.email;
             if (!to) return { attempted: true, sent: false, reason: 'missing-recipient' };
             const mode = (manufacturer.orderEmailMode || 'pdf').toLowerCase();
-            const subject = manufacturer.orderEmailSubject || `New order for ${manufacturer.name}`;
+            // Build subject and include normalized order number when available
+            const orderNumForSubject = order.order_number || (snapshot?.info && snapshot.info.orderNumber) || null;
+            let subject = manufacturer.orderEmailSubject || `New order for ${manufacturer.name}`;
+            if (orderNumForSubject) {
+                // Replace placeholder tokens if present
+                subject = subject.replace(/\{orderNumber\}|\{ORDER_NUMBER\}/g, orderNumForSubject);
+                // If no placeholder and number not already present, append it
+                if (!subject.includes(orderNumForSubject)) {
+                    subject += ` — ${orderNumForSubject}`;
+                }
+            }
             const template = manufacturer.orderEmailTemplate || 'Please find the attached order PDF. No pricing information is included.';
 
             const attachments = [];
             let html = undefined;
+
+            // Ensure snapshot has info.orderNumber/manufacturerName for PDF rendering
+            try {
+                const enriched = typeof snapshot === 'object' && snapshot ? snapshot : {};
+                if (!enriched.info || typeof enriched.info !== 'object') enriched.info = {};
+                if (!enriched.info.orderNumber) {
+                    enriched.info.orderNumber = order.order_number || null;
+                }
+                if (!enriched.info.manufacturerName) {
+                    enriched.info.manufacturerName = manufacturer.name || null;
+                }
+            } catch (_) { /* non-fatal */ }
             if (mode === 'pdf' || mode === 'both') {
                 const pdf = await this.generateNoPricePdf(snapshot);
                 if (pdf && pdf.length > 1000) {
-                    attachments.push({ filename: `Order-${order.id || eventData.proposalId}.pdf`, content: pdf, contentType: 'application/pdf' });
+                    // Prefer normalized order number in filename when available
+                    const orderNum = order.order_number || (snapshot?.info && snapshot.info.orderNumber) || null;
+                    const fileBase = orderNum ? `Order-${orderNum}` : `Order-${order.id || eventData.proposalId}`;
+                    attachments.push({ filename: `${fileBase}.pdf`, content: pdf, contentType: 'application/pdf' });
                 }
             }
             if (mode === 'plain' || mode === 'both') {

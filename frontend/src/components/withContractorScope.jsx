@@ -10,7 +10,7 @@ const withContractorScope = (WrappedComponent, requiredModule = null, requiredPe
   return function ContractorScopedComponent(props) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const isContractor = user.group && user.group.group_type === 'contractor';
-    
+
     // Handle modules that might be stored as strings
     let contractorModules = user.group?.modules || {};
     if (typeof contractorModules === 'string') {
@@ -43,7 +43,7 @@ const withContractorScope = (WrappedComponent, requiredModule = null, requiredPe
         const hasThisPermission = hasPermission(user, permission);
         return hasThisPermission;
       });
-      
+
       if (!hasAllPermissions) {
         // For contractors with the right module, let them through anyway
         if (requiredModule && contractorModules[requiredModule] === true) {

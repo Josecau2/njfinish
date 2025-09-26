@@ -485,6 +485,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             <CTableHead>
               <CTableRow>
                 <CTableHeaderCell scope="col" className="sticky-col">{t('proposals.headers.date')}</CTableHeaderCell>
+                <CTableHeaderCell scope="col">{t('proposals.headers.quoteNumber', 'Quote #')}</CTableHeaderCell>
                 <CTableHeaderCell scope="col">{t('proposals.headers.customer')}</CTableHeaderCell>
                 <CTableHeaderCell scope="col">{t('proposals.headers.description')}</CTableHeaderCell>
                 {canAssignDesigner && <CTableHeaderCell scope="col">{t('proposals.headers.designer')}</CTableHeaderCell>}
@@ -495,7 +496,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             <CTableBody>
               {paginatedItems?.length === 0 ? (
                 <CTableRow>
-                  <CTableDataCell colSpan={canAssignDesigner ? 6 : 5} className="text-center py-5">
+                  <CTableDataCell colSpan={canAssignDesigner ? 7 : 6} className="text-center py-5">
                     <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
                     <p className="mb-0">{t('proposals.empty.title')}</p>
                     <small className="text-muted">{t('proposals.empty.subtitle')}</small>
@@ -506,6 +507,9 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                   <CTableRow key={item.id}>
                     <CTableDataCell>
                       {new Date(item.date || item.createdAt).toLocaleDateString()}
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      {item.proposal_number || '-'}
                     </CTableDataCell>
                     <CTableDataCell
                       className="fw-medium"
@@ -619,6 +623,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     </div>
                     <div className="card__meta">
                       <span>{new Date(item.date || item.createdAt).toLocaleDateString()}</span>
+                      <span>{t('proposals.headers.quoteNumber', 'Quote #')}: {item.proposal_number || '-'}</span>
                       {canAssignDesigner && (
                         <span>{t('proposals.headers.designer')}: {item.designerData?.name || t('common.na')}</span>
                       )}

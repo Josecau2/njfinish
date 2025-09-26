@@ -148,6 +148,8 @@ exports.sendProposalEmail = async (req, res) => {
             sendCopy,
             htmlContent, // New field for HTML content
             noSend, // optional test flag to skip actual email and return pdf size
+            subject: incomingSubject, // optional subject override
+            attachmentFilename, // optional attachment filename override
         } = req.body;
 
     // Initialize Puppeteer (prefers system Chromium / puppeteer-core if available)
@@ -210,13 +212,17 @@ exports.sendProposalEmail = async (req, res) => {
         // });
 
         // Send email with PDF attachment
+        // Default subject and filename
+        const subject = (incomingSubject && String(incomingSubject).trim()) || 'Your Proposal';
+        const filename = (attachmentFilename && String(attachmentFilename).trim()) || 'Proposal.pdf';
+
         await sendMail({
             to: email,
-            subject: 'Your Proposal',
+            subject,
             html: body,
             attachments: [
                 {
-                    filename: 'Proposal.pdf',
+                    filename,
                     content: pdfBuffer,
                     contentType: 'application/pdf',
                 },

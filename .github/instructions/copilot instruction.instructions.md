@@ -368,3 +368,13 @@ module.exports = {
 ```
 
 Following these conventions will prevent runtime errors like "Cannot read properties of undefined (reading 'describeTable')" and privilege-related backup failures, and will keep migrations safe across dev/prod environments.
+
+### End-to-End Delivery Expectation (Important)
+- When introducing or modifying a feature, deliver it completely across layers in one iteration when feasible:
+    - Backend: routes, permission guards, validators, consistent status codes (use 403 for permission issues, 404 for missing resources), and proper headers (e.g., Content-Disposition filenames).
+    - Frontend: UI buttons/links wired to the correct endpoints, inline and download behaviors tested using authenticated blob requests, and error notices that surface backend messages.
+    - Data consistency: ensure snapshots, normalized numbers, and backfilled fields are present so PDFs/emails render correctly for legacy and new data alike.
+    - Filenames/subjects: include normalized numbers where applicable (Order #/Quote #) for attachments and downloads.
+    - Docs: update this instructions file or relevant READMEs with any new flows, routes, or expectations.
+- Prefer stable, explicit endpoints over relying on query-string semantics for critical actions. For example, provide a dedicated download route in addition to an inline preview route for PDFs.
+- Always run a quick build/smoke of the frontend after UI changes and confirm API responses locally. Keep the backend running; don’t ask to restart it unless necessary.

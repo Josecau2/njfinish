@@ -391,6 +391,121 @@
 			],
 			"isBackground": false,
 			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build:frontend"
+			],
+			"group": "build"
 		}
 	]
 }

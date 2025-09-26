@@ -4,6 +4,7 @@ const { Manufacturer } = require('../models/Manufacturers');
 const ManufacturerCatalogData = require('../models/manufacturerCatalogData');
 const { logActivity } = require('../utils/activityLogger');
 const { Op } = require('sequelize');
+const { nextCandidate } = require('../utils/numbering');
 
 // Helper to robustly parse JSON-like inputs (handles double-encoded strings)
 const robustParse = (val) => {
@@ -272,14 +273,60 @@ const saveProposal = async (req, res) => {
             }
         } catch (_) {}
 
+        // Compute proposal number (daily unique) with small retry loop on dup
+        const assignProposalNumber = async () => {
+            const maxAttempts = 5;
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                const cand = await nextCandidate('proposal');
+                const fields = {
+                    proposal_number: cand.number,
+                    proposal_number_date: cand.dateOnly,
+                    proposal_number_seq: cand.seq,
+                };
+                try {
+                    return { ok: true, fields };
+                } catch (_) {}
+            }
+            return { ok: false };
+        };
+
+        const numbering = await assignProposalNumber();
+
         const dataToSave = {
             ...formData,
             customerId,
             owner_group_id: user.group_id || null, // Set owner group for contractors
             created_by_user_id: user.id,
+            ...(numbering.ok ? numbering.fields : {})
         };
-
-        const proposal = await Proposals.create(dataToSave);
+        let proposal = null;
+        {
+            const maxAttempts = 5;
+            let lastErr = null;
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                try {
+                    proposal = await Proposals.create(dataToSave);
+                    break;
+                } catch (e) {
+                    const msg = String(e?.message || e);
+                    const dup = msg.includes('Duplicate entry') && (msg.includes('uniq_proposals_number_date_seq') || msg.includes('uniq_proposals_proposal_number'));
+                    if (dup) {
+                        // regenerate and retry
+                        const cand = await nextCandidate('proposal');
+                        dataToSave.proposal_number = cand.number;
+                        dataToSave.proposal_number_date = cand.dateOnly;
+                        dataToSave.proposal_number_seq = cand.seq;
+                        lastErr = e;
+                        continue;
+                    }
+                    lastErr = e;
+                    break;
+                }
+            }
+            if (!proposal) {
+                throw lastErr || new Error('Failed to create proposal with number');
+            }
+        }
 
         // Audit: proposal.create
         await logActivity({
@@ -891,6 +938,11 @@ const updateProposal = async (req, res) => {
                 }
 
                 // Create the order with comprehensive data
+                // Assign order number and include in snapshot for display
+                const cand = await nextCandidate('order');
+                if (normalizedSnapshot && typeof normalizedSnapshot === 'object') {
+                    normalizedSnapshot.info = { ...(normalizedSnapshot.info || {}), orderNumber: cand.number };
+                }
                 const createdOrder = await Order.create({
                     proposal_id: existingProposal.id,
                     owner_group_id: existingProposal.owner_group_id || null,
@@ -903,7 +955,10 @@ const updateProposal = async (req, res) => {
                     accepted_by_user_id: user.id,
                     accepted_by_label: user.name || user.email || String(user.id),
                     grand_total_cents: grandTotalCents,
-                    snapshot: normalizedSnapshot || { info: { note: 'Order created via updateProposal accept action' } }
+                    snapshot: normalizedSnapshot || { info: { note: 'Order created via updateProposal accept action' } },
+                    order_number: cand.number,
+                    order_number_date: cand.dateOnly,
+                    order_number_seq: cand.seq
                 });
 
                 console.log('✅ [DEBUG] Order created successfully via updateProposal for proposal:', id);
@@ -1263,6 +1318,10 @@ const updateProposalStatus = async (req, res) => {
                 }
 
                 // Create the order
+                const cand = await nextCandidate('order');
+                if (normalizedSnapshot && typeof normalizedSnapshot === 'object') {
+                    normalizedSnapshot.info = { ...(normalizedSnapshot.info || {}), orderNumber: cand.number };
+                }
                 const createdOrder = await Order.create({
                     proposal_id: fullProposal.id,
                     owner_group_id: fullProposal.owner_group_id || null,
@@ -1275,7 +1334,10 @@ const updateProposalStatus = async (req, res) => {
                     accepted_by_user_id: user.id,
                     accepted_by_label: user.name || user.email || String(user.id),
                     grand_total_cents: grandTotalCents,
-                    snapshot: normalizedSnapshot || { info: { note: 'Order created via updateProposalStatus' } }
+                    snapshot: normalizedSnapshot || { info: { note: 'Order created via updateProposalStatus' } },
+                    order_number: cand.number,
+                    order_number_date: cand.dateOnly,
+                    order_number_seq: cand.seq
                 });
 
                 console.log('✅ [DEBUG] Order created successfully via updateProposalStatus for proposal:', id);
@@ -1859,6 +1921,10 @@ const acceptProposal = async (req, res) => {
             // Ensure we always have a minimal snapshot payload even if upstream data is sparse
             const snapshotPayload = normalizedSnapshot || { manufacturers: [], items: [], summary: {} };
 
+            const cand = await nextCandidate('order');
+            if (snapshotPayload && typeof snapshotPayload === 'object') {
+                snapshotPayload.info = { ...(snapshotPayload.info || {}), orderNumber: cand.number };
+            }
             const createdOrder = await Order.create({
                 proposal_id: proposal.id,
                 owner_group_id: proposal.owner_group_id || null,
@@ -1871,7 +1937,10 @@ const acceptProposal = async (req, res) => {
                 accepted_by_user_id: typeof acceptedBy === 'number' ? acceptedBy : null,
                 accepted_by_label: typeof acceptedBy === 'string' ? acceptedBy : null,
                 grand_total_cents: grandTotalCents,
-                snapshot: snapshotPayload
+                snapshot: snapshotPayload,
+                order_number: cand.number,
+                order_number_date: cand.dateOnly,
+                order_number_seq: cand.seq
             });
 
             console.log('✅ [DEBUG] Order created successfully', {
@@ -1894,6 +1963,8 @@ const acceptProposal = async (req, res) => {
             let exists = await Order.findOne({ where: { proposal_id: proposal.id } });
             if (!exists) {
                 console.warn('🛟 [DEBUG] No order found after acceptance; creating fallback order record.', { proposalId: proposal.id });
+                const cand2 = await nextCandidate('order');
+                const fallbackSnap = { info: { note: 'fallback minimal order snapshot', orderNumber: cand2.number } };
                 await Order.create({
                     proposal_id: proposal.id,
                     owner_group_id: proposal.owner_group_id || null,
@@ -1906,7 +1977,10 @@ const acceptProposal = async (req, res) => {
                     accepted_by_user_id: typeof acceptedBy === 'number' ? acceptedBy : null,
                     accepted_by_label: typeof acceptedBy === 'string' ? acceptedBy : null,
                     grand_total_cents: null,
-                    snapshot: { info: { note: 'fallback minimal order snapshot' } }
+                    snapshot: fallbackSnap,
+                    order_number: cand2.number,
+                    order_number_date: cand2.dateOnly,
+                    order_number_seq: cand2.seq
                 });
                 console.warn('🛟 [DEBUG] Fallback order created.');
                 exists = await Order.findOne({ where: { proposal_id: proposal.id } });

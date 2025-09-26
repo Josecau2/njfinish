@@ -31,6 +31,8 @@ import {
 } from '@coreui/react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
+import axiosInstance from '../../helpers/axiosInstance'
+import { isAdmin } from '../../helpers/permissions'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -121,7 +123,16 @@ const OrderDetails = () => {
   const { current: order, loading, error } = useSelector((state) => state.orders)
   const { list: manuList, byId: manuById } = useSelector((state) => state.manufacturers)
   const dispatch = useDispatch()
+  const authUser = useSelector((state) => state.auth?.user)
+  const [showPdf, setShowPdf] = useState(false)
+  const [pdfUrl, setPdfUrl] = useState(null)
+  const [resending, setResending] = useState(false)
+  const [notice, setNotice] = useState({ visible: false, title: '', message: '', variant: 'success' })
   const [previewImg, setPreviewImg] = useState(null)
+  const [downloading, setDownloading] = useState(false)
+
+  const openNotice = (title, message, variant = 'success') => setNotice({ visible: true, title, message, variant })
+  const closeNotice = () => setNotice((n) => ({ ...n, visible: false }))
 
   // Get styling from PageHeader component logic
   const getContrastColor = (backgroundColor) => {
@@ -169,6 +180,15 @@ const OrderDetails = () => {
 
   // Parse snapshot from the fetched order
   const parsed = useMemo(() => parseFromSnapshot(order), [order])
+
+  // Prefer model field, then snapshot info, then fallback to ID
+  const displayOrderNumber = useMemo(() => {
+    const fromModel = order?.order_number
+    const fromSnap = (() => {
+      try { return (typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot)?.info?.orderNumber } catch { return null }
+    })()
+    return fromModel || fromSnap || `#${order?.id || id}`
+  }, [order, id])
 
   // Helper to compute display fields for an item (used by table and mobile views)
   const computeItemView = (it) => {
@@ -245,6 +265,69 @@ const OrderDetails = () => {
     )
   }
 
+  const handleViewPdf = async () => {
+    try {
+      // Open inline PDF using a blob URL to preserve auth
+      const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf`, { responseType: 'blob' })
+      const blob = new Blob([resp.data], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      setPdfUrl(url)
+      setShowPdf(true)
+    } catch (e) {
+      openNotice('Failed to load PDF', e?.response?.data?.message || e.message || 'Please try again.', 'danger')
+    }
+  }
+
+  const handleResendEmail = async () => {
+    try {
+      setResending(true)
+      const { data } = await axiosInstance.post(`/api/orders/${id}/resend-manufacturer-email`)
+      const ok = !!data?.success || !!data?.result?.sent
+      // Ensure only one modal visible at a time — close PDF viewer if open
+      if (showPdf) {
+        setShowPdf(false)
+        if (pdfUrl) { URL.revokeObjectURL(pdfUrl); setPdfUrl(null) }
+      }
+      if (ok) {
+        openNotice('Email Sent', 'Manufacturer email resent successfully.', 'success')
+      } else {
+        openNotice('Resend Attempted', data?.result?.reason || 'The email was not confirmed as sent.', 'warning')
+      }
+    } catch (e) {
+      openNotice('Resend Failed', e?.response?.data?.message || e.message || 'Please try again.', 'danger')
+    } finally {
+      setResending(false)
+    }
+  }
+
+  const handleDownloadPdf = async () => {
+    try {
+      setDownloading(true)
+      // Use dedicated download endpoint to avoid any proxy/query quirks
+      const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf/download`, { responseType: 'blob' })
+      // Determine filename from Content-Disposition header if available
+      const disp = resp.headers?.['content-disposition'] || resp.headers?.get?.('content-disposition')
+      let filename = `Order-${id}-Manufacturer.pdf`
+      if (disp && /filename\s*=\s*"?([^";]+)"?/i.test(disp)) {
+        const m = disp.match(/filename\s*=\s*"?([^";]+)"?/i)
+        if (m && m[1]) filename = m[1]
+      }
+      const blob = new Blob([resp.data], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      openNotice('Download Failed', e?.response?.data?.message || e.message || 'Please try again.', 'danger')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   return (
     <CContainer fluid>
       <style>
@@ -264,13 +347,28 @@ const OrderDetails = () => {
         `}
       </style>
       <PageHeader
-        title={t('orders.details.title', 'Order Details')}
+        title={`${t('orders.details.title', 'Order Details')} — ${displayOrderNumber}`}
   subtitle={order?.customer?.name ? `${t('orders.details.customerLabel', 'Customer')}: ${order.customer.name}` : t('orders.details.subtitle', 'Accepted order overview')}
         icon={FaShoppingCart}
         rightContent={
-          <button type="button" className="btn btn-light btn-sm" onClick={handleBack}>
-            <CIcon icon={cilArrowLeft} className="me-2" />{t('common.back', 'Back')}
-          </button>
+          <div className="d-flex align-items-center gap-2">
+            {isAdmin(authUser) && (
+              <>
+                <button type="button" className="btn btn-outline-primary btn-sm" onClick={handleViewPdf} title="View Manufacturer PDF">
+                  View PDF
+                </button>
+                <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleDownloadPdf} disabled={downloading} title="Download Manufacturer PDF">
+                  {downloading ? 'Downloading…' : 'Download PDF'}
+                </button>
+                <button type="button" className="btn btn-primary btn-sm" onClick={handleResendEmail} disabled={resending} title="Resend Manufacturer Email">
+                  {resending ? 'Resending…' : 'Resend Email'}
+                </button>
+              </>
+            )}
+            <button type="button" className="btn btn-light btn-sm" onClick={handleBack}>
+              <CIcon icon={cilArrowLeft} className="me-2" />{t('common.back', 'Back')}
+            </button>
+          </div>
         }
       />
       {/* Manufacturer Details (primary) */}
@@ -349,6 +447,7 @@ const OrderDetails = () => {
           <CCard>
             <CCardHeader>{t('orders.details.order', 'Order')}</CCardHeader>
             <CCardBody>
+              <div className="mb-2"><strong>{t('orders.headers.orderNumber', 'Order #')}:</strong> {displayOrderNumber}</div>
               <div className="mb-2"><strong>{t('orders.details.id', 'ID')}:</strong> {order?.id}</div>
               <div className="mb-2"><strong>{t('orders.details.date', 'Date')}:</strong> {new Date(order?.accepted_at || order?.date || order?.createdAt).toLocaleDateString()}</div>
               <div className="mb-2"><strong>{t('orders.details.status', 'Status')}:</strong> <CBadge color="success">{order?.status || 'accepted'}</CBadge></div>
@@ -622,45 +721,52 @@ const OrderDetails = () => {
         </CCardBody>
       </CCard>
 
-      {/* Preview Modal */}
-      <CModal
-        visible={!!previewImg}
-        onClose={() => setPreviewImg(null)}
-        alignment="center"
-        backdrop={true}
-        keyboard={true}
-        size="lg"
-      >
-        <CModalHeader
-          className="modal-header-custom"
-          style={{
-            backgroundColor: `${backgroundColor} !important`,
-            color: `${textColor} !important`,
-            borderBottom: `1px solid ${textColor === '#ffffff' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(45, 55, 72, 0.2)'}`,
-            background: `${backgroundColor} !important`
-          }}
-        >
-          <CModalTitle
-            style={{
-              color: `${textColor} !important`,
-              fontWeight: 'bold'
-            }}
-          >
-            {t('orders.details.preview', 'Preview')}
-          </CModalTitle>
+      {/* PDF Modal */}
+      <CModal size="xl" visible={showPdf} onClose={() => { setShowPdf(false); if (pdfUrl) { URL.revokeObjectURL(pdfUrl); setPdfUrl(null) } }}>
+        <CModalHeader className="modal-header-custom">
+          <CModalTitle>Manufacturer PDF</CModalTitle>
+          <CCloseButton className="text-reset" onClick={() => { setShowPdf(false); if (pdfUrl) { URL.revokeObjectURL(pdfUrl); setPdfUrl(null) } }} />
         </CModalHeader>
-        <CModalBody className="p-0 text-center">
-          {previewImg && (
-            <img
-              src={previewImg}
-              alt={t('orders.details.preview', 'Preview')}
-              style={{ width: '100%', height: 'auto', maxHeight: '80vh', objectFit: 'contain' }}
-              onClick={() => setPreviewImg(null)}
-              role="button"
-            />
+        <CModalBody style={{ height: '80vh' }}>
+          {pdfUrl ? (
+            <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
+              <iframe title="Manufacturer PDF" src={pdfUrl} style={{ width: '100%', height: '100%', border: 'none' }} />
+            </object>
+          ) : (
+            <div className="text-center text-muted py-5">Loading...</div>
           )}
         </CModalBody>
       </CModal>
+
+      {/* Image Preview Modal */}
+      <CModal size="xl" visible={!!previewImg} onClose={() => setPreviewImg(null)}>
+        <CModalHeader className="modal-header-custom">
+          <CModalTitle>{t('common.preview', 'Preview')}</CModalTitle>
+          <CCloseButton className="text-reset" onClick={() => setPreviewImg(null)} />
+        </CModalHeader>
+        <CModalBody className="text-center">
+          {previewImg ? (
+            <img src={previewImg} alt="Preview" style={{ maxWidth: '100%', maxHeight: '75vh' }} />
+          ) : null}
+        </CModalBody>
+      </CModal>
+
+      {/* Notice Modal */}
+      <CModal visible={notice.visible} onClose={closeNotice}>
+        <CModalHeader className="modal-header-custom">
+          <CModalTitle>{notice.title || 'Notice'}</CModalTitle>
+          <CCloseButton className="text-reset" onClick={closeNotice} />
+        </CModalHeader>
+        <CModalBody>
+          <CAlert color={notice.variant}>{notice.message}</CAlert>
+          <div className="text-end">
+            <button type="button" className={`btn btn-${notice.variant === 'danger' ? 'danger' : notice.variant === 'warning' ? 'warning' : 'primary'}`} onClick={closeNotice}>
+              OK
+            </button>
+          </div>
+        </CModalBody>
+      </CModal>
+
     </CContainer>
   )
 }

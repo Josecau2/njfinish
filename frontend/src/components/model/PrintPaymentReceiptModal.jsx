@@ -104,14 +104,23 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       });
     };
 
-    // Generate order number in format: Company initials + Date + Order number
+    // Generate displayable order number (normalized if available)
     const generateOrderNumber = (orderData) => {
-      // Extract initials from company name (logoText)
+      if (!orderData) return '';
+      // Prefer persisted normalized field
+      if (orderData.order_number) return orderData.order_number;
+      // Try snapshot.info.orderNumber
+      try {
+        const snap = typeof orderData.snapshot === 'string' ? JSON.parse(orderData.snapshot) : orderData.snapshot;
+        const num = snap?.info?.orderNumber;
+        if (num) return num;
+      } catch (_) { /* ignore */ }
+      // Legacy fallback (company initials + date + id)
       const companyInitials = logoText
         .split(' ')
         .map(word => word.charAt(0).toUpperCase())
         .join('')
-        .slice(0, 2); // Limit to 2 characters
+        .slice(0, 2);
       const orderDate = new Date(orderData.createdAt);
       const dateStr = orderDate.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
       return `${companyInitials}${dateStr}${orderData.id}`;
@@ -427,12 +436,17 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       const link = document.createElement('a');
       link.href = url;
 
-      // Generate receipt number for filename
-      const receiptDate = new Date(payment.paidAt || payment.createdAt);
-      const dateStr = receiptDate.toISOString().slice(0, 10).replace(/-/g, '');
-      const receiptNumber = `RCP${dateStr}${payment.id}`;
-
-      link.download = `payment-receipt-${receiptNumber}.pdf`;
+      // Generate filename using normalized order number when available
+      const orderNumber = order?.order_number || (order?.snapshot?.info && order.snapshot.info.orderNumber) || null;
+      if (orderNumber) {
+        link.download = `Payment-Receipt-${orderNumber}.pdf`;
+      } else {
+        // Fallback to prior receipt code format
+        const receiptDate = new Date(payment.paidAt || payment.createdAt);
+        const dateStr = receiptDate.toISOString().slice(0, 10).replace(/-/g, '');
+        const receiptNumber = `RCP${dateStr}${payment.id}`;
+        link.download = `payment-receipt-${receiptNumber}.pdf`;
+      }
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

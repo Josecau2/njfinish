@@ -160,6 +160,22 @@ const Proposal = sequelize.define('proposal', {
         defaultValue: false,
         comment: 'Flag indicating if proposal has been migrated to sections structure'
     },
+    // Normalized numbering fields (NJ-xxx-mmddyy)
+    proposal_number: {
+        type: DataTypes.STRING(32),
+        allowNull: true,
+        comment: 'Normalized human-readable proposal number (e.g., NJ-001-092525)'
+    },
+    proposal_number_date: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        comment: 'Date portion for daily sequence (YYYY-MM-DD)'
+    },
+    proposal_number_seq: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'Daily sequence integer for uniqueness enforcement'
+    },
 
 }, {
     timestamps: true,

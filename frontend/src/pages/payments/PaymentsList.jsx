@@ -175,6 +175,20 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
     }
   };
 
+  // Derive a displayable order number with safe fallbacks
+  const getDisplayOrderNumber = (payment) => {
+    const order = payment?.order;
+    if (order?.order_number) return order.order_number;
+    try {
+      const snap = typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot;
+      const num = snap?.info?.orderNumber;
+      if (num) return num;
+    } catch (_) {
+      // ignore
+    }
+    return `#${payment?.orderId ?? payment?.order?.id ?? ''}`;
+  };
+
   const handleCreatePayment = async () => {
     const { value: orderId } = await Swal.fire({
       title: t('payments.create.title', 'Create Payment'),
@@ -336,7 +350,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
               <CTableRow>
                 <CTableHeaderCell className="sticky-col">{t('payments.headers.date', 'Date')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('payments.headers.customer', 'Customer')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.order', 'Order')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('payments.headers.orderNumber', 'Order #')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('payments.headers.amount', 'Amount')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('payments.headers.status', 'Status')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('payments.headers.transaction', 'Transaction ID')}</CTableHeaderCell>
@@ -365,7 +379,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                       {new Date(payment.createdAt).toLocaleDateString()}
                     </CTableDataCell>
                     <CTableDataCell>{renderCustomerCell(payment)}</CTableDataCell>
-                    <CTableDataCell>#{payment.orderId}</CTableDataCell>
+                    <CTableDataCell>{getDisplayOrderNumber(payment)}</CTableDataCell>
                     <CTableDataCell>
                       {new Intl.NumberFormat('en-US', {
                         style: 'currency',
@@ -527,7 +541,7 @@ const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) 
                       currency: payment.currency || 'USD'
                     }).format(payment.amount)}
                   </span>
-                  <span>{t('payments.mobile.orderNumber','Order #{{id}}',{id: payment.orderId})}</span>
+                  <span>{t('payments.mobile.orderNumber','Order #{{id}}',{id: getDisplayOrderNumber(payment)})}</span>
                 </div>
                 {payment.transactionId && (
                   <div className="card__content text-muted">

@@ -328,7 +328,7 @@ export const buildProposalPdfHtml = ({
 <html>
 <head>
     <meta charset="utf-8">
-    <title>${t('proposalDoc.title', 'Proposal')}</title>
+  <title>${t('proposalDoc.title', 'Proposal')}${formData?.proposal_number ? ' ' + escapeHtml(formData.proposal_number) : ''}</title>
     <style>
         @page {
             margin: 20mm;
@@ -383,13 +383,13 @@ export const buildProposalPdfHtml = ({
             margin-bottom: 30px;
         }
 
-        .greeting {
+    .greeting {
             font-size: 14px;
             margin-bottom: 15px;
             color: #333;
         }
 
-        .description {
+    .description {
             font-size: 12px;
             margin-bottom: 25px;
             color: #666;

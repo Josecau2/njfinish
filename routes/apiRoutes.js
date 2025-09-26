@@ -310,6 +310,50 @@ const ordersController = require('../controllers/ordersController');
 router.get('/orders', verifyTokenWithGroup, ordersController.listOrders);
 router.get('/orders/:id', verifyTokenWithGroup, validateIdParam('id'), ordersController.getOrder);
 
+// Admin-only: stream manufacturer no-price PDF for a given order id
+async function streamManufacturerPdf(req, res, { forceDownload = false } = {}) {
+	try {
+		const orderId = req.params.id;
+		const Order = require('../models/Order');
+		const order = await Order.findByPk(orderId);
+		if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+		const snapshot = typeof order.snapshot === 'string' ? (() => { try { return JSON.parse(order.snapshot); } catch (_) { return null; } })() : order.snapshot;
+		if (!snapshot) return res.status(400).json({ success: false, message: 'Order has no snapshot' });
+
+		// Ensure snapshot.info.orderNumber is present for legacy snapshots
+		try {
+			if (!snapshot.info || typeof snapshot.info !== 'object') snapshot.info = {};
+			if (!snapshot.info.orderNumber) snapshot.info.orderNumber = order.order_number || null;
+		} catch (_) { /* ignore */ }
+		const eventManager = require('../utils/eventManager');
+		const pdf = await eventManager.generateNoPricePdf(snapshot);
+		const downloadParam = String(req.query.download || '').toLowerCase();
+		const download = forceDownload || downloadParam === '1' || downloadParam === 'true';
+
+		res.setHeader('Content-Type', 'application/pdf');
+		if (download) {
+			// Prefer normalized order number in filename when available
+			const orderNum = order.order_number || (snapshot?.info && snapshot.info.orderNumber) || null;
+			const safeBase = orderNum ? `Order-${orderNum}` : `Order-${orderId}`;
+			res.setHeader('Content-Disposition', `attachment; filename="${safeBase}-Manufacturer.pdf"`);
+		} else {
+			res.setHeader('Content-Disposition', 'inline');
+		}
+		return res.status(200).send(pdf);
+	} catch (e) {
+		return res.status(500).json({ success: false, message: e.message });
+	}
+}
+
+router.get('/orders/:id/manufacturer-pdf', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), async (req, res) => {
+	return streamManufacturerPdf(req, res);
+});
+
+// Explicit download path to avoid any client/proxy quirks with query strings
+router.get('/orders/:id/manufacturer-pdf/download', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), async (req, res) => {
+	return streamManufacturerPdf(req, res, { forceDownload: true });
+});
+
 // Admin-only: resend manufacturer email for a given order id
 router.post('/orders/:id/resend-manufacturer-email', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), async (req, res) => {
 	try {

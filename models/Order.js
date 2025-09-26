@@ -133,6 +133,22 @@ const Order = sequelize.define('order', {
     type: DataTypes.INTEGER,
     allowNull: true,
     comment: 'User who locked the order'
+  },
+  // Normalized numbering fields (NJ-xxx-mmddyy)
+  order_number: {
+    type: DataTypes.STRING(32),
+    allowNull: true,
+    comment: 'Normalized human-readable order number (e.g., NJ-001-092525)'
+  },
+  order_number_date: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    comment: 'Date portion for daily sequence (YYYY-MM-DD)'
+  },
+  order_number_seq: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'Daily sequence integer for uniqueness enforcement'
   }
 }, {
   timestamps: true,
@@ -150,7 +166,7 @@ Order.addHook('afterCreate', async (order, options) => {
     // Only create payment if order has a valid total
     if (order.grand_total_cents && order.grand_total_cents > 0) {
       const { Payment } = require('./index');
-      
+
       // Check if payment already exists
       const existingPayment = await Payment.findOne({
         where: { orderId: order.id }
@@ -158,7 +174,7 @@ Order.addHook('afterCreate', async (order, options) => {
 
       if (!existingPayment) {
         const amount = order.grand_total_cents / 100; // Convert cents to dollars
-        
+
         await Payment.create({
           orderId: order.id,
           amount: amount,
