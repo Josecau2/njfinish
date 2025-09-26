@@ -26,36 +26,47 @@ function decodePayload(token) {
 }
 
 // Force clear all tokens and memory cache
-export function clearAllTokens() {
+export function clearAllTokens(options = {}) {
+  const { preserveUser = false } = options;
+
   // Clear memory cache immediately
   memoryToken = null;
 
-  // Clear all possible token storage locations
-  const storageKeys = [
-    'token', 'user', 'auth', 'persist:auth', 'persist:user',
+  // Keys that strictly hold authentication state/token shards
+  const tokenKeys = [
+    'token', 'auth', 'persist:auth', 'persist:user',
     'persist:root', 'authToken', 'userToken', 'jwtToken',
     'accessToken', 'refreshToken', 'sessionToken'
   ];
 
   // Clear from localStorage
-  storageKeys.forEach(key => {
+  tokenKeys.forEach((key) => {
     try { localStorage.removeItem(key); } catch {}
   });
 
   // Clear from sessionStorage
-  storageKeys.forEach(key => {
+  tokenKeys.forEach((key) => {
     try { sessionStorage.removeItem(key); } catch {}
   });
 
+  if (!preserveUser) {
+    try { localStorage.removeItem('user'); } catch {}
+    try { sessionStorage.removeItem('user'); } catch {}
+  }
+
   if (import.meta?.env?.DEV) {
-    console.debug('[CLEAR_ALL] All tokens and memory cache cleared');
+    const note = preserveUser ? ' (preserved user profile)' : '';
+    console.debug(`[CLEAR_ALL] Auth storage cleared${note}`);
   }
 }
 
-export function installTokenEverywhere(newToken) {
+
+export function installTokenEverywhere(newToken, options = {}) {
+  const { preserveUser = true } = options;
+
   try {
-    // First, completely clear everything to ensure fresh state
-    clearAllTokens();
+    // Clear previous auth shards but preserve user payload by default
+    clearAllTokens({ preserveUser });
 
     // Write fresh token redundantly
     if (newToken) {
@@ -83,6 +94,7 @@ export function installTokenEverywhere(newToken) {
     try { if (import.meta?.env?.DEV) console.error('[INSTALL] Error installing token:', e) } catch {}
   }
 }
+
 
 // Get the freshest token from storage (checking both localStorage and sessionStorage)
 export function getFreshestToken() {

@@ -79,7 +79,7 @@ const LoginPage = () => {
       } catch {}
 
       // Install token everywhere (hard reset) and persist user
-      installTokenEverywhere(token);
+      installTokenEverywhere(token, { preserveUser: false });
       try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
 
       // Wait a brief moment to ensure token is fully installed before proceeding
@@ -234,6 +234,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-
 

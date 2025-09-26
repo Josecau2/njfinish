@@ -5,13 +5,13 @@ export const LOGIN_CUSTOMIZATION = {
   "logo": "/assets/customization/logo.png",
   "title": "Sign In",
   "subtitle": "Enter your email and password to sign in!",
-  "backgroundColor": "#181616",
+  "backgroundColor": "#000000",
   "showForgotPassword": true,
   "showKeepLoggedIn": true,
-  "rightTitle": "CONTRACTOR PORTAL KITCHEN",
-  "rightSubtitle": "See Your Cabinet Price in Seconds!! WILD HORSES",
-  "rightTagline": "NJ CONTRACTORS WILD HORSES",
-  "rightDescription": "LETS TRY THIS number 145676 WILD HORSES",
+  "rightTitle": "NJ CONTRACTOR'S PORTAL",
+  "rightSubtitle": "See Your Cabinet Price in Seconds",
+  "rightTagline": "NJ CONTRACTORS",
+  "rightDescription": "",
   "logoHeight": 60,
   "requestAccessTitle": "Request Access",
   "requestAccessSubtitle": "Interested in partnering with NJ Cabinets?",
@@ -29,7 +29,7 @@ export const LOGIN_CUSTOMIZATION = {
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
   "updatedAt": "2025-09-25T02:37:46.000Z",
-  "_generated": "2025-09-26T01:44:28.093Z",
+  "_generated": "2025-09-26T02:16:35.162Z",
   "_version": "1.0.0"
 }
 

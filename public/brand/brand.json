@@ -1,8 +1,8 @@
 {
-  "version": 1758851068097,
+  "version": 1758853030131,
   "colors": {
     "headerBg": "#000000",
-    "headerText": "#F8FAFC",
+    "headerText": "#ffffff",
     "sidebarBg": "#000000",
     "sidebarText": "#ffffff",
     "text": "#0f172a",
@@ -10,18 +10,18 @@
     "surface": "#f8fafc",
     "logoBg": "#000000"
   },
-  "logoAlt": "NJ Cabinets Demo",
+  "logoAlt": "NJ Contractors ",
   "login": {
     "title": "Sign In",
     "subtitle": "Enter your email and password to sign in!",
-    "backgroundColor": "#181616",
+    "backgroundColor": "#000000",
     "showForgotPassword": true,
     "showKeepLoggedIn": true,
-    "leftTitle": "CONTRACTOR PORTAL KITCHEN",
-    "leftSubtitle": "See Your Cabinet Price in Seconds!! WILD HORSES",
-    "rightTitle": "CONTRACTOR PORTAL KITCHEN",
-    "rightSubtitle": "See Your Cabinet Price in Seconds!! WILD HORSES",
-    "rightDescription": "LETS TRY THIS number 145676 WILD HORSES",
+    "leftTitle": "NJ CONTRACTOR'S PORTAL",
+    "leftSubtitle": "See Your Cabinet Price in Seconds",
+    "rightTitle": "NJ CONTRACTOR'S PORTAL",
+    "rightSubtitle": "See Your Cabinet Price in Seconds",
+    "rightDescription": "NJ CONTRACTORS",
     "logoHeight": 60,
     "requestAccessTitle": "Request Access",
     "requestAccessSubtitle": "Interested in partnering with NJ Cabinets?",
@@ -34,7 +34,7 @@
     "requestAccessSuccessMessage": "Thank you! We've received your request and will be in touch soon."
   },
   "app": {
-    "logoText": "NJ Cabinets Demo",
+    "logoText": "NJ Contractors ",
     "logoImage": "/uploads/images/logoImage-1758762402655-186039703.png",
     "logoBg": "#000000",
     "companyName": ""
