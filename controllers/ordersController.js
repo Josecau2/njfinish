@@ -184,3 +184,21 @@ module.exports = {
   // Exported for reuse (e.g., accept flow ensures schema before creating orders)
   ensureOrdersSchema,
 };
+// Admin-only: delete an order and cascade related payments
+const deleteOrder = async (req, res) => {
+  try {
+    await ensureOrdersSchema();
+    const { id } = req.params;
+    const order = await Order.findByPk(id);
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    // Hard-delete order; associated payments are configured with ON DELETE CASCADE
+    await order.destroy();
+    return res.status(200).json({ success: true, message: 'Order deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting order:', err);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+module.exports.deleteOrder = deleteOrder;

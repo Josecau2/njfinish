@@ -5,20 +5,20 @@ export const sendFormDataToBackend = createAsyncThunk(
     'proposal/sendFormDataToBackend',
     async (payload, { rejectWithValue }) => {
         try {
-            
+
 
             const { formData } = payload;
             const endpoint = formData.id ? '/api/update-proposals' : '/api/create-proposals';
 
-            
+
 
             const response = await axiosInstance.post(endpoint, payload);
 
-            
+
 
             return response.data;
         } catch (error) {
-            
+
             return rejectWithValue(error.response?.data || error.message);
         }
     }
@@ -95,6 +95,19 @@ export const deleteFormData = createAsyncThunk(
     }
 );
 
+// Admin-only: bypass locks/scoping to delete any proposal (soft delete)
+export const adminDeleteProposal = createAsyncThunk(
+    'proposal/adminDeleteProposal',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.delete(`/api/admin/proposals/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+
 export const updateProposalStatus = createAsyncThunk(
     'proposal/updateProposalStatus',
     async ({ id, action, status }, { rejectWithValue }) => {
@@ -111,19 +124,19 @@ export const acceptProposal = createAsyncThunk(
     'proposal/acceptProposal',
     async ({ id, externalSignerName, externalSignerEmail }, { rejectWithValue }) => {
         try {
-            
+
 
             const requestBody = {};
             if (externalSignerName) requestBody.external_signer_name = externalSignerName;
             if (externalSignerEmail) requestBody.external_signer_email = externalSignerEmail;
 
-            
+
 
             const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody);
 
             return response.data;
         } catch (error) {
-            
+
             return rejectWithValue(error.response?.data || error.message);
         }
     }
@@ -306,6 +319,25 @@ const formDataSlice = createSlice({
                 state.data = state.data.filter((item) => item._id !== deletedId);
             })
             .addCase(deleteFormData.rejected, (state, action) => {
+                state.submitting = false;
+                state.success = false;
+                state.error = action.payload;
+            });
+
+        // ADMIN DELETE (bypass)
+        builder
+            .addCase(adminDeleteProposal.pending, (state) => {
+                state.submitting = true;
+                state.error = null;
+            })
+            .addCase(adminDeleteProposal.fulfilled, (state, action) => {
+                state.submitting = false;
+                state.success = true;
+                state.response = action.payload;
+                const deletedId = action.meta.arg; // id passed to thunk
+                state.data = state.data.filter((item) => item._id !== deletedId);
+            })
+            .addCase(adminDeleteProposal.rejected, (state, action) => {
                 state.submitting = false;
                 state.success = false;
                 state.error = action.payload;

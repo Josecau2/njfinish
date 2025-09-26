@@ -26,10 +26,11 @@ import {
   CInputGroupText,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
-import { deleteFormData, getProposal, updateProposalStatus, acceptProposal } from '../../store/slices/proposalSlice';
+import { deleteFormData, getProposal, updateProposalStatus, acceptProposal, adminDeleteProposal } from '../../store/slices/proposalSlice';
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
 import axiosInstance from '../../helpers/axiosInstance';
 import { hasPermission } from '../../helpers/permissions';
+import { isAdmin } from '../../helpers/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import withContractorScope from '../../components/withContractorScope';
@@ -303,7 +304,9 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       confirmButtonText: t('proposals.confirm.deleteConfirm'),
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteFormData(id))
+        const user = JSON.parse(localStorage.getItem('user'));
+        const thunk = isAdmin(user) ? adminDeleteProposal : deleteFormData;
+        dispatch(thunk(id))
           .then((res) => {
             if (res.meta.requestStatus === 'fulfilled') {
               Swal.fire(t('common.deleted') || 'Deleted', t('proposals.toast.deleted') || 'Your quote has been deleted.', 'success');
@@ -537,7 +540,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                             <CIcon icon={cilPencil} />
                           </button>
                         </PermissionGate>
-                        {!item.is_locked && (
+                        {(isAdmin(loggedInUser) || !item.is_locked) && (
                           <PermissionGate action="delete" resource="proposal" item={item}>
                             <button
                               className="icon-btn"
@@ -660,7 +663,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                           ⋮
                         </CDropdownToggle>
                         <CDropdownMenu>
-                          {!item.is_locked && (
+                          {(isAdmin(loggedInUser) || !item.is_locked) && (
                             <CDropdownItem onClick={() => handleDelete(item.id)}>
                               <CIcon icon={cilTrash} className="me-2" /> {t('common.delete')}
                             </CDropdownItem>

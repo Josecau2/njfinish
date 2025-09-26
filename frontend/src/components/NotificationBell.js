@@ -229,50 +229,110 @@ const NotificationBell = () => {
     }
   }
 
+  // Resolve a destination URL for a notification
+  const resolveNotificationUrl = (n) => {
+    if (!n) return null
+    if (n.action_url) return n.action_url
+    const p = n.payload || {}
+    if (p.proposalId) return `/proposals/${p.proposalId}`
+    if (p.orderId) return `/orders/${p.orderId}`
+    if (p.customerId) return `/customers/edit/${p.customerId}`
+    return null
+  }
+
   return (
-    <CDropdown
-      variant="nav-item"
-      placement="bottom-end"
-      alignment="end"
-      visible={isOpen}
-      onToggle={handleToggle}
-      offset={[0, 12]}
-      portal
-      className="modern-header__nav-item notification-bell"
-    >
-      <CDropdownToggle
-        caret={false}
-        className="modern-header__dropdown-toggle nav-link border-0 bg-transparent position-relative d-flex align-items-center justify-content-center"
-        style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px' }}
-        aria-label={unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'}
+    <>
+      {/* Notification badge positioning fix */}
+      <style>{`
+        .notification-bell {
+          position: relative;
+          overflow: visible !important;
+        }
+        .notification-bell .dropdown-toggle {
+          overflow: visible !important;
+        }
+        .notification-badge {
+          position: absolute;
+          top: 4px;
+          right: 2px;
+          font-size: 0.7rem;
+          min-width: 1.1rem;
+          height: 1.1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: #dc3545;
+          color: white;
+          font-weight: 600;
+          border: 2px solid ${customization.headerBg || '#ffffff'};
+          z-index: 10;
+          transform: none;
+        }
+        /* Mobile specific fixes */
+        @media (max-width: 767.98px) {
+          .notification-bell {
+            margin-right: 4px;
+          }
+          .notification-badge {
+            top: 0px;
+            right: 4px;
+            font-size: 0.65rem;
+            min-width: 1rem;
+            height: 1rem;
+          }
+        }
+
+        /* Preview list styles */
+        .notification-list { max-height: 320px; overflow-y: auto; }
+        .notification-item { border-radius: 8px; transition: background .15s ease; }
+        .notification-item:hover { background: rgba(0,0,0,.04); }
+        [data-coreui-theme="dark"] .notification-item:hover { background: rgba(255,255,255,.06); }
+        .notification-item.is-read { opacity: .7; }
+        .notif-icon { width: 24px; height: 24px; display: grid; place-items: center; font-size: 16px; }
+        .notif-title { line-height: 1.25; }
+        .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      `}</style>
+
+      <CDropdown
+        variant="nav-item"
+        placement="bottom-end"
+        alignment="end"
+        visible={isOpen}
+        onToggle={handleToggle}
+        offset={[0, 12]}
+        portal
+        className="modern-header__nav-item notification-bell"
       >
-        <CIcon
-          icon={unreadCount > 0 ? cilBellExclamation : cilBell}
-          size="lg"
-          style={{
-            color: unreadCount > 0 ? '#ffc107' : optimalTextColor
-          }}
-        />
-        {unreadCount > 0 && (
-          <CBadge
-            position="top-end"
-            shape="rounded-pill"
-            color="danger"
-            className="position-absolute translate-middle"
-            style={{ fontSize: '0.75rem', minWidth: '1.25rem' }}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {unreadCount > 99 ? '99+' : unreadCount}
-          </CBadge>
-        )}
-      </CDropdownToggle>
+        <CDropdownToggle
+          caret={false}
+          className="modern-header__dropdown-toggle nav-link border-0 bg-transparent position-relative d-flex align-items-center justify-content-center"
+          style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px', overflow: 'visible' }}
+          aria-label={unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'}
+        >
+          <CIcon
+            icon={unreadCount > 0 ? cilBellExclamation : cilBell}
+            size="lg"
+            style={{
+              color: unreadCount > 0 ? '#ffc107' : optimalTextColor
+            }}
+          />
+          {unreadCount > 0 && (
+            <span
+              className="notification-badge"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </CDropdownToggle>
 
       <CDropdownMenu
         className="notification-mobile-dropdown header-dropdown__menu notification-bell__menu"
         style={{
-          width: 'clamp(260px, 85vw, 350px)',
-          maxHeight: 'min(400px, calc(100vh - 96px))',
+          width: 'clamp(260px, 85vw, 360px)',
+          maxHeight: 'min(420px, calc(100vh - 96px))',
           overflowY: 'auto',
           zIndex: 2050
         }}
@@ -296,16 +356,64 @@ const NotificationBell = () => {
         </div>
 
         {fetching && (
-          <div className="text-center py-3">
+          <div className="text-center py-4">
             <CSpinner size="sm" />
           </div>
         )}
 
-        {!fetching && (
-          <CDropdownItem disabled className="text-center py-3" aria-live="polite">
-            No new notifications
-          </CDropdownItem>
-        )}
+        {!fetching && Array.isArray(notifications) && notifications.length > 0 ? (
+          <div className="notification-list px-2 pb-2">
+            {notifications.map((n) => {
+              const url = resolveNotificationUrl(n)
+              const aria = n.title || n.subject || 'Notification'
+              return (
+              <div
+                key={n.id || `${n.type}-${n.created_at}`}
+                className={`notification-item d-flex gap-2 align-items-start px-2 py-2 ${n.is_read ? 'is-read' : ''} ${url ? 'clickable' : ''}`}
+                role={url ? 'button' : undefined}
+                tabIndex={url ? 0 : undefined}
+                aria-label={url ? `Open ${aria}` : aria}
+                onClick={() => {
+                  const target = url
+                  if (target) {
+                    // Best effort mark-as-read, then navigate
+                    if (!n.is_read && n.id) {
+                      handleMarkAsRead(n.id)
+                    }
+                    window.location.href = target
+                  }
+                }}
+                onKeyDown={(e) => {
+                  const target = url
+                  if (!target) return
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    window.location.href = target
+                  }
+                }}
+              >
+                <div className="notif-icon" aria-hidden>
+                  {getNotificationIcon(n.type)}
+                </div>
+                <div className="flex-grow-1">
+                  <div className="notif-title fw-semibold">
+                    {n.title || n.subject || 'Notification'}
+                  </div>
+                  {n.message || n.body || n.preview ? (
+                    <div className="notif-body text-muted small clamp-2">
+                      {(n.message || n.body || n.preview).toString()}
+                    </div>
+                  ) : null}
+                  <div className="notif-meta text-muted small mt-1">
+                    {formatTimeAgo(n.created_at || n.createdAt || n.timestamp)}
+                  </div>
+                </div>
+              </div>
+            )})}
+          </div>
+        ) : (!fetching && (
+          <div className="text-center py-4 text-muted">No new notifications</div>
+        ))}
 
         <CDropdownItem
           className="text-center"
@@ -317,6 +425,7 @@ const NotificationBell = () => {
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
+    </>
   )
 }
 

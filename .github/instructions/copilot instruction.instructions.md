@@ -378,3 +378,9 @@ Following these conventions will prevent runtime errors like "Cannot read proper
     - Docs: update this instructions file or relevant READMEs with any new flows, routes, or expectations.
 - Prefer stable, explicit endpoints over relying on query-string semantics for critical actions. For example, provide a dedicated download route in addition to an inline preview route for PDFs.
 - Always run a quick build/smoke of the frontend after UI changes and confirm API responses locally. Keep the backend running; don’t ask to restart it unless necessary.
+
+### Admin Deletions (Orders and Quotes)
+- Admins can delete any quote and any order.
+    - Quotes: Admin-only route `DELETE /api/admin/proposals/:id` bypasses locks and contractor scoping; still performs a soft delete (sets `isDeleted=true`).
+    - Orders: Admin-only route `DELETE /api/orders/:id` performs a hard delete; associated payments cascade via FK.
+- Frontend: Order Details shows a “Delete Order” button for admins that calls the endpoint with confirmation. Quote deletion continues to use existing flows for non-admins; admins may use the new route.

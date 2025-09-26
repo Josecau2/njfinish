@@ -85,6 +85,7 @@ const AppHeader = () => {
           align-items: center;
           min-height: 60px;
           padding: 0 1rem;
+          overflow: visible;
         }
 
         .modern-header__logo {
@@ -137,12 +138,14 @@ const AppHeader = () => {
           display: flex;
           align-items: center;
           height: 60px;
+          overflow: visible;
         }
 
         .modern-header__nav-item {
           display: flex;
           align-items: center;
           height: 100%;
+          overflow: visible;
         }
 
         .modern-header__dropdown-toggle {

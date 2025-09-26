@@ -269,6 +269,8 @@ router.post('/proposals/:id/accept', verifyTokenWithGroup, enforceGroupScoping({
 router.get('/proposals/:id/admin-details', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalsController.getProposalAdminDetails); // Admin read-only view
 // Create a tokenized public session for a proposal (contractor/admin only)
 router.post('/proposals/:id/sessions', verifyTokenWithGroup, enforceGroupScoping({ resourceType: 'proposals' }), validateIdParam('id'), proposalSessionController.createSession);
+// Admin-only: delete any proposal (bypass group scoping and lock)
+router.delete('/admin/proposals/:id', verifyTokenWithGroup, requirePermission('proposals:delete'), validateIdParam('id'), (req, res, next) => { req.isAdminBypass = true; next(); }, proposalsController.deleteProposals);
 // Public tokenized routes (no auth). View by token and accept with session_token in body.
 router.get('/public/proposals/by-token/:token', proposalsController.getProposalPublicByToken);
 router.post('/public/proposals/:id/accept', validateIdParam('id'), proposalsController.acceptProposal);
@@ -309,6 +311,8 @@ router.get(
 const ordersController = require('../controllers/ordersController');
 router.get('/orders', verifyTokenWithGroup, ordersController.listOrders);
 router.get('/orders/:id', verifyTokenWithGroup, validateIdParam('id'), ordersController.getOrder);
+// Admin-only: delete any order
+router.delete('/orders/:id', verifyTokenWithGroup, requirePermission('proposals:delete'), validateIdParam('id'), ordersController.deleteOrder);
 
 // Admin-only: stream manufacturer no-price PDF for a given order id
 async function streamManufacturerPdf(req, res, { forceDownload = false } = {}) {

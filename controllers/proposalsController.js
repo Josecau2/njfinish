@@ -477,25 +477,29 @@ const deleteProposals = async (req, res) => {
     try {
         const { id } = req.params;
         const user = req.user;
+        const role = (user?.role || '').toString().toLowerCase();
+        const isAdmin = role === 'admin' || role === 'super_admin';
 
         const proposal = await Proposals.findByPk(id);
         if (!proposal) {
             return res.status(404).json({ message: 'Proposals not found' });
         }
 
-        // Check if proposal is locked
-        if (proposal.is_locked) {
+        // Check if proposal is locked (admins can bypass)
+        if (proposal.is_locked && !(isAdmin || req.isAdminBypass)) {
             return res.status(403).json({
                 message: 'Proposal is locked and cannot be deleted.'
             });
         }
 
-        // For contractors, verify they own this proposal
-        if (user.group_id && user.group && user.group.type === 'contractor') {
-            if (proposal.owner_group_id !== user.group_id) {
-                return res.status(403).json({
-                    message: 'Cannot delete proposal from different contractor group'
-                });
+        // For contractors, verify they own this proposal (admins can bypass)
+        if (!isAdmin && !(req.isAdminBypass)) {
+            if (user.group_id && user.group && user.group.type === 'contractor') {
+                if (proposal.owner_group_id !== user.group_id) {
+                    return res.status(403).json({
+                        message: 'Cannot delete proposal from different contractor group'
+                    });
+                }
             }
         }
 

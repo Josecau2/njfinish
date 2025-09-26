@@ -33,6 +33,7 @@ import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlic
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { isAdmin } from '../../helpers/permissions'
+import Swal from 'sweetalert2'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -328,6 +329,28 @@ const OrderDetails = () => {
     }
   }
 
+  const handleDeleteOrder = async () => {
+    try {
+      const result = await Swal.fire({
+        title: t('orders.confirm.deleteTitle', 'Delete Order?'),
+        text: t('orders.confirm.deleteText', 'This will permanently delete this order and its payments.'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: t('orders.confirm.deleteConfirm', 'Delete'),
+      });
+      if (!result.isConfirmed) return;
+
+      await axiosInstance.delete(`/api/orders/${id}`);
+      await Swal.fire(t('common.deleted', 'Deleted'), t('orders.toast.deleted', 'Order deleted successfully.'), 'success');
+      navigate(backBasePath);
+    } catch (e) {
+      const msg = e?.response?.data?.message || e.message || 'Failed to delete order.';
+      await Swal.fire(t('common.error', 'Error'), msg, 'error');
+    }
+  }
+
   return (
     <CContainer fluid>
       <style>
@@ -362,6 +385,9 @@ const OrderDetails = () => {
                 </button>
                 <button type="button" className="btn btn-primary btn-sm" onClick={handleResendEmail} disabled={resending} title="Resend Manufacturer Email">
                   {resending ? 'Resending…' : 'Resend Email'}
+                </button>
+                <button type="button" className="btn btn-danger btn-sm" onClick={handleDeleteOrder} title="Delete Order">
+                  Delete Order
                 </button>
               </>
             )}
