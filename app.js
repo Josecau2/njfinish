@@ -37,13 +37,16 @@ app.use((req, res, next) => {
 
   // Content Security Policy (allow listed origins for images and API/connect)
   const originList = (env.CORS_ALLOWED_ORIGINS || []).join(' ');
-  const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
+  const stripeImgSrc = 'https://q.stripe.com';
+  const imgSrc = `img-src 'self' data: blob: ${originList} ${stripeImgSrc}`.trim();
   // Allow Cloudflare Web Analytics beacons
   const cfScriptSrc = 'https://static.cloudflareinsights.com';
   // Allow Stripe JS for payment processing
   const stripeScriptSrc = 'https://js.stripe.com';
   const cfConnectSrc = 'https://cloudflareinsights.com https://*.cloudflareinsights.com';
-  const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc}`.trim();
+  const stripeConnectSrc = 'https://api.stripe.com';
+  const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc} ${stripeConnectSrc}`.trim();
+  const frameSrc = `frame-src ${stripeScriptSrc} https://hooks.stripe.com`;
   res.setHeader(
     'Content-Security-Policy',
     [
@@ -55,6 +58,7 @@ app.use((req, res, next) => {
       "font-src 'self' data:",
       "object-src 'none'",
       connectSrc,
+      frameSrc,
       "frame-ancestors 'none'",
     ].join('; ') + ';'
   );
