@@ -4,11 +4,11 @@ import axiosInstance from '../helpers/axiosInstance'
 import { getBrand } from '../brand/useBrand'
 import { setCustomization } from '../store/slices/customizationSlice'
 import { syncSidebarWithScreenSize } from '../store/slices/sidebarSlice'
+import { resolveBrandAssetUrl } from '../utils/brandAssets'
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch()
   const customization = useSelector((state) => state.customization)
-  const api_url = import.meta.env.VITE_API_URL
 
   // Ensure sidebar state is correct when app initializes after login
   useEffect(() => {
@@ -35,15 +35,18 @@ const AppInitializer = ({ children }) => {
     }
 
     const faviconHref = (() => {
-      const image = customization.logoImage
-      if (image) {
-        if (image.startsWith('data:') || image.startsWith('http')) {
-          return image
-        }
-        return `${api_url}${image}`
+      const customizationLogo = resolveBrandAssetUrl(customization.logoImage)
+      if (customizationLogo) {
+        return customizationLogo
       }
       if (brand.logoDataURI) {
         return brand.logoDataURI
+      }
+      if (brand.app?.logoImage) {
+        const brandLogo = resolveBrandAssetUrl(brand.app.logoImage)
+        if (brandLogo) {
+          return brandLogo
+        }
       }
       return null
     })()
@@ -68,7 +71,7 @@ const AppInitializer = ({ children }) => {
       }
       iconLink.href = faviconHref
     }
-  }, [customization.logoText, customization.logoImage, api_url])
+  }, [customization.logoText, customization.logoImage])
 
   // Apply density token on small screens and update on resize
   useEffect(() => {

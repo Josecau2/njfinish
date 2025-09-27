@@ -52,7 +52,6 @@ export function buildUploadUrl(inputPath) {
   const raw = typeof inputPath === 'string' ? inputPath : String(inputPath || '');
 
   // Directly return data URIs or absolute URLs without modification
-  // Matches 'data:' URIs or 'http://' or 'https://' prefixes
   if (/^(data:|https?:\/\/)/i.test(raw)) {
     return raw;
   }

@@ -19,6 +19,7 @@ import { setSidebarShow, setSidebarUnfoldable, setSidebarPinned } from '../store
 import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs'
 import { isAdmin } from '../helpers/permissions'
 import ShowroomModeToggle from './showroom/ShowroomModeToggle'
+import { resolveBrandAssetUrl } from '../utils/brandAssets'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -28,8 +29,8 @@ const AppSidebar = () => {
   const navItems = useNavItems()
   const customization = useSelector((state) => state.customization)
   const authUser = useSelector((state) => state.auth?.user)
-  const api_url = import.meta.env.VITE_API_URL;
   const sidebarRef = useRef(null)
+  const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
 
   // Get user data for admin check
   const user = authUser || (() => {
@@ -301,11 +302,11 @@ const AppSidebar = () => {
               }
             }}
           >
-            {customization.logoImage ? (
+            {resolvedLogo ? (
               <>
                 {/* Full sidebar logo - visible when expanded */}
                 <img
-                  src={`${api_url}${customization.logoImage}`}
+                  src={resolvedLogo}
                   alt="Logo"
                   className="sidebar-brand-full"
                   style={{
@@ -316,7 +317,7 @@ const AppSidebar = () => {
                 />
                 {/* Collapsed sidebar logo - visible when collapsed */}
                 <img
-                  src={`${api_url}${customization.logoImage}`}
+                  src={resolvedLogo}
                   alt="Logo"
                   className="sidebar-brand-narrow"
                   style={{

@@ -13,8 +13,8 @@ export const CUSTOMIZATION_CONFIG = {
   "companyName": "",
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
-  "updatedAt": "2025-09-27T16:02:32.000Z",
-  "_generated": "2025-09-27T16:20:00.255Z",
+  "updatedAt": "2025-09-27T16:40:56.000Z",
+  "_generated": "2025-09-27T16:50:51.216Z",
   "_version": "1.0.0"
 }
 

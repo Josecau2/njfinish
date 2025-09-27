@@ -1,3 +1,4 @@
+import { buildUploadUrl, withAuthToken } from './uploads';
 const ABSOLUTE_URL_PATTERN = /^(?:[a-z]+:)?\/\//i;
 
 const normalizeBaseUrl = (base) => {
@@ -22,8 +23,20 @@ export const resolveAssetUrl = (input, apiUrl = import.meta.env?.VITE_API_URL) =
   const raw = String(input).trim();
   if (!raw) return '';
 
-  if (ABSOLUTE_URL_PATTERN.test(raw) || raw.startsWith('data:')) {
+  if (ABSOLUTE_URL_PATTERN.test(raw)) {
+    if (raw.includes('/uploads/')) {
+      return withAuthToken(raw);
+    }
     return raw;
+  }
+
+  if (raw.startsWith('data:')) {
+    return raw;
+  }
+
+  if (raw.startsWith('/uploads') || raw.startsWith('uploads/')) {
+    const uploadPath = raw.startsWith('/') ? raw : `/${raw}`;
+    return buildUploadUrl(uploadPath);
   }
 
   if (raw.startsWith('/assets/') || raw.startsWith('assets/')) {

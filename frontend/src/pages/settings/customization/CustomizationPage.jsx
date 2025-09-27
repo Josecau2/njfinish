@@ -12,12 +12,12 @@ import { cilSettings, cilImage, cilColorPalette, cilSave, cilTrash } from '@core
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { FaCog } from 'react-icons/fa'
+import { resolveBrandAssetUrl } from '../../../utils/brandAssets'
 
 const CustomizationPage = () => {
     const { t } = useTranslation()
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
-    const api_url = import.meta.env.VITE_API_URL
 
     const [formData, setFormData] = useState(customization)
     const [previewLogo, setPreviewLogo] = useState(null)
@@ -26,11 +26,9 @@ const CustomizationPage = () => {
 
     useEffect(() => {
         setFormData(customization)
-        const fullLogoUrl = customization.logoImage
-            ? `${api_url}${customization.logoImage}`
-            : null
-        setPreviewLogo(fullLogoUrl || null)
-    }, [customization, api_url])
+        const resolved = resolveBrandAssetUrl(customization.logoImage)
+        setPreviewLogo(resolved || null)
+    }, [customization])
 
     const handleChange = (e) => {
         const { name, value } = e.target
