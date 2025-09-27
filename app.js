@@ -40,6 +40,8 @@ app.use((req, res, next) => {
   const imgSrc = `img-src 'self' data: blob: ${originList}`.trim();
   // Allow Cloudflare Web Analytics beacons
   const cfScriptSrc = 'https://static.cloudflareinsights.com';
+  // Allow Stripe JS for payment processing
+  const stripeScriptSrc = 'https://js.stripe.com';
   const cfConnectSrc = 'https://cloudflareinsights.com https://*.cloudflareinsights.com';
   const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc}`.trim();
   res.setHeader(
@@ -47,7 +49,7 @@ app.use((req, res, next) => {
     [
       "default-src 'self'",
       "base-uri 'self'",
-      `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc}`,
+      `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc}`,
       `style-src 'self' 'unsafe-inline'`,
       imgSrc,
       "font-src 'self' data:",
