@@ -48,7 +48,7 @@ app.use((req, res, next) => {
       "default-src 'self'",
       "base-uri 'self'",
       `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc}`,
-      `style-src 'self' 'unsafe-inline' 'unsafe-hashed-attributes'`,
+      `style-src 'self' 'unsafe-inline'`,
       imgSrc,
       "font-src 'self' data:",
       "object-src 'none'",
