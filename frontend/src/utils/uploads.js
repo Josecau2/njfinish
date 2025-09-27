@@ -49,14 +49,22 @@ export function buildUploadUrl(inputPath) {
     return '';
   }
 
-  const base = resolveApiBase();
-  const normalised = typeof inputPath === 'string' ? inputPath : String(inputPath || '');
-  const hasUploadsPrefix = normalised.startsWith('/uploads');
-  const cleanRelative = hasUploadsPrefix
-    ? normalised
-    : `/uploads/${normalised.replace(/^\/+/, '')}`;
+  const raw = typeof inputPath === 'string' ? inputPath : String(inputPath || '');
 
-  const target = base ? `${base}${cleanRelative}` : cleanRelative;
+  // Directly return data URIs or absolute URLs without modification
+  // Matches 'data:' URIs or 'http://' or 'https://' prefixes
+  if (/^(data:|https?:\/\/)/i.test(raw)) {
+    return raw;
+  }
+
+  const base = resolveApiBase();
+  const normalised = raw.startsWith('/') ? raw : `/${raw}`;
+
+  if (!normalised.startsWith('/uploads')) {
+    return base ? `${base}${normalised}` : normalised;
+  }
+
+  const target = base ? `${base}${normalised}` : normalised;
   return withAuthToken(target);
 }
 
