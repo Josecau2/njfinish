@@ -419,6 +419,24 @@
       "remember": "Remember your password?",
       "emailLabel": "Email address",
       "emailPlaceholder": "you@example.com"
+    },
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "emailRequired": "Email is required",
+    "noAccountPrompt": "Don't have an account?",
+    "backToLogin": "Back to sign in",
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Securely update your password.",
+      "formTitle": "Create a new password",
+      "formDescription": "Enter a strong password to secure your account.",
+      "passwordLabel": "New Password",
+      "passwordPlaceholder": "Enter new password",
+      "submit": "Reset Password",
+      "submitting": "Updating...",
+      "success": "Password reset successful.",
+      "error": "Password reset failed.",
+      "requestError": "Failed to reset password."
     }
   },
   "nav": {

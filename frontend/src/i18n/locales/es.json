@@ -273,6 +273,24 @@
       "remember": "¿Recordaste tu contraseña?",
       "emailLabel": "Correo electrónico",
       "emailPlaceholder": "tu@ejemplo.com"
+    },
+    "hidePassword": "Ocultar contraseña",
+    "showPassword": "Mostrar contraseña",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "noAccountPrompt": "¿No tienes una cuenta?",
+    "backToLogin": "Volver a iniciar sesión",
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "subtitle": "Actualiza tu contraseña de forma segura.",
+      "formTitle": "Crea una nueva contraseña",
+      "formDescription": "Ingresa una contraseña segura para proteger tu cuenta.",
+      "passwordLabel": "Nueva contraseña",
+      "passwordPlaceholder": "Ingresa la nueva contraseña",
+      "submit": "Restablecer contraseña",
+      "submitting": "Actualizando...",
+      "success": "Contraseña restablecida correctamente.",
+      "error": "No se pudo restablecer la contraseña.",
+      "requestError": "Error al restablecer la contraseña."
     }
   },
   "nav": {

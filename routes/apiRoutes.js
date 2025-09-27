@@ -447,6 +447,9 @@ router.post('/resources/categories', verifyTokenWithGroup, resourcesController.c
 router.put('/resources/categories/:id', verifyTokenWithGroup, resourcesController.updateCategory);
 router.post('/resources/categories/scaffold', verifyTokenWithGroup, resourcesController.scaffoldCategories);
 router.delete('/resources/categories/:id', verifyTokenWithGroup, resourcesController.deleteCategory);
+// Category thumbnail upload (admin only) and serve
+router.post('/resources/categories/:id/thumbnail', verifyTokenWithGroup, resourceUpload.single('thumbnail'), resourcesController.uploadCategoryThumbnail);
+router.get('/resources/categories/:id/thumbnail', attachTokenFromQuery(), verifyTokenWithGroup, resourcesController.getCategoryThumbnail);
 
 router.get('/resources/announcements', verifyTokenWithGroup, resourcesController.getAnnouncements);
 router.post('/resources/announcements', verifyTokenWithGroup, resourcesController.createAnnouncement);
@@ -463,6 +466,9 @@ router.post('/resources/files', verifyTokenWithGroup, resourceUpload.single('fil
 router.put('/resources/files/:id', verifyTokenWithGroup, resourceUpload.single('file'), resourcesController.updateFile);
 router.delete('/resources/files/:id', verifyTokenWithGroup, resourcesController.deleteFile);
 router.get('/resources/files/download/:id', attachTokenFromQuery(), verifyTokenWithGroup, resourcesController.downloadFile);
+// File thumbnail upload (admin only) and serve
+router.post('/resources/files/:id/thumbnail', verifyTokenWithGroup, resourceUpload.single('thumbnail'), resourcesController.uploadFileThumbnail);
+router.get('/resources/files/:id/thumbnail', attachTokenFromQuery(), verifyTokenWithGroup, resourcesController.getFileThumbnail);
 
 // Upload images for sample images and category cards (admin only)
 router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);

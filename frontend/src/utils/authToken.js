@@ -70,12 +70,11 @@ export function installTokenEverywhere(newToken, options = {}) {
 
     // Write fresh token redundantly
     if (newToken) {
-      localStorage.setItem('token', newToken);
+      try { localStorage.removeItem('token'); } catch {}
       sessionStorage.setItem('token', newToken);
       memoryToken = newToken;
 
       // Force immediate validation that token is properly stored
-      const testLS = localStorage.getItem('token');
       const testSS = sessionStorage.getItem('token');
 
       // Dev log (base64url-safe)
@@ -86,7 +85,7 @@ export function installTokenEverywhere(newToken, options = {}) {
           const b64 = (seg.replace(/-/g, '+').replace(/_/g, '/')) + pad
           const payload = JSON.parse(atob(b64) || '{}')
           console.debug('[INSTALL] New token installed, exp:', payload?.exp ? new Date(payload.exp * 1000).toISOString() : 'n/a')
-          console.debug('[INSTALL] Verification - LS:', testLS === newToken, 'SS:', testSS === newToken, 'Memory:', memoryToken === newToken)
+          console.debug('[INSTALL] Verification - SS:', testSS === newToken, 'Memory:', memoryToken === newToken)
         }
       } catch {}
     }

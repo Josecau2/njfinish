@@ -31,8 +31,6 @@ import {
 } from '@coreui/icons';
 import axiosInstance from '../../helpers/axiosInstance';
 import Swal from "sweetalert2";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useParams, useNavigate } from "react-router-dom";
 import { decodeParam } from '../../utils/obfuscate';
 import { useTranslation } from 'react-i18next';
@@ -615,25 +613,15 @@ const EditCustomerPage = () => {
             </CCol>
           </CRow>
           <div className="mb-3">
-      <CFormLabel className="fw-medium text-dark mb-2">{t('customers.form.labels.notes')}</CFormLabel>
-            <div style={{
-              border: '1px solid #e3e6f0',
-              borderRadius: '10px',
-              overflow: 'hidden'
-            }}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={formData.note || ""}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  handleNoteChange(data);
-                }}
-                config={{
-                  toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
-      placeholder: t('customers.form.placeholders.notes')
-                }}
-              />
-            </div>
+            <CFormLabel className="fw-medium text-dark mb-2">{t('customers.form.labels.notes')}</CFormLabel>
+            <CFormTextarea
+              id="note"
+              name="note"
+              rows={6}
+              value={formData.note || ''}
+              onChange={(e) => handleNoteChange(e.target.value)}
+              placeholder={t('customers.form.placeholders.notes')}
+            />
           </div>
         </FormSection>
 

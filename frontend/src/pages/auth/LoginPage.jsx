@@ -224,8 +224,10 @@ const LoginPage = () => {
             </div>
           </form>
           <div className="text-center mt-4">
-            <span className="text-muted">Don't have an account? </span>
-            <Link to="/request-access" className="fw-semibold text-decoration-none">Request Access</Link>
+            <span className="text-muted">{t('auth.noAccountPrompt')}</span>{' '}
+            <Link to="/request-access" className="fw-semibold text-decoration-none">
+              {t('auth.requestAccess.submit')}
+            </Link>
           </div>
         </div>
       </div>

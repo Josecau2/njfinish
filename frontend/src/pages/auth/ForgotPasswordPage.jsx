@@ -47,17 +47,17 @@ const ForgotPasswordPage = () => {
     try {
       const trimmedEmail = form.email.trim()
       if (!trimmedEmail) {
-        setError(t('auth.emailRequired') || 'Email is required')
+        setError(t('auth.emailRequired'))
         setIsSubmitting(false)
         return
       }
 
       const res = await axios.post(`${api_url}/api/forgot-password`, { email: trimmedEmail })
       const data = res?.data || {}
-      setMessage(data.message || t('auth.resetLinkSent') || 'Password reset instructions sent.')
+      setMessage(data.message || t('auth.forgotPassword.success'))
       setForm({ ...EMPTY_FORM })
     } catch (err) {
-      const errorMsg = err?.response?.data?.message || t('auth.requestFailed') || 'Unable to process your request.'
+      const errorMsg = err?.response?.data?.message || t('auth.forgotPassword.error')
       setError(errorMsg)
     } finally {
       setIsSubmitting(false)
@@ -69,10 +69,10 @@ const ForgotPasswordPage = () => {
       <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
           <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
-            {loginBrand.rightTitle || brand.logoAlt || t('auth.resetHeading')}
+            {loginBrand.rightTitle || brand.logoAlt || t('auth.forgotPassword.title')}
           </h1>
           <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
-            {loginBrand.rightSubtitle || t('auth.resetSubheading') || 'We will send a reset link to your email.'}
+            {loginBrand.rightSubtitle || t('auth.forgotPassword.subtitle')}
           </p>
           <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription || ''}</p>
         </div>
@@ -83,8 +83,8 @@ const ForgotPasswordPage = () => {
           <div className="text-center mb-4">
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.resetTitle') || 'Reset Password'}</h2>
-          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.resetDescription') || 'Enter your email to receive reset instructions.'}</p>
+          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.forgotPassword.title')}</h2>
+          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}</p>
 
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
@@ -117,14 +117,14 @@ const ForgotPasswordPage = () => {
 
             <div className="d-grid">
               <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }} disabled={isSubmitting}>
-                {isSubmitting ? t('auth.sending') || 'Sending…' : t('auth.sendResetLink') || 'Send Reset Link'}
+                {isSubmitting ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submit')}
               </button>
             </div>
           </form>
 
           <div className="text-center mt-4">
             <Link to="/login" className="text-decoration-none">
-              {t('auth.backToLogin') || 'Back to sign in'}
+              {t('auth.backToLogin')}
             </Link>
           </div>
         </div>

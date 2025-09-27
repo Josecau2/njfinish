@@ -47,7 +47,6 @@ export default defineConfig(({ mode }) => {
             'date-vendor': ['date-fns', 'date-fns-tz', 'react-datepicker'],
             'redux-vendor': ['@reduxjs/toolkit', 'react-redux', 'redux'],
             'icons-vendor': ['react-icons', 'lucide-react', '@fortawesome/react-fontawesome'],
-            'editor-vendor': ['@ckeditor/ckeditor5-build-classic', '@ckeditor/ckeditor5-react'],
             'utils-vendor': ['axios', 'sweetalert2', 'classnames', 'prop-types']
           },
         },

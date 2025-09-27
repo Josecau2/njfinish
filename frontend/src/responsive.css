@@ -2724,6 +2724,337 @@ html, body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
 }
 
+/* ============ PDF Viewer Mobile Optimizations - Enhanced ============ */
+/* File Viewer Modal - Mobile Responsive Design */
+.file-viewer-modal {
+  --pdf-mobile-header-height: 56px;
+  --pdf-mobile-footer-height: 70px;
+}
+
+/* PDF Viewer specific mobile styles */
+.pdf-viewer-modal {
+  --pdf-viewer-bg: #1a1a1a;
+  --pdf-viewer-surface: #2d2d2d;
+  --pdf-fallback-bg: #f8f9fa;
+}
+
+/* Enhanced Mobile/Desktop Separation Classes */
+.mobile-viewer .pdf-viewer-container {
+  background: #0f0f0f;
+  border-radius: 0;
+}
+
+.desktop-viewer .pdf-viewer-container {
+  background: var(--pdf-viewer-bg);
+  border-radius: 8px;
+  margin: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* PDF Container Styling */
+.pdf-viewer-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background: var(--pdf-viewer-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-viewer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Enhanced PDF Canvas Styling with High-DPI Support */
+.pdf-canvas-container {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+  background: var(--pdf-viewer-surface);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pdf-canvas {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+  background: white;
+
+  /* High-DPI rendering support */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+
+  /* Smooth scaling for better quality */
+  transform-origin: center top;
+  transition: transform 0.2s ease;
+}
+
+/* Enhanced PDF Controls */
+.pdf-controls {
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #343a40 !important;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.pdf-controls .btn {
+  min-height: 36px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pdf-controls .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pdf-controls .btn:disabled {
+  opacity: 0.4;
+}
+
+/* PDF Object/Embed Styling (fallback) */
+.pdf-object, .pdf-embed {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: var(--pdf-viewer-surface);
+  min-height: inherit;
+}
+
+/* Enhanced PDF Fallback Styling */
+.pdf-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--pdf-fallback-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* Mobile specific PDF viewer styles */
+@media (max-width: 767.98px) {
+  /* PDF Modal Mobile Layout */
+  .pdf-viewer-modal .modal-dialog {
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: none !important;
+  }
+
+  .pdf-viewer-modal .modal-content {
+    height: 100vh !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* PDF Modal Header - Mobile */
+  .pdf-viewer-modal .modal-header {
+    flex-shrink: 0 !important;
+    padding: 12px 16px !important;
+    background: #343a40 !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    min-height: var(--pdf-mobile-header-height) !important;
+  }
+
+  .pdf-viewer-modal .modal-header .modal-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: calc(100vw - 120px) !important;
+  }
+
+  .pdf-viewer-modal .modal-header .btn-close {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    opacity: 0.8 !important;
+    font-size: 1.2rem !important;
+    padding: 8px !important;
+    margin: -8px !important;
+    border-radius: 6px !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .pdf-viewer-modal .modal-header .btn-close:hover {
+    opacity: 1 !important;
+    background: rgba(255,255,255,0.1) !important;
+  }
+
+  /* PDF Modal Body - Mobile */
+  .pdf-viewer-modal .modal-body {
+    flex: 1 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: var(--pdf-viewer-bg) !important;
+  }
+
+  .pdf-viewer-modal .pdf-viewer-container {
+    height: calc(100vh - var(--pdf-mobile-header-height) - var(--pdf-mobile-footer-height)) !important;
+    min-height: auto !important;
+    border-radius: 0 !important;
+    background: #1a1a1a !important;
+  }
+
+  .pdf-viewer-modal .pdf-viewer-inner {
+    height: 100% !important;
+  }
+
+  .pdf-viewer-modal .pdf-object,
+  .pdf-viewer-modal .pdf-embed {
+    height: 100% !important;
+    background: #2d2d2d !important;
+  }
+
+  /* PDF Fallback - Mobile */
+  .pdf-viewer-modal .pdf-fallback {
+    background: #f8f9fa !important;
+    padding: 20px !important;
+  }
+
+  .pdf-viewer-modal .pdf-fallback .text-center {
+    max-width: 280px !important;
+    margin: 0 auto !important;
+  }
+
+  .pdf-viewer-modal .pdf-fallback .btn {
+    min-height: 48px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 12px 24px !important;
+  }
+
+  /* PDF Modal Footer - Mobile */
+  .pdf-viewer-modal .modal-footer {
+    flex-shrink: 0 !important;
+    padding: 12px 16px !important;
+    background: #343a40 !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+    min-height: var(--pdf-mobile-footer-height) !important;
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .pdf-viewer-modal .modal-footer .btn {
+    flex: 1 !important;
+    max-width: 140px !important;
+    min-height: 48px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .pdf-viewer-modal .modal-footer .btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+  }
+
+  .pdf-viewer-modal .modal-footer .btn-primary:hover,
+  .pdf-viewer-modal .modal-footer .btn-primary:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  }
+
+  .pdf-viewer-modal .modal-footer .btn-secondary {
+    background: #6c757d !important;
+    color: white !important;
+  }
+
+  .pdf-viewer-modal .modal-footer .btn-secondary:hover,
+  .pdf-viewer-modal .modal-footer .btn-secondary:active {
+    background: #5a6268 !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* Tablet PDF viewer adjustments */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .pdf-viewer-modal .modal-dialog {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 20px auto !important;
+  }
+
+  .pdf-viewer-modal .modal-content {
+    max-height: calc(100vh - 40px) !important;
+  }
+
+  .pdf-viewer-modal .pdf-viewer-container {
+    height: calc(100vh - 200px) !important;
+    min-height: 500px !important;
+  }
+}
+
+/* Desktop PDF viewer improvements */
+@media (min-width: 992px) {
+  .pdf-viewer-modal .modal-dialog {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    margin: 30px auto !important;
+  }
+
+  .pdf-viewer-modal .modal-content {
+    max-height: calc(100vh - 60px) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .pdf-viewer-modal .modal-header {
+    background: #343a40 !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  .pdf-viewer-modal .modal-footer {
+    background: #f8f9fa !important;
+    border-top: 1px solid #dee2e6 !important;
+  }
+
+  .pdf-viewer-modal .pdf-viewer-container {
+    height: calc(100vh - 180px) !important;
+    min-height: 600px !important;
+    border-radius: 8px !important;
+    margin: 8px !important;
+  }
+}
+
 /* ============ Global Mobile Overflow Guards ============ */
 /* Additional protection against layout breaks */
 .u-no-overflow {
@@ -3045,4 +3376,3 @@ html, body {
     font-size: 13px !important;
   }
 }
-

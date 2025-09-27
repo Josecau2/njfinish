@@ -4,6 +4,23 @@ const { INLINE_PATH } = require('../branding/materializeBranding');
 let cachedInline = null;
 let cachedMtimeMs = 0;
 
+function applyNonce(content, nonce) {
+  if (!content || typeof content !== 'string') {
+    return content;
+  }
+  if (!nonce) {
+    return content.replace(/__CSP_NONCE__/g, '');
+  }
+  return content.replace(/__CSP_NONCE__/g, nonce);
+}
+
+function normalizeNonce(options) {
+  if (!options) return '';
+  if (typeof options === 'string') return options;
+  if (typeof options === 'object' && options.nonce) return options.nonce;
+  return '';
+}
+
 function readInline() {
   try {
     const stats = fs.statSync(INLINE_PATH);
@@ -17,16 +34,18 @@ function readInline() {
   }
 }
 
-function withBrandInline(html) {
+function withBrandInline(html, options) {
   if (typeof html !== 'string') return html;
-  const inline = readInline();
-  if (html.includes('<!--BRAND_INLINE-->')) {
-    return html.replace('<!--BRAND_INLINE-->', inline);
+  const nonce = normalizeNonce(options);
+  const inline = applyNonce(readInline(), nonce);
+  let output = applyNonce(html, nonce);
+  if (output.includes('<!--BRAND_INLINE-->')) {
+    return output.replace('<!--BRAND_INLINE-->', inline);
   }
-  if (html.includes('</head>')) {
-    return html.replace('</head>', `${inline}\n</head>`);
+  if (output.includes('</head>')) {
+    return output.replace('</head>', `${inline}\n</head>`);
   }
-  return `${inline}\n${html}`;
+  return `${inline}\n${output}`;
 }
 
-module.exports = { withBrandInline, readInline };
+module.exports = { withBrandInline, readInline, applyNonce };

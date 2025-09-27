@@ -158,7 +158,7 @@ async function materializeBranding(brand = {}) {
     }, {}),
   };
 
-  const inlineHtml = `<!-- GENERATED: DO NOT EDIT -->\n<style>\n:root{\n${cssVars}\n}\n.brand-logo{\n  display:inline-flex;\n  align-items:center;\n  justify-content:center;\n  width:48px;\n  height:48px;\n  background-image:url("${logoDataURI}");\n  background-size:contain;\n  background-repeat:no-repeat;\n  background-position:center;\n}\n.brand-logo-img{\n  width:48px;\n  height:48px;\n  object-fit:contain;\n  display:block;\n}\n</style>\n<script>\nwindow.__BRAND__ = ${JSON.stringify({
+  const inlineHtml = `<!-- GENERATED: DO NOT EDIT -->\n<style nonce="__CSP_NONCE__">\n:root{\n${cssVars}\n}\n.brand-logo{\n  display:inline-flex;\n  align-items:center;\n  justify-content:center;\n  width:48px;\n  height:48px;\n  background-image:url("${logoDataURI}");\n  background-size:contain;\n  background-repeat:no-repeat;\n  background-position:center;\n}\n.brand-logo-img{\n  width:48px;\n  height:48px;\n  object-fit:contain;\n  display:block;\n}\n</style>\n<script nonce="__CSP_NONCE__">\nwindow.__BRAND__ = ${JSON.stringify({
     version: timestamp,
     logoAlt: snapshot.logoAlt,
     logoDataURI,

@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import BrandLogo from '../../components/BrandLogo'
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
 import { getOptimalColors } from '../../utils/colorUtils'
 
 const ResetPasswordPage = () => {
+  const { t } = useTranslation()
   const api_url = import.meta.env.VITE_API_URL
   const { token } = useParams()
   const navigate = useNavigate()
@@ -36,13 +38,13 @@ const ResetPasswordPage = () => {
       const data = await res.json()
 
       if (res.ok) {
-        setMessage(data.message || 'Password reset successful.')
+        setMessage(data.message || t('auth.resetPassword.success'))
         setTimeout(() => navigate('/login'), 3000)
       } else {
-        setError(data.message || 'Password reset failed.')
+        setError(data.message || t('auth.resetPassword.error'))
       }
     } catch (err) {
-      setError('Failed to reset password.')
+      setError(t('auth.resetPassword.requestError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -53,10 +55,10 @@ const ResetPasswordPage = () => {
       <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
           <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
-            {loginBrand.rightTitle || brand.logoAlt || 'Reset Password'}
+            {loginBrand.rightTitle || brand.logoAlt || t('auth.resetPassword.title')}
           </h1>
           <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
-            {loginBrand.rightSubtitle || 'Securely update your password.'}
+            {loginBrand.rightSubtitle || t('auth.resetPassword.subtitle')}
           </p>
           <p style={{ color: rightPanelColors.subtitle }}>
             {loginBrand.rightDescription || ''}
@@ -69,8 +71,8 @@ const ResetPasswordPage = () => {
           <div className="text-center mb-4">
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || 'Create a new password'}</h2>
-          <p className="text-muted mb-4">{loginBrand.resetSubtitle || 'Enter a strong password to secure your account.'}</p>
+          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.resetPassword.formTitle')}</h2>
+          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}</p>
 
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
@@ -87,13 +89,13 @@ const ResetPasswordPage = () => {
           <form onSubmit={handleReset}>
             <div className="mb-3">
               <label htmlFor="password" className="form-label fw-medium">
-                New Password<span className="text-danger">*</span>
+                {t('auth.resetPassword.passwordLabel')}<span className="text-danger">*</span>
               </label>
               <input
                 type="password"
                 className="form-control form-control-lg"
                 id="password"
-                placeholder="Enter new password"
+                placeholder={t('auth.resetPassword.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -103,14 +105,14 @@ const ResetPasswordPage = () => {
 
             <div className="d-grid">
               <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }} disabled={isSubmitting}>
-                {isSubmitting ? 'Updating…' : 'Reset Password'}
+                {isSubmitting ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit')}
               </button>
             </div>
           </form>
 
           <div className="text-center mt-4">
             <Link to="/login" className="text-decoration-none">
-              Back to sign in
+              {t('auth.backToLogin')}
             </Link>
           </div>
         </div>

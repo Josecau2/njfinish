@@ -1,0 +1,22 @@
+/* Neutral Modal overrides - remove gradients and ensure solid header colors */
+.neutral-modal .modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.neutral-modal .modal-header {
+  background-image: none !important;
+}
+
+.neutral-modal .modal-title {
+  font-weight: 700;
+}
+
+.neutral-modal .modal-footer {
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Ensure CoreUI close button respects custom properties from the header */
+.neutral-modal .btn-close {
+  filter: none !important;
+}

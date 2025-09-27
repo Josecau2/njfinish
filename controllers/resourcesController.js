@@ -331,6 +331,15 @@ function mapCategory(raw) {
   if (!plain) {
     return null;
   }
+  // Normalize thumbnail: if stored as a local relative path, expose a secure API URL
+  let thumbnailUrl = plain.thumbnail_url || null;
+  if (thumbnailUrl && typeof thumbnailUrl === 'string') {
+    const lower = thumbnailUrl.toLowerCase();
+    if (!(lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('/api/'))) {
+      // For stored relative paths, provide a stable served endpoint
+      thumbnailUrl = `/api/resources/categories/${plain.id}/thumbnail`;
+    }
+  }
   return {
     id: plain.id,
     name: plain.name,
@@ -343,7 +352,7 @@ function mapCategory(raw) {
     isActive: parseBoolean(plain.is_active, true),
     isPinned: parseBoolean(plain.is_pinned, false),
     pinnedOrder: parseNumber(plain.pinned_order, 0),
-    thumbnailUrl: plain.thumbnail_url || null,
+    thumbnailUrl,
     metadata: plain.metadata || null,
     allowActions: !PROTECTED_CATEGORY_SLUGS.has(String(plain.slug || '').toLowerCase()),
     createdAt: toISOString(plain.createdAt || plain.created_at),
@@ -436,13 +445,21 @@ function mapFile(raw) {
     originalName: plain.original_name,
   });
   const fileSize = parseNumber(plain.file_size, 0);
+  // Normalize thumbnail: if stored as a local relative path, expose a secure API URL
+  let fileThumbUrl = plain.thumbnail_url || null;
+  if (fileThumbUrl && typeof fileThumbUrl === 'string') {
+    const lower = fileThumbUrl.toLowerCase();
+    if (!(lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('/api/'))) {
+      fileThumbUrl = `/api/resources/files/${plain.id}/thumbnail`;
+    }
+  }
   return {
     id: plain.id,
     name: plain.name,
     description: plain.description || '',
     categoryId: plain.category_id || null,
     category: pickCategorySummary(plain.category),
-    thumbnailUrl: plain.thumbnail_url || null,
+  thumbnailUrl: fileThumbUrl,
     isPinned: parseBoolean(plain.is_pinned, false),
     pinnedOrder: parseNumber(plain.pinned_order, 0),
     tags: normalizeArrayInput(plain.tags),
@@ -602,6 +619,31 @@ function buildContentDisposition(filename, inline = false) {
   const encoded = encodeURIComponent(filename || fallback);
   const type = inline ? 'inline' : 'attachment';
   return `${type}; filename="${safeName}"; filename*=UTF-8''${encoded}`;
+}
+
+function isRelativeStorageRef(value) {
+  if (!value || typeof value !== 'string') return false;
+  const v = value.toLowerCase();
+  return !(v.startsWith('http://') || v.startsWith('https://') || v.startsWith('/api/'));
+}
+
+function guessImageMimeFromPath(filePath) {
+  const ext = String(path.extname(filePath || '')).toLowerCase();
+  switch (ext) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg';
+    case '.png':
+      return 'image/png';
+    case '.gif':
+      return 'image/gif';
+    case '.webp':
+      return 'image/webp';
+    case '.svg':
+      return 'image/svg+xml';
+    default:
+      return 'application/octet-stream';
+  }
 }
 async function getResources(req, res) {
   try {
@@ -958,6 +1000,161 @@ async function deleteCategory(req, res) {
   } catch (error) {
     console.error('Error deleting category:', error);
     return res.status(500).json({ success: false, message: 'Failed to delete category' });
+  }
+}
+
+async function uploadCategoryThumbnail(req, res) {
+  try {
+    if (!userIsAdmin(req.user)) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    }
+    const category = await ResourceCategory.findByPk(id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+    const filePayload = req.file;
+    if (!filePayload) {
+      return res.status(400).json({ success: false, message: 'Thumbnail image is required' });
+    }
+    const storedPath = toRelativeStoragePath(filePayload.path);
+    // If previous thumbnail was a local stored file, remove it
+    if (isRelativeStorageRef(category.thumbnail_url)) {
+      try {
+        const oldAbs = safeResolveStoragePath(category.thumbnail_url);
+        removeFileQuietly(oldAbs);
+      } catch (e) {
+        // ignore
+      }
+    }
+    await category.update({ thumbnail_url: storedPath });
+    return res.status(200).json({ success: true, data: mapCategory(category), message: 'Thumbnail uploaded' });
+  } catch (error) {
+    console.error('Error uploading category thumbnail:', error);
+    return res.status(500).json({ success: false, message: 'Failed to upload thumbnail' });
+  }
+}
+
+async function getCategoryThumbnail(req, res) {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    }
+    const category = await ResourceCategory.findByPk(id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+    const ref = category.thumbnail_url;
+    if (!ref || !isRelativeStorageRef(ref)) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    let absolutePath;
+    try {
+      absolutePath = safeResolveStoragePath(ref);
+    } catch (error) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    const mime = guessImageMimeFromPath(absolutePath);
+    res.setHeader('Content-Type', mime);
+    res.setHeader('Content-Disposition', 'inline');
+    const stream = fs.createReadStream(absolutePath);
+    stream.on('error', (e) => {
+      console.error('Stream error while serving category thumbnail:', e);
+      res.status(500).end();
+    });
+    return stream.pipe(res);
+  } catch (error) {
+    console.error('Error serving category thumbnail:', error);
+    return res.status(500).json({ success: false, message: 'Failed to load thumbnail' });
+  }
+}
+
+// Upload a thumbnail image for a ResourceFile (admin only)
+async function uploadFileThumbnail(req, res) {
+  try {
+    if (!userIsAdmin(req.user)) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid file ID' });
+    }
+    const record = await ResourceFile.findByPk(id);
+    if (!record || record.is_deleted) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+    const filePayload = req.file;
+    if (!filePayload) {
+      return res.status(400).json({ success: false, message: 'Thumbnail image is required' });
+    }
+    const storedPath = toRelativeStoragePath(filePayload.path);
+    if (isRelativeStorageRef(record.thumbnail_url)) {
+      try {
+        const oldAbs = safeResolveStoragePath(record.thumbnail_url);
+        removeFileQuietly(oldAbs);
+      } catch (e) {
+        // ignore
+      }
+    }
+    await record.update({ thumbnail_url: storedPath });
+    return res.status(200).json({ success: true, data: mapFile(record), message: 'Thumbnail uploaded' });
+  } catch (error) {
+    console.error('Error uploading file thumbnail:', error);
+    return res.status(500).json({ success: false, message: 'Failed to upload thumbnail' });
+  }
+}
+
+// Serve a file's thumbnail if stored locally
+async function getFileThumbnail(req, res) {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid file ID' });
+    }
+    const record = await ResourceFile.findByPk(id);
+    if (!record || record.is_deleted) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+    const ref = record.thumbnail_url;
+    if (!ref || !isRelativeStorageRef(ref)) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    let absolutePath;
+    try {
+      absolutePath = safeResolveStoragePath(ref);
+    } catch (error) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+    }
+    const mime = guessImageMimeFromPath(absolutePath);
+    res.setHeader('Content-Type', mime);
+    res.setHeader('Content-Disposition', 'inline');
+    const stream = fs.createReadStream(absolutePath);
+    stream.on('error', (e) => {
+      console.error('Stream error while serving file thumbnail:', e);
+      res.status(500).end();
+    });
+    return stream.pipe(res);
+  } catch (error) {
+    console.error('Error serving file thumbnail:', error);
+    return res.status(500).json({ success: false, message: 'Failed to load thumbnail' });
   }
 }
 async function getLinks(req, res) {
@@ -1544,7 +1741,9 @@ module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryThumbnail,
   scaffoldCategories,
+  getCategoryThumbnail,
   getLinks,
   saveLink,
   updateLink,
@@ -1554,6 +1753,8 @@ module.exports = {
   updateFile,
   deleteFile,
   downloadFile,
+  uploadFileThumbnail,
+  getFileThumbnail,
   getAnnouncements,
   createAnnouncement,
   updateAnnouncement,

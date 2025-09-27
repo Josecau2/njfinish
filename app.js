@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
@@ -19,6 +20,9 @@ const app = express();
 
 // Security headers middleware
 app.use((req, res, next) => {
+  const cspNonce = crypto.randomBytes(16).toString('base64');
+  res.locals.cspNonce = cspNonce;
+
   // Remove server signature
   res.removeHeader('X-Powered-By');
 
@@ -40,11 +44,12 @@ app.use((req, res, next) => {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      // Permit Cloudflare Insights analytics script
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${cfScriptSrc}`,
+      "base-uri 'self'",
+      `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
       imgSrc,
       "font-src 'self' data:",
+      "object-src 'none'",
       connectSrc,
       "frame-ancestors 'none'",
     ].join('; ') + ';'
@@ -114,7 +119,8 @@ function serveSpaWithBrand(req, res) {
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
     const html = fs.readFileSync(INDEX_HTML_PATH, 'utf8');
-    res.send(withBrandInline(html));
+    const nonce = res.locals.cspNonce;
+    res.send(withBrandInline(html, { nonce }));
   } catch (err) {
     console.error('Failed to serve SPA shell:', err);
     res.status(500).send('Unable to load application shell');
