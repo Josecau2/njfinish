@@ -1,10 +1,63 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const router = express.Router();
 const { PaymentConfiguration } = require('../models');
 const { verifyToken } = require('../middleware/auth');
 const { requirePermission } = require('../middleware/permissions');
+const { sanitizePaymentEmbed } = require('../utils/htmlSanitizer');
+const env = require('../config/env');
 
-// Get payment configuration (admin only)
+const parseJson = (value, fallback) => {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch (err) {
+    return fallback;
+  }
+};
+
+const coerceCurrencies = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    return value.split(',').map((c) => c.trim().toUpperCase()).filter(Boolean);
+  }
+  return ['USD'];
+};
+
+const buildSafeConfig = (config) => {
+  if (!config) {
+    return {
+      gatewayProvider: 'stripe',
+      gatewayUrl: '',
+      embedCode: '',
+      isActive: false,
+      stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY || '',
+      cardPaymentsEnabled: Boolean(env.STRIPE_ENABLED),
+      supportedCurrencies: ['USD'],
+      settings: {},
+      hasSecretKey: Boolean(env.STRIPE_SECRET_KEY),
+      hasWebhookSecret: Boolean(env.STRIPE_WEBHOOK_SECRET),
+    };
+  }
+
+  return {
+    id: config.id,
+    gatewayProvider: config.gatewayProvider,
+    gatewayUrl: config.gatewayUrl,
+    embedCode: sanitizePaymentEmbed(config.embedCode || ''),
+    isActive: config.isActive,
+    supportedCurrencies: config.supportedCurrencies || ['USD'],
+    settings: config.settings || {},
+    stripePublishableKey: config.stripePublishableKey || '',
+    cardPaymentsEnabled: Boolean(config.cardPaymentsEnabled),
+    createdAt: config.createdAt,
+    updatedAt: config.updatedAt,
+    hasSecretKey: Boolean(config.apiKey),
+    hasWebhookSecret: Boolean(config.webhookSecret),
+  };
+};
+
 router.get('/', verifyToken, requirePermission('admin:settings'), async (req, res) => {
   try {
     const config = await PaymentConfiguration.findOne({
@@ -12,38 +65,13 @@ router.get('/', verifyToken, requirePermission('admin:settings'), async (req, re
       order: [['createdAt', 'DESC']],
     });
 
-    if (!config) {
-      return res.json({
-        gatewayProvider: 'stripe',
-        gatewayUrl: '',
-        embedCode: '',
-        isActive: false,
-        supportedCurrencies: ['USD'],
-        settings: {},
-      });
-    }
-
-    // Don't expose sensitive data in response
-    const safeConfig = {
-      id: config.id,
-      gatewayProvider: config.gatewayProvider,
-      gatewayUrl: config.gatewayUrl,
-      embedCode: config.embedCode,
-      isActive: config.isActive,
-      supportedCurrencies: config.supportedCurrencies,
-      settings: config.settings,
-      createdAt: config.createdAt,
-      updatedAt: config.updatedAt,
-    };
-
-    res.json(safeConfig);
+    res.json(buildSafeConfig(config));
   } catch (error) {
     console.error('Error fetching payment configuration:', error);
     res.status(500).json({ error: 'Failed to fetch payment configuration' });
   }
 });
 
-// Get public payment configuration (for embedding)
 router.get('/public', async (req, res) => {
   try {
     const config = await PaymentConfiguration.findOne({
@@ -52,143 +80,134 @@ router.get('/public', async (req, res) => {
     });
 
     if (!config || !config.isActive) {
-      return res.status(404).json({ error: 'Payment configuration not found' });
+      const fallback = {
+        gatewayProvider: 'stripe',
+        cardPaymentsEnabled: Boolean(env.STRIPE_ENABLED),
+        publishableKey: env.STRIPE_PUBLISHABLE_KEY || '',
+      };
+      if (!fallback.cardPaymentsEnabled) {
+        return res.status(404).json({ error: 'Payment configuration not found' });
+      }
+      return res.json(fallback);
     }
 
-    // Only return public-safe data
-    const publicConfig = {
+    const response = {
       gatewayProvider: config.gatewayProvider,
-      gatewayUrl: config.gatewayUrl,
-      embedCode: config.embedCode,
-      supportedCurrencies: config.supportedCurrencies,
+      cardPaymentsEnabled: Boolean(config.cardPaymentsEnabled),
+      publishableKey: config.stripePublishableKey || env.STRIPE_PUBLISHABLE_KEY || '',
     };
 
-    res.json(publicConfig);
+    if (config.gatewayProvider !== 'stripe') {
+      response.gatewayUrl = config.gatewayUrl;
+      response.embedCode = sanitizePaymentEmbed(config.embedCode || '');
+      response.supportedCurrencies = config.supportedCurrencies || ['USD'];
+    }
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching public payment configuration:', error);
     res.status(500).json({ error: 'Failed to fetch payment configuration' });
   }
 });
 
-// Create or update payment configuration (admin only)
 router.post('/', verifyToken, requirePermission('admin:settings'), async (req, res) => {
   try {
     const {
-      gatewayProvider,
-      gatewayUrl,
-      embedCode,
+      gatewayProvider = 'stripe',
+      gatewayUrl = '',
+      embedCode = '',
       apiKey,
       webhookSecret,
+      stripePublishableKey,
+      cardPaymentsEnabled = false,
       supportedCurrencies,
       settings,
-    } = req.body;
+    } = req.body || {};
 
     const user = req.user;
 
-    // Deactivate existing configurations
     await PaymentConfiguration.update(
       { isActive: false },
       { where: { isActive: true } }
     );
 
+    const sanitizedEmbed = sanitizePaymentEmbed(embedCode || '');
+
     const config = await PaymentConfiguration.create({
-      gatewayProvider: gatewayProvider || 'stripe',
+      gatewayProvider,
       gatewayUrl,
-      embedCode,
-      apiKey,
-      webhookSecret,
-      supportedCurrencies: supportedCurrencies || ['USD'],
-      settings: settings || {},
+      embedCode: sanitizedEmbed,
+      apiKey: apiKey || null,
+      webhookSecret: webhookSecret || null,
+      stripePublishableKey: stripePublishableKey || null,
+      cardPaymentsEnabled: Boolean(cardPaymentsEnabled),
+      supportedCurrencies: coerceCurrencies(supportedCurrencies),
+      settings: parseJson(settings, {}),
       isActive: true,
       createdBy: user.id,
     });
 
-    // Return safe config (without sensitive data)
-    const safeConfig = {
-      id: config.id,
-      gatewayProvider: config.gatewayProvider,
-      gatewayUrl: config.gatewayUrl,
-      embedCode: config.embedCode,
-      isActive: config.isActive,
-      supportedCurrencies: config.supportedCurrencies,
-      settings: config.settings,
-      createdAt: config.createdAt,
-      updatedAt: config.updatedAt,
-    };
-
-    res.status(201).json(safeConfig);
+    res.status(201).json(buildSafeConfig(config));
   } catch (error) {
     console.error('Error creating payment configuration:', error);
     res.status(500).json({ error: 'Failed to create payment configuration' });
   }
 });
 
-// Update payment configuration (admin only)
 router.put('/:id', verifyToken, requirePermission('admin:settings'), async (req, res) => {
   try {
     const { id } = req.params;
+    const config = await PaymentConfiguration.findByPk(id);
+    if (!config) {
+      return res.status(404).json({ error: 'Payment configuration not found' });
+    }
+
     const {
       gatewayProvider,
       gatewayUrl,
       embedCode,
       apiKey,
       webhookSecret,
+      stripePublishableKey,
+      cardPaymentsEnabled,
       supportedCurrencies,
       settings,
       isActive,
-    } = req.body;
+    } = req.body || {};
 
-    const config = await PaymentConfiguration.findByPk(id);
-    if (!config) {
-      return res.status(404).json({ error: 'Payment configuration not found' });
-    }
+    const updateData = {};
 
-    // If activating this config, deactivate others
-    if (isActive && !config.isActive) {
+    if (gatewayProvider !== undefined) updateData.gatewayProvider = gatewayProvider;
+    if (gatewayUrl !== undefined) updateData.gatewayUrl = gatewayUrl;
+    if (embedCode !== undefined) updateData.embedCode = sanitizePaymentEmbed(embedCode || '');
+    if (apiKey !== undefined) updateData.apiKey = apiKey || null;
+    if (webhookSecret !== undefined) updateData.webhookSecret = webhookSecret || null;
+    if (stripePublishableKey !== undefined) updateData.stripePublishableKey = stripePublishableKey || null;
+    if (cardPaymentsEnabled !== undefined) updateData.cardPaymentsEnabled = Boolean(cardPaymentsEnabled);
+    if (supportedCurrencies !== undefined) updateData.supportedCurrencies = coerceCurrencies(supportedCurrencies);
+    if (settings !== undefined) updateData.settings = parseJson(settings, {});
+    if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+
+    if (updateData.isActive) {
       await PaymentConfiguration.update(
         { isActive: false },
-        { where: { isActive: true, id: { [require('sequelize').Op.ne]: id } } }
+        { where: { isActive: true, id: { [Op.ne]: id } } }
       );
     }
 
-    const updateData = {};
-    if (gatewayProvider !== undefined) updateData.gatewayProvider = gatewayProvider;
-    if (gatewayUrl !== undefined) updateData.gatewayUrl = gatewayUrl;
-    if (embedCode !== undefined) updateData.embedCode = embedCode;
-    if (apiKey !== undefined) updateData.apiKey = apiKey;
-    if (webhookSecret !== undefined) updateData.webhookSecret = webhookSecret;
-    if (supportedCurrencies !== undefined) updateData.supportedCurrencies = supportedCurrencies;
-    if (settings !== undefined) updateData.settings = settings;
-    if (isActive !== undefined) updateData.isActive = isActive;
-
     await config.update(updateData);
 
-    // Return safe config (without sensitive data)
-    const updatedConfig = await PaymentConfiguration.findByPk(id);
-    const safeConfig = {
-      id: updatedConfig.id,
-      gatewayProvider: updatedConfig.gatewayProvider,
-      gatewayUrl: updatedConfig.gatewayUrl,
-      embedCode: updatedConfig.embedCode,
-      isActive: updatedConfig.isActive,
-      supportedCurrencies: updatedConfig.supportedCurrencies,
-      settings: updatedConfig.settings,
-      createdAt: updatedConfig.createdAt,
-      updatedAt: updatedConfig.updatedAt,
-    };
-
-    res.json(safeConfig);
+    const refreshed = await PaymentConfiguration.findByPk(id);
+    res.json(buildSafeConfig(refreshed));
   } catch (error) {
     console.error('Error updating payment configuration:', error);
     res.status(500).json({ error: 'Failed to update payment configuration' });
   }
 });
 
-// Delete payment configuration (admin only)
 router.delete('/:id', verifyToken, requirePermission('admin:settings'), async (req, res) => {
   try {
     const { id } = req.params;
-
     const config = await PaymentConfiguration.findByPk(id);
     if (!config) {
       return res.status(404).json({ error: 'Payment configuration not found' });
@@ -203,3 +222,8 @@ router.delete('/:id', verifyToken, requirePermission('admin:settings'), async (r
 });
 
 module.exports = router;
+
+
+
+
+

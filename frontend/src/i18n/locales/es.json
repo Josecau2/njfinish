@@ -84,7 +84,8 @@
     "filterByType": "Filtrar por tipo...",
     "leaveEmptyKeepExisting": "Dejar vacío para mantener el existente",
     "egSevenToFourteenDays": "ej., 7-14 días",
-    "egThreeToSevenDays": "ej., 3-7 días"
+    "egThreeToSevenDays": "ej., 3-7 días",
+    "continue": "Continuar"
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -518,75 +519,76 @@
   },
   "payments": {
     "title": {
-      "contractor": "Mis Pagos",
-      "admin": "Todos los Pagos"
+      "contractor": "Mis pagos",
+      "admin": "Todos los pagos"
     },
     "subtitle": {
-      "contractor": "Ver tu historial de pagos y realizar pagos",
-      "admin": "Gestionar todos los pagos y configuraciones de pago"
+      "contractor": "Consulta tu historial de pagos y realiza nuevos pagos",
+      "admin": "Administra todos los pagos y su configuración"
     },
     "status": {
       "all": "Todos",
-      "pending": "Pendiente",
+      "completed": "Pagado",
       "processing": "Procesando",
-      "completed": "Completado",
-      "paid": "Pagado",
+      "pending": "Pago requerido",
       "failed": "Fallido",
-      "cancelled": "Cancelado",
-      "paymentRequired": "Pago Requerido"
+      "cancelled": "Cancelado"
     },
     "headers": {
       "date": "Fecha",
       "customer": "Cliente",
-      "order": "Pedido",
+      "orderNumber": "Orden #",
       "amount": "Monto",
       "status": "Estado",
-      "transaction": "ID de Transacción",
+      "transaction": "ID de transacción",
       "actions": "Acciones"
     },
     "actions": {
-      "makePayment": "Realizar Pago"
+      "makePayment": "Realizar pago"
     },
     "searchPlaceholder": "Buscar por cliente, contratista o ID de transacción",
     "searchAria": "Buscar pagos",
-    "showingCount": "Mostrando {{count}} de {{total}}",
+    "showingCount": "Mostrando {{count}} de {{total}} pagos",
     "empty": {
       "title": "No se encontraron pagos",
       "subtitle": "Los pagos aparecerán aquí cuando se creen"
     },
     "openDetails": "Abrir detalles del pago",
     "create": {
-      "title": "Crear Pago",
-      "button": "Crear Pago",
-      "orderIdLabel": "ID del Pedido",
-      "orderIdPlaceholder": "Ingrese ID del pedido",
-      "invalidOrderId": "Por favor ingrese un ID de pedido válido",
-      "amountTitle": "Monto del Pago",
-      "amountLabel": "Monto",
-      "amountPlaceholder": "Ingrese monto",
-      "invalidAmount": "Por favor ingrese un monto válido",
-      "success": "Pago creado exitosamente",
-      "error": "Error al crear el pago"
+      "title": "Crear pago",
+      "button": "Crear pago",
+      "orderIdLabel": "ID de orden",
+      "orderIdPlaceholder": "Ingrese el ID de la orden",
+      "invalidOrderId": "Ingrese un ID de orden válido",
+      "gatewayTitle": "Seleccione el tipo de pago",
+      "gatewayRequired": "Seleccione un tipo de pago",
+      "success": "Pago creado correctamente",
+      "successStripe": "Pago de Stripe creado. El cliente ya puede completar el pago en línea.",
+      "error": "No se pudo crear el pago"
     },
     "appliedOn": "Aplicado el",
     "apply": {
       "button": "Aplicar",
-      "success": "Pago aplicado",
-      "error": "No se pudo aplicar",
-      "confirmTitle": "¿Aplicar pago?",
       "confirmText": "Esto marcará el pago como completado.",
       "methodLabel": "Método de pago",
-      "confirmYes": "Sí, aplicarlo",
-      "selectMethodPlaceholder": "Seleccione método de pago",
+      "selectMethodPlaceholder": "Seleccione el método de pago",
       "checkNumberLabel": "Número de cheque",
-      "checkNumberPlaceholder": "Ingrese número de cheque",
+      "checkNumberPlaceholder": "Ingrese el número de cheque",
+      "confirmTitle": "¿Aplicar pago?",
+      "confirmYes": "Sí, aplicarlo",
+      "success": "Pago aplicado",
+      "error": "No se pudo aplicar el pago",
       "validation": {
         "selectMethod": "Seleccione un método de pago",
         "checkNumber": "Ingrese un número de cheque"
       }
     },
     "mobile": {
-      "orderNumber": "Pedido #{{id}}"
+      "orderNumber": "Orden #{{id}}"
+    },
+    "gateway": {
+      "stripe": "Stripe",
+      "manual": "Manual"
     }
   },
   "contact": {
@@ -3281,6 +3283,107 @@
         "placeholder": "Añade una nota interna...",
         "submit": "Guardar nota"
       }
+    }
+  },
+  "payment": {
+    "title": "Realizar pago",
+    "subtitle": "Completa tu pago de forma segura",
+    "details": {
+      "title": "Detalles del pago"
+    },
+    "order": "Orden",
+    "processing": "Procesando pago...",
+    "retry": "Reintentar pago",
+    "confirm": "Confirmar pago",
+    "viewPayments": "Ver pagos",
+    "success": {
+      "title": "¡Pago realizado con éxito!",
+      "message": "Tu pago se procesó correctamente.",
+      "viewPayments": "Ver pagos",
+      "stay": "Permanecer aquí"
+    },
+    "failed": {
+      "title": "Pago fallido",
+      "message": "Stripe no pudo completar el pago. Inténtalo nuevamente."
+    },
+    "status": {
+      "completed": "Pago completado correctamente.",
+      "failed": "El pago falló. Inténtalo nuevamente.",
+      "pending": "Esperando confirmación...",
+      "pendingTitle": "Esperando confirmación",
+      "processing": "El pago se está procesando. Espera por favor..."
+    },
+    "receipt": {
+      "available": "Recibo disponible",
+      "view": "Ver recibo"
+    },
+    "unavailable": {
+      "title": "Pago no disponible",
+      "subtitle": "Los pagos con tarjeta están deshabilitados",
+      "configuration": "Contacta a un administrador para habilitar Stripe.",
+      "status": "Este pago no está disponible para procesar en este momento. Estado actual:"
+    }
+  },
+  "paymentConfig": {
+    "title": "Configuración de pagos",
+    "subtitle": "Configura los ajustes del proveedor de pagos y los formularios integrados",
+    "gateway": {
+      "title": "Ajustes del proveedor de pagos",
+      "subtitle": "Administra cómo los clientes envían pagos a tu negocio",
+      "provider": "Proveedor",
+      "url": "URL del proveedor",
+      "urlPlaceholder": "https://tu-proveedor-de-pagos.com/checkout",
+      "urlHelp": "URL a la que se redirigirá a los clientes para realizar el pago"
+    },
+    "providers": {
+      "stripe": "Stripe",
+      "custom": "Personalizado"
+    },
+    "currencies": {
+      "label": "Monedas soportadas",
+      "placeholder": "USD, EUR, CAD",
+      "help": "Separa múltiples monedas con comas"
+    },
+    "embed": {
+      "title": "Código embebido del formulario de pago",
+      "placeholder": "Pega aquí el código embebido de tu pasarela de pago...",
+      "help": "Opcional: código HTML/JavaScript para incrustar formularios de pago en tus páginas"
+    },
+    "advanced": {
+      "title": "Configuración avanzada (JSON)",
+      "help": "Opciones adicionales de configuración en formato JSON",
+      "invalidJson": "La configuración avanzada debe ser JSON válido."
+    },
+    "stripe": {
+      "cardTitle": "Pagos con tarjeta vía Stripe",
+      "enableLabel": "Habilitar pagos con tarjeta usando Stripe",
+      "enableHelp": "Los clientes pagarán usando Stripe Payment Intents.",
+      "publishableKey": "Clave publicable",
+      "secretKey": "Clave secreta",
+      "webhookSecret": "Secreto de firma de webhook",
+      "cardStatus": "Pagos con tarjeta habilitados",
+      "securityNote": "Los secretos se almacenan en el servidor. Elige “Reemplazar” para actualizarlos o “Eliminar” para borrarlos.",
+      "secret": {
+        "keepExisting": "Mantener valor existente",
+        "noneStored": "No hay valor almacenado",
+        "replace": "Reemplazar con un nuevo valor",
+        "clear": "Eliminar valor"
+      }
+    },
+    "preview": {
+      "title": "Vista previa de la configuración",
+      "current": "Configuración actual",
+      "notSet": "No configurado",
+      "embedConfigured": "Formulario de pago embebido configurado"
+    },
+    "save": {
+      "success": "Configuración de pagos guardada correctamente",
+      "error": "No se pudo guardar la configuración de pagos"
+    },
+    "test": {
+      "noUrl": "Configura primero una URL del proveedor",
+      "success": "La configuración se probó correctamente",
+      "error": "No se pudo probar la configuración"
     }
   }
 }

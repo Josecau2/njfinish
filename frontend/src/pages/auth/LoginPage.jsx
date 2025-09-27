@@ -86,7 +86,7 @@ const LoginPage = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Verify token was installed correctly
-      const verifyToken = localStorage.getItem('token');
+      const verifyToken = sessionStorage.getItem('token');
       if (!verifyToken || verifyToken !== token) {
         throw new Error('Token installation failed');
       }

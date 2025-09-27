@@ -1,5 +1,6 @@
 const Customization = require('../models/Customization')
 const PdfCustomization = require('../models/PdfCustomization')
+const { sanitizeHtml } = require('../utils/htmlSanitizer')
 const { regenerateBrandSnapshot } = require('../server/branding/regenerateBrandSnapshot')
 
 exports.getCustomization = async (req, res) => {
@@ -22,6 +23,14 @@ exports.saveCustomization = async (req, res) => {
 
     const payload = {
       ...req.body,
+    }
+
+    if (payload.logoText !== undefined && payload.logoText !== null) {
+      payload.logoText = sanitizeHtml(String(payload.logoText), { allowedTags: [], allowedAttributes: {}, allowDataAttributes: false }).trim()
+    }
+
+    if (typeof payload.companyName === 'string') {
+      payload.companyName = sanitizeHtml(payload.companyName, { allowedTags: [], allowedAttributes: {}, allowDataAttributes: false }).trim()
     }
 
     if (logoImagePath) {
@@ -56,15 +65,22 @@ exports.saveCustomizationpdf = async (req, res) => {
       req.body.headerLogo = `/uploads/manufacturer_catalogs/${req.file.filename}`;
     }
 
+    const pdfPayload = { ...req.body };
+    Object.keys(pdfPayload).forEach((key) => {
+      if (typeof pdfPayload[key] === 'string') {
+        pdfPayload[key] = sanitizeHtml(pdfPayload[key], { allowedTags: [], allowedAttributes: {}, allowDataAttributes: false }).trim();
+      }
+    });
+
     const existing = await PdfCustomization.findOne();
 
     if (existing) {
-      await existing.update(req.body);
+      await existing.update(pdfPayload);
       return res.json({ success: true, updated: true });
     }
 
-    await PdfCustomization.create(req.body);
-    res.json({ success: true, created: true });
+    await PdfCustomization.create(pdfPayload);
+    return res.json({ success: true, created: true });
 
   } catch (err) {
     console.error('Error saving customization:', err);
@@ -189,5 +205,3 @@ exports.generatepdf = async (req, res) => {
     });
   }
 };
-
-

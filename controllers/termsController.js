@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { Terms, TermsAcceptance, User } = require('../models');
+const { sanitizeHtml } = require('../utils/htmlSanitizer');
 
 // Ensure tables exist (defensive)
 async function ensureModels() {
@@ -26,7 +27,7 @@ exports.getLatestTerms = async (req, res) => {
         accepted = !!row;
       }
     } catch (_) {
-      // ignore acceptance check errors – still return latest terms
+      // ignore acceptance check errors - still return latest terms
       accepted = false;
     }
 
@@ -53,12 +54,15 @@ exports.saveTerms = async (req, res) => {
     if (!content || typeof content !== 'string') {
       return res.status(400).json({ success: false, message: 'Content required' });
     }
+
+    const sanitizedContent = sanitizeHtml(content);
+
     // Determine version
     const latest = await Terms.findOne({ order: [['version', 'DESC']] });
     // If no terms exist yet, create version 1
     if (!latest) {
       const created = await Terms.create({
-        content,
+        content: sanitizedContent,
         version: 1,
         created_by_user_id: req.user?.id || null,
       });
@@ -68,7 +72,7 @@ exports.saveTerms = async (req, res) => {
     // If bumpVersion is requested, create a new version (latest.version + 1)
     if (bumpVersion) {
       const created = await Terms.create({
-        content,
+        content: sanitizedContent,
         version: latest.version + 1,
         created_by_user_id: req.user?.id || null,
       });
@@ -76,7 +80,7 @@ exports.saveTerms = async (req, res) => {
     }
 
     // Otherwise, update the existing latest version's content (avoid unique violation)
-    await latest.update({ content });
+    await latest.update({ content: sanitizedContent });
     return res.json({ success: true, data: latest });
   } catch (e) {
     return res.status(500).json({ success: false, message: 'Failed to save terms' });

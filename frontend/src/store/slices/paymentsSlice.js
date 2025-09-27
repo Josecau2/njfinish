@@ -6,9 +6,9 @@ export const fetchPayments = createAsyncThunk(
   'payments/fetchPayments',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const { page = 1, limit = 10, status, orderId } = params;
+      const { page = 1, limit = 10, status, orderId, gateway } = params;
       const response = await axiosInstance.get('/api/payments', {
-        params: { page, limit, status, orderId },
+        params: { page, limit, status, orderId, gateway },
       });
       return response.data;
     } catch (error) {
@@ -31,9 +31,12 @@ export const fetchPaymentById = createAsyncThunk(
 
 export const createPayment = createAsyncThunk(
   'payments/createPayment',
-  async (paymentData, { rejectWithValue }) => {
+  async ({ orderId, gateway, paymentMethod }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/api/payments', paymentData);
+      const payload = { orderId };
+      if (gateway) payload.gateway = gateway;
+      if (paymentMethod) payload.paymentMethod = paymentMethod;
+      const response = await axiosInstance.post('/api/payments', payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { error: error.message });
@@ -256,6 +259,9 @@ const paymentsSlice = createSlice({
       // Public payment configuration
       .addCase(fetchPublicPaymentConfig.fulfilled, (state, action) => {
         state.publicPaymentConfig = action.payload;
+      })
+      .addCase(fetchPublicPaymentConfig.rejected, (state) => {
+        state.publicPaymentConfig = null;
       })
 
       // Save payment configuration

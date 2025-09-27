@@ -12,6 +12,8 @@ const env = require('./config/env');
 const startupHandler = require('./startup-handler');
 const { withBrandInline } = require('./server/middleware/withBrandInline');
 const { regenerateBrandSnapshot } = require('./server/branding/regenerateBrandSnapshot');
+const { serveUpload } = require('./controllers/uploadServeController');
+const { attachTokenFromQuery, verifyTokenWithGroup } = require('./middleware/auth');
 
 // Initialize event manager for domain events
 require('./utils/eventManager');
@@ -46,7 +48,7 @@ app.use((req, res, next) => {
       "default-src 'self'",
       "base-uri 'self'",
       `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc}`,
-      "style-src 'self' 'unsafe-inline'",
+      `style-src 'self' 'nonce-${cspNonce}' 'unsafe-inline'`,
       imgSrc,
       "font-src 'self' data:",
       "object-src 'none'",
@@ -82,6 +84,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // app.use(cors());
+// Stripe webhook must be mounted before body parsers so we can access the raw payload
+app.post('/api/payments/stripe/webhook', paymentsRoutes.stripeWebhookRaw, paymentsRoutes.handleStripeWebhook);
+app.post('/api/payments/stripe/webhook/:token', paymentsRoutes.stripeWebhookRaw, paymentsRoutes.handleStripeWebhook);
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -90,12 +96,11 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
-// Serve static uploads
-// Serve static uploads using configured path
-app.use('/uploads', express.static(path.resolve(__dirname, env.UPLOAD_PATH)));
-app.use('/uploads/images', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'images')));
-app.use('/uploads/logos', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'logos')));
-app.use('/uploads/manufacturer_catalogs', express.static(path.resolve(__dirname, env.UPLOAD_PATH, 'manufacturer_catalogs')));
+const uploadsRouter = express.Router();
+uploadsRouter.use(attachTokenFromQuery({ extraParams: ['access_token', 'authToken'] }));
+uploadsRouter.use(verifyTokenWithGroup);
+uploadsRouter.use('/', serveUpload);
+app.use('/uploads', uploadsRouter);
 
 // Serve SPA static assets from configurable directory (defaults to /app/build)
 const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, 'build');
@@ -190,3 +195,6 @@ syncPromise.then(async () => {
 });
 
 module.exports = app;
+
+
+

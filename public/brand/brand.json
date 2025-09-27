@@ -1,5 +1,5 @@
 {
-  "version": 1758944511974,
+  "version": 1758990000269,
   "colors": {
     "headerBg": "#000000",
     "headerText": "#ffffff",
@@ -10,7 +10,7 @@
     "surface": "#f8fafc",
     "logoBg": "#000000"
   },
-  "logoAlt": "NJ Contractors ",
+  "logoAlt": "NJ Contractors",
   "login": {
     "title": "Sign In",
     "subtitle": "Enter your email and password to sign in!",
@@ -34,8 +34,8 @@
     "requestAccessSuccessMessage": "Thank you! We've received your request and will be in touch soon."
   },
   "app": {
-    "logoText": "NJ Contractors ",
-    "logoImage": "/uploads/images/logoImage-1758762402655-186039703.png",
+    "logoText": "NJ Contractors",
+    "logoImage": "/uploads/images/logoImage-1758988952350-409154838.png",
     "logoBg": "#000000",
     "companyName": ""
   },

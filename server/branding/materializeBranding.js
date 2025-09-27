@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { stringifyForInlineScript } = require('../../utils/htmlSanitizer');
 
 const BRAND_DIR = path.join(process.cwd(), 'public', 'brand');
 const INLINE_PATH = path.join(BRAND_DIR, 'inline.html');
@@ -158,14 +159,16 @@ async function materializeBranding(brand = {}) {
     }, {}),
   };
 
-  const inlineHtml = `<!-- GENERATED: DO NOT EDIT -->\n<style nonce="__CSP_NONCE__">\n:root{\n${cssVars}\n}\n.brand-logo{\n  display:inline-flex;\n  align-items:center;\n  justify-content:center;\n  width:48px;\n  height:48px;\n  background-image:url("${logoDataURI}");\n  background-size:contain;\n  background-repeat:no-repeat;\n  background-position:center;\n}\n.brand-logo-img{\n  width:48px;\n  height:48px;\n  object-fit:contain;\n  display:block;\n}\n</style>\n<script nonce="__CSP_NONCE__">\nwindow.__BRAND__ = ${JSON.stringify({
+  const brandPayload = {
     version: timestamp,
     logoAlt: snapshot.logoAlt,
     logoDataURI,
     colors,
     login: snapshot.login,
     app: snapshot.app,
-  })};\nwindow.__APP_CUSTOMIZATION__ = ${JSON.stringify(inlineScript.appCustomization)};\nwindow.__LOGIN_CUSTOMIZATION__ = ${JSON.stringify(inlineScript.loginCustomization)};\n</script>`;
+  };
+  const inlineHtml = `<!-- GENERATED: DO NOT EDIT -->\n<style nonce="__CSP_NONCE__">\n:root{\n${cssVars}\n}\n.brand-logo{\n  display:inline-flex;\n  align-items:center;\n  justify-content:center;\n  width:48px;\n  height:48px;\n  background-image:url("${logoDataURI}");\n  background-size:contain;\n  background-repeat:no-repeat;\n  background-position:center;\n}\n.brand-logo-img{\n  width:48px;\n  height:48px;\n  object-fit:contain;\n  display:block;\n}\n</style>\n<script nonce="__CSP_NONCE__">\nwindow.__BRAND__ = ${stringifyForInlineScript(brandPayload)};\nwindow.__APP_CUSTOMIZATION__ = ${stringifyForInlineScript(inlineScript.appCustomization)};\nwindow.__LOGIN_CUSTOMIZATION__ = ${stringifyForInlineScript(inlineScript.loginCustomization)};\n</script>`;
+
 
   try {
     fs.writeFileSync(INLINE_PATH, inlineHtml);

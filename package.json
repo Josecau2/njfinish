@@ -34,7 +34,8 @@
     "test:email-quote": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js",
     "test:email-quote:full": "npm run build:frontend && npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js",
     "test:email-quote:to:joseca": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js --to joseca@symmetricalwolf.com",
-    "send:email-quote:to:joseca": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js --to joseca@symmetricalwolf.com --send"
+    "send:email-quote:to:joseca": "npm --prefix frontend run test:pdf && node scripts/test-email-quote-e2e.js --to joseca@symmetricalwolf.com --send",
+    "test:payments": "node --test tests/utils/payments/amounts.test.js"
   },
   "dependencies": {
     "@coreui/chartjs": "^4.1.0",
@@ -91,6 +92,7 @@
     "react-select": "^5.10.1",
     "react-xml-viewer": "^3.0.1",
     "redux": "5.0.1",
+    "sanitize-html": "^2.17.0",
     "sequelize": "^6.37.7",
     "simplebar-react": "^3.3.0",
     "stripe": "^18.5.0",

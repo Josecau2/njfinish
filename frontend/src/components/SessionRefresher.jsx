@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { clearAllTokens } from '../utils/authToken';
+import { clearAllTokens, getFreshestToken } from '../utils/authToken';
 
 const SessionRefresher = ({ children }) => {
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ const SessionRefresher = ({ children }) => {
 
     // Check for stale tokens on app start
     const checkTokenFreshness = () => {
-      const token = localStorage.getItem('token');
+      const token = getFreshestToken();
       if (token) {
         try {
           // Decode token to check expiration

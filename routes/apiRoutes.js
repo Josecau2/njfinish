@@ -23,7 +23,8 @@ const contactController = require('../controllers/contactController');
 const leadController = require('../controllers/leadController');
 const termsController = require('../controllers/termsController');
 const globalModsController = require('../controllers/globalModificationsController');
-const { fullAccessControl, requirePermission } = require('../middleware/accessControl');
+const { fullAccessControl, requirePermission, requireAnyPermission, attachPermissions } = require('../middleware/accessControl');
+const { PERMISSIONS } = require('../constants/permissions');
 const { verifyTokenWithGroup, enforceGroupScoping, attachTokenFromQuery } = require('../middleware/auth');
 const { createRateLimiter, rateLimitAccept } = require('../middleware/rateLimiter');
 const { validateIdParam, sanitizeBodyStrings } = require('../middleware/validators');
@@ -51,11 +52,46 @@ const proposalEmailLimiter = createRateLimiter({
 	keyGenerator: (req) => `proposal-email:${req.user?.id || req.ip}`,
 });
 
+const toPositiveInt = (value, fallback) => {
+	const parsed = parseInt(value, 10);
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const loginLimiter = createRateLimiter({
+	windowMs: toPositiveInt(process.env.AUTH_LOGIN_WINDOW_MS, 10 * 60 * 1000),
+	max: toPositiveInt(process.env.AUTH_LOGIN_MAX_ATTEMPTS, 10),
+	keyGenerator: (req) => {
+		const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+		return email ? `auth-login:${req.ip}:${email}` : `auth-login:${req.ip}`;
+	},
+});
+
+const signupLimiter = createRateLimiter({
+	windowMs: toPositiveInt(process.env.AUTH_SIGNUP_WINDOW_MS, 60 * 60 * 1000),
+	max: toPositiveInt(process.env.AUTH_SIGNUP_MAX_ATTEMPTS, 20),
+	keyGenerator: (req) => `auth-signup:${req.ip}`,
+});
+
+const forgotPasswordLimiter = createRateLimiter({
+	windowMs: toPositiveInt(process.env.AUTH_FORGOT_WINDOW_MS, 30 * 60 * 1000),
+	max: toPositiveInt(process.env.AUTH_FORGOT_MAX_ATTEMPTS, 5),
+	keyGenerator: (req) => `auth-forgot:${req.ip}`,
+});
+
+const resetPasswordLimiter = createRateLimiter({
+	windowMs: toPositiveInt(process.env.AUTH_RESET_WINDOW_MS, 30 * 60 * 1000),
+	max: toPositiveInt(process.env.AUTH_RESET_MAX_ATTEMPTS, 5),
+	keyGenerator: (req) => {
+		const token = typeof req.body?.token === 'string' ? req.body.token.slice(0, 12) : '';
+		return token ? `auth-reset:${token}` : `auth-reset:${req.ip}`;
+	},
+});
+
 // Auth route
-router.post('/login', authController.login);
-router.post('/signup', authController.signup);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+router.post('/login', loginLimiter, authController.login);
+router.post('/signup', signupLimiter, authController.signup);
+router.post('/forgot-password', forgotPasswordLimiter, authController.forgotPassword);
+router.post('/reset-password', resetPasswordLimiter, authController.resetPassword);
 router.post('/request-access', requestAccessLimiter, sanitizeBodyStrings(5000), leadController.submitLead);
 router.get('/admin/leads', verifyTokenWithGroup, requirePermission('admin:leads'), leadController.listLeads);
 router.patch('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);
@@ -392,12 +428,17 @@ router.post('/generate-pdf', customizationController.generatepdf)
 
 // Authenticated endpoint to generate a PDF and email a proposal
 router.post(
-	'/proposals/send-email',
-	verifyTokenWithGroup,
-	proposalEmailLimiter,
-	// Do not truncate HTML at all; sanitizer will still trim but not slice when maxLen=0
-	sanitizeBodyStrings(0),
-	emailController.sendProposalEmail
+  '/proposals/send-email',
+  verifyTokenWithGroup,
+  attachPermissions,
+  requireAnyPermission([
+    PERMISSIONS.PROPOSALS.UPDATE,
+    PERMISSIONS.PROPOSALS.ACCEPT,
+  ]),
+  proposalEmailLimiter,
+  // Do not truncate HTML at all; sanitizer will still trim but not slice when maxLen=0
+  sanitizeBodyStrings(0),
+  emailController.sendProposalEmail
 );
 
 
@@ -519,6 +560,3 @@ router.post('/catalog-items/requirements', verifyTokenWithGroup, sanitizeBodyStr
 
 
 module.exports = router;
-
-
-

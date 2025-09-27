@@ -4,6 +4,7 @@ const { User, UserRole, UserGroup } = require('../models/index');
 const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { sendMail } = require('../utils/mail');
+const { validatePassword, passwordPolicyHint } = require('../utils/passwordPolicy');
 require('dotenv').config();
 
 // Centralized token lifetime (default to long-lived sessions)
@@ -14,9 +15,19 @@ exports.signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ where: { email } });
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ message: passwordCheck.message, policy: passwordPolicyHint() });
+    }
+
+    const existingUser = await User.findOne({ where: { email, isDeleted: false } });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    const deletedUser = await User.findOne({ where: { email, isDeleted: true } });
+    if (deletedUser) {
+      return res.status(409).json({ message: 'Account for this email has been deactivated. Please contact an administrator to restore access.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,7 +59,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({
-      where: { email },
+      where: { email, isDeleted: false },
       include: [{
         model: UserGroup,
         as: 'group',
@@ -165,6 +176,10 @@ exports.updateCurrentUser = async (req, res) => {
 
     if (name) user.name = name;
     if (password && password.trim() !== '') {
+      const passwordCheck = validatePassword(password);
+      if (!passwordCheck.valid) {
+        return res.status(400).json({ message: passwordCheck.message, policy: passwordPolicyHint() });
+      }
       user.password = await bcrypt.hash(password, 10);
     }
 
@@ -181,7 +196,7 @@ exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email, isDeleted: false } });
     if (!user) {
       return res.json({ message: 'If an account exists for that email, a reset link has been sent.' });
     }
@@ -227,10 +242,16 @@ exports.resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
 
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ message: passwordCheck.message, policy: passwordPolicyHint() });
+    }
+
     const user = await User.findOne({
       where: {
         resetToken: token,
         resetTokenExpiry: { [Op.gt]: new Date() },
+        isDeleted: false,
       },
     });
 
@@ -320,6 +341,11 @@ exports.addUser = async (req, res) => {
       company_zip_code,
       company_country
     } = req.body;
+
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ message: passwordCheck.message, policy: passwordPolicyHint() });
+    }
 
     const existingUser = await User.findOne({
       where: {
@@ -547,6 +573,10 @@ exports.updateUser = async (req, res) => {
     if (role_id !== undefined) user.role_id = parseInt(role_id) || 0;
 
     if (password && password.trim() !== '') {
+      const passwordCheck = validatePassword(password);
+      if (!passwordCheck.valid) {
+        return res.status(400).json({ message: passwordCheck.message, policy: passwordPolicyHint() });
+      }
       user.password = await bcrypt.hash(password, 10);
     }
 
@@ -588,7 +618,38 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    const requesterId = req.user && req.user.id ? Number(req.user.id) : null;
+    if (requesterId !== null && Number(id) === requesterId) {
+      return res.status(400).json({ message: 'You cannot delete your own account.' });
+    }
+
+    if (user.isDeleted) {
+      return res.status(409).json({ message: 'User is already deleted.' });
+    }
+
+    const isAdmin = ((user.role || '').toLowerCase() === 'admin') || user.role_id === 2;
+    if (isAdmin) {
+      const remainingAdmins = await User.count({
+        where: {
+          isDeleted: false,
+          id: { [Op.ne]: user.id },
+          [Op.or]: [
+            { role: 'Admin' },
+            { role: 'admin' },
+            { role_id: 2 }
+          ]
+        }
+      });
+
+      if (remainingAdmins === 0) {
+        return res.status(409).json({ message: 'Cannot delete the last active admin account.' });
+      }
+    }
+
     user.isDeleted = true;
+    user.password = null;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
     await user.save();
     await UserRole.destroy({ where: { userId: id } });
 

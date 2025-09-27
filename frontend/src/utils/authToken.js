@@ -95,7 +95,7 @@ export function installTokenEverywhere(newToken, options = {}) {
 }
 
 
-// Get the freshest token from storage (checking both localStorage and sessionStorage)
+// Get the freshest token from storage (prefers sessionStorage; migrates legacy localStorage tokens)
 export function getFreshestToken() {
   try {
     if (typeof window === 'undefined') return null;
@@ -113,63 +113,49 @@ export function getFreshestToken() {
       return exp > now;
     };
 
-    // Always check all sources and pick the best one
-    const memValid = (() => {
-      if (!memoryToken) return false;
-      return isTokenValid(memoryToken);
-    })();
-
-    const lsToken = localStorage.getItem('token');
-    const ssToken = sessionStorage.getItem('token');
-
-    const lsValid = isTokenValid(lsToken);
-    const ssValid = isTokenValid(ssToken);
-
-    try { if (import.meta?.env?.DEV) {
-      const details = {
-        memValid,
-        lsExists: !!lsToken,
-        ssExists: !!ssToken,
-        lsValid,
-        ssValid,
-        storage: {
-          hasLS: !!lsToken,
-          hasLS_valid: lsValid,
-          hasSS: !!ssToken,
-          hasSS_valid: ssValid
-        }
-      };
-      console.debug('[GET_FRESHEST] Status:', details);
-    }} catch {}
-
-    // Clean up expired tokens immediately
-    if (!lsValid && lsToken) {
-      localStorage.removeItem('token');
-      try { if (import.meta?.env?.DEV) console.debug('[GET_FRESHEST] Removed expired localStorage token') } catch {}
-    }
-    if (!ssValid && ssToken) {
-      sessionStorage.removeItem('token');
-      try { if (import.meta?.env?.DEV) console.debug('[GET_FRESHEST] Removed expired sessionStorage token') } catch {}
-    }
-
-    // Pick the best available token - prefer the one with latest expiration
     const candidates = [];
-    if (memValid) candidates.push({ token: memoryToken, exp: getTokenExp(memoryToken), source: 'memory' });
-    if (lsValid) candidates.push({ token: lsToken, exp: getTokenExp(lsToken), source: 'localStorage' });
-    if (ssValid) candidates.push({ token: ssToken, exp: getTokenExp(ssToken), source: 'sessionStorage' });
+
+    if (memoryToken && isTokenValid(memoryToken)) {
+      candidates.push({ token: memoryToken, exp: getTokenExp(memoryToken), source: 'memory' });
+    }
+
+    let legacyToken = null;
+    try { legacyToken = localStorage.getItem('token'); } catch {}
+
+    if (legacyToken) {
+      if (isTokenValid(legacyToken)) {
+        candidates.push({ token: legacyToken, exp: getTokenExp(legacyToken), source: 'legacy-localStorage' });
+      }
+      try { sessionStorage.setItem('token', legacyToken); } catch {}
+      try { localStorage.removeItem('token'); } catch {}
+    }
+
+    let sessionToken = null;
+    try { sessionToken = sessionStorage.getItem('token'); } catch {}
+
+    if (sessionToken && !isTokenValid(sessionToken)) {
+      try { sessionStorage.removeItem('token'); } catch {}
+      sessionToken = null;
+    }
+
+    if (sessionToken && isTokenValid(sessionToken)) {
+      const already = candidates.some((candidate) => candidate.token === sessionToken);
+      if (!already) {
+        candidates.push({ token: sessionToken, exp: getTokenExp(sessionToken), source: 'sessionStorage' });
+      }
+    }
 
     if (candidates.length === 0) {
-      memoryToken = null; // Clear stale memory cache
+      memoryToken = null;
       try { if (import.meta?.env?.DEV) console.debug('[GET_FRESHEST] No valid tokens found') } catch {}
       return null;
     }
 
-    // Sort by expiration time, pick latest
     candidates.sort((a, b) => b.exp - a.exp);
     const best = candidates[0];
 
-    // Update memory cache with the best token
     memoryToken = best.token;
+    try { sessionStorage.setItem('token', best.token); } catch {}
 
     try { if (import.meta?.env?.DEV) console.debug('[GET_FRESHEST] Using token from:', best.source, 'exp:', new Date(best.exp * 1000).toISOString()) } catch {}
     return best.token;
@@ -178,6 +164,7 @@ export function getFreshestToken() {
     return null;
   }
 }
+
 
 export function detoxAuthStorage() {
   try {
@@ -194,55 +181,36 @@ export function detoxAuthStorage() {
       return exp > now;
     };
 
-    const ls = localStorage.getItem('token');
-    const ss = sessionStorage.getItem('token');
+    let legacy = null;
+    try { legacy = localStorage.getItem('token'); } catch {}
+    let sessionToken = null;
+    try { sessionToken = sessionStorage.getItem('token'); } catch {}
 
-    // Debug logging to see what tokens we found
-    try { if (import.meta?.env?.DEV) {
-      console.debug('[DETOX] ls exp:', ls ? new Date(pickExp(ls) * 1000).toISOString() : 'none');
-      console.debug('[DETOX] ss exp:', ss ? new Date(pickExp(ss) * 1000).toISOString() : 'none');
-    }} catch {}
-
-    const lsValid = isTokenValid(ls);
-    const ssValid = isTokenValid(ss);
-
-    // Pick the token with the latest expiration that's not expired
-    let winner = null;
-    if (lsValid && ssValid) {
-      // Both valid, pick later expiration
-      const lsExp = pickExp(ls);
-      const ssExp = pickExp(ss);
-      winner = (lsExp >= ssExp) ? ls : ss;
-    } else if (lsValid) {
-      // Only localStorage valid
-      winner = ls;
-    } else if (ssValid) {
-      // Only sessionStorage valid
-      winner = ss;
+    if (legacy) {
+      try { sessionStorage.setItem('token', legacy); sessionToken = legacy; } catch {}
+      try { localStorage.removeItem('token'); } catch {}
     }
-    // If both expired or missing, winner stays null
 
-    // Clear both storages first
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+    const sessionValid = isTokenValid(sessionToken);
 
-    // Install winner in both if we have one
-    if (winner) {
-      localStorage.setItem('token', winner);
-      sessionStorage.setItem('token', winner);
-      memoryToken = winner;
-      try { if (import.meta?.env?.DEV) console.debug('[DETOX] Installed fresh token expiring:', new Date(pickExp(winner) * 1000).toISOString()) } catch {}
+    try { sessionStorage.removeItem('token'); } catch {}
+
+    if (sessionValid) {
+      try { sessionStorage.setItem('token', sessionToken); } catch {}
+      memoryToken = sessionToken;
+      try { if (import.meta?.env?.DEV) console.debug('[DETOX] Installed fresh session token expiring:', new Date(pickExp(sessionToken) * 1000).toISOString()) } catch {}
     } else {
       memoryToken = null;
-      try { if (import.meta?.env?.DEV) console.debug('[DETOX] No valid tokens found, cleared all storage') } catch {}
+      try { if (import.meta?.env?.DEV) console.debug('[DETOX] No valid session token found, cleared storage') } catch {}
     }
 
     // Clear redux-persist shards that might resurrect stale auth
-    Object.keys(localStorage).forEach(k => { if (k.startsWith('persist:')) localStorage.removeItem(k); });
+    try { Object.keys(localStorage).forEach((k) => { if (k.startsWith('persist:')) localStorage.removeItem(k); }); } catch {}
   } catch (e) {
     try { if (import.meta?.env?.DEV) console.error('[DETOX] Error during token cleanup:', e) } catch {}
   }
 }
+
 
 // Handy dev helper to quickly inspect token state from the console
 export function debugAuthSnapshot() {

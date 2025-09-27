@@ -3,7 +3,7 @@
 // DO NOT edit manually - changes will be overwritten
 
 export const CUSTOMIZATION_CONFIG = {
-  "logoText": "NJ Contractors ",
+  "logoText": "NJ Contractors",
   "logoImage": "/assets/customization/logo.png",
   "headerBg": "#000000",
   "headerFontColor": "#ffffff",
@@ -13,8 +13,8 @@ export const CUSTOMIZATION_CONFIG = {
   "companyName": "",
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
-  "updatedAt": "2025-09-26T02:17:10.000Z",
-  "_generated": "2025-09-27T03:41:51.963Z",
+  "updatedAt": "2025-09-27T16:02:32.000Z",
+  "_generated": "2025-09-27T16:20:00.255Z",
   "_version": "1.0.0"
 }
 

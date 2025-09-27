@@ -1,3 +1,4 @@
+import { getFreshestToken } from '../../../utils/authToken'
 import { useState, useCallback, useRef } from 'react'
 import {
   CButton, CCard, CCardBody, CCardHeader, CCol, CRow,
@@ -72,12 +73,13 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     formData.append('fileType', getFileType(file.type))
 
     try {
+      const token = getFreshestToken()
       const response = await fetch(`${api_url}/api/proposals/upload-file`, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: token ? {
+          'Authorization': `Bearer ${token}`
+        } : {}
       })
 
       if (!response.ok) {
@@ -183,14 +185,14 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const deleteFile = async (fileId) => {
     try {
+      const token = getFreshestToken()
       const response = await fetch(`${api_url}/api/proposals/files/${fileId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           'Content-Type': 'application/json'
         }
       })
-
       if (!response.ok) {
         throw new Error('Delete failed')
       }

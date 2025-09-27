@@ -9,8 +9,17 @@ function parseList(value, fallback = []) {
     .filter(Boolean);
 }
 
+const toBool = (value, fallback = false) => {
+  if (value === null || value === undefined) return fallback;
+  const normalized = String(value).trim().toLowerCase();
+  if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
+  if (['false', '0', 'no', 'off'].includes(normalized)) return false;
+  return fallback;
+};
+
 const defaults = {
   PORT: 8080,
+  STRIPE_WEBHOOK_TOLERANCE_SECONDS: 300,
   UPLOAD_PATH: './uploads',
   RESOURCES_UPLOAD_DIR: './uploads/resources',
   CORS_ALLOWED_ORIGINS: [
@@ -49,6 +58,14 @@ const env = {
 
   // Notifications poll interval (frontend default if sockets not used)
   NOTIFICATIONS_POLL_INTERVAL_MS: Number(process.env.NOTIFICATIONS_POLL_INTERVAL_MS) || defaults.NOTIFICATIONS_POLL_INTERVAL_MS,
+
+  STRIPE_ENABLED: toBool(process.env.STRIPE_ENABLED, false),
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
+  STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || '',
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+  STRIPE_WEBHOOK_PATH_TOKEN: process.env.STRIPE_WEBHOOK_PATH_TOKEN || '',
+  STRIPE_WEBHOOK_TOLERANCE_SECONDS: Number(process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS) || defaults.STRIPE_WEBHOOK_TOLERANCE_SECONDS,
 };
 
 module.exports = env;
+

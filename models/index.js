@@ -29,6 +29,7 @@ const ManufacturerSubType = require('./ManufacturerSubType');
 const CatalogSubTypeAssignment = require('./CatalogSubTypeAssignment');
 const Payment = require('./Payment');
 const PaymentConfiguration = require('./PaymentConfiguration');
+const ProcessedWebhookEvent = require('./ProcessedWebhookEvent');
 
 // New models
 const Category = require('./Category');
@@ -194,6 +195,8 @@ Order.belongsTo(User, { foreignKey: 'accepted_by_user_id', as: 'creator' });
 Order.hasMany(Payment, { foreignKey: 'orderId', as: 'payments' });
 Payment.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 Payment.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+Payment.hasMany(ProcessedWebhookEvent, { foreignKey: 'payment_id', as: 'webhookEvents' });
+ProcessedWebhookEvent.belongsTo(Payment, { foreignKey: 'payment_id', as: 'payment' });
 
 // Resource hierarchy associations
 ResourceCategory.hasMany(ResourceCategory, { foreignKey: 'parent_id', as: 'children' });
@@ -283,6 +286,7 @@ module.exports = {
     CatalogSubTypeAssignment,
     Payment,
     PaymentConfiguration,
+    ProcessedWebhookEvent,
     // New models
     Category,
     Menu,
@@ -309,3 +313,6 @@ module.exports = {
     PdfCustomizations,
     Lead
 };
+
+
+

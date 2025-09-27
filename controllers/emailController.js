@@ -1,237 +1,188 @@
 const { getPuppeteer } = require('../utils/puppeteerLauncher');
 
-const PdfPrinter = require('pdfmake');
 require('dotenv').config();
-
-// Built-in fonts (no file dependency)
-const fonts = {
-    Helvetica: {
-        normal: 'Helvetica',
-        bold: 'Helvetica-Bold',
-        italics: 'Helvetica-Oblique',
-        bolditalics: 'Helvetica-BoldOblique',
-    },
-};
-
-const printer = new PdfPrinter(fonts);
+const { sanitizeHtml } = require('../utils/htmlSanitizer');
 
 // Nodemailer transporter
 const { sendMail } = require('../utils/mail');
 
-// // Send Proposal Email with PDF attachment
-// exports.sendProposalEmail = async (req, res) => {
-//     try {
-//         const {
-//             email,
-//             body,
-//             versions,
-//             sendCopy,
-//             proposalSummary,
-//             stylesData,
-//             priceSummary,
-//             proposalItems,
-//         } = req.body;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_SUBJECT_LENGTH = 160;
 
+const sanitizeSubject = (value) => {
+  if (!value) return 'Your Proposal';
+  const cleaned = sanitizeHtml(String(value), {
+    allowedTags: [],
+    allowedAttributes: {},
+    allowDataAttributes: false,
+  })
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!cleaned) return 'Your Proposal';
+  return cleaned.slice(0, MAX_SUBJECT_LENGTH);
+};
 
-//         // Build PDF document definition
-//         const docDefinition = {
-//             content: [
-//                 { text: 'Proposal Summary', style: 'header' },
-//                 { text: `To: ${email}`, margin: [0, 5] },
-//                 { text: `Versions: ${versions}`, margin: [0, 5] },
-//                 { text: `Include Proposal Items: ${sendCopy ? 'Yes' : 'No'}`, margin: [0, 5] },
-
-//                 { text: '\nProposal Details', style: 'subheader' },
-//                 {
-//                     ul: [
-//                         `Description: ${proposalSummary.description}`,
-//                         `Designer: ${proposalSummary.designer}`,
-//                         `Customer: ${proposalSummary.customer}`,
-//                         `Date: ${proposalSummary.date}`,
-//                     ]
-//                 },
-
-//                 { text: '\nStyles', style: 'subheader' },
-//                 ...stylesData.map(style => ({
-//                     ul: [
-//                         `Version: ${style.versionName}`,
-//                         `Style: ${style.styleName}`,
-//                         `Short Name: ${style.styleShortname}`,
-//                         `Assembly Option: ${style.assemblyOption}`,
-//                         `Image: ${style.image}`,  // Note: This will just print the URL unless you handle images in PDF
-//                     ]
-//                 })),
-
-//                 { text: '\nPrice Summary', style: 'subheader' },
-//                 {
-//                     ul: [
-//                         `Cabinets: $${priceSummary.cabinets}`,
-//                         `Assembly Fee: $${priceSummary.assemblyFee}`,
-//                         `Modifications: $${priceSummary.modifications}`,
-//                         `Style Total: $${priceSummary.styleTotal}`,
-//                         `Total: $${priceSummary.total}`,
-//                         `Tax: $${priceSummary.tax}`,
-//                         `Grand Total: $${priceSummary.grandTotal}`,
-//                     ]
-//                 },
-
-//                 { text: '\nProposal Items', style: 'subheader' },
-//                 {
-//                     table: {
-//                         headerRows: 1,
-//                         widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-//                         body: [
-//                             ['Qty', 'Item', 'Assembled', 'Hinge Side', 'Exposed Side', 'Price', 'Assembly Cost', 'Total'],
-//                             ...proposalItems.map(item => [
-//                                 item.qty,
-//                                 item.item,
-//                                 item.assembled,
-//                                 item.hingeSide,
-//                                 item.exposedSide,
-//                                 `$${item.price.toFixed(2)}`,
-//                                 `$${item.assemblyCost.toFixed(2)}`,
-//                                 `$${item.total.toFixed(2)}`
-//                             ])
-//                         ],
-//                     }
-//                 }
-//             ],
-//             styles: {
-//                 header: { fontSize: 18, bold: true },
-//                 subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-//             },
-//             defaultStyle: {
-//                 font: 'Helvetica',
-//             },
-//         };
-
-
-//         // Generate PDF in memory
-//         const pdfDoc = printer.createPdfKitDocument(docDefinition);
-//         const chunks = [];
-
-//         pdfDoc.on('data', (chunk) => chunks.push(chunk));
-//         pdfDoc.on('end', async () => {
-//             const pdfBuffer = Buffer.concat(chunks);
-
-//             // Send email with PDF attachment
-//             await transporter.sendMail({
-//                 from: process.env.GMAIL_USER,
-//                 to: email,
-//                 subject: 'Your Proposal',
-//                 html: body,
-//                 attachments: [
-//                     {
-//                         filename: 'Proposal.pdf',
-//                         content: pdfBuffer,
-//                     },
-//                 ],
-//             });
-
-//             return res.status(200).json({ success: true, message: 'Email sent successfully' });
-//         });
-
-//         pdfDoc.end();
-
-//     } catch (error) {
-//         console.error('Error sending proposal email:', error);
-//         return res.status(500).json({ success: false, error: 'Failed to send email' });
-//     }
-// };
+const sanitizeFilename = (value) => {
+  const fallback = 'Proposal.pdf';
+  if (!value) return fallback;
+  const trimmed = String(value).trim();
+  if (!trimmed) return fallback;
+  const safe = trimmed.replace(/[^a-z0-9_\-.]+/gi, '_');
+  if (!safe.toLowerCase().endsWith('.pdf')) {
+    return `${safe}.pdf`;
+  }
+  return safe;
+};
 
 exports.sendProposalEmail = async (req, res) => {
-    try {
-        const {
-            email,
-            body,
-            versions,
-            sendCopy,
-            htmlContent, // New field for HTML content
-            noSend, // optional test flag to skip actual email and return pdf size
-            subject: incomingSubject, // optional subject override
-            attachmentFilename, // optional attachment filename override
-        } = req.body;
+  try {
+    const {
+      email,
+      body,
+      htmlContent,
+      noSend,
+      subject: incomingSubject,
+      attachmentFilename,
+    } = req.body || {};
 
-    // Initialize Puppeteer (prefers system Chromium / puppeteer-core if available)
-        if (!htmlContent || String(htmlContent).trim().length < 100) {
-            // If frontend payload was truncated or missing, fail fast with an explicit message
-            return res.status(400).json({ success: false, error: 'Invalid or empty htmlContent received' });
-        }
-
-        const { puppeteer, launchOptions } = getPuppeteer();
-    const browser = await puppeteer.launch(launchOptions);
-        const page = await browser.newPage();
-
-        // Set the HTML content
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-        // Generate PDF
-        const pdfBuffer = await page.pdf({
-            format: 'A4',
-            margin: {
-                top: '20mm',
-                right: '20mm',
-                bottom: '20mm',
-                left: '20mm',
-            },
-            printBackground: true,
-        });
-
-        await browser.close();
-
-        let pdfBytes = 0;
-        if (Buffer.isBuffer(pdfBuffer)) {
-            pdfBytes = pdfBuffer.length;
-        } else if (pdfBuffer && typeof pdfBuffer.byteLength === 'number') {
-            // Covers Uint8Array and ArrayBuffer
-            pdfBytes = pdfBuffer.byteLength;
-        } else if (pdfBuffer && typeof pdfBuffer.length === 'number') {
-            pdfBytes = pdfBuffer.length;
-        }
-
-        // Optional debug logging to troubleshoot empty PDFs when called via frontend route
-        if (process.env.DEBUG_EMAIL_PDF === '1') {
-            try {
-                console.error(`[EMAIL PDF] Incoming htmlContent length=${htmlContent ? String(htmlContent).length : 0}`);
-                console.error(`[EMAIL PDF] Generated pdfBytes=${pdfBytes}`);
-            } catch {}
-        }
-
-        // In test mode or when explicitly requested, do not actually send the email.
-        if (noSend || process.env.EMAIL_DRY_RUN === '1') {
-            return res.status(200).json({ success: true, message: 'PDF generated (email skipped)', skippedSend: true, pdfBytes });
-        }
-
-        // Set up Nodemailer transporter
-        // const transporter = nodemailer.createTransport({
-        //     service: 'gmail',
-        //     auth: {
-        //         user: process.env.GMAIL_USER,
-        //         pass: process.env.GMAIL_PASS,
-        //     },
-        // });
-
-        // Send email with PDF attachment
-        // Default subject and filename
-        const subject = (incomingSubject && String(incomingSubject).trim()) || 'Your Proposal';
-        const filename = (attachmentFilename && String(attachmentFilename).trim()) || 'Proposal.pdf';
-
-        await sendMail({
-            to: email,
-            subject,
-            html: body,
-            attachments: [
-                {
-                    filename,
-                    content: pdfBuffer,
-                    contentType: 'application/pdf',
-                },
-            ],
-        });
-
-        return res.status(200).json({ success: true, message: 'Email sent successfully', pdfBytes });
-    } catch (error) {
-        console.error('Error sending proposal email:', error);
-        return res.status(500).json({ success: false, error: 'Failed to send email' });
+    const recipient = typeof email === 'string' ? email.trim() : '';
+    if (!recipient || recipient.length > 320 || !EMAIL_REGEX.test(recipient)) {
+      return res.status(400).json({ success: false, error: 'A valid recipient email is required.' });
     }
+
+    const trimmedHtml = typeof htmlContent === 'string' ? htmlContent.trim() : '';
+    if (!trimmedHtml || trimmedHtml.length < 100) {
+      return res.status(400).json({ success: false, error: 'Invalid or empty htmlContent received' });
+    }
+
+    const sanitizedHtml = sanitizeHtml(trimmedHtml, { allowIframes: false });
+    const sanitizedBody = body ? sanitizeHtml(String(body)) : '';
+
+    const { puppeteer, launchOptions } = getPuppeteer();
+    const browser = await puppeteer.launch(launchOptions);
+    let page;
+    let pdfBuffer;
+    try {
+      page = await browser.newPage();
+
+      const allowedHosts = new Set();
+      const appendHost = (value) => {
+        if (!value) return;
+        const trimmed = String(value).trim();
+        if (!trimmed) return;
+        try {
+          const parsed = new URL(trimmed);
+          if (parsed.hostname) {
+            allowedHosts.add(parsed.hostname);
+            return;
+          }
+        } catch (_) {
+          // ignore, fall through to raw host handling below
+        }
+        allowedHosts.add(trimmed.replace(/^https?:\/\//, ''));
+      };
+
+      appendHost(process.env.APP_URL);
+      appendHost(process.env.STATIC_ASSET_URL);
+      (process.env.PUPPETEER_ALLOWED_HOSTS || '')
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .forEach(appendHost);
+
+      await page.setRequestInterception(true);
+      const requestHandler = (request) => {
+        const url = request.url();
+        if (url.startsWith('data:') || url.startsWith('about:')) {
+          return request.continue();
+        }
+
+        let parsed;
+        try {
+          parsed = new URL(url);
+        } catch (_) {
+          return request.abort();
+        }
+
+        if (parsed.protocol !== 'https:') {
+          return request.abort();
+        }
+
+        if (allowedHosts.size && !allowedHosts.has(parsed.hostname)) {
+          return request.abort();
+        }
+
+        if (!['GET', 'HEAD'].includes(request.method())) {
+          return request.abort();
+        }
+
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame() && parsed.origin !== 'about:blank') {
+          return request.abort();
+        }
+
+        return request.continue();
+      };
+
+      page.on('request', requestHandler);
+
+      await page.setContent(sanitizedHtml, { waitUntil: 'networkidle0' });
+      pdfBuffer = await page.pdf({
+        format: 'A4',
+        margin: {
+          top: '20mm',
+          right: '20mm',
+          bottom: '20mm',
+          left: '20mm',
+        },
+        printBackground: true,
+      });
+    } finally {
+      if (page) {
+        page.removeAllListeners('request');
+      }
+      await browser.close().catch(() => {});
+    }
+
+    let pdfBytes = 0;
+    if (Buffer.isBuffer(pdfBuffer)) {
+      pdfBytes = pdfBuffer.length;
+    } else if (pdfBuffer && typeof pdfBuffer.byteLength === 'number') {
+      pdfBytes = pdfBuffer.byteLength;
+    } else if (pdfBuffer && typeof pdfBuffer.length === 'number') {
+      pdfBytes = pdfBuffer.length;
+    }
+
+    if (process.env.DEBUG_EMAIL_PDF === '1') {
+      try {
+        console.error(`[EMAIL PDF] Incoming htmlContent length=${trimmedHtml.length}`);
+        console.error(`[EMAIL PDF] Generated pdfBytes=${pdfBytes}`);
+      } catch (_) {}
+    }
+
+    if (noSend || process.env.EMAIL_DRY_RUN === '1') {
+      return res.status(200).json({ success: true, message: 'PDF generated (email skipped)', skippedSend: true, pdfBytes });
+    }
+
+    const subject = sanitizeSubject(incomingSubject);
+    const filename = sanitizeFilename(attachmentFilename);
+
+    await sendMail({
+      to: recipient,
+      subject,
+      html: sanitizedBody || '<p>Please see the attached proposal.</p>',
+      attachments: [
+        {
+          filename,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+
+    return res.status(200).json({ success: true, message: 'Email sent successfully', pdfBytes });
+  } catch (error) {
+    console.error('Error sending proposal email:', error);
+    return res.status(500).json({ success: false, error: 'Failed to send email' });
+  }
 };

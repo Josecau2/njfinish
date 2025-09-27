@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const env = require('../config/env');
 
 // Order model stores a static snapshot when a proposal is accepted
 const Order = sequelize.define('order', {
@@ -175,11 +176,14 @@ Order.addHook('afterCreate', async (order, options) => {
       if (!existingPayment) {
         const amount = order.grand_total_cents / 100; // Convert cents to dollars
 
+        const amountCents = Number.isFinite(order.grand_total_cents) ? order.grand_total_cents : Math.round((amount || 0) * 100);
         await Payment.create({
           orderId: order.id,
-          amount: amount,
+          amount_cents: amountCents,
+          amount: amountCents / 100,
           currency: order.currency || 'USD',
           status: 'pending',
+          gateway: 'manual',
           createdBy: order.accepted_by_user_id || order.created_by_user_id
         });
 
@@ -197,3 +201,6 @@ Order.addHook('afterCreate', async (order, options) => {
 });
 
 module.exports = Order;
+
+
+

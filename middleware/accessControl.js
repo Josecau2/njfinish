@@ -37,6 +37,8 @@ exports.fullAccessControl = [
   injectGroupScoping
 ];
 
+exports.attachPermissions = attachPermissions;
+
 /**
  * Permission checking middleware
  */

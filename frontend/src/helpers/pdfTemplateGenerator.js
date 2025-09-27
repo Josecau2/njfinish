@@ -1,6 +1,8 @@
 // Centralized PDF template generator for consistent proposal formatting
 // This ensures all users get the same customized PDF when printing proposals
 
+import { buildUploadUrl } from '../utils/uploads';
+
 export const generateProposalPdfTemplate = (formData, values, pdfCustomization, t, shortLabel, i18n) => {
     const {
         companyName,
@@ -17,7 +19,7 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
     // Construct logo URL consistently
     const api_url = import.meta.env.VITE_API_URL;
     const logoUrl = headerLogo
-        ? `${api_url}/uploads/manufacturer_catalogs/${headerLogo}`
+        ? buildUploadUrl(`/uploads/manufacturer_catalogs/${headerLogo}`)
         : null;
 
     // Get proposal data consistently

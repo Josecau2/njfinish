@@ -23,10 +23,23 @@ const PaymentConfiguration = sequelize.define('PaymentConfiguration', {
   apiKey: {
     type: DataTypes.STRING(255),
     allowNull: true,
+    comment: 'Stripe secret key (write-only)'
   },
   webhookSecret: {
     type: DataTypes.STRING(255),
     allowNull: true,
+    comment: 'Stripe webhook signing secret (write-only)'
+  },
+  stripePublishableKey: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    comment: 'Stripe publishable key exposed to frontend'
+  },
+  cardPaymentsEnabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: 'Feature flag for Stripe card payments'
   },
   isActive: {
     type: DataTypes.BOOLEAN,
@@ -54,3 +67,4 @@ const PaymentConfiguration = sequelize.define('PaymentConfiguration', {
 });
 
 module.exports = PaymentConfiguration;
+

@@ -86,7 +86,8 @@
     "filterByType": "Filter by type...",
     "leaveEmptyKeepExisting": "Leave empty to keep existing",
     "egSevenToFourteenDays": "e.g., 7-14 days",
-    "egThreeToSevenDays": "e.g., 3-7 days"
+    "egThreeToSevenDays": "e.g., 3-7 days",
+    "continue": "Continue"
   },
   "globalMods": {
     "modal": {
@@ -681,18 +682,16 @@
     },
     "status": {
       "all": "All",
-      "pending": "Pending",
+      "completed": "Paid",
       "processing": "Processing",
-      "completed": "Completed",
-      "paid": "Paid",
+      "pending": "Payment Required",
       "failed": "Failed",
-      "cancelled": "Cancelled",
-      "paymentRequired": "Payment Required"
+      "cancelled": "Cancelled"
     },
     "headers": {
       "date": "Date",
       "customer": "Customer",
-      "order": "Order",
+      "orderNumber": "Order #",
       "amount": "Amount",
       "status": "Status",
       "transaction": "Transaction ID",
@@ -703,7 +702,7 @@
     },
     "searchPlaceholder": "Search by customer, contractor, or transaction ID",
     "searchAria": "Search payments",
-    "showingCount": "Showing {{count}} of {{total}}",
+    "showingCount": "Showing {{count}} of {{total}} payments",
     "empty": {
       "title": "No payments found",
       "subtitle": "Payments will appear here when created"
@@ -715,22 +714,24 @@
       "orderIdLabel": "Order ID",
       "orderIdPlaceholder": "Enter order ID",
       "invalidOrderId": "Please enter a valid order ID",
-      "amountTitle": "Payment Amount",
-      "amountLabel": "Amount",
-      "amountPlaceholder": "Enter amount",
-      "invalidAmount": "Please enter a valid amount",
+      "gatewayTitle": "Select payment type",
+      "gatewayRequired": "Select a payment type",
       "success": "Payment created successfully",
+      "successStripe": "Stripe payment created successfully. Customers can now complete payment online.",
       "error": "Failed to create payment"
     },
     "appliedOn": "Applied on",
     "apply": {
-      "confirmTitle": "Apply Payment?",
+      "button": "Apply",
       "confirmText": "This will mark the payment as completed.",
       "methodLabel": "Payment Method",
-      "confirmYes": "Yes, apply it",
       "selectMethodPlaceholder": "Select payment method",
       "checkNumberLabel": "Check Number",
       "checkNumberPlaceholder": "Enter check number",
+      "confirmTitle": "Apply Payment?",
+      "confirmYes": "Yes, apply it",
+      "success": "Payment applied",
+      "error": "Failed to apply",
       "validation": {
         "selectMethod": "Please select a payment method",
         "checkNumber": "Please enter a check number"
@@ -738,6 +739,10 @@
     },
     "mobile": {
       "orderNumber": "Order #{{id}}"
+    },
+    "gateway": {
+      "stripe": "Stripe",
+      "manual": "Manual"
     }
   },
   "payment": {
@@ -772,13 +777,15 @@
     },
     "unavailable": {
       "title": "Payment Unavailable",
-      "subtitle": "This payment cannot be processed at this time",
-      "message": "This payment is not available for processing. Status:"
+      "subtitle": "Card payments are currently disabled",
+      "configuration": "Please contact an administrator to enable Stripe payments.",
+      "status": "This payment is not available for processing right now. Current status:"
     },
     "success": {
       "title": "Payment Successful!",
       "message": "Your payment has been processed successfully.",
-      "continue": "Continue"
+      "viewPayments": "View payments",
+      "stay": "Stay here"
     },
     "error": {
       "title": "Payment Failed",
@@ -793,7 +800,25 @@
       "simulatedFailure": "Simulated failure",
       "transactionIdLabel": "Transaction ID"
     },
-    "formRegion": "Payment form"
+    "formRegion": "Payment form",
+    "retry": "Retry Payment",
+    "confirm": "Confirm Payment",
+    "viewPayments": "View Payments",
+    "failed": {
+      "title": "Payment failed",
+      "message": "Stripe was unable to complete the payment. Please try again."
+    },
+    "status": {
+      "completed": "Payment completed successfully.",
+      "failed": "Payment failed. Please try again.",
+      "pending": "Awaiting confirmation...",
+      "pendingTitle": "Awaiting confirmation",
+      "processing": "Payment is processing. Please wait..."
+    },
+    "receipt": {
+      "available": "Receipt available",
+      "view": "View Receipt"
+    }
   },
   "paymentConfig": {
     "title": "Payment Configuration",
@@ -803,7 +828,8 @@
       "provider": "Gateway Provider",
       "url": "Gateway URL",
       "urlPlaceholder": "https://your-payment-gateway.com/checkout",
-      "urlHelp": "The URL where customers will be redirected to make payments"
+      "urlHelp": "The URL where customers will be redirected to make payments",
+      "subtitle": "Manage how customers submit payments to your business"
     },
     "providers": {
       "stripe": "Stripe",
@@ -823,7 +849,8 @@
     },
     "advanced": {
       "title": "Advanced Settings (JSON)",
-      "help": "Additional configuration options in JSON format"
+      "help": "Additional configuration options in JSON format",
+      "invalidJson": "Advanced settings must be valid JSON."
     },
     "preview": {
       "title": "Configuration Preview",
@@ -840,6 +867,22 @@
       "noUrl": "Please configure a gateway URL first",
       "success": "Configuration appears valid. Please test with a real payment to confirm.",
       "invalidUrl": "Invalid gateway URL"
+    },
+    "stripe": {
+      "cardTitle": "Stripe Card Payments",
+      "enableLabel": "Enable card payments with Stripe",
+      "enableHelp": "Customers will pay using Stripe Payment Intents.",
+      "publishableKey": "Publishable key",
+      "secretKey": "Secret key",
+      "webhookSecret": "Webhook signing secret",
+      "securityNote": "Secrets are stored server-side. Choose “Replace” to update them, or “Remove” to clear the value.",
+      "cardStatus": "Card payments enabled",
+      "secret": {
+        "keepExisting": "Keep existing value",
+        "noneStored": "No value stored",
+        "replace": "Replace with new value",
+        "clear": "Remove value"
+      }
     }
   },
   "demo": {

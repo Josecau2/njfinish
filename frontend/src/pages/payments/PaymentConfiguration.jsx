@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -9,13 +9,16 @@ import {
   CCol,
   CContainer,
   CForm,
+  CFormCheck,
   CFormInput,
   CFormLabel,
   CFormSelect,
+  CFormSwitch,
   CFormTextarea,
   CRow,
   CSpinner,
   CAlert,
+  CCollapse,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilSettings, cilSave } from '../../icons';
@@ -26,8 +29,14 @@ import {
   updatePaymentConfig,
   clearConfigError,
 } from '../../store/slices/paymentsSlice';
-import { FaCogs } from 'react-icons/fa';
+import { FaCogs, FaCreditCard } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+
+const SECRET_ACTIONS = {
+  KEEP: 'keep',
+  REPLACE: 'replace',
+  CLEAR: 'clear',
+};
 
 const PaymentConfiguration = () => {
   const { t } = useTranslation();
@@ -40,6 +49,17 @@ const PaymentConfiguration = () => {
     embedCode: '',
     supportedCurrencies: ['USD'],
     settings: {},
+    cardPaymentsEnabled: false,
+    stripePublishableKey: '',
+  });
+
+  const [secretState, setSecretState] = useState({
+    hasSecretKey: false,
+    hasWebhookSecret: false,
+    secretKeyAction: SECRET_ACTIONS.KEEP,
+    secretKeyValue: '',
+    webhookSecretAction: SECRET_ACTIONS.KEEP,
+    webhookSecretValue: '',
   });
 
   const [isDirty, setIsDirty] = useState(false);
@@ -50,32 +70,39 @@ const PaymentConfiguration = () => {
 
   useEffect(() => {
     if (paymentConfig) {
-      console.log('PaymentConfig received:', paymentConfig);
-      console.log('supportedCurrencies type:', typeof paymentConfig.supportedCurrencies);
-      console.log('supportedCurrencies isArray:', Array.isArray(paymentConfig.supportedCurrencies));
-
       setFormData({
         gatewayProvider: paymentConfig.gatewayProvider || 'stripe',
         gatewayUrl: paymentConfig.gatewayUrl || '',
         embedCode: paymentConfig.embedCode || '',
-    // Normalize to an array; handle string (comma-separated) or null/undefined
-    supportedCurrencies: Array.isArray(paymentConfig.supportedCurrencies)
-      ? paymentConfig.supportedCurrencies
-      : (typeof paymentConfig.supportedCurrencies === 'string'
-        ? paymentConfig.supportedCurrencies
-          .split(',')
-          .map((c) => c.trim().toUpperCase())
-          .filter(Boolean)
-        : ['USD']),
+        supportedCurrencies: Array.isArray(paymentConfig.supportedCurrencies)
+          ? paymentConfig.supportedCurrencies
+          : (typeof paymentConfig.supportedCurrencies === 'string'
+            ? paymentConfig.supportedCurrencies
+              .split(',')
+              .map((c) => c.trim().toUpperCase())
+              .filter(Boolean)
+            : ['USD']),
         settings: paymentConfig.settings || {},
+        cardPaymentsEnabled: Boolean(paymentConfig.cardPaymentsEnabled),
+        stripePublishableKey: paymentConfig.stripePublishableKey || '',
       });
+      setSecretState((prev) => ({
+        ...prev,
+        hasSecretKey: Boolean(paymentConfig.hasSecretKey),
+        hasWebhookSecret: Boolean(paymentConfig.hasWebhookSecret),
+        secretKeyAction: SECRET_ACTIONS.KEEP,
+        secretKeyValue: '',
+        webhookSecretAction: SECRET_ACTIONS.KEEP,
+        webhookSecretValue: '',
+      }));
+      setIsDirty(false);
     }
   }, [paymentConfig]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     setIsDirty(true);
   };
@@ -85,15 +112,86 @@ const PaymentConfiguration = () => {
       .split(',')
       .map((c) => c.trim().toUpperCase())
       .filter((c) => c);
-    handleInputChange('supportedCurrencies', currencies);
+    handleInputChange('supportedCurrencies', currencies.length ? currencies : ['USD']);
+  };
+
+  const handleSecretActionChange = (field, action) => {
+    setSecretState((prev) => ({
+      ...prev,
+      [field]: action,
+      ...(field === 'secretKeyAction' ? { secretKeyValue: '' } : {}),
+      ...(field === 'webhookSecretAction' ? { webhookSecretValue: '' } : {}),
+    }));
+    setIsDirty(true);
+  };
+
+  const handleSecretValueChange = (field, value) => {
+    setSecretState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    setIsDirty(true);
+  };
+
+  const parseSettings = () => {
+    const value = formData.settings;
+    if (typeof value === 'string') {
+      if (!value.trim()) return {};
+      try {
+        return JSON.parse(value);
+      } catch (err) {
+        Swal.fire(
+          t('common.error', 'Error'),
+          t('paymentConfig.advanced.invalidJson', 'Advanced settings must be valid JSON.'),
+          'error'
+        );
+        throw err;
+      }
+    }
+    return value || {};
+  };
+
+  const buildPayload = () => {
+    const payload = {
+      gatewayProvider: formData.gatewayProvider,
+      supportedCurrencies: formData.supportedCurrencies,
+      settings: parseSettings(),
+    };
+
+    if (formData.gatewayProvider === 'stripe') {
+      payload.cardPaymentsEnabled = Boolean(formData.cardPaymentsEnabled);
+      payload.stripePublishableKey = formData.stripePublishableKey || null;
+
+      if (secretState.secretKeyAction === SECRET_ACTIONS.REPLACE) {
+        payload.apiKey = secretState.secretKeyValue || null;
+      } else if (secretState.secretKeyAction === SECRET_ACTIONS.CLEAR) {
+        payload.apiKey = null;
+      }
+
+      if (secretState.webhookSecretAction === SECRET_ACTIONS.REPLACE) {
+        payload.webhookSecret = secretState.webhookSecretValue || null;
+      } else if (secretState.webhookSecretAction === SECRET_ACTIONS.CLEAR) {
+        payload.webhookSecret = null;
+      }
+
+      // Backward compatibility: allow optional manual fields only when embed/custom provider selected
+      payload.gatewayUrl = '';
+      payload.embedCode = '';
+    } else {
+      payload.cardPaymentsEnabled = false;
+      payload.gatewayUrl = formData.gatewayUrl;
+      payload.embedCode = formData.embedCode;
+      payload.stripePublishableKey = null;
+      payload.apiKey = null;
+      payload.webhookSecret = null;
+    }
+
+    return payload;
   };
 
   const handleSave = async () => {
     try {
-      const payload = {
-        ...formData,
-        settings: typeof formData.settings === 'string' ? JSON.parse(formData.settings) : formData.settings,
-      };
+      const payload = buildPayload();
 
       if (paymentConfig?.id) {
         await dispatch(updatePaymentConfig({ id: paymentConfig.id, ...payload })).unwrap();
@@ -102,6 +200,13 @@ const PaymentConfiguration = () => {
       }
 
       setIsDirty(false);
+      setSecretState((prev) => ({
+        ...prev,
+        secretKeyAction: SECRET_ACTIONS.KEEP,
+        webhookSecretAction: SECRET_ACTIONS.KEEP,
+        secretKeyValue: '',
+        webhookSecretValue: '',
+      }));
 
       Swal.fire(
         t('common.success', 'Success'),
@@ -117,56 +222,89 @@ const PaymentConfiguration = () => {
     }
   };
 
-  const handleTestConfiguration = async () => {
-    if (!formData.gatewayUrl) {
-      Swal.fire(
-        t('common.error', 'Error'),
-        t('paymentConfig.test.noUrl', 'Please configure a gateway URL first'),
-        'warning'
-      );
-      return;
+  const handleCancel = () => {
+    dispatch(clearConfigError());
+    if (paymentConfig) {
+      setFormData({
+        gatewayProvider: paymentConfig.gatewayProvider || 'stripe',
+        gatewayUrl: paymentConfig.gatewayUrl || '',
+        embedCode: paymentConfig.embedCode || '',
+        supportedCurrencies: paymentConfig.supportedCurrencies || ['USD'],
+        settings: paymentConfig.settings || {},
+        cardPaymentsEnabled: Boolean(paymentConfig.cardPaymentsEnabled),
+        stripePublishableKey: paymentConfig.stripePublishableKey || '',
+      });
+      setSecretState((prev) => ({
+        ...prev,
+        secretKeyAction: SECRET_ACTIONS.KEEP,
+        webhookSecretAction: SECRET_ACTIONS.KEEP,
+        secretKeyValue: '',
+        webhookSecretValue: '',
+      }));
     }
-
-    try {
-      // Simple URL validation
-      new URL(formData.gatewayUrl);
-
-      Swal.fire(
-        t('common.success', 'Success'),
-        t('paymentConfig.test.success', 'Configuration appears valid. Please test with a real payment to confirm.'),
-        'success'
-      );
-    } catch (error) {
-      Swal.fire(
-        t('common.error', 'Error'),
-        t('paymentConfig.test.invalidUrl', 'Invalid gateway URL'),
-        'error'
-      );
-    }
+    setIsDirty(false);
   };
 
-  // Safe getter for currencies text representation
-  const getCurrenciesText = () => {
-    if (Array.isArray(formData.supportedCurrencies)) {
-      return formData.supportedCurrencies.join(', ');
-    }
-    if (typeof formData.supportedCurrencies === 'string') {
-      return formData.supportedCurrencies;
-    }
-    return '';
+  const renderSecretRadios = (field, actionField, hasValue) => {
+    const action = secretState[actionField];
+    const valueField = actionField === 'secretKeyAction' ? 'secretKeyValue' : 'webhookSecretValue';
+    return (
+      <div className="d-flex flex-column gap-2">
+        <div className="d-flex flex-column gap-1">
+          <CFormCheck
+            type="radio"
+            name={actionField}
+            id={`${actionField}-keep`}
+            label={hasValue ? t('paymentConfig.stripe.secret.keepExisting', 'Keep existing value') : t('paymentConfig.stripe.secret.noneStored', 'No value stored')}
+            checked={action === SECRET_ACTIONS.KEEP}
+            disabled={!hasValue}
+            onChange={() => handleSecretActionChange(actionField, SECRET_ACTIONS.KEEP)}
+          />
+          <CFormCheck
+            type="radio"
+            name={actionField}
+            id={`${actionField}-replace`}
+            label={t('paymentConfig.stripe.secret.replace', 'Replace with new value')}
+            checked={action === SECRET_ACTIONS.REPLACE}
+            onChange={() => handleSecretActionChange(actionField, SECRET_ACTIONS.REPLACE)}
+          />
+          <CFormCheck
+            type="radio"
+            name={actionField}
+            id={`${actionField}-clear`}
+            label={t('paymentConfig.stripe.secret.clear', 'Remove value')}
+            checked={action === SECRET_ACTIONS.CLEAR}
+            onChange={() => handleSecretActionChange(actionField, SECRET_ACTIONS.CLEAR)}
+          />
+        </div>
+        <CCollapse visible={action === SECRET_ACTIONS.REPLACE}>
+          <CFormInput
+            type="password"
+            autoComplete="off"
+            value={secretState[valueField]}
+            onChange={(e) => handleSecretValueChange(valueField, e.target.value)}
+            placeholder={field === 'secret' ? 'sk_live_...' : 'whsec_...'}
+          />
+        </CCollapse>
+      </div>
+    );
   };
+
+  const getCurrenciesText = useMemo(() => () => (formData.supportedCurrencies || []).join(', '), [formData.supportedCurrencies]);
+
+  const showLegacyFields = formData.gatewayProvider !== 'stripe';
 
   return (
     <CContainer fluid className="payment-config">
-      <style>{`
-        /* Small, safe, component-scoped mobile tweaks */
-        .payment-config .card-header .d-flex { gap: 0.5rem; flex-wrap: wrap; }
-        @media (max-width: 576px) {
+      <style>
+        {`
+          .payment-config .card-header .d-flex { gap: 0.5rem; flex-wrap: wrap; }
           .payment-config .card-header .d-flex > .btn { flex: 1 1 auto; min-height: 44px; }
           .payment-config .card-body .row + .row { margin-top: 0.5rem; }
           .payment-config textarea, .payment-config input, .payment-config select { min-height: 44px; }
-        }
-      `}</style>
+        `}
+      </style>
+
       <PageHeader
         title={t('paymentConfig.title', 'Payment Configuration')}
         subtitle={t('paymentConfig.subtitle', 'Configure payment gateway settings and embedded payment forms')}
@@ -174,43 +312,35 @@ const PaymentConfiguration = () => {
       />
 
       {configError && (
-        <CAlert color="danger" dismissible onClose={() => dispatch(clearConfigError())}>
+        <CAlert color="danger" className="mb-3" dismissible onClose={() => dispatch(clearConfigError())}>
           {configError}
         </CAlert>
       )}
 
       <CCard>
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">
-            <CIcon icon={cilSettings} className="me-2" />
-            {t('paymentConfig.gateway.title', 'Payment Gateway Settings')}
-          </h5>
+        <CCardHeader className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-3">
+            <CIcon icon={cilSettings} />
+            <div>
+              <h5 className="mb-0">{t('paymentConfig.gateway.title', 'Payment Gateway Settings')}</h5>
+              <small className="text-muted">
+                {t('paymentConfig.gateway.subtitle', 'Manage how customers submit payments to your business')}
+              </small>
+            </div>
+          </div>
           <div className="d-flex gap-2">
-            <CButton
-              color="secondary"
-              variant="outline"
-              onClick={handleTestConfiguration}
-              disabled={configLoading}
-            >
-              {t('paymentConfig.test.button', 'Test Configuration')}
+            <CButton color="secondary" variant="outline" disabled={!isDirty || configLoading} onClick={handleCancel}>
+              {t('common.cancel', 'Cancel')}
             </CButton>
-            <CButton
-              color="primary"
-              onClick={handleSave}
-              disabled={configLoading || !isDirty}
-            >
-              {configLoading ? (
-                <CSpinner size="sm" className="me-2" />
-              ) : (
-                <CIcon icon={cilSave} className="me-2" />
-              )}
-              {t('common.save', 'Save')}
+            <CButton color="primary" disabled={configLoading} onClick={handleSave}>
+              {configLoading ? <CSpinner size="sm" className="me-2" /> : <CIcon icon={cilSave} className="me-2" />}
+              {t('common.saveChanges', 'Save Changes')}
             </CButton>
           </div>
         </CCardHeader>
         <CCardBody>
           <CForm>
-            <CRow className="mb-3">
+            <CRow className="mb-4">
               <CCol md={6}>
                 <CFormLabel htmlFor="gatewayProvider">
                   {t('paymentConfig.gateway.provider', 'Gateway Provider')}
@@ -221,8 +351,6 @@ const PaymentConfiguration = () => {
                   onChange={(e) => handleInputChange('gatewayProvider', e.target.value)}
                 >
                   <option value="stripe">{t('paymentConfig.providers.stripe', 'Stripe')}</option>
-                  <option value="paypal">{t('paymentConfig.providers.paypal', 'PayPal')}</option>
-                  <option value="square">{t('paymentConfig.providers.square', 'Square')}</option>
                   <option value="custom">{t('paymentConfig.providers.custom', 'Custom')}</option>
                 </CFormSelect>
               </CCol>
@@ -243,42 +371,105 @@ const PaymentConfiguration = () => {
               </CCol>
             </CRow>
 
-            <CRow className="mb-3">
-              <CCol md={12}>
-                <CFormLabel htmlFor="gatewayUrl">
-                  {t('paymentConfig.gateway.url', 'Gateway URL')} *
-                </CFormLabel>
-                <CFormInput
-                  id="gatewayUrl"
-                  type="url"
-                  value={formData.gatewayUrl}
-                  onChange={(e) => handleInputChange('gatewayUrl', e.target.value)}
-                  placeholder={t('paymentConfig.gateway.urlPlaceholder', 'https://your-payment-gateway.com/checkout')}
-                  required
-                />
-                <small className="text-muted">
-                  {t('paymentConfig.gateway.urlHelp', 'The URL where customers will be redirected to make payments')}
-                </small>
-              </CCol>
-            </CRow>
+            <CCard className="mb-4">
+              <CCardHeader className="d-flex align-items-center gap-2">
+                <FaCreditCard />
+                <span>{t('paymentConfig.stripe.cardTitle', 'Stripe Card Payments')}</span>
+              </CCardHeader>
+              <CCardBody className="d-flex flex-column gap-3">
+                <div className="d-flex align-items-center justify-content-between">
+                  <div>
+                    <h6 className="mb-1">{t('paymentConfig.stripe.enableLabel', 'Enable card payments with Stripe')}</h6>
+                    <small className="text-muted">
+                      {t('paymentConfig.stripe.enableHelp', 'Customers will pay using Stripe Payment Intents.')}
+                    </small>
+                  </div>
+                  <CFormSwitch
+                    id="cardPaymentsEnabled"
+                    checked={formData.cardPaymentsEnabled}
+                    onChange={(e) => handleInputChange('cardPaymentsEnabled', e.target.checked)}
+                    label=""
+                  />
+                </div>
 
-            <CRow className="mb-3">
-              <CCol md={12}>
-                <CFormLabel htmlFor="embedCode">
-                  {t('paymentConfig.embed.title', 'Embedded Payment Form Code')}
-                </CFormLabel>
-                <CFormTextarea
-                  id="embedCode"
-                  rows={8}
-                  value={formData.embedCode}
-                  onChange={(e) => handleInputChange('embedCode', e.target.value)}
-                  placeholder={t('paymentConfig.embed.placeholder', 'Paste your payment gateway\'s embed code here...')}
-                />
-                <small className="text-muted">
-                  {t('paymentConfig.embed.help', 'Optional: HTML/JavaScript code to embed payment forms directly in your pages')}
-                </small>
-              </CCol>
-            </CRow>
+                <CCollapse visible={formData.cardPaymentsEnabled}>
+                  <CRow className="mb-3">
+                    <CCol md={6}>
+                      <CFormLabel htmlFor="stripePublishableKey">
+                        {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
+                      </CFormLabel>
+                      <CFormInput
+                        id="stripePublishableKey"
+                        autoComplete="off"
+                        value={formData.stripePublishableKey}
+                        onChange={(e) => handleInputChange('stripePublishableKey', e.target.value.trim())}
+                        placeholder="pk_live_..."
+                      />
+                    </CCol>
+                  </CRow>
+
+                  <CRow className="mb-3">
+                    <CCol md={6}>
+                      <CFormLabel>
+                        {t('paymentConfig.stripe.secretKey', 'Secret key')}
+                      </CFormLabel>
+                      {renderSecretRadios('secret', 'secretKeyAction', secretState.hasSecretKey)}
+                    </CCol>
+                    <CCol md={6}>
+                      <CFormLabel>
+                        {t('paymentConfig.stripe.webhookSecret', 'Webhook signing secret')}
+                      </CFormLabel>
+                      {renderSecretRadios('webhook', 'webhookSecretAction', secretState.hasWebhookSecret)}
+                    </CCol>
+                  </CRow>
+
+                  <CAlert color="info" className="mb-0">
+                    {t('paymentConfig.stripe.securityNote', 'Secrets are stored server-side. Choose “Replace” to update them, or “Remove” to clear the value.')}
+                  </CAlert>
+                </CCollapse>
+              </CCardBody>
+            </CCard>
+
+            {showLegacyFields && (
+              <>
+                <CRow className="mb-3">
+                  <CCol md={12}>
+                    <CFormLabel htmlFor="gatewayUrl">
+                      {t('paymentConfig.gateway.url', 'Gateway URL')} *
+                    </CFormLabel>
+                    <CFormInput
+                      id="gatewayUrl"
+                      type="url"
+                      value={formData.gatewayUrl}
+                      onChange={(e) => handleInputChange('gatewayUrl', e.target.value)}
+                      placeholder={t('paymentConfig.gateway.urlPlaceholder', 'https://your-payment-gateway.com/checkout')}
+                      required
+                    />
+                    <small className="text-muted">
+                      {t('paymentConfig.gateway.urlHelp', 'The URL where customers will be redirected to make payments')}
+                    </small>
+                  </CCol>
+                </CRow>
+
+                <CRow className="mb-3">
+                  <CCol md={12}>
+                    <CFormLabel htmlFor="embedCode">
+                      {t('paymentConfig.embed.title', 'Embedded Payment Form Code')}
+                    </CFormLabel>
+                    <CFormTextarea
+                      id="embedCode"
+                      rows={8}
+                      value={formData.embedCode}
+                      onChange={(e) => handleInputChange('embedCode', e.target.value)}
+                      placeholder={t('paymentConfig.embed.placeholder', 'Paste your payment gateway\'s embed code here...')}
+                    />
+                    <small className="text-muted">
+                      {t('paymentConfig.embed.help', 'Optional: HTML/JavaScript code to embed payment forms directly in your pages')}
+                    </small>
+                  </CCol>
+                </CRow>
+              </>
+            )}
 
             <CRow className="mb-3">
               <CCol md={12}>
@@ -307,7 +498,6 @@ const PaymentConfiguration = () => {
         </CCardHeader>
         <CCardBody>
           <div className="border rounded p-3 bg-light">
-            <h6>{t('paymentConfig.preview.current', 'Current Configuration')}</h6>
             <div className="row">
               <div className="col-md-6">
                 <strong>{t('paymentConfig.gateway.provider', 'Provider')}:</strong> {formData.gatewayProvider}
@@ -316,14 +506,27 @@ const PaymentConfiguration = () => {
                 <strong>{t('paymentConfig.currencies.label', 'Currencies')}:</strong> {getCurrenciesText()}
               </div>
             </div>
-            <div className="mt-2">
-              <strong>{t('paymentConfig.gateway.url', 'Gateway URL')}:</strong>
-              <br />
-              <code className="text-break">{formData.gatewayUrl || t('paymentConfig.preview.notSet', 'Not configured')}</code>
-            </div>
-            {formData.embedCode && (
+            {formData.gatewayProvider === 'stripe' ? (
+              <div className="mt-3">
+                <div>
+                  <strong>{t('paymentConfig.stripe.publishableKey', 'Publishable key')}:</strong>
+                  <br />
+                  <code className="text-break">{formData.stripePublishableKey || t('paymentConfig.preview.notSet', 'Not configured')}</code>
+                </div>
+                <div className="mt-2">
+                  <strong>{t('paymentConfig.stripe.cardStatus', 'Card payments enabled')}:</strong> {formData.cardPaymentsEnabled ? t('common.yes', 'Yes') : t('common.no', 'No')}
+                </div>
+              </div>
+            ) : (
               <div className="mt-2">
-                <strong>{t('paymentConfig.embed.title', 'Embed Code')}:</strong>
+                <strong>{t('paymentConfig.gateway.url', 'Gateway URL')}:</strong>
+                <br />
+                <code className="text-break">{formData.gatewayUrl || t('paymentConfig.preview.notSet', 'Not configured')}</code>
+              </div>
+            )}
+            {showLegacyFields && formData.embedCode && (
+              <div className="mt-2">
+                <strong>{t('paymentConfig.embed.title', 'Embedded Payment Form Code')}:</strong>
                 <br />
                 <small className="text-muted">{t('paymentConfig.preview.embedConfigured', 'Embedded payment form configured')}</small>
               </div>

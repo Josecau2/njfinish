@@ -1,235 +1,265 @@
-# Stripe Payments Integration — End‑to‑End Plan (Authoritative)
+# Stripe Payments Integration - End-to-End Plan (Authoritative)
 
 This document is the single source of truth for implementing Stripe payments using Payment Intents. It enumerates all components, exact changes, conventions, and acceptance criteria. Follow Microsoft Copilot instructions and our repo conventions.
 
-Last updated: 2025-09-26
+Last updated: 2025-09-27
 Owner: Payments/Orders
 
 ## Goals and scope
 
-- Accept card payments via Stripe for each Order. Amount charged must match the Order grand total (including parts, assembly, modifications, delivery/shipping, discounts, and tax) using integer cents to avoid rounding errors.
-- Use Stripe Payment Intents with webhooks as the source of truth for final status.
-- Keep existing manual “Apply Payment” for checks/cash; Stripe is additive.
+- Accept card payments via Stripe for each Order. Amount charged must match the Order grand total (parts, assembly, modifications, delivery/shipping, discounts, tax) using integer cents to avoid rounding errors.
+- Use Stripe Payment Intents with webhooks as the source of truth for the final payment status; frontends only reflect what the backend already knows.
+- Keep existing manual "Apply Payment" flow for checks/cash; Stripe support is additive and must coexist.
+- Provide auditable, idempotent server-side payment handling with minimal sensitive data exposure.
 
-Out of scope (Phase 2): partial payments/deposits, refunds, surcharges, ACH.
+Out of scope (Phase 2): partial payments/deposits, refunds, surcharges, ACH, subscription billing, invoice-based flows.
 
-## Architecture overview
+## Current system assessment
 
-- Source of truth for amount: `orders.grand_total_cents` and `orders.currency`.
-- One `payments` row per order for Stripe (status lifecycle: pending → processing → completed/failed). Future: allow multiple rows for partials.
-- Backend owns amount computation; frontend never supplies an amount.
-- Webhook finalizes status transitions. Frontend polls on success/cancel if needed.
+- `Payment.amount` is stored as `DECIMAL(10,2)` and computed in multiple places (Order hook, manual create UI), which risks drift against Stripe’s integer amounts.
+- Orders auto-create a single pending payment after acceptance, but the hook divides cents into dollars (`grand_total_cents / 100`), losing source precision (models/Order.js:164).
+- The payment page renders an arbitrary embed snippet and manually calls `updatePaymentStatus` to mark Stripe payments complete (frontend/src/pages/payments/PaymentPage.jsx:51,88).
+- `/api/payments` exposes manual status updates and a generic webhook endpoint that trusts arbitrary JSON and lacks Stripe signature validation (routes/payments.js:233,273).
+- Payment configuration stores an `embedCode` and `gatewayUrl`; there is no notion of publishable key, feature flag, or different handling per gateway (routes/paymentConfig.js:20).
+- Stripe SDK is installed in both workspaces, but there is no shared client helper, raw webhook parsing, or Elements integration.
+
+## Target architecture overview
+
+- Source of truth for Stripe charge amount: `orders.grand_total_cents` and `orders.currency`. All downstream code uses integer cents.
+- One Stripe-backed `payments` row per order in Phase 1. `payments.gateway` distinguishes Stripe vs manual entries (future phases can allow multiple rows).
+- Backend owns amount computation and generates/updates Payment Intents. Frontend never supplies an amount.
+- Webhooks finalize payment status transition (`completed` or `failed`). Frontend polls or subscribes to updates; no optimistic success writes.
+- Manual “Apply Payment” is limited to `gateway='manual'` rows to prevent bypassing Stripe for card payments.
 
 ## Data model and migrations
 
-Existing models:
-- `models/Order.js` — has `grand_total_cents` (INT), `currency`, and snapshot.
-- `models/Payment.js` — has `amount` (DECIMAL), `currency`, `status`, `transactionId`, `gatewayResponse`, `paidAt`, `createdBy`.
-- `models/PaymentConfiguration.js` — active gateway, apiKey/webhookSecret, settings.
+Conventions: Place migrations in `scripts/migrations/` with timestamp prefix. Use Umzug/Sequelize signatures (`async up/down`). Use `describeTable` guards so migrations are idempotent and reversible. Do not import models inside migrations; use `queryInterface` and `Sequelize.DataTypes`.
 
-Required changes:
-1) Payment (optional but recommended for integrity)
-   - Add `amount_cents` (INT) mirror to ensure exact server-calculated integer amount used for Stripe.
-   - Add `gateway` (ENUM: 'stripe', 'manual') default 'stripe' when creating Stripe payments; for checks/cash use 'manual'.
-   - Add `receipt_url` (STRING) nullable.
+### Payments table adjustments
 
-2) PaymentConfiguration
-   - Add `stripePublishableKey` (STRING). This value is safe to expose in public config.
-   - Keep `apiKey` and `webhookSecret` server-only.
+Create `scripts/migrations/20250927-1300-payments-add-stripe-columns.js`:
+- Up:
+  - Add `amount_cents` (INTEGER, allowNull false) defaulting to 0, then backfill from existing `amount` (`Math.round(amount * 100)`).
+  - Add `gateway` (ENUM: `['stripe', 'manual']`, default `'manual'`). Backfill existing rows to `'manual'` except those with `transactionId`/`gatewayResponse` matching Stripe markers once we migrate data (safe assumption: mark `'manual'` initially and update when Stripe intent is created).
+  - Add `receipt_url` (STRING) nullable.
+  - Ensure a partial index or composite index for `(gateway, status)` to speed up list filters.
+- Down: drop `receipt_url`, `gateway`, `amount_cents`. Clean up ENUM definitions (MySQL requires manual `DROP TYPE` equivalent if needed).
 
-Conventions for migrations (per Copilot instructions):
-- Place files under `scripts/migrations/` with timestamp prefix.
-- Use Umzug/Sequelize signature: `async up(queryInterface, Sequelize)`, `async down(...)`.
-- Use `Sequelize.DataTypes` from the parameter; check existence via `describeTable` before add/remove.
-- Keep reversible and idempotent; do not import application models.
+### Payment configuration adjustments
 
-Migration files to add:
-- `scripts/migrations/20250926-1300-payments-add-stripe-columns.js`
-  - Up: add `amount_cents` (INT), `gateway` (ENUM), `receipt_url` (STRING) to `payments` if missing.
-  - Down: remove those columns if they exist.
-- `scripts/migrations/20250926-1310-payment-config-publishable-key.js`
-  - Up: add `stripePublishableKey` (STRING) to `payment_configurations` if missing.
-  - Down: remove column if exists.
+Create `scripts/migrations/20250927-1310-payment-config-add-publishable-key.js`:
+- Up: add `stripePublishableKey` (STRING, allowNull true) to `payment_configurations`.
+- Down: remove the column.
+
+### Webhook idempotency table
+
+Create `scripts/migrations/20250927-1320-processed-webhook-events.js`:
+- Table: `processed_webhook_events`
+  - `id` INT PK, `stripe_event_id` STRING unique, `type` STRING, `payment_id` INT NULL FK to `payments`, `received_at` DATETIME default now, `processed_at` DATETIME nullable, `payload` JSON/TEXT (truncated), timestamps.
+- Add unique index on `stripe_event_id`.
+- Down: drop table.
+
+### Model updates after migrations
+
+- Update `models/Payment.js` to expose `amount_cents`, `gateway`, `receipt_url`. Keep `amount` but treat it as read-only/coerced from cents.
+- Adjust `Order` `afterCreate` hook to set both `amount_cents` and `amount` (derived from cents) when auto-creating payments (models/Order.js:164).
+- Ensure serializers (`routes/payments.js`, `frontend/src/store/slices/paymentsSlice.js`) return both `amount` and `amount_cents` for backward compatibility.
 
 ## Backend changes
 
-Packages: `stripe` (server). Use env `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`.
+### Stripe client and environment
 
-1) Stripe client and config
-- Create `services/stripeClient.js`:
-  - Exports a configured Stripe instance with the secret key.
-  - Validates presence of key at startup; warn in dev if missing.
+- Add `services/stripeClient.js` exporting a configured Stripe instance. Validate `STRIPE_SECRET_KEY` at startup; throw in production if missing, warn in dev.
+- Update `.env.example` with `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY`, optional `STRIPE_WEBHOOK_PATH_TOKEN`, and `STRIPE_WEBHOOK_TOLERANCE_SECONDS` (default 300).
+- Update config loaders to surface `stripe.publishableKey` to clients only via dedicated public endpoint.
 
-2) Payment Intent endpoint
-- New route: `POST /api/payments/:id/stripe-intent`
-  - Auth: `verifyTokenWithGroup` + role scoping (contractors limited to their orders).
+### Payment amount helper
+
+- Create `utils/payments/amounts.js` with helpers:
+  - `getOrderAmountCents(order)` -> { amount_cents, currency }
+  - `formatCents(amount_cents)` -> decimal for display (backend only).
+  - Functions must handle orders missing `grand_total_cents` by recomputing from snapshot fallback; add tests.
+
+### Routes and controllers
+
+- Refactor `/api/payments` routes:
+  - Restrict `PUT /:id/status` to non-Stripe gateways. For Stripe payments, respond 409 with guidance.
+  - Ensure listing endpoints include `gateway`, `amount_cents`, `receipt_url`, and only expose sanitized `gatewayResponse` (prune card data).
+
+- New route `POST /api/payments/:id/stripe-intent`:
+  - Auth: `verifyTokenWithGroup` + scoping: contractors limited to their orders; admins/staff as today.
   - Steps:
-    - Load Payment by id with include Order and scoping.
-    - Determine `amount_cents` from `order.grand_total_cents` (fallback compute from `snapshot` if null) and `currency` from order (default 'USD').
-    - If Payment has `transactionId` and intent is not succeeded/canceled, update amount if necessary (only if modifiable per Stripe rules) or create a fresh intent if required.
-    - Create intent if needed: `paymentIntents.create({ amount, currency, automatic_payment_methods: { enabled: true }, metadata: { paymentId, orderId, order_number, user_id, group_id }, capture_method: config.settings?.capture || 'automatic' })`.
-    - Save `transactionId = intent.id`, `status = 'processing'` (or keep 'pending' until confirmation).
-    - Return `{ clientSecret: intent.client_secret }`.
+    1. Load payment + order using associations.
+    2. Verify `gateway === 'stripe'` (upgrade existing pending payments during migration step when Stripe is enabled).
+    3. Compute final { amount_cents, currency } via helper. If amount differs from stored `amount_cents`, update payment (keeping historical `amount` in sync).
+    4. If `transactionId` exists, fetch existing intent. Update amount if allowed (by checking `amount_capturable` constraints); otherwise create a new intent and supersede the previous one (store old id in metadata or event log).
+    5. Create/confirm Payment Intent with `automatic_payment_methods: { enabled: true }`, metadata containing `paymentId`, `orderId`, `order_number`, `user_id`, `group_id`.
+    6. Persist: `transactionId`, `status = 'processing'` (or `pending` until webhook?), `gateway = 'stripe'`, `amount_cents` synced, `amount` derived, `gateway='stripe'`.
+    7. Return `{ clientSecret, publishableKey }`.
 
-3) Webhook endpoint
-- New route: `POST /api/payments/stripe/webhook`
-  - Use raw body parser. Verify signature: `stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET, toleranceSeconds)` with an explicit tolerance (e.g., 300s) to mitigate replay.
-  - Handle events (allowlist only):
-    - `payment_intent.succeeded`: set `status='completed'`, `paidAt = now()`, store subset of `gatewayResponse` and set `receipt_url` from latest charge if present.
-    - `payment_intent.payment_failed`: set `status='failed'` and persist error message.
-    - Ignore unrelated events.
-  - Idempotency: persist processed Stripe event IDs (e.g., table `processed_webhook_events` with unique `stripe_event_id`) and short-circuit duplicates.
-  - Validate linkage: ensure `intent.id` matches `payment.transactionId` and, when metadata present, that `metadata.paymentId` and `metadata.orderId` match our database records before applying updates.
-  - Strict parsing: enforce POST method, JSON content-type, and a reasonable body size limit; do not log raw secrets or full payloads in production.
-  - Return 200 quickly; all processing idempotent.
+- Webhook endpoint `POST /api/payments/stripe/webhook/:token?`:
+  - Mount before `express.json()` using `express.raw({ type: 'application/json' })` (app.js adjustment).
+  - Verify Stripe signature with configured tolerance and optional path token check.
+  - Allowlist event types: `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded` (future), others ignored but logged at debug.
+  - Enforce idempotency using `processed_webhook_events` table.
+  - Validate linkage: ensure `intent.id === payment.transactionId` and metadata IDs match; reject otherwise.
+  - On success: update `status='completed'`, `paidAt=now`, `receipt_url` from latest charge receipt, persist a trimmed `gatewayResponse` (e.g., `id`, `status`, `charges[0].id`, `charges[0].receipt_url`, `charges[0].balance_transaction`).
+  - On failure: update `status='failed'`, capture `last_payment_error.message`.
+  - Return 200 for processed/ignored events. Surface `Stripe-Signature` errors as 400 without leaking secret values.
 
-4) Payments manual apply remains
-- Keep `PUT /api/payments/:id/apply` for checks/cash. Ensure it sets `gateway='manual'`.
+- Manual apply endpoint (`PUT /:id/apply`):
+  - Require `gateway === 'manual'`. If Stripe, respond 409 instructing to retry card payment.
+  - Ensure manual completion sets `paymentMethod` (check/cash/etc.), `gateway='manual'`.
 
-5) Payment Config updates
-- Extend `routes/paymentConfig.js` to accept `stripePublishableKey`; include it in `/api/payment-config/public` safe payload.
-- Never expose `apiKey` and `webhookSecret` outside admin endpoints.
+- Payment creation (admin UI `POST /api/payments`):
+  - When Stripe is active, default `gateway='stripe'`, set `amount_cents` via helper. For manual flows, allow `gateway='manual'`.
+  - Validate duplicates: one pending Stripe payment per order.
 
-6) Amount integrity helper
-- Add `utils/payments/amounts.js` with `getOrderAmountCents(order)` to compute from `grand_total_cents` or fallback snapshot. Include tiny rounding guards.
+- Public config endpoint `/api/payment-config/public`:
+  - Return `publishableKey`, `gateway='stripe'`, feature flag for “card payments enabled”. Do not return `embedCode` for Stripe; embed code remains for legacy fallback until removed.
+  - Update admin config endpoints to store secret key + webhook secret server-side only, publishable key separately.
 
-7) Permissions and errors
-- Reuse existing scoping. Ensure 403 on unauthorized access, 404 on missing.
-- Log with `order.order_number` and `payment.id` for trace.
+### Middleware and setup
+
+- Modify `app.js` to mount the Stripe webhook route with raw body parsing before global JSON middleware (app.js:44).
+- Add health check/logging around Stripe key availability during startup; fail fast in production if misconfigured.
+- Consider adding background job or cron (future) to reconcile failed/pending intents; document as post-MVP note.
 
 ## Frontend changes
 
-Packages: `@stripe/stripe-js`, `@stripe/react-stripe-js`.
+- Install/use `@stripe/react-stripe-js` and `@stripe/stripe-js` (already in dependencies) to build UI.
+- Add a global Stripe wrapper in `frontend/src/App.js` (or dedicated payment page) that loads `stripePublishableKey` via new public config endpoint before rendering payment UI.
+- Replace embed snippet in `PaymentPage.jsx` with Stripe Elements form:
+  - Fetch payment + config on load.
+  - Call `POST /api/payments/:id/stripe-intent` to obtain client secret.
+  - Render Elements (`PaymentElement` or CardElement) with submit button.
+  - On submit, confirm payment using `stripe.confirmPayment` and handle errors (declines, authentication).
+  - After confirmation success, show a spinner while polling `/api/payments/:id` until status is `completed` (or max retries). Display `receipt_url` link when present.
+  - Move inline global handlers (`window.handlePaymentSuccess`) to React stateful flows; remove script injection.
 
-1) PaymentPage Stripe flow
-- When `publicPaymentConfig.gatewayProvider === 'stripe'` and `stripePublishableKey` present:
-  - Initialize Stripe with publishable key.
-  - On mount or when pressing “Make Payment”: call `POST /api/payments/:id/stripe-intent` to fetch `clientSecret`.
-  - Render `Elements` + `PaymentElement` (or `CardElement`), show amount summary (read-only from payment/order), and a Pay button.
-  - On submit: `stripe.confirmPayment({ elements, clientSecret, confirmParams: { return_url: window.location.origin + '/#/payments/success?id=' + id } })`.
-  - Disable button while processing; show errors inline.
+- Update `PaymentsList.jsx` and related components:
+  - Display `gateway` badges (Stripe/manual).
+  - Show formatted amount using `amount_cents` where available.
+  - Hide “Apply” action for Stripe payments; show “Make Payment” only when `gateway==='stripe'` and `status==='pending'`.
 
-2) Success/Cancel pages
-- Read `id` from URL, dispatch `fetchPaymentById(id)`; if not completed, poll every 2–3s up to 30s.
-- Show receipt link if `receipt_url` exists; otherwise “Print Receipt”.
+- Add success/cancel pages that poll payment detail and show final status, receipt, and order summary.
+- Update localization keys (en/es) for new strings (gateway labels, card errors, Stripe instructions).
 
-3) PaymentsList/OrdersList integrations
-- Keep “Make Payment” CTA; route to `/payments/:id/pay` which loads the Stripe flow.
-- Display status badges: pending, processing, completed, failed.
+## DevOps & configuration
 
-## Configuration and environment
+- Document new environment variables in `.env.example` and deployment guides.
+- Update infrastructure/playbooks to register the webhook endpoint path (with optional secret suffix) in Stripe Dashboard.
+- Ensure production secrets are stored securely (e.g., Azure Key Vault, AWS Secrets Manager) and injected at runtime.
+- Consider feature flag (ENV `STRIPE_ENABLED=true`) preventing frontend from offering card payment until config complete.
 
-- Server env:
-  - `STRIPE_SECRET_KEY` (required in prod)
-  - `STRIPE_WEBHOOK_SECRET` (required in prod)
-- Admin config (DB):
-  - `stripePublishableKey` stored in `payment_configurations` and returned in public config.
-  - `settings.capture` = 'automatic' | 'manual'.
+## Security hardening
 
-## Logging and observability
-
-- Log intent creation/update with `{ paymentId, orderId, order_number, amount_cents, currency }`.
-- Log webhook events processed with event id and intent id.
-- Avoid logging full card details; store only minimal `gatewayResponse` (pruned JSON).
-
-## Security
-
-- Do not accept amount from client.
-- Verify Stripe webhook signature on raw body.
-- Restrict `/stripe-intent` to users authorized for the order via existing scoping.
-- Never expose secret key; publishable key only in public config.
-
-### Webhook hardening (additional protections)
-
-- Signature verification with timestamp tolerance (e.g., 300s). Reject stale events.
-- Secret webhook path suffix: expose endpoint as `/api/payments/stripe/webhook/${STRIPE_WEBHOOK_PATH_TOKEN}`; keep token in env to reduce unsolicited hits.
-- Allowlist event types: only process `payment_intent.succeeded` and `payment_intent.payment_failed` (and later specific refund events).
-- Event idempotency store: create `processed_webhook_events` table; ignore repeats by `stripe_event_id` (unique).
-- Linkage validation: cross-check `payment.transactionId === intent.id` and metadata `paymentId`/`orderId` before mutating state.
-- Minimal logging: no PII or card data; never log signature header; truncate payloads.
-- CSRF/CORS: not applicable to server-to-server; ensure no CORS preflight acceptance and only POST allowed.
-- Body limits: set explicit size limits to prevent abuse.
+- Strictly verify Stripe signatures against raw request body with tolerance (reject stale events).
+- Secret webhook path suffix to reduce unsolicited hits (`/api/payments/stripe/webhook/${token}`).
+- Allowlist Stripe IPs only if feasible (optional future enhancement).
+- Store only minimal gateway metadata; truncate logs to avoid PII/PAN leakage.
+- Ensure manual status update endpoints enforce gateway checks and audit logging (who applied manual payment).
+- Add rate limiting to intent creation endpoint (per user/order) to prevent abuse.
+- Ensure CSRF coverage remains unaffected; all new endpoints use JWT auth or secret tokens.
 
 ## Testing plan
 
-1) Unit/integration (backend)
-- Amount helper returns exact cents and currency for a variety of order snapshots.
-- Intent endpoint returns `clientSecret` and persists `transactionId`.
-- Webhook transitions status to completed/failed; idempotent retries.
+### Automated
 
-2) E2E (dev with test keys)
-- Happy path: Accept proposal → Order created → Payment auto-created (pending) → Make Payment → Stripe test card 4242 → success page → status becomes completed.
-- Failure path: Use a failed test card → status = failed.
-- Manual apply path: Apply check in PaymentsList → completed with `gateway='manual'`.
+- Unit tests for `utils/payments/amounts.js` covering various order snapshots (complete data, missing fields, rounding).
+- Integration tests for `POST /api/payments/:id/stripe-intent` (mock Stripe SDK) verifying amount sync, metadata, idempotency when amount changes, permission scoping.
+- Integration tests for webhook handler: success, failure, signature mismatch, duplicate event.
+- Tests ensuring manual apply rejects Stripe payments and still works for manual ones.
+- Tests for public config endpoint to ensure publishable key exposure only when set.
 
-3) Permissions
-- Contractor can only pay for their orders; admin can pay any; unauthorized user 403.
+### Manual / E2E (using Stripe test keys)
 
-4) Edge cases
-- Order total changed before confirmation: allow creating a fresh intent or updating amount if possible; ensure only one active intent linked (prefer latest).
-- Webhook arrives before frontend return: success page polls shows completed.
-- Duplicate webhooks: ensure idempotent updates.
-- Expired signature timestamp: send a test event with old timestamp; ensure 400 rejection.
-- Unknown event type: ensure endpoint returns 200 with no side effect.
+- Happy path: Accept proposal -> Order created -> Payment auto-created (pending, gateway=stripe) -> `Make Payment` -> pay with 4242 card -> webhook sets status completed -> UI shows receipt link.
+- Decline path: use `4000 0000 0000 9995` (insufficient funds) -> webhook marks failed -> UI surfaces friendly retry message.
+- 3DS path: use `4000 0027 6000 3184` to confirm authentication flow works.
+- Manual apply path: mark payment as manual, ensure check/cash flow still works and UI disables card-specific controls.
+- Permission checks: contractor only sees their group’s payments, cannot fetch others’ client secrets.
+- Resilience: change order total before payment confirmation; intent recalculates amount or issues new intent.
+- Webhook replay: resend event via Stripe CLI to verify idempotency table prevents duplicate status changes.
 
 ## Rollout plan
 
-- Feature flag: enable Stripe only when config present and env keys set; otherwise fall back to existing flows.
-- Migrate: run new migrations; seed config with test keys in dev.
-- Deploy: add webhook endpoint to Stripe dashboard; test in staging; then prod.
+1. Ship migrations and model updates behind feature flag (`STRIPE_ENABLED`).
+2. Deploy backend with new endpoints (intent, webhook, config) and config gating (flag false by default).
+3. Configure Stripe secrets in non-prod; run integration tests using Stripe CLI.
+4. Enable flag in staging; run E2E flows (success, failure, manual apply).
+5. Register production webhook endpoint and secrets.
+6. Enable flag in production after sanity checks; monitor logs/events closely for first transactions.
+7. Post-launch: schedule reconciliation job (Phase 2) and consider partial payment support.
 
-## Tasks checklist (execution order)
+## Tasks checklist
 
-1) Migrations
-- [ ] Add `payments` columns: `amount_cents`, `gateway`, `receipt_url`.
-- [ ] Add `stripePublishableKey` to `payment_configurations`.
-- [ ] Add `processed_webhook_events` table with unique `stripe_event_id`, `type`, `received_at`, `processed_at`, optional `payment_id`.
+### Migrations
+- [x] Add `amount_cents`, `gateway`, `receipt_url` columns and backfill.
+- [x] Add `stripePublishableKey` to `payment_configurations`.
+- [x] Create `processed_webhook_events` table.
 
-2) Backend
-- [ ] `services/stripeClient.js` with key validation.
-- [ ] `utils/payments/amounts.js` helper.
-- [ ] `POST /api/payments/:id/stripe-intent` endpoint.
-- [ ] `POST /api/payments/stripe/webhook` with signature verification.
-- [ ] Webhook hardening: event-type allowlist, timestamp tolerance, idempotency store, linkage validation, body size limit.
-- [ ] Extend payment config routes to include publishable key in public payload.
-- [ ] Ensure manual apply sets `gateway='manual'`.
+### Backend
+- [x] Implement `services/stripeClient.js` and config validation.
+- [x] Add `utils/payments/amounts.js` with tests.
+- [x] Update `models/Payment.js` and `models/Order.js` hooks.
+- [x] Refactor `/api/payments` routes for Stripe intent, webhook, and manual apply restrictions.
+- [x] Ensure app mounts webhook route with raw body parser and tolerances.
+- [x] Update payment config routes to handle publishable key + feature flag.
 
-3) Frontend
-- [ ] Add Stripe libs and provider wiring in `PaymentPage.jsx`.
-- [ ] Add Elements form and submit handling; show statuses and errors.
-- [ ] Success/Cancel pages polling for final status; render receipt URL if present.
-- [ ] Update PaymentsList/OrdersList buttons if any adjustments needed.
+### Frontend
+- [x] Wire Stripe Elements provider and load publishable key.
+- [x] Replace payment embed with Elements flow and status polling.
+- [x] Update lists/detail components to handle `gateway`, `amount_cents`, `receipt_url`.
+- [x] Refresh translations and UX copy for Stripe flows.
 
-4) QA and docs
-- [ ] Update `.github/instructions/copilot instruction.instructions.md` with Stripe endpoints, migration notes, and E2E expectations (explicit endpoints, filenames, etc.).
-- [ ] Write a mini README section in this file with “Try it” steps and test cards.
+### QA & documentation
+- [x] Capture `npm run test:payments` helper script for regression checks (see Appendix D step 6).
+- [x] Document Stripe environment variables in `.env.example` and Appendix B.
+- [ ] Update `.github/instructions/copilot instruction.instructions.md` with Stripe endpoints, migrations, testing expectations.
+- [x] Add a "Try it" section with test cards and Stripe CLI commands to this file (Appendix D).
+- [ ] Document environment setup/rollback steps for operations.
 
 ## Acceptance criteria
 
-- Creating an order auto-creates a pending payment (unchanged behavior).
-- Clicking Make Payment launches a Stripe form and returns a `clientSecret` from server.
-- Successful payment updates status to completed via webhook; payment shows transaction id and receipt link.
-- Failed payment updates to failed; user sees a friendly message and can retry.
-- Amount charged equals `orders.grand_total_cents / 100` exactly.
-- No sensitive keys exposed to the client.
+- Orders with `grand_total_cents` auto-create a Stripe payment (pending, correct `amount_cents`, `gateway='stripe'`).
+- `POST /api/payments/:id/stripe-intent` returns a client secret and publishable key, persists transaction id, and enforces access control.
+- Successful Stripe payments transition to `completed` via webhook; payment row stores `transactionId`, `receipt_url`, `gatewayResponse` (redacted).
+- Failed Stripe payments transition to `failed`; UI shows retry guidance and does not auto-complete.
+- Manual apply remains functional for `gateway='manual'` payments; Stripe payments cannot be manually marked complete.
+- No sensitive keys appear in client responses or logs.
+- Duplicate webhooks are ignored without side effects.
 
 ---
 
-Appendix A — Minimal API contracts
+Appendix A – Minimal API contracts
 
-- POST `/api/payments/:id/stripe-intent` → 200
-  - Request: none (id in URL)
-  - Response: `{ clientSecret: string }`
+- `POST /api/payments/:id/stripe-intent` -> 200 `{ clientSecret: string, publishableKey: string }`
+- `POST /api/payments/stripe/webhook/:token?` -> 200 (raw JSON body, Stripe signature header `stripe-signature`)
+- `GET /api/payment-config/public` -> 200 `{ gatewayProvider: 'stripe', publishableKey: string, cardPaymentsEnabled: boolean }`
 
-- POST `/api/payments/stripe/webhook` → 200
-  - Raw body, Stripe signature header `stripe-signature`.
+Appendix B – Environment variables
 
-Appendix B — Env example
+```
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_WEBHOOK_PATH_TOKEN=stripeWebhook123   # optional extra path segment
+STRIPE_WEBHOOK_TOLERANCE_SECONDS=300
+STRIPE_ENABLED=true
+```
 
-- STRIPE_SECRET_KEY=sk_test_...
-- STRIPE_WEBHOOK_SECRET=whsec_...
-
-Appendix C — References
+Appendix C – References
 
 - Stripe Payment Intents: https://stripe.com/docs/payments/payment-intents
 - Webhooks: https://stripe.com/docs/webhooks
+- Stripe test cards: https://stripe.com/docs/testing
+
+Appendix D – “Try it” flow (non-prod)
+
+1. Export keys: `stripe listen --forward-to localhost:3000/api/payments/stripe/webhook/<token>`.
+2. Accept a proposal to create an order/payment (use seeded data if needed).
+3. Navigate to `/payments`, click “Make Payment”, run a test card (`4242 4242 4242 4242`).
+4. Observe webhook log, verify payment row status `completed`, and confirm receipt link renders in UI.
+5. Trigger a failure (`4000 0000 0000 9995`) to validate error handling.
+6. Run `npm run test:payments` to validate payment amount utilities.

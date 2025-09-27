@@ -2,10 +2,10 @@
 
 | ID | Area | Description | Status | Notes |
 | --- | --- | --- | --- | --- |
-| S1 | File Serving | Restrict /uploads static exposure and route downloads through authorized controller. | Pending | Defer per current priority; investigate secure storage relocation before change. |
-| S2 | Web App Shell | Harden CSP and reduce client token persistence to mitigate XSS-driven session theft. | In Progress | Current update: introduce per-request CSP nonce and remove unsafe script allowances; token storage adjustments partially complete. |
-| S3 | Content Sanitization | Sanitize or sandbox customizable HTML (branding, contracts, payment embed). | Pending | Evaluate DOMPurify/HTML sanitizers and storage encoding. |
-| S4 | Proposal Email Pipeline | Lock down Puppeteer rendering to prevent SSRF/data exfiltration and restrict endpoint access. | Pending | Assess request interception, allowlist, and job isolation. |
-| S5 | Account Lifecycle | Enforce account deletion checks, password policy, and rate limiting on auth endpoints. | Pending | Requires coordination with auth flows and user management UI. |
+| S1 | File Serving | Restrict /uploads static exposure and route downloads through authorized controller. | Completed | Replaced static mounts with auth-guarded streaming and ensured clients append JWTs to asset requests. |
+| S2 | Web App Shell | Harden CSP and reduce client token persistence to mitigate XSS-driven session theft. | Completed | CSP now injects nonce-backed script/style directives, axios/auth helpers keep tokens in session memory, and subject/filename sanitizers guard proposal mail headers. |
+| S3 | Content Sanitization | Sanitize or sandbox customizable HTML (branding, contracts, payment embed). | Completed | Added sanitize-html utility, applied to branding/login payloads, contact terms, payment embeds, and PDF customization inputs. |
+| S4 | Proposal Email Pipeline | Lock down Puppeteer rendering to prevent SSRF/data exfiltration and restrict endpoint access. | Completed | Proposal email route now requires proposals:update/accept, Puppeteer host allowlist enforced, and outbound email payloads are validated/sanitized. |
+| S5 | Account Lifecycle | Enforce account deletion checks, password policy, and rate limiting on auth endpoints. | Completed | Added rate limiting to auth routes, enforced password strength, blocked deleted logins, and protected last-admin deletion. |
 
-> Updated: 2025-09-27
+> Updated: 2025-09-28
