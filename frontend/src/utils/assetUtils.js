@@ -40,7 +40,9 @@ export const resolveAssetUrl = (input, apiUrl = import.meta.env?.VITE_API_URL) =
   }
 
   if (raw.startsWith('/assets/') || raw.startsWith('assets/')) {
-    return raw.startsWith('/') ? raw : `/${raw}`;
+    const assetPath = raw.startsWith('/') ? raw : `/${raw}`;
+    const base = normalizeBaseUrl(apiUrl);
+    return base ? `${base}${assetPath}` : assetPath;
   }
 
   const normalizedBase = normalizeBaseUrl(apiUrl);
