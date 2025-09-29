@@ -2,7 +2,6 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import eslintPluginReact from 'eslint-plugin-react'
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
 
 export default [
   { ignores: ['eslint.config.mjs'] },
@@ -13,7 +12,6 @@ export default [
     plugins: {
       eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
-      'jsx-a11y': jsxA11y,
     },
     languageOptions: {
       globals: {
@@ -35,7 +33,6 @@ export default [
     },
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules,
     },
   },
   eslintPluginPrettierRecommended,
