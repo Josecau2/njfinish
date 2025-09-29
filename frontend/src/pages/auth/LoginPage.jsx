@@ -208,7 +208,7 @@ const LoginPage = () => {
                 required: t('auth.emailRequired'),
                 pattern: {
                   value: /[^\s]+@[^\s]+\.[^\s]+/,
-                  message: t('auth.loginFailed'),
+                  message: t('auth.emailInvalid'),
                 },
               })}
             />
