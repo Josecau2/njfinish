@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import autoprefixer from 'autoprefixer'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -15,8 +16,8 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_ENV__: JSON.stringify(env.VITE_NODE_ENV || mode),
     },
-    // Ensure Vite uses the frontend folder as root (so index.html is resolved correctly)
-    root: __dirname,
+  // Ensure Vite uses the frontend folder as root (so index.html is resolved correctly)
+  root: __dirname,
     build: {
       outDir: 'build', // Output to build directory
       emptyOutDir: true, // Clean output directory
@@ -49,6 +50,13 @@ export default defineConfig(({ mode }) => {
             'utils-vendor': ['axios', 'sweetalert2', 'classnames', 'prop-types']
           },
         },
+      },
+    },
+    css: {
+      postcss: {
+        plugins: [
+          autoprefixer({}), // add options if needed
+        ],
       },
     },
     esbuild: {

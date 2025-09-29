@@ -31,7 +31,6 @@ const lazyWithRetry = (importer, retries = 2, interval = 350) =>
 
 // Pages (Lazy loaded)
 const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'))
-const ModernDashboard = React.lazy(() => import('./pages/new-ui/ModernDashboard'))
 const Customers = React.lazy(() => import('./pages/customers/Customers'))
 const CustomerForm = React.lazy(() => import('./pages/customers/CustomerForm'))
 const Proposals = React.lazy(() => import('./pages/proposals/Proposals'))
@@ -82,7 +81,6 @@ const ContactUs = React.lazy(() => import('./pages/contact/ContactUs'))
 
 const routes = [
   { path: '/', name: 'Dashboard', element: Dashboard },
-  { path: '/modern-dashboard', name: 'Modern Dashboard', element: ModernDashboard },
   { path: '/profile', name: 'Profile', element: Profile },
 
   // Customer routes
