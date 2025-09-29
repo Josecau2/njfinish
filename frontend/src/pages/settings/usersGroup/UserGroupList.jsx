@@ -1,311 +1,347 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-  CButton,
-  CBadge,
-  CFormSwitch,
-  CSpinner,
-  CAlert,
-  CContainer
-} from '@coreui/react';
-import { Plus, Pencil, Users } from '@/icons-lucide';
-import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
-import { useTranslation } from 'react-i18next';
+  Card,
+  CardBody,
+  Badge,
+  Switch,
+  Spinner,
+  Alert,
+  Container,
+  Button,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Text,
+  VStack,
+  HStack,
+  Grid,
+  GridItem,
+  Box,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { Plus, Pencil, Users } from '@/icons-lucide'
+import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
+import { useNavigate } from 'react-router-dom'
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
+import { motion } from 'framer-motion'
 
 const UserGroupList = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
   // Use the normalized array from the slice (allGroups). Keep a safe fallback.
-  const { allGroups = [], loading, error } = useSelector((state) => state.usersGroup || {});
-  const userGroups = allGroups;
-  const [updatingModule, setUpdatingModule] = useState(null);
+  const { allGroups = [], loading, error } = useSelector((state) => state.usersGroup || {})
+  const userGroups = allGroups
+  const [updatingModule, setUpdatingModule] = useState(null)
 
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
-
+    dispatch(fetchUsers())
+  }, [dispatch])
 
   const handleModuleToggle = async (groupId, module, currentModules) => {
-    setUpdatingModule(`${groupId}-${module}`);
+    setUpdatingModule(`${groupId}-${module}`)
 
     try {
-      // Handle modules as object, not array - with defensive defaults
-      // Parse currentModules if it comes as a string
-      let modulesObj;
+      let modulesObj
       if (typeof currentModules === 'string') {
         try {
-          modulesObj = JSON.parse(currentModules);
+          modulesObj = JSON.parse(currentModules)
         } catch (e) {
           modulesObj = {
             dashboard: false,
             proposals: false,
             customers: false,
-            resources: false
-          };
+            resources: false,
+          }
         }
       } else {
         modulesObj = currentModules || {
           dashboard: false,
           proposals: false,
           customers: false,
-          resources: false
-        };
+          resources: false,
+        }
       }
 
       const newModules = {
         ...modulesObj,
-        [module]: !modulesObj[module] // Toggle the boolean value
-      };
+        [module]: !modulesObj[module],
+      }
 
-      await dispatch(updateUser({
-        id: groupId,
-        data: { modules: newModules }
-      })).unwrap();
-
-      // No need to refresh - Redux will update both list and allGroups automatically
+      await dispatch(
+        updateUser({
+          id: groupId,
+          data: { modules: newModules },
+        }),
+      ).unwrap()
     } catch (error) {
-      // Error updating module
+      // noop: could toast
     } finally {
-      setUpdatingModule(null);
+      setUpdatingModule(null)
     }
-  };
+  }
 
   const handleCreateGroup = () => {
-    navigate('/settings/users/group/create');
-  };
+    navigate('/settings/users/group/create')
+  }
 
   const handleEditGroup = (groupId) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/users/group/edit/:id', { id: groupId });
-  navigate(noisy);
-  };
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/settings/users/group/edit/:id', { id: groupId })
+    navigate(noisy)
+  }
 
   const getModuleToggle = (group, module) => {
-    // Handle modules as object with boolean values, with defensive defaults
-    // Parse modules if it comes as a string
-    let modules;
+    let modules
     if (typeof group.modules === 'string') {
       try {
-        modules = JSON.parse(group.modules);
+        modules = JSON.parse(group.modules)
       } catch (e) {
         modules = {
           dashboard: false,
           proposals: false,
           customers: false,
-          resources: false
-        };
+          resources: false,
+        }
       }
     } else {
       modules = group.modules || {
         dashboard: false,
         proposals: false,
         customers: false,
-        resources: false
-      };
+        resources: false,
+      }
     }
 
-    const isEnabled = modules[module] === true;
-    const isUpdating = updatingModule === `${group.id}-${module}`;
+    const isEnabled = modules[module] === true
+    const isUpdating = updatingModule === `${group.id}-${module}`
 
     return (
-      <CFormSwitch
-        id={`${group.id}-${module}`}
-        checked={isEnabled}
-        disabled={group.group_type !== 'contractor' || isUpdating}
-        onChange={() => handleModuleToggle(group.id, module, modules)}
-        label={isUpdating ? <CSpinner size="sm" /> : ''}
-        size="sm"
-      />
-    );
-  };
+      <HStack spacing={2}>
+        <Switch
+          id={`${group.id}-${module}`}
+          isChecked={isEnabled}
+          isDisabled={group.group_type !== 'contractor' || isUpdating}
+          onChange={() => handleModuleToggle(group.id, module, modules)}
+          size="sm"
+          colorScheme="brand"
+        />
+        {isUpdating && <Spinner size="xs" />}
+      </HStack>
+    )
+  }
 
   if (loading) {
     return (
-      <CContainer className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-        <div className="text-center">
-          <CSpinner />
-          <p className="mt-2 text-muted">{t('common.loadingUserGroups')}</p>
-        </div>
-      </CContainer>
-    );
+      <Container maxW="container.xl" py={8}>
+        <VStack spacing={4} justify="center" minH="200px">
+          <Spinner size="lg" color="brand.500" />
+          <Text color="gray.500">{t('common.loadingUserGroups')}</Text>
+        </VStack>
+      </Container>
+    )
   }
 
   if (error) {
     return (
-      <CContainer>
-        <CAlert color="danger">
-          <strong>Error loading user groups:</strong> {error.message || error.toString() || 'Unknown error'}
-        </CAlert>
-      </CContainer>
-    );
+      <Container maxW="container.xl" py={8}>
+        <Alert status="error" borderRadius="md">
+          <Text fontWeight="semibold">{t('settings.userGroups.errorLoading')}</Text>
+          <Text ml={2}>{error.message || error.toString() || 'Unknown error'}</Text>
+        </Alert>
+      </Container>
+    )
   }
 
   return (
-    <CRow>
-      <CCol xs={12}>
-        <CCard className="mb-4">
-          <CCardHeader className="d-flex justify-content-between align-items-center">
-            <strong className="d-flex align-items-center gap-2">
-              <Users size={18} aria-hidden="true" />
-              {t('settings.userGroups.header')}
-            </strong>
-            <CButton
-              color="primary"
-              onClick={handleCreateGroup}
-              className="d-flex align-items-center gap-2"
-            >
-              <Plus size={16} aria-hidden="true" />
-              {t('settings.userGroups.actions.create')}
-            </CButton>
-          </CCardHeader>
-          <CCardBody>
-            {error && (
-              <CAlert color="danger" className="mb-3">
-                {t('settings.userGroups.loadFailed')}: {error.message || error.toString() || t('common.error')}
-              </CAlert>
-            )}
-            {/* Desktop table (hidden on small screens) */}
-            <div className="d-none d-md-block table-wrap">
-            <CTable hover responsive className="table-modern">
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>{t('settings.userGroups.table.name')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.userGroups.table.type')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('contractorsAdmin.modules.dashboard')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('contractorsAdmin.modules.proposals')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('contractorsAdmin.modules.customers')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('contractorsAdmin.modules.resources')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.userGroups.table.actions')}</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
+    <Container maxW="container.xl" py={8}>
+      <PageHeader
+        title={t('settings.userGroups.header')}
+        icon={Users}
+        actions={[
+          <Button
+            key="create"
+            leftIcon={<Plus size={16} />}
+            colorScheme="brand"
+            onClick={handleCreateGroup}
+            as={motion.button}
+            whileTap={{ scale: 0.98 }}
+          >
+            {t('settings.userGroups.actions.create')}
+          </Button>,
+        ]}
+      />
+
+      <Card>
+        <CardBody>
+          {error && (
+            <Alert status="error" mb={6} borderRadius="md">
+              <Text>
+                {t('settings.userGroups.loadFailed')}:{' '}
+                {error.message || error.toString() || t('common.error')}
+              </Text>
+            </Alert>
+          )}
+
+          {/* Desktop table */}
+          <Box display={{ base: 'none', md: 'block' }}>
+            <Table variant="simple" size="sm">
+              <Thead>
+                <Tr>
+                  <Th scope="col">{t('settings.userGroups.table.name')}</Th>
+                  <Th scope="col">{t('settings.userGroups.table.type')}</Th>
+                  <Th scope="col">{t('contractorsAdmin.modules.dashboard')}</Th>
+                  <Th scope="col">{t('contractorsAdmin.modules.proposals')}</Th>
+                  <Th scope="col">{t('contractorsAdmin.modules.customers')}</Th>
+                  <Th scope="col">{t('contractorsAdmin.modules.resources')}</Th>
+                  <Th scope="col">{t('settings.userGroups.table.actions')}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {userGroups.length === 0 ? (
-                  <CTableRow key="empty-state">
-                    <CTableDataCell colSpan="7" className="text-center py-4">
+                  <Tr>
+                    <Td colSpan={7} textAlign="center" py={8} color="gray.500">
                       {t('settings.userGroups.empty')}
-                    </CTableDataCell>
-                  </CTableRow>
+                    </Td>
+                  </Tr>
                 ) : (
                   userGroups.map((group) => (
-                    <CTableRow key={group.id}>
-                      <CTableDataCell>
-                        <strong>{group.name || 'Unnamed Group'}</strong>
-                        {!group.name && <small className="text-muted d-block">ID: {group.id}</small>}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge color={group.group_type === 'contractor' ? 'info' : 'secondary'} shape="rounded-pill">
-                          {group.group_type === 'contractor' ? t('settings.userGroups.types.contractor') : t('settings.userGroups.types.standard')}
-                        </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {getModuleToggle(group, 'dashboard')}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {getModuleToggle(group, 'proposals')}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {getModuleToggle(group, 'customers')}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {getModuleToggle(group, 'resources')}
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <CButton
-                          color="light"
+                    <Tr key={group.id} _hover={{ bg: hoverBg }}>
+                      <Td>
+                        <VStack align="start" spacing={0}>
+                          <Text fontWeight="semibold">{group.name || 'Unnamed Group'}</Text>
+                          {!group.name && (
+                            <Text fontSize="sm" color="gray.500">ID: {group.id}</Text>
+                          )}
+                        </VStack>
+                      </Td>
+                      <Td>
+                        <Badge
+                          colorScheme={group.group_type === 'contractor' ? 'blue' : 'gray'}
+                          variant="subtle"
+                          borderRadius="full"
+                        >
+                          {group.group_type === 'contractor'
+                            ? t('settings.userGroups.types.contractor')
+                            : t('settings.userGroups.types.standard')}
+                        </Badge>
+                      </Td>
+                      <Td>{getModuleToggle(group, 'dashboard')}</Td>
+                      <Td>{getModuleToggle(group, 'proposals')}</Td>
+                      <Td>{getModuleToggle(group, 'customers')}</Td>
+                      <Td>{getModuleToggle(group, 'resources')}</Td>
+                      <Td>
+                        <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditGroup(group.id)}
-                          className="icon-btn"
-                          title={t('settings.userGroups.actions.edit')}
                           aria-label={t('settings.userGroups.actions.edit')}
-                          style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                          as={motion.button}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          <Pencil size={16} aria-hidden="true" />
-                        </CButton>
-                      </CTableDataCell>
-                    </CTableRow>
+                          <Pencil size={16} />
+                        </Button>
+                      </Td>
+                    </Tr>
                   ))
                 )}
-              </CTableBody>
-            </CTable>
-            </div>
+              </Tbody>
+            </Table>
+          </Box>
 
-            {/* Mobile card list (visible on small screens only) */}
-            <div className="d-md-none user-groups-mobile">
-              {userGroups.length === 0 ? (
-                <div className="text-center text-muted py-4">
-                  {t('settings.userGroups.empty')}
-                </div>
-              ) : (
-                userGroups.map((group) => (
-                  <div className="mobile-card mb-3" key={`m-${group.id}`}>
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <div>
-                        <div className="fw-semibold">{group.name || 'Unnamed Group'}</div>
-                        {!group.name && <small className="text-muted">ID: {group.id}</small>}
-                      </div>
-                      <CBadge color={group.group_type === 'contractor' ? 'info' : 'secondary'} shape="rounded-pill">
-                        {group.group_type === 'contractor' ? t('settings.userGroups.types.contractor') : t('settings.userGroups.types.standard')}
-                      </CBadge>
-                    </div>
+          {/* Mobile card list */}
+          <VStack display={{ base: 'flex', md: 'none' }} spacing={4} align="stretch">
+            {userGroups.length === 0 ? (
+              <Text textAlign="center" color="gray.500" py={8}>
+                {t('settings.userGroups.empty')}
+              </Text>
+            ) : (
+              userGroups.map((group) => (
+                <Card key={group.id} variant="outline" size="sm">
+                  <CardBody>
+                    <HStack justify="space-between" align="start" mb={3}>
+                      <VStack align="start" spacing={0}>
+                        <Text fontWeight="semibold">{group.name || 'Unnamed Group'}</Text>
+                        {!group.name && (
+                          <Text fontSize="sm" color="gray.500">ID: {group.id}</Text>
+                        )}
+                      </VStack>
+                      <Badge
+                        colorScheme={group.group_type === 'contractor' ? 'blue' : 'gray'}
+                        variant="subtle"
+                        borderRadius="full"
+                      >
+                        {group.group_type === 'contractor'
+                          ? t('settings.userGroups.types.contractor')
+                          : t('settings.userGroups.types.standard')}
+                      </Badge>
+                    </HStack>
 
-                    <div className="row g-2 small">
-                      <div className="col-6 d-flex align-items-center justify-content-between">
-                        <span className="text-muted me-2">{t('contractorsAdmin.modules.dashboard')}</span>
-                        {getModuleToggle(group, 'dashboard')}
-                      </div>
-                      <div className="col-6 d-flex align-items-center justify-content-between">
-                        <span className="text-muted me-2">{t('contractorsAdmin.modules.proposals')}</span>
-                        {getModuleToggle(group, 'proposals')}
-                      </div>
-                      <div className="col-6 d-flex align-items-center justify-content-between">
-                        <span className="text-muted me-2">{t('contractorsAdmin.modules.customers')}</span>
-                        {getModuleToggle(group, 'customers')}
-                      </div>
-                      <div className="col-6 d-flex align-items-center justify-content-between">
-                        <span className="text-muted me-2">{t('contractorsAdmin.modules.resources')}</span>
-                        {getModuleToggle(group, 'resources')}
-                      </div>
-                    </div>
+                    <Grid templateColumns="1fr 1fr" gap={3} mb={4}>
+                      <GridItem>
+                        <HStack justify="space-between">
+                          <Text fontSize="sm" color="gray.600">
+                            {t('contractorsAdmin.modules.dashboard')}
+                          </Text>
+                          {getModuleToggle(group, 'dashboard')}
+                        </HStack>
+                      </GridItem>
+                      <GridItem>
+                        <HStack justify="space-between">
+                          <Text fontSize="sm" color="gray.600">
+                            {t('contractorsAdmin.modules.proposals')}
+                          </Text>
+                          {getModuleToggle(group, 'proposals')}
+                        </HStack>
+                      </GridItem>
+                      <GridItem>
+                        <HStack justify="space-between">
+                          <Text fontSize="sm" color="gray.600">
+                            {t('contractorsAdmin.modules.customers')}
+                          </Text>
+                          {getModuleToggle(group, 'customers')}
+                        </HStack>
+                      </GridItem>
+                      <GridItem>
+                        <HStack justify="space-between">
+                          <Text fontSize="sm" color="gray.600">
+                            {t('contractorsAdmin.modules.resources')}
+                          </Text>
+                          {getModuleToggle(group, 'resources')}
+                        </HStack>
+                      </GridItem>
+                    </Grid>
 
-                    <div className="d-flex justify-content-end mt-2">
-                      <CButton
-                        color="light"
+                    <Box textAlign="right">
+                      <Button
                         variant="outline"
                         size="sm"
+                        leftIcon={<Pencil size={16} />}
                         onClick={() => handleEditGroup(group.id)}
-                        title={t('settings.userGroups.actions.edit')}
                         aria-label={t('settings.userGroups.actions.edit')}
-                        className="icon-btn"
-                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                        as={motion.button}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        <Pencil size={16} className="me-1" aria-hidden="true" />
-                        {t('common.edit') || 'Edit'}
-                      </CButton>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
-  );
-};
+                        {t('common.edit')}
+                      </Button>
+                    </Box>
+                  </CardBody>
+                </Card>
+              ))
+            )}
+          </VStack>
+        </CardBody>
+      </Card>
+    </Container>
+  )
+}
 
-export default UserGroupList;
+export default UserGroupList

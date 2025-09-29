@@ -1,64 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import axiosInstance from '../../helpers/axiosInstance';
-import { useParams, useNavigate } from 'react-router-dom';
-import { decodeParam } from '../../utils/obfuscate';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  CContainer,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CRow,
-  CCol,
-  CBadge,
-  CButton,
-  CSpinner,
-  CAlert,
-  CListGroup,
-  CListGroupItem,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-  CAccordion,
-  CAccordionItem,
-  CAccordionHeader,
-  CAccordionBody,
-  CButtonGroup
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import {
-  cilArrowLeft,
-  cilBriefcase,
-  cilUser,
-  cilCalendar,
-  cilLocationPin,
-  cilDollar,
-  cilClipboard,
-  cilHistory,
-  cilInfo,
-  cilCheckCircle,
-  cilXCircle,
-  cilClock,
-  cilPrint,
-  cilPaperPlane,
-  cilCloudDownload
-} from '@coreui/icons';
+import React, { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import axiosInstance from '../../helpers/axiosInstance'
+import { useParams, useNavigate } from 'react-router-dom'
+import { decodeParam } from '../../utils/obfuscate'
+import { Container, Card, CardBody, CardHeader, Flex, Box, Badge, Spinner, Alert, Icon } from '@chakra-ui/react'
+import { ArrowLeft, User, Calendar, CheckCircle, Clock, Download } from 'lucide-react'
 
 const AdminProposalView = () => {
-  const api_url = import.meta.env.VITE_API_URL;
-  const { proposalId: rawProposalId } = useParams();
-  const proposalId = decodeParam(rawProposalId);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { proposalId: rawProposalId } = useParams()
+  const proposalId = decodeParam(rawProposalId)
+  const navigate = useNavigate()
 
-  const [proposal, setProposal] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { t } = useTranslation();
+  const [proposal, setProposal] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const { t } = useTranslation()
 
   // Status definitions
   const statusDefinitions = {
@@ -70,8 +26,8 @@ const AdminProposalView = () => {
     rejected: { label: 'Rejected', color: 'danger', icon: cilXCircle },
     expired: { label: 'Expired', color: 'dark', icon: cilClock },
     in_progress: { label: 'In Progress', color: 'info', icon: cilClock },
-    completed: { label: 'Completed', color: 'success', icon: cilCheckCircle }
-  };
+    completed: { label: 'Completed', color: 'success', icon: cilCheckCircle },
+  }
 
   const getStatusLabel = (status) => {
     const map = {
@@ -83,59 +39,59 @@ const AdminProposalView = () => {
       rejected: t('proposals.status.rejected', 'Rejected'),
       expired: t('proposals.status.expired', 'Expired'),
       in_progress: t('adminQuote.status.in_progress', 'In Progress'),
-      completed: t('adminQuote.status.completed', 'Completed')
-    };
-    return map[status] || status || t('proposals.status.draft', 'Draft');
-  };
+      completed: t('adminQuote.status.completed', 'Completed'),
+    }
+    return map[status] || status || t('proposals.status.draft', 'Draft')
+  }
+
+  const fetchProposalDetails = useCallback(async () => {
+    try {
+      setLoading(true)
+      if (!proposalId) {
+        throw new Error(t('adminQuote.noId', 'No quote ID provided'))
+      }
+      const { data } = await axiosInstance.get(`/api/quotes/proposalByID/${proposalId}`)
+      setProposal(data)
+      setError(null)
+    } catch (err) {
+      console.error('Error fetching proposal:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [proposalId, t])
 
   useEffect(() => {
     if (proposalId) {
-      fetchProposalDetails();
+      fetchProposalDetails()
     }
-  }, [proposalId]);
-
-  const fetchProposalDetails = async () => {
-    try {
-      setLoading(true);
-      if (!proposalId) {
-        throw new Error(t('adminQuote.noId','No quote ID provided'));
-      }
-  const { data } = await axiosInstance.get(`/api/quotes/proposalByID/${proposalId}`);
-      setProposal(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching proposal:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [proposalId, fetchProposalDetails])
 
   const getStatusColor = (status) => {
-    return statusDefinitions[status]?.color || 'secondary';
-  };
+    return statusDefinitions[status]?.color || 'secondary'
+  }
 
   const getStatusIcon = (status) => {
-    return statusDefinitions[status]?.icon || cilClipboard;
-  };
+    return statusDefinitions[status]?.icon || cilClipboard
+  }
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
-    }).format(amount || 0);
-  };
+      currency: 'USD',
+    }).format(amount || 0)
+  }
 
   // Parse manufacturer data to extract items and totals
   const parseProposalData = (proposal) => {
     if (!proposal || !proposal.manufacturersData) {
-      return { items: [], totalAmount: 0, summary: {} };
+      return { items: [], totalAmount: 0, summary: {} }
     }
 
     try {
-      const manufacturersData = JSON.parse(proposal.manufacturersData);
-      let allItems = [];
-      let totalAmount = 0;
+      const manufacturersData = JSON.parse(proposal.manufacturersData)
+      let allItems = []
+      let totalAmount = 0
       let combinedSummary = {
         cabinets: 0,
         assemblyFee: 0,
@@ -143,176 +99,181 @@ const AdminProposalView = () => {
         styleTotal: 0,
         discountAmount: 0,
         taxAmount: 0,
-        grandTotal: 0
-      };
+        grandTotal: 0,
+      }
 
-      manufacturersData.forEach(manufacturer => {
+      manufacturersData.forEach((manufacturer) => {
         if (manufacturer.items) {
-          allItems = allItems.concat(manufacturer.items);
+          allItems = allItems.concat(manufacturer.items)
         }
         if (manufacturer.summary) {
-          combinedSummary.cabinets += manufacturer.summary.cabinets || 0;
-          combinedSummary.assemblyFee += manufacturer.summary.assemblyFee || 0;
-          combinedSummary.modificationsCost += manufacturer.summary.modificationsCost || 0;
-          combinedSummary.styleTotal += manufacturer.summary.styleTotal || 0;
-          combinedSummary.discountAmount += manufacturer.summary.discountAmount || 0;
-          combinedSummary.taxAmount += manufacturer.summary.taxAmount || 0;
-          combinedSummary.grandTotal += manufacturer.summary.grandTotal || 0;
+          combinedSummary.cabinets += manufacturer.summary.cabinets || 0
+          combinedSummary.assemblyFee += manufacturer.summary.assemblyFee || 0
+          combinedSummary.modificationsCost += manufacturer.summary.modificationsCost || 0
+          combinedSummary.styleTotal += manufacturer.summary.styleTotal || 0
+          combinedSummary.discountAmount += manufacturer.summary.discountAmount || 0
+          combinedSummary.taxAmount += manufacturer.summary.taxAmount || 0
+          combinedSummary.grandTotal += manufacturer.summary.grandTotal || 0
         }
-      });
+      })
 
       return {
         items: allItems,
         totalAmount: combinedSummary.grandTotal,
-        summary: combinedSummary
-      };
+        summary: combinedSummary,
+      }
     } catch (error) {
-  console.error('Error parsing manufacturer data:', error);
-      return { items: [], totalAmount: 0, summary: {} };
+      console.error('Error parsing manufacturer data:', error)
+      return { items: [], totalAmount: 0, summary: {} }
     }
-  };
+  }
 
   // Get parsed proposal data
-  const parsedData = proposal ? parseProposalData(proposal) : { items: [], totalAmount: 0, summary: {} };
+  const parsedData = proposal
+    ? parseProposalData(proposal)
+    : { items: [], totalAmount: 0, summary: {} }
 
   const formatDate = (dateString) => {
-  if (!dateString) return t('common.na','N/A');
+    if (!dateString) return t('common.na', 'N/A')
 
     try {
-      const date = new Date(dateString);
+      const date = new Date(dateString)
       // Check if the date is valid
       if (isNaN(date.getTime())) {
-        return t('common.na','N/A');
+        return t('common.na', 'N/A')
       }
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
-      });
+        minute: '2-digit',
+      })
     } catch (error) {
-  console.error('Error formatting date:', error);
-      return t('common.na','N/A');
+      console.error('Error formatting date:', error)
+      return t('common.na', 'N/A')
     }
-  };
+  }
 
   const getStatusTimeline = (proposal) => {
-    const timeline = [];
+    const timeline = []
 
     timeline.push({
       status: 'created',
-      label: t('adminQuote.labels.created','Created'),
+      label: t('adminQuote.labels.created', 'Created'),
       date: proposal.created_at,
       icon: cilClipboard,
       color: 'secondary',
-      description: t('adminQuote.timeline.created','Quote was created and added to the system')
-    });
+      description: t('adminQuote.timeline.created', 'Quote was created and added to the system'),
+    })
 
     // Add sent status if it exists
     if (proposal.sent_at) {
       timeline.push({
         status: 'sent',
-        label: t('adminQuote.labels.sentToCustomer','Sent to Customer'),
+        label: t('adminQuote.labels.sentToCustomer', 'Sent to Customer'),
         date: proposal.sent_at,
         icon: cilPaperPlane,
         color: 'info',
-        description: t('adminQuote.timeline.sent','Quote was sent to the customer for review')
-      });
+        description: t('adminQuote.timeline.sent', 'Quote was sent to the customer for review'),
+      })
     }
 
     // Add accepted status if it exists
     if (proposal.accepted_at) {
       timeline.push({
         status: 'accepted',
-        label: t('adminQuote.labels.accepted','Accepted'),
+        label: t('adminQuote.labels.accepted', 'Accepted'),
         date: proposal.accepted_at,
         icon: cilCheckCircle,
         color: 'success',
-        description: t('adminQuote.timeline.accepted','Quote was formally accepted')
-      });
+        description: t('adminQuote.timeline.accepted', 'Quote was formally accepted'),
+      })
     }
 
     // Add other status changes if they're different from sent/accepted
     if (proposal.status && !['draft', 'sent', 'accepted'].includes(proposal.status)) {
       timeline.push({
         status: proposal.status,
-  label: getStatusLabel(proposal.status),
+        label: getStatusLabel(proposal.status),
         date: proposal.updated_at,
         icon: getStatusIcon(proposal.status),
         color: getStatusColor(proposal.status),
-  description: proposal.status === 'rejected' ? t('adminQuote.timeline.rejected','Quote was rejected') :
-        proposal.status === 'expired' ? t('adminQuote.timeline.expired','Quote has expired') :
-        t('adminQuote.timeline.changed','Proposal status changed to {{status}}',{ status: proposal.status })
-      });
+        description:
+          proposal.status === 'rejected'
+            ? t('adminQuote.timeline.rejected', 'Quote was rejected')
+            : proposal.status === 'expired'
+              ? t('adminQuote.timeline.expired', 'Quote has expired')
+              : t('adminQuote.timeline.changed', 'Proposal status changed to {{status}}', {
+                  status: proposal.status,
+                }),
+      })
     }
 
-    return timeline;
-  };
+    return timeline
+  }
 
   const handlePrint = () => {
-    window.print();
-  };
+    window.print()
+  }
 
   const handleDownload = () => {
     // TODO: Implement PDF download functionality
-  };
+  }
 
   if (loading) {
     return (
-      <CContainer className="py-4">
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-          <CSpinner color="primary" size="lg" />
-          <span className="ms-3">{t('adminQuote.loading','Loading proposal details...')}</span>
+      <Container className="py-4">
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: '400px' }}
+        >
+          <Spinner colorScheme="blue" size="lg" />
+          <span className="ms-3">{t('adminQuote.loading', 'Loading proposal details...')}</span>
         </div>
-      </CContainer>
-    );
+      </Container>
+    )
   }
 
   if (error) {
     return (
-      <CContainer className="py-4">
-        <CAlert color="danger">
+      <Container className="py-4">
+        <Alert status="error">
           <CIcon icon={cilInfo} className="me-2" />
           {error}
-        </CAlert>
-        <CButton color="secondary" onClick={() => navigate(-1)}>
-          <CIcon icon={cilArrowLeft} className="me-1" />
-          {t('common.back','Back')}
+        </Alert>
+        <CButton colorScheme="gray" onClick={() => navigate(-1)}>
+          <Icon as={ArrowLeft} className="me-1" />
+          {t('common.back', 'Back')}
         </CButton>
-      </CContainer>
-    );
+      </Container>
+    )
   }
 
   if (!proposal) {
     return (
-      <CContainer className="py-4">
-        <CAlert color="warning">
+      <Container className="py-4">
+        <Alert status="warning">
           <CIcon icon={cilInfo} className="me-2" />
-          {t('adminQuote.ui.notFound','Proposal not found.')}
-        </CAlert>
-        <CButton color="secondary" onClick={() => navigate(-1)}>
-          <CIcon icon={cilArrowLeft} className="me-1" />
-          {t('common.back','Back')}
+          {t('adminQuote.ui.notFound', 'Proposal not found.')}
+        </Alert>
+        <CButton colorScheme="gray" onClick={() => navigate(-1)}>
+          <Icon as={ArrowLeft} className="me-1" />
+          {t('common.back', 'Back')}
         </CButton>
-      </CContainer>
-    );
+      </Container>
+    )
   }
 
   return (
-    <CContainer fluid className="py-4">
+    <Container fluid className="py-4">
       {/* Header */}
-      <CRow className="mb-4">
-        <CCol>
+      <Flex className="mb-4">
+        <Box>
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
-              <CButton
-                color="ghost"
-                size="sm"
-                onClick={() => navigate(-1)}
-                className="me-3"
-              >
-                <CIcon icon={cilArrowLeft} />
+              <CButton color="ghost" size="sm" onClick={() => navigate(-1)} className="me-3">
+                <Icon as={ArrowLeft} />
               </CButton>
               <div>
                 <h3 className="mb-1">
@@ -321,128 +282,154 @@ const AdminProposalView = () => {
                 </h3>
                 <div className="d-flex align-items-center gap-3 text-muted">
                   <span>
-                    <CIcon icon={cilUser} className="me-1" />
+                    <Icon as={User} className="me-1" />
                     {proposal.customer?.name || 'N/A'}
                   </span>
                   <span>
                     <CIcon icon={cilLocationPin} className="me-1" />
                     {proposal.UserGroup?.name || 'N/A'}
                   </span>
-                  <CBadge color={getStatusColor(proposal.status)} size="lg">
+                  <Badge color={getStatusColor(proposal.status)} size="lg">
                     <CIcon icon={getStatusIcon(proposal.status)} className="me-1" />
                     {getStatusLabel(proposal.status)}
-                  </CBadge>
+                  </Badge>
                 </div>
-              </div>
             </div>
             <div className="d-flex gap-2">
               <CButton color="outline-secondary" size="sm" onClick={handlePrint}>
                 <CIcon icon={cilPrint} className="me-1" />
-                {t('adminQuote.ui.print','Print')}
+                {t('adminQuote.ui.print', 'Print')}
               </CButton>
               <CButton color="outline-primary" size="sm" onClick={handleDownload}>
-                <CIcon icon={cilCloudDownload} className="me-1" />
-                {t('proposalCommon.downloadPdf','Download PDF')}
+                <Icon as={Download} className="me-1" />
+                {t('proposalCommon.downloadPdf', 'Download PDF')}
               </CButton>
             </div>
-          </div>
-        </CCol>
-      </CRow>
+        </Box>
+      </Flex>
 
-      <CRow>
-        <CCol lg={8}>
+      <Flex>
+        <Box lg={8}>
           {/* Main Content */}
-          <CCard className="mb-4">
-            <CCardHeader>
-              <strong>{t('adminQuote.ui.overview','Quote Overview')}</strong>
-            </CCardHeader>
-            <CCardBody>
-              <CRow className="mb-4">
-                <CCol md={6}>
+          <Card className="mb-4">
+            <CardHeader>
+              <strong>{t('adminQuote.ui.overview', 'Quote Overview')}</strong>
+            </CardHeader>
+            <CardBody>
+              <Flex className="mb-4">
+                <Box md={6}>
                   <h4 className="text-success mb-3">{formatCurrency(parsedData.totalAmount)}</h4>
 
                   <CListGroup flush>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.proposalId','Quote ID')}</span>
+                      <span className="text-muted">
+                        {t('adminQuote.ui.proposalId', 'Quote ID')}
+                      </span>
                       <strong>#{proposal.id}</strong>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.customer','Customer')}</span>
-                      <span>{proposal.customer?.name || t('common.na','N/A')}</span>
+                      <span className="text-muted">{t('adminQuote.ui.customer', 'Customer')}</span>
+                      <span>{proposal.customer?.name || t('common.na', 'N/A')}</span>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.contractorGroup','Contractor Group')}</span>
-                      <span>{proposal.UserGroup?.name || t('common.na','N/A')}</span>
+                      <span className="text-muted">
+                        {t('adminQuote.ui.contractorGroup', 'Contractor Group')}
+                      </span>
+                      <span>{proposal.UserGroup?.name || t('common.na', 'N/A')}</span>
                     </CListGroupItem>
                   </CListGroup>
-                </CCol>
-                <CCol md={6}>
+                </Box>
+                <Box md={6}>
                   <CListGroup flush>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.createdDate','Created Date')}</span>
+                      <span className="text-muted">
+                        {t('adminQuote.ui.createdDate', 'Created Date')}
+                      </span>
                       <span>{formatDate(proposal.created_at)}</span>
                     </CListGroupItem>
                     <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.updatedDate','Last Updated')}</span>
+                      <span className="text-muted">
+                        {t('adminQuote.ui.updatedDate', 'Last Updated')}
+                      </span>
                       <span>{formatDate(proposal.updated_at)}</span>
                     </CListGroupItem>
                     {proposal.sent_at && (
                       <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">{t('adminQuote.ui.sentDate','Sent Date')}</span>
+                        <span className="text-muted">
+                          {t('adminQuote.ui.sentDate', 'Sent Date')}
+                        </span>
                         <span className="text-info">{formatDate(proposal.sent_at)}</span>
                       </CListGroupItem>
                     )}
                     {proposal.accepted_at && (
                       <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">{t('adminQuote.ui.acceptedDate','Accepted Date')}</span>
+                        <span className="text-muted">
+                          {t('adminQuote.ui.acceptedDate', 'Accepted Date')}
+                        </span>
                         <span className="text-success">{formatDate(proposal.accepted_at)}</span>
                       </CListGroupItem>
                     )}
                   </CListGroup>
-                </CCol>
-              </CRow>
+                </Box>
+              </Flex>
 
               {proposal.description && (
                 <div className="mt-4">
-                  <h6 className="text-muted mb-2">{t('common.description','Description')}</h6>
+                  <h6 className="text-muted mb-2">{t('common.description', 'Description')}</h6>
                   <div className="bg-light p-3 rounded">
                     <p className="mb-0">{proposal.description}</p>
                   </div>
-                </div>
               )}
-            </CCardBody>
-          </CCard>
+            </CardBody>
+          </Card>
 
           {/* Proposal Items */}
           {parsedData.items && parsedData.items.length > 0 && (
-            <CCard className="mb-4">
-              <CCardHeader>
+            <Card className="mb-4">
+              <CardHeader>
                 <strong>
                   <CIcon icon={cilClipboard} className="me-2" />
-                  {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', { count: parsedData.items.length })}
+                  {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', {
+                    count: parsedData.items.length,
+                  })}
                 </strong>
-              </CCardHeader>
-              <CCardBody>
+              </CardHeader>
+              <CardBody>
                 <div className="table-responsive">
                   <CTable hover>
                     <CTableHead>
                       <CTableRow>
-                        <CTableHeaderCell>{t('proposalColumns.item','Item')}</CTableHeaderCell>
-                        <CTableHeaderCell>{t('common.description','Description')}</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center">{t('proposalColumns.qty','Qty')}</CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">{t('proposalDoc.catalog.unitPrice','Unit Price')}</CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">{t('proposalColumns.total','Total')}</CTableHeaderCell>
+                        <CTableHeaderCell>{t('proposalColumns.item', 'Item')}</CTableHeaderCell>
+                        <CTableHeaderCell>
+                          {t('common.description', 'Description')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">
+                          {t('proposalColumns.qty', 'Qty')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-end">
+                          {t('proposalDoc.catalog.unitPrice', 'Unit Price')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-end">
+                          {t('proposalColumns.total', 'Total')}
+                        </CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
                       {parsedData.items.map((item, index) => (
                         <CTableRow key={index}>
                           <CTableDataCell>
-                            <strong>{item.code || t('adminQuote.ui.itemNumber','Item {{n}}', { n: index + 1 })}</strong>
+                            <strong>
+                              {item.code ||
+                                t('adminQuote.ui.itemNumber', 'Item {{n}}', { n: index + 1 })}
+                            </strong>
                           </CTableDataCell>
-                          <CTableDataCell>{item.description || t('common.na','N/A')}</CTableDataCell>
+                          <CTableDataCell>
+                            {item.description || t('common.na', 'N/A')}
+                          </CTableDataCell>
                           <CTableDataCell className="text-center">{item.qty || 1}</CTableDataCell>
-                          <CTableDataCell className="text-end">{formatCurrency(parseFloat(item.price) || 0)}</CTableDataCell>
+                          <CTableDataCell className="text-end">
+                            {formatCurrency(parseFloat(item.price) || 0)}
+                          </CTableDataCell>
                           <CTableDataCell className="text-end">
                             <strong>{formatCurrency(parseFloat(item.total) || 0)}</strong>
                           </CTableDataCell>
@@ -454,64 +441,70 @@ const AdminProposalView = () => {
 
                 {/* Totals */}
                 <div className="border-top pt-3 mt-3">
-                  <CRow>
-                    <CCol md={6}></CCol>
-                    <CCol md={6}>
+                  <Flex>
+                    <Box md={6}></Box>
+                    <Box md={6}>
                       <div className="d-flex justify-content-between mb-2">
-                        <span>{t('proposalDoc.priceSummary.cabinets','Cabinets & Parts:')}</span>
+                        <span>{t('proposalDoc.priceSummary.cabinets', 'Cabinets & Parts:')}</span>
                         <span>{formatCurrency(parsedData.summary.cabinets || 0)}</span>
                       </div>
                       {parsedData.summary.assemblyFee > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>{t('proposalDoc.priceSummary.assembly','Assembly fee:')}</span>
+                          <span>{t('proposalDoc.priceSummary.assembly', 'Assembly fee:')}</span>
                           <span>{formatCurrency(parsedData.summary.assemblyFee)}</span>
                         </div>
                       )}
                       {parsedData.summary.modificationsCost > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>{t('proposalDoc.priceSummary.modifications','Modifications:')}</span>
+                          <span>
+                            {t('proposalDoc.priceSummary.modifications', 'Modifications:')}
+                          </span>
                           <span>{formatCurrency(parsedData.summary.modificationsCost)}</span>
                         </div>
                       )}
                       {parsedData.summary.discountAmount > 0 && (
                         <div className="d-flex justify-content-between mb-2 text-danger">
-                          <span>{t('orders.details.discount','Discount')}</span>
+                          <span>{t('orders.details.discount', 'Discount')}</span>
                           <span>-{formatCurrency(parsedData.summary.discountAmount)}</span>
                         </div>
                       )}
                       {parsedData.summary.taxAmount > 0 && (
                         <div className="d-flex justify-content-between mb-2">
-                          <span>{t('proposalDoc.priceSummary.tax','Tax:')}</span>
+                          <span>{t('proposalDoc.priceSummary.tax', 'Tax:')}</span>
                           <span>{formatCurrency(parsedData.summary.taxAmount)}</span>
                         </div>
                       )}
                       <div className="d-flex justify-content-between border-top pt-2">
-                        <strong>{t('proposalDoc.priceSummary.total','Total:')}</strong>
-                        <strong className="text-success fs-5">{formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}</strong>
+                        <strong>{t('proposalDoc.priceSummary.total', 'Total:')}</strong>
+                        <strong className="text-success fs-5">
+                          {formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}
+                        </strong>
                       </div>
-                    </CCol>
-                  </CRow>
+                    </Box>
+                  </Flex>
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
           )}
-        </CCol>
+        </Box>
 
-        <CCol lg={4}>
+        <Box lg={4}>
           {/* Status Timeline */}
-          <CCard>
-            <CCardHeader>
+          <Card>
+            <CardHeader>
               <strong>
                 <CIcon icon={cilHistory} className="me-2" />
-                {t('adminQuote.ui.statusTimeline','Status Timeline')}
+                {t('adminQuote.ui.statusTimeline', 'Status Timeline')}
               </strong>
-            </CCardHeader>
-            <CCardBody>
+            </CardHeader>
+            <CardBody>
               <div className="timeline">
                 {getStatusTimeline(proposal).map((item, index) => (
                   <div key={index} className="d-flex mb-4">
-                    <div className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
-                         style={{ width: '40px', height: '40px', minWidth: '40px' }}>
+                    <div
+                      className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
+                      style={{ width: '40px', height: '40px', minWidth: '40px' }}
+                    >
                       <CIcon icon={item.icon} size="sm" />
                     </div>
                     <div className="flex-grow-1">
@@ -521,15 +514,14 @@ const AdminProposalView = () => {
                       </div>
                       <small className="text-muted">{item.description}</small>
                     </div>
-                  </div>
                 ))}
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
-  );
-};
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
+    </Container>
+  )
+}
 
-export default AdminProposalView;
+export default AdminProposalView

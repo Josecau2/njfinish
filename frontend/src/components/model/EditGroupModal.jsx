@@ -1,163 +1,139 @@
 import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import PageHeader from '../PageHeader'
 import {
-    CModal,
-    CModalBody,
-    CModalFooter,
-    CButton,
-    CForm,
-    CFormInput,
-    CFormLabel,
-    CAlert,
-    CContainer,
-    CRow,
-    CCol,
-} from '@coreui/react'
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
+  Switch,
+  Alert,
+  AlertIcon,
+  Stack,
+  Button,
+} from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
+
+const DEFAULT_FORM = {
+  name: '',
+  multiplier: '',
+  enabled: false,
+}
+
+const multiplierRegex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
 
 const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
-    const { t } = useTranslation()
-    const customization = useSelector((state) => state.customization)
+  const { t } = useTranslation()
+  const [formData, setFormData] = useState(DEFAULT_FORM)
+  const [error, setError] = useState(null)
 
-    const [formData, setFormData] = useState({
-        name: '',
-        multiplier: '',
-        enabled: false,
-    })
-
-    const [error, setError] = useState(null)
-
-    useEffect(() => {
-        if (manufacturer) {
-            setFormData({
-                name: manufacturer.user_group.name || '',
-                multiplier: manufacturer.multiplier || '',
-                enabled: manufacturer.enabled || false,
-            })
-        }
-    }, [manufacturer])
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }))
+  useEffect(() => {
+    if (manufacturer) {
+      setFormData({
+        name: manufacturer?.user_group?.name || '',
+        multiplier: manufacturer?.multiplier?.toString() || '',
+        enabled: Boolean(manufacturer?.enabled),
+      })
+    } else {
+      setFormData(DEFAULT_FORM)
     }
+  }, [manufacturer])
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setError(null)
-        onSave(formData)
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
+
+  const handleMultiplierChange = (event) => {
+    const { value } = event.target
+    if (value === '' || multiplierRegex.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        multiplier: value,
+      }))
     }
+  }
 
-    const inputStyle = {
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #dcdcdc',
-        borderRadius: '8px',
-        padding: '10px 14px',
-        fontSize: '15px',
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    setError(null)
+    onSave(formData)
+  }
 
-    const readOnlyStyle = {
-        ...inputStyle,
-        backgroundColor: '#f1f3f5',
-        color: '#6c757d',
-        cursor: 'not-allowed',
-    }
+  return (
+    <Modal isOpen={show} onClose={onClose} size='lg' isCentered>
+      <ModalOverlay />
+      <ModalContent as='form' onSubmit={handleSubmit} className='edit-group-modal'>
+        <ModalHeader>{t('settings.userGroups.multipliers.modal.title')}</ModalHeader>
+        <ModalBody>
+          <Stack spacing={4}>
+            {error ? (
+              <Alert status='error'>
+                <AlertIcon />
+                {error}
+              </Alert>
+            ) : null}
 
-    return (
-        <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center" scrollable>
-            <CForm onSubmit={handleSubmit}>
-                <CModalBody className="p-0">
-                    <PageHeader
-                        title={t('settings.userGroups.multipliers.modal.title')}
-                        cardClassName="mb-0 rounded-top-3"
-                    />
-                    <div className="p-4">
-                        {error && <CAlert color="danger" role="alert" aria-live="assertive">{error}</CAlert>}
+            <FormControl>
+              <FormLabel htmlFor='name'>
+                {t('settings.userGroups.multipliers.modal.labels.name')}
+              </FormLabel>
+              <Input
+                id='name'
+                name='name'
+                value={formData.name}
+                isReadOnly
+                variant='filled'
+                placeholder={t('settings.userGroups.multipliers.modal.placeholders.name')}
+              />
+            </FormControl>
 
-                    <CContainer fluid>
-                        <CRow className="mb-3">
-                            <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="name">{t('settings.userGroups.multipliers.modal.labels.name')}</CFormLabel>
-                                <CFormInput
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    readOnly
-                                    placeholder={t('settings.userGroups.multipliers.modal.placeholders.name')}
-                                    style={readOnlyStyle}
-                                    aria-label={t('settings.userGroups.multipliers.modal.labels.name')}
-                                />
-                            </CCol>
-                            <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="multiplier">{t('settings.userGroups.multipliers.modal.labels.multiplier')}</CFormLabel>
-                                <CFormInput
-                                    type="number"
-                                    step="0.01"
-                                    id="multiplier"
-                                    name="multiplier"
-                                    value={formData.multiplier}
-                                    onChange={(e) => {
-                                        const value = e.target.value
-                                        const regex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
-                                        if (value === '' || regex.test(value)) {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                multiplier: value,
-                                            }))
-                                        }
-                                    }}
-                                    placeholder={t('settings.userGroups.multipliers.modal.placeholders.multiplier')}
-                                    style={inputStyle}
-                                    aria-label={t('settings.userGroups.multipliers.modal.labels.multiplier')}
-                                />
-                            </CCol>
-                        </CRow>
+            <FormControl>
+              <FormLabel htmlFor='multiplier'>
+                {t('settings.userGroups.multipliers.modal.labels.multiplier')}
+              </FormLabel>
+              <Input
+                id='multiplier'
+                name='multiplier'
+                type='number'
+                step='0.01'
+                value={formData.multiplier}
+                onChange={handleMultiplierChange}
+                placeholder={t('settings.userGroups.multipliers.modal.placeholders.multiplier')}
+              />
+            </FormControl>
 
-                        <CRow>
-
-                            <CCol xs={6} md={6}>
-                                <div
-                                    className="form-check form-switch mt-5"
-                                    style={{ transform: 'scale(1.0)', display: 'flex', alignItems: 'center' }}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="enabled"
-                                        name="enabled"
-                                        checked={formData.enabled}
-                                        onChange={handleChange}
-                                        aria-label={t('settings.userGroups.multipliers.modal.labels.enabled')}
-                                    />
-                                    <label
-                                        className="form-check-label ms-2"
-                                        htmlFor="enabled"
-                                        style={{ fontSize: '1.1rem' }}
-                                    >
-                                        {t('settings.userGroups.multipliers.modal.labels.enabled')}
-                                    </label>
-                                </div>
-                            </CCol>
-                        </CRow>
-                    </CContainer>
-                    </div>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="secondary" variant="outline" onClick={onClose} style={{ minHeight: '44px' }}>
-                        {t('common.cancel')}
-                    </CButton>
-                    <CButton color="primary" type="submit" style={{ minHeight: '44px' }}>
-                        {t('common.save')}
-                    </CButton>
-                </CModalFooter>
-            </CForm>
-        </CModal>
-    )
+            <FormControl display='flex' alignItems='center'>
+              <Switch
+                id='enabled'
+                name='enabled'
+                isChecked={formData.enabled}
+                onChange={handleChange}
+                mr={3}
+              />
+              <FormLabel htmlFor='enabled' mb={0}>
+                {t('settings.userGroups.multipliers.modal.labels.enabled')}
+              </FormLabel>
+            </FormControl>
+          </Stack>
+        </ModalBody>
+        <ModalFooter gap={3}>
+          <Button variant='outline' onClick={onClose}>
+            {t('common.cancel')}
+          </Button>
+          <Button colorScheme='blue' type='submit'>
+            {t('common.save')}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
 }
 
 export default EditGroupModal

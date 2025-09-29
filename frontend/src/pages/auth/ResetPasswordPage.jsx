@@ -60,9 +60,7 @@ const ResetPasswordPage = () => {
           <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
             {loginBrand.rightSubtitle || t('auth.resetPassword.subtitle')}
           </p>
-          <p style={{ color: rightPanelColors.subtitle }}>
-            {loginBrand.rightDescription || ''}
-          </p>
+          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription || ''}</p>
         </div>
       </div>
 
@@ -71,8 +69,12 @@ const ResetPasswordPage = () => {
           <div className="text-center mb-4">
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.resetPassword.formTitle')}</h2>
-          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}</p>
+          <h2 className="mb-2 fw-bold">
+            {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
+          </h2>
+          <p className="text-muted mb-4">
+            {loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}
+          </p>
 
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
@@ -89,7 +91,8 @@ const ResetPasswordPage = () => {
           <form onSubmit={handleReset}>
             <div className="mb-3">
               <label htmlFor="password" className="form-label fw-medium">
-                {t('auth.resetPassword.passwordLabel')}<span className="text-danger">*</span>
+                {t('auth.resetPassword.passwordLabel')}
+                <span className="text-danger">*</span>
               </label>
               <input
                 type="password"
@@ -104,7 +107,12 @@ const ResetPasswordPage = () => {
             </div>
 
             <div className="d-grid">
-              <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }} disabled={isSubmitting}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ minHeight: 44 }}
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit')}
               </button>
             </div>

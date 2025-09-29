@@ -1,1 +1,5 @@
 build/
+
+# Ignore intentionally broken/legacy or backup files
+src/pages/customers/Customers_broken.jsx
+src/i18n/locales/*.backup.json

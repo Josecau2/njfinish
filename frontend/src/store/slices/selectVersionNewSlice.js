@@ -1,5 +1,5 @@
 // store/slices/selectVersionNewSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 const selectVersionNewSlice = createSlice({
   name: 'selectVersionNew',
@@ -8,13 +8,13 @@ const selectVersionNewSlice = createSlice({
   },
   reducers: {
     setSelectVersionNew(state, action) {
-      state.data = action.payload;
+      state.data = action.payload
     },
     clearSelectVersionNew(state) {
-      state.data = null;
+      state.data = null
     },
   },
-});
+})
 
-export const { setSelectVersionNew, clearSelectVersionNew } = selectVersionNewSlice.actions;
-export default selectVersionNewSlice.reducer;
+export const { setSelectVersionNew, clearSelectVersionNew } = selectVersionNewSlice.actions
+export default selectVersionNewSlice.reducer

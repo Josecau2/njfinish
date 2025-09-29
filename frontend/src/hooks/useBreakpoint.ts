@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 
 const queries = {
   mobile: '(max-width: 576px)',
-  desktop: '(min-width: 577px)'
+  desktop: '(min-width: 577px)',
 } as const
 
-export function useBreakpoint(name: keyof typeof queries = 'mobile'){
+export function useBreakpoint(name: keyof typeof queries = 'mobile') {
   const q = queries[name]
   const [match, setMatch] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia(q).matches : false,

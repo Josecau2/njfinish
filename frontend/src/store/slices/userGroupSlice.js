@@ -6,12 +6,12 @@ export const fetchUsers = createAsyncThunk(
   'usersgroups/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.get('/api/usersgroups');
+      const response = await axiosInstance.get('/api/usersgroups')
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Fetch user group multipliers
@@ -19,12 +19,12 @@ export const fetchUserMultipliers = createAsyncThunk(
   'usersgroups/fetchUserMultipliers',
   async (_, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.get('/api/usersgroupsmultiplier');
+      const response = await axiosInstance.get('/api/usersgroupsmultiplier')
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Fetch single user by ID
@@ -32,12 +32,12 @@ export const fetchUserById = createAsyncThunk(
   'usersgroups/fetchUserById',
   async (id, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.get(`/api/usersgroups/${id}`);
+      const response = await axiosInstance.get(`/api/usersgroups/${id}`)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Fetch single user group for editing
@@ -45,25 +45,25 @@ export const fetchSingleUser = createAsyncThunk(
   'usersgroups/fetchSingleUser',
   async (id, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.get(`/api/usersgroups/${id}`);
+      const response = await axiosInstance.get(`/api/usersgroups/${id}`)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Add new user
-export const  addUser = createAsyncThunk(
+export const addUser = createAsyncThunk(
   'usersgroups/addUser',
   async (userData, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.post('/api/usersgroups', userData);
+      const response = await axiosInstance.post('/api/usersgroups', userData)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Update user
@@ -71,12 +71,12 @@ export const updateUser = createAsyncThunk(
   'usersgroups/updateUser',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-  const response = await axiosInstance.put(`/api/usersgroups/${id}`, data);
+      const response = await axiosInstance.put(`/api/usersgroups/${id}`, data)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 // Delete user
@@ -84,12 +84,12 @@ export const deleteUser = createAsyncThunk(
   'usersgroups/deleteUser',
   async (id, { rejectWithValue }) => {
     try {
-  await axiosInstance.delete(`/api/usersgroups/${id}`);
+      await axiosInstance.delete(`/api/usersgroups/${id}`)
       return id
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 const userGroupSlice = createSlice({
@@ -99,7 +99,7 @@ const userGroupSlice = createSlice({
     allGroups: [], // Store all user groups here
     selected: null,
     loading: false,
-    error: null
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -110,11 +110,11 @@ const userGroupSlice = createSlice({
         state.error = null
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
-  state.loading = false;
-  const groups = action.payload.users || [];
-  // Store in both fields for backward compatibility with existing components
-  state.allGroups = groups;
-  state.list = groups;
+        state.loading = false
+        const groups = action.payload.users || []
+        // Store in both fields for backward compatibility with existing components
+        state.allGroups = groups
+        state.list = groups
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false
@@ -127,8 +127,8 @@ const userGroupSlice = createSlice({
         state.error = null
       })
       .addCase(fetchUserMultipliers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = action.payload.users || []; // users array
+        state.loading = false
+        state.list = action.payload.users || [] // users array
       })
       .addCase(fetchUserMultipliers.rejected, (state, action) => {
         state.loading = false
@@ -158,22 +158,20 @@ const userGroupSlice = createSlice({
         state.list.push(action.payload)
       })
       .addCase(addUser.rejected, (state, action) => {
-        const payload = action.payload;
+        const payload = action.payload
         state.error =
-          typeof payload === 'string'
-            ? payload
-            : payload?.message || 'Failed to add user';
+          typeof payload === 'string' ? payload : payload?.message || 'Failed to add user'
       })
 
       // Update
       .addCase(updateUser.fulfilled, (state, action) => {
-        const updated = action.payload.user || action.payload; // Handle both response formats
+        const updated = action.payload.user || action.payload // Handle both response formats
         // Update list
-        const i1 = state.list.findIndex(user => user.id === updated.id);
-        if (i1 !== -1) state.list[i1] = { ...state.list[i1], ...updated };
+        const i1 = state.list.findIndex((user) => user.id === updated.id)
+        if (i1 !== -1) state.list[i1] = { ...state.list[i1], ...updated }
         // Update allGroups
-        const i2 = state.allGroups.findIndex(user => user.id === updated.id);
-        if (i2 !== -1) state.allGroups[i2] = { ...state.allGroups[i2], ...updated };
+        const i2 = state.allGroups.findIndex((user) => user.id === updated.id)
+        if (i2 !== -1) state.allGroups[i2] = { ...state.allGroups[i2], ...updated }
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.error = action.payload
@@ -181,13 +179,13 @@ const userGroupSlice = createSlice({
 
       // Delete
       .addCase(deleteUser.fulfilled, (state, action) => {
-        state.list = state.list.filter(user => user.id !== action.payload);
-        state.allGroups = state.allGroups.filter(user => user.id !== action.payload);
+        state.list = state.list.filter((user) => user.id !== action.payload)
+        state.allGroups = state.allGroups.filter((user) => user.id !== action.payload)
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.error = action.payload
       })
-  }
+  },
 })
 
 export default userGroupSlice.reducer

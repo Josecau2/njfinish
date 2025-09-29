@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import {
-  CCard,
-  CCardBody,
-  CNav,
-  CNavItem,
-  CNavLink,
-  CTabContent,
-  CTabPane,
-} from '@coreui/react'
+import { Card, CardBody, Flex, Box, Link } from '@chakra-ui/react'
 import CustomizationPage from './CustomizationPage'
 import PdfLayoutCustomization from './PdfLayoutCustomization'
 import LoginCustomizerPage from './LoginCustomizerPage'
@@ -16,51 +8,39 @@ const CustomizationIndex = () => {
   const [activeKey, setActiveKey] = useState(1)
 
   return (
-    <CCard className='main-div-cutomization'>
-      <CCardBody>
-        <CNav variant="tabs" role="tablist">
-          <CNavItem>
-            <CNavLink
-              active={activeKey === 1}
-              onClick={() => setActiveKey(1)}
-              style={{ cursor: 'pointer' }}
-            >
+    <Card className="main-div-cutomization">
+      <CardBody>
+        <Flex role="tablist" gap={4}>
+          <Box>
+            <Link onClick={() => setActiveKey(1)} style={{ cursor: 'pointer', fontWeight: activeKey === 1 ? 600 : 400 }}>
               General Customization
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink
-              active={activeKey === 2}
-              onClick={() => setActiveKey(2)}
-              style={{ cursor: 'pointer' }}
-            >
+            </Link>
+          </Box>
+          <Box>
+            <Link onClick={() => setActiveKey(2)} style={{ cursor: 'pointer', fontWeight: activeKey === 2 ? 600 : 400 }}>
               PDF Layout
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink
-              active={activeKey === 3}
-              onClick={() => setActiveKey(3)}
-              style={{ cursor: 'pointer' }}
-            >
+            </Link>
+          </Box>
+          <Box>
+            <Link onClick={() => setActiveKey(3)} style={{ cursor: 'pointer', fontWeight: activeKey === 3 ? 600 : 400 }}>
               Login Page
-            </CNavLink>
-          </CNavItem>
-        </CNav>
+            </Link>
+          </Box>
+        </Flex>
 
-        <CTabContent>
-          <CTabPane visible={activeKey === 1}>
+        <Box>
+          <Box display={activeKey === 1 ? 'block' : 'none'}>
             <CustomizationPage />
-          </CTabPane>
-          <CTabPane visible={activeKey === 2}>
+          </Box>
+          <Box display={activeKey === 2 ? 'block' : 'none'}>
             <PdfLayoutCustomization />
-          </CTabPane>
-          <CTabPane visible={activeKey === 3}>
+          </Box>
+          <Box display={activeKey === 3 ? 'block' : 'none'}>
             <LoginCustomizerPage />
-          </CTabPane>
-        </CTabContent>
-      </CCardBody>
-    </CCard>
+          </Box>
+        </Box>
+      </CardBody>
+    </Card>
   )
 }
 

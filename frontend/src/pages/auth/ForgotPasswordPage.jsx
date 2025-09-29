@@ -83,8 +83,12 @@ const ForgotPasswordPage = () => {
           <div className="text-center mb-4">
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{loginBrand.resetTitle || t('auth.forgotPassword.title')}</h2>
-          <p className="text-muted mb-4">{loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}</p>
+          <h2 className="mb-2 fw-bold">
+            {loginBrand.resetTitle || t('auth.forgotPassword.title')}
+          </h2>
+          <p className="text-muted mb-4">
+            {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
+          </p>
 
           {message && (
             <div className="alert alert-success" role="status" aria-live="polite">
@@ -116,8 +120,15 @@ const ForgotPasswordPage = () => {
             </div>
 
             <div className="d-grid">
-              <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }} disabled={isSubmitting}>
-                {isSubmitting ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submit')}
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ minHeight: 44 }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? t('auth.forgotPassword.submitting')
+                  : t('auth.forgotPassword.submit')}
               </button>
             </div>
           </form>

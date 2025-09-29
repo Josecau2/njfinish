@@ -1,133 +1,151 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setUser, setError } from '../../store/slices/authSlice';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import axios from 'axios';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useTranslation } from 'react-i18next';
-import { getOptimalColors } from '../../utils/colorUtils';
-import BrandLogo from '../../components/BrandLogo';
-import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
-import { installTokenEverywhere } from '../../utils/authToken';
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setUser, setError } from '../../store/slices/authSlice'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import axios from 'axios'
+import { Eye, EyeOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { getOptimalColors } from '../../utils/colorUtils'
+import BrandLogo from '../../components/BrandLogo'
+import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
+import { installTokenEverywhere } from '../../utils/authToken'
 
 const LoginPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const api_url = import.meta.env.VITE_API_URL;
-  const { t } = useTranslation();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const api_url = import.meta.env.VITE_API_URL
+  const { t } = useTranslation()
 
-  const brand = getBrand();
-  const loginBrand = getLoginBrand();
-  const brandColors = getBrandColors();
-  const logoHeight = Number(loginBrand.logoHeight) || 60;
-  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446';
+  const brand = getBrand()
+  const loginBrand = getLoginBrand()
+  const brandColors = getBrandColors()
+  const logoHeight = Number(loginBrand.logoHeight) || 60
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446'
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [noticeMessage, setNoticeMessage] = useState('');
-
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [noticeMessage, setNoticeMessage] = useState('')
 
   useEffect(() => {
     try {
-      localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
+      localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
     } catch (_) {
       // ignore storage failures
     }
-  }, []);
+  }, [])
 
   // Detect redirect reasons (e.g., session expired) and show a banner
   useEffect(() => {
     try {
-      const params = new URLSearchParams(location.search || '');
-      const reason = params.get('reason') || sessionStorage.getItem('logout_reason') || '';
+      const params = new URLSearchParams(location.search || '')
+      const reason = params.get('reason') || sessionStorage.getItem('logout_reason') || ''
       if (reason) {
         // Clear the stored reason so it doesn't persist
-        try { sessionStorage.removeItem('logout_reason'); } catch {}
+        try {
+          sessionStorage.removeItem('logout_reason')
+        } catch {}
       }
       if (reason === 'expired' || reason === 'auth-error') {
-        setNoticeMessage(t('auth.sessionExpired') || 'Your session expired. Please sign in again.');
+        setNoticeMessage(t('auth.sessionExpired') || 'Your session expired. Please sign in again.')
       } else if (reason) {
-        setNoticeMessage(t('auth.loginRequired') || 'Please sign in to continue.');
+        setNoticeMessage(t('auth.loginRequired') || 'Please sign in to continue.')
       }
     } catch (_) {
       // no-op
     }
-  }, [location.search, t]);
+  }, [location.search, t])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       const response = await axios.post(`${api_url}/api/login`, {
         email,
         password,
-      });
+      })
 
-      const { token, userId, name, role, role_id, group_id, group } = response.data;
-      const user = { email, userId, name, role: String(role || '').toLowerCase(), role_id, group_id, group };
+      const { token, userId, name, role, role_id, group_id, group } = response.data
+      const user = {
+        email,
+        userId,
+        name,
+        role: String(role || '').toLowerCase(),
+        role_id,
+        group_id,
+        group,
+      }
 
       // Force complete token cleanup before installing new token
       // This ensures no stale tokens interfere with the new session
       try {
         // Clear any existing tokens first
-        localStorage.clear(); // Complete clean slate
-        sessionStorage.clear(); // Complete clean slate
+        localStorage.clear() // Complete clean slate
+        sessionStorage.clear() // Complete clean slate
       } catch {}
 
       // Install token everywhere (hard reset) and persist user
-      installTokenEverywhere(token, { preserveUser: false });
-      try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
+      installTokenEverywhere(token, { preserveUser: false })
+      try {
+        localStorage.setItem('user', JSON.stringify(user))
+      } catch {}
 
       // Wait a brief moment to ensure token is fully installed before proceeding
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       // Verify token was installed correctly
-      const verifyToken = sessionStorage.getItem('token');
+      const verifyToken = sessionStorage.getItem('token')
       if (!verifyToken || verifyToken !== token) {
-        throw new Error('Token installation failed');
+        throw new Error('Token installation failed')
       }
 
       // Notify other tabs
-      try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
+      try {
+        window.localStorage.setItem('__auth_changed__', String(Date.now()))
+      } catch {}
 
-      dispatch(setUser({ user, token }));
+      dispatch(setUser({ user, token }))
 
       // Force light mode as default theme on login
-      localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
+      localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
 
-      const returnTo = (() => { try { return sessionStorage.getItem('return_to') || '/' } catch { return '/' } })();
-      try { sessionStorage.removeItem('return_to'); } catch {}
-      navigate(returnTo);
+      const returnTo = (() => {
+        try {
+          return sessionStorage.getItem('return_to') || '/'
+        } catch {
+          return '/'
+        }
+      })()
+      try {
+        sessionStorage.removeItem('return_to')
+      } catch {}
+      navigate(returnTo)
     } catch (err) {
-      const errorMsg =
-        err.response?.data?.message || t('auth.loginFailed');
-      dispatch(setError(errorMsg));
-      setErrorMessage(errorMsg);
+      const errorMsg = err.response?.data?.message || t('auth.loginFailed')
+      dispatch(setError(errorMsg))
+      setErrorMessage(errorMsg)
     }
-  };
-
+  }
 
   // Compute optimal text colors for the right panel based on background
-  const rightPanelColors = getOptimalColors(loginBackground);
+  const rightPanelColors = getOptimalColors(loginBackground)
 
   return (
     <div className="login-page-wrapper">
       {/* Left Panel - Illustration and Branding */}
-      <div
-        className="login-left-panel"
-        style={{ backgroundColor: loginBackground }}
-      >
+      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>{loginBrand.rightTitle}</h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightSubtitle}</p>
+          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
+            {loginBrand.rightTitle}
+          </h1>
+          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
+            {loginBrand.rightSubtitle}
+          </p>
           <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
         </div>
       </div>
-
       {/* Right Panel - Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
@@ -190,9 +208,10 @@ const LoginPage = () => {
                   tabIndex={-1}
                   style={{ minHeight: 44, minWidth: 44 }}
                 >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+
             </div>
 
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -232,8 +251,7 @@ const LoginPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoginPage;
-
+export default LoginPage

@@ -1,125 +1,158 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 import {
-  CButton,
-  CModal,
-  CModalBody,
-  CCard,
-  CCardBody,
-  CForm,
-  CFormInput,
-  CFormLabel,
-  CFormTextarea,
-  CFormCheck,
-  CRow,
-  CCol,
-  CContainer,
-  CSpinner,
-  CInputGroup,
-  CFormRange,
-} from "@coreui/react";
-import CIcon from '@coreui/icons-react';
-import { cilSettings, cilPaintBucket, cilText, cilColorPalette, cilSave } from '@coreui/icons';
-import axiosInstance from "../../../helpers/axiosInstance";
-import LoginPreview from "../../../components/LoginPreview";
-import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../../config/customization';
-import { FaCog, FaPalette } from "react-icons/fa";
-import Swal from 'sweetalert2';
-import { useTranslation } from 'react-i18next';
-import PageHeader from '../../../components/PageHeader';
+  Box,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Card,
+  CardBody,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  Checkbox,
+  Grid,
+  GridItem,
+  Container,
+  Spinner,
+  InputGroup,
+  InputLeftElement,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  VStack,
+  HStack,
+  Text,
+  Flex,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import {
+  Settings,
+  Palette,
+  Type,
+  Save,
+  Cog,
+  TestTube,
+  PaintBucket,
+  Mail,
+} from 'lucide-react'
+import axiosInstance from '../../../helpers/axiosInstance'
+import LoginPreview from '../../../components/LoginPreview'
+import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../../config/customization'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
+
+const MotionButton = motion(Button)
 
 const DEFAULT_SETTINGS = {
-  logo: "",
+  logo: '',
   logoHeight: 60,
-  title: "Sign In",
-  subtitle: "Enter your email and password to sign in!",
-  backgroundColor: "#0e1446",
+  title: 'Sign In',
+  subtitle: 'Enter your email and password to sign in!',
+  backgroundColor: '#0e1446',
   showForgotPassword: true,
   showKeepLoggedIn: true,
-  rightTitle: "See Your Cabinet Price in Seconds!",
-  rightSubtitle: "CABINET PORTAL",
-  rightTagline: "Dealer Portal",
-  rightDescription: "Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.",
-  requestAccessTitle: "Request Access",
-  requestAccessSubtitle: "Interested in partnering with NJ Cabinets?",
-  requestAccessDescription: "Tell us a bit about your business and we'll follow up with onboarding details.",
+  rightTitle: 'See Your Cabinet Price in Seconds!',
+  rightSubtitle: 'CABINET PORTAL',
+  rightTagline: 'Dealer Portal',
+  rightDescription:
+    'Manage end-to-end flow, from pricing cabinets to orders and returns with our premium sales automation software tailored to kitchen industry. A flexible and component-based B2B solution that can integrate with your existing inventory, accounting, and other systems.',
+  requestAccessTitle: 'Request Access',
+  requestAccessSubtitle: 'Interested in partnering with NJ Cabinets?',
+  requestAccessDescription:
+    "Tell us a bit about your business and we'll follow up with onboarding details.",
   requestAccessBenefits: [
-    "Generate accurate cabinet quotes in minutes",
-    "Submit and track orders from one dashboard",
-    "Collaborate directly with our support specialists",
+    'Generate accurate cabinet quotes in minutes',
+    'Submit and track orders from one dashboard',
+    'Collaborate directly with our support specialists',
   ],
   requestAccessSuccessMessage: "Thank you! We've received your request and will be in touch soon.",
-  requestAccessAdminSubject: "New Access Request Submitted",
-  requestAccessAdminBody: "You have a new access request from {{name}} ({{email}}).{{companyLine}}{{messageBlock}}",
-  requestAccessLeadSubject: "We received your request",
-  requestAccessLeadBody: "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n- The NJ Cabinets Team",
-  smtpHost: "",
-  smtpPort: "",
+  requestAccessAdminSubject: 'New Access Request Submitted',
+  requestAccessAdminBody:
+    'You have a new access request from {{name}} ({{email}}).{{companyLine}}{{messageBlock}}',
+  requestAccessLeadSubject: 'We received your request',
+  requestAccessLeadBody:
+    'Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n- The NJ Cabinets Team',
+  smtpHost: '',
+  smtpPort: '',
   smtpSecure: false,
-  smtpUser: "",
-  smtpPass: "",
-  emailFrom: "",
-};
+  smtpUser: '',
+  smtpPass: '',
+  emailFrom: '',
+}
 
 const LoginCustomizerPage = () => {
-  const APP_CUSTOMIZATION = (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION;
-  const { t } = useTranslation();
+  const APP_CUSTOMIZATION =
+    (typeof window !== 'undefined' && window.__APP_CUSTOMIZATION__) || FALLBACK_APP_CUSTOMIZATION
+  const { t } = useTranslation()
+  const toast = useToast()
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
+  const cardBg = useColorModeValue('white', 'gray.800')
 
-  const [showPreview, setShowPreview] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [settings, setSettings] = useState(() => ({
     ...DEFAULT_SETTINGS,
     requestAccessBenefits: [...DEFAULT_SETTINGS.requestAccessBenefits],
-  }));
-  const [testEmail, setTestEmail] = useState('');
-  const [testingEmail, setTestingEmail] = useState(false);
+  }))
+  const [testEmail, setTestEmail] = useState('')
+  const [testingEmail, setTestingEmail] = useState(false)
 
   const normalizeSettings = (incoming = {}) => {
     const merged = {
       ...DEFAULT_SETTINGS,
       requestAccessBenefits: [...DEFAULT_SETTINGS.requestAccessBenefits],
       ...incoming,
-    };
+    }
 
-    merged.logo = incoming.logo || merged.logo || APP_CUSTOMIZATION.logoImage || '';
-    merged.logoHeight = Number(incoming.logoHeight ?? merged.logoHeight) || DEFAULT_SETTINGS.logoHeight;
+    merged.logo = incoming.logo || merged.logo || APP_CUSTOMIZATION.logoImage || ''
+    merged.logoHeight =
+      Number(incoming.logoHeight ?? merged.logoHeight) || DEFAULT_SETTINGS.logoHeight
 
-    const rawBenefits = incoming.requestAccessBenefits ?? merged.requestAccessBenefits;
+    const rawBenefits = incoming.requestAccessBenefits ?? merged.requestAccessBenefits
     merged.requestAccessBenefits = Array.isArray(rawBenefits)
       ? rawBenefits.map((item) => String(item || '').trim()).filter(Boolean)
       : String(rawBenefits || '')
           .split(/\r?\n/)
           .map((line) => line.trim())
-          .filter(Boolean);
+          .filter(Boolean)
 
-    const coerceField = (value) => (value === undefined || value === null ? '' : String(value));
-    merged.smtpHost = coerceField(incoming.smtpHost ?? merged.smtpHost);
-    const rawPort = incoming.smtpPort ?? merged.smtpPort;
-    merged.smtpPort = rawPort === undefined || rawPort === null || rawPort === '' ? '' : String(rawPort);
-    merged.smtpSecure = incoming.smtpSecure !== undefined
-      ? Boolean(incoming.smtpSecure)
-      : Boolean(merged.smtpSecure);
-    merged.smtpUser = coerceField(incoming.smtpUser ?? merged.smtpUser);
-    merged.smtpPass = coerceField(incoming.smtpPass ?? merged.smtpPass);
-    merged.emailFrom = coerceField(incoming.emailFrom ?? merged.emailFrom);
+    const coerceField = (value) => (value === undefined || value === null ? '' : String(value))
+    merged.smtpHost = coerceField(incoming.smtpHost ?? merged.smtpHost)
+    const rawPort = incoming.smtpPort ?? merged.smtpPort
+    merged.smtpPort =
+      rawPort === undefined || rawPort === null || rawPort === '' ? '' : String(rawPort)
+    merged.smtpSecure =
+      incoming.smtpSecure !== undefined ? Boolean(incoming.smtpSecure) : Boolean(merged.smtpSecure)
+    merged.smtpUser = coerceField(incoming.smtpUser ?? merged.smtpUser)
+    merged.smtpPass = coerceField(incoming.smtpPass ?? merged.smtpPass)
+    merged.emailFrom = coerceField(incoming.emailFrom ?? merged.emailFrom)
 
-    return merged;
-  };
+    return merged
+  }
 
   const handleBenefitsChange = (value) => {
     const lines = value
       .split(/\r?\n/)
       .map((line) => line.trim())
-      .filter(Boolean);
-    setSettings((prev) => ({ ...prev, requestAccessBenefits: lines }));
-  };
+      .filter(Boolean)
+    setSettings((prev) => ({ ...prev, requestAccessBenefits: lines }))
+  }
 
   const buildPayload = () => {
     const sanitizedBenefits = (settings.requestAccessBenefits || [])
       .map((item) => String(item || '').trim())
-      .filter(Boolean);
+      .filter(Boolean)
 
-    const trimmed = (value) => (value === undefined || value === null ? '' : String(value).trim());
+    const trimmed = (value) => (value === undefined || value === null ? '' : String(value).trim())
 
     return {
       ...settings,
@@ -127,644 +160,828 @@ const LoginCustomizerPage = () => {
       logo: settings.logo || APP_CUSTOMIZATION.logoImage || '',
       logoHeight: Number(settings.logoHeight) || DEFAULT_SETTINGS.logoHeight,
       smtpHost: trimmed(settings.smtpHost),
-      smtpPort: settings.smtpPort === '' || settings.smtpPort === null || settings.smtpPort === undefined
-        ? ''
-        : String(settings.smtpPort).trim(),
+      smtpPort:
+        settings.smtpPort === '' || settings.smtpPort === null || settings.smtpPort === undefined
+          ? ''
+          : String(settings.smtpPort).trim(),
       smtpSecure: Boolean(settings.smtpSecure),
       smtpUser: trimmed(settings.smtpUser),
-      smtpPass: settings.smtpPass === undefined || settings.smtpPass === null ? '' : String(settings.smtpPass),
+      smtpPass:
+        settings.smtpPass === undefined || settings.smtpPass === null
+          ? ''
+          : String(settings.smtpPass),
       emailFrom: trimmed(settings.emailFrom),
-    };
-  };
+    }
+  }
 
   useEffect(() => {
     const fetchCustomization = async () => {
       try {
-        setLoading(true);
-        const res = await axiosInstance.get('/api/login-customization');
+        setLoading(true)
+        const res = await axiosInstance.get('/api/login-customization')
         if (res.data.customization) {
-          setSettings(normalizeSettings(res.data.customization));
+          setSettings(normalizeSettings(res.data.customization))
         }
       } catch (err) {
-        console.error("Error fetching customization:", err);
-        Swal.fire(t('common.error'), t('settings.customization.login.alerts.loadFailed'), 'error');
+        console.error('Error fetching customization:', err)
+        toast({
+          title: t('common.error'),
+          description: t('settings.customization.login.alerts.loadFailed'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchCustomization();
-  }, []);
+    }
+    fetchCustomization()
+  }, [t, toast])
 
   const handleChange = (key, value) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
+    setSettings((prev) => ({ ...prev, [key]: value }))
+  }
 
   const handleSave = async () => {
     try {
-      setSaving(true);
-      const payload = buildPayload();
-      await axiosInstance.post('/api/login-customization', payload);
-      setSettings(normalizeSettings(payload));
-      await Swal.fire(t('common.success'), t('settings.customization.login.alerts.saveSuccess'), 'success');
+      setSaving(true)
+      const payload = buildPayload()
+      await axiosInstance.post('/api/login-customization', payload)
+      setSettings(normalizeSettings(payload))
+      toast({
+        title: t('common.success'),
+        description: t('settings.customization.login.alerts.saveSuccess'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
     } catch (err) {
-      console.error("Failed to save customization:", err);
-      Swal.fire(t('common.error'), t('settings.customization.login.alerts.saveFailed'), 'error');
+      console.error('Failed to save customization:', err)
+      toast({
+        title: t('common.error'),
+        description: t('settings.customization.login.alerts.saveFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const handleSendTestEmail = async () => {
-    const recipient = (testEmail || '').trim();
+    const recipient = (testEmail || '').trim()
     if (!recipient) {
-      Swal.fire(t('common.error'), t('settings.customization.login.smtp.testMissingEmail'), 'error');
-      return;
+      toast({
+        title: t('common.error'),
+        description: t('settings.customization.login.smtp.testMissingEmail'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+      return
     }
 
     try {
-      setTestingEmail(true);
-      const payload = buildPayload();
+      setTestingEmail(true)
+      const payload = buildPayload()
       await axiosInstance.post('/api/login-customization/test-email', {
         email: recipient,
         settings: payload,
-      });
-      await Swal.fire(t('common.success'), t('settings.customization.login.smtp.testSuccess', { email: recipient }), 'success');
+      })
+      toast({
+        title: t('common.success'),
+        description: t('settings.customization.login.smtp.testSuccess', { email: recipient }),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || t('settings.customization.login.smtp.testFailed');
-      Swal.fire(t('common.error'), message, 'error');
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        t('settings.customization.login.smtp.testFailed')
+      toast({
+        title: t('common.error'),
+        description: message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
-      setTestingEmail(false);
+      setTestingEmail(false)
     }
-  };
+  }
 
   const getCharCount = (text, max) => {
-    const count = text?.length || 0;
-    const isOverLimit = count > max;
+    const count = text?.length || 0
+    const isOverLimit = count > max
     return (
       <small className={`text-${isOverLimit ? 'danger' : 'muted'}`}>
         {/* {count}/{max} characters */}
       </small>
-    );
-  };
+    )
+  }
 
   return (
-    <CContainer fluid className="p-2 m-2 main-div-custom-login" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Container
+      maxW="full"
+      bg={bgColor}
+      minH="100vh"
+      p={4}
+      className="main-div-custom-login"
+    >
       <PageHeader
         title={t('settings.customization.login.headerTitle')}
         subtitle={t('settings.customization.login.headerSubtitle')}
-        icon={FaCog}
+        icon={Cog}
       >
-        <CButton
-          color="light"
-          className="shadow-sm px-4 fw-semibold"
+        <MotionButton
+          variant="outline"
+          colorScheme="gray"
+          size="md"
+          leftIcon={<Save size={18} />}
           onClick={() => setShowPreview(true)}
-          disabled={loading}
-          style={{
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease',
-          }}
+          isDisabled={loading}
+          whileTap={{ scale: 0.98 }}
+          aria-label={t('settings.customization.login.buttons.preview')}
         >
-          <CIcon icon={cilSave} className="me-2" />
           {t('settings.customization.login.buttons.preview')}
-        </CButton>
-        <CButton
-          color="success"
-          className="shadow-sm px-4 fw-semibold"
+        </MotionButton>
+        <MotionButton
+          variant="solid"
+          colorScheme="green"
+          size="md"
+          leftIcon={saving ? <Spinner size="sm" /> : <Save size={18} />}
           onClick={handleSave}
-          disabled={loading || saving}
-          style={{
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease',
-          }}
+          isDisabled={loading || saving}
+          isLoading={saving}
+          loadingText={t('settings.customization.login.buttons.saving')}
+          whileTap={{ scale: 0.98 }}
+          aria-label={t('settings.customization.login.buttons.saveSettings')}
         >
-          {saving ? (
-            <>
-              <CSpinner size="sm" className="me-2" />
-              {t('settings.customization.login.buttons.saving')}
-            </>
-          ) : (
-            <>
-              <CIcon icon={cilSave} className="me-2" />
-              {t('settings.customization.login.buttons.saveSettings')}
-            </>
-          )}
-        </CButton>
+          {t('settings.customization.login.buttons.saveSettings')}
+        </MotionButton>
       </PageHeader>
 
       {loading && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="text-center py-5">
-            <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">{t('settings.customization.login.loading')}</p>
-          </CCardBody>
-        </CCard>
+        <Card bg={cardBg} shadow="sm" borderWidth="0">
+          <CardBody textAlign="center" py={8}>
+            <Spinner color="blue.500" size="lg" />
+            <Text color="gray.500" mt={3} mb={0}>
+              {t('settings.customization.login.loading')}
+            </Text>
+          </CardBody>
+        </Card>
       )}
 
       {!loading && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody>
-            <CForm>
-              <CRow>
-                <CCol lg={6}>
-                  <div className="mb-4">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: '#e7f3ff',
-                          borderRadius: '8px',
-                        }}
+        <Card bg={cardBg} shadow="sm" borderWidth="0">
+          <CardBody>
+            <Box as="form">
+              <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
+                <GridItem>
+                  <VStack align="stretch" spacing={6}>
+                    <Flex align="center" gap={3}>
+                      <Flex
+                        align="center"
+                        justify="center"
+                        w="32px"
+                        h="32px"
+                        bg="blue.50"
+                        borderRadius="8px"
                       >
-                        <CIcon icon={cilText} style={{ color: '#0d6efd', fontSize: '16px' }} />
-                      </div>
-                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.form.title')}</h5>
-                    </div>
+                        <Type size={16} color="#0d6efd" />
+                      </Flex>
+                      <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                        {t('settings.customization.login.form.title')}
+                      </Text>
+                    </Flex>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.form.loginTitle')}</CFormLabel>
-                      <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.form.loginTitle')}
+                      </FormLabel>
+                      <Input
                         value={settings.title}
                         onChange={(e) => handleChange('title', e.target.value)}
                         placeholder={t('settings.customization.login.form.placeholders.title')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.title, 50)}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.form.loginSubtitle')}</CFormLabel>
-                      <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.form.loginSubtitle')}
+                      </FormLabel>
+                      <Input
                         value={settings.subtitle}
                         onChange={(e) => handleChange('subtitle', e.target.value)}
                         placeholder={t('settings.customization.login.form.placeholders.subtitle')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.subtitle, 100)}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.form.backgroundColor')}</CFormLabel>
-                      <CInputGroup>
-                        <input
-                          type="color"
-                          className="form-control form-control-color"
-                          value={settings.backgroundColor}
-                          onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                          style={{
-                            borderRadius: '8px 0 0 8px',
-                            border: '1px solid #e3e6f0',
-                            width: '60px',
-                          }}
-                        />
-                        <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.form.backgroundColor')}
+                      </FormLabel>
+                      <InputGroup>
+                        <InputLeftElement w="60px">
+                          <input
+                            type="color"
+                            value={settings.backgroundColor}
+                            onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                            style={{
+                              width: '40px',
+                              height: '30px',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          />
+                        </InputLeftElement>
+                        <Input
+                          pl="70px"
                           value={settings.backgroundColor}
                           onChange={(e) => handleChange('backgroundColor', e.target.value)}
                           placeholder="#000000"
-                          style={{
-                            borderRadius: '0 8px 8px 0',
-                            border: '1px solid #e3e6f0',
-                            borderLeft: 'none',
-                            fontSize: '14px',
-                          }}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          fontSize="14px"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CInputGroup>
-                    </div>
+                      </InputGroup>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.logoSize.label')}</CFormLabel>
-                      <div className="d-flex flex-column flex-md-row align-items-md-center gap-3">
-                        <CFormRange
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.logoSize.label')}
+                      </FormLabel>
+                      <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'center' }} gap={3}>
+                        <Slider
                           min={32}
                           max={160}
                           step={1}
                           value={Number(settings.logoHeight) || 60}
-                          onChange={(e) => handleChange('logoHeight', Number(e.target.value))}
+                          onChange={(value) => handleChange('logoHeight', Number(value))}
                           aria-label={t('settings.customization.login.logoSize.aria')}
-                        />
-                        <span className="fw-semibold text-muted" style={{ minWidth: '60px' }}>{Math.round(Number(settings.logoHeight) || 60)}px</span>
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-3">{t('settings.customization.login.options.title')}</CFormLabel>
-                      <div className="d-flex flex-column gap-3">
-                        <div
-                          className="p-3 rounded"
-                          style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                          flex="1"
                         >
-                          <CFormCheck
-                            className="mb-0"
-                            label={t('settings.customization.login.options.showForgot')}
-                            checked={settings.showForgotPassword}
+                          <SliderTrack>
+                            <SliderFilledTrack />
+                          </SliderTrack>
+                          <SliderThumb />
+                        </Slider>
+                        <Text fontWeight="semibold" color="gray.500" minW="60px" textAlign="center">
+                          {Math.round(Number(settings.logoHeight) || 60)}px
+                        </Text>
+                      </Flex>
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={3}>
+                        {t('settings.customization.login.options.title')}
+                      </FormLabel>
+                      <VStack spacing={3} align="stretch">
+                        <Box p={3} bg="gray.50" borderWidth="1px" borderColor="gray.200" borderRadius="8px">
+                          <Checkbox
+                            isChecked={settings.showForgotPassword}
                             onChange={(e) => handleChange('showForgotPassword', e.target.checked)}
                             id="forgotPassword"
-                          />
-                          <small className="text-muted">{t('settings.customization.login.options.showForgotHint')}</small>
-                        </div>
+                            mb={1}
+                          >
+                            {t('settings.customization.login.options.showForgot')}
+                          </Checkbox>
+                          <Text fontSize="sm" color="gray.500">
+                            {t('settings.customization.login.options.showForgotHint')}
+                          </Text>
+                        </Box>
 
-                        <div
-                          className="p-3 rounded"
-                          style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
-                        >
-                          <CFormCheck
-                            className="mb-0"
-                            label={t('settings.customization.login.options.showKeep')}
-                            checked={settings.showKeepLoggedIn}
+                        <Box p={3} bg="gray.50" borderWidth="1px" borderColor="gray.200" borderRadius="8px">
+                          <Checkbox
+                            isChecked={settings.showKeepLoggedIn}
                             onChange={(e) => handleChange('showKeepLoggedIn', e.target.checked)}
                             id="keepLoggedIn"
-                          />
-                          <small className="text-muted">{t('settings.customization.login.options.showKeepHint')}</small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CCol>
+                            mb={1}
+                          >
+                            {t('settings.customization.login.options.showKeep')}
+                          </Checkbox>
+                          <Text fontSize="sm" color="gray.500">
+                            {t('settings.customization.login.options.showKeepHint')}
+                          </Text>
+                        </Box>
+                      </VStack>
+                    </FormControl>
+                  </VStack>
+                </GridItem>
 
-                <CCol lg={6}>
-                  <div className="mb-4">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: '#e6ffed',
-                          borderRadius: '8px',
-                        }}
+                <GridItem>
+                  <VStack align="stretch" spacing={6}>
+                    <Flex align="center" gap={3}>
+                      <Flex
+                        align="center"
+                        justify="center"
+                        w="32px"
+                        h="32px"
+                        bg="green.50"
+                        borderRadius="8px"
                       >
-                        <FaPalette style={{ color: '#198754', fontSize: '16px' }} />
-                      </div>
-                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.rightPanel.title')}</h5>
-                    </div>
+                        <Palette size={16} color="#198754" />
+                      </Flex>
+                      <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                        {t('settings.customization.login.rightPanel.title')}
+                      </Text>
+                    </Flex>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.panelTitle')}</CFormLabel>
-                      <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.rightPanel.panelTitle')}
+                      </FormLabel>
+                      <Input
                         value={settings.rightTitle}
                         onChange={(e) => handleChange('rightTitle', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.title')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.rightTitle, 50)}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.panelSubtitle')}</CFormLabel>
-                      <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.rightPanel.panelSubtitle')}
+                      </FormLabel>
+                      <Input
                         value={settings.rightSubtitle}
                         onChange={(e) => handleChange('rightSubtitle', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.subtitle')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.rightSubtitle, 80)}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.tagline')}</CFormLabel>
-                      <CFormInput
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.rightPanel.tagline')}
+                      </FormLabel>
+                      <Input
                         value={settings.rightTagline}
                         onChange={(e) => handleChange('rightTagline', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.tagline')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.rightTagline, 30)}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.rightPanel.description')}</CFormLabel>
-                      <CFormTextarea
+                    <FormControl>
+                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        {t('settings.customization.login.rightPanel.description')}
+                      </FormLabel>
+                      <Textarea
                         rows={5}
                         value={settings.rightDescription}
                         onChange={(e) => handleChange('rightDescription', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.description')}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid #e3e6f0',
-                          fontSize: '14px',
-                          padding: '12px 16px',
-                          resize: 'vertical',
-                        }}
+                        borderRadius="8px"
+                        borderColor="gray.200"
+                        fontSize="14px"
+                        resize="vertical"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
                       {getCharCount(settings.rightDescription, 500)}
-                    </div>
-                  </div>
-                </CCol>
-              </CRow>
+                    </FormControl>
+                  </VStack>
+                </GridItem>
+              </Grid>
 
-              <CRow className="mt-4">
-                <CCol lg={12}>
-                  <div className="mb-4">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: '#f0f4ff',
-                          borderRadius: '8px',
-                        }}
-                      >
-                        <CIcon icon={cilSettings} style={{ color: '#2b6cb0', fontSize: '16px' }} />
-                      </div>
-                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.smtp.title')}</h5>
-                    </div>
-                    <p className="text-muted mb-4">{t('settings.customization.login.smtp.subtitle')}</p>
-                    <CRow className="g-3">
-                      <CCol md={6}>
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.host')}</CFormLabel>
-                        <CFormInput
+              <Box mt={6}>
+                <VStack align="stretch" spacing={6}>
+                  <Flex align="center" gap={3}>
+                    <Flex
+                      align="center"
+                      justify="center"
+                      w="32px"
+                      h="32px"
+                      bg="blue.50"
+                      borderRadius="8px"
+                    >
+                      <Settings size={16} color="#2b6cb0" />
+                    </Flex>
+                    <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                      {t('settings.customization.login.smtp.title')}
+                    </Text>
+                  </Flex>
+
+                  <Text color="gray.500" mb={4}>
+                    {t('settings.customization.login.smtp.subtitle')}
+                  </Text>
+
+                  <Grid templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }} gap={4}>
+                    <GridItem colSpan={{ base: 1, md: 3 }}>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.smtp.host')}
+                        </FormLabel>
+                        <Input
                           value={settings.smtpHost}
                           onChange={(e) => handleChange('smtpHost', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.host')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CCol>
-                      <CCol md={3}>
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.port')}</CFormLabel>
-                        <CFormInput
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 1, md: 2 }}>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.smtp.port')}
+                        </FormLabel>
+                        <Input
                           type="number"
                           value={settings.smtpPort}
                           onChange={(e) => handleChange('smtpPort', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.port')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CCol>
-                      <CCol md={3} className="d-flex align-items-end">
-                        <CFormCheck
-                          className="mb-3"
-                          label={t('settings.customization.login.smtp.secure')}
-                          checked={Boolean(settings.smtpSecure)}
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={1} display="flex" alignItems="end">
+                      <FormControl>
+                        <Checkbox
+                          isChecked={Boolean(settings.smtpSecure)}
                           onChange={(e) => handleChange('smtpSecure', e.target.checked)}
-                        />
-                      </CCol>
-                      <CCol md={6}>
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.user')}</CFormLabel>
-                        <CFormInput
+                          mb={3}
+                        >
+                          {t('settings.customization.login.smtp.secure')}
+                        </Checkbox>
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 1, md: 3 }}>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.smtp.user')}
+                        </FormLabel>
+                        <Input
                           value={settings.smtpUser}
                           onChange={(e) => handleChange('smtpUser', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.user')}
                           autoComplete="username"
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CCol>
-                      <CCol md={6}>
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.pass')}</CFormLabel>
-                        <CFormInput
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 1, md: 3 }}>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.smtp.pass')}
+                        </FormLabel>
+                        <Input
                           type="password"
                           value={settings.smtpPass}
                           onChange={(e) => handleChange('smtpPass', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.pass')}
                           autoComplete="new-password"
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CCol>
-                      <CCol md={6}>
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.from')}</CFormLabel>
-                        <CFormInput
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 1, md: 3 }}>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.smtp.from')}
+                        </FormLabel>
+                        <Input
                           value={settings.emailFrom}
                           onChange={(e) => handleChange('emailFrom', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.from')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                      </CCol>
-                    </CRow>
-                    <hr className="my-4" />
-                    <div className="d-flex flex-column flex-md-row align-items-md-end gap-3">
-                      <div className="flex-grow-1">
-                        <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.smtp.testLabel')}</CFormLabel>
-                        <CFormInput
-                          value={testEmail}
-                          onChange={(e) => setTestEmail(e.target.value)}
-                          placeholder={t('settings.customization.login.smtp.testPlaceholder')}
-                        />
-                      </div>
-                      <div>
-                        <CButton
-                          color="primary"
-                          className="mt-3 mt-md-0"
-                          disabled={testingEmail}
+                      </FormControl>
+                    </GridItem>
+                  </Grid>
+
+                  <Box borderTop="1px" borderColor="gray.200" pt={4} mt={4}>
+                    <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'end' }} gap={3}>
+                      <Box flex="1">
+                        <FormControl>
+                          <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                            {t('settings.customization.login.smtp.testLabel')}
+                          </FormLabel>
+                          <Input
+                            value={testEmail}
+                            onChange={(e) => setTestEmail(e.target.value)}
+                            placeholder={t('settings.customization.login.smtp.testPlaceholder')}
+                            borderRadius="8px"
+                            borderColor="gray.200"
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                          />
+                        </FormControl>
+                      </Box>
+                      <Box>
+                        <MotionButton
+                          variant="solid"
+                          colorScheme="blue"
+                          isDisabled={testingEmail}
+                          isLoading={testingEmail}
+                          loadingText={t('settings.customization.login.smtp.testing')}
+                          leftIcon={testingEmail ? <Spinner size="sm" /> : <TestTube size={18} />}
                           onClick={handleSendTestEmail}
+                          whileTap={{ scale: 0.98 }}
+                          aria-label={t('settings.customization.login.smtp.testButton')}
+                          mt={{ base: 3, md: 0 }}
                         >
-                          {testingEmail ? (
-                            <>
-                              <CSpinner size="sm" className="me-2" />
-                              {t('settings.customization.login.smtp.testing')}
-                            </>
-                          ) : (
-                            t('settings.customization.login.smtp.testButton')
-                          )}
-                        </CButton>
-                      </div>
-                    </div>
-                  </div>
-                </CCol>
-              </CRow>
+                          {t('settings.customization.login.smtp.testButton')}
+                        </MotionButton>
+                      </Box>
+                    </Flex>
+                  </Box>
+                </VStack>
+              </Box>
 
-              <CRow className="mt-4">
-                <CCol lg={6}>
-                  <div className="mb-4">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: '#fff7e6',
-                          borderRadius: '8px',
-                        }}
-                      >
-                        <CIcon icon={cilPaintBucket} style={{ color: '#f59f00', fontSize: '16px' }} />
-                      </div>
-                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.requestAccess.title')}</h5>
-                    </div>
+              <Box mt={6}>
+                <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
+                  <GridItem>
+                    <VStack align="stretch" spacing={6}>
+                      <Flex align="center" gap={3}>
+                        <Flex
+                          align="center"
+                          justify="center"
+                          w="32px"
+                          h="32px"
+                          bg="orange.50"
+                          borderRadius="8px"
+                        >
+                          <PaintBucket size={16} color="#f59f00" />
+                        </Flex>
+                        <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                          {t('settings.customization.login.requestAccess.title')}
+                        </Text>
+                      </Flex>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.pageTitle')}</CFormLabel>
-                      <CFormInput
-                        value={settings.requestAccessTitle}
-                        onChange={(e) => handleChange('requestAccessTitle', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.pageTitle')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.pageTitle')}
+                        </FormLabel>
+                        <Input
+                          value={settings.requestAccessTitle}
+                          onChange={(e) => handleChange('requestAccessTitle', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.pageTitle')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.subtitle')}</CFormLabel>
-                      <CFormInput
-                        value={settings.requestAccessSubtitle}
-                        onChange={(e) => handleChange('requestAccessSubtitle', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.subtitle')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.subtitle')}
+                        </FormLabel>
+                        <Input
+                          value={settings.requestAccessSubtitle}
+                          onChange={(e) => handleChange('requestAccessSubtitle', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.subtitle')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.description')}</CFormLabel>
-                      <CFormTextarea
-                        rows={4}
-                        value={settings.requestAccessDescription}
-                        onChange={(e) => handleChange('requestAccessDescription', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.description')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.description')}
+                        </FormLabel>
+                        <Textarea
+                          rows={4}
+                          value={settings.requestAccessDescription}
+                          onChange={(e) => handleChange('requestAccessDescription', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.description')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          resize="vertical"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.benefits')}</CFormLabel>
-                      <CFormTextarea
-                        rows={5}
-                        value={(settings.requestAccessBenefits || []).join('\n')}
-                        onChange={(e) => handleBenefitsChange(e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.benefits')}
-                      />
-                      <small className="text-muted">{t('settings.customization.login.requestAccess.benefitsHint')}</small>
-                    </div>
-                  </div>
-                </CCol>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.benefits')}
+                        </FormLabel>
+                        <Textarea
+                          rows={5}
+                          value={(settings.requestAccessBenefits || []).join('\n')}
+                          onChange={(e) => handleBenefitsChange(e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.benefits')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          resize="vertical"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                          {t('settings.customization.login.requestAccess.benefitsHint')}
+                        </Text>
+                      </FormControl>
+                    </VStack>
+                  </GridItem>
 
-                <CCol lg={6}>
-                  <div className="mb-4">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: '#e7f0ff',
-                          borderRadius: '8px',
-                        }}
-                      >
-                        <CIcon icon={cilSettings} style={{ color: '#1d4ed8', fontSize: '16px' }} />
-                      </div>
-                      <h5 className="fw-bold mb-0 text-dark">{t('settings.customization.login.requestAccess.requestEmails')}</h5>
-                    </div>
+                  <GridItem>
+                    <VStack align="stretch" spacing={6}>
+                      <Flex align="center" gap={3}>
+                        <Flex
+                          align="center"
+                          justify="center"
+                          w="32px"
+                          h="32px"
+                          bg="blue.50"
+                          borderRadius="8px"
+                        >
+                          <Mail size={16} color="#1d4ed8" />
+                        </Flex>
+                        <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                          {t('settings.customization.login.requestAccess.requestEmails')}
+                        </Text>
+                      </Flex>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.successMessage')}</CFormLabel>
-                      <CFormInput
-                        value={settings.requestAccessSuccessMessage}
-                        onChange={(e) => handleChange('requestAccessSuccessMessage', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.successMessage')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.successMessage')}
+                        </FormLabel>
+                        <Input
+                          value={settings.requestAccessSuccessMessage}
+                          onChange={(e) => handleChange('requestAccessSuccessMessage', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.successMessage')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.leadEmailSubject')}</CFormLabel>
-                      <CFormInput
-                        value={settings.requestAccessLeadSubject}
-                        onChange={(e) => handleChange('requestAccessLeadSubject', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailSubject')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.leadEmailSubject')}
+                        </FormLabel>
+                        <Input
+                          value={settings.requestAccessLeadSubject}
+                          onChange={(e) => handleChange('requestAccessLeadSubject', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailSubject')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.leadEmailBody')}</CFormLabel>
-                      <CFormTextarea
-                        rows={6}
-                        value={settings.requestAccessLeadBody}
-                        onChange={(e) => handleChange('requestAccessLeadBody', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailBody')}
-                      />
-                      <small className="text-muted">
-                        {t('settings.customization.login.requestAccess.placeholdersAvailable')} {'{{firstName}}'}, {'{{name}}'}, {'{{email}}'}
-                      </small>
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.leadEmailBody')}
+                        </FormLabel>
+                        <Textarea
+                          rows={6}
+                          value={settings.requestAccessLeadBody}
+                          onChange={(e) => handleChange('requestAccessLeadBody', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailBody')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          resize="vertical"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                          {t('settings.customization.login.requestAccess.placeholdersAvailable')}{' '}
+                          {'{{firstName}}'}, {'{{name}}'}, {'{{email}}'}
+                        </Text>
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.adminEmailSubject')}</CFormLabel>
-                      <CFormInput
-                        value={settings.requestAccessAdminSubject}
-                        onChange={(e) => handleChange('requestAccessAdminSubject', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailSubject')}
-                      />
-                    </div>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.adminEmailSubject')}
+                        </FormLabel>
+                        <Input
+                          value={settings.requestAccessAdminSubject}
+                          onChange={(e) => handleChange('requestAccessAdminSubject', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailSubject')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                      </FormControl>
 
-                    <div className="mb-3">
-                      <CFormLabel className="fw-semibold text-dark mb-2">{t('settings.customization.login.requestAccess.adminEmailBody')}</CFormLabel>
-                      <CFormTextarea
-                        rows={6}
-                        value={settings.requestAccessAdminBody}
-                        onChange={(e) => handleChange('requestAccessAdminBody', e.target.value)}
-                        placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailBody')}
-                      />
-                      <small className="text-muted">
-                        {t('settings.customization.login.requestAccess.placeholdersAvailable')} {'{{name}}'}, {'{{email}}'}, {'{{companyLine}}'}, {'{{messageBlock}}'}
-                      </small>
-                    </div>
-                  </div>
-                </CCol>
-              </CRow>
-            </CForm>
-          </CCardBody>
-        </CCard>
+                      <FormControl>
+                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          {t('settings.customization.login.requestAccess.adminEmailBody')}
+                        </FormLabel>
+                        <Textarea
+                          rows={6}
+                          value={settings.requestAccessAdminBody}
+                          onChange={(e) => handleChange('requestAccessAdminBody', e.target.value)}
+                          placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailBody')}
+                          borderRadius="8px"
+                          borderColor="gray.200"
+                          resize="vertical"
+                          _hover={{ borderColor: 'gray.300' }}
+                          _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                        />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                          {t('settings.customization.login.requestAccess.placeholdersAvailable')}{' '}
+                          {'{{name}}'}, {'{{email}}'}, {'{{companyLine}}'}, {'{{messageBlock}}'}
+                        </Text>
+                      </FormControl>
+                    </VStack>
+                  </GridItem>
+                </Grid>
+              </Box>
+            </Box>
+          </CardBody>
+        </Card>
       )}
 
-      <CModal
-        visible={showPreview}
+      <Modal
+        isOpen={showPreview}
         onClose={() => setShowPreview(false)}
-        fullscreen
-        className="login-preview-modal"
+        size="full"
+        motionPreset="slideInBottom"
       >
-        <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-          <h5 className="mb-0 fw-bold">{t('settings.customization.login.previewTitle')}</h5>
-          <CButton
-            color="light"
-            size="sm"
-            onClick={() => setShowPreview(false)}
-            style={{ borderRadius: '6px' }}
+        <ModalOverlay />
+        <ModalContent borderRadius="0" border="none" className="login-preview-modal">
+          <ModalHeader
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            p={3}
+            borderBottom="1px"
+            borderColor="gray.200"
           >
-            {t('settings.customization.login.closePreview')}
-          </CButton>
-        </div>
-        <CModalBody className="p-0">
-          <LoginPreview config={settings} />
-        </CModalBody>
-      </CModal>
+            <Text fontSize="lg" fontWeight="bold" mb={0}>
+              {t('settings.customization.login.previewTitle')}
+            </Text>
+            <MotionButton
+              variant="ghost"
+              colorScheme="gray"
+              size="sm"
+              onClick={() => setShowPreview(false)}
+              whileTap={{ scale: 0.95 }}
+              aria-label={t('settings.customization.login.closePreview')}
+              borderRadius="6px"
+            >
+              {t('settings.customization.login.closePreview')}
+            </MotionButton>
+          </ModalHeader>
+          <ModalBody p={0}>
+            <LoginPreview config={settings} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Container>
+  )
+}
 
-      <style>{`
-        .login-preview-modal .modal-content {
-          border: none;
-          border-radius: 0;
-        }
-
-        .form-control-color {
-          height: 45px;
-        }
-
-        .form-check-input:checked {
-          background-color: #0d6efd;
-          border-color: #0d6efd;
-        }
-
-        .form-check-input:focus {
-          border-color: #86b7fe;
-          outline: 0;
-          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-      `}</style>
-    </CContainer>
-  );
-};
-
-export default LoginCustomizerPage;
+export default LoginCustomizerPage

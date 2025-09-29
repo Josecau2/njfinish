@@ -1,43 +1,53 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Box, Button, Flex, Image, Link, Text } from '@chakra-ui/react'
 
 import ComponentsImg from 'src/assets/images/components.webp'
 
-const DocsComponents = (props) => (
-  <div className="bg-primary bg-opacity-10 border border-2 border-primary rounded mb-4">
-    <div className="row d-flex align-items-center p-3 px-xl-4 flex-xl-nowrap">
-      <div className="col-xl-auto col-12 d-none d-xl-block p-0">
-        <img
-          className="img-fluid"
-          src={ComponentsImg}
-          width="160px"
-          height="160px"
-          alt="CoreUI PRO hexagon"
-        />
-      </div>
-      <div className="col-md col-12 px-lg-4">
-        Our Admin Panel isn’t just a mix of third-party components. It’s{' '}
-        <strong>
-          the only open-source React dashboard built on a professional, enterprise-grade UI
-          Components Library
-        </strong>
-        . This component is part of this library, and we present only the basic usage of it here. To
-        explore extended examples, detailed API documentation, and customization options, refer to
-        our docs.
-      </div>
-      <div className="col-md-auto col-12 mt-3 mt-lg-0">
-        <a
-          className="btn btn-primary text-nowrap text-white"
-          href={`https://coreui.io/react/docs/${props.href}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Explore Documentation
-        </a>
-      </div>
-    </div>
-  </div>
-)
+const DocsComponents = ({ href }) => {
+  const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
+
+  return (
+    <Box bg="blue.50" borderWidth="2px" borderColor="blue.500" borderRadius="md" mb={4}>
+      <Flex
+        align="center"
+        direction={{ base: 'column', xl: 'row' }}
+        gap={{ base: 4, xl: 6 }}
+        px={{ base: 4, xl: 6 }}
+        py={4}
+      >
+        <Box display={{ base: 'none', xl: 'block' }} flexShrink={0}>
+          <Image
+            src={ComponentsImg}
+            alt="CoreUI PRO hexagon"
+            w="160px"
+            h="160px"
+            objectFit="contain"
+          />
+        </Box>
+        <Text flex="1" color="gray.700" textAlign={{ base: 'center', xl: 'left' }}>
+          Our Admin Panel is not simply a bundle of third-party pieces. It is the only open-source React
+          dashboard built on a professional, enterprise-grade UI component library. This example shows the
+          basic usage; for extended demos, detailed API docs, and customization guidance, visit the
+          documentation.
+        </Text>
+        {documentationLink && (
+          <Button
+            as={Link}
+            href={documentationLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            colorScheme="blue"
+            variant="solid"
+            whiteSpace="nowrap"
+          >
+            Explore Documentation
+          </Button>
+        )}
+      </Flex>
+    </Box>
+  )
+}
 
 DocsComponents.propTypes = {
   href: PropTypes.string,

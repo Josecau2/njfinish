@@ -1,9 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { CCard, CCardBody, CCol, CRow, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CButton, CBadge } from '@coreui/react'
+import { Card, CardBody, Box, Flex, Link, Badge } from '@chakra-ui/react'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
-import { getContactInfo, saveContactInfo, listThreads, getThread, createThread, postMessage, markRead, closeThread, getConfigurationInfo } from '../../helpers/contactApi'
+import {
+  getContactInfo,
+  saveContactInfo,
+  listThreads,
+  getThread,
+  createThread,
+  postMessage,
+  markRead,
+  closeThread,
+  getConfigurationInfo,
+} from '../../helpers/contactApi'
 import { isAdmin as isAdminCheck } from '../../helpers/permissions'
 
 import ContactInfoCard from '../../components/contact/ContactInfoCard'
@@ -32,7 +42,7 @@ const ContactUs = () => {
   useEffect(() => {
     let mounted = true
     setInfoLoading(true)
-    
+
     // Load both contact info and configuration data in parallel
     Promise.all([
       getContactInfo().catch((err) => {
@@ -40,42 +50,47 @@ const ContactUs = () => {
       }),
       getConfigurationInfo().catch((err) => {
         return { data: null }
+      }),
+    ])
+      .then(([contactRes, configRes]) => {
+        if (!mounted) return
+
+        // Contact API returns { success: true, data: info }
+        const contactData = contactRes?.data?.data || {}
+        // PDF Customization API returns data directly
+        const configData = configRes?.data || {}
+
+        // Merge configuration data with contact-specific data
+        // Contact-specific data takes precedence over configuration defaults
+        const mergedInfo = {
+          companyName: contactData.companyName || configData.companyName || '',
+          email: contactData.email || configData.companyEmail || '',
+          phone: contactData.phone || configData.companyPhone || '',
+          website: contactData.website || configData.companyWebsite || '',
+          address: contactData.address || configData.companyAddress || '',
+          hours: contactData.hours || '',
+          notes: contactData.notes || '',
+
+          // Visibility settings - default to true if not set
+          showCompanyName: contactData.showCompanyName !== false,
+          showEmail: contactData.showEmail !== false,
+          showPhone: contactData.showPhone !== false,
+          showWebsite: contactData.showWebsite !== false,
+          showAddress: contactData.showAddress !== false,
+          showHours: contactData.showHours !== false,
+          showNotes: contactData.showNotes !== false,
+        }
+        setInfo(mergedInfo)
       })
-    ]).then(([contactRes, configRes]) => {
-      if (!mounted) return
-      
-      // Contact API returns { success: true, data: info }
-      const contactData = contactRes?.data?.data || {}
-      // PDF Customization API returns data directly
-      const configData = configRes?.data || {}
-      
-      // Merge configuration data with contact-specific data
-      // Contact-specific data takes precedence over configuration defaults
-      const mergedInfo = {
-        companyName: contactData.companyName || configData.companyName || '',
-        email: contactData.email || configData.companyEmail || '',
-        phone: contactData.phone || configData.companyPhone || '',
-        website: contactData.website || configData.companyWebsite || '',
-        address: contactData.address || configData.companyAddress || '',
-        hours: contactData.hours || '',
-        notes: contactData.notes || '',
-        
-        // Visibility settings - default to true if not set
-        showCompanyName: contactData.showCompanyName !== false,
-        showEmail: contactData.showEmail !== false,
-        showPhone: contactData.showPhone !== false,
-        showWebsite: contactData.showWebsite !== false,
-        showAddress: contactData.showAddress !== false,
-        showHours: contactData.showHours !== false,
-        showNotes: contactData.showNotes !== false,
-      }
-      setInfo(mergedInfo)
-    }).catch((err) => {
-      console.warn('Failed to load contact info:', err)
-      if (mounted) setInfo(null)
-    }).finally(() => mounted && setInfoLoading(false))
-    
-    return () => { mounted = false }
+      .catch((err) => {
+        console.warn('Failed to load contact info:', err)
+        if (mounted) setInfo(null)
+      })
+      .finally(() => mounted && setInfoLoading(false))
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   // If user becomes admin after initial render, ensure the correct default tab
@@ -89,17 +104,22 @@ const ContactUs = () => {
     setInboxLoading(true)
     const params = { page }
     if (isAdmin && userId) params.userId = userId
-    listThreads(params).then((res) => {
-      setThreads(res?.data?.data || [])
-      setPagination(res?.data?.pagination || { page: 1, totalPages: 1 })
-    }).catch((err) => {
-      console.warn('Failed to load threads:', err)
-      setThreads([])
-      setPagination({ page: 1, totalPages: 1 })
-    }).finally(() => setInboxLoading(false))
+    listThreads(params)
+      .then((res) => {
+        setThreads(res?.data?.data || [])
+        setPagination(res?.data?.pagination || { page: 1, totalPages: 1 })
+      })
+      .catch((err) => {
+        console.warn('Failed to load threads:', err)
+        setThreads([])
+        setPagination({ page: 1, totalPages: 1 })
+      })
+      .finally(() => setInboxLoading(false))
   }
 
-  useEffect(() => { loadThreads(1, selectedUserId) }, [isAdmin, selectedUserId])
+  useEffect(() => {
+    loadThreads(1, selectedUserId)
+  }, [isAdmin, selectedUserId])
 
   const openThread = async (id) => {
     setThreadLoading(true)
@@ -107,7 +127,11 @@ const ContactUs = () => {
       .then((res) => {
         setSelectedThread(res?.data?.data)
         // Optimistically clear unread on the list right away
-        setThreads((prev) => (Array.isArray(prev) ? prev.map((t) => (t.id === id ? { ...t, unreadCount: 0 } : t)) : prev))
+        setThreads((prev) =>
+          Array.isArray(prev)
+            ? prev.map((t) => (t.id === id ? { ...t, unreadCount: 0 } : t))
+            : prev,
+        )
         // Admins auto-mark as read on open; contractors should not update read state
         if (isAdmin) {
           markRead(id)
@@ -119,7 +143,11 @@ const ContactUs = () => {
                   ...prev,
                   messages: (prev.messages || []).map((m) =>
                     otherSide(m)
-                      ? { ...m, read_by_recipient: true, read_at: m.read_at || new Date().toISOString() }
+                      ? {
+                          ...m,
+                          read_by_recipient: true,
+                          read_at: m.read_at || new Date().toISOString(),
+                        }
                       : m,
                   ),
                 }
@@ -161,7 +189,7 @@ const ContactUs = () => {
     try {
       await closeThread(id)
       loadThreads(pagination.page)
-      setSelectedThread((prev) => prev && prev.id === id ? { ...prev, status: 'closed' } : prev)
+      setSelectedThread((prev) => (prev && prev.id === id ? { ...prev, status: 'closed' } : prev))
     } catch (err) {
       console.warn('Failed to close thread:', err)
     }
@@ -173,26 +201,33 @@ const ContactUs = () => {
         title={t('contact.header')}
         subtitle={t('contact.subtitle')}
         mobileLayout="stack"
-        badge={{ text: isAdmin ? t('contact.adminView') : t('contact.userView'), variant: 'secondary' }}
+        badge={{
+          text: isAdmin ? t('contact.adminView') : t('contact.userView'),
+          variant: 'secondary',
+        }}
       />
 
-      <CRow>
-        <CCol xs={12}>
+      <Flex>
+        <Box xs={12}>
           {isAdmin ? (
-            <CCard className="border-0 shadow-sm">
-              <CCardBody>
-                <CNav variant="tabs" role="tablist" className="mb-3 flex-nowrap overflow-auto">
-                  <CNavItem>
-                    <CNavLink active={activeTab === 'inbox'} onClick={() => setActiveTab('inbox')}>{t('contact.inbox')}</CNavLink>
-                  </CNavItem>
-                  <CNavItem>
-                    <CNavLink active={activeTab === 'info'} onClick={() => setActiveTab('info')}>{t('contact.infoTab')}</CNavLink>
-                  </CNavItem>
-                </CNav>
-                <CTabContent>
-                  <CTabPane visible={activeTab === 'inbox'}>
-                    <CRow className="g-3">
-                      <CCol md={4}>
+            <Card className="border-0 shadow-sm">
+              <CardBody>
+                <Flex variant="tabs" role="tablist" className="mb-3 flex-nowrap overflow-auto">
+                  <Box>
+                    <Link active={activeTab === 'inbox'} onClick={() => setActiveTab('inbox')}>
+                      {t('contact.inbox')}
+                    </Link>
+                  </Box>
+                  <Box>
+                    <Link active={activeTab === 'info'} onClick={() => setActiveTab('info')}>
+                      {t('contact.infoTab')}
+                    </Link>
+                  </Box>
+                </Flex>
+                <Box>
+                  <Box visible={activeTab === 'inbox'}>
+                    <Flex className="g-3">
+                      <Box md={4}>
                         <MessageHistory
                           loading={inboxLoading}
                           threads={threads}
@@ -202,10 +237,14 @@ const ContactUs = () => {
                           onSelect={openThread}
                           isAdmin
                           groupByUser={!selectedUserId}
-                          onSelectUser={(uid) => { setSelectedUserId(uid); setSelectedThread(null); loadThreads(1, uid); }}
+                          onSelectUser={(uid) => {
+                            setSelectedUserId(uid)
+                            setSelectedThread(null)
+                            loadThreads(1, uid)
+                          }}
                         />
-                      </CCol>
-                      <CCol md={8}>
+                      </Box>
+                      <Box md={8}>
                         <ThreadView
                           loading={threadLoading}
                           thread={selectedThread}
@@ -213,70 +252,73 @@ const ContactUs = () => {
                           onClose={onCloseThread}
                           isAdmin
                         />
-                      </CCol>
-                    </CRow>
-                  </CTabPane>
-                  <CTabPane visible={activeTab === 'info'}>
-                    <CRow className="g-3">
-                      <CCol lg={6}>
+                      </Box>
+                    </Flex>
+                  </Box>
+                  <Box visible={activeTab === 'info'}>
+                    <Flex className="g-3">
+                      <Box lg={6}>
                         <ContactInfoCard loading={infoLoading} info={info} />
-                      </CCol>
-                      <CCol lg={6}>
-                        <ContactInfoEditor info={info} onSave={async (data) => {
-                          try {
-                            const res = await saveContactInfo(data)
-                            // Reload both contact and configuration data after save
-                            const [contactRes, configRes] = await Promise.all([
-                              getContactInfo().catch((err) => {
-                                return { data: { data: null } }
-                              }),
-                              getConfigurationInfo().catch((err) => {
-                                return { data: null }
-                              })
-                            ])
-                            
-                            // Contact API returns { success: true, data: info }
-                            const contactData = contactRes?.data?.data || {}
-                            // PDF Customization API returns data directly
-                            const configData = configRes?.data || {}
-                            
-                            // Merge updated data
-                            const mergedInfo = {
-                              companyName: contactData.companyName || configData.companyName || '',
-                              email: contactData.email || configData.companyEmail || '',
-                              phone: contactData.phone || configData.companyPhone || '',
-                              website: contactData.website || configData.companyWebsite || '',
-                              address: contactData.address || configData.companyAddress || '',
-                              hours: contactData.hours || '',
-                              notes: contactData.notes || '',
-                              
-                              // Visibility settings - default to true if not set
-                              showCompanyName: contactData.showCompanyName !== false,
-                              showEmail: contactData.showEmail !== false,
-                              showPhone: contactData.showPhone !== false,
-                              showWebsite: contactData.showWebsite !== false,
-                              showAddress: contactData.showAddress !== false,
-                              showHours: contactData.showHours !== false,
-                              showNotes: contactData.showNotes !== false,
+                      </Box>
+                      <Box lg={6}>
+                        <ContactInfoEditor
+                          info={info}
+                          onSave={async (data) => {
+                            try {
+                              const res = await saveContactInfo(data)
+                              // Reload both contact and configuration data after save
+                              const [contactRes, configRes] = await Promise.all([
+                                getContactInfo().catch((err) => {
+                                  return { data: { data: null } }
+                                }),
+                                getConfigurationInfo().catch((err) => {
+                                  return { data: null }
+                                }),
+                              ])
+
+                              // Contact API returns { success: true, data: info }
+                              const contactData = contactRes?.data?.data || {}
+                              // PDF Customization API returns data directly
+                              const configData = configRes?.data || {}
+
+                              // Merge updated data
+                              const mergedInfo = {
+                                companyName:
+                                  contactData.companyName || configData.companyName || '',
+                                email: contactData.email || configData.companyEmail || '',
+                                phone: contactData.phone || configData.companyPhone || '',
+                                website: contactData.website || configData.companyWebsite || '',
+                                address: contactData.address || configData.companyAddress || '',
+                                hours: contactData.hours || '',
+                                notes: contactData.notes || '',
+
+                                // Visibility settings - default to true if not set
+                                showCompanyName: contactData.showCompanyName !== false,
+                                showEmail: contactData.showEmail !== false,
+                                showPhone: contactData.showPhone !== false,
+                                showWebsite: contactData.showWebsite !== false,
+                                showAddress: contactData.showAddress !== false,
+                                showHours: contactData.showHours !== false,
+                                showNotes: contactData.showNotes !== false,
+                              }
+
+                              setInfo(mergedInfo)
+                            } catch (err) {
+                              console.warn('Failed to save contact info:', err)
                             }
-                            
-                            setInfo(mergedInfo)
-                          } catch (err) {
-                            console.warn('Failed to save contact info:', err)
-                          }
-                        }} />
-                      </CCol>
-                    </CRow>
-                  </CTabPane>
-                </CTabContent>
-              </CCardBody>
-            </CCard>
+                          }}
+                        />
+                      </Box>
+                    </Flex>
+                  </Box>
+              </CardBody>
+            </Card>
           ) : (
-            <CRow className="g-3">
-              <CCol lg={5}>
+            <Flex className="g-3">
+              <Box lg={5}>
                 <ContactInfoCard loading={infoLoading} info={info} />
-              </CCol>
-              <CCol lg={7}>
+              </Box>
+              <Box lg={7}>
                 <MessageComposer onSend={onSendNew} />
                 <div className="mt-3">
                   <MessageHistory
@@ -292,11 +334,11 @@ const ContactUs = () => {
                 <div className="mt-3">
                   <ThreadView loading={threadLoading} thread={selectedThread} onReply={onReply} />
                 </div>
-              </CCol>
-            </CRow>
+              </Box>
+            </Flex>
           )}
-        </CCol>
-      </CRow>
+        </Box>
+      </Flex>
     </>
   )
 }

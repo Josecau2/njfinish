@@ -1,2 +1,1 @@
-export { default } from './RouteGuard.jsx';
-
+RouteGuard.jsx

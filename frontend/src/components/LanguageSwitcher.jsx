@@ -1,28 +1,36 @@
 import React from 'react'
-import { CFormSelect } from '@coreui/react'
+import { Select } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
-const LanguageSwitcher = () => {
-  // useTranslation subscribes this component to language changes so it re-renders
+const LanguageSwitcher = ({ compact = false }) => {
   const { i18n } = useTranslation()
   const current = i18n.resolvedLanguage || i18n.language || 'en'
-  const onChange = (e) => {
-    const lng = e.target.value
-    i18n.changeLanguage(lng)
-    localStorage.setItem('lang', lng)
+
+  const handleChange = (event) => {
+    const nextLanguage = event.target.value
+    i18n.changeLanguage(nextLanguage)
+    try {
+      localStorage.setItem('lang', nextLanguage)
+    } catch (_) {
+      // ignore persistence failures
+    }
   }
+
+  const minWidth = compact ? 'auto' : '140px'
+
   return (
-    <CFormSelect
-      size="sm"
+    <Select
+      size='sm'
       value={current}
-      onChange={onChange}
-      className="w-auto"
-      aria-label="Select language"
-      style={{ minHeight: 44 }}
+      onChange={handleChange}
+      w='auto'
+      aria-label='Select language'
+      minH='44px'
+      minW={minWidth}
     >
-      <option value="en">English</option>
-      <option value="es">Español</option>
-    </CFormSelect>
+      <option value='en'>English</option>
+      <option value='es'>Español</option>
+    </Select>
   )
 }
 

@@ -1,45 +1,112 @@
-// Centralized toast/notification helpers using SweetAlert2
-import Swal from 'sweetalert2'
+import React from 'react'
+import { Box, HStack, IconButton, Text, createStandaloneToast } from '@chakra-ui/react'
+import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react'
+import theme from '../theme'
 
-const toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  showCloseButton: true,
-  didOpen: (el) => {
-    try {
-      el.style.padding = '8px 12px'
-      el.style.fontSize = '14px'
-      el.style.minHeight = 'auto'
-    } catch (_) {}
-  },
+const toast = createStandaloneToast({
+  theme,
 })
 
+const STATUS_MAP = {
+  success: {
+    icon: CheckCircle2,
+    accent: 'brand.500',
+  },
+  error: {
+    icon: AlertTriangle,
+    accent: 'red.500',
+  },
+  info: {
+    icon: Info,
+    accent: 'brand.400',
+  },
+  warning: {
+    icon: AlertTriangle,
+    accent: 'orange.400',
+  },
+}
+
+const showToast = ({ status, title, description, duration = 4000 }) => {
+  const mapping = STATUS_MAP[status] || STATUS_MAP.info
+  const Icon = mapping.icon || Info
+
+  toast({
+    duration,
+    position: 'top-right',
+    isClosable: true,
+    render: ({ onClose }) => (
+      <Box
+        bg="surface"
+        color="text"
+        border="1px solid"
+        borderColor="border"
+        borderLeftWidth="4px"
+        borderLeftColor={mapping.accent}
+        boxShadow="md"
+        borderRadius="md"
+        px={4}
+        py={3}
+        maxW="320px"
+      >
+        <HStack align="flex-start" spacing={3}>
+          <Box color={mapping.accent} mt={0.5} aria-hidden>
+            <Icon size={18} />
+          </Box>
+          <Box flex="1">
+            <Text fontWeight="semibold" fontSize="sm">
+              {title}
+            </Text>
+            {description ? (
+              <Text fontSize="sm" color="muted" mt={1}>
+                {description}
+              </Text>
+            ) : null}
+          </Box>
+          <IconButton
+            variant="ghost"
+            size="sm"
+            aria-label="Close notification"
+            icon={<X size={14} />}
+            onClick={onClose}
+          />
+        </HStack>
+      </Box>
+    ),
+  })
+}
+
 export const notifySuccess = (title = 'Success', text = '') =>
-  toast.fire({ icon: 'success', title, text })
+  showToast({ status: 'success', title, description: text })
 
 export const notifyError = (title = 'Error', text = '') =>
-  toast.fire({ icon: 'error', title, text })
+  showToast({ status: 'error', title, description: text })
 
 export const notifyInfo = (title = 'Info', text = '') =>
-  toast.fire({ icon: 'info', title, text })
+  showToast({ status: 'info', title, description: text })
 
-export const confirm = (title, text, confirmButtonText = 'Yes', options = {}) =>
-  Swal.fire({
-    title,
-    text,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText,
-    cancelButtonText: options.cancelButtonText || 'Cancel',
-    ...options,
+export const notifyWarning = (title = 'Warning', text = '') =>
+  showToast({ status: 'warning', title, description: text })
+
+export const confirm = (title, text = '', _confirmButtonText = 'Yes') =>
+  new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve({ isConfirmed: false, isDenied: false, isDismissed: true })
+      return
+    }
+
+    const message = text ? `${title}\n\n${text}` : title
+    const isConfirmed = window.confirm(message)
+    resolve({
+      isConfirmed,
+      isDenied: false,
+      isDismissed: !isConfirmed,
+    })
   })
 
 export default {
   notifySuccess,
   notifyError,
   notifyInfo,
+  notifyWarning,
   confirm,
 }

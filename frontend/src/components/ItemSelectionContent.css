@@ -1,6 +1,6 @@
 /* Make a single card unclickable without blocking neighbors */
-.styleCard[aria-disabled="true"] {
-  opacity: .45;
+.styleCard[aria-disabled='true'] {
+  opacity: 0.45;
   filter: grayscale(40%);
   pointer-events: none; /* only this card is unclickable */
 }
@@ -50,14 +50,14 @@
 .styles-compact-list {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .compact-style-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .5rem .75rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   background: #fff;
@@ -69,14 +69,14 @@
 }
 
 .style-info .style-name {
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
 .current-style-indicator {
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: #1a73e8;
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }
 
 /* Minor helpers for consistent spacing */

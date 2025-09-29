@@ -1,4 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react'
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  Spinner,
+  Stack,
+  Switch,
+  Tag,
+  TagLabel,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react'
 import {
   Building2,
   Mail,
@@ -10,498 +34,334 @@ import {
   SortAsc,
   SortDesc,
   Factory,
-} from '@/icons-lucide';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice';
-import Swal from 'sweetalert2';
-import { useTranslation } from 'react-i18next';
-import PageHeader from '../../../components/PageHeader';
+} from '@/icons-lucide'
+import { useNavigate } from 'react-router-dom'
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice'
+import Swal from 'sweetalert2'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
+
+const getContrastColor = (hexColor) => {
+  if (!hexColor) return '#ffffff'
+  const hex = hexColor.replace('#', '')
+  if (hex.length !== 6) return '#ffffff'
+  const r = parseInt(hex.substr(0, 2), 16)
+  const g = parseInt(hex.substr(2, 2), 16)
+  const b = parseInt(hex.substr(4, 2), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 ? '#2d3748' : '#ffffff'
+}
+
+const sortOptions = [
+  { value: 'id', label: 'ID' },
+  { value: 'name', label: 'Name' },
+  { value: 'email', label: 'Email' },
+]
 
 const ManufacturersList = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { list: allManufacturers, loading, error } = useSelector(state => state.manufacturers);
-  const customization = useSelector((state) => state.customization);
-  const [manufacturers, setManufacturers] = useState([]);
-  const [filterText, setFilterText] = useState('');
-  const [sortBy, setSortBy] = useState('id');
-  const [sortDirection, setSortDirection] = useState('desc');
-  const navigate = useNavigate();
-  const api_url = import.meta.env.VITE_API_URL;
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const apiUrl = import.meta.env.VITE_API_URL
 
-  // Function to get optimal text color for contrast
-  const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff';
-    // Convert hex to RGB
-    const hex = backgroundColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
+  const { list: allManufacturers, loading, error } = useSelector((state) => state.manufacturers)
+  const customization = useSelector((state) => state.customization)
 
-    // Calculate luminance
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-    // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? '#2d3748' : '#ffffff';
-  };
+  const [filterText, setFilterText] = useState('')
+  const [sortBy, setSortBy] = useState('id')
+  const [sortDirection, setSortDirection] = useState('desc')
 
   useEffect(() => {
-    dispatch(fetchManufacturers());
-  }, [dispatch]);
+    dispatch(fetchManufacturers())
+  }, [dispatch])
 
-  const handleFilterChange = (e) => {
-    setFilterText(e.target.value);
-    filterManufacturers(e.target.value, sortBy, sortDirection);
-  };
+  const filteredManufacturers = useMemo(() => {
+    const prepared = [...allManufacturers]
+    const normalizedFilter = filterText.trim().toLowerCase()
 
-  const handleSortByChange = (e) => {
-    setSortBy(e.target.value);
-    filterManufacturers(filterText, e.target.value, sortDirection);
-  };
+    const filtered = normalizedFilter
+      ? prepared.filter((manufacturer) => {
+          const nameMatch = manufacturer.name?.toLowerCase().includes(normalizedFilter)
+          const emailMatch = manufacturer.email?.toLowerCase().includes(normalizedFilter)
+          return nameMatch || emailMatch
+        })
+      : prepared
 
-  const handleSortDirectionChange = (e) => {
-    setSortDirection(e.target.value);
-    filterManufacturers(filterText, sortBy, e.target.value);
-  };
+    filtered.sort((a, b) => {
+      const aValue = a[sortBy] ?? ''
+      const bValue = b[sortBy] ?? ''
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+
+    return filtered
+  }, [allManufacturers, filterText, sortBy, sortDirection])
+
+  const handleFilterChange = (event) => {
+    setFilterText(event.target.value)
+  }
+
+  const handleSortByChange = (event) => {
+    setSortBy(event.target.value)
+  }
+
+  const handleSortDirectionChange = (event) => {
+    setSortDirection(event.target.value)
+  }
 
   const toggleEnabled = (id, currentStatus) => {
     dispatch(updateManufacturerStatus({ id, enabled: !currentStatus }))
       .unwrap()
-      .then((res) => {
+      .then(() => {
         dispatch(fetchManufacturers())
         Swal.fire({
           toast: true,
-          position: "top",
-          icon: "success",
+          position: 'top',
+          icon: 'success',
           title: t('settings.manufacturers.toast.updateSuccess'),
           showConfirmButton: false,
           timer: 1500,
-          width: '360px',
-          didOpen: (toast) => {
-            toast.style.padding = '8px 12px';
-            toast.style.fontSize = '14px';
-            toast.style.minHeight = 'auto';
-          }
-        });
+          width: 360,
+        })
       })
       .catch((err) => {
-        console.error('Toggle failed:', err)
+        console.error('Toggle manufacturer failed:', err)
         Swal.fire({
           toast: true,
-          position: "top",
-          icon: "error",
+          position: 'top',
+          icon: 'error',
           title: t('settings.manufacturers.toast.updateFailed'),
           showConfirmButton: false,
           timer: 1500,
-          width: '330px',
-          didOpen: (toast) => {
-            toast.style.padding = '8px 12px';
-            toast.style.fontSize = '14px';
-            toast.style.minHeight = 'auto';
-          }
-        });
+          width: 330,
+        })
       })
-  };
-
-  useEffect(() => {
-    filterManufacturers(filterText, sortBy, sortDirection);
-  }, [allManufacturers, filterText, sortBy, sortDirection]);
-
-  const filterManufacturers = (filter, sort, direction) => {
-    let filtered = [...allManufacturers];
-    if (filter) {
-      filtered = filtered.filter(m =>
-        m.name?.toLowerCase().includes(filter.toLowerCase()) ||
-        m.email?.toLowerCase().includes(filter.toLowerCase())
-      );
-    }
-
-    filtered.sort((a, b) => {
-      if (a[sort] < b[sort]) return direction === 'asc' ? -1 : 1;
-      if (a[sort] > b[sort]) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    setManufacturers(filtered);
-  };
-
-  const handleManuCreate = () => {
-    navigate("/settings/manufacturers/create");
   }
 
-  const handleEdit = (id) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/manufacturers/edit/:id', { id });
-  navigate(noisy);
+  const handleCreateManufacturer = () => {
+    navigate('/settings/manufacturers/create')
   }
 
-  const cardStyles = {
-    container: {
-      padding: '8px 16px',
-      backgroundColor: '#f8fafc',
-      minHeight: '100vh'
-    },
-    headerCard: {
-      background: customization.headerBg || '#667eea',
-      border: 'none',
-      borderRadius: '8px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-      marginBottom: '16px'
-    },
-    controlsCard: {
-      border: 'none',
-      borderRadius: '8px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-      marginBottom: '8px'
-    },
-    manufacturerCard: {
-      border: 'none',
-      borderRadius: '12px',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-      transition: 'all 0.3s ease',
-      height: '100%',
-      overflow: 'hidden'
-    },
-    badge: {
-      borderRadius: '20px',
-      fontSize: '12px',
-      fontWeight: '500',
-      padding: '6px 12px'
-    },
-    inputGroup: {
-      position: 'relative'
-    },
-    searchIcon: {
-      position: 'absolute',
-      left: '12px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 10,
-      color: '#6c757d'
-    },
-    searchInput: {
-      paddingLeft: '40px',
-      border: '1px solid #e3e6f0',
-      borderRadius: '10px',
-      fontSize: '14px',
-      padding: '12px 16px 12px 40px'
-    },
-    editButton: {
-      position: 'absolute',
-      top: '12px',
-      right: '12px',
-      backgroundColor: '#ffffff',
-      border: '1px solid #e3e6f0',
-      borderRadius: '8px',
-      padding: '8px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    },
-    logoContainer: {
-      width: '80px',
-      height: '80px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
-      flexShrink: 0,
-      border: '2px solid #e9ecef'
-    }
-  };
+  const handleEdit = (manufacturerId) => {
+    const noisyPath = `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/settings/manufacturers/:id/edit', { id: manufacturerId })
+    navigate(noisyPath)
+  }
+
+  const headerActions = [
+    <Button
+      key="create"
+      colorScheme="blue"
+      leftIcon={<Icon as={Plus} boxSize={4} />}
+      onClick={handleCreateManufacturer}
+    >
+      {t('settings.manufacturers.create')}
+    </Button>,
+  ]
+
+  const brandBg = customization?.headerBg || '#2563eb'
+  const brandText = getContrastColor(brandBg)
 
   return (
-    <div style={cardStyles.container}>
-      <PageHeader
-        title={
-          <div className="d-flex align-items-center">
-            <Factory className="me-2" size={24} />
-            {t('settings.manufacturers.header')}
-          </div>
-        }
-        subtitle={t('settings.manufacturers.subtitle')}
-        rightContent={
-          <button
-            className="btn btn-light shadow-sm px-4 fw-semibold"
-            onClick={handleManuCreate}
-            style={{
-              borderRadius: '5px',
-              border: 'none',
-              transition: 'all 0.3s ease',
-              minHeight: '44px'
-            }}
-            aria-label={t('settings.manufacturers.add')}
-          >
-            <Plus className="me-2" size={16} />
-            {t('settings.manufacturers.add')}
-          </button>
-        }
-      />
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={t('settings.manufacturers.title')}
+          subtitle={t('settings.manufacturers.subtitle')}
+          icon={Factory}
+          actions={headerActions}
+        />
 
-      {/* Search and Controls */}
-      <div className="card" style={cardStyles.controlsCard}>
-        <div className="card-body">
-          <div className="row align-items-end">
-            <div className="col-lg-4 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSearch">
-                <Search size={14} className="me-1" />
-                {t('settings.manufacturers.search')}
-              </label>
-              <div style={cardStyles.inputGroup}>
-                <Search size={16} style={cardStyles.searchIcon} />
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder={t('settings.manufacturers.searchPlaceholder')}
-                  value={filterText}
-                  onChange={handleFilterChange}
-                  id="manufacturerSearch"
-                  aria-label={t('settings.manufacturers.search')}
-                  style={cardStyles.searchInput}
-                />
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSortBy">
-                <Filter size={14} className="me-1" />
-                {t('settings.manufacturers.sortBy')}
-              </label>
-              <select
-                className="form-select"
-                value={sortBy}
-                onChange={handleSortByChange}
-                id="manufacturerSortBy"
-                style={{
-                  border: '1px solid #e3e6f0',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  padding: '12px 16px'
-                }}
-              >
-                <option value="id">{t('settings.manufacturers.sort.id')}</option>
-                <option value="name">{t('settings.manufacturers.sort.name')}</option>
-                <option value="email">{t('settings.manufacturers.sort.email')}</option>
-                <option value="capacity">{t('settings.manufacturers.sort.capacity')}</option>
-              </select>
-            </div>
-            <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
-              <label className="form-label fw-medium text-muted mb-2" htmlFor="manufacturerSortOrder">
-                {sortDirection === 'asc' ? <SortAsc size={14} className="me-1" /> : <SortDesc size={14} className="me-1" />}
-                {t('settings.manufacturers.order')}
-              </label>
-              <select
-                className="form-select"
-                value={sortDirection}
-                onChange={handleSortDirectionChange}
-                id="manufacturerSortOrder"
-                style={{
-                  border: '1px solid #e3e6f0',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  padding: '12px 16px'
-                }}
-              >
-                <option value="desc">{t('settings.manufacturers.orderOptions.descending')}</option>
-                <option value="asc">{t('settings.manufacturers.orderOptions.ascending')}</option>
-              </select>
-            </div>
-            <div className="col-lg-2 col-md-6">
-              <div className="d-flex justify-content-lg-end">
-                <span
-                  className="badge bg-info"
-                  style={{
-                    ...cardStyles.badge,
-                    // backgroundColor: '#e7f3ff !important',
-                    // color: '#0d6efd'
-                  }}
-                >
-                  {t('settings.manufacturers.stats.total', { count: allManufacturers?.length || 0 })}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <Card>
+          <CardBody>
+            <Grid templateColumns={{ base: '1fr', md: '2fr 1fr 1fr' }} gap={4} alignItems="center">
+              <GridItem>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={Search} boxSize={4} color="gray.400" />
+                  </InputLeftElement>
+                  <Input
+                    placeholder={t('settings.manufacturers.searchPlaceholder', 'Search manufacturers')}
+                    value={filterText}
+                    onChange={handleFilterChange}
+                  />
+                </InputGroup>
+              </GridItem>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="card" style={cardStyles.controlsCard}>
-          <div className="card-body text-center py-5">
-            <div className="spinner-border text-primary mb-3" role="status">
-              <span className="visually-hidden">{t('common.loading')}</span>
-            </div>
-            <p className="text-muted mb-0">{t('settings.manufacturers.loading')}</p>
-          </div>
-        </div>
-      )}
+              <GridItem>
+                <Select value={sortBy} onChange={handleSortByChange}>
+                  {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`settings.manufacturers.sort.${option.value}`, option.label)}
+                    </option>
+                  ))}
+                </Select>
+              </GridItem>
 
-      {/* Error State */}
-      {error && (
-        <div className="card" style={cardStyles.controlsCard}>
-          <div className="card-body">
-            <div className="alert alert-danger mb-0">
-              <strong>{t('settings.manufacturers.errorPrefix')}</strong> {error}
-            </div>
-          </div>
-        </div>
-      )}
+              <GridItem>
+                <Select value={sortDirection} onChange={handleSortDirectionChange}>
+                  <option value="asc">
+                    {t('settings.manufacturers.sort.asc', 'Ascending')}
+                  </option>
+                  <option value="desc">
+                    {t('settings.manufacturers.sort.desc', 'Descending')}
+                  </option>
+                </Select>
+              </GridItem>
+            </Grid>
+          </CardBody>
+        </Card>
 
-      {/* Empty State */}
-      {!loading && manufacturers.length === 0 && (
-        <div className="card" style={cardStyles.controlsCard}>
-          <div className="card-body text-center py-5">
-            <Factory size={48} className="text-muted mb-3 opacity-25" />
-            <h5 className="text-muted mb-2">{t('settings.manufacturers.empty.title')}</h5>
-            <p className="text-muted mb-0">
-              {filterText ? t('settings.manufacturers.empty.subtitleFiltered') : t('settings.manufacturers.empty.subtitleStart')}
-            </p>
-          </div>
-        </div>
-      )}
+        {loading && (
+          <Flex align="center" justify="center" py={16}>
+            <Spinner size="lg" color="blue.500" />
+          </Flex>
+        )}
 
-      {/* Manufacturers Grid */}
-      {!loading && manufacturers.length > 0 && (
-        <div className="row">
-          {manufacturers.map((manufacturer) => (
-            <div className="col-xl-6 col-lg-6 col-md-12 mb-4" key={manufacturer.id}>
-              <div
-                className="card"
-                style={cardStyles.manufacturerCard}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.12)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                }}
-              >
-                <div className="card-body p-4" style={{ position: 'relative' }}>
-                  {/* Edit Button */}
-                  <button
-                    style={cardStyles.editButton}
-                    onClick={() => handleEdit(manufacturer.id)}
-                    className="icon-btn"
-                    aria-label={t('actions.editManufacturer', { name: manufacturer.name })}
-                    type="button"
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
-                      e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ffffff';
-                      e.currentTarget.style.borderColor = '#e3e6f0';
-                    }}
+        {error && !loading && (
+          <Card borderColor="red.200" borderWidth="1px">
+            <CardBody>
+              <Text color="red.500" fontWeight="semibold">
+                {t('common.error')}:
+              </Text>
+              <Text color="red.400">{error}</Text>
+            </CardBody>
+          </Card>
+        )}
+
+        {!loading && filteredManufacturers.length === 0 && (
+          <Card>
+            <CardBody textAlign="center" py={16}>
+              <Icon as={Filter} boxSize={10} color="gray.300" mb={4} />
+              <Text fontSize="lg" color="gray.600">
+                {t('settings.manufacturers.emptyState', 'No manufacturers match the current filters.')}
+              </Text>
+            </CardBody>
+          </Card>
+        )}
+
+        <Stack spacing={4}>
+          {filteredManufacturers.map((manufacturer) => (
+            <Card
+              key={manufacturer.id}
+              borderRadius="xl"
+              boxShadow="md"
+              _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }}
+              transition="all 0.2s"
+            >
+              <CardBody>
+                <Flex direction={{ base: 'column', md: 'row' }} gap={6} align="stretch">
+                  <Box
+                    w={{ base: '100%', md: '140px' }}
+                    h={{ base: '120px', md: '140px' }}
+                    bg="gray.50"
+                    borderRadius="md"
+                    borderWidth="1px"
+                    borderColor="gray.100"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    overflow="hidden"
+                    flexShrink={0}
                   >
-                    <Edit3 size={16} style={{ color: customization.headerBg || '#667eea' }} />
-                  </button>
+                    <img
+                      src={
+                        manufacturer.image
+                          ? `${apiUrl}/uploads/images/${manufacturer.image}`
+                          : '/images/nologo.png'
+                      }
+                      alt={manufacturer.name}
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    />
+                  </Box>
 
-                  <div className="d-flex">
-                    {/* Logo Section */}
-                    <div style={cardStyles.logoContainer} className="me-4">
-                      <img
-                        src={
-                          manufacturer.image
-                            ? `${api_url}/uploads/images/${manufacturer.image}`
-                            : "/images/nologo.png"
-                        }
-                        alt={`${manufacturer.name} logo`}
-                        style={{
-                          maxWidth: '100%',
-                          maxHeight: '100%',
-                          objectFit: 'contain'
-                        }}
-                      />
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                      {/* Name */}
-                      <div className="mb-3">
-                        <h5 className="mb-1 fw-bold text-dark d-flex align-items-center">
-                          <Building2 size={18} className="me-2 text-primary" />
-                          <span style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}>
+                  <Flex flex="1" direction="column" gap={4} minW="0">
+                    <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3}>
+                      <Box minW="0">
+                        <HStack spacing={2} align="center">
+                          <Icon as={Building2} boxSize={5} color="blue.500" />
+                          <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
                             {manufacturer.name}
-                          </span>
-                        </h5>
-                      </div>
+                          </Text>
+                        </HStack>
+                        <Text fontSize="sm" color="gray.500">
+                          ID: {manufacturer.id}
+                        </Text>
+                      </Box>
 
-                      {/* Email */}
-                      <div className="mb-3 d-flex align-items-center">
-                        <Mail size={16} className="me-2 text-muted flex-shrink-0" />
-                        <span
-                          className="text-muted"
-                          style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            fontSize: '14px'
-                          }}
+                      <Tooltip label={t('actions.editManufacturer', { name: manufacturer.name })}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          colorScheme="blue"
+                          leftIcon={<Icon as={Edit3} boxSize={4} />}
+                          onClick={() => handleEdit(manufacturer.id)}
                         >
-                          {manufacturer.email}
-                        </span>
-                      </div>
+                          {t('common.edit')}
+                        </Button>
+                      </Tooltip>
+                    </Flex>
 
-                      {/* Capacity */}
-                      <div className="mb-3 d-flex align-items-center">
-                        <FileText size={16} className="me-2 text-muted flex-shrink-0" />
-                        <span
-                          className="badge"
-                          style={{
-                            ...cardStyles.badge,
-                            backgroundColor: '#f8f9fa',
-                            color: '#495057',
-                            border: '1px solid #e9ecef'
-                          }}
-                        >
-                          {t('settings.manufacturers.labels.capacity', { capacity: manufacturer.capacity })}
-                        </span>
-                      </div>
+                    <HStack spacing={4} align="flex-start" flexWrap="wrap">
+                      <HStack spacing={2} minW="0">
+                        <Icon as={Mail} boxSize={4} color="gray.400" />
+                        <Text fontSize="sm" color="gray.600" noOfLines={1}>
+                          {manufacturer.email || t('settings.manufacturers.noEmail', 'No email provided')}
+                        </Text>
+                      </HStack>
 
-                      {/* Status Toggle */}
-                      <div className="d-flex align-items-center justify-content-between">
-            <div className="form-check form-switch">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={`enabledSwitch${manufacturer.id}`}
-                            checked={manufacturer.status}
-                            onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
-              aria-label={manufacturer.status ? t('settings.manufacturers.labels.disable') : t('settings.manufacturers.labels.enable')}
-                            style={{ cursor: 'pointer' }}
-                          />
-                          <label
-                            className="form-check-label fw-medium"
-                            htmlFor={`enabledSwitch${manufacturer.id}`}
-                            style={{ cursor: 'pointer', fontSize: '14px' }}
-                          >
-                            {manufacturer.status ? t('settings.manufacturers.labels.active') : t('settings.manufacturers.labels.inactive')}
-                          </label>
-                        </div>
-                        <span
-                          className={`badge ${manufacturer.status ? 'bg-success' : 'bg-secondary'}`}
-                          style={cardStyles.badge}
-                        >
-                          {manufacturer.status ? t('settings.manufacturers.labels.enabled') : t('settings.manufacturers.labels.disabled')}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      <HStack spacing={2}>
+                        <Icon as={FileText} boxSize={4} color="gray.400" />
+                        <Tag size="sm" variant="subtle" colorScheme="gray">
+                          <TagLabel>
+                            {t('settings.manufacturers.labels.capacity', {
+                              capacity: manufacturer.capacity ?? t('common.notAvailable'),
+                            })}
+                          </TagLabel>
+                        </Tag>
+                      </HStack>
+                    </HStack>
+
+                    <Flex align="center" justify="space-between" flexWrap="wrap" gap={4}>
+                      <HStack spacing={3}>
+                        <Switch
+                          colorScheme="blue"
+                          isChecked={Boolean(manufacturer.status)}
+                          onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
+                        />
+                        <Text fontSize="sm" color="gray.600">
+                          {manufacturer.status
+                            ? t('settings.manufacturers.labels.active')
+                            : t('settings.manufacturers.labels.inactive')}
+                        </Text>
+                      </HStack>
+
+                      <Tag
+                        size="lg"
+                        borderRadius="full"
+                        bg={manufacturer.status ? brandBg : 'gray.200'}
+                        color={manufacturer.status ? brandText : 'gray.600'}
+                      >
+                        <TagLabel>
+                          {manufacturer.status
+                            ? t('settings.manufacturers.labels.enabled')
+                            : t('settings.manufacturers.labels.disabled')}
+                        </TagLabel>
+                      </Tag>
+                    </Flex>
+                  </Flex>
+                </Flex>
+              </CardBody>
+            </Card>
           ))}
-        </div>
-      )}
-    </div>
-  );
-};
+        </Stack>
+      </Stack>
+    </Container>
+  )
+}
 
-export default ManufacturersList;
+export default ManufacturersList

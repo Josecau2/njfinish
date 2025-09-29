@@ -1,6 +1,11 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { hasPermission, isContractor, hasModuleAccess, canPerformAction } from '../helpers/permissions';
+import React from 'react'
+import { useSelector } from 'react-redux'
+import {
+  hasPermission,
+  isContractor,
+  hasModuleAccess,
+  canPerformAction,
+} from '../helpers/permissions'
 
 /**
  * PermissionGate component that conditionally renders UI elements based on permissions
@@ -16,75 +21,75 @@ import { hasPermission, isContractor, hasModuleAccess, canPerformAction } from '
  * @param {ReactNode} props.fallbackComponent - Component to render when permission denied
  * @returns {ReactNode|null} - Child components, fallback, or null
  */
-const PermissionGate = ({ 
-  children, 
-  permission, 
-  module, 
+const PermissionGate = ({
+  children,
+  permission,
+  module,
   adminOnly = false,
   action,
   resource,
   item,
   fallback = false,
-  fallbackComponent = null
+  fallbackComponent = null,
 }) => {
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector((state) => state.auth.user)
 
   // If no user, don't render anything
   if (!user) {
-    return fallback ? fallbackComponent : null;
+    return fallback ? fallbackComponent : null
   }
 
-  let hasAccess = true;
+  let hasAccess = true
 
   // Check admin-only elements
   if (adminOnly && !['admin', 'super_admin'].includes(user.role)) {
-    hasAccess = false;
+    hasAccess = false
   }
 
   // Check specific permission
   if (hasAccess && permission && !hasPermission(user, permission)) {
-    hasAccess = false;
+    hasAccess = false
   }
 
   // Check module access for contractors
   if (hasAccess && module && isContractor(user) && !hasModuleAccess(user, module)) {
-    hasAccess = false;
+    hasAccess = false
   }
 
   // Check action-based permissions
   if (hasAccess && action && resource) {
-    hasAccess = canPerformAction(user, action, resource, item);
+    hasAccess = canPerformAction(user, action, resource, item)
   }
 
   // Render based on access and fallback settings
   if (!hasAccess) {
     if (fallback && React.isValidElement(children)) {
       // Clone children and add disabled prop
-      return React.cloneElement(children, { disabled: true });
+      return React.cloneElement(children, { disabled: true })
     }
-    return fallbackComponent;
+    return fallbackComponent
   }
 
-  return children;
-};
+  return children
+}
 
 // Helper components for common use cases
 export const AdminOnly = ({ children, fallback, fallbackComponent }) => (
   <PermissionGate adminOnly={true} fallback={fallback} fallbackComponent={fallbackComponent}>
     {children}
   </PermissionGate>
-);
+)
 
 export const ContractorModule = ({ module, children, fallback, fallbackComponent }) => (
   <PermissionGate module={module} fallback={fallback} fallbackComponent={fallbackComponent}>
     {children}
   </PermissionGate>
-);
+)
 
 export const RequirePermission = ({ permission, children, fallback, fallbackComponent }) => (
   <PermissionGate permission={permission} fallback={fallback} fallbackComponent={fallbackComponent}>
     {children}
   </PermissionGate>
-);
+)
 
-export default PermissionGate;
+export default PermissionGate

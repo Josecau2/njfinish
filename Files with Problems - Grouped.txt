@@ -1,0 +1,189 @@
+FILES WITH JSX SYNTAX ERRORS - ORGANIZED INTO GROUPS
+=====================================================
+Total: 115 files divided into 3 main groups, each with 4 subgroups
+
+===========================================
+GROUP 1: CORE COMPONENTS & LAYOUT (39 files)
+===========================================
+
+GROUP 1A: Main App & Layout Components (10 files)
+--------------------------------------------------
+[FIXED] frontend\src\App.jsx
+[FIXED] frontend\src\layout\DefaultLayout.jsx
+[FIXED] frontend\src\components\AppBreadcrumb.jsx
+[FIXED] frontend\src\components\BrandLogo.jsx
+[FIXED] frontend\src\components\PageHeader.jsx
+[FIXED] frontend\src\components\MobileStickyActions.jsx
+[FIXED] frontend\src\components\withDynamicContrast.jsx
+[FIXED] frontend\src\components\common\PaginationComponent.jsx
+[FIXED] frontend\src\components\LanguageSwitcher.jsx
+[FIXED] frontend\src\components\LoginPreview.jsx
+
+GROUP 1B: Modal Components (10 files)
+--------------------------------------
+[FIXED] frontend\src\components\EditManufacturerModal.jsx
+[FIXED] frontend\src\components\NeutralModal.jsx
+[FIXED] frontend\src\components\PaymentModal.jsx
+[FIXED] frontend\src\components\ProposalAcceptanceModal.jsx
+[FIXED] frontend\src\components\TermsModal.jsx
+[FIXED] frontend\src\components\FileViewerModal.jsx
+[FIXED] frontend\src\components\model\EditGroupModal.jsx
+[FIXED] frontend\src\components\model\EditManufacturerModal.jsx
+[FIXED] frontend\src\components\model\EmailContractModal.jsx
+[FIXED] frontend\src\components\model\EmailProposalModal.jsx
+
+GROUP 1C: Advanced Modal & PDF Components (10 files)
+-----------------------------------------------------
+[FIXED] frontend\src\components\model\ModificationBrowserModal.jsx
+[FIXED] frontend\src\components\model\ModificationModal.jsx
+[FIXED] frontend\src\components\model\ModificationModalEdit.jsx
+[FIXED] frontend\src\components\model\PrintPaymentReceiptModal.jsx
+[FIXED] frontend\src\components\model\PrintPaymentReceiptModal_backup.jsx
+[FIXED] frontend\src\components\model\PrintProposalModal.jsx
+[FIXED] frontend\src\components\pdf\DesktopPdfViewer.jsx
+[FIXED] frontend\src\components\pdf\MobilePdfViewer.jsx
+[FIXED] frontend\src\components\showroom\ShowroomModeToggle.jsx
+[FIXED] frontend\src\components\StyleCarousel.jsx
+
+GROUP 1D: Content & Utility Components (9 files)
+-------------------------------------------------
+frontend\src\components\StyleMerger.jsx
+frontend\src\components\EmbeddedPaymentForm.jsx
+frontend\src\components\ItemSelectionContent.jsx
+frontend\src\components\ItemSelectionContentEdit.jsx
+frontend\src\components\ContentTile\index.jsx
+frontend\src\components\contact\ContactInfoCard.jsx
+frontend\src\components\contact\MessageHistory.jsx
+frontend\src\components\contact\ThreadView.jsx
+frontend\src\views\pages\page404\Page404.jsx
+
+===========================================
+GROUP 2: MAIN PAGES & FEATURES (38 files)
+===========================================
+
+GROUP 2A: Auth & User Management Pages (10 files)
+--------------------------------------------------
+[FIXED] frontend\src\pages\auth\ForgotPasswordPage.jsx - Fixed missing div structure
+[FIXED] frontend\src\pages\auth\LoginPage.jsx - Fixed JSX structure
+[FIXED] frontend\src\pages\auth\RequestAccessPage.jsx - Added missing closing div for left panel
+[FIXED] frontend\src\pages\auth\ResetPasswordPage.jsx - Added missing closing div between panels
+[FIXED] frontend\src\pages\auth\SignupPage.jsx - Structure was already correct
+[FIXED] frontend\src\pages\profile\index.jsx - Fixed CFormFeedback → FormErrorMessage, CButton → Button, removed orphaned style tag
+[FIXED] frontend\src\pages\admin\ContractorDetail.jsx - Fixed orphaned closing tags, corrected icon imports
+[FIXED] frontend\src\pages\admin\ContractorDetail\CustomersTab.jsx - Replaced all CoreUI table components with Chakra UI, fixed orphaned tags
+[FIXED] frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx - Fixed Progress component, replaced CoreUI components, cleaned orphaned tags
+[FIXED] frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx - Complete CoreUI to Chakra UI conversion using git comparison method
+
+GROUP 2B: Admin & Core Business Pages (9 files)
+------------------------------------------------
+[FIXED] frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx - Fixed CListGroup → List, CListGroupItem → ListItem conversions
+[FIXED] frontend\src\pages\admin\Contractors.jsx - Fixed CTable → Table, CButton → Button, JSX corruption cleanup
+[FIXED] frontend\src\pages\admin\LeadsPage.jsx - Fixed CTable → Table, modal structure, CButton → Button conversions
+[FIXED] frontend\src\pages\dashboard\Dashboard.jsx - Fixed CListGroup → List, CButton → Button, JSX corruption cleanup
+[FIXED] frontend\src\pages\contractor\ContractorDashboard.jsx - Fixed CButton → Button conversions, JSX cleanup
+[FIXED] frontend\src\pages\calender\index.jsx - Fixed CButton → Button, CInputGroup → InputGroup conversions
+[FIXED] frontend\src\pages\contact\ContactUs.jsx - Fixed JSX corruption and syntax errors
+[FIXED] frontend\src\pages\contracts\index.jsx - Fixed CTable → Table, modal structure, CButton → Button conversions
+[FIXED] frontend\src\pages\Resources\index.jsx - Already properly converted to Chakra UI
+
+GROUP 2C: Customer & Order Management (10 files)
+-------------------------------------------------
+frontend\src\pages\customers\AddCustomerForm.jsx
+frontend\src\pages\customers\CustomerForm.jsx
+[FIXED] frontend\src\pages\customers\Customers.jsx - Proper Chakra UI components (no CoreUI), fixed sort icons, imports, and JSX; logic preserved
+frontend\src\pages\customers\Customers_broken.jsx
+frontend\src\pages\customers\Customers_fixed.jsx
+frontend\src\pages\customers\EditCustomerPage.jsx
+frontend\src\pages\orders\OrderDetails.jsx
+frontend\src\pages\orders\OrdersList.jsx
+frontend\src\pages\public\PublicProposalPage.jsx
+frontend\src\pages\quotes\CreateQuote\QuoteEditorWrapper.jsx
+
+GROUP 2D: Payments & Quotes (9 files)
+--------------------------------------
+[FIXED] frontend\src\pages\payments\PaymentCancel.jsx - Already properly converted to Chakra UI
+[FIXED] frontend\src\pages\payments\PaymentConfiguration.jsx - Fixed broken imports, CButton → Button, CCollapse → Collapse, JSX corruption cleanup
+[FIXED] frontend\src\pages\payments\PaymentPage.jsx - Fixed CButton → Button conversions, import cleanup
+[FIXED] frontend\src\pages\payments\PaymentsList.jsx - Already properly converted to Chakra UI
+[FIXED] frontend\src\pages\payments\PaymentSuccess.jsx - Already properly converted to Chakra UI
+[FIXED] frontend\src\pages\payments\PaymentTest.jsx - Fixed CButton → Button, CIcon → Icon conversions
+[FIXED] frontend\src\pages\quotes\Create\CreateQuote.jsx - Fixed JSX corruption and orphaned closing tags
+[FIXED] frontend\src\pages\quotes\Create\QuoteEditor.jsx - Fixed JSX corruption and orphaned closing tags
+[FIXED] frontend\src\pages\proposals\ProposalEditor.jsx - Fixed JSX corruption and orphaned closing tags
+
+===========================================
+GROUP 3: PROPOSALS & SETTINGS (38 files)
+===========================================
+
+GROUP 3A: Proposal Creation & Management (10 files)
+----------------------------------------------------
+frontend\src\pages\proposals\CreateProposal\CustomerInfo.jsx
+frontend\src\pages\proposals\CreateProposal\DesignUpload.jsx
+frontend\src\pages\proposals\CreateProposal\FileUploadSection .jsx
+frontend\src\pages\proposals\CreateProposal\FileUploadSection.jsx
+frontend\src\pages\proposals\CreateProposal\ManufacturerSelect.jsx
+frontend\src\pages\proposals\CreateProposal\ProposalEditor.jsx
+frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx
+frontend\src\pages\proposals\CreateProposalForm.jsx
+frontend\src\pages\proposals\EditProposal.jsx
+frontend\src\pages\proposals\EditProposal\EditProposal.jsx
+
+GROUP 3B: Settings - General & Customization (9 files)
+[FIXED] frontend\src\pages\proposals\Proposals.jsx - Fixed incomplete Chakra UI import, broken function call, JSX structure issues
+[FIXED] frontend\src\pages\settings\customization\CustomizationPage.jsx - Added missing CButton import, fixed missing closing div, cleaned up ending structures
+[FIXED] frontend\src\pages\settings\customization\index.jsx - Fixed JSX structure by closing Box element and removing extra closing tags
+[FIXED] frontend\src\pages\settings\customization\LoginCustomizerPage.jsx - Already syntactically correct, no changes needed
+[PARTIALLY FIXED - COMPLEX MODAL STRUCTURES NEED MORE WORK] frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx - Fixed imports and broken title JSX, but modal structures still have issues
+[PARTIALLY FIXED - MANY MODAL STRUCTURES NEED MORE WORK] frontend\src\pages\settings\globalMods\GlobalModsPage.jsx - Fixed basic imports and ending structure, but modals throughout still broken
+[FIXED] frontend\src\pages\settings\taxes\TaxesPage.jsx - Added missing CButton and CTable imports, fixed broken JSX structure
+[FIXED] frontend\src\pages\settings\terms\TermsPage.jsx - Added missing CButton and CTable imports, fixed malformed ending structure
+[FIXED] frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx - Added missing CButton import, fixed FormControl usage, fixed component name
+GROUP 3C: Settings - Manufacturers & Locations (10 files)
+----------------------------------------------------------
+frontend\src\pages\settings\multipliers\ManuMultipliers.jsx
+frontend\src\pages\settings\locations\CreateLocation.jsx
+frontend\src\pages\settings\locations\EditLocation.jsx
+frontend\src\pages\settings\locations\LocationList.jsx
+frontend\src\pages\settings\manufacturers\EditManufacturer.jsx
+frontend\src\pages\settings\manufacturers\ManufacturersForm.jsx
+frontend\src\pages\settings\manufacturers\ManufacturersList.jsx
+frontend\src\pages\settings\manufacturers\tabs\EditManufacturerTab.jsx
+frontend\src\pages\settings\manufacturers\tabs\FilesHistoryTab.jsx
+frontend\src\pages\settings\manufacturers\tabs\SettingsTab.jsx
+
+GROUP 3D: Settings - Complex Tabs & Users (9 files)
+----------------------------------------------------
+[FIXED] frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx
+frontend\src\pages\settings\manufacturers\tabs\StylePicturesTab.jsx
+frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx
+frontend\src\pages\settings\users\CreateUser.jsx
+frontend\src\pages\settings\users\EditUser.jsx
+frontend\src\pages\settings\users\UserList.jsx
+frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx
+frontend\src\pages\settings\usersGroup\EditUserGroup.jsx
+frontend\src\pages\settings\usersGroup\UserGroupList.jsx
+
+===========================================
+SUMMARY
+===========================================
+GROUP 1 (Core Components & Layout): 39 files
+  - 1A: Main App & Layout Components: 10 files
+  - 1B: Modal Components: 10 files
+  - 1C: Advanced Modal & PDF Components: 10 files
+  - 1D: Content & Utility Components: 9 files
+
+GROUP 2 (Main Pages & Features): 38 files
+  - 2A: Auth & User Management Pages: 10 files
+  - 2B: Admin & Core Business Pages: 9 files
+  - 2C: Customer & Order Management: 10 files
+  - 2D: Payments & Quotes: 9 files
+
+GROUP 3 (Proposals & Settings): 38 files
+  - 3A: Proposal Creation & Management: 10 files
+  - 3B: Settings - General & Customization: 9 files
+  - 3C: Settings - Manufacturers & Locations: 10 files
+  - 3D: Settings - Complex Tabs & Users: 9 files
+
+TOTAL: 115 files across 12 subgroups (3 main groups × 4 subgroups each)
+
+Generated: 2025-09-29

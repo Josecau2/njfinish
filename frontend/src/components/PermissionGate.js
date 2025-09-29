@@ -1,2 +1,3 @@
-export { default } from './PermissionGate.jsx';
-
+import {
+  export { default
+} from

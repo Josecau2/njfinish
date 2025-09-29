@@ -1,51 +1,114 @@
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import {
-  CModal,
-  CModalBody,
-  CButton,
-  CFormInput,
-  CSpinner,
-  CBreadcrumb,
-  CBreadcrumbItem,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CBadge,
-  CFormCheck,
-  CFormTextarea,
-  CFormRange
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilArrowLeft, cilMagnifyingGlass, cilX } from '@coreui/icons'
-import axiosInstance from '../../helpers/axiosInstance'
-import Swal from 'sweetalert2'
-import PageHeader from '../PageHeader'
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  IconButton,
+  Input,
+  Spinner,
+  Breadcrumb,
+  BreadcrumbItem,
+  SimpleGrid,
+  Box,
+  Text,
+  Tag,
+  Stack,
+  HStack,
+  VStack,
+  Divider,
+  Image,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Alert,
+  AlertIcon,
+  useToast,
+  Textarea,
+} from '@chakra-ui/react'
+import { ArrowLeft, Search, X } from 'lucide-react'
+import { useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import axiosInstance from '../../helpers/axiosInstance'
+import PageHeader from '../PageHeader'
+
+const FALLBACK_LEAD_TIME_DAYS = 8
+
+const formatInches = (value) => {
+  const numeric = Number(value)
+  if (Number.isNaN(numeric)) return `${value}"`
+  const whole = Math.floor(numeric)
+  const fraction = numeric - whole
+  const eighth = Math.round(fraction * 8)
+  const fractionMap = {
+    0: '',
+    1: '1/8',
+    2: '1/4',
+    3: '3/8',
+    4: '1/2',
+    5: '5/8',
+    6: '3/4',
+    7: '7/8',
+    8: '',
+  }
+
+  let wholePart = whole
+  let fracLabel = fractionMap[eighth]
+  if (eighth === 8) {
+    wholePart += 1
+    fracLabel = ''
+  }
+  const pieces = []
+  if (wholePart > 0) pieces.push(String(wholePart))
+  if (fracLabel) pieces.push(fracLabel)
+  return `${pieces.length ? pieces.join(' ') : '0'}"`
+}
 
 const ModificationBrowserModal = ({
   visible,
   onClose,
   onApplyModification,
   selectedItemIndex,
-  catalogItemId
+  catalogItemId,
 }) => {
-  const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
+  const toast = useToast()
+  const prefersReducedMotion = useReducedMotion()
+  const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [gallery, setGallery] = useState([])
-  const [currentView, setCurrentView] = useState('categories') // 'categories', 'templates', 'details'
+  const [currentView, setCurrentView] = useState('categories')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [modification, setModification] = useState({
     quantity: 1,
     selectedOptions: {},
-    uploadedFiles: []
+    uploadedFiles: [],
   })
 
-  // Load assigned modifications for the specific catalog item
-  const loadAssignedModifications = async () => {
+  const resetState = useCallback(() => {
+    setCurrentView('categories')
+    setSelectedCategory(null)
+    setSelectedTemplate(null)
+    setSearchTerm('')
+    setModification({
+      quantity: 1,
+      selectedOptions: {},
+      uploadedFiles: [],
+    })
+  }, [])
+
+  const loadAssignedModifications = useCallback(async () => {
     setLoading(true)
     try {
       if (!catalogItemId) {
@@ -53,121 +116,111 @@ const ModificationBrowserModal = ({
         return
       }
 
-      const response = await axiosInstance.get(`/api/global-mods/item/${catalogItemId}`)
-      const assignments = response.data?.assignments || []
-
-      // Group assignments by category to create the gallery structure
+      const { data } = await axiosInstance.get(`/api/global-mods/item/${catalogItemId}`)
+      const assignments = data?.assignments || []
       const categoryMap = new Map()
 
-      assignments.forEach(assignment => {
+      assignments.forEach((assignment) => {
         const template = assignment.template
         if (!template) return
 
-        // Prefer assignment.category provided by the API; template only has categoryId
-  const categoryName = assignment.category?.name || t('common.none','None')
+        const categoryName = assignment.category?.name || t('modificationBrowser.uncategorized', 'Uncategorized')
         const categoryId = assignment.category?.id || 'uncategorized'
 
         if (!categoryMap.has(categoryId)) {
           categoryMap.set(categoryId, {
             id: categoryId,
             name: categoryName,
-            templates: []
+            templates: [],
           })
         }
 
-        // Add the template with assignment data
         categoryMap.get(categoryId).templates.push({
           ...template,
           assignmentId: assignment.id,
           overridePrice: assignment.overridePrice,
           effectivePrice: assignment.overridePrice ?? template.defaultPrice,
-          scope: assignment.scope
+          scope: assignment.scope,
         })
       })
 
       setGallery(Array.from(categoryMap.values()))
     } catch (error) {
       console.error('Error loading assigned modifications:', error)
-  Swal.fire(t('common.error','Error'), t('proposals.toast.errorGeneric','An error occurred'), 'error')
+      toast({
+        status: 'error',
+        title: t('common.error', 'Error'),
+        description: t('modificationBrowser.toast.loadFailed', 'Failed to load modifications.'),
+      })
       setGallery([])
     } finally {
       setLoading(false)
     }
-  }
+  }, [catalogItemId, t, toast])
 
   useEffect(() => {
-    if (visible && catalogItemId) {
+    if (visible) {
       loadAssignedModifications()
-      // Reset state when modal opens
-      setCurrentView('categories')
-      setSelectedCategory(null)
-      setSelectedTemplate(null)
-      setSearchTerm('')
-      setModification({
-        quantity: 1,
-        selectedOptions: {},
-        uploadedFiles: []
-      })
+      resetState()
     }
-  }, [visible, catalogItemId])
+  }, [visible, loadAssignedModifications, resetState])
 
-  // Filter categories based on search
-  const filteredCategories = gallery.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (category.templates || []).some(template =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = useMemo(() => {
+    if (!searchTerm) return gallery
+    return gallery.filter((category) => {
+      const inCategory = category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const inTemplates = (category.templates || []).some((template) =>
+        template.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      return inCategory || inTemplates
+    })
+  }, [gallery, searchTerm])
+
+  const filteredTemplates = useMemo(() => {
+    if (!selectedCategory) return []
+    if (!searchTerm) return selectedCategory.templates || []
+    return (selectedCategory.templates || []).filter((template) =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()),
     )
-  )
+  }, [selectedCategory, searchTerm])
 
-  // Filter templates in selected category
-  const filteredTemplates = selectedCategory?.templates?.filter(template =>
-    template.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || []
-
-  // Handle category selection
   const handleCategorySelect = (category) => {
     setSelectedCategory(category)
     setCurrentView('templates')
     setSearchTerm('')
   }
 
-  // Handle template selection
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template)
     setCurrentView('details')
     setSearchTerm('')
 
-    // Initialize modification state with default values from the saved configuration
     const config = template.fieldsConfig || {}
     const initialOptions = {}
-    const initialQuantity = (config.qtyRange && config.qtyRange.enabled !== false) ? config.qtyRange.min : 1
+    const initialQuantity = config.qtyRange && config.qtyRange.enabled !== false ? config.qtyRange.min : 1
 
-    // Set default values for sliders based on saved configuration
     if (config.sliders) {
-      Object.keys(config.sliders).forEach(sliderKey => {
-        const slider = config.sliders[sliderKey]
-        // Support both new format (no enabled flag = enabled) and old format (enabled flag)
-        const isEnabled = slider.enabled !== false
-        if (isEnabled) {
-          initialOptions[sliderKey] = slider.min || 0
-        }
+      Object.entries(config.sliders).forEach(([key, slider]) => {
+        if (slider.enabled === false) return
+        initialOptions[key] = slider.min || 0
       })
     }
 
-    // Set default value for side selector if configured and enabled
-    if (config.sideSelector && (config.sideSelector.enabled !== false) && config.sideSelector.options && config.sideSelector.options.length > 0) {
-      initialOptions.sideSelector = config.sideSelector.options[0]
+    if (config.sideSelector && config.sideSelector.enabled !== false) {
+      const firstOption = config.sideSelector.options?.[0]
+      if (firstOption) {
+        initialOptions.sideSelector = firstOption
+      }
     }
 
-    setModification(prev => ({
+    setModification((prev) => ({
       ...prev,
       quantity: initialQuantity,
       selectedOptions: initialOptions,
-      uploadedFiles: []
+      uploadedFiles: [],
     }))
   }
 
-  // Handle back navigation
   const handleBack = () => {
     if (currentView === 'details') {
       setCurrentView('templates')
@@ -179,18 +232,27 @@ const ModificationBrowserModal = ({
     setSearchTerm('')
   }
 
-  // Apply modification
   const handleApplyModification = async () => {
     if (!selectedTemplate) return
 
-    // Validate required customer upload
     const cfg = selectedTemplate.fieldsConfig || {}
-    if (cfg.customerUpload && cfg.customerUpload.enabled !== false && cfg.customerUpload.required && (!modification.uploadedFiles || modification.uploadedFiles.length === 0)) {
-  Swal.fire(t('common.warning','Warning'), t('proposalUI.custom.validation.missingFile','This modification requires a file upload. Please attach at least one file.'), 'warning')
+    if (
+      cfg.customerUpload &&
+      cfg.customerUpload.enabled !== false &&
+      cfg.customerUpload.required &&
+      (!modification.uploadedFiles || modification.uploadedFiles.length === 0)
+    ) {
+      toast({
+        status: 'warning',
+        title: t('common.warning', 'Warning'),
+        description: t(
+          'proposalUI.custom.validation.missingFile',
+          'This modification requires a file upload. Please attach at least one file.',
+        ),
+      })
       return
     }
 
-    // If there are files, upload them first via resources API
     let attachments = []
     try {
       if (Array.isArray(modification.uploadedFiles) && modification.uploadedFiles.length > 0) {
@@ -198,22 +260,33 @@ const ModificationBrowserModal = ({
           modification.uploadedFiles.map(async (file) => {
             const form = new FormData()
             form.append('file', file)
-            const { data } = await axiosInstance.post('/api/resources/files', form, { headers: { 'Content-Type': 'multipart/form-data' } })
-            const f = data?.data || data
-            return f ? {
-              id: f.id,
-              url: f.url || `/api/resources/files/download/${f.id}`,
-              name: f.original_name || f.name || file.name,
-              mimeType: f.mime_type || file.type || '',
-              size: f.file_size || file.size
-            } : null
-          })
+            const { data } = await axiosInstance.post('/api/resources/files', form, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            const payload = data?.data || data
+            return payload
+              ? {
+                  id: payload.id,
+                  url: payload.url || `/api/resources/files/download/${payload.id}`,
+                  name: payload.original_name || payload.name || file.name,
+                  mimeType: payload.mime_type || file.type || '',
+                  size: payload.file_size || file.size,
+                }
+              : null
+          }),
         )
         attachments = uploads.filter(Boolean)
       }
-    } catch (err) {
-      console.error('Upload failed:', err)
-  Swal.fire(t('common.error','Error'), t('proposalUI.custom.validation.uploadFailed','Could not upload one or more files. Please try again.'), 'error')
+    } catch (error) {
+      console.error('Upload failed:', error)
+      toast({
+        status: 'error',
+        title: t('common.error', 'Error'),
+        description: t(
+          'proposalUI.custom.validation.uploadFailed',
+          'Could not upload one or more files. Please try again.',
+        ),
+      })
       return
     }
 
@@ -222,483 +295,514 @@ const ModificationBrowserModal = ({
       templateName: selectedTemplate.name,
       categoryName: selectedCategory?.name || '',
       quantity: modification.quantity,
-      note: selectedTemplate.fieldsConfig?.notes?.placeholder || '', // Use the pre-configured note
+      note: selectedTemplate.fieldsConfig?.notes?.placeholder || '',
       selectedOptions: modification.selectedOptions,
       price: selectedTemplate.effectivePrice || selectedTemplate.defaultPrice || 0,
-      taxable: true, // Default to taxable
+      taxable: true,
       scope: selectedTemplate.scope,
       assignmentId: selectedTemplate.assignmentId,
-      attachments
+      attachments,
     }
 
     try {
       await onApplyModification(selectedItemIndex, modificationData)
-  Swal.fire(t('common.success','Success'), t('proposalUI.custom.applied','Modification applied successfully!'), 'success')
-      onClose()
+      toast({
+        status: 'success',
+        title: t('common.success', 'Success'),
+        description: t('proposalUI.custom.applied', 'Modification applied successfully!'),
+      })
+      onClose?.()
     } catch (error) {
-      console.error('Error applying modification:', error)
-  Swal.fire(t('common.error','Error'), t('proposalUI.custom.applyFailed','Failed to apply modification'), 'error')
+      console.error('Apply modification failed:', error)
+      toast({
+        status: 'error',
+        title: t('common.error', 'Error'),
+        description: t('proposalUI.custom.errorApply', 'Unable to apply modification.'),
+      })
     }
   }
 
-  // Render modification configuration based on fieldsConfig
   const renderModificationConfig = () => {
     if (!selectedTemplate?.fieldsConfig) {
       return (
-        <div className="alert alert-info">
-    <small>{t('proposalUI.custom.noOptions','This modification template has no configurable options.')}</small>
-        </div>
+        <Alert status="info" variant="subtle" borderRadius="md">
+          <AlertIcon />
+          <Text fontSize="sm">
+            {t('proposalUI.custom.noOptions', 'This modification template has no configurable options.')}
+          </Text>
+        </Alert>
       )
     }
 
     const config = selectedTemplate.fieldsConfig
-    const { selectedOptions } = modification
-
-    // helper to format inches nicely (e.g., 15 1/4") when decimals exist
-    const formatInches = (num) => {
-      const value = Number(num)
-      if (Number.isNaN(value)) return `${num}\"`
-      const whole = Math.floor(value)
-      const frac = value - whole
-      // map to nearest 1/8 fraction for readability
-      const eighth = Math.round(frac * 8)
-      const fractionMap = {
-        0: '',
-        1: '1/8',
-        2: '1/4',
-        3: '3/8',
-        4: '1/2',
-        5: '5/8',
-        6: '3/4',
-        7: '7/8',
-        8: '', // roll into next inch if exactly 1
-      }
-      let parts = []
-      let w = whole
-      let fracLabel = fractionMap[eighth]
-      if (eighth === 8) {
-        w = whole + 1
-        fracLabel = ''
-      }
-      if (w > 0) parts.push(String(w))
-      if (fracLabel) parts.push(fracLabel)
-      const label = parts.length ? parts.join(' ') : '0'
-      return `${label}\"`
-    }
 
     return (
-      <div className="modification-config mt-4">
-        {/* Sliders - only show enabled ones */}
-  {config.sliders && Object.keys(config.sliders).map(sliderKey => {
-          const slider = config.sliders[sliderKey]
-
-          // Only render if the slider exists (enabled sliders are included in config)
-          // Support both new format (no enabled flag = enabled) and old format (enabled flag)
-          const isEnabled = slider.enabled !== false // If enabled is undefined, treat as enabled
-          if (!isEnabled) return null
-
-    const currentValue = selectedOptions[sliderKey] || slider.min
-      const sliderId = `slider-${sliderKey}`
-
-          return (
-            <div key={sliderKey} className="mb-4">
-              <label className="form-label text-capitalize" htmlFor={sliderId}>
-            {t('proposalUI.custom.choose','Choose')} {sliderKey}: <strong>{formatInches(currentValue)}</strong>
-              </label>
-              <CFormRange
-                id={sliderId}
-                min={slider.min}
-                max={slider.max}
-                step={slider.step || 1}
-                value={currentValue}
-                onChange={(e) => setModification(prev => ({
-                  ...prev,
-                  selectedOptions: {
-                    ...prev.selectedOptions,
-                    [sliderKey]: Number(e.target.value)
-                  }
-                }))}
-                className="mb-2"
-              />
-              <div className="d-flex justify-content-between text-muted small">
-        <span>{formatInches(slider.min)}</span>
-        <span>{formatInches(slider.max)}</span>
-              </div>
-            </div>
-          )
-        })}
-
-        {/* Side Selector - only show if enabled */}
-        {config.sideSelector && (config.sideSelector.enabled !== false) && (
-          <div className="mb-4">
-            <label className="form-label fw-bold">Side Selection</label>
-            <div className="d-flex gap-2">
-              {config.sideSelector.options.map(option => {
-                const isSelected = selectedOptions.sideSelector === option;
-                const displayLabel = option === 'L' ? 'Left' : option === 'R' ? 'Right' : option;
-
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    className={`btn ${isSelected ? 'btn-primary' : 'btn-outline-primary'} px-4 py-2 fw-semibold`}
-                    style={{
-                      minWidth: '80px',
-                      border: isSelected ? '2px solid #0d6efd' : '2px solid #6c757d',
-                      backgroundColor: isSelected ? '#0d6efd' : '#ffffff',
-                      color: isSelected ? '#ffffff' : '#495057',
-                      fontWeight: '600'
-                    }}
-                    onClick={() => setModification(prev => ({
+      <Stack spacing={5} mt={4}>
+        {config.sliders &&
+          Object.entries(config.sliders).map(([sliderKey, slider]) => {
+            if (slider.enabled === false) return null
+            const value = modification.selectedOptions[sliderKey] ?? slider.min
+            return (
+              <Stack key={sliderKey} spacing={2}>
+                <HStack justify="space-between">
+                  <Text fontWeight="medium" textTransform="capitalize">
+                    {t('proposalUI.custom.choose', 'Choose')} {sliderKey}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {formatInches(value)}
+                  </Text>
+                </HStack>
+                <Slider
+                  min={slider.min}
+                  max={slider.max}
+                  step={slider.step || 1}
+                  value={value}
+                  onChange={(next) =>
+                    setModification((prev) => ({
                       ...prev,
                       selectedOptions: {
                         ...prev.selectedOptions,
-                        sideSelector: option
-                      }
-                    }))}
+                        [sliderKey]: Number(next),
+                      },
+                    }))
+                  }
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <HStack justify="space-between" fontSize="xs" color="gray.500">
+                  <Text>{formatInches(slider.min)}</Text>
+                  <Text>{formatInches(slider.max)}</Text>
+                </HStack>
+              </Stack>
+            )
+          })}
+
+        {config.sideSelector && config.sideSelector.enabled !== false && (
+          <Stack spacing={2}>
+            <Text fontWeight="medium">{t('modificationBrowser.sideSelector.label', 'Side Selection')}</Text>
+            <HStack spacing={3}>
+              {(config.sideSelector.options || []).map((option) => {
+                const isSelected = modification.selectedOptions.sideSelector === option
+                const display = option === 'L'
+                  ? t('modificationBrowser.sideSelector.left', 'Left')
+                  : option === 'R'
+                  ? t('modificationBrowser.sideSelector.right', 'Right')
+                  : option
+                return (
+                  <Button
+                    key={option}
+                    variant={isSelected ? 'solid' : 'outline'}
+                    colorScheme="brand"
+                    size="sm"
+                    onClick={() =>
+                      setModification((prev) => ({
+                        ...prev,
+                        selectedOptions: {
+                          ...prev.selectedOptions,
+                          sideSelector: option,
+                        },
+                      }))
+                    }
                   >
-                    {displayLabel}
-                  </button>
-                );
+                    {display}
+                  </Button>
+                )
               })}
-            </div>
-          </div>
+            </HStack>
+          </Stack>
         )}
 
-        {/* Quantity Range - only show if enabled */}
-        {config.qtyRange && (config.qtyRange.enabled !== false) && (
-          <div className="mb-4">
-            <label className="form-label">Quantity</label>
-            <CFormInput
-              type="number"
+        {config.qtyRange && config.qtyRange.enabled !== false && (
+          <Stack spacing={2}>
+            <Text fontWeight="medium">{t('modificationBrowser.qty.label', 'Quantity')}</Text>
+            <NumberInput
               min={config.qtyRange.min}
               max={config.qtyRange.max}
               value={modification.quantity}
-              onChange={(e) => setModification(prev => ({
-                ...prev,
-                quantity: Math.max(config.qtyRange.min, Math.min(config.qtyRange.max, Number(e.target.value)))
-              }))}
-              aria-label="Quantity"
-            />
-          </div>
+              onChange={(_, valueNumber) =>
+                setModification((prev) => ({
+                  ...prev,
+                  quantity: valueNumber,
+                }))
+              }
+              maxW="160px"
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </Stack>
         )}
 
-        {/* Notes - only show if enabled, read-only display */}
-        {config.notes && (config.notes.enabled !== false) && (
-          <div className="mb-4">
-            <label className="form-label">Notes</label>
-            <div className="form-control-plaintext border rounded p-2 bg-light text-danger">
-              {config.notes.placeholder || 'No additional notes configured for this modification.'}
-            </div>
-          </div>
+        {config.notes && config.notes.enabled !== false && (
+          <Box borderWidth="1px" borderColor="gray.200" borderRadius="md" p={3} bg="gray.50">
+            <Text fontSize="sm" color="gray.600">
+              {config.notes.placeholder || t('proposalUI.custom.notesFallback', 'No additional notes configured for this modification.')}
+            </Text>
+          </Box>
         )}
 
-        {/* Customer Upload - only show if enabled */}
-        {config.customerUpload && (config.customerUpload.enabled !== false) && (
-          <div className="mb-4">
-            <label className="form-label">
-              {config.customerUpload.title || 'File Upload'}
-              {config.customerUpload.required && <span className="text-danger"> *</span>}
-            </label>
-            <CFormInput
+        {config.customerUpload && config.customerUpload.enabled !== false && (
+          <Stack spacing={2}>
+            <HStack spacing={1}>
+              <Text fontWeight="medium">
+                {config.customerUpload.title || t('modificationBrowser.upload.label', 'File Upload')}
+              </Text>
+              {config.customerUpload.required && <Text color="red.500">*</Text>}
+            </HStack>
+            <Input
               type="file"
               multiple
-              onChange={(e) => setModification(prev => ({
-                ...prev,
-                uploadedFiles: Array.from(e.target.files)
-              }))}
-              aria-label="Upload files for modification"
+              onChange={(event) =>
+                setModification((prev) => ({
+                  ...prev,
+                  uploadedFiles: Array.from(event.target.files || []),
+                }))
+              }
             />
-          </div>
+            {config.customerUpload.description && (
+              <Text fontSize="xs" color="gray.500">
+                {config.customerUpload.description}
+              </Text>
+            )}
+          </Stack>
         )}
-      </div>
+      </Stack>
     )
   }
 
-  // Render breadcrumb navigation
-  const renderBreadcrumb = () => {
-    return (
-      <CBreadcrumb className="mb-0 small">
-        <CBreadcrumbItem
-          active={currentView === 'categories'}
-          style={{ cursor: 'pointer', color: currentView === 'categories' ? '#084298' : '#6c757d' }}
-          onClick={() => currentView !== 'categories' && setCurrentView('categories')}
+  const renderCategoryGrid = () => (
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+      {filteredCategories.map((category) => (
+        <Box
+          key={category.id}
+          borderWidth="1px"
+          borderRadius="lg"
+          p={5}
+          bg="white"
+          shadow="sm"
+          _hover={{ shadow: 'md', borderColor: 'brand.500' }}
+          cursor="pointer"
+          onClick={() => handleCategorySelect(category)}
         >
-          All
-        </CBreadcrumbItem>
+          <Stack spacing={3}>
+            <Text fontWeight="semibold" noOfLines={2}>
+              {category.name}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              {t('modificationBrowser.category.count', {
+                defaultValue: '{{count}} templates',
+                count: category.templates?.length || 0,
+              })}
+            </Text>
+          </Stack>
+        </Box>
+      ))}
+    </SimpleGrid>
+  )
 
-        {selectedCategory && (
-          <CBreadcrumbItem
-            active={currentView === 'templates'}
-            style={{ cursor: 'pointer', color: currentView === 'templates' ? '#084298' : '#6c757d' }}
-            onClick={() => currentView === 'details' && setCurrentView('templates')}
+  const renderTemplateGrid = () => (
+    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+      {filteredTemplates.map((template) => (
+        <Box
+          key={template.id}
+          borderWidth="1px"
+          borderRadius="lg"
+          p={4}
+          bg="white"
+          shadow="sm"
+          _hover={{ shadow: 'md', borderColor: 'brand.500' }}
+          cursor="pointer"
+          onClick={() => handleTemplateSelect(template)}
+        >
+          <Stack spacing={3} h="100%">
+            {(template.sampleImage || template.fieldsConfig?.modSampleImage?.enabled) && (
+              <Box
+                bg="gray.50"
+                borderRadius="md"
+                borderWidth="1px"
+                borderColor="gray.200"
+                h="150px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Image
+                  src={template.sampleImage ? `${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}` : '/images/nologo.png'}
+                  alt={template.name}
+                  maxH="140px"
+                  objectFit="contain"
+                  fallbackSrc="/images/nologo.png"
+                />
+              </Box>
+            )}
+            <Stack spacing={1} flex="1">
+              <HStack justify="space-between" align="flex-start">
+                <Text fontWeight="semibold" noOfLines={2}>
+                  {template.name}
+                </Text>
+                <Tag colorScheme={template.isReady ? 'green' : 'yellow'}>
+                  {template.isReady
+                    ? t('modificationBrowser.template.status.ready', 'Ready')
+                    : t('modificationBrowser.template.status.draft', 'Draft')}
+                </Tag>
+              </HStack>
+              {template.descriptions?.customer && (
+                <Text fontSize="sm" color="gray.500" noOfLines={2}>
+                  {template.descriptions.customer}
+                </Text>
+              )}
+              {template.effectivePrice && (
+                <Text fontSize="sm">
+                  <Text as="span" fontWeight="semibold">
+                    ${Number(template.effectivePrice).toFixed(2)}
+                  </Text>
+                  {template.overridePrice && (
+                    <Text as="span" fontSize="xs" color="gray.500" ml={1}>
+                      {t('modificationBrowser.template.price.overrideShort', 'Override')}
+                    </Text>
+                  )}
+                </Text>
+              )}
+            </Stack>
+            <Tag alignSelf="flex-start" colorScheme="brand">
+              {t('modificationBrowser.template.configure', 'Configure')}
+            </Tag>
+          </Stack>
+        </Box>
+      ))}
+    </SimpleGrid>
+  )
+
+  const renderTemplateDetails = () => {
+    if (!selectedTemplate) return null
+    return (
+      <Stack spacing={5}>
+        <Stack spacing={2}>
+          <HStack justify="space-between" align="flex-start">
+            <Stack spacing={1} flex="1">
+              <Text fontSize="lg" fontWeight="semibold">
+                {selectedTemplate.name}
+              </Text>
+              {selectedTemplate.descriptions?.customer && (
+                <Text fontSize="sm" color="gray.500">
+                  {selectedTemplate.descriptions.customer}
+                </Text>
+              )}
+            </Stack>
+            <Stack spacing={1} align="flex-end">
+              {selectedTemplate.effectivePrice && (
+                <Text fontWeight="bold">
+                  ${Number(selectedTemplate.effectivePrice).toFixed(2)}
+                </Text>
+              )}
+              {selectedTemplate.overridePrice && (
+                <Text fontSize="xs" color="gray.500">
+                  {t('modificationBrowser.template.price.overrideLabel', 'Override price')}
+                </Text>
+              )}
+              <Tag colorScheme={selectedTemplate.isReady ? 'green' : 'yellow'}>
+                {selectedTemplate.isReady
+                  ? t('modificationBrowser.template.status.ready', 'Ready')
+                  : t('modificationBrowser.template.status.draft', 'Draft')}
+              </Tag>
+            </Stack>
+          </HStack>
+        </Stack>
+
+        {(selectedTemplate.sampleImage || selectedTemplate.fieldsConfig?.modSampleImage?.enabled) && (
+          <Box
+            borderWidth="1px"
+            borderRadius="md"
+            bg="gray.50"
+            borderColor="gray.200"
+            h="230px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            {selectedCategory.name}
-          </CBreadcrumbItem>
+            <Image
+              src={selectedTemplate.sampleImage ? `${import.meta.env.VITE_API_URL || ''}/uploads/images/${selectedTemplate.sampleImage}` : '/images/nologo.png'}
+              alt={selectedTemplate.name}
+              maxH="220px"
+              objectFit="contain"
+              fallbackSrc="/images/nologo.png"
+            />
+          </Box>
         )}
 
-        {selectedTemplate && (
-          <CBreadcrumbItem active style={{ color: '#084298' }}>
-            {selectedTemplate.name}
-          </CBreadcrumbItem>
+        <Alert status="warning" variant="subtle" borderRadius="md">
+          <AlertIcon />
+          <Text fontSize="sm">
+            <Text as="span" fontWeight="semibold">
+              {t('modificationBrowser.leadTime.noticeTitle', 'Please note:')}
+            </Text>{' '}
+            {t('modificationBrowser.leadTime.noticeText', {
+              defaultValue: 'This item has an extended lead time of {{days}} days.',
+              days: FALLBACK_LEAD_TIME_DAYS,
+            })}
+          </Text>
+        </Alert>
+
+        {renderModificationConfig()}
+
+        {(!selectedTemplate.fieldsConfig?.qtyRange || selectedTemplate.fieldsConfig.qtyRange.enabled === false) && (
+          <Stack spacing={2}>
+            <Text fontWeight="medium">{t('modificationBrowser.qty.label', 'Quantity')}</Text>
+            <NumberInput
+              min={1}
+              value={modification.quantity}
+              onChange={(_, valueNumber) =>
+                setModification((prev) => ({
+                  ...prev,
+                  quantity: Math.max(1, valueNumber),
+                }))
+              }
+              maxW="160px"
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </Stack>
         )}
-      </CBreadcrumb>
+      </Stack>
     )
   }
+
+  const showBackButton = currentView !== 'categories'
 
   return (
-    <CModal
-      visible={visible}
-      onClose={onClose}
-      size="lg"
-      scrollable
-    >
-      {/* Header using PageHeader component */}
-      <PageHeader
-        title={t('modificationBrowser.title')}
-        mobileLayout="inline"
-        rightContent={
-          <div className="d-flex align-items-center gap-2">
-            {currentView !== 'categories' && (
-              <CButton
-                color="primary"
-                size="sm"
-                onClick={handleBack}
-                className="me-2"
-                aria-label={t('modificationBrowser.buttons.back')}
-                title={t('modificationBrowser.buttons.back')}
-                style={{ minHeight: '44px' }}
-              >
-                <CIcon icon={cilArrowLeft} className="me-1" />
-                <span>{t('modificationBrowser.buttons.back')}</span>
-              </CButton>
-            )}
-            <CButton
-              color="light"
-              size="sm"
+    <Modal isOpen={visible} onClose={onClose} size="6xl" scrollBehavior="inside">
+      <ModalOverlay />
+      <ModalContent borderRadius="xl" overflow="hidden">
+        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor="gray.100">
+          <HStack justify="space-between" align="center">
+            <HStack spacing={2} align="center">
+              {showBackButton && (
+                <IconButton
+                  icon={<ArrowLeft size={18} />}
+                  variant="ghost"
+                  aria-label={t('modificationBrowser.buttons.back', 'Back')}
+                  onClick={handleBack}
+                />
+              )}
+              <Text fontWeight="semibold" fontSize="lg">
+                {t('modificationBrowser.title', 'Browse Modifications')}
+              </Text>
+            </HStack>
+            <IconButton
+              icon={<X size={18} />}
+              variant="ghost"
+              aria-label={t('modificationBrowser.buttons.close', 'Close')}
               onClick={onClose}
-              aria-label={t('modificationBrowser.buttons.close')}
-              title={t('modificationBrowser.buttons.close')}
-              style={{ minHeight: '44px' }}
-            >
-              <CIcon icon={cilX} />
-            </CButton>
-          </div>
-        }
-      />
+            />
+          </HStack>
+        </ModalHeader>
 
-      <CModalBody className="p-2">
-        {/* Breadcrumb Navigation */}
-        <div className="mb-2">
-          {renderBreadcrumb()}
-        </div>
+        <ModalBody px={6} py={4} bg="gray.50">
+          <Stack spacing={6}>
+            <PageHeader
+              title={t('modificationBrowser.header.title', 'Modification Library')}
+              subtitle={t('modificationBrowser.header.subtitle', 'Pick a modification to apply to this item.')}
+              breadcrumbs={[
+                { label: t('modificationBrowser.breadcrumb.categories', 'Categories'), href: null },
+                ...(selectedCategory
+                  ? [{ label: selectedCategory.name, href: null }]
+                  : []),
+                ...(selectedTemplate
+                  ? [{ label: selectedTemplate.name, href: null }]
+                  : []),
+              ]}
+            />
 
-        {/* Search */}
-        <div className="position-relative mb-3">
-          <CIcon
-            icon={cilMagnifyingGlass}
-            className="position-absolute"
-            style={{
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#6c757d'
-            }}
-          />
-          <CFormInput
-            placeholder={t('modificationBrowser.search.placeholder')}
-            aria-label={t('modificationBrowser.search.placeholder')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ paddingLeft: '40px' }}
-          />
-        </div>
+            <HStack spacing={3}>
+              <Box flex="1" position="relative">
+                <Input
+                  pl={10}
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder={t('modificationBrowser.search.placeholder', 'Search modifications')}
+                />
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color="gray.400">
+                  <Search size={16} />
+                </Box>
+              </Box>
+              <Button variant="ghost" onClick={() => setSearchTerm('')} isDisabled={!searchTerm}>
+                {t('modificationBrowser.search.clear', 'Clear')}
+              </Button>
+            </HStack>
 
-        {loading ? (
-          <div className="text-center py-5">
-            <CSpinner color="primary" />
-            <p className="mt-2 text-muted">{t('modificationBrowser.loading')}</p>
-          </div>
-        ) : gallery.length === 0 ? (
-          <div className="text-center py-5">
-            <div className="text-muted">
-              <CIcon icon={cilMagnifyingGlass} size="4xl" className="mb-3" />
-              <h5>{t('modificationBrowser.empty.title')}</h5>
-              <p>{t('modificationBrowser.empty.subtitle')}</p>
-              <p className="small">{t('modificationBrowser.empty.hint')}</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Categories View */}
-            {currentView === 'categories' && (
-              <CRow className="g-3">
-                {filteredCategories.map(category => (
-                  <CCol sm={6} md={4} lg={3} key={category.id} className="mb-3">
-                    <CCard
-                      className="h-100 border-0 shadow-sm"
-                      style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
-                      onClick={() => handleCategorySelect(category)}
-                    >
-                      <CCardBody className="d-flex flex-column p-3">
-                        {category.image && (
-                          <div className="mb-2 text-center">
-                            <img
-                              src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${category.image}`}
-                              alt={category.name}
-                              style={{ width: '100%', maxHeight: 100, objectFit: 'cover', borderRadius: 6, border: '1px solid #e9ecef' }}
-                              onError={(e) => { e.currentTarget.src = '/images/nologo.png' }}
-                            />
-                          </div>
-                        )}
-                        <h6 className="card-title mb-1 fs-6">{category.name}</h6>
-                        <p className="text-muted small mb-2">
-                          {category.templates?.length || 0} {/* TODO pluralization */} modification{(category.templates?.length || 0) !== 1 ? 's' : ''}
-                        </p>
-                        <div className="mt-auto">
-                          <CBadge color="primary" className="px-2 py-1 small">
-                            {t('modificationBrowser.category.browse')}
-                          </CBadge>
-                        </div>
-                      </CCardBody>
-                    </CCard>
-                  </CCol>
-                ))}
-              </CRow>
+            {loading ? (
+              <Box py={16} textAlign="center">
+                <Spinner size="lg" />
+                <Text mt={4} color="gray.500">
+                  {t('modificationBrowser.loading', 'Loading modifications...')}
+                </Text>
+              </Box>
+            ) : currentView === 'categories' ? (
+              filteredCategories.length ? (
+                renderCategoryGrid()
+              ) : (
+                <Alert status="info" variant="subtle" borderRadius="md">
+                  <AlertIcon />
+                  <Stack spacing={1}>
+                    <Text fontWeight="semibold">
+                      {t('modificationBrowser.empty.title', 'No categories found')}
+                    </Text>
+                    <Text fontSize="sm">
+                      {t('modificationBrowser.empty.subtitle', 'Try adjusting the search or assign modifications to this item first.')}
+                    </Text>
+                  </Stack>
+                </Alert>
+              )
+            ) : currentView === 'templates' ? (
+              filteredTemplates.length ? (
+                renderTemplateGrid()
+              ) : (
+                <Alert status="info" variant="subtle" borderRadius="md">
+                  <AlertIcon />
+                  <Text fontSize="sm">
+                    {t('modificationBrowser.templates.empty', 'No templates match your search in this category.')}
+                  </Text>
+                </Alert>
+              )
+            ) : (
+              renderTemplateDetails()
             )}
+          </Stack>
+        </ModalBody>
 
-            {/* Templates View */}
-            {currentView === 'templates' && (
-              <CRow className="g-3">
-                {filteredTemplates.map(template => (
-                  <CCol sm={6} md={4} lg={3} key={template.id} className="mb-3">
-                    <CCard
-                      className="h-100 border-0 shadow-sm"
-                      style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
-                      onClick={() => handleTemplateSelect(template)}
-                    >
-                      <CCardBody className="d-flex flex-column p-3">
-                        {/* Sample image preview */}
-                        {(template.sampleImage || template.fieldsConfig?.modSampleImage?.enabled) && (
-                          <div className="mb-2 text-center" style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8f9fa', borderRadius: 6, border: '1px solid #e9ecef' }}>
-                            <img
-                              src={template.sampleImage ? `${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}` : '/images/nologo.png'}
-                              alt={template.name}
-                              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 4 }}
-                              onError={(e) => { e.currentTarget.src = '/images/nologo.png' }}
-                            />
-                          </div>
-                        )}
-                        <div className="d-flex justify-content-between align-items-start mb-1">
-                          <h6 className="card-title mb-0 fs-6">{template.name}</h6>
-                          <CBadge color={template.isReady ? 'success' : 'warning'} className="small">
-                            {template.isReady ? t('modificationBrowser.template.status.ready') : t('modificationBrowser.template.status.draft')}
-                          </CBadge>
-                        </div>
-                        {template.descriptions?.customer && (
-                          <p className="text-muted small mb-2 text-truncate">{template.descriptions.customer}</p>
-                        )}
-                        {template.effectivePrice && (
-                          <p className="mb-2 small">
-                            <strong>${Number(template.effectivePrice).toFixed(2)}</strong>
-                            {template.overridePrice && (
-                              <small className="text-muted ms-1">{t('modificationBrowser.template.price.overrideShort')}</small>
-                            )}
-                          </p>
-                        )}
-                        <div className="mt-auto">
-                          <CBadge color="primary" className="px-2 py-1 small">
-                            {t('modificationBrowser.template.configure')}
-                          </CBadge>
-                        </div>
-                      </CCardBody>
-                    </CCard>
-                  </CCol>
-                ))}
-              </CRow>
+        <Divider borderColor="gray.100" />
+
+        <ModalFooter px={6} py={4} bg="white">
+          <HStack spacing={3} justify="flex-end" w="full">
+            <Button variant="outline" onClick={onClose}>
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            {currentView === 'details' && (
+              <Button
+                colorScheme="brand"
+                onClick={handleApplyModification}
+                isDisabled={!selectedTemplate}
+                minW="160px"
+                transition={prefersReducedMotion ? undefined : 'transform 0.1s ease'}
+                _active={prefersReducedMotion ? undefined : { transform: 'scale(0.98)' }}
+              >
+                {t('modificationBrowser.actions.addModification', 'Add modification')}
+              </Button>
             )}
-
-            {/* Details View */}
-            {currentView === 'details' && selectedTemplate && (
-              <div>
-                <CCard className="border-0 shadow-sm">
-                  <CCardBody className="p-3">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <h4 className="mb-1">{selectedTemplate.name}</h4>
-                        <p className="text-muted mb-2">{selectedTemplate.descriptions?.customer}</p>
-                      </div>
-                      <div className="text-end">
-                        {selectedTemplate.effectivePrice && (
-                          <h4 className="mb-0">${Number(selectedTemplate.effectivePrice).toFixed(2)}</h4>
-                        )}
-                        {selectedTemplate.overridePrice && (
-                          <small className="text-muted">{t('modificationBrowser.template.price.overrideLabel')}</small>
-                        )}
-                        <CBadge color={selectedTemplate.isReady ? 'success' : 'warning'} className="ms-2">
-                          {selectedTemplate.isReady ? t('modificationBrowser.template.status.ready') : t('modificationBrowser.template.status.draft')}
-                        </CBadge>
-                      </div>
-                    </div>
-
-                    {/* Sample image large preview */}
-                    {(selectedTemplate.sampleImage || selectedTemplate.fieldsConfig?.modSampleImage?.enabled) && (
-                      <div className="mb-3" style={{ height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8f9fa', borderRadius: 8, border: '1px solid #e9ecef' }}>
-                        <img
-                          src={selectedTemplate.sampleImage ? `${import.meta.env.VITE_API_URL || ''}/uploads/images/${selectedTemplate.sampleImage}` : '/images/nologo.png'}
-                          alt={selectedTemplate.name}
-                          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 6 }}
-                          onError={(e) => { e.currentTarget.src = '/images/nologo.png' }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Lead time notice */}
-                    <div className="alert alert-warning mb-3 py-2" role="alert">
-                      <small>
-                        <strong>{t('modificationBrowser.leadTime.noticeTitle')}</strong> {t('modificationBrowser.leadTime.noticeText', { days: 8 })}
-                      </small>
-                    </div>
-
-                    {/* Modification Configuration */}
-                    {renderModificationConfig()}
-
-                    {/* Default quantity if not configured or not enabled */}
-                    {(!selectedTemplate.fieldsConfig?.qtyRange || selectedTemplate.fieldsConfig.qtyRange.enabled === false) && (
-                      <div className="mb-3">
-                        <label className="form-label">{t('modificationBrowser.qty.label')}</label>
-                        <CFormInput
-                          type="number"
-                          min={1}
-                          value={modification.quantity}
-                          onChange={(e) => setModification(prev => ({
-                            ...prev,
-                            quantity: Math.max(1, Number(e.target.value))
-                          }))}
-                          style={{ width: '100px' }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="d-flex justify-content-end gap-2 mt-3">
-                      <CButton
-                        color="primary"
-                        onClick={handleApplyModification}
-                        disabled={!selectedTemplate}
-                        style={{ minHeight: '44px' }}
-                      >
-                        {t('modificationBrowser.actions.addModification')}
-                      </CButton>
-                    </div>
-                  </CCardBody>
-                </CCard>
-              </div>
-            )}
-          </>
-        )}
-      </CModalBody>
-    </CModal>
+          </HStack>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }
 

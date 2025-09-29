@@ -1,24 +1,28 @@
 import React from 'react'
-import { CAlert } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilSearch } from '@coreui/icons'
+import { Box, Text, Icon, VStack } from '@chakra-ui/react'
+import { Search } from 'lucide-react'
 
 const EmptyState = ({
   title = 'Nothing here yet',
   subtitle = 'Try adjusting your filters or create a new item.',
-  icon = cilSearch,
+  icon: IconComponent = Search,
   className = '',
   children,
 }) => {
   return (
-    <div className={`text-center py-4 ${className}`} role="status" aria-live="polite">
-      <div className="mb-2" style={{ opacity: 0.35 }}>
-        <CIcon icon={icon} size="xl" />
-      </div>
-      <div className="fw-semibold" aria-atomic="true">{title}</div>
-      <div className="text-muted small">{subtitle}</div>
+    <VStack spacing={3} py={4} textAlign="center" className={className} role="status" aria-live="polite">
+      <Box opacity={0.35}>
+        <Icon as={IconComponent} boxSize={8} />
+      </Box>
+      <Text fontWeight="semibold" aria-atomic="true">
+        {title}
+      </Text>
+      <Text color="gray.500" fontSize="sm">
+        {subtitle}
+      </Text>
       {children}
-    </div>
+    </VStack>
+  
   )
 }
 

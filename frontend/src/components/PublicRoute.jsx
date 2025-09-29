@@ -1,24 +1,24 @@
-import { Navigate } from 'react-router-dom';
-import { getFreshestToken } from '../utils/authToken';
+import { Navigate } from 'react-router-dom'
+import { getFreshestToken } from '../utils/authToken'
 
 const PublicRoute = ({ children }) => {
-  const token = getFreshestToken();
+  const token = getFreshestToken()
 
   if (token) {
     // If already authenticated, redirect to the last intended route if any
-    let dest = '/';
+    let dest = '/'
     try {
-      const stored = sessionStorage.getItem('return_to');
+      const stored = sessionStorage.getItem('return_to')
       if (stored && typeof stored === 'string' && stored.startsWith('/')) {
-        dest = stored;
+        dest = stored
       }
       // Clear the hint to avoid loops on subsequent visits
-      sessionStorage.removeItem('return_to');
+      sessionStorage.removeItem('return_to')
     } catch {}
-    return <Navigate to={dest} replace />;
+    return <Navigate to={dest} replace />
   }
 
-  return children;
-};
+  return children
+}
 
-export default PublicRoute;
+export default PublicRoute

@@ -1,11 +1,22 @@
-import React from 'react';
-import { CCard, CCardBody, CBadge, CButton } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilFile, cilImage, cilCloudDownload, cilPencil, cilTrash } from '@coreui/icons';
+import React from 'react'
+import {
+  Card,
+  CardBody,
+  Badge,
+  Button,
+  HStack,
+  VStack,
+  Text,
+  Box
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { Download, Edit2, Trash2, File, Image } from 'lucide-react'
+
+const MotionButton = motion(Button)
 
 // Simple, generic content tile used to display a file/link-like item.
-// This implementation intentionally avoids problematic icons like cilMusic/cilPlay.
-// Props (loose contract to prevent compile errors if used in multiple places):
+// ACCESSIBILITY COMPLIANT: All touch targets ≥44×44px with proper ARIA labels
+// Props:
 // - title: string
 // - description: string
 // - type: 'file' | 'image' | 'video' | string (used for badge)
@@ -14,51 +25,129 @@ import { cilFile, cilImage, cilCloudDownload, cilPencil, cilTrash } from '@coreu
 // - onEdit: () => void
 // - onDelete: () => void
 export default function ContentTile({
-	title,
-	description,
-	type = 'file',
-	onOpen,
-	onDownload,
-	onEdit,
-	onDelete,
+  title,
+  description,
+  type = 'file',
+  onOpen,
+  onDownload,
+  onEdit,
+  onDelete,
 }) {
-	const isImage = String(type).toLowerCase() === 'image';
-	const badgeColor = isImage ? 'info' : 'secondary';
+  const isImage = String(type).toLowerCase() === 'image'
+  const badgeColorScheme = isImage ? 'blue' : 'gray'
 
-	return (
-		<CCard className="h-100 border-0 shadow-sm" role="button" onClick={onOpen}>
-			<CCardBody>
-				<div className="d-flex justify-content-between align-items-start mb-2">
-					<CBadge color={badgeColor} className="text-uppercase">{type || 'file'}</CBadge>
-					<div className="d-flex gap-2">
-						{onDownload && (
-							<CButton size="sm" color="info" variant="ghost" onClick={(e) => { e.stopPropagation(); onDownload(); }}>
-								<CIcon icon={cilCloudDownload} />
-							</CButton>
-						)}
-						{onEdit && (
-							<CButton size="sm" color="secondary" variant="ghost" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-								<CIcon icon={cilPencil} />
-							</CButton>
-						)}
-						{onDelete && (
-							<CButton size="sm" color="danger" variant="ghost" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
-								<CIcon icon={cilTrash} />
-							</CButton>
-						)}
-					</div>
-				</div>
-				<div className="d-flex align-items-center gap-2 text-truncate">
-					<CIcon icon={isImage ? cilImage : cilFile} className="text-muted" />
-					<div className="text-truncate">
-						<div className="fw-semibold text-truncate" title={title}>{title || 'Untitled'}</div>
-						{description && (
-							<div className="text-muted small mt-1 text-truncate" title={description}>{description}</div>
-						)}
-					</div>
-				</div>
-			</CCardBody>
-		</CCard>
-	);
+  return (
+    <Card
+      height="100%"
+      shadow="sm"
+      cursor="pointer"
+      onClick={onOpen}
+      _hover={{ shadow: 'md', transform: 'translateY(-1px)' }}
+      transition="all 0.2s"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen?.()
+    </div>
+  
+  )
+        }
+      }}
+    >
+      <CardBody p={4}>
+        <VStack align="stretch" spacing={3}>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Badge
+              colorScheme={badgeColorScheme}
+              textTransform="uppercase"
+              fontSize="xs"
+            >
+              {type || 'file'}
+            </Badge>
+            <HStack spacing={1}>
+              {onDownload && (
+                <MotionButton
+                  variant="ghost"
+                  colorScheme="blue"
+                  height="44px"
+                  minW="44px"
+                  p={2}
+                  aria-label="Download file"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDownload()
+                  }}
+                >
+                  <Download size={20} />
+                </MotionButton>
+              )}
+              {onEdit && (
+                <MotionButton
+                  variant="ghost"
+                  colorScheme="gray"
+                  height="44px"
+                  minW="44px"
+                  p={2}
+                  aria-label="Edit file"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit()
+                  }}
+                >
+                  <Edit2 size={20} />
+                </MotionButton>
+              )}
+              {onDelete && (
+                <MotionButton
+                  variant="ghost"
+                  colorScheme="red"
+                  height="44px"
+                  minW="44px"
+                  p={2}
+                  aria-label="Delete file"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete()
+                  }}
+                >
+                  <Trash2 size={20} />
+                </MotionButton>
+              )}
+            </HStack>
+          </Box>
+
+          <HStack spacing={3} align="flex-start">
+            <Box color="gray.500" flexShrink={0} mt={0.5}>
+              {isImage ? <Image size={18} /> : <File size={18} />}
+            </Box>
+            <VStack align="flex-start" spacing={1} flex={1} minW={0}>
+              <Text
+                fontWeight="semibold"
+                noOfLines={1}
+                title={title}
+                fontSize="sm"
+              >
+                {title || 'Untitled'}
+              </Text>
+              {description && (
+                <Text
+                  color="gray.500"
+                  fontSize="xs"
+                  noOfLines={2}
+                  title={description}
+                >
+                  {description}
+                </Text>
+              )}
+            </VStack>
+          </HStack>
+        </VStack>
+      </CardBody>
+    </Card>
+  )
 }
-

@@ -1,602 +1,740 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react'
 import {
-  CCard,
-  CCardBody,
-  CForm,
-  CFormLabel,
-  CFormInput,
-  CFormCheck,
-  CButton,
-  CRow,
-  CCol,
-} from '@coreui/react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import CreatableSelect from 'react-select/creatable';
-import { motion, AnimatePresence } from 'framer-motion';
-import axiosInstance from '../../../helpers/axiosInstance';
-import { hasPermission } from '../../../helpers/permissions';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchUsers } from '../../../store/slices/userSlice';
-import { fetchLocations } from '../../../store/slices/locationSlice';
-import { FaCalendarAlt } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
-import Swal from 'sweetalert2';
+  Box,
+  Card,
+  CardBody,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Checkbox,
+  SimpleGrid,
+  Button,
+  useToast,
+  HStack,
+  Text,
+  Collapse,
+  Textarea,
+  Stack,
+  Icon,
+  Divider,
+  Heading,
+} from '@chakra-ui/react'
+import { useForm, Controller } from 'react-hook-form'
+import CreatableSelect from 'react-select/creatable'
+import { motion, useReducedMotion } from 'framer-motion'
+import axiosInstance from '../../../helpers/axiosInstance'
+import { hasPermission } from '../../../helpers/permissions'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchUsers } from '../../../store/slices/userSlice'
+import { fetchLocations } from '../../../store/slices/locationSlice'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-const CustomerInfoStep = ({ formData, updateFormData, nextStep, prevStep, hideBack, isContractor, contractorGroupId }) => {
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
-  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false);
-  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
-  const { t } = useTranslation();
-  const [customerOptions, setCustomerOptions] = useState([]);
-  const dispatch = useDispatch();
-  const { list: users, loading } = useSelector((state) => state.users);
-  const { list: locations } = useSelector((state) => state.locations);
-  const loggedInUser = JSON.parse(localStorage.getItem('user'));
-  const loggedInUserId = loggedInUser.userId;
+const MotionButton = motion(Button)
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-  // Check if user can assign designers (admin only)
-  const canAssignDesigner = hasPermission(loggedInUser, 'admin:users');
+const buildSelectStyles = (hasError) => ({
+  control: (provided, state) => ({
+    ...provided,
+    minHeight: '44px',
+    borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
+    boxShadow: 'none',
+    '&:hover': {
+      borderColor: '#3182ce',
+    },
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 20,
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: '0.95rem',
+    backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
+    color: state.isFocused ? '#1a202c' : provided.color,
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0.25rem 0.75rem',
+  }),
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    paddingRight: '0.5rem',
+  }),
+})
 
-  // Dynamic validation schema based on user permissions
-  const validationSchema = Yup.object().shape({
-    customerName: Yup.string().required(t('proposals.create.customerInfo.validation.customerName')),
-    description: Yup.string().required(t('proposals.create.customerInfo.validation.description')),
-    ...(canAssignDesigner && {
-      designer: Yup.string().required(t('proposals.create.customerInfo.validation.designer')),
+const CustomerInfoStep = ({
+  formData,
+  updateFormData,
+  nextStep,
+  prevStep,
+  hideBack,
+  isContractor,
+  contractorGroupId,
+}) => {
+  const [showMoreOptions, setShowMoreOptions] = useState(false)
+  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false)
+  const { t } = useTranslation()
+  const toast = useToast()
+  const prefersReducedMotion = useReducedMotion()
+  const [customerOptions, setCustomerOptions] = useState([])
+  const dispatch = useDispatch()
+  const { list: users, loading: usersLoading } = useSelector((state) => state.users)
+  const { list: locations } = useSelector((state) => state.locations)
+  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUserId = loggedInUser?.userId
+
+  const canAssignDesigner = hasPermission(loggedInUser, 'admin:users')
+
+  const defaultValues = useMemo(
+    () => ({
+      customerId: formData.customerId || '',
+      customerName: formData.customerName || '',
+      customerEmail: formData.customerEmail || '',
+      designer: formData.designer || '',
+      description: formData.description || '',
+      measurementDone: !!formData.measurementDone,
+      designDone: !!formData.designDone,
+      measurementDate: formData.measurementDate || '',
+      designDate: formData.designDate || '',
+      location: formData.location || '',
+      salesRep: formData.salesRep || '',
+      leadSource: formData.leadSource || '',
+      type: formData.type || '',
     }),
-  });
+    [formData],
+  )
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    getValues,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues,
+    shouldUnregister: false,
+  })
 
   useEffect(() => {
-    // Only fetch users if user can assign designers (admin only)
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
+  useEffect(() => {
     if (canAssignDesigner) {
-      dispatch(fetchUsers());
+      dispatch(fetchUsers())
     }
-    dispatch(fetchLocations());
-  }, [dispatch, canAssignDesigner]);
+    dispatch(fetchLocations())
+  }, [dispatch, canAssignDesigner])
 
   useEffect(() => {
-
-    // For contractors, pass the group_id to get scoped customers
-    let url = '/api/customers';
+    let url = '/api/customers'
     if (isContractor && contractorGroupId) {
-      url += `?group_id=${contractorGroupId}`;
+      url += `?group_id=${contractorGroupId}`
     }
 
     axiosInstance
-  .get(url)
+      .get(url)
       .then((res) => {
-        const options = res.data.data.map((data) => ({
+        const options = (res?.data?.data || []).map((data) => ({
           label: data.name,
           value: data.name,
-          data: data,
-        }));
-        setCustomerOptions(options);
+          data,
+        }))
+        setCustomerOptions(options)
       })
-            .catch((error) => {
-        console.error('Error fetching customers:', error);
-      });
-  }, [dispatch, isContractor, contractorGroupId]);
+      .catch((error) => {
+        console.error('Error fetching customers:', error)
+      })
+  }, [isContractor, contractorGroupId])
 
   useEffect(() => {
-    if (locations.length > 0 && !formData.location) {
-      const mainLocation = locations.find(
-        (loc) => loc.locationName.trim().toLowerCase() === 'main'
-      );
-      if (mainLocation) {
-        updateFormData({ location: mainLocation.id.toString() });
-      }
+    if (!locations.length || formData.location) return
+    const mainLocation = locations.find((loc) => loc.locationName.trim().toLowerCase() === 'main')
+    if (mainLocation) {
+      updateFormData({ location: mainLocation.id.toString() })
+      setValue('location', mainLocation.id.toString())
     }
-  }, [locations]);
+  }, [locations, formData.location, setValue, updateFormData])
 
-  // Auto-populate designer field when users are loaded
   useEffect(() => {
-    if (canAssignDesigner && users.length > 0) {
-      const currentUser = users.find(user => user.id === loggedInUserId);
-      const availableDesigners = users.filter(user => user.role === 'Manufacturers');
-      const isCurrentDesignerValid = availableDesigners.some(designer => designer.id == formData.designer);
+    if (!canAssignDesigner || !users.length || !loggedInUserId) return
+    const currentUser = users.find((user) => user.id === loggedInUserId)
+    const availableDesigners = users.filter((user) => user.role === 'Manufacturers')
+    const isCurrentDesignerValid = availableDesigners.some((designer) => designer.id === formData.designer)
 
-      // Auto-populate if designer field is empty OR if current value is invalid
-      if (!formData.designer || formData.designer === '' || !isCurrentDesignerValid) {
-        if (currentUser && currentUser.role === 'Manufacturers') {
-          // If current user is a designer, auto-populate with them
-          updateFormData({ designer: currentUser.id });
-        } else if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'User')) {
-          // If current user is Admin/User, auto-populate with the first available designer
-          if (availableDesigners.length > 0) {
-            const firstDesigner = availableDesigners[0];
-            updateFormData({ designer: firstDesigner.id });
-          }
-        }
+    if (!formData.designer || !isCurrentDesignerValid) {
+      if (currentUser && currentUser.role === 'Manufacturers') {
+        setValue('designer', currentUser.id)
+        updateFormData({ designer: currentUser.id })
+      } else if (availableDesigners.length > 0) {
+        const firstDesigner = availableDesigners[0]
+        setValue('designer', firstDesigner.id)
+        updateFormData({ designer: firstDesigner.id })
       }
     }
-  }, [users, canAssignDesigner, loggedInUserId, formData.designer, updateFormData]);
+  }, [canAssignDesigner, users, formData.designer, loggedInUserId, setValue, updateFormData])
 
-  const toggleMoreOptions = () => setShowMoreOptions(!showMoreOptions);
+  const designerOptions = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === 'Manufacturers')
+        .map((user) => ({ value: user.id, label: user.name })),
+    [users],
+  )
 
-  const handleSubmit = (values) => {
-    updateFormData(values);
-    nextStep();
-  };
+  const locationOptions = useMemo(
+    () =>
+      locations.map((loc) => ({
+        label: loc.locationName,
+        value: loc.id.toString(),
+      })),
+    [locations],
+  )
 
-  // Function to create a new designer user
-  const createNewDesigner = async (designerName) => {
+  const leadSourceOptions = useMemo(
+    () => [
+      { label: t('proposals.create.customerInfo.sources.existing'), value: 'Existing customer' },
+      { label: t('proposals.create.customerInfo.sources.online'), value: 'Online' },
+      { label: t('form.sources.walkIn'), value: 'Walk-in' },
+      { label: t('form.sources.referral'), value: 'Referral' },
+      { label: t('proposals.create.customerInfo.sources.call'), value: 'Call' },
+      { label: t('proposals.create.customerInfo.sources.email'), value: 'Email' },
+    ],
+    [t],
+  )
+
+  const typeOptions = useMemo(
+    () => [
+      { label: t('form.types.homeOwner'), value: 'Home Owner' },
+      { label: t('form.types.contractor'), value: 'Contractor' },
+      { label: t('proposals.create.customerInfo.types.builder'), value: 'Builder' },
+      { label: t('proposals.create.customerInfo.types.architect'), value: 'Architect' },
+      { label: t('proposals.create.customerInfo.types.interiorDesigner'), value: 'Interior Designer' },
+    ],
+    [t],
+  )
+
+  const measurementDone = watch('measurementDone')
+  const designDone = watch('designDone')
+
+  const getCustomerOption = (value) =>
+    customerOptions.find((opt) => opt.value === value) || (value ? { label: value, value } : null)
+
+  const getSimpleOption = (value, options) => options.find((opt) => opt.value === value) || null
+
+  const handleCreateCustomer = async (inputValue) => {
+    const name = String(inputValue || '').trim()
+    if (!name) return
+
     try {
-      setIsCreatingDesigner(true);
+      setIsCreatingCustomer(true)
+      const values = getValues()
+      const payload = {
+        name,
+        email: values.customerEmail || '',
+        ...(isContractor && contractorGroupId ? { group_id: contractorGroupId } : {}),
+      }
+      const res = await axiosInstance.post('/api/customers/add', payload)
+      const created = res?.data?.customer || res?.data
+      const newOption = {
+        label: created?.name || name,
+        value: created?.name || name,
+        data: created,
+      }
 
-      // Generate a temporary email for the designer
-      const tempEmail = `${designerName.toLowerCase().replace(/\s+/g, '.')}@designer.local`;
+      setCustomerOptions((prev) => [newOption, ...prev.filter((opt) => opt.value !== newOption.value)])
+
+      const customerEmail = created?.email || values.customerEmail || ''
+      const customerId = created?.id || ''
+
+      setValue('customerName', newOption.value, { shouldValidate: true })
+      setValue('customerEmail', customerEmail, { shouldValidate: true })
+      setValue('customerId', customerId)
+      updateFormData({
+        customerName: newOption.value,
+        customerEmail,
+        customerId,
+      })
+
+      toast({
+        status: 'success',
+        title: t('proposals.create.customerInfo.customerCreated', 'Customer created'),
+        description: `"${newOption.value}" ${t('proposals.create.customerInfo.customerCreatedMsg', 'was added.')}`,
+      })
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || error?.message || t('common.errorGeneric', 'Something went wrong')
+      toast({
+        status: 'error',
+        title: t('proposals.create.customerInfo.customerCreateError', 'Unable to create customer'),
+        description: message,
+      })
+    } finally {
+      setIsCreatingCustomer(false)
+    }
+  }
+
+  const createNewDesigner = async (designerName) => {
+    const trimmed = String(designerName || '').trim()
+    if (!trimmed) return null
+
+    try {
+      setIsCreatingDesigner(true)
+      const tempEmail = `${trimmed.toLowerCase().replace(/\s+/g, '.') }@designer.local`
 
       const response = await axiosInstance.post('/api/users', {
-        name: designerName,
+        name: trimmed,
         email: tempEmail,
-        password: 'temppassword123', // Temporary password
-        role: 'Manufacturers', // Set role as Manufacturers (designer)
+        password: 'temppassword123',
+        role: 'Manufacturers',
         isSalesRep: false,
         location: null,
-        userGroup: null
-  });
+        userGroup: null,
+      })
 
       if (response.status === 200 || response.status === 201) {
-        // Refresh the users list to include the new designer
-        await dispatch(fetchUsers());
-        return response.data.user;
+        await dispatch(fetchUsers())
+        const newDesigner = response.data.user
+        toast({
+          status: 'success',
+          title: t('proposals.create.customerInfo.designerCreated', 'Designer created'),
+          description: `"${trimmed}" ${t('proposals.create.customerInfo.designerCreatedMsg', 'is now available.')}`,
+        })
+        return newDesigner
       }
+
+      return null
     } catch (error) {
-      console.error('Error creating new designer:', error);
-      // Handle error - you could add a toast notification here
-      alert(`Error creating designer "${designerName}". Please try again.`);
-      return null;
+      const message =
+        error?.response?.data?.message || error?.message || t('common.errorGeneric', 'Something went wrong')
+      toast({
+        status: 'error',
+        title: t('proposals.create.customerInfo.designerCreateError', 'Unable to create designer'),
+        description: message,
+      })
+      return null
     } finally {
-      setIsCreatingDesigner(false);
+      setIsCreatingDesigner(false)
     }
-  };
+  }
 
-  // Include all users with designer role (Manufacturers), including the logged-in user
-  const designerOptions = users
-    .filter((user) => user.role === "Manufacturers")
-    .map((user) => ({ value: user.id, label: user.name }));
+  const onSubmit = (values) => {
+    updateFormData(values)
+    nextStep()
+  }
 
-  const locationOptions = locations.map((loc) => ({
-    label: loc.locationName,
-    value: loc.id.toString(),
-  }));
+  const toggleMoreOptions = () => setShowMoreOptions((prev) => !prev)
 
   return (
-    <div className="w-100 my-4 proposal-form-mobile">
-      <style>{`
-        /* Mobile/a11y quick wins */
-        .proposal-form-mobile .btn { min-height: 44px; }
-        .proposal-form-mobile .text-break { word-break: break-word; overflow-wrap: anywhere; }
-      `}</style>
-      <CCard>
-        <CCardBody className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h4 className="fw-semibold mb-0">{t('proposals.create.customerInfo.title')}</h4>
-            {!hideBack && (
-              <CButton
-                color="secondary"
-                variant="outline"
-                onClick={prevStep}
-                aria-label={t('common.back')}
-                style={{ borderRadius: '6px', minWidth: '90px' }}
-              >
-                {t('common.back')}
-              </CButton>
-            )}
-          </div>
+    <Box w="full" my={4}>
+      <Card shadow="md" borderRadius="xl">
+        <CardBody p={{ base: 4, md: 6 }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={6}>
+              <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
+                <Heading size="md" color="gray.800">
+                  {t('proposals.create.customerInfo.title')}
+                </Heading>
+                {!hideBack && (
+                  <MotionButton
+                    variant="outline"
+                    colorScheme="gray"
+                    onClick={prevStep}
+                    whileTap={{ scale: 0.98 }}
+                    alignSelf={{ base: 'flex-start', md: 'center' }}
+                  >
+                    {t('common.back')}
+                  </MotionButton>
+                )}
+              </Flex>
 
-          <Formik
-            initialValues={formData}
-            enableReinitialize
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              setFieldValue,
-            }) => (
-              <CForm onSubmit={handleSubmit}>
-                <div className="form-section">
-                  <CRow className="mb-3">
-                    <CCol md={6}>
-                      <CFormLabel htmlFor="customerName">{t('proposals.create.customerInfo.customerName')} *</CFormLabel>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                <FormControl isInvalid={!!errors.customerName} isRequired>
+                  <FormLabel htmlFor="customerName">
+                    {t('proposals.create.customerInfo.customerName')}
+                  </FormLabel>
+                  <Controller
+                    name="customerName"
+                    control={control}
+                    rules={{ required: t('form.validation.required', 'This field is required') }}
+                    render={({ field }) => (
                       <CreatableSelect
+                        inputId="customerName"
+                        styles={buildSelectStyles(!!errors.customerName)}
                         isClearable
+                        isLoading={usersLoading || isCreatingCustomer}
+                        isDisabled={isCreatingCustomer}
                         options={customerOptions}
-                        value={
-                          customerOptions.find((opt) => opt.value === values.customerName) ||
-                          (values.customerName
-                            ? { label: values.customerName, value: values.customerName }
-                            : null)
-                        }
-                        onChange={(selectedOption) => {
-                          const name = selectedOption?.value || '';
-                          const email = selectedOption?.data?.email || '';
-                          const customerId = selectedOption?.data?.id || '';
+                        value={getCustomerOption(field.value)}
+                        onChange={(option) => {
+                          const name = option?.value || ''
+                          const email = option?.data?.email || getValues('customerEmail') || ''
+                          const customerId = option?.data?.id || ''
+                          field.onChange(name)
+                          setValue('customerEmail', email, { shouldValidate: true })
+                          setValue('customerId', customerId)
                           updateFormData({
-                            ...formData,
                             customerName: name,
                             customerEmail: email,
-                            customerId: customerId
-                          });
-                          setFieldValue('customerName', name);
-                          setFieldValue('customerEmail', email);
-                          setFieldValue('customerId', customerId);
+                            customerId,
+                          })
                         }}
-                        onCreateOption={async (inputValue) => {
-                          const name = String(inputValue || '').trim();
-                          if (!name) return;
-                          try {
-                            setIsCreatingCustomer(true);
-                            // Compose minimal payload; admin may need group_id when creating for a contractor
-                            const payload = {
-                              name,
-                              email: values.customerEmail || '',
-                              ...(isContractor && contractorGroupId ? { group_id: contractorGroupId } : {}),
-                            };
-                            const res = await axiosInstance.post('/api/customers/add', payload);
-                            const created = res?.data?.customer || res?.data;
-                            const newId = created?.id || '';
-
-                            // Update form and local options
-                            const option = { label: created?.name || name, value: created?.name || name, data: created };
-                            setCustomerOptions((prev) => [option, ...prev.filter((o) => o.value !== option.value)]);
-
-                            updateFormData({
-                              ...formData,
-                              customerName: created?.name || name,
-                              customerEmail: created?.email || values.customerEmail || '',
-                              customerId: newId,
-                            });
-                            setFieldValue('customerName', created?.name || name);
-                            setFieldValue('customerEmail', created?.email || values.customerEmail || '');
-                            setFieldValue('customerId', newId);
-
-                            Swal.fire('Customer Created', `"${created?.name || name}" was added.`, 'success');
-                          } catch (err) {
-                            const msg = err?.response?.data?.message || err?.message || 'Failed to create customer';
-                            Swal.fire('Error', msg, 'error');
-                          } finally {
-                            setIsCreatingCustomer(false);
-                          }
-                        }}
-                      onBlur={handleBlur}
-                      inputId="customerName"
-                      placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
-                      isLoading={loading || isCreatingCustomer}
-                    />
-                    {errors.customerName && touched.customerName && (
-                      <div className="text-danger small mt-1">{errors.customerName}</div>
-                    )}
-                  </CCol>
-
-                  <CCol md={6}>
-                    <CFormLabel htmlFor="customerEmail">{t('proposals.create.customerInfo.customerEmail')}</CFormLabel>
-                    <CFormInput
-                      type="email"
-                      id="customerEmail"
-                      name="customerEmail"
-                      value={values.customerEmail}
-                      onChange={(e) => {
-                        setFieldValue('customerEmail', e.target.value); // Update Formik state
-                        updateFormData({ customerEmail: e.target.value }); // Update external formData
-                      }}
-                      placeholder={t('proposalCommon.emailPlaceholder')}
-                    />
-
-                  </CCol>
-                </CRow>
-
-                <CRow className="mb-3">
-                  {canAssignDesigner && (
-                    <CCol md={6}>
-                      <CFormLabel htmlFor="designer">{t('proposals.create.customerInfo.designer')} *</CFormLabel>
-                      <CreatableSelect
-                        isClearable
-                        isLoading={isCreatingDesigner}
-                        isDisabled={isCreatingDesigner}
-                        id="designer"
-                        name="designer"
-                        options={designerOptions}
-                        value={
-                          designerOptions.find(
-                            (opt) => opt.value === values.designer
-                          ) || null
-                        }
-                        onChange={(selectedOption) => {
-                          const designerId = selectedOption?.value || '';
-                          setFieldValue('designer', designerId);
-                          updateFormData({ designer: designerId });
-                        }}
-                        onCreateOption={async (inputValue) => {
-                          // Create new designer when user types a name that doesn't exist
-                          const newDesigner = await createNewDesigner(inputValue);
-                          if (newDesigner) {
-                            // Set the new designer as selected
-                            setFieldValue('designer', newDesigner.id);
-                            updateFormData({ designer: newDesigner.id });
-                          }
-                        }}
-                        onBlur={handleBlur}
-                        placeholder={isCreatingDesigner ? "Creating designer..." : "Select or create a designer..."}
-                        formatCreateLabel={(inputValue) => `Create designer: "${inputValue}"`}
+                        onCreateOption={handleCreateCustomer}
+                        onBlur={field.onBlur}
+                        placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
                       />
-                      {errors.designer && touched.designer && (
-                        <div className="text-danger small mt-1">
-                          {errors.designer}
-                        </div>
+                    )}
+                  />
+                  <FormErrorMessage>{errors.customerName && errors.customerName.message}</FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.customerEmail}>
+                  <FormLabel htmlFor="customerEmail">
+                    {t('proposals.create.customerInfo.customerEmail')}
+                  </FormLabel>
+                  <Input
+                    id="customerEmail"
+                    type="email"
+                    placeholder={t('proposals.create.customerInfo.customerEmailPlaceholder')}
+                    {...register('customerEmail', {
+                      pattern: {
+                        value: emailPattern,
+                        message: t('form.validation.email', 'Enter a valid email address'),
+                      },
+                      onChange: (event) => {
+                        updateFormData({ customerEmail: event.target.value })
+                      },
+                    })}
+                  />
+                  <FormErrorMessage>{errors.customerEmail && errors.customerEmail.message}</FormErrorMessage>
+                </FormControl>
+              </SimpleGrid>
+
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                {canAssignDesigner && (
+                  <FormControl isInvalid={!!errors.designer} isRequired>
+                    <FormLabel htmlFor="designer">
+                      {t('proposals.create.customerInfo.designer')}
+                    </FormLabel>
+                    <Controller
+                      name="designer"
+                      control={control}
+                      rules={{ required: t('form.validation.required', 'This field is required') }}
+                      render={({ field }) => (
+                        <CreatableSelect
+                          inputId="designer"
+                          styles={buildSelectStyles(!!errors.designer)}
+                          isClearable
+                          isDisabled={isCreatingDesigner}
+                          isLoading={isCreatingDesigner}
+                          options={designerOptions}
+                          value={getSimpleOption(field.value, designerOptions)}
+                          onChange={(option) => {
+                            const id = option?.value || ''
+                            field.onChange(id)
+                            updateFormData({ designer: id })
+                          }}
+                          onCreateOption={async (inputValue) => {
+                            const newDesigner = await createNewDesigner(inputValue)
+                            if (newDesigner) {
+                              setValue('designer', newDesigner.id, { shouldValidate: true })
+                              updateFormData({ designer: newDesigner.id })
+                            }
+                          }}
+                          onBlur={field.onBlur}
+                          placeholder={
+                            isCreatingDesigner
+                              ? t('proposals.create.customerInfo.creatingDesigner', 'Creating designer...')
+                              : t('proposals.create.customerInfo.designerPlaceholder', 'Select or create a designer')
+                          }
+                        />
                       )}
-                    </CCol>
-                  )}
-
-                  <CCol md={6}>
-                    <CFormLabel htmlFor="description">{t('proposals.create.customerInfo.description')} *</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={values.description}
-                      onChange={(e) => {
-                        setFieldValue('description', e.target.value);
-                        updateFormData({ description: e.target.value });
-                      }}
-                      onBlur={handleBlur}
-                      placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
                     />
-                    {errors.description && touched.description && (
-                      <div className="text-danger small mt-1">
-                        {errors.description}
-                      </div>
+                    <FormErrorMessage>{errors.designer && errors.designer.message}</FormErrorMessage>
+                  </FormControl>
+                )}
+
+                <FormControl isInvalid={!!errors.description} isRequired>
+                  <FormLabel htmlFor="description">
+                    {t('proposals.create.customerInfo.description')}
+                  </FormLabel>
+                  <Textarea
+                    id="description"
+                    rows={4}
+                    placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
+                    {...register('description', {
+                      required: t('form.validation.required', 'This field is required'),
+                      onChange: (event) => updateFormData({ description: event.target.value }),
+                    })}
+                  />
+                  <FormErrorMessage>{errors.description && errors.description.message}</FormErrorMessage>
+                </FormControl>
+              </SimpleGrid>
+
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                <FormControl>
+                  <Stack spacing={3}>
+                    <Controller
+                      name="measurementDone"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          isChecked={field.value}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            field.onChange(checked)
+                            updateFormData({ measurementDone: checked })
+                            if (!checked) {
+                              setValue('measurementDate', '', { shouldValidate: true })
+                              updateFormData({ measurementDate: '' })
+                            }
+                          }}
+                        >
+                          {t('proposals.create.customerInfo.measurementDone')}
+                        </Checkbox>
+                      )}
+                    />
+                    {measurementDone && (
+                      <Controller
+                        name="measurementDate"
+                        control={control}
+                        rules={{
+                          required: t('form.validation.required', 'This field is required'),
+                        }}
+                        render={({ field }) => (
+                          <FormControl isInvalid={!!errors.measurementDate}>
+                            <FormLabel htmlFor="measurementDate">
+                              {t('proposals.create.customerInfo.measurementDoneDate')}
+                            </FormLabel>
+                            <Input
+                              id="measurementDate"
+                              type="date"
+                              value={field.value ? field.value.substring(0, 10) : ''}
+                              onChange={(event) => {
+                                const value = event.target.value
+                                field.onChange(value)
+                                updateFormData({ measurementDate: value })
+                              }}
+                            />
+                            <FormErrorMessage>
+                              {errors.measurementDate && errors.measurementDate.message}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      />
                     )}
-                  </CCol>
-                </CRow>
+                  </Stack>
+                </FormControl>
 
-                <h5 className="mb-3 mt-4">{t('proposals.create.customerInfo.schedule')}</h5>
-
-                <CRow className="mb-4">
-                  <CCol md={6} className="d-flex flex-column">
-                    <div className="d-flex align-items-center mb-3 mt-3">
-                      <CFormCheck
-                        id="measurementDone"
-                        label={t('proposals.create.customerInfo.measurementDone')}
-                        name="measurementDone"
-                        checked={values.measurementDone}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          setFieldValue('measurementDone', checked);
-                          updateFormData({ measurementDone: checked });
-                        }}
-                        className="me-3"
-                      />
-                    </div>
-                    <CFormLabel htmlFor="measurementDate">
-                      {values.measurementDone ? t('proposals.create.customerInfo.measurementDoneDate') : t('proposals.create.customerInfo.measurementScheduledDate')}
-                    </CFormLabel>
-                    <div style={{ position: 'relative' }}>
-                      <DatePicker
-                        id="measurementDate"
-                        selected={values.measurementDate ? new Date(values.measurementDate) : null}
-                        onChange={(date) => {
-                          setFieldValue('measurementDate', date);
-                          // Defer syncing to parent until submit to avoid reinitialize loops
-                        }}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText={
-                          values.measurementDone ? t('proposals.create.customerInfo.measurementDoneDate') : t('proposals.create.customerInfo.measurementScheduledDate')
-                        }
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-
-                  <CCol md={6} className="d-flex flex-column">
-                    <div className="d-flex align-items-center mb-3 mt-3">
-                      <CFormCheck
-                        id="designDone"
-                        label={t('proposals.create.customerInfo.designDone')}
-                        name="designDone"
-                        checked={values.designDone}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          setFieldValue('designDone', checked);
-                          updateFormData({ designDone: checked });
-                        }}
-                        className="me-3"
-                      />
-                    </div>
-                    <CFormLabel htmlFor="designDate">
-                      {values.designDone ? t('proposals.create.customerInfo.designDoneDate') : t('proposals.create.customerInfo.designScheduledDate')}
-                    </CFormLabel>
-                    <div style={{ position: 'relative' }}>
-                      <DatePicker
-                        id="designDate"
-                        selected={values.designDate ? new Date(values.designDate) : null}
-                        onChange={(date) => {
-                          setFieldValue('designDate', date);
-                          // Defer syncing to parent until submit to avoid reinitialize loops
-                        }}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText={
-                          values.designDone ? t('proposals.create.customerInfo.designDoneDate') : t('proposals.create.customerInfo.designScheduledDate')
-                        }
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-                </CRow>
-
-                <div className="mb-3">
-                  <CButton
-                    color="link"
-                    className="text-decoration-none p-0"
-                    onClick={toggleMoreOptions}
-                    aria-expanded={showMoreOptions}
-                    aria-controls="customer-more-options"
-                  >
-                    {showMoreOptions ? t('proposals.create.customerInfo.hideOptions') : t('proposals.create.customerInfo.moreOptions')}
-                  </CButton>
-                </div>
-
-                <AnimatePresence>
-                  {showMoreOptions && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      id="customer-more-options"
-                    >
-                      <h5 className="mb-3 mt-4">{t('proposals.create.customerInfo.additionalInfo')}</h5>
-                      <CRow className="mb-3">
-                        <CCol md={6}>
-                          <CFormLabel htmlFor="location">{t('profile.location')} *</CFormLabel>
-                          <CreatableSelect
-                            isClearable
-                            options={locationOptions}
-                            value={
-                              locationOptions.find(
-                                (opt) => opt.value === values.location
-                              ) ||
-                              (values.location
-                                ? {
-                                  label: values.location,
-                                  value: values.location,
-                                }
-                                : null)
+                <FormControl>
+                  <Stack spacing={3}>
+                    <Controller
+                      name="designDone"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          isChecked={field.value}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            field.onChange(checked)
+                            updateFormData({ designDone: checked })
+                            if (!checked) {
+                              setValue('designDate', '', { shouldValidate: true })
+                              updateFormData({ designDate: '' })
                             }
-                            onChange={(selectedOption) => {
-                              const value = selectedOption?.value || '';
-                              setFieldValue('location', value);
-                              updateFormData({
-                                ...formData,
-                                location: value,
-                              });
-                            }}
-                            onBlur={handleBlur}
-                            inputId="location"
-                          />
-                        </CCol>
+                          }}
+                        >
+                          {t('proposals.create.customerInfo.designDone')}
+                        </Checkbox>
+                      )}
+                    />
+                    {designDone && (
+                      <Controller
+                        name="designDate"
+                        control={control}
+                        rules={{
+                          required: t('form.validation.required', 'This field is required'),
+                        }}
+                        render={({ field }) => (
+                          <FormControl isInvalid={!!errors.designDate}>
+                            <FormLabel htmlFor="designDate">
+                              {t('proposals.create.customerInfo.designDoneDate')}
+                            </FormLabel>
+                            <Input
+                              id="designDate"
+                              type="date"
+                              value={field.value ? field.value.substring(0, 10) : ''}
+                              onChange={(event) => {
+                                const value = event.target.value
+                                field.onChange(value)
+                                updateFormData({ designDate: value })
+                              }}
+                            />
+                            <FormErrorMessage>
+                              {errors.designDate && errors.designDate.message}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      />
+                    )}
+                  </Stack>
+                </FormControl>
+              </SimpleGrid>
 
-                        <CCol md={6}>
-                          <CFormLabel htmlFor="salesRep">{t('proposals.create.customerInfo.salesRep')}</CFormLabel>
-                          <CreatableSelect
-                            isClearable
-                            id="salesRep"
-                            name="salesRep"
-                            options={designerOptions}
-                            value={
-                              designerOptions.find(
-                                (opt) => opt.value === values.salesRep
-                              ) || null
-                            }
-                            onChange={(selectedOption) => {
-                              setFieldValue('salesRep', selectedOption?.value || '');
-                              updateFormData({ salesRep: selectedOption?.value || '' });
-                            }}
-                            onBlur={handleBlur}
-                          />
-                        </CCol>
-                      </CRow>
+              <Box>
+                <MotionButton
+                  variant="link"
+                  colorScheme="brand"
+                  onClick={toggleMoreOptions}
+                  rightIcon={<Icon as={showMoreOptions ? ChevronUp : ChevronDown} boxSize={4} />}
+                  whileTap={{ scale: 0.98 }}
+                  aria-expanded={showMoreOptions}
+                  aria-controls="customer-more-options"
+                >
+                  {showMoreOptions
+                    ? t('proposals.create.customerInfo.hideOptions')
+                    : t('proposals.create.customerInfo.moreOptions')}
+                </MotionButton>
 
-                      <CRow className="mb-3">
-                        <CCol md={6}>
-                          <CFormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</CFormLabel>
-                          <CreatableSelect
-                            isClearable
-                            options={[
-                              { label: t('proposals.create.customerInfo.sources.existing'), value: 'Existing customer' },
-                              { label: t('proposals.create.customerInfo.sources.online'), value: 'Online' },
-                              { label: t('form.sources.walkIn'), value: 'Walk-in' },
-                              { label: t('form.sources.referral'), value: 'Referral' },
-                              { label: t('proposals.create.customerInfo.sources.call'), value: 'Call' },
-                              { label: t('proposals.create.customerInfo.sources.email'), value: 'Email' },
-                            ]}
-                            value={
-                              ['Existing customer', 'Online', 'Walk-in', 'Referral', 'Call', 'Email',]
-                                .map(opt => ({ label: opt, value: opt }))
-                                .find(opt => opt.value === values.leadSource) || null
-                            }
-                            onChange={(selectedOption) => {
-                              setFieldValue('leadSource', selectedOption?.value || '');
-                              updateFormData({ leadSource: selectedOption?.value || '' });
-                            }}
-                            onBlur={handleBlur}
-                            inputId="leadSource"
-                          />
-                        </CCol>
+                <Collapse in={showMoreOptions} animateOpacity={!prefersReducedMotion} id="customer-more-options">
+                  <Stack spacing={6} mt={4}>
+                    <Divider />
+                    <Text fontSize="lg" fontWeight="semibold" color="gray.700">
+                      {t('proposals.create.customerInfo.additionalInfo')}
+                    </Text>
 
-                        <CCol md={6}>
-                          <CFormLabel htmlFor="type">{t('proposals.create.customerInfo.type')}</CFormLabel>
-                          <CreatableSelect
-                            isClearable
-                            options={[
-                              { label: t('form.types.homeOwner'), value: 'Home Owner' },
-                              { label: t('form.types.contractor'), value: 'Contractor' },
-                              { label: t('proposals.create.customerInfo.types.builder'), value: 'Builder' },
-                              { label: t('proposals.create.customerInfo.types.architect'), value: 'Architect' },
-                              { label: t('proposals.create.customerInfo.types.interiorDesigner'), value: 'Interior Designer' },
-                            ]}
-                            value={['Home Owner', 'Contractor', 'Builder', 'Architect', 'Interior Designer',]
-                              .map(opt => ({ label: opt, value: opt }))
-                              .find(opt => opt.value === values.type) || null
-                            }
-                            onChange={(selectedOption) => {
-                              setFieldValue('type', selectedOption?.value || '');
-                              updateFormData({ type: selectedOption?.value || '' });
-                            }}
-                            onBlur={handleBlur}
-                            inputId="type"
-                          />
-                        </CCol>
-                      </CRow>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                      <FormControl isInvalid={!!errors.location} isRequired>
+                        <FormLabel htmlFor="location">{t('profile.location')}</FormLabel>
+                        <Controller
+                          name="location"
+                          control={control}
+                          rules={{ required: t('form.validation.required', 'This field is required') }}
+                          render={({ field }) => (
+                            <CreatableSelect
+                              inputId="location"
+                              styles={buildSelectStyles(!!errors.location)}
+                              isClearable
+                              options={locationOptions}
+                              value={getSimpleOption(field.value, locationOptions)}
+                              onChange={(option) => {
+                                const value = option?.value || ''
+                                field.onChange(value)
+                                updateFormData({ location: value })
+                              }}
+                              onBlur={field.onBlur}
+                              placeholder={t('proposals.create.customerInfo.locationPlaceholder', 'Select a location')}
+                            />
+                          )}
+                        />
+                        <FormErrorMessage>{errors.location && errors.location.message}</FormErrorMessage>
+                      </FormControl>
 
-                </div> {/* End form-section */}
+                      <FormControl isInvalid={!!errors.salesRep}>
+                        <FormLabel htmlFor="salesRep">
+                          {t('proposals.create.customerInfo.salesRep')}
+                        </FormLabel>
+                        <Controller
+                          name="salesRep"
+                          control={control}
+                          render={({ field }) => (
+                            <CreatableSelect
+                              inputId="salesRep"
+                              styles={buildSelectStyles(false)}
+                              isClearable
+                              options={designerOptions}
+                              value={getSimpleOption(field.value, designerOptions)}
+                              onChange={(option) => {
+                                const value = option?.value || ''
+                                field.onChange(value)
+                                updateFormData({ salesRep: value })
+                              }}
+                              onBlur={field.onBlur}
+                              placeholder={t('proposals.create.customerInfo.salesRepPlaceholder', 'Select a sales representative')}
+                            />
+                          )}
+                        />
+                        <FormErrorMessage>{errors.salesRep && errors.salesRep.message}</FormErrorMessage>
+                      </FormControl>
+                    </SimpleGrid>
 
-                <div className="button-group">
-                  <CButton type="submit" style={{ borderRadius: '6px', minWidth: '90px' }} color="success">
-                    {t('common.next', 'Next')}
-                  </CButton>
-                </div>
-              </CForm>
-            )}
-          </Formik>
-        </CCardBody>
-      </CCard>
-    </div>
-  );
-};
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                      <FormControl>
+                        <FormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</FormLabel>
+                        <Controller
+                          name="leadSource"
+                          control={control}
+                          render={({ field }) => (
+                            <CreatableSelect
+                              inputId="leadSource"
+                              styles={buildSelectStyles(false)}
+                              isClearable
+                              options={leadSourceOptions}
+                              value={getSimpleOption(field.value, leadSourceOptions)}
+                              onChange={(option) => {
+                                const value = option?.value || ''
+                                field.onChange(value)
+                                updateFormData({ leadSource: value })
+                              }}
+                              onBlur={field.onBlur}
+                            />
+                          )}
+                        />
+                      </FormControl>
 
-export default CustomerInfoStep;
+                      <FormControl>
+                        <FormLabel htmlFor="type">{t('proposals.create.customerInfo.type')}</FormLabel>
+                        <Controller
+                          name="type"
+                          control={control}
+                          render={({ field }) => (
+                            <CreatableSelect
+                              inputId="type"
+                              styles={buildSelectStyles(false)}
+                              isClearable
+                              options={typeOptions}
+                              value={getSimpleOption(field.value, typeOptions)}
+                              onChange={(option) => {
+                                const value = option?.value || ''
+                                field.onChange(value)
+                                updateFormData({ type: value })
+                              }}
+                              onBlur={field.onBlur}
+                            />
+                          )}
+                        />
+                      </FormControl>
+                    </SimpleGrid>
+                  </Stack>
+                </Collapse>
+              </Box>
+
+              <HStack justify="flex-end">
+                <MotionButton
+                  type="submit"
+                  colorScheme="brand"
+                  size="lg"
+                  minW="120px"
+                  isLoading={isSubmitting}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {t('common.next', 'Next')}
+                </MotionButton>
+              </HStack>
+            </Stack>
+          </form>
+        </CardBody>
+      </Card>
+    </Box>
+  )
+}
+
+export default CustomerInfoStep

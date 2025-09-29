@@ -1,0 +1,104 @@
+/* stylelint-disable */
+/* This file contains Tailwind CSS directives and utilities */
+/* Disable all stylelint warnings as they don't recognize Tailwind syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layer for consistent typography and layout */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.25;
+    font-weight: 600;
+  }
+}
+
+/* Component layer for reusable patterns */
+@layer components {
+  /* Focus ring utilities following playbook guidelines */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .focus-ring-error {
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+
+  .focus-ring-success {
+    @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+  }
+
+  /* Container utilities */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Card pattern */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-slate-200;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-lg shadow-lg border border-slate-200;
+  }
+}
+
+/* Utility layer for project-specific utilities */
+@layer utilities {
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .text-muted {
+      @apply text-slate-800;
+    }
+
+    .border-subtle {
+      @apply border-slate-400;
+    }
+  }
+
+  /* Safe area utilities for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}

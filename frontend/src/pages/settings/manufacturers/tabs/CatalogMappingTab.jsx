@@ -1,89 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import PageHeader from '../../../../components/PageHeader';
-
-// Authorization is handled centrally by axios interceptors
-
+import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
+import PageHeader from '../../../../components/PageHeader'
 import {
-  CButton,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CForm,
-  CFormInput,
-  CTable,
-  CTableHead,
-  CTableBody,
-  CTableRow,
-  CTableHeaderCell,
-  CTableDataCell,
-  CFormTextarea,
-  CFormSelect,
-  CFormLabel,
-  CFormCheck,
-  CBadge,
-  CCard,
-  CCardHeader,
-  CCardBody
-} from '@coreui/react';
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  Image,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useToast,
+} from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
-import { Plus, ChevronUp, ChevronDown } from '@/icons-lucide';
-import Swal from 'sweetalert2';
-import { useDispatch } from 'react-redux';
-import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
-import axiosInstance from '../../../../helpers/axiosInstance';
-import CreatableSelect from 'react-select/creatable';
+import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
+import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
+import axiosInstance from '../../../../helpers/axiosInstance'
+// Removed Swal - using Chakra useToast
+// Removed CreatableSelect - using Chakra Select
 
 const CatalogMappingTab = ({ manufacturer, id }) => {
-  const { t } = useTranslation();
-  const api_url = import.meta.env.VITE_API_URL;
-  const customization = useSelector((state) => state.customization);
-  const headerBg = customization?.headerBg || '#321fdb';
-  const textColor = customization?.headerTextColor || '#ffffff';
+  const { t } = useTranslation()
+  const toast = useToast()
+  const api_url = import.meta.env.VITE_API_URL
+  const customization = useSelector((state) => state.customization)
+  const headerBg = customization?.headerBg || '#321fdb'
+  const textColor = customization?.headerTextColor || '#ffffff'
 
   // Server-side paginated catalog data (avoid loading all items at once)
-  const [catalogData, setCatalogData] = useState([]);
-  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 50, totalPages: 0 });
-  const [filterMeta, setFilterMeta] = useState({ uniqueTypes: [], uniqueStyles: [] });
-  const [loading, setLoading] = useState(false);
-  const [loadError, setLoadError] = useState(null);
+  const [catalogData, setCatalogData] = useState([])
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 50, totalPages: 0 })
+  const [filterMeta, setFilterMeta] = useState({ uniqueTypes: [], uniqueStyles: [] })
+  const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState(null)
 
   // Sorting state - default to alphabetical by code
-  const [sortBy, setSortBy] = useState('code');
-  const [sortOrder, setSortOrder] = useState('ASC');
+  const [sortBy, setSortBy] = useState('code')
+  const [sortOrder, setSortOrder] = useState('ASC')
 
   const getInitialItemsPerPage = () => {
-    const saved = localStorage.getItem('catalogItemsPerPage');
-    return saved ? parseInt(saved, 10) : 50;
-  };
+    const saved = localStorage.getItem('catalogItemsPerPage')
+    return saved ? parseInt(saved, 10) : 50
+  }
 
-  const [typeFilter, setTypeFilter] = useState('');
-  const [styleFilter, setStyleFilter] = useState('');
-  const [searchFilter, setSearchFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('')
+  const [styleFilter, setStyleFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
 
-
-  const uniqueTypes = filterMeta.uniqueTypes || [];
+  const uniqueTypes = filterMeta.uniqueTypes || []
   const typeOptions = uniqueTypes.map((type) => ({
     value: type,
     label: type,
-  }));
+  }))
 
+  const [fileModalVisible, setFileModalVisible] = useState(false)
+  const [manualModalVisible, setManualModalVisible] = useState(false)
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage())
 
-  const [fileModalVisible, setFileModalVisible] = useState(false);
-  const [manualModalVisible, setManualModalVisible] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false) // Add loading state for manual save
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage());
-
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isSaving, setIsSaving] = useState(false); // Add loading state for manual save
-
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
 
   // const currentItems = catalogData.slice(indexOfFirstItem, indexOfLastItem);
   // const totalPages = Math.ceil(catalogData.length / itemsPerPage);
@@ -92,70 +95,113 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   //   : catalogData;
 
   // Use data as-is; backend applies filters and pagination
-  const filteredCatalogData = catalogData;
-  const totalPages = pagination.totalPages || Math.ceil(filteredCatalogData.length / itemsPerPage);
-  const currentItems = filteredCatalogData;
+  const filteredCatalogData = catalogData
+  const totalPages = pagination.totalPages || Math.ceil(filteredCatalogData.length / itemsPerPage)
+  const currentItems = filteredCatalogData
 
-  const [showAssemblyModal, setShowAssemblyModal] = useState(false);
-  const [isAssemblyCostSaving, setIsAssemblyCostSaving] = useState(false);
-  const [showHingesModal, setShowHingesModal] = useState(false);
-  const [showModificationModal, setShowModificationModal] = useState(false);
+  const [showAssemblyModal, setShowAssemblyModal] = useState(false)
+  const [isAssemblyCostSaving, setIsAssemblyCostSaving] = useState(false)
+  const [showHingesModal, setShowHingesModal] = useState(false)
+  const [showModificationModal, setShowModificationModal] = useState(false)
   // Main Modification Management Modal
-  const [showMainModificationModal, setShowMainModificationModal] = useState(false);
+  const [showMainModificationModal, setShowMainModificationModal] = useState(false)
   // Quick edit states for categories/templates within Modification Management
-  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
-  const [editCategory, setEditCategory] = useState({ id: '', name: '', orderIndex: 0, image: '' });
-  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
-  const [showMoveModificationModal, setShowMoveModificationModal] = useState(false);
-  const [modificationToMove, setModificationToMove] = useState(null);
-  const [showQuickEditTemplateModal, setShowQuickEditTemplateModal] = useState(false);
+  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false)
+  const [editCategory, setEditCategory] = useState({ id: '', name: '', orderIndex: 0, image: '' })
+  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState(null)
+  const [showMoveModificationModal, setShowMoveModificationModal] = useState(false)
+  const [modificationToMove, setModificationToMove] = useState(null)
+  const [showQuickEditTemplateModal, setShowQuickEditTemplateModal] = useState(false)
   // Keep full context so quick-save doesn't wipe fields on server
-  const [editTemplate, setEditTemplate] = useState({ id: '', categoryId: '', name: '', defaultPrice: '', sampleImage: '', isReady: false, fieldsConfig: null });
+  const [editTemplate, setEditTemplate] = useState({
+    id: '',
+    categoryId: '',
+    name: '',
+    defaultPrice: '',
+    sampleImage: '',
+    isReady: false,
+    fieldsConfig: null,
+  })
   const [editGuidedBuilder, setEditGuidedBuilder] = useState({
     sliders: {
-      height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
-      width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
-      depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+      height: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Height',
+      },
+      width: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Width',
+      },
+      depth: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Depth',
+      },
     },
-    sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+    sideSelector: { enabled: false, options: ['L', 'R'], label: 'Side' },
     qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
     notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
     customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
     descriptions: { internal: '', customer: '', installer: '', both: false },
-    modSampleImage: { enabled: false, label: 'Sample Image' }
-  });
-  const [modificationView, setModificationView] = useState('cards'); // 'cards', 'addNew', 'gallery'
-  const [selectedModificationCategory, setSelectedModificationCategory] = useState(null);
-  const [modificationStep, setModificationStep] = useState(1); // 1: submenu, 2: template builder
+    modSampleImage: { enabled: false, label: 'Sample Image' },
+  })
+  const [modificationView, setModificationView] = useState('cards') // 'cards', 'addNew', 'gallery'
+  const [selectedModificationCategory, setSelectedModificationCategory] = useState(null)
+  const [modificationStep, setModificationStep] = useState(1) // 1: submenu, 2: template builder
   // Track editing state for template builder
-  const [editingTemplateId, setEditingTemplateId] = useState(null);
+  const [editingTemplateId, setEditingTemplateId] = useState(null)
   // Global Mods integration
-  const [showAssignGlobalModsModal, setShowAssignGlobalModsModal] = useState(false);
-  const [showItemGlobalModsModal, setShowItemGlobalModsModal] = useState(false);
-  const [globalGallery, setGlobalGallery] = useState([]);
-  const [globalAssignments, setGlobalAssignments] = useState([]);
-  const [assignLoading, setAssignLoading] = useState(false);
-  const [assignFormGM, setAssignFormGM] = useState({ templateId: '', scope: 'all', targetStyle: '', targetType: '', overridePrice: '' });
-  const [includeDraftTemplates, setIncludeDraftTemplates] = useState(false);
-  const [itemGlobalList, setItemGlobalList] = useState([]);
+  const [showAssignGlobalModsModal, setShowAssignGlobalModsModal] = useState(false)
+  const [showItemGlobalModsModal, setShowItemGlobalModsModal] = useState(false)
+  const [globalGallery, setGlobalGallery] = useState([])
+  const [globalAssignments, setGlobalAssignments] = useState([])
+  const [assignLoading, setAssignLoading] = useState(false)
+  const [assignFormGM, setAssignFormGM] = useState({
+    templateId: '',
+    scope: 'all',
+    targetStyle: '',
+    targetType: '',
+    overridePrice: '',
+  })
+  const [includeDraftTemplates, setIncludeDraftTemplates] = useState(false)
+  const [itemGlobalList, setItemGlobalList] = useState([])
 
   const [assemblyData, setAssemblyData] = useState({
     type: '',
     price: '',
     applyTo: 'one',
-    selectedTypes: []
-  });
-  const [availableTypes, setAvailableTypes] = useState([]);
-  const [assemblyCostsByType, setAssemblyCostsByType] = useState({});
+    selectedTypes: [],
+  })
+  const [availableTypes, setAvailableTypes] = useState([])
+  const [assemblyCostsByType, setAssemblyCostsByType] = useState({})
 
   const [hingesData, setHingesData] = useState({
     leftHingePrice: '',
     rightHingePrice: '',
     bothHingePrice: '',
     exposedSidePrice: '',
-  });
-  const [modificationData, setModificationData] = useState({ modificationName: '', price: '', notes: '', description: '' });
+  })
+  const [modificationData, setModificationData] = useState({
+    modificationName: '',
+    price: '',
+    notes: '',
+    description: '',
+  })
 
   // Comprehensive Template Builder State
   const [newTemplate, setNewTemplate] = useState({
@@ -164,57 +210,79 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     defaultPrice: '',
     isReady: false,
     sampleImage: '',
-    saveAsBlueprint: false // Task 5: Add blueprint checkbox support
-  });
-  const [newCategory, setNewCategory] = useState({ name: '', orderIndex: 0 });
+    saveAsBlueprint: false, // Task 5: Add blueprint checkbox support
+  })
+  const [newCategory, setNewCategory] = useState({ name: '', orderIndex: 0 })
   const [guidedBuilder, setGuidedBuilder] = useState({
     sliders: {
-      height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
-      width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
-      depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+      height: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Height',
+      },
+      width: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Width',
+      },
+      depth: {
+        enabled: false,
+        min: 0,
+        max: 0,
+        step: 1,
+        useCustomIncrements: false,
+        customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+        label: 'Depth',
+      },
     },
-    sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+    sideSelector: { enabled: false, options: ['L', 'R'], label: 'Side' },
     qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
     notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
     customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
     descriptions: { internal: '', customer: '', installer: '', both: false },
-    modSampleImage: { enabled: false, label: 'Sample Image' }
-  });
-  const [builderErrors, setBuilderErrors] = useState({});
-  const [creatingModification, setCreatingModification] = useState(false);
-
+    modSampleImage: { enabled: false, label: 'Sample Image' },
+  })
+  const [builderErrors, setBuilderErrors] = useState({})
+  const [creatingModification, setCreatingModification] = useState(false)
 
   // Selected Items for bulk operations
-  const [selectedCatalogItem, setSelectedCatalogItem] = useState([]);
+  const [selectedCatalogItem, setSelectedCatalogItem] = useState([])
 
   // Sub-types management
-  const [subTypes, setSubTypes] = useState([]);
-  const [showSubTypeModal, setShowSubTypeModal] = useState(false);
-  const [showAssignSubTypeModal, setShowAssignSubTypeModal] = useState(false);
+  const [subTypes, setSubTypes] = useState([])
+  const [showSubTypeModal, setShowSubTypeModal] = useState(false)
+  const [showAssignSubTypeModal, setShowAssignSubTypeModal] = useState(false)
   const [subTypeForm, setSubTypeForm] = useState({
     name: '',
     description: '',
     requires_hinge_side: false,
-    requires_exposed_side: false
-  });
+    requires_exposed_side: false,
+  })
 
   // State for grouped catalog view in assignment modal
-  const [groupedCatalogData, setGroupedCatalogData] = useState([]);
-  const [selectedCatalogCodes, setSelectedCatalogCodes] = useState([]);
-  const [editingSubType, setEditingSubType] = useState(null);
-  const [selectedSubType, setSelectedSubType] = useState(null);
-  const [subTypeAssignments, setSubTypeAssignments] = useState({});
+  const [groupedCatalogData, setGroupedCatalogData] = useState([])
+  const [selectedCatalogCodes, setSelectedCatalogCodes] = useState([])
+  const [editingSubType, setEditingSubType] = useState(null)
+  const [selectedSubType, setSelectedSubType] = useState(null)
+  const [subTypeAssignments, setSubTypeAssignments] = useState({})
 
   // Style management states
-  const [styleImage, setStyleImage] = useState(null);
+  const [styleImage, setStyleImage] = useState(null)
 
-  const uniqueStyles = filterMeta.uniqueStyles || [];
-  const sortedUniqueStyles = [...uniqueStyles];
+  const uniqueStyles = filterMeta.uniqueStyles || []
+  const sortedUniqueStyles = [...uniqueStyles]
   const styleOptions = sortedUniqueStyles.map((style) => ({
     value: style,
     label: style,
-  }));
-
+  }))
 
   // Initialize form with proper default values
   const initialManualForm = {
@@ -223,16 +291,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     code: '',
     description: '',
     price: '',
-  };
+  }
 
-
-  const [manualForm, setManualForm] = useState(initialManualForm);
+  const [manualForm, setManualForm] = useState(initialManualForm)
 
   // Fetch paginated catalog data from backend
-  const fetchCatalogData = async (page = currentPage, limit = itemsPerPage, type = typeFilter, style = styleFilter, sort = sortBy, order = sortOrder) => {
-    if (!id) return;
-    setLoading(true);
-    setLoadError(null);
+  const fetchCatalogData = async (
+    page = currentPage,
+    limit = itemsPerPage,
+    type = typeFilter,
+    style = styleFilter,
+    sort = sortBy,
+    order = sortOrder,
+  ) => {
+    if (!id) return
+    setLoading(true)
+    setLoadError(null)
     try {
       const params = {
         page: String(page),
@@ -241,227 +315,279 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         sortOrder: order,
         ...(type ? { typeFilter: type } : {}),
         ...(style ? { styleFilter: style } : {}),
-      };
+      }
       const { data } = await axiosInstance.get(`/api/manufacturers/${id}/catalog`, {
         params,
-      });
-      setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : []);
-      setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 });
-      if (page === 1 && data.filters) setFilterMeta(data.filters);
+      })
+      setCatalogData(Array.isArray(data.catalogData) ? data.catalogData : [])
+      setPagination(data.pagination || { total: 0, page, limit, totalPages: 0 })
+      if (page === 1 && data.filters) setFilterMeta(data.filters)
       if (data.sorting) {
-        setSortBy(data.sorting.sortBy);
-        setSortOrder(data.sorting.sortOrder);
+        setSortBy(data.sorting.sortBy)
+        setSortOrder(data.sorting.sortOrder)
       }
-      setCurrentPage(page);
-      setItemsPerPage(limit);
+      setCurrentPage(page)
+      setItemsPerPage(limit)
     } catch (e) {
-      console.error('Error fetching catalog data:', e);
-      setLoadError(e.message);
-      setCatalogData([]);
+      console.error('Error fetching catalog data:', e)
+      setLoadError(e.message)
+      setCatalogData([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   // Load sub-types for this manufacturer
   const loadSubTypes = async () => {
-    if (!id) return;
+    if (!id) return
     try {
-      const { data } = await axiosInstance.get(`/api/manufacturers/${id}/sub-types`);
-      setSubTypes(data.data || []);
+      const { data } = await axiosInstance.get(`/api/manufacturers/${id}/sub-types`)
+      setSubTypes(data.data || [])
     } catch (error) {
-      console.error('Error loading sub-types:', error);
-      setSubTypes([]);
+      console.error('Error loading sub-types:', error)
+      setSubTypes([])
     }
-  };
+  }
 
   // Create or update sub-type
   const handleSubTypeSave = async () => {
     try {
       if (editingSubType) {
-        await axiosInstance.put(`/api/sub-types/${editingSubType.id}`, subTypeForm);
-        Swal.fire('Success', 'Sub-type updated successfully!', 'success');
+        await axiosInstance.put(`/api/sub-types/${editingSubType.id}`, subTypeForm)
+        toast({
+          title: t('common.success', 'Success'),
+          description: t(
+            'settings.manufacturers.catalogMapping.subTypeUpdated',
+            'Sub-type updated successfully!',
+          ),
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
       } else {
-        await axiosInstance.post(`/api/manufacturers/${id}/sub-types`, subTypeForm);
-        Swal.fire('Success', 'Sub-type created successfully!', 'success');
+        await axiosInstance.post(`/api/manufacturers/${id}/sub-types`, subTypeForm)
+        toast({
+          title: t('common.success', 'Success'),
+          description: t(
+            'settings.manufacturers.catalogMapping.subTypeCreated',
+            'Sub-type created successfully!',
+          ),
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
       }
 
-      setShowSubTypeModal(false);
-      setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
-      setEditingSubType(null);
-      await loadSubTypes();
+      setShowSubTypeModal(false)
+      setSubTypeForm({
+        name: '',
+        description: '',
+        requires_hinge_side: false,
+        requires_exposed_side: false,
+      })
+      setEditingSubType(null)
+      await loadSubTypes()
     } catch (error) {
-      console.error('Error saving sub-type:', error);
-      Swal.fire(t('common.error'), error.response?.data?.message || t('settings.manufacturers.catalogMapping.subTypes.saveFailed'), 'error');
+      console.error('Error saving sub-type:', error)
+      toast({
+        title: t('common.error', 'Error'),
+        description:
+          error.response?.data?.message ||
+          t('settings.manufacturers.catalogMapping.subTypes.saveFailed', 'Failed to save sub-type'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
-  };
+  }
 
   // Delete sub-type
   const handleSubTypeDelete = async (subType) => {
     const result = await Swal.fire({
       title: t('settings.manufacturers.catalogMapping.subTypes.deleteTitle'),
-      text: t('settings.manufacturers.catalogMapping.subTypes.deleteConfirm', { name: subType.name }),
+      text: t('settings.manufacturers.catalogMapping.subTypes.deleteConfirm', {
+        name: subType.name,
+      }),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       confirmButtonText: t('common.delete'),
-      cancelButtonText: t('common.cancel')
-    });
+      cancelButtonText: t('common.cancel'),
+    })
 
     if (result.isConfirmed) {
       try {
-        await axiosInstance.delete(`/api/sub-types/${subType.id}`);
-        Swal.fire(t('common.deleted'), t('settings.manufacturers.catalogMapping.subTypes.deleteSuccess'), 'success');
-        await loadSubTypes();
+        await axiosInstance.delete(`/api/sub-types/${subType.id}`)
+        Swal.fire(
+          t('common.deleted'),
+          t('settings.manufacturers.catalogMapping.subTypes.deleteSuccess'),
+          'success',
+        )
+        await loadSubTypes()
       } catch (error) {
-        console.error('Error deleting sub-type:', error);
-        Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.subTypes.deleteFailed'), 'error');
+        console.error('Error deleting sub-type:', error)
+        Swal.fire(
+          t('common.error'),
+          t('settings.manufacturers.catalogMapping.subTypes.deleteFailed'),
+          'error',
+        )
       }
     }
-  };
+  }
 
   // Assign selected items to sub-type
   const handleAssignToSubType = async () => {
-    if (!selectedSubType || selectedCatalogItem.length === 0) return;
+    if (!selectedSubType || selectedCatalogItem.length === 0) return
 
     try {
       await axiosInstance.post(`/api/sub-types/${selectedSubType}/assign-items`, {
-        catalogItemIds: selectedCatalogItem
-      });
+        catalogItemIds: selectedCatalogItem,
+      })
 
-  Swal.fire(t('common.success'), t('settings.manufacturers.catalogMapping.subTypes.assignSuccess', { count: selectedCatalogItem.length }), 'success');
-      setShowAssignSubTypeModal(false);
-      setSelectedCatalogItem([]);
-      setSelectedSubType(null);
-      await fetchCatalogData(); // Refresh to show assignments
+      Swal.fire(
+        t('common.success'),
+        t('settings.manufacturers.catalogMapping.subTypes.assignSuccess', {
+          count: selectedCatalogItem.length,
+        }),
+        'success',
+      )
+      setShowAssignSubTypeModal(false)
+      setSelectedCatalogItem([])
+      setSelectedSubType(null)
+      await fetchCatalogData() // Refresh to show assignments
     } catch (error) {
-      console.error('Error assigning items:', error);
-      Swal.fire(t('common.error'), t('settings.manufacturers.catalogMapping.subTypes.assignFailed'), 'error');
+      console.error('Error assigning items:', error)
+      Swal.fire(
+        t('common.error'),
+        t('settings.manufacturers.catalogMapping.subTypes.assignFailed'),
+        'error',
+      )
     }
-  };
+  }
 
   // Group catalog data by code for assignment modal
   const groupCatalogDataByCode = (catalogItems) => {
-    const groups = {};
+    const groups = {}
 
-    catalogItems.forEach(item => {
-      const code = item.code;
+    catalogItems.forEach((item) => {
+      const code = item.code
       if (!groups[code]) {
         groups[code] = {
           code: code,
           description: item.description,
           type: item.type,
           styles: [],
-          itemIds: []
-        };
+          itemIds: [],
+        }
       }
 
-      groups[code].styles.push(item.style);
-      groups[code].itemIds.push(item.id);
-    });
+      groups[code].styles.push(item.style)
+      groups[code].itemIds.push(item.id)
+    })
 
     // Convert to array and sort by code
-    return Object.values(groups).sort((a, b) => a.code.localeCompare(b.code));
-  };
+    return Object.values(groups).sort((a, b) => a.code.localeCompare(b.code))
+  }
 
   // Handle code selection (selects all items with that code)
   const handleCodeSelection = (code, isSelected) => {
-    const group = groupedCatalogData.find(g => g.code === code);
-    if (!group) return;
+    const group = groupedCatalogData.find((g) => g.code === code)
+    if (!group) return
 
     if (isSelected) {
       // Add all item IDs for this code
-      setSelectedCatalogItem(prev => [
-        ...prev.filter(id => !group.itemIds.includes(id)), // Remove any existing
-        ...group.itemIds // Add all for this code
-      ]);
-      setSelectedCatalogCodes(prev => [...prev.filter(c => c !== code), code]);
+      setSelectedCatalogItem((prev) => [
+        ...prev.filter((id) => !group.itemIds.includes(id)), // Remove any existing
+        ...group.itemIds, // Add all for this code
+      ])
+      setSelectedCatalogCodes((prev) => [...prev.filter((c) => c !== code), code])
     } else {
       // Remove all item IDs for this code
-      setSelectedCatalogItem(prev => prev.filter(id => !group.itemIds.includes(id)));
-      setSelectedCatalogCodes(prev => prev.filter(c => c !== code));
+      setSelectedCatalogItem((prev) => prev.filter((id) => !group.itemIds.includes(id)))
+      setSelectedCatalogCodes((prev) => prev.filter((c) => c !== code))
     }
-  };
+  }
 
   // Update grouped data when catalog data changes
   useEffect(() => {
     if (showAssignSubTypeModal && catalogData.length > 0) {
-      setGroupedCatalogData(groupCatalogDataByCode(catalogData));
+      setGroupedCatalogData(groupCatalogDataByCode(catalogData))
       // Load existing assignments for the selected sub-type
       if (selectedSubType) {
-        loadExistingAssignments();
+        loadExistingAssignments()
       }
     }
-  }, [showAssignSubTypeModal, catalogData, selectedSubType]);
+  }, [showAssignSubTypeModal, catalogData, selectedSubType])
 
   // Load existing assignments for the selected sub-type
   const loadExistingAssignments = async () => {
-    if (!selectedSubType) return;
+    if (!selectedSubType) return
 
     try {
-      const { data } = await axiosInstance.get(`/api/sub-types/${selectedSubType}/assignments`);
-      const assignedItems = data.data || [];
+      const { data } = await axiosInstance.get(`/api/sub-types/${selectedSubType}/assignments`)
+      const assignedItems = data.data || []
 
       // Extract the assigned item IDs
-      const assignedItemIds = assignedItems.map(item => item.id);
-      setSelectedCatalogItem(assignedItemIds);
+      const assignedItemIds = assignedItems.map((item) => item.id)
+      setSelectedCatalogItem(assignedItemIds)
 
       // Extract the codes that are assigned
-      const assignedCodes = [...new Set(assignedItems.map(item => item.code))];
-      setSelectedCatalogCodes(assignedCodes);
-
+      const assignedCodes = [...new Set(assignedItems.map((item) => item.code))]
+      setSelectedCatalogCodes(assignedCodes)
     } catch (error) {
-      console.error('Error loading existing assignments:', error);
+      console.error('Error loading existing assignments:', error)
       // Don't show error to user as this is just for display purposes
     }
-  };
+  }
 
   // Global mods helpers
   const loadGlobalGallery = async () => {
     try {
-      const { data } = await axiosInstance.get('/api/global-mods/gallery');
-      setGlobalGallery(data?.gallery || []);
+      const { data } = await axiosInstance.get('/api/global-mods/gallery')
+      setGlobalGallery(data?.gallery || [])
     } catch (e) {
-      setGlobalGallery([]);
+      setGlobalGallery([])
     }
-  };
+  }
 
   // Load manufacturer-specific categories
-  const [manufacturerCategories, setManufacturerCategories] = useState([]);
+  const [manufacturerCategories, setManufacturerCategories] = useState([])
   const loadManufacturerCategories = async () => {
-    if (!id) return;
+    if (!id) return
     try {
       const { data } = await axiosInstance.get('/api/global-mods/categories', {
-        params: { scope: 'manufacturer', manufacturerId: id, includeTemplates: true }
-      });
-      setManufacturerCategories(data?.categories || []);
+        params: { scope: 'manufacturer', manufacturerId: id, includeTemplates: true },
+      })
+      setManufacturerCategories(data?.categories || [])
     } catch (e) {
-      setManufacturerCategories([]);
+      setManufacturerCategories([])
     }
-  };
+  }
   const loadGlobalAssignments = async () => {
-    if (!id) return;
-    setAssignLoading(true);
+    if (!id) return
+    setAssignLoading(true)
     try {
-      const { data } = await axiosInstance.get('/api/global-mods/assignments', { params: { manufacturerId: id } });
-      setGlobalAssignments(data?.assignments || []);
+      const { data } = await axiosInstance.get('/api/global-mods/assignments', {
+        params: { manufacturerId: id },
+      })
+      setGlobalAssignments(data?.assignments || [])
     } catch (e) {
-      setGlobalAssignments([]);
+      setGlobalAssignments([])
     } finally {
-      setAssignLoading(false);
+      setAssignLoading(false)
     }
-  };
+  }
 
   // Image upload helper (reuses backend /api/global-mods/upload/image)
   const uploadImageFile = async (file) => {
-    if (!file) return null;
-    const form = new FormData();
-    form.append('logoImage', file);
+    if (!file) return null
+    const form = new FormData()
+    form.append('logoImage', file)
     const { data } = await axiosInstance.post('/api/global-mods/upload/image', form, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    return data?.filename || null;
-  };
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return data?.filename || null
+  }
 
   // Create modification category (submenu)
   const createModificationCategory = async () => {
@@ -470,22 +596,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         name: newCategory.name,
         scope: 'manufacturer', // Always manufacturer scope in this context
         manufacturerId: id, // Current manufacturer ID
-        orderIndex: parseInt(newCategory.orderIndex) || 0
-      });
-      await loadManufacturerCategories(); // Reload manufacturer categories to show new category
-      return data.category;
+        orderIndex: parseInt(newCategory.orderIndex) || 0,
+      })
+      await loadManufacturerCategories() // Reload manufacturer categories to show new category
+      return data.category
     } catch (error) {
-      console.error('Error creating category:', error);
-      throw error;
+      console.error('Error creating category:', error)
+      throw error
     }
-  };
+  }
 
   // Create modification template
   const createModificationTemplate = async (categoryId) => {
     try {
       // Task 5: Ensure manufacturerId is present for proper isolation
       if (!id) {
-        throw new Error('Manufacturer ID is required to create modifications');
+        throw new Error('Manufacturer ID is required to create modifications')
       }
 
       const fieldsConfig = {
@@ -495,41 +621,43 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         notes: guidedBuilder.notes,
         customerUpload: guidedBuilder.customerUpload,
         descriptions: guidedBuilder.descriptions,
-        modSampleImage: guidedBuilder.modSampleImage
-      };
+        modSampleImage: guidedBuilder.modSampleImage,
+      }
 
       // Task 5: Handle blueprint vs manufacturer mod logic
-      const isBlueprint = newTemplate.saveAsBlueprint || false;
+      const isBlueprint = newTemplate.saveAsBlueprint || false
       const requestData = {
-        categoryId: isBlueprint ? null : (categoryId || null), // Blueprints don't need categories
+        categoryId: isBlueprint ? null : categoryId || null, // Blueprints don't need categories
         name: newTemplate.name,
         isReady: newTemplate.isReady,
         fieldsConfig: fieldsConfig,
         sampleImage: newTemplate.sampleImage || null,
-        isBlueprint: isBlueprint
-      };
+        isBlueprint: isBlueprint,
+      }
 
       // Business rule: Blueprints cannot have manufacturerId or price
       if (isBlueprint) {
         // Creating blueprint - no manufacturerId, no price
-        requestData.manufacturerId = null;
-        requestData.defaultPrice = null;
+        requestData.manufacturerId = null
+        requestData.defaultPrice = null
       } else {
         // Creating manufacturer-specific mod - has manufacturerId and price
-        requestData.manufacturerId = id;
-        requestData.defaultPrice = newTemplate.defaultPrice ? parseFloat(newTemplate.defaultPrice) : null;
+        requestData.manufacturerId = id
+        requestData.defaultPrice = newTemplate.defaultPrice
+          ? parseFloat(newTemplate.defaultPrice)
+          : null
       }
 
-      const { data } = await axiosInstance.post('/api/global-mods/templates', requestData);
+      const { data } = await axiosInstance.post('/api/global-mods/templates', requestData)
 
-      await loadGlobalGallery(); // Reload gallery to show new template
-      await loadManufacturerCategories(); // Reload manufacturer categories in case category was created
-      return data.template;
+      await loadGlobalGallery() // Reload gallery to show new template
+      await loadManufacturerCategories() // Reload manufacturer categories in case category was created
+      return data.template
     } catch (error) {
-      console.error('Error creating template:', error);
-      throw error;
+      console.error('Error creating template:', error)
+      throw error
     }
-  };
+  }
 
   // Update modification template (edit mode)
   const updateModificationTemplate = async (templateId, categoryId) => {
@@ -541,8 +669,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         notes: guidedBuilder.notes,
         customerUpload: guidedBuilder.customerUpload,
         descriptions: guidedBuilder.descriptions,
-        modSampleImage: guidedBuilder.modSampleImage
-      };
+        modSampleImage: guidedBuilder.modSampleImage,
+      }
 
       await axiosInstance.put(`/api/global-mods/templates/${templateId}`, {
         categoryId: categoryId || null,
@@ -550,15 +678,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         defaultPrice: newTemplate.defaultPrice ? parseFloat(newTemplate.defaultPrice) : null,
         isReady: newTemplate.isReady,
         fieldsConfig,
-        sampleImage: newTemplate.sampleImage || null
-      });
+        sampleImage: newTemplate.sampleImage || null,
+      })
 
-      await loadGlobalGallery();
+      await loadGlobalGallery()
     } catch (error) {
-      console.error('Error updating template:', error);
-      throw error;
+      console.error('Error updating template:', error)
+      throw error
     }
-  };
+  }
 
   // Reset modification form
   const resetModificationForm = () => {
@@ -567,152 +695,171 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       name: '',
       defaultPrice: '',
       isReady: false,
-      sampleImage: ''
-    });
-    setNewCategory({ name: '', orderIndex: 0 });
+      sampleImage: '',
+    })
+    setNewCategory({ name: '', orderIndex: 0 })
     setGuidedBuilder({
       sliders: {
-        height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Height' },
-        width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Width' },
-        depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'], label: 'Depth' }
+        height: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Height',
+        },
+        width: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Width',
+        },
+        depth: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Depth',
+        },
       },
-      sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+      sideSelector: { enabled: false, options: ['L', 'R'], label: 'Side' },
       qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
       notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
       customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
       descriptions: { internal: '', customer: '', installer: '', both: false },
-      modSampleImage: { enabled: false, label: 'Sample Image' }
-    });
-    setSelectedModificationCategory(null);
-    setModificationStep(1);
-    setModificationView('cards');
-  setEditingTemplateId(null);
-  };
+      modSampleImage: { enabled: false, label: 'Sample Image' },
+    })
+    setSelectedModificationCategory(null)
+    setModificationStep(1)
+    setModificationView('cards')
+    setEditingTemplateId(null)
+  }
 
   // Delete modification template
   const deleteModificationTemplate = async (templateId) => {
     try {
-      await axiosInstance.delete(`/api/global-mods/templates/${templateId}`);
-      await loadGlobalGallery(); // Reload gallery to update the list
-      Swal.fire({
-        toast: true,
-        position: "top",
-        icon: "success",
-        title: "Modification deleted successfully",
-        showConfirmButton: false,
-        timer: 1500,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+      await axiosInstance.delete(`/api/global-mods/templates/${templateId}`)
+      await loadGlobalGallery() // Reload gallery to update the list
+      toast({
+        title: t(
+          'settings.manufacturers.catalogMapping.modificationDeleted',
+          'Modification deleted successfully',
+        ),
+        status: 'success',
+        duration: 1500,
+        isClosable: true,
+      })
     } catch (error) {
-      console.error('Error deleting template:', error);
+      console.error('Error deleting template:', error)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to delete modification",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to delete modification',
         showConfirmButton: false,
         timer: 1500,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     }
-  };
+  }
 
   // Delete category
   const deleteCategory = async (categoryId, mode = 'only') => {
     try {
-      const url = `/api/global-mods/categories/${categoryId}${mode !== 'only' ? `?mode=${mode}` : ''}`;
-      await axiosInstance.delete(url);
+      const url = `/api/global-mods/categories/${categoryId}${mode !== 'only' ? `?mode=${mode}` : ''}`
+      await axiosInstance.delete(url)
 
       // Reload both gallery and manufacturer categories to update the lists
-      await loadGlobalGallery();
-      await loadManufacturerCategories();
+      await loadGlobalGallery()
+      await loadManufacturerCategories()
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: "Category deleted successfully",
+        position: 'top',
+        icon: 'success',
+        title: 'Category deleted successfully',
         showConfirmButton: false,
         timer: 1500,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error('Error deleting category:', error)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: error.response?.data?.message || "Failed to delete category",
+        position: 'top',
+        icon: 'error',
+        title: error.response?.data?.message || 'Failed to delete category',
         showConfirmButton: false,
         timer: 3000,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     }
-  };
+  }
 
   // Move modification to different category
   const moveModification = async (templateId, newCategoryId) => {
     try {
       await axiosInstance.put(`/api/global-mods/templates/${templateId}`, {
-        categoryId: newCategoryId
-      });
+        categoryId: newCategoryId,
+      })
 
       // Reload both gallery and manufacturer categories to update the lists
-      await loadGlobalGallery();
-      await loadManufacturerCategories();
+      await loadGlobalGallery()
+      await loadManufacturerCategories()
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: "Modification moved successfully",
+        position: 'top',
+        icon: 'success',
+        title: 'Modification moved successfully',
         showConfirmButton: false,
         timer: 1500,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } catch (error) {
-      console.error('Error moving modification:', error);
+      console.error('Error moving modification:', error)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: error.response?.data?.message || "Failed to move modification",
+        position: 'top',
+        icon: 'error',
+        title: error.response?.data?.message || 'Failed to move modification',
         showConfirmButton: false,
         timer: 3000,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     }
-  };
+  }
 
   // Build fieldsConfig from edit guided builder
   const buildEditFieldsConfig = () => {
@@ -723,331 +870,398 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       notes: editGuidedBuilder.notes,
       customerUpload: editGuidedBuilder.customerUpload,
       descriptions: editGuidedBuilder.descriptions,
-      modSampleImage: editGuidedBuilder.modSampleImage
-    };
-    return fieldsConfig;
-  };
+      modSampleImage: editGuidedBuilder.modSampleImage,
+    }
+    return fieldsConfig
+  }
   useEffect(() => {
-    loadGlobalGallery();
-  }, []);
+    loadGlobalGallery()
+  }, [])
   useEffect(() => {
-    loadGlobalAssignments();
-    loadManufacturerCategories(); // Load manufacturer-specific categories
-    loadSubTypes(); // Load sub-types for this manufacturer
-  }, [id]);
+    loadGlobalAssignments()
+    loadManufacturerCategories() // Load manufacturer-specific categories
+    loadSubTypes() // Load sub-types for this manufacturer
+  }, [id])
 
   const flatTemplates = React.useMemo(() => {
-    const list = [];
+    const list = []
     // Add only manufacturer-specific templates
-    (manufacturerCategories || []).forEach(cat => (cat.templates || []).forEach(t => list.push({ ...t, categoryName: cat.name, isGlobal: false })));
+    ;(manufacturerCategories || []).forEach((cat) =>
+      (cat.templates || []).forEach((t) =>
+        list.push({ ...t, categoryName: cat.name, isGlobal: false }),
+      ),
+    )
     return list
-      .filter(t => includeDraftTemplates || t.isReady)
-      .sort((a, b) => (a.categoryName || '').localeCompare(b.categoryName) || a.name.localeCompare(b.name));
-  }, [manufacturerCategories, includeDraftTemplates]);
+      .filter((t) => includeDraftTemplates || t.isReady)
+      .sort(
+        (a, b) =>
+          (a.categoryName || '').localeCompare(b.categoryName) || a.name.localeCompare(b.name),
+      )
+  }, [manufacturerCategories, includeDraftTemplates])
 
   const openAssignGlobal = () => {
-    setAssignFormGM({ templateId: '', scope: styleFilter ? 'style' : 'all', targetStyle: styleFilter || '', targetType: typeFilter || '', overridePrice: '' });
-    setShowAssignGlobalModsModal(true);
-  };
+    setAssignFormGM({
+      templateId: '',
+      scope: styleFilter ? 'style' : 'all',
+      targetStyle: styleFilter || '',
+      targetType: typeFilter || '',
+      overridePrice: '',
+    })
+    setShowAssignGlobalModsModal(true)
+  }
 
   // Transform fieldsConfig from template to guidedBuilder shape
   const makeGuidedFromFields = (fc) => {
     const base = {
       sliders: {
-        height: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Height' },
-        width: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Width' },
-        depth: { enabled: false, min: 0, max: 0, step: 1, useCustomIncrements: false, customIncrements: ['1/8','1/4','3/8','1/2','5/8','3/4','7/8'], label: 'Depth' }
+        height: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Height',
+        },
+        width: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Width',
+        },
+        depth: {
+          enabled: false,
+          min: 0,
+          max: 0,
+          step: 1,
+          useCustomIncrements: false,
+          customIncrements: ['1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'],
+          label: 'Depth',
+        },
       },
-      sideSelector: { enabled: false, options: ['L','R'], label: 'Side' },
+      sideSelector: { enabled: false, options: ['L', 'R'], label: 'Side' },
       qtyRange: { enabled: false, min: 1, max: 10, label: 'Quantity' },
       notes: { enabled: false, placeholder: '', showInRed: true, label: 'Customer Notes' },
       customerUpload: { enabled: false, required: false, title: '', label: 'File Upload' },
       descriptions: { internal: '', customer: '', installer: '', both: false },
-      modSampleImage: { enabled: false, label: 'Sample Image' }
-    };
-    if (!fc) return base;
+      modSampleImage: { enabled: false, label: 'Sample Image' },
+    }
+    if (!fc) return base
     // sliders
     if (fc.sliders) {
-      ['height','width','depth'].forEach(k => {
+      ;['height', 'width', 'depth'].forEach((k) => {
         if (fc.sliders[k]) {
-          base.sliders[k].enabled = !!fc.sliders[k].enabled;
-          base.sliders[k].min = Number(fc.sliders[k].min ?? 0);
-          base.sliders[k].max = Number(fc.sliders[k].max ?? 0);
-          base.sliders[k].step = Number(fc.sliders[k].step ?? 1);
-          if (Array.isArray(fc.sliders[k].customIncrements) && fc.sliders[k].customIncrements.length > 0) {
-            base.sliders[k].useCustomIncrements = true;
-            base.sliders[k].customIncrements = fc.sliders[k].customIncrements;
+          base.sliders[k].enabled = !!fc.sliders[k].enabled
+          base.sliders[k].min = Number(fc.sliders[k].min ?? 0)
+          base.sliders[k].max = Number(fc.sliders[k].max ?? 0)
+          base.sliders[k].step = Number(fc.sliders[k].step ?? 1)
+          if (
+            Array.isArray(fc.sliders[k].customIncrements) &&
+            fc.sliders[k].customIncrements.length > 0
+          ) {
+            base.sliders[k].useCustomIncrements = true
+            base.sliders[k].customIncrements = fc.sliders[k].customIncrements
           } else {
-            base.sliders[k].useCustomIncrements = false;
+            base.sliders[k].useCustomIncrements = false
           }
         }
-      });
+      })
     }
     if (fc.sideSelector) {
-      base.sideSelector.enabled = !!fc.sideSelector.enabled;
-      base.sideSelector.options = Array.isArray(fc.sideSelector.options) && fc.sideSelector.options.length ? fc.sideSelector.options : ['L','R'];
+      base.sideSelector.enabled = !!fc.sideSelector.enabled
+      base.sideSelector.options =
+        Array.isArray(fc.sideSelector.options) && fc.sideSelector.options.length
+          ? fc.sideSelector.options
+          : ['L', 'R']
     }
     if (fc.qtyRange) {
-      base.qtyRange.enabled = !!fc.qtyRange.enabled;
-      base.qtyRange.min = Number(fc.qtyRange.min ?? 1);
-      base.qtyRange.max = Number(fc.qtyRange.max ?? 10);
+      base.qtyRange.enabled = !!fc.qtyRange.enabled
+      base.qtyRange.min = Number(fc.qtyRange.min ?? 1)
+      base.qtyRange.max = Number(fc.qtyRange.max ?? 10)
     }
     if (fc.notes) {
-      base.notes.enabled = !!fc.notes.enabled;
-      base.notes.placeholder = fc.notes.placeholder || '';
-      base.notes.showInRed = !!fc.notes.showInRed;
+      base.notes.enabled = !!fc.notes.enabled
+      base.notes.placeholder = fc.notes.placeholder || ''
+      base.notes.showInRed = !!fc.notes.showInRed
     }
     if (fc.customerUpload) {
-      base.customerUpload.enabled = !!fc.customerUpload.enabled;
-      base.customerUpload.required = !!fc.customerUpload.required;
-      base.customerUpload.title = fc.customerUpload.title || '';
+      base.customerUpload.enabled = !!fc.customerUpload.enabled
+      base.customerUpload.required = !!fc.customerUpload.required
+      base.customerUpload.title = fc.customerUpload.title || ''
     }
     if (fc.descriptions) {
-      base.descriptions.internal = fc.descriptions.internal || '';
-      base.descriptions.customer = fc.descriptions.customer || '';
-      base.descriptions.installer = fc.descriptions.installer || '';
-      base.descriptions.both = !!fc.descriptions.both;
+      base.descriptions.internal = fc.descriptions.internal || ''
+      base.descriptions.customer = fc.descriptions.customer || ''
+      base.descriptions.installer = fc.descriptions.installer || ''
+      base.descriptions.both = !!fc.descriptions.both
     }
     if (fc.modSampleImage) {
-      base.modSampleImage.enabled = !!fc.modSampleImage.enabled;
+      base.modSampleImage.enabled = !!fc.modSampleImage.enabled
     }
-    return base;
-  };
+    return base
+  }
 
   const submitAssignGlobal = async () => {
-    if (!assignFormGM.templateId) return;
+    if (!assignFormGM.templateId) return
     try {
       // Support applying to selected items
       if (assignFormGM.scope === 'item' && selectedItems.length > 0) {
-        await Promise.all(selectedItems.map(catalogDataId => axiosInstance.post('/api/global-mods/assignments', {
-          templateId: Number(assignFormGM.templateId),
-          manufacturerId: id,
-          scope: 'item',
-          catalogDataId,
-          overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
-        })));
+        await Promise.all(
+          selectedItems.map((catalogDataId) =>
+            axiosInstance.post('/api/global-mods/assignments', {
+              templateId: Number(assignFormGM.templateId),
+              manufacturerId: id,
+              scope: 'item',
+              catalogDataId,
+              overridePrice:
+                assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice),
+            }),
+          ),
+        )
       } else {
         await axiosInstance.post('/api/global-mods/assignments', {
           templateId: Number(assignFormGM.templateId),
           manufacturerId: id,
           scope: assignFormGM.scope,
-          targetStyle: assignFormGM.scope === 'style' ? (assignFormGM.targetStyle || null) : null,
-          targetType: assignFormGM.scope === 'type' ? (assignFormGM.targetType || null) : null,
-          catalogDataId: assignFormGM.scope === 'item' ? (selectedCatalogItem?.id || null) : null,
-          overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
-        });
+          targetStyle: assignFormGM.scope === 'style' ? assignFormGM.targetStyle || null : null,
+          targetType: assignFormGM.scope === 'type' ? assignFormGM.targetType || null : null,
+          catalogDataId: assignFormGM.scope === 'item' ? selectedCatalogItem?.id || null : null,
+          overridePrice:
+            assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice),
+        })
       }
-      await loadGlobalAssignments();
-      setShowAssignGlobalModsModal(false);
-      Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Assigned', showConfirmButton: false, timer: 1200 });
+      await loadGlobalAssignments()
+      setShowAssignGlobalModsModal(false)
+      Swal.fire({
+        toast: true,
+        position: 'top',
+        icon: 'success',
+        title: 'Assigned',
+        showConfirmButton: false,
+        timer: 1200,
+      })
     } catch (e) {
-      Swal.fire({ toast: true, position: 'top', icon: 'error', title: e.message || 'Assignment failed', showConfirmButton: false, timer: 1500 });
+      Swal.fire({
+        toast: true,
+        position: 'top',
+        icon: 'error',
+        title: e.message || 'Assignment failed',
+        showConfirmButton: false,
+        timer: 1500,
+      })
     }
-  };
+  }
 
   const removeGlobalAssignment = async (assignmentId) => {
     try {
-      await axiosInstance.delete(`/api/global-mods/assignments/${assignmentId}`);
-      await loadGlobalAssignments();
+      await axiosInstance.delete(`/api/global-mods/assignments/${assignmentId}`)
+      await loadGlobalAssignments()
     } catch (e) {
       // ignore
     }
-  };
+  }
 
   const openItemGlobalMods = async (item) => {
-    setSelectedCatalogItem(item);
+    setSelectedCatalogItem(item)
     try {
-      const { data } = await axiosInstance.get(`/api/global-mods/item/${item.id}`);
-      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
+      const { data } = await axiosInstance.get(`/api/global-mods/item/${item.id}`)
+      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : [])
     } catch (e) {
-      setItemGlobalList([]);
+      setItemGlobalList([])
     }
-    setShowItemGlobalModsModal(true);
-  };
+    setShowItemGlobalModsModal(true)
+  }
 
   const suppressTemplateForItem = async (templateId, active) => {
     // active=false => create a suppression assignment; true => remove suppression if exists
     try {
       if (active === false) {
-        await axiosInstance.post('/api/global-mods/assignments', { templateId, manufacturerId: id, scope: 'item', catalogDataId: selectedCatalogItem.id, isActive: false });
+        await axiosInstance.post('/api/global-mods/assignments', {
+          templateId,
+          manufacturerId: id,
+          scope: 'item',
+          catalogDataId: selectedCatalogItem.id,
+          isActive: false,
+        })
       } else {
         // find suppression assignment to delete (scope=item, isActive=false)
-        const suppress = itemGlobalList.find(a => a.template?.id === templateId && a.scope === 'item' && a.isActive === false);
-        if (suppress) await axiosInstance.delete(`/api/global-mods/assignments/${suppress.id}`);
+        const suppress = itemGlobalList.find(
+          (a) => a.template?.id === templateId && a.scope === 'item' && a.isActive === false,
+        )
+        if (suppress) await axiosInstance.delete(`/api/global-mods/assignments/${suppress.id}`)
       }
-      const { data } = await axiosInstance.get(`/api/global-mods/item/${selectedCatalogItem.id}`);
-      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
+      const { data } = await axiosInstance.get(`/api/global-mods/item/${selectedCatalogItem.id}`)
+      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : [])
     } catch (e) {
       // ignore
     }
-  };
+  }
 
   // Keep filters in sync and refetch when they change
   useEffect(() => {
-    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeFilter, styleFilter, id, sortBy, sortOrder]);
+  }, [typeFilter, styleFilter, id, sortBy, sortOrder])
 
   // Initial load
   useEffect(() => {
     if (id) {
-      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id])
 
   // Persist items per page
   useEffect(() => {
-    localStorage.setItem('catalogItemsPerPage', String(itemsPerPage));
-  }, [itemsPerPage]);
+    localStorage.setItem('catalogItemsPerPage', String(itemsPerPage))
+  }, [itemsPerPage])
 
-  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false)
   const [editForm, setEditForm] = useState({
     id: null,
     style: '',
     type: '',
     code: '',
     description: '',
-    price: ''
-  });
+    price: '',
+  })
 
   // Delete style modal states
-  const [deleteStyleModalVisible, setDeleteStyleModalVisible] = useState(false);
-  const [styleToDelete, setStyleToDelete] = useState('');
-  const [mergeToStyle, setMergeToStyle] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteStyleModalVisible, setDeleteStyleModalVisible] = useState(false)
+  const [styleToDelete, setStyleToDelete] = useState('')
+  const [mergeToStyle, setMergeToStyle] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Bulk delete states
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [bulkDeleteModalVisible, setBulkDeleteModalVisible] = useState(false);
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([])
+  const [isSelectAll, setIsSelectAll] = useState(false)
+  const [bulkDeleteModalVisible, setBulkDeleteModalVisible] = useState(false)
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   // Individual delete states
-  const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [isDeletingItem, setIsDeletingItem] = useState(false);
+  const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const [isDeletingItem, setIsDeletingItem] = useState(false)
 
   // Cleanup duplicates states
-  const [isCleaningDuplicates, setIsCleaningDuplicates] = useState(false);
+  const [isCleaningDuplicates, setIsCleaningDuplicates] = useState(false)
 
   // Rollback states
-  const [rollbackModalVisible, setRollbackModalVisible] = useState(false);
-  const [availableBackups, setAvailableBackups] = useState([]);
-  const [selectedBackup, setSelectedBackup] = useState('');
-  const [isLoadingBackups, setIsLoadingBackups] = useState(false);
-  const [isRollingBack, setIsRollingBack] = useState(false);
+  const [rollbackModalVisible, setRollbackModalVisible] = useState(false)
+  const [availableBackups, setAvailableBackups] = useState([])
+  const [selectedBackup, setSelectedBackup] = useState('')
+  const [isLoadingBackups, setIsLoadingBackups] = useState(false)
+  const [isRollingBack, setIsRollingBack] = useState(false)
 
   // Bulk edit states
-  const [bulkEditModalVisible, setBulkEditModalVisible] = useState(false);
-  const [isBulkEditing, setIsBulkEditing] = useState(false);
+  const [bulkEditModalVisible, setBulkEditModalVisible] = useState(false)
+  const [isBulkEditing, setIsBulkEditing] = useState(false)
   const [bulkEditForm, setBulkEditForm] = useState({
     style: '',
     type: '',
     description: '',
-    price: ''
-  });
+    price: '',
+  })
 
   // Style name edit states
-  const [editStyleNameModalVisible, setEditStyleNameModalVisible] = useState(false);
-  const [isEditingStyleName, setIsEditingStyleName] = useState(false);
+  const [editStyleNameModalVisible, setEditStyleNameModalVisible] = useState(false)
+  const [isEditingStyleName, setIsEditingStyleName] = useState(false)
   const [styleNameEditForm, setStyleNameEditForm] = useState({
     oldStyleName: '',
-    newStyleName: ''
-  });
+    newStyleName: '',
+  })
 
-  const [file, setFile] = useState(null);
-  const dispatch = useDispatch();
+  const [file, setFile] = useState(null)
+  const dispatch = useDispatch()
 
   // Sort handler function
   const handleSort = (field) => {
-    let newSortOrder = 'ASC';
+    let newSortOrder = 'ASC'
     if (sortBy === field && sortOrder === 'ASC') {
-      newSortOrder = 'DESC';
+      newSortOrder = 'DESC'
     }
-    setSortBy(field);
-    setSortOrder(newSortOrder);
+    setSortBy(field)
+    setSortOrder(newSortOrder)
     // Fetch data with new sorting
-    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, field, newSortOrder);
-    setCurrentPage(1);
-  };
+    fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, field, newSortOrder)
+    setCurrentPage(1)
+  }
 
-  const [errors, setErrors] = useState({});
-  const handleManualChange = (e) => {
-    setManualForm({ ...manualForm, [e.target.name]: e.target.value });
-  };
+  const [errors, setErrors] = useState({})
+  const handleManualChange = (event) => {
+    setManualForm({ ...manualForm, [event.currentTarget.name]: event.currentTarget.value })
+  }
 
   const validateManualForm = () => {
-    const newErrors = {};
+    const newErrors = {}
     Object.entries(manualForm).forEach(([key, value]) => {
       if (!value || !value.toString().trim()) {
-        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`
       }
-    });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    })
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const resetManualForm = () => {
-    setManualForm(initialManualForm);
-    setErrors({});
-  };
+    setManualForm(initialManualForm)
+    setErrors({})
+  }
 
   const handleSaveManualItem = async () => {
-    if (isSaving) return; // Prevent double submission
-    if (!validateManualForm()) return;
-    setIsSaving(true);
+    if (isSaving) return // Prevent double submission
+    if (!validateManualForm()) return
+    setIsSaving(true)
 
     try {
-  await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm);
+      await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: "Catalog added successfully",
+        position: 'top',
+        icon: 'success',
+        title: 'Catalog added successfully',
         showConfirmButton: false,
         timer: 1500,
         width: '360px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
       // Reset and close modal
-      setManualForm({ style: '', color: '', code: '', type: '', description: '', price: '' });
-  // Refresh list (keep filters, reset to page 1 to show newest)
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      setManualForm({ style: '', color: '', code: '', type: '', description: '', price: '' })
+      // Refresh list (keep filters, reset to page 1 to show newest)
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
 
-      setErrors({});
-      resetManualForm();
-      setManualModalVisible(false);
-
+      setErrors({})
+      resetManualForm()
+      setManualModalVisible(false)
 
       // TODO: Trigger a reload of catalogData
-
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to save catalog",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to save catalog',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
-  };
-
-
+  }
 
   const handleEditClick = (item) => {
     setEditForm({
@@ -1056,602 +1270,613 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       type: item.type || '',
       code: item.code || '',
       description: item.description || '',
-      price: item.price || ''
-    });
-    setEditModalVisible(true);
-  };
+      price: item.price || '',
+    })
+    setEditModalVisible(true)
+  }
 
   const handleUpdateItem = async () => {
     // if (!validateManualForm()) return;
-    setIsUpdating(true); // Start loading
+    setIsUpdating(true) // Start loading
     try {
-  await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm);
+      await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm)
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: "Catalog updated successfully",
+        position: 'top',
+        icon: 'success',
+        title: 'Catalog updated successfully',
         showConfirmButton: false,
         timer: 1500,
         width: '360px',
-      });
+      })
 
-      setEditModalVisible(false);
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      setEditModalVisible(false)
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to update catalog",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to update catalog',
         showConfirmButton: false,
         timer: 1500,
-      });
+      })
     } finally {
-      setIsUpdating(false); // End loading
+      setIsUpdating(false) // End loading
     }
-  };
+  }
 
   // Bulk selection handlers
   const handleSelectAll = (checked) => {
-    setIsSelectAll(checked);
+    setIsSelectAll(checked)
     if (checked) {
-      setSelectedItems(currentItems.map(item => item.id));
+      setSelectedItems(currentItems.map((item) => item.id))
     } else {
-      setSelectedItems([]);
+      setSelectedItems([])
     }
-  };
+  }
 
   const handleSelectItem = (itemId, checked) => {
     if (checked) {
-      const newSelectedItems = [...selectedItems, itemId];
-      setSelectedItems(newSelectedItems);
+      const newSelectedItems = [...selectedItems, itemId]
+      setSelectedItems(newSelectedItems)
 
       // Check if all current page items are selected
-      const currentPageIds = currentItems.map(item => item.id);
-      const allCurrentPageSelected = currentPageIds.every(id => newSelectedItems.includes(id));
-      setIsSelectAll(allCurrentPageSelected);
+      const currentPageIds = currentItems.map((item) => item.id)
+      const allCurrentPageSelected = currentPageIds.every((id) => newSelectedItems.includes(id))
+      setIsSelectAll(allCurrentPageSelected)
     } else {
-      setSelectedItems(prev => prev.filter(id => id !== itemId));
-      setIsSelectAll(false);
+      setSelectedItems((prev) => prev.filter((id) => id !== itemId))
+      setIsSelectAll(false)
     }
-  };
+  }
 
   // Update select all state when page changes
   React.useEffect(() => {
-    const currentPageIds = currentItems.map(item => item.id);
-    const allCurrentPageSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedItems.includes(id));
-    setIsSelectAll(allCurrentPageSelected);
-  }, [currentItems, selectedItems]);
+    const currentPageIds = currentItems.map((item) => item.id)
+    const allCurrentPageSelected =
+      currentPageIds.length > 0 && currentPageIds.every((id) => selectedItems.includes(id))
+    setIsSelectAll(allCurrentPageSelected)
+  }, [currentItems, selectedItems])
 
   // Individual delete handlers
   const handleDeleteItemClick = (item) => {
-    setItemToDelete(item);
-    setDeleteItemModalVisible(true);
-  };
+    setItemToDelete(item)
+    setDeleteItemModalVisible(true)
+  }
 
   const handleDeleteItem = async () => {
-    if (!itemToDelete || isDeletingItem) return;
+    if (!itemToDelete || isDeletingItem) return
 
-    setIsDeletingItem(true);
+    setIsDeletingItem(true)
 
     try {
-  await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`);
+      await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`)
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: "Item deleted successfully",
+        position: 'top',
+        icon: 'success',
+        title: 'Item deleted successfully',
         showConfirmButton: false,
         timer: 1500,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset modal state
-      setDeleteItemModalVisible(false);
-      setItemToDelete(null);
+      setDeleteItemModalVisible(false)
+      setItemToDelete(null)
 
       // Refresh data
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to delete item",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to delete item',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsDeletingItem(false);
+      setIsDeletingItem(false)
     }
-  };
+  }
 
   // Bulk delete handlers
   const handleBulkDeleteClick = () => {
-    if (selectedItems.length === 0) return;
-    setBulkDeleteModalVisible(true);
-  };
+    if (selectedItems.length === 0) return
+    setBulkDeleteModalVisible(true)
+  }
 
   const handleBulkDelete = async () => {
-    if (selectedItems.length === 0 || isBulkDeleting) return;
+    if (selectedItems.length === 0 || isBulkDeleting) return
 
-    setIsBulkDeleting(true);
+    setIsBulkDeleting(true)
 
     try {
       // Delete items one by one (could be optimized with a bulk endpoint)
-      const deletePromises = selectedItems.map(itemId =>
-        axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemId}`)
-      );
-      await Promise.all(deletePromises);
+      const deletePromises = selectedItems.map((itemId) =>
+        axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemId}`),
+      )
+      await Promise.all(deletePromises)
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
+        position: 'top',
+        icon: 'success',
         title: `Successfully deleted ${selectedItems.length} items`,
         showConfirmButton: false,
         timer: 2000,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset states
-      setBulkDeleteModalVisible(false);
-      setSelectedItems([]);
-      setIsSelectAll(false);
+      setBulkDeleteModalVisible(false)
+      setSelectedItems([])
+      setIsSelectAll(false)
 
       // Refresh data
-  fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to delete some items",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to delete some items',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsBulkDeleting(false);
+      setIsBulkDeleting(false)
     }
-  };
+  }
 
   // Cleanup duplicates handler
   const handleCleanupDuplicates = async () => {
-    if (isCleaningDuplicates) return;
+    if (isCleaningDuplicates) return
 
-    setIsCleaningDuplicates(true);
+    setIsCleaningDuplicates(true)
 
     try {
-  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/cleanup-duplicates`, null);
+      const { data: result } = await axiosInstance.post(
+        `/api/manufacturers/${id}/cleanup-duplicates`,
+        null,
+      )
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: result.duplicatesRemoved > 0 ? "success" : "info",
+        position: 'top',
+        icon: result.duplicatesRemoved > 0 ? 'success' : 'info',
         title: result.message,
         showConfirmButton: false,
         timer: 3000,
         width: '450px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Refresh data if duplicates were removed
       if (result.duplicatesRemoved > 0) {
-        fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-        setCurrentPage(1);
+        fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
+        setCurrentPage(1)
       }
-
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to cleanup duplicates",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to cleanup duplicates',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsCleaningDuplicates(false);
+      setIsCleaningDuplicates(false)
     }
-  };
+  }
 
   // Rollback functions
   const handleRollbackClick = async () => {
-    setIsLoadingBackups(true);
-    setRollbackModalVisible(true);
+    setIsLoadingBackups(true)
+    setRollbackModalVisible(true)
 
     try {
-  const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`);
-      setAvailableBackups(result.backups || []);
-
+      const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`)
+      setAvailableBackups(result.backups || [])
     } catch (err) {
-      console.error('Error fetching backups:', err);
+      console.error('Error fetching backups:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to load backup history",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to load backup history',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsLoadingBackups(false);
+      setIsLoadingBackups(false)
     }
-  };
+  }
 
   const handleRollback = async () => {
-    if (!selectedBackup || isRollingBack) return;
+    if (!selectedBackup || isRollingBack) return
 
-    setIsRollingBack(true);
+    setIsRollingBack(true)
 
     try {
-  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/rollback`, { uploadSessionId: selectedBackup });
+      const { data: result } = await axiosInstance.post(
+        `/api/manufacturers/${id}/catalog/rollback`,
+        { uploadSessionId: selectedBackup },
+      )
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
+        position: 'top',
+        icon: 'success',
         title: result.message || t('settings.manufacturers.catalogMapping.rollback.success'),
         showConfirmButton: false,
         timer: 2500,
         width: '450px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset modal state
-      setRollbackModalVisible(false);
-      setSelectedBackup('');
-      setAvailableBackups([]);
+      setRollbackModalVisible(false)
+      setSelectedBackup('')
+      setAvailableBackups([])
 
       // Refresh data
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-      setCurrentPage(1);
-
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
+      setCurrentPage(1)
     } catch (err) {
-      console.error('Error during rollback:', err);
+      console.error('Error during rollback:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
+        position: 'top',
+        icon: 'error',
         title: t('settings.manufacturers.catalogMapping.rollback.failed'),
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsRollingBack(false);
+      setIsRollingBack(false)
     }
-  };
+  }
 
   const handleDeleteStyleClick = (styleName) => {
-    setStyleToDelete(styleName);
-    setMergeToStyle('');
-    setDeleteStyleModalVisible(true);
-  };
+    setStyleToDelete(styleName)
+    setMergeToStyle('')
+    setDeleteStyleModalVisible(true)
+  }
 
   const handleDeleteStyle = async () => {
-    if (!styleToDelete || isDeleting) return;
+    if (!styleToDelete || isDeleting) return
 
-    setIsDeleting(true);
+    setIsDeleting(true)
 
     try {
-      const requestBody = mergeToStyle ? { mergeToStyle } : {};
+      const requestBody = mergeToStyle ? { mergeToStyle } : {}
 
-      const { data: result } = await axiosInstance.delete(`/api/manufacturers/${id}/style/${encodeURIComponent(styleToDelete)}`, {
-        data: requestBody,
-      });
+      const { data: result } = await axiosInstance.delete(
+        `/api/manufacturers/${id}/style/${encodeURIComponent(styleToDelete)}`,
+        {
+          data: requestBody,
+        },
+      )
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: result.message || "Style operation completed successfully",
+        position: 'top',
+        icon: 'success',
+        title: result.message || 'Style operation completed successfully',
         showConfirmButton: false,
         timer: 2500,
         width: '450px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset modal state
-      setDeleteStyleModalVisible(false);
-      setStyleToDelete('');
-      setMergeToStyle('');
+      setDeleteStyleModalVisible(false)
+      setStyleToDelete('')
+      setMergeToStyle('')
 
       // Refresh data
-  fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
 
       // Reset current page if we're beyond the new total pages
-      setCurrentPage(1);
-
+      setCurrentPage(1)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to delete/merge style",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to delete/merge style',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   // Bulk edit handlers
   const handleBulkEditClick = () => {
-    if (selectedItems.length === 0) return;
+    if (selectedItems.length === 0) return
     setBulkEditForm({
       style: '',
       type: '',
       description: '',
-      price: ''
-    });
-    setBulkEditModalVisible(true);
-  };
+      price: '',
+    })
+    setBulkEditModalVisible(true)
+  }
 
   const handleBulkEdit = async () => {
-    if (selectedItems.length === 0 || isBulkEditing) return;
+    if (selectedItems.length === 0 || isBulkEditing) return
 
     // Check if at least one field is filled
-    const hasUpdates = Object.values(bulkEditForm).some(value => value && value.trim() !== '');
+    const hasUpdates = Object.values(bulkEditForm).some((value) => value && value.trim() !== '')
     if (!hasUpdates) {
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "warning",
-        title: "Please fill at least one field to update",
+        position: 'top',
+        icon: 'warning',
+        title: 'Please fill at least one field to update',
         showConfirmButton: false,
         timer: 2000,
-        width: '350px'
-      });
-      return;
+        width: '350px',
+      })
+      return
     }
 
-    setIsBulkEditing(true);
+    setIsBulkEditing(true)
 
     try {
       // Prepare updates object (only include non-empty fields)
-      const updates = {};
-      Object.keys(bulkEditForm).forEach(key => {
+      const updates = {}
+      Object.keys(bulkEditForm).forEach((key) => {
         if (bulkEditForm[key] && bulkEditForm[key].trim() !== '') {
-          updates[key] = bulkEditForm[key].trim();
+          updates[key] = bulkEditForm[key].trim()
         }
-      });
+      })
 
-  const { data: result } = await axiosInstance.put(`/api/manufacturers/catalog/bulk-edit`, {
+      const { data: result } = await axiosInstance.put(`/api/manufacturers/catalog/bulk-edit`, {
         itemIds: selectedItems,
-        updates
-  });
+        updates,
+      })
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
+        position: 'top',
+        icon: 'success',
         title: result.message || `Successfully updated ${selectedItems.length} items`,
         showConfirmButton: false,
         timer: 2000,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset states
-      setBulkEditModalVisible(false);
-      setSelectedItems([]);
-      setIsSelectAll(false);
+      setBulkEditModalVisible(false)
+      setSelectedItems([])
+      setIsSelectAll(false)
       setBulkEditForm({
         style: '',
         type: '',
         description: '',
-        price: ''
-      });
+        price: '',
+      })
 
       // Refresh data
-      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: "Failed to bulk edit items",
+        position: 'top',
+        icon: 'error',
+        title: 'Failed to bulk edit items',
         showConfirmButton: false,
         timer: 1500,
         width: '330px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsBulkEditing(false);
+      setIsBulkEditing(false)
     }
-  };
+  }
 
   // Style name edit handlers
   const handleEditStyleNameClick = (styleName) => {
     setStyleNameEditForm({
       oldStyleName: styleName,
-      newStyleName: ''
-    });
-    setEditStyleNameModalVisible(true);
-  };
+      newStyleName: '',
+    })
+    setEditStyleNameModalVisible(true)
+  }
 
   const handleEditStyleName = async () => {
-    if (!styleNameEditForm.oldStyleName || !styleNameEditForm.newStyleName || isEditingStyleName) return;
+    if (!styleNameEditForm.oldStyleName || !styleNameEditForm.newStyleName || isEditingStyleName)
+      return
 
     if (styleNameEditForm.oldStyleName.trim() === styleNameEditForm.newStyleName.trim()) {
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "warning",
-        title: "New style name must be different from the old one",
+        position: 'top',
+        icon: 'warning',
+        title: 'New style name must be different from the old one',
         showConfirmButton: false,
         timer: 2000,
-        width: '350px'
-      });
-      return;
+        width: '350px',
+      })
+      return
     }
 
-    setIsEditingStyleName(true);
+    setIsEditingStyleName(true)
 
     try {
-  const { data: result } = await axiosInstance.put(`/api/manufacturers/${id}/style-name`, {
+      const { data: result } = await axiosInstance.put(`/api/manufacturers/${id}/style-name`, {
         oldStyleName: styleNameEditForm.oldStyleName.trim(),
-        newStyleName: styleNameEditForm.newStyleName.trim()
-  });
+        newStyleName: styleNameEditForm.newStyleName.trim(),
+      })
 
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "success",
-        title: result.message || "Style name updated successfully",
+        position: 'top',
+        icon: 'success',
+        title: result.message || 'Style name updated successfully',
         showConfirmButton: false,
         timer: 2500,
         width: '450px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
 
       // Reset modal state
-      setEditStyleNameModalVisible(false);
+      setEditStyleNameModalVisible(false)
       setStyleNameEditForm({
         oldStyleName: '',
-        newStyleName: ''
-      });
+        newStyleName: '',
+      })
 
       // Refresh data
-      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder);
-
+      fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error:', err)
       Swal.fire({
         toast: true,
-        position: "top",
-        icon: "error",
-        title: err.message || "Failed to edit style name",
+        position: 'top',
+        icon: 'error',
+        title: err.message || 'Failed to edit style name',
         showConfirmButton: false,
         timer: 2000,
         width: '350px',
         didOpen: (toast) => {
-          toast.style.padding = '8px 12px';
-          toast.style.fontSize = '14px';
-          toast.style.minHeight = 'auto';
-        }
-      });
+          toast.style.padding = '8px 12px'
+          toast.style.fontSize = '14px'
+          toast.style.minHeight = 'auto'
+        },
+      })
     } finally {
-      setIsEditingStyleName(false);
+      setIsEditingStyleName(false)
     }
-  };
+  }
 
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
+  const handleFileChange = (event) => {
+    const selectedFile = event.currentTarget.files[0]
     if (selectedFile) {
       const allowedTypes = [
         'text/csv',
         'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      ];
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ]
 
       if (!allowedTypes.includes(selectedFile.type)) {
-        Swal.fire("Unsupported file type", "Please upload a CSV or Excel file.", "error");
-        return;
+        toast({
+          title: t('common.error', 'Error'),
+          description: t(
+            'settings.manufacturers.catalogMapping.unsupportedFileType',
+            'Please upload a CSV or Excel file.',
+          ),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
+        return
       }
 
-      setFile(selectedFile);
+      setFile(selectedFile)
     }
-  };
+  }
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) return
 
     // Check file size and show appropriate warning
-    const fileSizeInMB = file.size / (1024 * 1024);
-    const isLargeFile = fileSizeInMB > 10;
+    const fileSizeInMB = file.size / (1024 * 1024)
+    const isLargeFile = fileSizeInMB > 10
 
     if (fileSizeInMB > 50) {
       Swal.fire({
         title: t('common.error'),
         text: `File too large (${fileSizeInMB.toFixed(2)}MB). Maximum size is 50MB. Please split your file into smaller chunks.`,
-        icon: "error"
-      });
-      return;
+        icon: 'error',
+      })
+      return
     }
 
     if (isLargeFile) {
@@ -1661,17 +1886,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, upload',
-        cancelButtonText: 'Cancel'
-      });
+        cancelButtonText: 'Cancel',
+      })
 
-      if (!result.isConfirmed) return;
+      if (!result.isConfirmed) return
     }
 
-    const formData = new FormData();
-    formData.append('catalogFiles', file);
+    const formData = new FormData()
+    formData.append('catalogFiles', file)
 
     // Show loading with progress for large files
-    let progressSwal;
+    let progressSwal
     if (isLargeFile) {
       progressSwal = Swal.fire({
         title: 'Processing Large File',
@@ -1688,70 +1913,72 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         allowOutsideClick: false,
         showConfirmButton: false,
         willOpen: () => {
-          Swal.showLoading();
-        }
-      });
+          Swal.showLoading()
+        },
+      })
     }
 
     try {
-      const startTime = Date.now();
+      const startTime = Date.now()
 
-  const { data: result } = await axiosInstance.post(`/api/manufacturers/${id}/catalog/upload`, formData);
-      const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
+      const { data: result } = await axiosInstance.post(
+        `/api/manufacturers/${id}/catalog/upload`,
+        formData,
+      )
+      const processingTime = ((Date.now() - startTime) / 1000).toFixed(1)
 
       // Close progress modal if it was shown
       if (progressSwal) {
-        Swal.close();
+        Swal.close()
       }
 
       // Enhanced success message with detailed stats
-      let successMessage = t('settings.manufacturers.catalogMapping.file.uploadSuccess');
+      let successMessage = t('settings.manufacturers.catalogMapping.file.uploadSuccess')
       if (result.stats) {
-        successMessage += `\n\nFile: ${fileSizeInMB.toFixed(2)}MB`;
-        successMessage += `\nProcessing: ${result.stats.processingMethod || 'regular'}`;
-        successMessage += `\nTime: ${processingTime}s`;
-        successMessage += `\n\nItems processed: ${result.stats.totalProcessed}`;
-        successMessage += `\nCreated: ${result.stats.created} | Updated: ${result.stats.updated}`;
+        successMessage += `\n\nFile: ${fileSizeInMB.toFixed(2)}MB`
+        successMessage += `\nProcessing: ${result.stats.processingMethod || 'regular'}`
+        successMessage += `\nTime: ${processingTime}s`
+        successMessage += `\n\nItems processed: ${result.stats.totalProcessed}`
+        successMessage += `\nCreated: ${result.stats.created} | Updated: ${result.stats.updated}`
 
         if (result.stats.backupCreated) {
-          successMessage += `\n\n✅ Backup created - you can rollback this upload if needed.`;
+          successMessage += `\n\n✅ Backup created - you can rollback this upload if needed.`
         }
       }
 
       Swal.fire({
         title: t('common.success'),
         text: successMessage,
-        icon: "success",
-        confirmButtonText: "OK"
-      });
+        icon: 'success',
+        confirmButtonText: 'OK',
+      })
 
-      setFileModalVisible(false);
-      setFile(null);
-      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder); // Reload updated data
-
+      setFileModalVisible(false)
+      setFile(null)
+      fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder) // Reload updated data
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error('Upload error:', err)
 
       // Close progress modal if it was shown
       if (progressSwal) {
-        Swal.close();
+        Swal.close()
       }
 
-      let errorMessage = err.message || t('settings.manufacturers.catalogMapping.file.uploadFailed');
+      let errorMessage = err.message || t('settings.manufacturers.catalogMapping.file.uploadFailed')
 
       Swal.fire({
         title: t('common.error'),
         text: errorMessage,
-        icon: "error",
-        footer: isLargeFile ?
-          'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.' :
-          undefined
-      });
+        icon: 'error',
+        footer: isLargeFile
+          ? 'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.'
+          : undefined,
+      })
     }
-  };
+  }
 
-  const [showStyleModal, setShowStyleModal] = useState(false);
-  const [selectedStyle, setSelectedStyle] = useState('');
+  const [showStyleModal, setShowStyleModal] = useState(false)
+  const [selectedStyle, setSelectedStyle] = useState('')
   const [styleForm, setStyleForm] = useState({
     name: '',
     shortName: '',
@@ -1759,19 +1986,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     image: '',
     catalogId: '',
     manufacturerId: '',
-    code: ''
-  });
+    code: '',
+  })
 
   const handleManageStyleClick = async (item) => {
-    const { id: catalogId, manufacturerId, style, code } = item;
+    const { id: catalogId, manufacturerId, style, code } = item
 
     try {
-  const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`);
-      const data = response.data;
+      const response = await axiosInstance.get(`/api/manufacturers/style/${catalogId}`)
+      const data = response.data
 
       if (data) {
         // Prefill the form with existing DB data
-        setSelectedStyle(data.name || style || '');
+        setSelectedStyle(data.name || style || '')
         setStyleForm({
           name: data.name || '',
           shortName: data.shortName || '',
@@ -1779,12 +2006,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           image: data.image || '',
           catalogId,
           manufacturerId,
-          code
-        });
-        setStyleImage(null); // Clear any previously selected image
+          code,
+        })
+        setStyleImage(null) // Clear any previously selected image
       } else {
         // No existing data
-        setSelectedStyle(style || '');
+        setSelectedStyle(style || '')
         setStyleForm({
           name: style || '',
           shortName: '',
@@ -1792,17 +2019,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           image: '',
           catalogId,
           manufacturerId,
-          code
-        });
-        setStyleImage(null);
+          code,
+        })
+        setStyleImage(null)
       }
 
-      setShowStyleModal(true);
+      setShowStyleModal(true)
     } catch (error) {
-      console.error('Error fetching style data:', error);
+      console.error('Error fetching style data:', error)
 
       // Fallback to minimal data
-      setSelectedStyle(style || '');
+      setSelectedStyle(style || '')
       setStyleForm({
         name: style || '',
         shortName: '',
@@ -1810,163 +2037,153 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         image: '',
         catalogId,
         manufacturerId,
-        code
-      });
-      setStyleImage(null);
-      setShowStyleModal(true);
+        code,
+      })
+      setStyleImage(null)
+      setShowStyleModal(true)
     }
-  };
+  }
 
-
-
-
-  const handleStyleFormChange = (e) => {
-    const { name, value } = e.target;
+  const handleStyleFormChange = (event) => {
+    const { name, value } = event.currentTarget
     setStyleForm((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
+    }))
+  }
 
   const handleSaveStyle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const formDataToSend = new FormData();
+      const formDataToSend = new FormData()
       Object.keys(styleForm).forEach((key) => {
-        formDataToSend.append(key, styleForm[key]);
-      });
+        formDataToSend.append(key, styleForm[key])
+      })
       if (styleImage) {
-        formDataToSend.append('styleImage', styleImage);
+        formDataToSend.append('styleImage', styleImage)
       }
       const response = await axiosInstance.post('/api/manufacturers/style/create', formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       if (response.data.status == 200) {
         setStyleForm({
           name: '',
           shortName: '',
           description: '',
           image: '',
-
-        });
+        })
 
         Swal.fire({
           toast: true,
-          position: "top",
-          icon: "success",
-          title: "Catalog Style Updated successfully",
+          position: 'top',
+          icon: 'success',
+          title: 'Catalog Style Updated successfully',
           showConfirmButton: false,
           timer: 1500,
           width: '360px',
           didOpen: (toast) => {
-            toast.style.padding = '8px 12px';
-            toast.style.fontSize = '14px';
-            toast.style.minHeight = 'auto';
-          }
-        });
+            toast.style.padding = '8px 12px'
+            toast.style.fontSize = '14px'
+            toast.style.minHeight = 'auto'
+          },
+        })
       }
-
-
     } catch (error) {
       // Error handling for style save
     } finally {
       // setLoading(false);
-      setStyleImage('');
-      setShowStyleModal(false);
+      setStyleImage('')
+      setShowStyleModal(false)
     }
+  }
 
-  };
-
-  const [showStyleViewModal, setShowStyleViewModal] = useState(false);
-  const [styleDetails, setStyleDetails] = useState(null);
+  const [showStyleViewModal, setShowStyleViewModal] = useState(false)
+  const [styleDetails, setStyleDetails] = useState(null)
 
   const handleShowStyleOnClick = async (item) => {
     try {
       const { id } = item
-  const res = await axiosInstance.get(`/api/manufacturers/style/${id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/style/${id}`)
 
       if (res.data) {
-        setStyleDetails(res.data);
-        setShowStyleViewModal(true);
+        setStyleDetails(res.data)
+        setShowStyleViewModal(true)
       }
-
     } catch (error) {
-      console.error('Error fetching style:', error);
-      setStyleDetails(null);
+      console.error('Error fetching style:', error)
+      setStyleDetails(null)
     } finally {
-      setShowStyleViewModal(true);
-
+      setShowStyleViewModal(true)
     }
   }
 
   // Fetch available types for the manufacturer
   const fetchAvailableTypes = async () => {
-    if (!id) return;
+    if (!id) return
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${id}/types`);
+      const response = await axiosInstance.get(`/api/manufacturers/${id}/types`)
       if (response.data.success) {
-        setAvailableTypes(response.data.data || []);
+        setAvailableTypes(response.data.data || [])
       }
     } catch (error) {
-      console.error('Failed to fetch types:', error);
-      setAvailableTypes([]);
+      console.error('Failed to fetch types:', error)
+      setAvailableTypes([])
     }
-  };
+  }
 
   // Fetch assembly costs by types
   const fetchAssemblyCostsByTypes = async () => {
-    if (!id) return;
+    if (!id) return
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${id}/assembly-costs-by-types`);
+      const response = await axiosInstance.get(`/api/manufacturers/${id}/assembly-costs-by-types`)
       if (response.data.success) {
-        setAssemblyCostsByType(response.data.data || {});
+        setAssemblyCostsByType(response.data.data || {})
       }
     } catch (error) {
-      console.error('Failed to fetch assembly costs by types:', error);
-      setAssemblyCostsByType({});
+      console.error('Failed to fetch assembly costs by types:', error)
+      setAssemblyCostsByType({})
     }
-  };
+  }
 
   const handleAssemblyCostClick = async (item) => {
     try {
-      const { id } = item;
+      const { id } = item
 
-      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`);
+      const res = await axiosInstance.get(`/api/manufacturers/assemblycost/${id}`)
 
-      const { type, price } = res.data || {};
-      setSelectedCatalogItem(item);
+      const { type, price } = res.data || {}
+      setSelectedCatalogItem(item)
 
       // Fetch available types and assembly costs for the dropdown
-      await fetchAvailableTypes();
-      await fetchAssemblyCostsByTypes();
+      await fetchAvailableTypes()
+      await fetchAssemblyCostsByTypes()
 
       setAssemblyData({
         type: type || '',
         price: price || '',
         applyTo: 'one',
         selectedItemType: item.type || '',
-        selectedTypes: []
-      });
+        selectedTypes: [],
+      })
     } catch (error) {
-      console.error('Error fetching assembly cost:', error);
+      console.error('Error fetching assembly cost:', error)
       // Fetch available types even if assembly cost fetch fails
-      await fetchAvailableTypes();
-      await fetchAssemblyCostsByTypes();
-      setSelectedCatalogItem(item);
+      await fetchAvailableTypes()
+      await fetchAssemblyCostsByTypes()
+      setSelectedCatalogItem(item)
       setAssemblyData({
         type: '',
         price: '',
         applyTo: 'one',
         selectedItemType: item.type || '',
-        selectedTypes: []
-      });
+        selectedTypes: [],
+      })
     } finally {
-      setShowAssemblyModal(true);
+      setShowAssemblyModal(true)
     }
-  };
+  }
 
   // const handleHingesDetailsClick = async (item) => {
   //   try {
@@ -1995,25 +2212,47 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   // };
 
   const saveAssemblyCost = async () => {
-    if (isAssemblyCostSaving) return; // Prevent multiple submissions
+    if (isAssemblyCostSaving) return // Prevent multiple submissions
 
     try {
-      setIsAssemblyCostSaving(true);
+      setIsAssemblyCostSaving(true)
 
       // Validation
       if (assemblyData.applyTo === 'type' && !assemblyData.selectedItemType) {
-        Swal.fire('Validation Error', 'Please select an item type when applying by type.', 'warning');
-        return;
+        Swal.fire(
+          'Validation Error',
+          'Please select an item type when applying by type.',
+          'warning',
+        )
+        return
       }
 
       if (assemblyData.applyTo === 'types' && assemblyData.selectedTypes.length === 0) {
-        Swal.fire('Validation Error', 'Please select at least one item type when applying by types.', 'warning');
-        return;
+        Swal.fire(
+          'Validation Error',
+          'Please select at least one item type when applying by types.',
+          'warning',
+        )
+        return
       }
 
-      if (!assemblyData.type || assemblyData.price === '' || assemblyData.price === null || assemblyData.price === undefined) {
-        Swal.fire('Validation Error', 'Please fill in both Type and Price fields.', 'warning');
-        return;
+      if (
+        !assemblyData.type ||
+        assemblyData.price === '' ||
+        assemblyData.price === null ||
+        assemblyData.price === undefined
+      ) {
+        toast({
+          title: t('common.validationError', 'Validation Error'),
+          description: t(
+            'settings.manufacturers.catalogMapping.fillBothFields',
+            'Please fill in both Type and Price fields.',
+          ),
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        })
+        return
       }
 
       const payload = {
@@ -2022,69 +2261,84 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         price: parseFloat(assemblyData.price) || 0,
         applyTo: assemblyData.applyTo || 'one',
         manufacturerId: selectedCatalogItem.manufacturerId,
-      };
+      }
 
       // Add itemType if applying by single type
       if (assemblyData.applyTo === 'type') {
-        payload.itemType = assemblyData.selectedItemType;
+        payload.itemType = assemblyData.selectedItemType
       }
 
       // Add selectedTypes if applying by multiple types
       if (assemblyData.applyTo === 'types') {
-        payload.selectedTypes = assemblyData.selectedTypes;
+        payload.selectedTypes = assemblyData.selectedTypes
       }
 
-      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload);
+      await axiosInstance.post('/api/manufacturers/items/assembly-cost', payload)
 
       // Refresh the assembly costs data to show updated badges
-      await fetchAssemblyCostsByTypes();
+      await fetchAssemblyCostsByTypes()
 
       // Close modal and show success message
-      setShowAssemblyModal(false);
+      setShowAssemblyModal(false)
 
       // Show success message based on application scope
-      const price = parseFloat(assemblyData.price) || 0;
-      const priceText = price === 0 ? 'No assembly cost (0$)' : `$${price.toFixed(2)} assembly cost`;
-      let successMessage = '';
+      const price = parseFloat(assemblyData.price) || 0
+      const priceText = price === 0 ? 'No assembly cost (0$)' : `$${price.toFixed(2)} assembly cost`
+      let successMessage = ''
       switch (assemblyData.applyTo) {
         case 'one':
-          successMessage = `${priceText} applied to item "${selectedCatalogItem.code}"`;
-          break;
+          successMessage = `${priceText} applied to item "${selectedCatalogItem.code}"`
+          break
         case 'type':
-          successMessage = `${priceText} applied to all items of type "${assemblyData.selectedItemType}"`;
-          break;
+          successMessage = `${priceText} applied to all items of type "${assemblyData.selectedItemType}"`
+          break
         case 'types':
-          successMessage = `${priceText} applied to ${assemblyData.selectedTypes.length} selected types`;
-          break;
+          successMessage = `${priceText} applied to ${assemblyData.selectedTypes.length} selected types`
+          break
         case 'all':
-          successMessage = `${priceText} applied to all items`;
-          break;
+          successMessage = `${priceText} applied to all items`
+          break
         default:
-          successMessage = 'Assembly cost saved successfully';
+          successMessage = 'Assembly cost saved successfully'
       }
 
-      Swal.fire('Success', successMessage, 'success');
+      toast({
+        title: t('common.success', 'Success'),
+        description: successMessage,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
 
       // Refresh the catalog data to show updated assembly costs
-      fetchCatalogData();
+      fetchCatalogData()
     } catch (error) {
-      console.error('Failed to save assembly cost:', error);
-      Swal.fire('Error', 'Failed to save assembly cost. Please try again.', 'error');
+      console.error('Failed to save assembly cost:', error)
+      toast({
+        title: t('common.error', 'Error'),
+        description: t(
+          'settings.manufacturers.catalogMapping.saveError',
+          'Failed to save assembly cost. Please try again.',
+        ),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
-      setIsAssemblyCostSaving(false);
+      setIsAssemblyCostSaving(false)
     }
-  };
+  }
 
   const handleModificationDetailsClick = async (item) => {
-    setSelectedCatalogItem(item);
+    setSelectedCatalogItem(item)
     setModificationData({
       modificationName: '',
       description: '',
       notes: '',
-      price: ''
-    });
-    setShowModificationModal(true);
-  };
+      price: '',
+    })
+    setShowModificationModal(true)
+  }
   const saveHingesDetails = async () => {
     try {
       const payload = {
@@ -2093,13 +2347,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         rightHingePrice: parseFloat(hingesData.rightHingePrice) || 0,
         bothHingesPrice: parseFloat(hingesData.bothHingePrice) || 0,
         exposedSidePrice: parseFloat(hingesData.exposedSidePrice) || 0,
-      };
-  await axiosInstance.post('/api/manufacturers/items/hinges', payload);
-      setShowHingesModal(false);
+      }
+      await axiosInstance.post('/api/manufacturers/items/hinges', payload)
+      setShowHingesModal(false)
     } catch (error) {
-      console.error('Failed to save hinges details:', error);
+      console.error('Failed to save hinges details:', error)
     }
-  };
+  }
 
   const saveModificationDetails = async () => {
     try {
@@ -2109,20 +2363,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         description: modificationData.description,
         notes: modificationData.notes,
         price: parseFloat(modificationData.price) || 0,
-      };
+      }
 
-  await axiosInstance.post('/api/manufacturers/items/modifications', payload);
-      setShowModificationModal(false);
+      await axiosInstance.post('/api/manufacturers/items/modifications', payload)
+      setShowModificationModal(false)
     } catch (error) {
-      console.error('Failed to save modification details:', error);
+      console.error('Failed to save modification details:', error)
     }
-  };
-
-
-
-
-
-
+  }
 
   return (
     <div>
@@ -2185,88 +2433,127 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         title={t('settings.manufacturers.catalogMapping.title')}
         mobileLayout="compact"
         rightContent={
-          <div className="d-flex flex-wrap gap-2 catalog-actions">
-            <CButton
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+          <HStack spacing={2} flexWrap="wrap" className="catalog-actions">
+            <Button
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ bg: headerBg, opacity: 0.9 }}
               size="sm"
-              className="flex-shrink-0"
               onClick={() => setFileModalVisible(true)}
               aria-label={t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
+              leftIcon={<Icon as={Upload} boxSize={4} />}
+              minH="44px"
             >
-              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}</span>
-              <span className="d-sm-none">📁 CSV</span>
-            </CButton>
-            <CButton
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>CSV</Text>
+            </Button>
+            <Button
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ bg: headerBg, opacity: 0.9 }}
               size="sm"
-              className="flex-shrink-0"
               onClick={() => setManualModalVisible(true)}
               aria-label={t('settings.manufacturers.catalogMapping.buttons.addItem')}
+              leftIcon={<Icon as={Plus} boxSize={4} />}
+              minH="44px"
             >
-              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.buttons.addItem')}</span>
-              <span className="d-sm-none">{t('settings.manufacturers.catalogMapping.buttons.addShort', '➕ Add')}</span>
-            </CButton>
-            <CButton
-              color="primary"
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {t('settings.manufacturers.catalogMapping.buttons.addItem')}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>
+                {t('settings.manufacturers.catalogMapping.buttons.addShort', 'Add')}
+              </Text>
+            </Button>
+            <Button
+              colorScheme="brand"
               size="sm"
-              className="flex-shrink-0"
               onClick={() => setShowMainModificationModal(true)}
               title={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
-              aria-label={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
+              aria-label={t(
+                'settings.manufacturers.catalogMapping.actions.modificationManagementTitle',
+              )}
+              leftIcon={<Icon as={Wrench} boxSize={4} />}
+              minH="44px"
             >
-              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.modification')}</span>
-              <span className="d-sm-none">🔧</span>
-            </CButton>
-            <CButton
-              color="success"
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {t('settings.manufacturers.catalogMapping.actions.modification')}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>
+                {t('settings.manufacturers.catalogMapping.actions.modificationShort', 'Mods')}
+              </Text>
+            </Button>
+            <Button
+              colorScheme="purple"
               size="sm"
-              className="flex-shrink-0"
               onClick={openAssignGlobal}
               title={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
               aria-label={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
+              leftIcon={<Icon as={Sparkles} boxSize={4} />}
+              minH="44px"
             >
-              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.actions.assignMods')}</span>
-              <span className="d-sm-none">🧩</span>
-            </CButton>
-            <CButton
-              color="warning"
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {t('settings.manufacturers.catalogMapping.actions.assignMods')}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>
+                {t('settings.manufacturers.catalogMapping.actions.assignModsShort', 'Assign')}
+              </Text>
+            </Button>
+            <Button
+              colorScheme="orange"
               size="sm"
-              className="flex-shrink-0"
               onClick={handleCleanupDuplicates}
-              disabled={isCleaningDuplicates}
+              isDisabled={isCleaningDuplicates}
               title={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
               aria-label={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
+              leftIcon={
+                isCleaningDuplicates ? <Spinner size="sm" /> : <Icon as={RefreshCw} boxSize={4} />
+              }
+              minH="44px"
             >
-              {isCleaningDuplicates ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                  <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.cleanupDuplicates.cleaning')}</span>
-                  <span className="d-sm-none">...</span>
-                </>
-              ) : (
-                <>
-                  <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.cleanupDuplicates.buttonText')}</span>
-                  <span className="d-sm-none">🧹</span>
-                </>
-              )}
-            </CButton>
-            <CButton
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {isCleaningDuplicates
+                  ? t('settings.manufacturers.catalogMapping.cleanupDuplicates.cleaning')
+                  : t(
+                      'settings.manufacturers.catalogMapping.cleanupDuplicates.cta',
+                      'Cleanup duplicates',
+                    )}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>
+                {isCleaningDuplicates ? '...' : t('common.clean', 'Clean')}
+              </Text>
+            </Button>
+            <Button
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ bg: headerBg, opacity: 0.9 }}
               size="sm"
-              className="flex-shrink-0"
               onClick={handleRollbackClick}
-              disabled={(pagination.total || 0) === 0}
-              title="Rollback recent catalog upload"
+              isDisabled={(pagination.total || 0) === 0}
+              title={t(
+                'settings.manufacturers.catalogMapping.rollback.tooltip',
+                'Rollback recent catalog upload',
+              )}
               aria-label={t('settings.manufacturers.catalogMapping.rollback.buttonText')}
+              leftIcon={<Icon as={ChevronDown} boxSize={4} transform="rotate(90deg)" />}
+              minH="44px"
             >
-              <span className="d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.rollback.buttonText')}</span>
-              <span className="d-sm-none">↶</span>
-            </CButton>
-          </div>
+              <Text display={{ base: 'none', sm: 'inline' }}>
+                {t('settings.manufacturers.catalogMapping.rollback.buttonText')}
+              </Text>
+              <Text display={{ base: 'inline', sm: 'none' }}>
+                {t('settings.manufacturers.catalogMapping.rollback.short', 'Undo')}
+              </Text>
+            </Button>
+          </HStack>
         }
       />
 
-  <style>{`
+      <style>{`
         .catalog-actions {
           width: 100%;
         }
@@ -2429,86 +2716,102 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   `}</style>
 
       {/* Sub-Types Management Section */}
-      <CCard className="mb-3">
-        <CCardHeader className="d-flex justify-content-between align-items-center">
+      <Card className="mb-3">
+        <CardHeader className="d-flex justify-content-between align-items-center">
           <h6 className="mb-0">{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
-          <CButton
-            color="primary"
+          <Button
+            colorScheme="blue"
             size="sm"
             onClick={() => {
-              setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
-              setEditingSubType(null);
-              setShowSubTypeModal(true);
+              setSubTypeForm({
+                name: '',
+                description: '',
+                requires_hinge_side: false,
+                requires_exposed_side: false,
+              })
+              setEditingSubType(null)
+              setShowSubTypeModal(true)
             }}
           >
-            <Plus size={16} aria-hidden="true" className="me-1" /> {t('settings.manufacturers.catalogMapping.subTypes.create')}
-          </CButton>
-        </CCardHeader>
-        <CCardBody>
+            <Plus size={16} aria-hidden="true" className="me-1" />{' '}
+            {t('settings.manufacturers.catalogMapping.subTypes.create')}
+          </Button>
+        </CardHeader>
+        <CardBody>
           {subTypes.length === 0 ? (
-            <p className="text-muted mb-0">{t('settings.manufacturers.catalogMapping.subTypes.empty')}</p>
+            <p className="text-muted mb-0">
+              {t('settings.manufacturers.catalogMapping.subTypes.empty')}
+            </p>
           ) : (
             <div className="row g-3">
-              {subTypes.map(subType => (
+              {subTypes.map((subType) => (
                 <div key={subType.id} className="col-md-6 col-lg-4">
-                  <CCard className="h-100">
-                    <CCardBody>
+                  <Card className="h-100">
+                    <CardBody>
                       <h6 className="card-title">{subType.name}</h6>
-                      {subType.description && <p className="card-text small text-muted">{subType.description}</p>}
+                      {subType.description && (
+                        <p className="card-text small text-muted">{subType.description}</p>
+                      )}
                       <div className="mb-2">
                         {subType.requires_hinge_side && (
-                          <CBadge color="info" className="me-1">{t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}</CBadge>
+                          <Badge colorScheme="info" className="me-1">
+                            {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
+                          </Badge>
                         )}
                         {subType.requires_exposed_side && (
-                          <CBadge color="warning" className="me-1">{t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}</CBadge>
+                          <Badge colorScheme="warning" className="me-1">
+                            {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
+                          </Badge>
                         )}
                       </div>
                       <div className="d-flex gap-1 flex-wrap">
-                        <CButton
-                          color="primary"
+                        <Button
+                          colorScheme="blue"
                           size="sm"
                           onClick={() => {
                             setSubTypeForm({
                               name: subType.name,
                               description: subType.description || '',
                               requires_hinge_side: subType.requires_hinge_side,
-                              requires_exposed_side: subType.requires_exposed_side
-                            });
-                            setEditingSubType(subType);
-                            setShowSubTypeModal(true);
+                              requires_exposed_side: subType.requires_exposed_side,
+                            })
+                            setEditingSubType(subType)
+                            setShowSubTypeModal(true)
                           }}
                           aria-label={t('common.edit')}
                         >
                           {t('common.edit')}
-                        </CButton>
-                        <CButton
+                        </Button>
+                        <Button
                           color="success"
                           size="sm"
                           onClick={() => {
-                            setSelectedSubType(subType.id);
-                            setShowAssignSubTypeModal(true);
+                            setSelectedSubType(subType.id)
+                            setShowAssignSubTypeModal(true)
                           }}
-                          aria-label={t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
+                          aria-label={t(
+                            'settings.manufacturers.catalogMapping.subTypes.assignItems',
+                          )}
                         >
                           {t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
-                        </CButton>
-                        <CButton
-                          color="danger"
+                        </Button>
+                        <Button
+                          colorScheme="red"
                           size="sm"
                           onClick={() => handleSubTypeDelete(subType)}
                           aria-label={t('common.delete')}
                         >
                           {t('common.delete')}
-                        </CButton>
+                        </Button>
                       </div>
-                    </CCardBody>
-                  </CCard>
+                    </CardBody>
+                  </Card>
                 </div>
               ))}
             </div>
           )}
-        </CCardBody>
-      </CCard>
+        </CardBody>
+      </Card>
 
       {/* Mobile-Optimized Filters and Pagination */}
       <div className="row g-2 mb-3">
@@ -2519,20 +2822,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               className="form-select form-select-sm"
               style={{ width: 'auto', minWidth: '60px' }}
               value={itemsPerPage}
-              aria-label={t('settings.manufacturers.catalogMapping.pagination.itemsPerPage', 'Items per page')}
-              onChange={(e) => {
-                const value = parseInt(e.target.value, 10);
-                setItemsPerPage(value);
-                localStorage.setItem('catalogItemsPerPage', value);
-                setCurrentPage(1);
-                fetchCatalogData(1, value, typeFilter, styleFilter, sortBy, sortOrder);
+              aria-label={t(
+                'settings.manufacturers.catalogMapping.pagination.itemsPerPage',
+                'Items per page',
+              )}
+              onChange={(event) => {
+                const value = parseInt(event.currentTarget.value, 10)
+                setItemsPerPage(value)
+                localStorage.setItem('catalogItemsPerPage', value)
+                setCurrentPage(1)
+                fetchCatalogData(1, value, typeFilter, styleFilter, sortBy, sortOrder)
               }}
             >
               {[10, 25, 50, 100, 200].map((num) => (
-                <option key={num} value={num}>{num}</option>
+                <option key={num} value={num}>
+                  {num}
+                </option>
               ))}
             </select>
-            <span className="text-muted small d-none d-sm-inline">{t('settings.manufacturers.catalogMapping.pagination.perPage')}</span>
+            <span className="text-muted small d-none d-sm-inline">
+              {t('settings.manufacturers.catalogMapping.pagination.perPage')}
+            </span>
             <span className="text-muted small d-sm-none">per page</span>
           </div>
         </div>
@@ -2546,7 +2856,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               className="form-control form-control-sm"
               placeholder="🔍 Search styles..."
               value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
+              onChange={(event) => setSearchFilter(event.currentTarget.value)}
               style={{ paddingRight: searchFilter ? '35px' : '12px' }}
             />
             {searchFilter && (
@@ -2569,9 +2879,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             className="form-select form-select-sm"
             aria-label={t('settings.manufacturers.catalogMapping.filters.type', 'Filter by type')}
             value={typeFilter}
-            onChange={(e) => {
-              setCurrentPage(1);
-              setTypeFilter(e.target.value);
+            onChange={(event) => {
+              setCurrentPage(1)
+              setTypeFilter(event.currentTarget.value)
             }}
           >
             <option value="">All Types</option>
@@ -2589,9 +2899,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             className="form-select form-select-sm"
             aria-label={t('settings.manufacturers.catalogMapping.filters.style', 'Filter by style')}
             value={styleFilter}
-            onChange={(e) => {
-              setCurrentPage(1);
-              setStyleFilter(e.target.value);
+            onChange={(event) => {
+              setCurrentPage(1)
+              setStyleFilter(event.currentTarget.value)
             }}
           >
             <option value="">All Styles</option>
@@ -2620,11 +2930,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <strong>Managing Style: "{styleFilter}"</strong>
                 <br />
                 <small className="text-muted">
-                  {catalogData.filter(item => item.style === styleFilter).length} items with this style
+                  {catalogData.filter((item) => item.style === styleFilter).length} items with this
+                  style
                 </small>
               </div>
               <div className="d-flex gap-2 flex-shrink-0">
-                <CButton
+                <Button
                   color="info"
                   size="sm"
                   onClick={() => handleEditStyleNameClick(styleFilter)}
@@ -2638,8 +2949,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ) : (
                     <>✏️ Rename Style</>
                   )}
-                </CButton>
-                <CButton
+                </Button>
+                <Button
                   color="warning"
                   size="sm"
                   onClick={() => handleDeleteStyleClick(styleFilter)}
@@ -2653,7 +2964,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ) : (
                     <>🗑️ Delete/Merge Style</>
                   )}
-                </CButton>
+                </Button>
               </div>
             </div>
           </div>
@@ -2661,44 +2972,46 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
-          <span className="fw-bold">
-            {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', { count: selectedItems.length })}
-          </span>
-          <div className="d-flex gap-2 flex-shrink-0">
-            <CButton
-              color="primary"
-              size="sm"
-              onClick={handleBulkEditClick}
-              disabled={isBulkEditing}
-            >
-              {isBulkEditing ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                  Editing...
-                </>
-              ) : (
-                <>✏️ Edit Selected</>
-              )}
-            </CButton>
-            <CButton
-              color="danger"
-              size="sm"
-              onClick={handleBulkDeleteClick}
-              disabled={isBulkDeleting}
-            >
-              {isBulkDeleting ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                  {t('settings.manufacturers.catalogMapping.bulk.deleting')}
-                </>
-              ) : (
-                <>{t('settings.manufacturers.catalogMapping.buttons.deleteSelected')}</>
-              )}
-            </CButton>
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
+            <span className="fw-bold">
+              {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', {
+                count: selectedItems.length,
+              })}
+            </span>
+            <div className="d-flex gap-2 flex-shrink-0">
+              <Button
+                colorScheme="blue"
+                size="sm"
+                onClick={handleBulkEditClick}
+                disabled={isBulkEditing}
+              >
+                {isBulkEditing ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Editing...
+                  </>
+                ) : (
+                  <>✏️ Edit Selected</>
+                )}
+              </Button>
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={handleBulkDeleteClick}
+                disabled={isBulkDeleting}
+              >
+                {isBulkDeleting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                    {t('settings.manufacturers.catalogMapping.bulk.deleting')}
+                  </>
+                ) : (
+                  <>{t('settings.manufacturers.catalogMapping.buttons.deleteSelected')}</>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </>
 
       {/* Table - Desktop and Mobile Views */}
@@ -2708,3049 +3021,4613 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <>
           {/* Desktop Table View - Hidden on mobile */}
           <div className="table-responsive table-container d-none d-md-block">
-            <CTable hover responsive className="mb-0">
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell style={{ width: '35px', minWidth: '35px' }}>
+            <Table className="mb-0">
+              <Thead>
+                <Tr>
+                  <Th style={{ width: '35px', minWidth: '35px' }}>
                     <input
                       type="checkbox"
                       checked={isSelectAll}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      onChange={(event) => handleSelectAll(event.currentTarget.checked)}
                       className="form-check-input"
                       style={{
                         borderColor: '#6c757d',
                         borderWidth: '2px',
-                        transform: 'scale(1.1)'
+                        transform: 'scale(1.1)',
                       }}
                     />
-                  </CTableHeaderCell>
-                  <CTableHeaderCell
-                    style={{ minWidth: '80px', cursor: 'pointer', userSelect: 'none' }}
-                    onClick={() => handleSort('code')}
-                    className="d-flex align-items-center"
-                    role="button"
-                    tabIndex={0}
-                    aria-sort={sortBy === 'code' ? (sortOrder === 'ASC' ? 'ascending' : 'descending') : 'none'}
-                    aria-label={`${t('settings.manufacturers.catalogMapping.table.code')} ${sortBy === 'code' ? (sortOrder === 'ASC' ? t('common.sortAscending', 'ascending') : t('common.sortDescending', 'descending')) : t('common.sortable', 'sortable')}`}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('code'); } }}
+                  </Th>
+                  <Th
+                    style={{ minWidth: '80px', userSelect: 'none' }}
+                    scope="col"
+                    aria-sort={
+                      sortBy === 'code'
+                        ? sortOrder === 'ASC'
+                          ? 'ascending'
+                          : 'descending'
+                        : 'none'
+                    }
                   >
-                    {t('settings.manufacturers.catalogMapping.table.code')}
-                    {sortBy === 'code' && (
-                      sortOrder === 'ASC' ? (
-                        <ChevronUp size={16} aria-hidden="true" className="ms-1" />
-                      ) : (
-                        <ChevronDown size={16} aria-hidden="true" className="ms-1" />
-                      )
-                    )}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell style={{ minWidth: '120px', maxWidth: '180px' }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSort('code')}
+                      justifyContent="flex-start"
+                      width="100%"
+                      px={0}
+                      color="inherit"
+                      fontWeight="inherit"
+                      aria-label={`${t('settings.manufacturers.catalogMapping.table.code')} ${sortBy === 'code' ? (sortOrder === 'ASC' ? t('common.sortAscending', 'ascending') : t('common.sortDescending', 'descending')) : t('common.sortable', 'sortable')}`}
+                      rightIcon={
+                        sortBy === 'code' ? (
+                          <Icon
+                            as={sortOrder === 'ASC' ? ChevronUp : ChevronDown}
+                            boxSize={4}
+                            aria-hidden="true"
+                          />
+                        ) : undefined
+                      }
+                    >
+                      {t('settings.manufacturers.catalogMapping.table.code')}
+                    </Button>
+                  </Th>
+                  <Th style={{ minWidth: '120px', maxWidth: '180px' }}>
                     {t('settings.manufacturers.catalogMapping.table.description')}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell style={{ minWidth: '80px' }}>{t('settings.manufacturers.catalogMapping.table.style')}</CTableHeaderCell>
-                  <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.price')}</CTableHeaderCell>
-                  <CTableHeaderCell style={{ minWidth: '70px' }}>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
-                  <CTableHeaderCell style={{ minWidth: '120px' }} className="actions-column">{t('settings.manufacturers.catalogMapping.table.actions')}</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-            {currentItems.map((item, index) => (
-              <CTableRow key={index}>
-                <CTableDataCell>
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={(e) => handleSelectItem(item.id, e.target.checked)}
-                    className="form-check-input"
-                    aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
-                    style={{
-                      borderColor: '#6c757d',
-                      borderWidth: '2px',
-                      transform: 'scale(1.1)'
-                    }}
-                  />
-                </CTableDataCell>
-                <CTableDataCell>{item.code}</CTableDataCell>
-                <CTableDataCell style={{
-                  maxWidth: '200px',
-                  wordWrap: 'break-word',
-                  whiteSpace: 'normal'
-                }}>
-                  {item.description ? item.description : t('common.na')}
-                </CTableDataCell>
-                <CTableDataCell style={{ cursor: 'pointer' }} >
-                  <CButton
-                    size="sm"
-                    color="dark"
-                    onClick={() => handleShowStyleOnClick(item)}
-                    className="me-2"
-                    style={{
-                      backgroundColor: '#6c757d',
-                      borderColor: '#6c757d',
-                      color: 'white',
-                      fontSize: '12px',
-                      padding: '4px 8px'
-                    }}
-                  >
-                    {item.style}
-
-                  </CButton>
-                </CTableDataCell>
-                <CTableDataCell>{item.price}</CTableDataCell>
-                <CTableDataCell>{item.type ? item.type : 'N/A'}</CTableDataCell>
-                <CTableDataCell>
-                  <div className="d-flex flex-wrap gap-1">
-                    <CButton
-                      size="sm"
-                      color="secondary"
-                      onClick={() => handleEditClick(item)}
+                  </Th>
+                  <Th style={{ minWidth: '80px' }}>
+                    {t('settings.manufacturers.catalogMapping.table.style')}
+                  </Th>
+                  <Th style={{ minWidth: '70px' }}>
+                    {t('settings.manufacturers.catalogMapping.table.price')}
+                  </Th>
+                  <Th style={{ minWidth: '70px' }}>
+                    {t('settings.manufacturers.catalogMapping.table.type')}
+                  </Th>
+                  <Th style={{ minWidth: '120px' }} className="actions-column">
+                    {t('settings.manufacturers.catalogMapping.table.actions')}
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {currentItems.map((item, index) => (
+                  <Tr key={index}>
+                    <Td>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={(event) => handleSelectItem(item.id, event.currentTarget.checked)}
+                        className="form-check-input"
+                        aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
+                        style={{
+                          borderColor: '#6c757d',
+                          borderWidth: '2px',
+                          transform: 'scale(1.1)',
+                        }}
+                      />
+                    </Td>
+                    <Td>{item.code}</Td>
+                    <Td
                       style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        minWidth: 'auto'
+                        maxWidth: '200px',
+                        wordWrap: 'break-word',
+                        whiteSpace: 'normal',
                       }}
                     >
-                      ✏️
-                    </CButton>
+                      {item.description ? item.description : t('common.na')}
+                    </Td>
+                    <Td style={{ cursor: 'pointer' }}>
+                      <Button
+                        size="sm"
+                        color="dark"
+                        onClick={() => handleShowStyleOnClick(item)}
+                        className="me-2"
+                        style={{
+                          backgroundColor: '#6c757d',
+                          borderColor: '#6c757d',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '4px 8px',
+                        }}
+                      >
+                        {item.style}
+                      </Button>
+                    </Td>
+                    <Td>{item.price}</Td>
+                    <Td>{item.type ? item.type : 'N/A'}</Td>
+                    <Td>
+                      <div className="d-flex flex-wrap gap-1">
+                        <Button
+                          size="sm"
+                          colorScheme="gray"
+                          onClick={() => handleEditClick(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            minWidth: 'auto',
+                          }}
+                        >
+                          ✏️
+                        </Button>
 
-                    <CButton
-                      size="sm"
-                      onClick={() => handleManageStyleClick(item)}
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        backgroundColor: headerBg,
-                        borderColor: headerBg,
-                        color: textColor,
-                        minWidth: 'auto'
-                      }}
-                      title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
-                    >
-                      🎨
-                    </CButton>
+                        <Button
+                          size="sm"
+                          onClick={() => handleManageStyleClick(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            backgroundColor: headerBg,
+                            borderColor: headerBg,
+                            color: textColor,
+                            minWidth: 'auto',
+                          }}
+                          title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
+                        >
+                          🎨
+                        </Button>
 
-                    <CButton
-                      size="sm"
-                      onClick={() => handleAssemblyCostClick(item)}
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        backgroundColor: headerBg,
-                        borderColor: headerBg,
-                        color: textColor,
-                        minWidth: 'auto'
-                      }}
-                      title={t('settings.manufacturers.catalogMapping.actions.assemblyCost')}
-                    >
-                      🔧
-                    </CButton>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAssemblyCostClick(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            backgroundColor: headerBg,
+                            borderColor: headerBg,
+                            color: textColor,
+                            minWidth: 'auto',
+                          }}
+                          title={t('settings.manufacturers.catalogMapping.actions.assemblyCost')}
+                        >
+                          🔧
+                        </Button>
 
-                    <CButton
-                      size="sm"
-                      onClick={() => handleModificationDetailsClick(item)}
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        backgroundColor: headerBg,
-                        borderColor: headerBg,
-                        color: textColor,
-                        minWidth: 'auto'
-                      }}
-                      title={t('settings.manufacturers.catalogMapping.actions.modification')}
-                    >
-                      ⚙️
-                    </CButton>
+                        <Button
+                          size="sm"
+                          onClick={() => handleModificationDetailsClick(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            backgroundColor: headerBg,
+                            borderColor: headerBg,
+                            color: textColor,
+                            minWidth: 'auto',
+                          }}
+                          title={t('settings.manufacturers.catalogMapping.actions.modification')}
+                        >
+                          ⚙️
+                        </Button>
 
-                    <CButton
-                      size="sm"
-                      onClick={() => openItemGlobalMods(item)}
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        backgroundColor: '#20c997',
-                        borderColor: '#20c997',
-                        color: '#fff',
-                        minWidth: 'auto'
-                      }}
-                      title="Global Mods for item"
-                    >
-                      🧩
-                    </CButton>
+                        <Button
+                          size="sm"
+                          onClick={() => openItemGlobalMods(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            backgroundColor: '#20c997',
+                            borderColor: '#20c997',
+                            color: '#fff',
+                            minWidth: 'auto',
+                          }}
+                          title="Global Mods for item"
+                        >
+                          🧩
+                        </Button>
 
-                    <CButton
-                      size="sm"
-                      color="danger"
-                      onClick={() => handleDeleteItemClick(item)}
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        minWidth: 'auto'
-                      }}
-                      title={`Delete item: ${item.code}`}
-                    >
-                      🗑️
-                    </CButton>
-                  </div>
-                </CTableDataCell>
+                        <Button
+                          size="sm"
+                          colorScheme="red"
+                          onClick={() => handleDeleteItemClick(item)}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            minWidth: 'auto',
+                          }}
+                          title={`Delete item: ${item.code}`}
+                        >
+                          🗑️
+                        </Button>
+                      </div>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </div>
 
-              </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
-      </div>
+          {/* Mobile Card View - Visible only on mobile */}
+          <div className="d-block d-md-none">
+            {/* Mobile Select All */}
+            <div className="d-flex align-items-center mb-3 p-3 bg-light rounded">
+              <input
+                type="checkbox"
+                checked={isSelectAll}
+                onChange={(event) => handleSelectAll(event.currentTarget.checked)}
+                className="form-check-input me-2"
+                id="mobile-select-all"
+              />
+              <label htmlFor="mobile-select-all" className="form-check-label mb-0">
+                Select All ({currentItems.length} items)
+              </label>
+            </div>
 
-      {/* Mobile Card View - Visible only on mobile */}
-      <div className="d-block d-md-none">
-        {/* Mobile Select All */}
-        <div className="d-flex align-items-center mb-3 p-3 bg-light rounded">
-          <input
-            type="checkbox"
-            checked={isSelectAll}
-            onChange={(e) => handleSelectAll(e.target.checked)}
-            className="form-check-input me-2"
-            id="mobile-select-all"
-          />
-          <label htmlFor="mobile-select-all" className="form-check-label mb-0">
-            Select All ({currentItems.length} items)
-          </label>
-        </div>
+            {/* Mobile Cards */}
+            <div className="mobile-cards-container">
+              {currentItems.map((item, index) => (
+                <div key={index} className="card mb-3 mobile-catalog-card">
+                  <div className="card-body p-3">
+                    {/* Card Header with checkbox and style */}
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div className="d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={(event) =>
+                            handleSelectItem(item.id, event.currentTarget.checked)
+                          }
+                          className="form-check-input me-2"
+                        />
+                        <div>
+                          <h6 className="card-title mb-1 fw-bold">{item.code}</h6>
+                          <small className="text-muted">{item.description}</small>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        style={{
+                          backgroundColor: '#6c757d',
+                          borderColor: '#6c757d',
+                          color: 'white',
+                          fontSize: '11px',
+                          padding: '2px 8px',
+                        }}
+                      >
+                        {item.style}
+                      </Button>
+                    </div>
 
-        {/* Mobile Cards */}
-        <div className="mobile-cards-container">
-          {currentItems.map((item, index) => (
-            <div key={index} className="card mb-3 mobile-catalog-card">
-              <div className="card-body p-3">
-                {/* Card Header with checkbox and style */}
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div className="d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={(e) => handleSelectItem(item.id, e.target.checked)}
-                      className="form-check-input me-2"
-                    />
-                    <div>
-                      <h6 className="card-title mb-1 fw-bold">{item.code}</h6>
-                      <small className="text-muted">{item.description}</small>
+                    {/* Card Content */}
+                    <div className="row g-2 mb-3">
+                      <div className="col-6">
+                        <small className="text-muted d-block">Price</small>
+                        <span className="fw-bold">${item.price}</span>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">Type</small>
+                        <span>{item.type || 'N/A'}</span>
+                      </div>
+                    </div>
+
+                    {/* Card Actions */}
+                    <div className="d-flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        colorScheme="gray"
+                        onClick={() => handleEditClick(item)}
+                        className="flex-fill"
+                      >
+                        ✏️ Edit
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={() => handleManageStyleClick(item)}
+                        style={{
+                          backgroundColor: headerBg,
+                          borderColor: headerBg,
+                          color: textColor,
+                        }}
+                        className="flex-fill"
+                        title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
+                      >
+                        🎨 Style
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={() => handleModificationDetailsClick(item)}
+                        style={{
+                          backgroundColor: headerBg,
+                          borderColor: headerBg,
+                          color: textColor,
+                        }}
+                        className="flex-fill"
+                        title={t(
+                          'settings.manufacturers.catalogMapping.actions.modificationDetails',
+                        )}
+                      >
+                        🔧 Modify
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        colorScheme="red"
+                        onClick={() => handleDeleteClick(item.id)}
+                        style={{
+                          fontSize: '11px',
+                          padding: '4px 8px',
+                        }}
+                      >
+                        🗑️
+                      </Button>
                     </div>
                   </div>
-                  <CButton
-                    size="sm"
-                    style={{
-                      backgroundColor: '#6c757d',
-                      borderColor: '#6c757d',
-                      color: 'white',
-                      fontSize: '11px',
-                      padding: '2px 8px'
-                    }}
-                  >
-                    {item.style}
-                  </CButton>
                 </div>
-
-                {/* Card Content */}
-                <div className="row g-2 mb-3">
-                  <div className="col-6">
-                    <small className="text-muted d-block">Price</small>
-                    <span className="fw-bold">${item.price}</span>
-                  </div>
-                  <div className="col-6">
-                    <small className="text-muted d-block">Type</small>
-                    <span>{item.type || 'N/A'}</span>
-                  </div>
-                </div>
-
-                {/* Card Actions */}
-                <div className="d-flex flex-wrap gap-2">
-                  <CButton
-                    size="sm"
-                    color="secondary"
-                    onClick={() => handleEditClick(item)}
-                    className="flex-fill"
-                  >
-                    ✏️ Edit
-                  </CButton>
-
-                  <CButton
-                    size="sm"
-                    onClick={() => handleManageStyleClick(item)}
-                    style={{
-                      backgroundColor: headerBg,
-                      borderColor: headerBg,
-                      color: textColor
-                    }}
-                    className="flex-fill"
-                    title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
-                  >
-                    🎨 Style
-                  </CButton>
-
-                  <CButton
-                    size="sm"
-                    onClick={() => handleModificationDetailsClick(item)}
-                    style={{
-                      backgroundColor: headerBg,
-                      borderColor: headerBg,
-                      color: textColor
-                    }}
-                    className="flex-fill"
-                    title={t('settings.manufacturers.catalogMapping.actions.modificationDetails')}
-                  >
-                    🔧 Modify
-                  </CButton>
-
-                  <CButton
-                    size="sm"
-                    color="danger"
-                    onClick={() => handleDeleteClick(item.id)}
-                    style={{
-                      fontSize: '11px',
-                      padding: '4px 8px'
-                    }}
-                  >
-                    🗑️
-                  </CButton>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </>
-  )}
+          </div>
+        </>
+      )}
       {catalogData.length > 0 ? (
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
             {loading
               ? 'Loading…'
-              : t('pagination.pageInfo', { current: pagination.page || 1, total: pagination.totalPages || 1 })}
+              : t('pagination.pageInfo', {
+                  current: pagination.page || 1,
+                  total: pagination.totalPages || 1,
+                })}
           </div>
           <div>
-            <CButton
+            <Button
               size="sm"
-              color="secondary"
+              colorScheme="gray"
               disabled={loading || (pagination.page || 1) === 1}
-              onClick={() => fetchCatalogData((pagination.page || 1) - 1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)}
+              onClick={() =>
+                fetchCatalogData(
+                  (pagination.page || 1) - 1,
+                  itemsPerPage,
+                  typeFilter,
+                  styleFilter,
+                  sortBy,
+                  sortOrder,
+                )
+              }
               className="me-2"
             >
               {t('pagination.prevPageTitle')}
-            </CButton>
-            <CButton
+            </Button>
+            <Button
               size="sm"
-              color="secondary"
+              colorScheme="gray"
               disabled={loading || (pagination.page || 1) >= (pagination.totalPages || 1)}
-              onClick={() => fetchCatalogData((pagination.page || 1) + 1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)}
+              onClick={() =>
+                fetchCatalogData(
+                  (pagination.page || 1) + 1,
+                  itemsPerPage,
+                  typeFilter,
+                  styleFilter,
+                  sortBy,
+                  sortOrder,
+                )
+              }
             >
               {t('pagination.nextPageTitle')}
-            </CButton>
+            </Button>
           </div>
         </div>
-      ) : ""}
+      ) : (
+        ''
+      )}
 
       {/* File Upload Modal */}
-      <CModal
-        visible={fileModalVisible}
-        onClose={() => setFileModalVisible(false)}
-      >
-        <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
-        <CModalBody>
-          <CForm>
-            <CFormInput type="file" name="catalogFiles" label={t('settings.manufacturers.catalogMapping.file.selectLabel')} onChange={handleFileChange} />
-
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setFileModalVisible(false)}>
-            {t('common.cancel')}
-          </CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleUpload}>{t('settings.manufacturers.catalogMapping.file.uploadBtn')}</CButton>
-
-        </CModalFooter>
-      </CModal>
+      <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
+          <ModalBody>
+            <FormControl>
+              <Input type="file" name="catalogFiles" onChange={handleFileChange} />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setFileModalVisible(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={handleUpload}
+            >
+              {t('settings.manufacturers.catalogMapping.file.uploadBtn')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* Assign Global Mods Modal */}
-      <CModal visible={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size="lg">
-  <PageHeader title={t('settings.manufacturers.catalogMapping.assign.header', 'Assign Global Modifications')} />
-        <CModalBody>
-          <div className="mb-3 d-flex align-items-center gap-2">
-            <CFormCheck
-              label="Include drafts"
-              checked={includeDraftTemplates}
-              onChange={(e) => setIncludeDraftTemplates(e.target.checked)}
-            />
-          </div>
-          <div className="row g-3">
-            <div className="col-md-6">
-              <CFormLabel>Template</CFormLabel>
-              <CFormSelect value={assignFormGM.templateId} onChange={e => setAssignFormGM(f => ({ ...f, templateId: e.target.value }))}>
-                <option value="">Select template…</option>
-                {flatTemplates.map(t => (
-                  <option key={t.id} value={t.id}>{t.categoryName ? `[${t.categoryName}] ` : ''}{t.name}{t.defaultPrice != null ? ` — $${Number(t.defaultPrice).toFixed(2)}` : ' — blueprint'}</option>
-                ))}
-              </CFormSelect>
+      <Modal
+        isOpen={showAssignGlobalModsModal}
+        onClose={() => setShowAssignGlobalModsModal(false)}
+        size="lg"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t(
+              'settings.manufacturers.catalogMapping.assign.header',
+              'Assign Global Modifications',
+            )}
+          />
+          <ModalBody>
+            <div className="mb-3 d-flex align-items-center gap-2">
+              <Checkbox
+                isChecked={includeDraftTemplates}
+                onChange={(event) => setIncludeDraftTemplates(event.currentTarget.checked)}
+              >
+                Include drafts
+              </Checkbox>
             </div>
-            <div className="col-md-3">
-              <CFormLabel>Scope</CFormLabel>
-              <CFormSelect value={assignFormGM.scope} onChange={e => setAssignFormGM(f => ({ ...f, scope: e.target.value }))}>
-                <option value="all">All</option>
-                <option value="style">Style</option>
-                <option value="type">Type</option>
-                <option value="item">Selected items</option>
-              </CFormSelect>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <FormLabel>Template</FormLabel>
+                <Select
+                  value={assignFormGM.templateId}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, templateId: event.currentTarget.value }))
+                  }
+                >
+                  <option value="">Select template…</option>
+                  {flatTemplates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.categoryName ? `[${t.categoryName}] ` : ''}
+                      {t.name}
+                      {t.defaultPrice != null
+                        ? ` — $${Number(t.defaultPrice).toFixed(2)}`
+                        : ' — blueprint'}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="col-md-3">
+                <FormLabel>Scope</FormLabel>
+                <Select
+                  value={assignFormGM.scope}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, scope: event.currentTarget.value }))
+                  }
+                >
+                  <option value="all">All</option>
+                  <option value="style">Style</option>
+                  <option value="type">Type</option>
+                  <option value="item">Selected items</option>
+                </Select>
+              </div>
+              <div className="col-md-3">
+                <FormLabel>Override price</FormLabel>
+                <Input
+                  type="number"
+                  value={assignFormGM.overridePrice}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
+                  }
+                  placeholder="optional"
+                />
+              </div>
             </div>
-            <div className="col-md-3">
-              <CFormLabel>Override price</CFormLabel>
-              <CFormInput type="number" value={assignFormGM.overridePrice} onChange={e => setAssignFormGM(f => ({ ...f, overridePrice: e.target.value }))} placeholder="optional" />
-            </div>
-          </div>
-          {assignFormGM.scope === 'style' && (
-            <div className="mt-3">
-              <CFormLabel>Target style</CFormLabel>
-              <CFormSelect value={assignFormGM.targetStyle} onChange={e => setAssignFormGM(f => ({ ...f, targetStyle: e.target.value }))}>
-                <option value="">Select style…</option>
-                {sortedUniqueStyles.map((s, i) => (<option key={i} value={s}>{s}</option>))}
-              </CFormSelect>
-            </div>
-          )}
-          {assignFormGM.scope === 'type' && (
-            <div className="mt-3">
-              <CFormLabel>Target type</CFormLabel>
-              <CFormSelect value={assignFormGM.targetType} onChange={e => setAssignFormGM(f => ({ ...f, targetType: e.target.value }))}>
-                <option value="">Select type…</option>
-                {uniqueTypes.map((t, i) => (<option key={i} value={t}>{t}</option>))}
-              </CFormSelect>
-            </div>
-          )}
-          {assignFormGM.scope === 'item' && (
-            <div className="mt-2 text-muted small">{selectedItems.length} selected item(s) will receive this assignment.</div>
-          )}
-          <hr />
-          <div className="mt-2">
-            <h6>Existing assignments</h6>
-            {assignLoading ? (
-              <div>Loading…</div>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-sm align-middle">
-                  <thead>
-                    <tr>
-                      <th>Template</th>
-                      <th>Scope</th>
-                      <th>Target</th>
-                      <th>Price</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {globalAssignments.map(a => (
-                      <tr key={a.id}>
-                        <td>{a.template?.name}</td>
-                        <td>{a.scope}</td>
-                        <td>{a.scope === 'style' ? a.targetStyle : a.scope === 'type' ? a.targetType : a.scope === 'item' ? `Item ${a.catalogDataId}` : 'All'}</td>
-                        <td>{a.overridePrice != null ? `$${Number(a.overridePrice).toFixed(2)}` : (a.template?.defaultPrice != null ? `$${Number(a.template.defaultPrice).toFixed(2)}` : '—')}</td>
-                        <td>
-                          <CButton color="danger" size="sm" onClick={() => removeGlobalAssignment(a.id)}>Remove</CButton>
-                        </td>
-                      </tr>
-                    ))}
-                    {globalAssignments.length === 0 && (
-                      <tr><td colSpan="5" className="text-muted">No assignments</td></tr>
-                    )}
-                  </tbody>
-                </table>
+            {assignFormGM.scope === 'style' && (
+              <div className="mt-3">
+                <FormLabel>Target style</FormLabel>
+                <Select
+                  value={assignFormGM.targetStyle}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, targetStyle: event.currentTarget.value }))
+                  }
+                >
+                  <option value="">Select style…</option>
+                  {sortedUniqueStyles.map((s, i) => (
+                    <option key={i} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </Select>
               </div>
             )}
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowAssignGlobalModsModal(false)}>{t('common.cancel')}</CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={submitAssignGlobal} disabled={!assignFormGM.templateId}>Assign</CButton>
-        </CModalFooter>
-      </CModal>
+            {assignFormGM.scope === 'type' && (
+              <div className="mt-3">
+                <FormLabel>Target type</FormLabel>
+                <Select
+                  value={assignFormGM.targetType}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, targetType: event.currentTarget.value }))
+                  }
+                >
+                  <option value="">Select type…</option>
+                  {uniqueTypes.map((t, i) => (
+                    <option key={i} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
+            {assignFormGM.scope === 'item' && (
+              <div className="mt-2 text-muted small">
+                {selectedItems.length} selected item(s) will receive this assignment.
+              </div>
+            )}
+            <hr />
+            <div className="mt-2">
+              <h6>Existing assignments</h6>
+              {assignLoading ? (
+                <div>Loading…</div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-sm align-middle">
+                    <thead>
+                      <tr>
+                        <th>Template</th>
+                        <th>Scope</th>
+                        <th>Target</th>
+                        <th>Price</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {globalAssignments.map((a) => (
+                        <tr key={a.id}>
+                          <td>{a.template?.name}</td>
+                          <td>{a.scope}</td>
+                          <td>
+                            {a.scope === 'style'
+                              ? a.targetStyle
+                              : a.scope === 'type'
+                                ? a.targetType
+                                : a.scope === 'item'
+                                  ? `Item ${a.catalogDataId}`
+                                  : 'All'}
+                          </td>
+                          <td>
+                            {a.overridePrice != null
+                              ? `$${Number(a.overridePrice).toFixed(2)}`
+                              : a.template?.defaultPrice != null
+                                ? `$${Number(a.template.defaultPrice).toFixed(2)}`
+                                : '—'}
+                          </td>
+                          <td>
+                            <Button
+                              colorScheme="red"
+                              size="sm"
+                              onClick={() => removeGlobalAssignment(a.id)}
+                            >
+                              Remove
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                      {globalAssignments.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="text-muted">
+                            No assignments
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowAssignGlobalModsModal(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={submitAssignGlobal}
+              disabled={!assignFormGM.templateId}
+            >
+              Assign
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* Item Global Mods Modal */}
-      <CModal visible={showItemGlobalModsModal} onClose={() => setShowItemGlobalModsModal(false)} size="lg">
-        <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
-        <CModalBody>
-          <div className="table-responsive">
-            <table className="table table-sm align-middle">
-              <thead>
-                <tr>
-                  <th>Template</th>
-                  <th>Category</th>
-                  <th>Scope</th>
-                  <th>Price</th>
-                  <th>Active</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {itemGlobalList.map(a => (
-                  <tr key={a.id}>
-                    <td>{a.template?.name}</td>
-                    <td>{a.template?.category?.name || '-'}</td>
-                    <td>{a.scope}</td>
-                    <td>{a.overridePrice != null ? `$${Number(a.overridePrice).toFixed(2)}` : (a.template?.defaultPrice != null ? `$${Number(a.template.defaultPrice).toFixed(2)}` : '—')}</td>
-                    <td>{a.isActive === false ? 'Suppressed' : 'Active'}</td>
-                    <td>
-                      {a.scope === 'item' ? (
-                        <CButton color="danger" size="sm" onClick={() => removeGlobalAssignment(a.id)}>Remove</CButton>
-                      ) : (
-                        a.isActive === false ? (
-                          <CButton color="success" size="sm" onClick={() => suppressTemplateForItem(a.template?.id, true)}>Unsuppress</CButton>
-                        ) : (
-                          <CButton color="warning" size="sm" onClick={() => suppressTemplateForItem(a.template?.id, false)}>Suppress</CButton>
-                        )
-                      )}
-                    </td>
+      <Modal
+        isOpen={showItemGlobalModsModal}
+        onClose={() => setShowItemGlobalModsModal(false)}
+        size="lg"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
+          <ModalBody>
+            <div className="table-responsive">
+              <table className="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Template</th>
+                    <th>Category</th>
+                    <th>Scope</th>
+                    <th>Price</th>
+                    <th>Active</th>
+                    <th></th>
                   </tr>
-                ))}
-                {itemGlobalList.length === 0 && (
-                  <tr><td colSpan="6" className="text-muted">No global templates apply</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <hr />
-          <div className="row g-3">
-            <div className="col-md-6">
-              <CFormLabel>Add template to this item</CFormLabel>
-              <CFormSelect value={assignFormGM.templateId} onChange={e => setAssignFormGM(f => ({ ...f, templateId: e.target.value }))}>
-                <option value="">Select template…</option>
-                {flatTemplates.map(t => (
-                  <option key={t.id} value={t.id}>{t.categoryName ? `[${t.categoryName}] ` : ''}{t.name}{t.defaultPrice != null ? ` — $${Number(t.defaultPrice).toFixed(2)}` : ' — blueprint'}</option>
-                ))}
-              </CFormSelect>
+                </thead>
+                <tbody>
+                  {itemGlobalList.map((a) => (
+                    <tr key={a.id}>
+                      <td>{a.template?.name}</td>
+                      <td>{a.template?.category?.name || '-'}</td>
+                      <td>{a.scope}</td>
+                      <td>
+                        {a.overridePrice != null
+                          ? `$${Number(a.overridePrice).toFixed(2)}`
+                          : a.template?.defaultPrice != null
+                            ? `$${Number(a.template.defaultPrice).toFixed(2)}`
+                            : '—'}
+                      </td>
+                      <td>{a.isActive === false ? 'Suppressed' : 'Active'}</td>
+                      <td>
+                        {a.scope === 'item' ? (
+                          <Button
+                            colorScheme="red"
+                            size="sm"
+                            onClick={() => removeGlobalAssignment(a.id)}
+                          >
+                            Remove
+                          </Button>
+                        ) : a.isActive === false ? (
+                          <Button
+                            colorScheme="green"
+                            size="sm"
+                            onClick={() => suppressTemplateForItem(a.template?.id, true)}
+                          >
+                            Unsuppress
+                          </Button>
+                        ) : (
+                          <Button
+                            colorScheme="orange"
+                            size="sm"
+                            onClick={() => suppressTemplateForItem(a.template?.id, false)}
+                          >
+                            Suppress
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {itemGlobalList.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="text-muted">
+                        No global templates apply
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-            <div className="col-md-3">
-              <CFormLabel>Override price</CFormLabel>
-              <CFormInput type="number" value={assignFormGM.overridePrice} onChange={e => setAssignFormGM(f => ({ ...f, overridePrice: e.target.value }))} placeholder="optional" />
+            <hr />
+            <div className="row g-3">
+              <div className="col-md-6">
+                <FormLabel>Add template to this item</FormLabel>
+                <Select
+                  value={assignFormGM.templateId}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, templateId: event.currentTarget.value }))
+                  }
+                >
+                  <option value="">Select template…</option>
+                  {flatTemplates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.categoryName ? `[${t.categoryName}] ` : ''}
+                      {t.name}
+                      {t.defaultPrice != null
+                        ? ` — $${Number(t.defaultPrice).toFixed(2)}`
+                        : ' — blueprint'}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="col-md-3">
+                <FormLabel>Override price</FormLabel>
+                <Input
+                  type="number"
+                  value={assignFormGM.overridePrice}
+                  onChange={(event) =>
+                    setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
+                  }
+                  placeholder="optional"
+                />
+              </div>
+              <div className="col-md-3 d-flex align-items-end">
+                <Button
+                  colorScheme="blue"
+                  disabled={!assignFormGM.templateId}
+                  onClick={async () => {
+                    try {
+                      await axiosInstance.post('/api/global-mods/assignments', {
+                        templateId: Number(assignFormGM.templateId),
+                        manufacturerId: id,
+                        scope: 'item',
+                        catalogDataId: selectedCatalogItem.id,
+                        overridePrice:
+                          assignFormGM.overridePrice === ''
+                            ? null
+                            : Number(assignFormGM.overridePrice),
+                      })
+                      const { data } = await axiosInstance.get(
+                        `/api/global-mods/item/${selectedCatalogItem.id}`,
+                      )
+                      setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : [])
+                      setAssignFormGM((f) => ({ ...f, templateId: '', overridePrice: '' }))
+                    } catch (e) {}
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
             </div>
-            <div className="col-md-3 d-flex align-items-end">
-              <CButton color="primary" disabled={!assignFormGM.templateId} onClick={async () => {
-                try {
-                  await axiosInstance.post('/api/global-mods/assignments', {
-                    templateId: Number(assignFormGM.templateId),
-                    manufacturerId: id,
-                    scope: 'item',
-                    catalogDataId: selectedCatalogItem.id,
-                    overridePrice: assignFormGM.overridePrice === '' ? null : Number(assignFormGM.overridePrice)
-                  });
-                  const { data } = await axiosInstance.get(`/api/global-mods/item/${selectedCatalogItem.id}`);
-                  setItemGlobalList(Array.isArray(data?.assignments) ? data.assignments : []);
-                  setAssignFormGM(f => ({ ...f, templateId: '', overridePrice: '' }));
-                } catch (e) {}
-              }}>Add</CButton>
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowItemGlobalModsModal(false)}>{t('common.close', 'Close')}</CButton>
-        </CModalFooter>
-      </CModal>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowItemGlobalModsModal(false)}>
+              {t('common.close', 'Close')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* Manual Upload Modal */}
-      <CModal
-        visible={manualModalVisible}
-        onClose={() => setManualModalVisible(false)}
-      >
-        <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
-        <CModalBody>
-          <CForm>
-
-            <CreatableSelect
-              isClearable
-              className="mb-2"
-        placeholder={t('settings.manufacturers.catalogMapping.stylePlaceholder')}
-              options={styleOptions}
-              value={manualForm.style ? { label: manualForm.style, value: manualForm.style } : null}
-              onChange={(selectedOption) =>
+      <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
+          <ModalBody>
+            <Select
+              placeholder={t(
+                'settings.manufacturers.catalogMapping.stylePlaceholder',
+                'Select or enter style',
+              )}
+              value={manualForm.style || ''}
+              onChange={(e) =>
                 setManualForm({
                   ...manualForm,
-                  style: selectedOption ? selectedOption.value : '',
+                  style: e.target.value,
                 })
               }
-            />
-            <CFormInput
-              className="mb-2"
-        label={t('settings.manufacturers.catalogMapping.fields.code')}
-              name="code"
-              value={manualForm.code}
-              onChange={handleManualChange}
-              invalid={!!errors.code}
-              feedback={errors.code}
-            />
-            <CFormInput
-              className="mb-2"
-        label={t('settings.manufacturers.catalogMapping.fields.description')}
-              name="description"
-              value={manualForm.description}
-              onChange={handleManualChange}
-              invalid={!!errors.description}
-              feedback={errors.description}
-            />
-            <CFormInput
-              className="mb-2"
-              type="number"
-        label={t('settings.manufacturers.catalogMapping.fields.price')}
-              name="price"
-              value={manualForm.price}
-              onChange={handleManualChange}
-              invalid={!!errors.price}
-              feedback={errors.price}
-            />
+              mb={2}
+            >
+              {styleOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            <FormControl className="mb-2" isInvalid={!!errors.code}>
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.code')}</FormLabel>
+              <Input name="code" value={manualForm.code} onChange={handleManualChange} />
+            </FormControl>
+            <FormControl className="mb-2" isInvalid={!!errors.description}>
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.description')}</FormLabel>
+              <Input
+                name="description"
+                value={manualForm.description}
+                onChange={handleManualChange}
+              />
+            </FormControl>
+            <FormControl className="mb-2" isInvalid={!!errors.price}>
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.price')}</FormLabel>
+              <Input
+                type="number"
+                name="price"
+                value={manualForm.price}
+                onChange={handleManualChange}
+              />
+            </FormControl>
 
-            <CFormInput
-              className="mb-2"
-        label={t('settings.manufacturers.catalogMapping.fields.type')}
-              name="type"
-              value={manualForm.type}
-              onChange={handleManualChange}
-              invalid={!!errors.type}
-              feedback={errors.type}
-            />
+            <FormControl className="mb-2" isInvalid={!!errors.type}>
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.type')}</FormLabel>
+              <Input name="type" value={manualForm.type} onChange={handleManualChange} />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setManualModalVisible(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={handleSaveManualItem}
+            >
+              {t('common.save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setManualModalVisible(false)}>
-            {t('common.cancel')}
-          </CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleSaveManualItem}>{t('common.save')}</CButton>
-        </CModalFooter>
-      </CModal>
-
-      <CModal visible={editModalVisible} onClose={() => setEditModalVisible(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
-        <CModalBody>
-          <CForm>
-            <CreatableSelect
-              isClearable
-        placeholder={t('settings.manufacturers.catalogMapping.stylePlaceholder')}
-              options={styleOptions}
-              value={editForm.style ? { label: editForm.style, value: editForm.style } : null}
-              onChange={(selectedOption) =>
+      <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
+          <ModalBody>
+            <Select
+              placeholder={t(
+                'settings.manufacturers.catalogMapping.stylePlaceholder',
+                'Select or enter style',
+              )}
+              value={editForm.style || ''}
+              onChange={(e) =>
                 setEditForm({
                   ...editForm,
-                  style: selectedOption ? selectedOption.value : '',
+                  style: e.target.value,
                 })
               }
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderColor: '#d8dbe0',
-                  minHeight: '38px',
-                  boxShadow: 'none',
-                  '&:hover': {
-                    borderColor: '#a6a9b0',
-                  },
-                }),
-              }}
-            />
+            >
+              {styleOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
 
             {['code', 'description', 'type'].map((field) => (
-              <CFormInput
-                key={field}
-                className="mb-2"
-                label={
-                  field === 'code'
+              <FormControl key={field} className="mb-2">
+                <FormLabel>
+                  {field === 'code'
                     ? t('settings.manufacturers.catalogMapping.fields.code')
                     : field === 'description'
-                    ? t('settings.manufacturers.catalogMapping.fields.description')
-                    : t('settings.manufacturers.catalogMapping.fields.type')
-                }
-                name={field}
-                value={editForm[field]}
-                onChange={(e) => setEditForm({ ...editForm, [field]: e.target.value })}
-              />
+                      ? t('settings.manufacturers.catalogMapping.fields.description')
+                      : t('settings.manufacturers.catalogMapping.fields.type')}
+                </FormLabel>
+                <Input
+                  name={field}
+                  value={editForm[field]}
+                  onChange={(event) =>
+                    setEditForm({ ...editForm, [field]: event.currentTarget.value })
+                  }
+                />
+              </FormControl>
             ))}
 
-            <CFormInput
-              className="mb-2"
-              type="number"
-              step="0.01"
-              min="0"
-              label={t('settings.manufacturers.catalogMapping.fields.price')}
-              name="price"
-              value={editForm.price}
-              onChange={(e) => {
-                const val = e.target.value;
-                setEditForm({ ...editForm, price: val });
-              }}
-            />
-
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditModalVisible(false)}>{t('common.cancel')}</CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleUpdateItem} disabled={isUpdating}>
-            {isUpdating ? t('settings.manufacturers.catalogMapping.edit.updating') : t('settings.manufacturers.catalogMapping.edit.update')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
+            <FormControl className="mb-2">
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.price')}</FormLabel>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                name="price"
+                value={editForm.price}
+                onChange={(event) => {
+                  const val = event.currentTarget.value
+                  setEditForm({ ...editForm, price: val })
+                }}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setEditModalVisible(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={handleUpdateItem}
+              disabled={isUpdating}
+            >
+              {isUpdating
+                ? t('settings.manufacturers.catalogMapping.edit.updating')
+                : t('settings.manufacturers.catalogMapping.edit.update')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* Style Modal */}
-      <CModal visible={showStyleModal} onClose={() => setShowStyleModal(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.style.manageTitle', { style: selectedStyle })} />
+      <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t('settings.manufacturers.catalogMapping.style.manageTitle', {
+              style: selectedStyle,
+            })}
+          />
 
-        <CModalBody>
-          <CForm>
+          <ModalBody>
             {/* Short Name */}
-            <CFormInput
-              label={t('settings.manufacturers.catalogMapping.style.shortName')}
-              name="shortName"
-              value={styleForm.shortName}
-              onChange={handleStyleFormChange}
-              className="mb-3"
-            />
+            <FormControl className="mb-3">
+              <FormLabel>{t('settings.manufacturers.catalogMapping.style.shortName')}</FormLabel>
+              <Input
+                name="shortName"
+                value={styleForm.shortName}
+                onChange={handleStyleFormChange}
+              />
+            </FormControl>
 
             {/* Description */}
-            <CFormTextarea
-              label={t('settings.manufacturers.catalogMapping.fields.description')}
-              name="description"
-              value={styleForm.description}
-              onChange={handleStyleFormChange}
-              className="mb-3"
-              rows={4}
-            />
+            <FormControl className="mb-3">
+              <FormLabel>{t('settings.manufacturers.catalogMapping.fields.description')}</FormLabel>
+              <Textarea
+                name="description"
+                value={styleForm.description}
+                onChange={handleStyleFormChange}
+                rows={4}
+              />
+            </FormControl>
 
             {/* Image Upload */}
-            <CFormInput
-              type="file"
-              label={t('settings.manufacturers.catalogMapping.style.uploadImage')}
-              accept="image/*"
-              id="styleImage"
-              onChange={(e) => setStyleImage(e.target.files[0])}
-            />
+            <FormControl>
+              <FormLabel>{t('settings.manufacturers.catalogMapping.style.uploadImage')}</FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                id="styleImage"
+                onChange={(event) => setStyleImage(event.currentTarget.files[0])}
+              />
+            </FormControl>
 
             {/* Show selected image name or current image */}
             {styleImage ? (
-              <div className="mt-2 text-success">{t('settings.manufacturers.catalogMapping.style.imageSelected', { name: styleImage.name })}</div>
+              <div className="mt-2 text-success">
+                {t('settings.manufacturers.catalogMapping.style.imageSelected', {
+                  name: styleImage.name,
+                })}
+              </div>
             ) : styleForm.image ? (
               <div className="mt-3">
-                <p className="mb-1"><strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong></p>
-                <img
-                  src={
-                    styleForm.image
-                      ? `${api_url}/uploads/images/${styleForm.image}`
-                      : "/images/nologo.png"
-                  }
-                  alt="Style Preview"
+                <p className="mb-1">
+                  <strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong>
+                </p>
+                <Image
+                  src={styleForm.image ? `${api_url}/uploads/images/${styleForm.image}` : undefined}
+                  alt={t('settings.manufacturers.catalogMapping.style.previewAlt', 'Style preview')}
+                  fallbackSrc="/images/nologo.png"
                   style={{
                     maxWidth: '100%',
                     maxHeight: '300px',
                     borderRadius: '8px',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                     display: 'block',
-                    margin: '0 auto'
+                    margin: '0 auto',
                   }}
-                  onError={(e) => {
-                    if (styleForm.image && !e.target.dataset.fallbackTried) {
-                      e.target.dataset.fallbackTried = '1';
-                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`;
+                  onError={(event) => {
+                    if (styleForm.image && !event.currentTarget.dataset.fallbackTried) {
+                      event.currentTarget.dataset.fallbackTried = '1'
+                      event.currentTarget.src = `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`
                     } else {
-                      e.target.src = '/images/nologo.png';
+                      event.currentTarget.src = '/images/nologo.png'
                     }
                   }}
                 />
               </div>
             ) : null}
-          </CForm>
-        </CModalBody>
+          </ModalBody>
 
-        <CModalFooter>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={handleSaveStyle}>{t('common.save')}</CButton>
-          <CButton color="secondary" onClick={() => setShowStyleModal(false)}>{t('common.cancel')}</CButton>
-        </CModalFooter>
-      </CModal>
-
+          <ModalFooter>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={handleSaveStyle}
+            >
+              {t('common.save')}
+            </Button>
+            <Button colorScheme="gray" onClick={() => setShowStyleModal(false)}>
+              {t('common.cancel')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* Style View Modal */}
-      <CModal visible={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size="lg">
-        <PageHeader title={`📝 ${t('settings.manufacturers.catalogMapping.style.detailsTitle')}`} />
-        <CModalBody>
-          {styleDetails ? (
-            <div style={{ padding: '10px 5px' }}>
-              <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 100%', paddingRight: '10px' }}>
-                  <p><strong>🏷️ {t('settings.manufacturers.catalogMapping.style.shortName')}:</strong> {styleDetails.shortName ? styleDetails.shortName : t('common.na')}</p>
-                  <p><strong>📝 {t('settings.manufacturers.catalogMapping.fields.description')}:</strong> {styleDetails.description ? styleDetails.description : t('common.na')}</p>
+      <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={`📝 ${t('settings.manufacturers.catalogMapping.style.detailsTitle')}`}
+          />
+          <ModalBody>
+            {styleDetails ? (
+              <div style={{ padding: '10px 5px' }}>
+                <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 100%', paddingRight: '10px' }}>
+                    <p>
+                      <strong>
+                        🏷️ {t('settings.manufacturers.catalogMapping.style.shortName')}:
+                      </strong>{' '}
+                      {styleDetails.shortName ? styleDetails.shortName : t('common.na')}
+                    </p>
+                    <p>
+                      <strong>
+                        📝 {t('settings.manufacturers.catalogMapping.fields.description')}:
+                      </strong>{' '}
+                      {styleDetails.description ? styleDetails.description : t('common.na')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              {styleDetails.image ? (
-                <div style={{ marginTop: '20px' }}>
-                  <img
-                    src={
-                      styleDetails.image
-                        ? `${api_url}/uploads/images/${styleDetails.image}`
-                        : "/images/nologo.png"
-                    }
-                    alt="Style"
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '300px',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
-                    }}
-                    onError={(e) => {
-                      if (styleDetails.image && !e.target.dataset.fallbackTried) {
-                        e.target.dataset.fallbackTried = '1';
-                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`;
-                      } else {
-                        e.target.src = '/images/nologo.png';
+                {styleDetails.image ? (
+                  <div style={{ marginTop: '20px' }}>
+                    <Image
+                      src={
+                        styleDetails.image
+                          ? `${api_url}/uploads/images/${styleDetails.image}`
+                          : undefined
                       }
-                    }}
-                  />
-                </div>
-              ) : (
-                <p style={{ textAlign: 'center', color: '#888' }}>{t('settings.manufacturers.catalogMapping.style.noImage')}</p>
-              )}
-            </div>
-          ) : (
-            <p>{t('settings.manufacturers.catalogMapping.style.noData')}</p>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowStyleViewModal(false)}>
-            {t('common.cancel')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-
-
-
-      <CModal visible={showAssemblyModal} onClose={() => !isAssemblyCostSaving && setShowAssemblyModal(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
-        <CModalBody style={{ position: 'relative' }}>
-          {isAssemblyCostSaving && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10,
-                borderRadius: '8px'
-              }}
-            >
-              <div className="text-center">
-                <div className="spinner-border text-primary mb-2" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <div>Applying assembly cost...</div>
-              </div>
-            </div>
-          )}
-          <CFormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</CFormLabel>
-          <CFormSelect
-            value={assemblyData.type}
-            onChange={(e) => setAssemblyData({ ...assemblyData, type: e.target.value })}
-            disabled={isAssemblyCostSaving}
-          >
-            <option value="">{t('settings.manufacturers.catalogMapping.assembly.selectType')}</option>
-            <option value="percentage">{t('settings.manufacturers.catalogMapping.assembly.percentage')}</option>
-            <option value="fixed">{t('settings.manufacturers.catalogMapping.assembly.fixed')}</option>
-          </CFormSelect>
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.price')}</CFormLabel>
-          <CFormInput
-            type="number"
-            min="0"
-            step="0.01"
-            value={assemblyData.price}
-            onChange={(e) => setAssemblyData({ ...assemblyData, price: e.target.value })}
-            placeholder="Enter price (0 for no assembly cost)"
-            disabled={isAssemblyCostSaving}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.applyTo')}</CFormLabel>
-          <CFormSelect
-            value={assemblyData.applyTo}
-            onChange={(e) => setAssemblyData({ ...assemblyData, applyTo: e.target.value })}
-            disabled={isAssemblyCostSaving}
-          >
-            <option value="one">{t('settings.manufacturers.catalogMapping.assembly.applyOne')}</option>
-            <option value="type">{t('settings.manufacturers.catalogMapping.assembly.applyType')}</option>
-            <option value="types">{t('settings.manufacturers.catalogMapping.assembly.applyTypes', 'Apply by Multiple Types')}</option>
-            <option value="all">{t('settings.manufacturers.catalogMapping.assembly.applyAll')}</option>
-          </CFormSelect>
-
-          {assemblyData.applyTo === 'one' && selectedCatalogItem && selectedCatalogItem.type && assemblyCostsByType[selectedCatalogItem.type]?.assemblyCosts?.length > 0 && (
-            <div className="mt-3 p-3 bg-light rounded">
-              <small className="fw-bold text-muted">Existing Assembly Costs for "{selectedCatalogItem.code}" ({selectedCatalogItem.type}):</small>
-              <div className="mt-2">
-                {assemblyCostsByType[selectedCatalogItem.type].assemblyCosts.map((cost, idx) => (
-                  <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} me-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
-                    {cost.assemblyType}: ${cost.price.toFixed(2)}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
-            <div className="mt-3 p-3 bg-light rounded">
-              <small className="fw-bold text-muted">Existing Assembly Costs by Type:</small>
-              <div className="mt-2">
-                {availableTypes.map((typeItem) => {
-                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
-                  if (typeAssemblyCosts.length === 0) return null;
-
-                  return (
-                    <div key={typeItem.type} className="d-flex justify-content-between align-items-center mb-1">
-                      <small className="text-muted">{typeItem.type}:</small>
-                      <div>
-                        {typeAssemblyCosts.map((cost, idx) => (
-                          <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
-                            ${cost.price.toFixed(2)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {assemblyData.applyTo === 'type' && (
-            <>
-              <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.selectItemType')}</CFormLabel>
-              <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                {availableTypes.map((typeItem) => {
-                  const isSelected = assemblyData.selectedItemType === typeItem.type;
-                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
-
-                  return (
-                    <div key={typeItem.type} className="form-check mb-2">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="singleTypeSelection"
-                        id={`single-type-${typeItem.type}`}
-                        checked={isSelected}
-                        onChange={() => setAssemblyData({ ...assemblyData, selectedItemType: typeItem.type })}
-                      />
-                      <label className="form-check-label d-flex justify-content-between align-items-center w-100" htmlFor={`single-type-${typeItem.type}`}>
-                        <div>
-                          <div className="fw-bold">{typeItem.type}</div>
-                          <small className="text-muted">{typeItem.count} items</small>
-                        </div>
-                        <div>
-                          {typeAssemblyCosts.map((cost, idx) => (
-                            <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
-                              ${cost.price.toFixed(2)}
-                            </span>
-                          ))}
-                        </div>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-
-          {assemblyData.applyTo === 'types' && (
-            <>
-              <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.assembly.selectMultipleTypes', 'Select Item Types')}</CFormLabel>
-              <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                {availableTypes.map((typeItem) => {
-                  const isSelected = assemblyData.selectedTypes.includes(typeItem.type);
-                  const typeAssemblyCosts = assemblyCostsByType[typeItem.type]?.assemblyCosts || [];
-
-                  return (
-                    <div key={typeItem.type} className="form-check mb-2">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id={`type-${typeItem.type}`}
-                        checked={isSelected}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAssemblyData(prev => ({
-                              ...prev,
-                              selectedTypes: [...prev.selectedTypes, typeItem.type]
-                            }));
-                          } else {
-                            setAssemblyData(prev => ({
-                              ...prev,
-                              selectedTypes: prev.selectedTypes.filter(t => t !== typeItem.type)
-                            }));
-                          }
-                        }}
-                      />
-                      <label className="form-check-label d-flex justify-content-between align-items-center w-100" htmlFor={`type-${typeItem.type}`}>
-                        <div>
-                          <div className="fw-bold">{typeItem.type}</div>
-                          <small className="text-muted">{typeItem.count} items</small>
-                        </div>
-                        <div>
-                          {typeAssemblyCosts.map((cost, idx) => (
-                            <span key={idx} className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`} title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}>
-                              ${cost.price.toFixed(2)}
-                            </span>
-                          ))}
-                        </div>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3 d-flex gap-2">
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  type="button"
-                  onClick={() => {
-                    const allTypes = availableTypes.map(t => t.type);
-                    setAssemblyData(prev => ({ ...prev, selectedTypes: allTypes }));
-                  }}
-                >
-                  {t('common.selectAll', 'Select All')}
-                </button>
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  type="button"
-                  onClick={() => setAssemblyData(prev => ({ ...prev, selectedTypes: [] }))}
-                >
-                  {t('common.selectNone', 'Select None')}
-                </button>
-              </div>
-
-              {assemblyData.selectedTypes.length > 0 && (
-                <div className="alert alert-info mt-3">
-                  <small>
-                    {t('settings.manufacturers.catalogMapping.assembly.multipleTypesWarning',
-                    'This will apply the assembly cost to all items in {{count}} selected types.',
-                    { count: assemblyData.selectedTypes.length })}
-                  </small>
-                </div>
-              )}
-            </>
-          )}
-
-
-        </CModalBody>
-
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setShowAssemblyModal(false)}
-            disabled={isAssemblyCostSaving}
-          >
-            {t('common.cancel')}
-          </CButton>
-          <CButton
-            style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
-            onClick={saveAssemblyCost}
-            disabled={isAssemblyCostSaving}
-          >
-            {isAssemblyCostSaving ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Applying...
-              </>
-            ) : (
-              t('common.save')
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-
-      <CModal visible={showHingesModal} onClose={() => setShowHingesModal(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
-        <CModalBody>
-          <CFormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</CFormLabel>
-          <CFormInput
-            type="number"
-            value={hingesData.leftHingePrice}
-            onChange={(e) => setHingesData({ ...hingesData, leftHingePrice: e.target.value })}
-            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderLeft')}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.right')}</CFormLabel>
-          <CFormInput
-            type="number"
-            value={hingesData.rightHingePrice}
-            onChange={(e) => setHingesData({ ...hingesData, rightHingePrice: e.target.value })}
-            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderRight')}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.both')}</CFormLabel>
-          <CFormInput
-            type="number"
-            value={hingesData.bothHingePrice}
-            onChange={(e) => setHingesData({ ...hingesData, bothHingePrice: e.target.value })}
-            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderBoth')}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.hinges.exposedSide')}</CFormLabel>
-          <CFormInput
-            type="number"
-            value={hingesData.exposedSidePrice}
-            onChange={(e) => setHingesData({ ...hingesData, exposedSidePrice: e.target.value })}
-            placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderExposed')}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowHingesModal(false)}>{t('common.cancel')}</CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveHingesDetails}>{t('common.save')}</CButton>
-        </CModalFooter>
-      </CModal>
-
-
-      <CModal visible={showModificationModal} onClose={() => setShowModificationModal(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
-        <CModalBody>
-          <CFormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</CFormLabel>
-          <CFormInput
-            value={modificationData.modificationName}
-            onChange={(e) => setModificationData({ ...modificationData, modificationName: e.target.value })}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.description')}</CFormLabel>
-          <CFormTextarea
-            value={modificationData.description}
-            onChange={(e) => setModificationData({ ...modificationData, description: e.target.value })}
-            rows={3}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.mod.notes')}</CFormLabel>
-          <CFormTextarea
-            value={modificationData.notes}
-            onChange={(e) => setModificationData({ ...modificationData, notes: e.target.value })}
-            rows={2}
-          />
-
-          <CFormLabel className="mt-2">{t('settings.manufacturers.catalogMapping.fields.price')}</CFormLabel>
-          <CFormInput
-            type="number"
-            value={modificationData.price}
-            onChange={(e) => setModificationData({ ...modificationData, price: e.target.value })}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowModificationModal(false)}>{t('common.cancel')}</CButton>
-          <CButton style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }} onClick={saveModificationDetails}>{t('common.save')}</CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Delete Style Modal */}
-      <CModal visible={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)}>
-  <PageHeader title={t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', { style: styleToDelete })} />
-        <CModalBody>
-          <div className="mb-3">
-            <p>
-              You are about to delete the style "<strong>{styleToDelete}</strong>".
-              This will affect <strong>{catalogData.filter(item => item.style === styleToDelete).length}</strong> catalog items.
-            </p>
-
-            <p>What would you like to do with the items that currently have this style?</p>
-
-            <div className="mt-3">
-              <div className="form-check mb-2">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="deleteOption"
-                  id="deleteItems"
-                  checked={!mergeToStyle}
-                  onChange={() => setMergeToStyle('')}
-                />
-                <label className="form-check-label text-danger" htmlFor="deleteItems">
-                  <strong>Delete all items</strong> with this style permanently
-                </label>
-              </div>
-
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="deleteOption"
-                  id="mergeItems"
-                  checked={!!mergeToStyle}
-                  onChange={() => setMergeToStyle(sortedUniqueStyles.find(s => s !== styleToDelete) || '')}
-                />
-                <label className="form-check-label text-primary" htmlFor="mergeItems">
-                  <strong>Merge items</strong> to another style
-                </label>
-              </div>
-            </div>
-
-            {mergeToStyle !== '' && (
-              <div className="mt-3">
-                <CFormLabel>Select target style:</CFormLabel>
-                <CFormSelect
-                  value={mergeToStyle}
-                  onChange={(e) => setMergeToStyle(e.target.value)}
-                >
-                  <option value="">Select a style...</option>
-                  {sortedUniqueStyles
-                    .filter(style => style !== styleToDelete)
-                    .map((style, idx) => (
-                      <option key={idx} value={style}>
-                        {style}
-                      </option>
-                    ))}
-                </CFormSelect>
-              </div>
-            )}
-
-            <div className="mt-3 p-3 bg-light rounded">
-              <small className="text-muted">
-                {mergeToStyle ? (
-                  <>
-                    <strong>Smart Merge Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items
-                    with style "{styleToDelete}" will be processed:
-                    <ul className="mt-1 mb-0">
-                      <li>Items with unique codes will be merged to style "{mergeToStyle}"</li>
-                      <li>Duplicate items (same code + style) will be automatically removed</li>
-                    </ul>
-                  </>
-                ) : (
-                  <>
-                    <strong>Delete Action:</strong> All {catalogData.filter(item => item.style === styleToDelete).length} items
-                    with style "{styleToDelete}" will be permanently deleted. This action cannot be undone.
-                  </>
-                )}
-              </small>
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setDeleteStyleModalVisible(false)}
-            disabled={isDeleting}
-          >
-            {t('common.cancel')}
-          </CButton>
-          <CButton
-            color={mergeToStyle ? "primary" : "danger"}
-            onClick={handleDeleteStyle}
-            disabled={isDeleting || (mergeToStyle !== '' && !mergeToStyle)}
-          >
-            {isDeleting ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Processing...
-              </>
-            ) : (
-              mergeToStyle ? `Merge to "${mergeToStyle}"` : "Delete Permanently"
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Individual Delete Item Modal */}
-      <CModal visible={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)}>
-  <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
-        <CModalBody>
-          {itemToDelete && (
-            <div>
-              <p>Are you sure you want to delete this catalog item?</p>
-              <div className="p-3 bg-light rounded">
-                <strong>Code:</strong> {itemToDelete.code}<br />
-                <strong>Description:</strong> {itemToDelete.description || 'N/A'}<br />
-                <strong>Style:</strong> {itemToDelete.style || 'N/A'}<br />
-                <strong>Price:</strong> ${itemToDelete.price || '0.00'}
-              </div>
-              <p className="text-danger mt-3">
-                <small>⚠️ This action cannot be undone.</small>
-              </p>
-            </div>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setDeleteItemModalVisible(false)}
-            disabled={isDeletingItem}
-          >
-            {t('common.cancel')}
-          </CButton>
-          <CButton
-            color="danger"
-            onClick={handleDeleteItem}
-            disabled={isDeletingItem}
-          >
-            {isDeletingItem ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Deleting...
-              </>
-            ) : (
-              "Delete Item"
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Bulk Delete Modal */}
-      <CModal visible={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)}>
-  <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
-        <CModalBody>
-          <div>
-            <p>Are you sure you want to delete <strong>{selectedItems.length}</strong> selected catalog items?</p>
-
-            <div className="p-3 bg-light rounded">
-              <strong>Items to be deleted:</strong>
-              <ul className="mt-2 mb-0">
-                {currentItems
-                  .filter(item => selectedItems.includes(item.id))
-                  .slice(0, 10) // Show first 10 items
-                  .map(item => (
-                    <li key={item.id}>
-                      {item.code} - {item.description || 'N/A'}
-                    </li>
-                  ))}
-                {selectedItems.length > 10 && (
-                  <li><em>... and {selectedItems.length - 10} more items</em></li>
-                )}
-              </ul>
-            </div>
-
-            <p className="text-danger mt-3">
-              <small>⚠️ This action cannot be undone. All selected items will be permanently deleted.</small>
-            </p>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setBulkDeleteModalVisible(false)}
-            disabled={isBulkDeleting}
-          >
-            {t('common.cancel')}
-          </CButton>
-          <CButton
-            color="danger"
-            onClick={handleBulkDelete}
-            disabled={isBulkDeleting}
-          >
-            {isBulkDeleting ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Deleting {selectedItems.length} items...
-              </>
-            ) : (
-              `Delete ${selectedItems.length} Items`
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Rollback Modal */}
-      <CModal visible={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)}>
-        <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
-        <CModalBody>
-          <div className="mb-3">
-            <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>
-
-            {isLoadingBackups ? (
-              <div className="text-center py-3">
-                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                Loading backups...
-              </div>
-            ) : availableBackups.length === 0 ? (
-              <div className="alert alert-info">
-                {t('settings.manufacturers.catalogMapping.rollback.noBackups')}
-              </div>
-            ) : (
-              <div>
-                {availableBackups.map((backup) => (
-                  <div key={backup.uploadSessionId} className="form-check mb-2">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="backupSelection"
-                      id={`backup-${backup.uploadSessionId}`}
-                      value={backup.uploadSessionId}
-                      checked={selectedBackup === backup.uploadSessionId}
-                      onChange={(e) => setSelectedBackup(e.target.value)}
+                      alt={t(
+                        'settings.manufacturers.catalogMapping.style.detailsImageAlt',
+                        'Style preview',
+                      )}
+                      fallbackSrc="/images/nologo.png"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '300px',
+                        borderRadius: '8px',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                      }}
+                      onError={(event) => {
+                        if (styleDetails.image && !event.currentTarget.dataset.fallbackTried) {
+                          event.currentTarget.dataset.fallbackTried = '1'
+                          event.currentTarget.src = `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`
+                        } else {
+                          event.currentTarget.src = '/images/nologo.png'
+                        }
+                      }}
                     />
-                    <label className="form-check-label" htmlFor={`backup-${backup.uploadSessionId}`}>
-                      <div>
-                        <strong>{backup.originalName}</strong>
-                        <br />
-                        <small className="text-muted">
-                          {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount} items
-                        </small>
-                      </div>
-                    </label>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {selectedBackup && (
-            <div className="alert alert-warning">
-              <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
-              <br />
-              {t('settings.manufacturers.catalogMapping.rollback.confirmText')}
-            </div>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setRollbackModalVisible(false);
-              setSelectedBackup('');
-              setAvailableBackups([]);
-            }}
-          >
-            {t('common.cancel')}
-          </CButton>
-          <CButton
-            color="warning"
-            onClick={handleRollback}
-            disabled={!selectedBackup || isRollingBack}
-          >
-            {isRollingBack ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {t('settings.manufacturers.catalogMapping.rollback.rolling')}
-              </>
-            ) : (
-              t('settings.manufacturers.catalogMapping.rollback.rollbackButton')
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Bulk Edit Modal */}
-      <CModal visible={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size="lg">
-  <PageHeader title={t('settings.manufacturers.catalogMapping.bulkEdit.header', { count: selectedItems.length })} />
-        <CModalBody>
-          <div>
-            <p>Edit the following fields for the selected {selectedItems.length} catalog items. Leave fields empty to keep existing values.</p>
-
-            <div className="row g-3">
-              <div className="col-md-6">
-                <CFormLabel>Style</CFormLabel>
-                <CFormInput
-                  type="text"
-                  value={bulkEditForm.style}
-                  onChange={(e) => setBulkEditForm({...bulkEditForm, style: e.target.value})}
-                  placeholder="Leave empty to keep existing"
-                />
-              </div>
-
-              <div className="col-md-6">
-                <CFormLabel>Type</CFormLabel>
-                <CFormInput
-                  type="text"
-                  value={bulkEditForm.type}
-                  onChange={(e) => setBulkEditForm({...bulkEditForm, type: e.target.value})}
-                  placeholder="Leave empty to keep existing"
-                />
-              </div>
-
-              <div className="col-12">
-                <CFormLabel>Description</CFormLabel>
-                <CFormTextarea
-                  value={bulkEditForm.description}
-                  onChange={(e) => setBulkEditForm({...bulkEditForm, description: e.target.value})}
-                  placeholder="Leave empty to keep existing"
-                  rows={3}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <CFormLabel>Price</CFormLabel>
-                <CFormInput
-                  type="number"
-                  step="0.01"
-                  value={bulkEditForm.price}
-                  onChange={(e) => setBulkEditForm({...bulkEditForm, price: e.target.value})}
-                  placeholder="Leave empty to keep existing"
-                />
-              </div>
-            </div>
-
-            <div className="mt-3 p-3 bg-light rounded">
-              <small className="text-muted">
-                <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will preserve the existing values for each item.
-              </small>
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setBulkEditModalVisible(false)}
-            disabled={isBulkEditing}
-          >
-            Cancel
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={handleBulkEdit}
-            disabled={isBulkEditing}
-          >
-            {isBulkEditing ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Updating {selectedItems.length} Items...
-              </>
-            ) : (
-              `Update ${selectedItems.length} Items`
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Edit Style Name Modal */}
-      <CModal visible={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)}>
-        <PageHeader title="Edit Style Name" />
-        <CModalBody>
-          <div>
-            <p>Rename the style for all items of this manufacturer. This will affect all catalog items currently using this style.</p>
-
-            <div className="mb-3">
-              <CFormLabel>Current Style Name</CFormLabel>
-              <CFormInput
-                type="text"
-                value={styleNameEditForm.oldStyleName}
-                disabled
-                className="bg-light"
-              />
-            </div>
-
-            <div className="mb-3">
-              <CFormLabel>New Style Name</CFormLabel>
-              <CFormInput
-                type="text"
-                value={styleNameEditForm.newStyleName}
-                onChange={(e) => setStyleNameEditForm({...styleNameEditForm, newStyleName: e.target.value})}
-                placeholder="Enter new style name"
-                autoFocus
-              />
-            </div>
-
-            <div className="p-3 bg-warning bg-opacity-10 rounded">
-              <small className="text-muted">
-                <strong>Warning:</strong> This will rename the style for all items currently using "{styleNameEditForm.oldStyleName}".
-                The change applies to all {catalogData.filter(item => item.style === styleNameEditForm.oldStyleName).length} items with this style.
-              </small>
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => setEditStyleNameModalVisible(false)}
-            disabled={isEditingStyleName}
-          >
-            Cancel
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={handleEditStyleName}
-            disabled={isEditingStyleName || !styleNameEditForm.newStyleName.trim()}
-          >
-            {isEditingStyleName ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Renaming Style...
-              </>
-            ) : (
-              "Rename Style"
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      {/* Main Modification Management Modal */}
-      <CModal visible={showMainModificationModal} onClose={() => setShowMainModificationModal(false)} size="xl">
-        <PageHeader title={t('settings.manufacturers.catalogMapping.modManagement.title', 'Modification Management')} />
-        <CModalBody>
-          {modificationView === 'cards' && (
-            <div>
-              {/* Main Action Buttons */}
-              <div className="d-flex gap-3 mb-4 justify-content-center">
-                <CButton
-                  color="primary"
-                  size="lg"
-                  onClick={() => { setEditingTemplateId(null); setSelectedModificationCategory(''); setNewTemplate(n=>({categoryId:'', name:'', defaultPrice:'', isReady:false, sampleImage:'', saveAsBlueprint:false})); setGuidedBuilder(makeGuidedFromFields(null)); setModificationView('addNew'); setModificationStep(1); }}
-                >
-                  {t('globalMods.ui.buttons.addModification', 'Add Modification')}
-                </CButton>
-                <CButton
-                  color="info"
-                  size="lg"
-                  onClick={() => setModificationView('gallery')}
-                >
-                  {t('globalMods.ui.buttons.gallery', 'Gallery')}
-                </CButton>
-                <CButton
-                  color="success"
-                  size="lg"
-                  onClick={() => setShowAssignGlobalModsModal(true)}
-                >
-                  {t('globalMods.ui.buttons.assignModification', 'Assign Modification')}
-                </CButton>
-              </div>
-
-              {/* Existing Modification Cards */}
-              <div className="row">
-                {manufacturerCategories.map(category => (
-                  <div key={category.id} className="col-md-6 mb-4">
-                    <div className="card h-100">
-                      <div className="card-header d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0 d-flex align-items-center gap-2">
-                          {category.image && (
-                            <>
-                              <img
-                                src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${category.image}`}
-                                alt={category.name}
-                                width={24}
-                                height={24}
-                                style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
-                                onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
-                              />
-                              <CBadge color="info" title={t('globalMods.modal.gallery.categoryImageUploaded', 'Category image uploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
-                            </>
-                          )}
-                          {category.name}
-                        </h6>
-                        <div className="d-flex align-items-center gap-2">
-                          <span className="badge bg-secondary">{t('settings.manufacturers.catalogMapping.modManagement.modsCount', { count: category.templates?.length || 0 })}</span>
-                          <CButton size="sm" color="warning" variant="outline" title={t('globalMods.category.editTooltip')}
-                            onClick={() => { setEditCategory({ id: category.id, name: category.name || '', orderIndex: category.orderIndex || 0, image: category.image || '' }); setShowEditCategoryModal(true); }}>
-                            ✏️ {t('common.edit')}
-                          </CButton>
-                          <CButton size="sm" color="danger" variant="outline" title={t('globalMods.category.deleteTooltip')}
-                            onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}>
-                            🗑️ {t('common.delete')}
-                          </CButton>
-                        </div>
-                      </div>
-                      <div className="card-body">
-                        {category.templates?.length ? (
-                          category.templates.map(template => (
-                            <div key={template.id} className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-                              <div className="d-flex align-items-center gap-2">
-                                {template.sampleImage && (
-                                  <img
-                                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
-                                    alt={template.name}
-                                    width={32}
-                                    height={32}
-                                    style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
-                                    onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
-                                  />
-                                )}
-                                <div>
-                                  <strong>{template.name}</strong>
-                                  {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
-                                  <div className="d-flex gap-1 mt-1">
-                                    <CBadge color={template.isReady ? 'success' : 'warning'}>
-                                      {template.isReady ? t('settings.manufacturers.catalogMapping.gallery.badges.ready') : t('settings.manufacturers.catalogMapping.gallery.badges.draft')}
-                                    </CBadge>
-                                    {template.sampleImage && (
-                                      <CBadge color="info" title={t('settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="d-flex gap-1">
-                                <CButton
-                                  size="sm"
-                                  color="outline-primary"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.edit')}
-                                  onClick={() => {
-                                    // Preserve full state so PUT payload includes required fields
-                                    setEditTemplate({
-                                      id: template.id,
-                                      categoryId: String(template.categoryId || ''),
-                                      name: template.name || '',
-                                      defaultPrice: template.defaultPrice !== null && template.defaultPrice !== undefined ? String(template.defaultPrice) : '',
-                                      sampleImage: template.sampleImage || '',
-                                      isReady: !!template.isReady,
-                                      fieldsConfig: template.fieldsConfig || null,
-                                    });
-                                    // Load guided builder state from fieldsConfig
-                                    setEditGuidedBuilder(makeGuidedFromFields(template.fieldsConfig));
-                                    setShowQuickEditTemplateModal(true);
-                                  }}
-                                >
-                                  ✏️
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="outline-danger"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.delete')}
-                                  onClick={() => {
-                                    if (window.confirm(t('settings.manufacturers.catalogMapping.gallery.confirmDelete', { name: template.name }))) {
-                                      deleteModificationTemplate(template.id);
-                                    }
-                                  }}
-                                >
-                                  🗑️
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="outline-warning"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.move')}
-                                  onClick={() => {
-                                    setModificationToMove(template);
-                                    setShowMoveModificationModal(true);
-                                  }}
-                                >
-                                  📁
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="outline-success"
-                                  title={t('globalMods.modal.assign.title')}
-                                  onClick={() => {
-                                    setAssignFormGM(f => ({ ...f, templateId: template.id }));
-                                    setShowAssignGlobalModsModal(true);
-                                  }}
-                                >
-                                  🎯
-                                </CButton>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-muted">{t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {!manufacturerCategories.length && (
-                  <div className="col-12 text-center">
-                    <p className="text-muted">{t('settings.manufacturers.catalogMapping.modManagement.noCategories', { addLabel: t('globalMods.ui.buttons.addModification', 'Add Modification') })}</p>
-                  </div>
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#888' }}>
+                    {t('settings.manufacturers.catalogMapping.style.noImage')}
+                  </p>
                 )}
               </div>
-            </div>
-          )}
+            ) : (
+              <p>{t('settings.manufacturers.catalogMapping.style.noData')}</p>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowStyleViewModal(false)}>
+              {t('common.cancel')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-          {modificationView === 'addNew' && (
-            <div>
-              {modificationStep === 1 && (
-                <div>
-          <h5>{t('globalMods.modal.add.step1Title')}</h5>
-                  <div className="mb-3">
-                    <CFormSelect
-                      value={selectedModificationCategory}
-                      onChange={e => setSelectedModificationCategory(e.target.value)}
-                    >
-            <option value="">{t('globalMods.modal.add.selectExisting')}</option>
-                      {/* Show manufacturer categories only for manufacturer context */}
-                      {manufacturerCategories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
-            <option value="new">{t('globalMods.modal.add.createNew')}</option>
-                    </CFormSelect>
+      <Modal
+        isOpen={showAssemblyModal}
+        onClose={() => !isAssemblyCostSaving && setShowAssemblyModal(false)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
+          <ModalBody style={{ position: 'relative' }}>
+            {isAssemblyCostSaving && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 10,
+                  borderRadius: '8px',
+                }}
+              >
+                <div className="text-center">
+                  <div className="spinner-border text-primary mb-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
                   </div>
-
-                  {selectedModificationCategory === 'new' && (
-                    <div className="border rounded p-3 mb-3">
-            <h6>{t('globalMods.modal.add.createNew')}</h6>
-                      <div className="row">
-                        <div className="col-md-8">
-                          <CFormInput
-              placeholder={t('globalMods.modal.add.newSubmenuName')}
-                            value={newCategory.name}
-                            onChange={e => setNewCategory(n => ({ ...n, name: e.target.value }))}
-                          />
-                        </div>
-                        <div className="col-md-4">
-                          <CFormInput
-                            type="number"
-              placeholder={t('globalMods.modal.add.orderIndex')}
-                            value={newCategory.orderIndex}
-                            onChange={e => setNewCategory(n => ({ ...n, orderIndex: e.target.value }))}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="d-flex gap-2">
-                    <CButton color="secondary" onClick={() => setModificationView('cards')}>Back to Overview</CButton>
-                    <CButton
-                      color="primary"
-                      onClick={() => setModificationStep(2)}
-                      disabled={!selectedModificationCategory || (selectedModificationCategory === 'new' && !newCategory.name)}
-                    >
-                      Next: Template Builder
-                    </CButton>
-                  </div>
+                  <div>Applying assembly cost...</div>
                 </div>
-              )}
+              </div>
+            )}
+            <FormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</FormLabel>
+            <Select
+              value={assemblyData.type}
+              onChange={(event) =>
+                setAssemblyData({ ...assemblyData, type: event.currentTarget.value })
+              }
+              disabled={isAssemblyCostSaving}
+            >
+              <option value="">
+                {t('settings.manufacturers.catalogMapping.assembly.selectType')}
+              </option>
+              <option value="percentage">
+                {t('settings.manufacturers.catalogMapping.assembly.percentage')}
+              </option>
+              <option value="fixed">
+                {t('settings.manufacturers.catalogMapping.assembly.fixed')}
+              </option>
+            </Select>
 
-              {modificationStep === 2 && (
-                <div>
-                  <h5>Step 2: Build Modification Template</h5>
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.fields.price')}
+            </FormLabel>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={assemblyData.price}
+              onChange={(event) =>
+                setAssemblyData({ ...assemblyData, price: event.currentTarget.value })
+              }
+              placeholder="Enter price (0 for no assembly cost)"
+              disabled={isAssemblyCostSaving}
+            />
 
-                  {/* Default Required Fields */}
-                  <div className="border rounded p-3 mb-3">
-                    <h6>Required Fields</h6>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <CFormInput
-                          placeholder="Modification name *"
-                          value={newTemplate.name}
-                          onChange={e => setNewTemplate(n => ({ ...n, name: e.target.value }))}
-                        />
-                      </div>
-                      <div className="col-md-6">
-                        <CFormInput
-                          type="number"
-                          placeholder={newTemplate.saveAsBlueprint ? "Blueprints don't have prices" : "Default price *"}
-                          value={newTemplate.saveAsBlueprint ? '' : newTemplate.defaultPrice}
-                          onChange={e => setNewTemplate(n => ({ ...n, defaultPrice: e.target.value }))}
-                          disabled={newTemplate.saveAsBlueprint}
-                        />
-                      </div>
-                    </div>
-                  </div>
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.assembly.applyTo')}
+            </FormLabel>
+            <Select
+              value={assemblyData.applyTo}
+              onChange={(event) =>
+                setAssemblyData({ ...assemblyData, applyTo: event.currentTarget.value })
+              }
+              disabled={isAssemblyCostSaving}
+            >
+              <option value="one">
+                {t('settings.manufacturers.catalogMapping.assembly.applyOne')}
+              </option>
+              <option value="type">
+                {t('settings.manufacturers.catalogMapping.assembly.applyType')}
+              </option>
+              <option value="types">
+                {t(
+                  'settings.manufacturers.catalogMapping.assembly.applyTypes',
+                  'Apply by Multiple Types',
+                )}
+              </option>
+              <option value="all">
+                {t('settings.manufacturers.catalogMapping.assembly.applyAll')}
+              </option>
+            </Select>
 
-                  {/* Optional Field Builder */}
-                  <div className="border rounded p-3 mb-3">
-                    <h6>Optional Field Builder (Building Blocks)</h6>
-
-                    {/* Slider Controls */}
-                    <div className="row mb-3">
-                      <div className="col-md-4">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Height Slider"
-                              checked={guidedBuilder.sliders.height.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, enabled:e.target.checked}}}))}
-                            />
-                          </div>
-                          {guidedBuilder.sliders.height.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Min height"
-                                  value={guidedBuilder.sliders.height.min}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:e.target.value}}}))}
-                                />
-                              </div>
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Max height"
-                                  value={guidedBuilder.sliders.height.max}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:e.target.value}}}))}
-                                />
-                              </div>
-                              <CFormSelect
-                                value={guidedBuilder.sliders.height.useCustomIncrements ? 'custom' : guidedBuilder.sliders.height.step}
-                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
-                              >
-                                <option value="1">1 inch increments</option>
-                                <option value="0.5">0.5 inch increments</option>
-                                <option value="0.25">0.25 inch increments</option>
-                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
-                              </CFormSelect>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-4">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Width Slider"
-                              checked={guidedBuilder.sliders.width.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, enabled:e.target.checked}}}))}
-                            />
-                          </div>
-                          {guidedBuilder.sliders.width.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Min width"
-                                  value={guidedBuilder.sliders.width.min}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:e.target.value}}}))}
-                                />
-                              </div>
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Max width"
-                                  value={guidedBuilder.sliders.width.max}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:e.target.value}}}))}
-                                />
-                              </div>
-                              <CFormSelect
-                                value={guidedBuilder.sliders.width.useCustomIncrements ? 'custom' : guidedBuilder.sliders.width.step}
-                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
-                              >
-                                <option value="1">1 inch increments</option>
-                                <option value="0.5">0.5 inch increments</option>
-                                <option value="0.25">0.25 inch increments</option>
-                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
-                              </CFormSelect>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-4">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Depth Slider"
-                              checked={guidedBuilder.sliders.depth.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, enabled:e.target.checked}}}))}
-                            />
-                          </div>
-                          {guidedBuilder.sliders.depth.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Min depth"
-                                  value={guidedBuilder.sliders.depth.min}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:e.target.value}}}))}
-                                />
-                              </div>
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Max depth"
-                                  value={guidedBuilder.sliders.depth.max}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:e.target.value}}}))}
-                                />
-                              </div>
-                              <CFormSelect
-                                value={guidedBuilder.sliders.depth.useCustomIncrements ? 'custom' : guidedBuilder.sliders.depth.step}
-                                onChange={e=>setGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, step:e.target.value==='custom'?1:e.target.value, useCustomIncrements:e.target.value==='custom'}}}))}
-                              >
-                                <option value="1">1 inch increments</option>
-                                <option value="0.5">0.5 inch increments</option>
-                                <option value="0.25">0.25 inch increments</option>
-                                <option value="custom">Custom fractions (1/8, 1/4, 3/8, etc.)</option>
-                              </CFormSelect>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Additional Controls */}
-                    <div className="row mb-3">
-                      <div className="col-md-3">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Side Selector"
-                              checked={guidedBuilder.sideSelector.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, enabled:e.target.checked}}))}
-                            />
-                          </div>
-                          {guidedBuilder.sideSelector.enabled && (
-                            <div className="card-body">
-                              <small className="text-muted d-block mb-2">Limited to Left/Right options</small>
-                              <CFormInput
-                                placeholder="L,R"
-                                value={guidedBuilder.sideSelector.options?.join(',')}
-                                onChange={e=>setGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, options:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}}))}
-                                disabled
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Quantity Limits"
-                              checked={guidedBuilder.qtyRange.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, enabled:e.target.checked}}))}
-                            />
-                          </div>
-                          {guidedBuilder.qtyRange.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  type="number"
-                                  placeholder="Min qty"
-                                  value={guidedBuilder.qtyRange.min}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:e.target.value}}))}
-                                />
-                              </div>
-                              <CFormInput
-                                type="number"
-                                placeholder="Max qty"
-                                value={guidedBuilder.qtyRange.max}
-                                onChange={e=>setGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:e.target.value}}))}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Customer Notes"
-                              checked={guidedBuilder.notes.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, enabled:e.target.checked}}))}
-                            />
-                          </div>
-                          {guidedBuilder.notes.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  placeholder="Notes placeholder"
-                                  value={guidedBuilder.notes.placeholder}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, placeholder:e.target.value}}))}
-                                />
-                              </div>
-                              <CFormCheck
-                                label="Show in red for customer warning"
-                                checked={guidedBuilder.notes.showInRed}
-                                onChange={e=>setGuidedBuilder(g=>({...g, notes:{...g.notes, showInRed:e.target.checked}}))}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label="Customer Upload"
-                              checked={guidedBuilder.customerUpload.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, enabled:e.target.checked}}))}
-                            />
-                          </div>
-                          {guidedBuilder.customerUpload.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormInput
-                                  placeholder={t('settings.manufacturers.catalogMapping.builder.uploadTitlePh')}
-                                  value={guidedBuilder.customerUpload.title}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
-                                />
-                              </div>
-                              <CFormCheck
-                                label={t('settings.manufacturers.catalogMapping.builder.requiredUpload')}
-                                checked={guidedBuilder.customerUpload.required}
-                                onChange={e=>setGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Description and Sample Image */}
-                    <div className="row mb-3">
-                      <div className="col-md-8">
-                        <div className="card">
-                          <div className="card-header">
-                            <h6 className="mb-0">{t('settings.manufacturers.catalogMapping.builder.descriptions.header')}</h6>
-                          </div>
-                          <div className="card-body">
-                            <div className="row">
-                              <div className="col-md-4">
-                                <CFormInput
-                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.internal')}
-                                  value={guidedBuilder.descriptions.internal}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
-                                />
-                              </div>
-                              <div className="col-md-4">
-                                <CFormInput
-                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.customer')}
-                                  value={guidedBuilder.descriptions.customer}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
-                                />
-                              </div>
-                              <div className="col-md-4">
-                                <CFormInput
-                                  placeholder={t('settings.manufacturers.catalogMapping.builder.descriptions.installer')}
-                                  value={guidedBuilder.descriptions.installer}
-                                  onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
-                                />
-                              </div>
-                            </div>
-                            <div className="mt-2">
-                              <CFormCheck
-                                label={t('settings.manufacturers.catalogMapping.builder.descriptions.showBoth')}
-                                checked={guidedBuilder.descriptions.both}
-                                onChange={e=>setGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, both:e.target.checked}}))}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="card">
-                          <div className="card-header">
-                            <CFormCheck
-                              label={t('settings.manufacturers.catalogMapping.builder.sampleImage.label')}
-                              checked={guidedBuilder.modSampleImage.enabled}
-                              onChange={e=>setGuidedBuilder(g=>({...g, modSampleImage:{...g.modSampleImage, enabled:e.target.checked}}))}
-                            />
-                          </div>
-                          {guidedBuilder.modSampleImage.enabled && (
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <CFormLabel>{t('settings.manufacturers.catalogMapping.builder.sampleImage.upload')}</CFormLabel>
-                                <CFormInput type="file" accept="image/*" onChange={async (e)=>{
-                                  const file = e.target.files?.[0];
-                                  const fname = await uploadImageFile(file);
-                                  if (fname) setNewTemplate(n=>({ ...n, sampleImage: fname }));
-                                }} />
-                              </div>
-                              {newTemplate.sampleImage && (
-                                <div className="p-2 bg-light border rounded" style={{ height: 200, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                                  <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`} alt={t('settings.manufacturers.catalogMapping.builder.sampleImage.alt')} style={{ maxHeight: '100%', maxWidth:'100%', objectFit:'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Ready Checkbox */}
-                    <div className="border-top pt-3">
-                      <CFormCheck
-                        label={t('settings.manufacturers.catalogMapping.builder.ready.markAsReady')}
-                        checked={newTemplate.isReady}
-                        onChange={e => setNewTemplate(n => ({ ...n, isReady: e.target.checked }))}
-                      />
-                      {/* Task 5: Blueprint checkbox for saving to gallery */}
-                      <CFormCheck
-                        label={t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
-                        checked={newTemplate.saveAsBlueprint}
-                        onChange={e => setNewTemplate(n => ({ ...n, saveAsBlueprint: e.target.checked }))}
-                        className="mt-2"
-                      />
-                      <small className="text-muted d-block mt-1">
-                        {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
-                      </small>
-                    </div>
-                  </div>
-
-                  <div className="d-flex gap-2">
-                    <CButton color="secondary" onClick={() => setModificationStep(1)}>{t('settings.manufacturers.catalogMapping.builder.buttons.back')}</CButton>
-                    <CButton color="secondary" onClick={() => setModificationView('cards')}>{t('settings.manufacturers.catalogMapping.builder.buttons.cancel')}</CButton>
-                    {editingTemplateId ? (
-                      <CButton
-                        color="primary"
-                        onClick={async () => {
-                          setCreatingModification(true);
-                          try {
-                            let categoryIdToUse = selectedModificationCategory;
-                            if (selectedModificationCategory === 'new') {
-                              const newCat = await createModificationCategory();
-                              categoryIdToUse = newCat.id;
-                            }
-                            await updateModificationTemplate(editingTemplateId, categoryIdToUse);
-                            resetModificationForm();
-                            Swal.fire({ toast: true, position: 'top', icon: 'success', title: t('settings.manufacturers.catalogMapping.builder.toast.updateSuccess'), showConfirmButton: false, timer: 1500 });
-                          } catch (error) {
-                            console.error('Error updating template:', error);
-                            Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.updateFailed'), showConfirmButton: false, timer: 1800 });
-                          } finally {
-                            setCreatingModification(false);
-                          }
-                        }}
-                        disabled={!newTemplate.name || creatingModification}
-                      >
-                        {creatingModification ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            {t('common.saving')}
-                          </>
-                        ) : (
-                          t('settings.manufacturers.catalogMapping.builder.buttons.saveChanges')
-                        )}
-                      </CButton>
-                    ) : (
-                      <CButton
-                        color="primary"
-                        onClick={async () => {
-                          // Task 5: Block creation if manufacturerId is missing
-                          if (!id) {
-                            Swal.fire({
-                              title: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle'),
-                              text: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText'),
-                              icon: 'error'
-                            });
-                            return;
-                          }
-
-                          setCreatingModification(true);
-                          try {
-                            let categoryIdToUse = selectedModificationCategory;
-
-                            // Create new category if needed
-                            if (selectedModificationCategory === 'new') {
-                              const newCat = await createModificationCategory();
-                              categoryIdToUse = newCat.id;
-                            }
-
-                            // Create the template
-                            await createModificationTemplate(categoryIdToUse);
-
-                            // Reset form and go back to cards view
-                            resetModificationForm();
-
-                            // Show success message
-                            Swal.fire({
-                              title: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle'),
-                              text: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessText'),
-                              icon: 'success',
-                              timer: 2000
-                            });
-
-                          } catch (error) {
-                            console.error('Error creating template:', error);
-                            Swal.fire({
-                              title: t('settings.manufacturers.catalogMapping.builder.toast.createFailedTitle'),
-                              text: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.createFailedText'),
-                              icon: 'error'
-                            });
-                          } finally {
-                            setCreatingModification(false);
-                          }
-                        }}
-                        disabled={!newTemplate.name || !newTemplate.defaultPrice || creatingModification}
-                      >
-                        {creatingModification ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            {t('common.creating')}
-                          </>
-                        ) : (
-                          t('settings.manufacturers.catalogMapping.builder.buttons.create')
-                        )}
-                      </CButton>
+            {assemblyData.applyTo === 'one' &&
+              selectedCatalogItem &&
+              selectedCatalogItem.type &&
+              assemblyCostsByType[selectedCatalogItem.type]?.assemblyCosts?.length > 0 && (
+                <div className="mt-3 p-3 bg-light rounded">
+                  <small className="fw-bold text-muted">
+                    Existing Assembly Costs for "{selectedCatalogItem.code}" (
+                    {selectedCatalogItem.type}):
+                  </small>
+                  <div className="mt-2">
+                    {assemblyCostsByType[selectedCatalogItem.type].assemblyCosts.map(
+                      (cost, idx) => (
+                        <span
+                          key={idx}
+                          className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} me-1`}
+                          title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
+                        >
+                          {cost.assemblyType}: ${cost.price.toFixed(2)}
+                        </span>
+                      ),
                     )}
                   </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {modificationView === 'gallery' && (
-            <div>
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
-                <CButton color="secondary" onClick={() => setModificationView('cards')}>{t('settings.manufacturers.catalogMapping.gallery.back')}</CButton>
-              </div>
+            {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
+              <div className="mt-3 p-3 bg-light rounded">
+                <small className="fw-bold text-muted">Existing Assembly Costs by Type:</small>
+                <div className="mt-2">
+                  {availableTypes.map((typeItem) => {
+                    const typeAssemblyCosts =
+                      assemblyCostsByType[typeItem.type]?.assemblyCosts || []
+                    if (typeAssemblyCosts.length === 0) return null
 
-              <div className="row">
-                {globalGallery.map(category => (
-                  <div key={category.id} className="col-md-6 mb-4">
-                    <div className="card">
-                      <div className="card-header d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0">{category.name}</h6>
-                        <div className="d-flex gap-2">
-                          <CButton
-                            size="sm"
-                            color="danger"
-                            variant="outline"
-                            title={t('settings.manufacturers.catalogMapping.gallery.tooltips.deleteCategory')}
-                            onClick={() => { setCategoryToDelete(category); setShowDeleteCategoryModal(true); }}
-                          >
-                            {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
-                          </CButton>
+                    return (
+                      <div
+                        key={typeItem.type}
+                        className="d-flex justify-content-between align-items-center mb-1"
+                      >
+                        <small className="text-muted">{typeItem.type}:</small>
+                        <div>
+                          {typeAssemblyCosts.map((cost, idx) => (
+                            <span
+                              key={idx}
+                              className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                              title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
+                            >
+                              ${cost.price.toFixed(2)}
+                            </span>
+                          ))}
                         </div>
                       </div>
-                      <div className="card-body">
-                        {category.templates?.length ? (
-                          category.templates.map(template => (
-                            <div key={template.id} className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-                              <div className="d-flex align-items-center gap-2">
-                                {template.sampleImage && (
-                                  <img
-                                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
-                                    alt={template.name}
-                                    width={32}
-                                    height={32}
-                                    style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
-                                    onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }}
-                                  />
-                                )}
-                                <div>
-                                  <strong>{template.name}</strong>
-                                  {template.defaultPrice && <span className="text-muted"> - ${Number(template.defaultPrice).toFixed(2)}</span>}
-                                  <div className="d-flex gap-1 mt-1">
-                                    <CBadge color={template.isReady ? 'success' : 'warning'}>
-                                      {template.isReady ? t('settings.manufacturers.catalogMapping.gallery.badges.ready') : t('settings.manufacturers.catalogMapping.gallery.badges.draft')}
-                                    </CBadge>
-                                    {template.sampleImage && (
-                                      <CBadge color="info" title={t('settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded')}>{t('settings.manufacturers.catalogMapping.gallery.badges.img')}</CBadge>
-                                    )}
-                                  </div>
-                                  <div className="small text-muted">
-                                    {template.fieldsConfig?.descriptions?.customer || t('settings.manufacturers.catalogMapping.gallery.noDescription')}
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="d-flex gap-1 flex-wrap">
-                                <CButton
-                                  size="sm"
-                                  color="outline-primary"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.edit')}
-                                  onClick={() => {
-                                    // Set up edit state
-                                    setEditTemplate({
-                                      id: template.id,
-                                      categoryId: String(template.categoryId || ''),
-                                      name: template.name || '',
-                                      defaultPrice: template.defaultPrice !== null && template.defaultPrice !== undefined ? String(template.defaultPrice) : '',
-                                      sampleImage: template.sampleImage || '',
-                                      isReady: !!template.isReady,
-                                      fieldsConfig: template.fieldsConfig || null,
-                                    });
-                                    setEditGuidedBuilder(makeGuidedFromFields(template.fieldsConfig));
-                                    setShowQuickEditTemplateModal(true);
-                                  }}
-                                >
-                                  ✏️
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="outline-danger"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.delete')}
-                                  onClick={() => {
-                                    if (window.confirm(`Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`)) {
-                                      deleteModificationTemplate(template.id);
-                                    }
-                                  }}
-                                >
-                                  🗑️
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="outline-warning"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.move')}
-                                  onClick={() => {
-                                    setModificationToMove(template);
-                                    setShowMoveModificationModal(true);
-                                  }}
-                                >
-                                  {t('settings.manufacturers.catalogMapping.gallery.actions.move')}
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="primary"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.useAsBlueprint')}
-                                  onClick={async () => {
-                                    try {
-                                      await axiosInstance.post('/api/global-mods/templates', {
-                                        categoryId: template.categoryId || null,
-                                        name: `${template.name} (Copy)`,
-                                        defaultPrice: 0,
-                                        isReady: false,
-                                        fieldsConfig: template.fieldsConfig || {},
-                                        sampleImage: template.sampleImage || null,
-                                      });
-                                      await loadGlobalGallery();
-                                    } catch (e) {
-                                      alert(e?.response?.data?.message || e.message);
-                                    }
-                                  }}
-                                >
-                                  📋
-                                </CButton>
-                                <CButton
-                                  size="sm"
-                                  color="success"
-                                  title={t('settings.manufacturers.catalogMapping.gallery.tooltips.assignToManufacturer')}
-                                  onClick={() => {
-                                    // Assign this template
-                                    setAssignFormGM(prev => ({...prev, templateId: template.id}));
-                                    setShowAssignGlobalModsModal(true);
-                                  }}
-                                >
-                                  🎯
-                                </CButton>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-muted">{t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowMainModificationModal(false)}>{t('common.close', 'Close')}</CButton>
-        </CModalFooter>
-      </CModal>
+            )}
 
-      {/* Edit Category Modal */}
-  <CModal visible={showEditCategoryModal} onClose={() => setShowEditCategoryModal(false)} size="lg">
-    <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
-        <CModalBody>
-          <div className="row g-3">
-            <div className="col-md-6">
-      <CFormLabel>{t('globalMods.modal.editCategory.nameLabel', 'Category Name')}</CFormLabel>
-              <CFormInput value={editCategory.name} onChange={e=>setEditCategory(c=>({...c, name:e.target.value}))} />
-            </div>
-            <div className="col-md-6">
-      <CFormLabel>{t('globalMods.modal.editCategory.orderLabel', 'Order')}</CFormLabel>
-              <CFormInput type="number" value={editCategory.orderIndex} onChange={e=>setEditCategory(c=>({...c, orderIndex:e.target.value}))} />
-            </div>
-            <div className="col-12">
-      <CFormLabel>{t('globalMods.modal.editCategory.imageLabel', 'Category Image')}</CFormLabel>
-              <CFormInput type="file" accept="image/*" onChange={async (e)=>{
-                const file = e.target.files?.[0];
-                const fname = await uploadImageFile(file);
-                if (fname) setEditCategory(c=>({...c, image: fname}));
-              }} />
-              {editCategory.image && (
-                <div className="mt-2 p-2 bg-light border rounded" style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`} alt={t('globalMods.modal.editCategory.imageLabel', 'Category Image')} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="d-flex gap-2 justify-content-end mt-3">
-    <CButton color="secondary" onClick={() => setShowEditCategoryModal(false)}>{t('globalMods.modal.editCategory.cancel', 'Cancel')}</CButton>
-            <CButton color="primary" onClick={async ()=>{
-              if (!editCategory.id || !editCategory.name.trim()) return;
-              await axiosInstance.put(`/api/global-mods/categories/${editCategory.id}`, {
-                name: editCategory.name.trim(),
-                orderIndex: Number(editCategory.orderIndex || 0),
-                image: editCategory.image || null
-              });
-              setShowEditCategoryModal(false);
-              await loadGlobalGallery();
-    }}>{t('globalMods.modal.editCategory.save', 'Save')}</CButton>
-          </div>
-        </CModalBody>
-      </CModal>
-
-      {/* Delete Category Modal */}
-  <CModal visible={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
-    <PageHeader title={t('globalMods.modal.deleteCategory.title', { name: categoryToDelete?.name || '' })} />
-        <CModalBody>
-          {categoryToDelete && (
-            <>
-      <p><strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong> {t('globalMods.modal.deleteCategory.aboutToDelete', { name: categoryToDelete.name })}</p>
-              {categoryToDelete.templates?.length > 0 && (
-                <div className="alert alert-warning">
-      <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong> {t('globalMods.modal.deleteCategory.contains', { count: categoryToDelete.templates.length })}
-                  <div className="mt-2">
-                    <div className="form-check">
-                      <input className="form-check-input" type="radio" name="deleteMode" id="deleteCancel" value="cancel" defaultChecked />
-                      <label className="form-check-label" htmlFor="deleteCancel">
-        {t('globalMods.modal.deleteCategory.cancel')}
-                      </label>
-                    </div>
-                    <div className="form-check">
-                      <input className="form-check-input" type="radio" name="deleteMode" id="deleteWithMods" value="withMods" />
-                      <label className="form-check-label" htmlFor="deleteWithMods">
-        {t('globalMods.modal.deleteCategory.deleteWithMods')}
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          <div className="d-flex gap-2 justify-content-end mt-3">
-    <CButton color="secondary" onClick={() => setShowDeleteCategoryModal(false)}>{t('globalMods.modal.deleteCategory.cancel', 'Cancel')}</CButton>
-            <CButton color="danger" onClick={async () => {
-              if (!categoryToDelete) return;
-
-              let deleteMode = 'only'; // Default mode for empty categories
-              if (categoryToDelete.templates?.length > 0) {
-                const selectedMode = document.querySelector('input[name="deleteMode"]:checked')?.value;
-                if (selectedMode === 'withMods') {
-                  deleteMode = 'withMods';
-                } else {
-                  // User chose to cancel deletion
-                  setShowDeleteCategoryModal(false);
-                  return;
-                }
-              }
-
-              await deleteCategory(categoryToDelete.id, deleteMode);
-              setShowDeleteCategoryModal(false);
-              setCategoryToDelete(null);
-            }}>
-              {t('globalMods.modal.deleteCategory.deleteOnly', 'Delete Category')}
-            </CButton>
-          </div>
-        </CModalBody>
-      </CModal>
-
-      {/* Move Modification Modal */}
-  <CModal visible={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
-    <PageHeader title={t('common.move', 'Move Modification')} />
-        <CModalBody>
-          {modificationToMove && (
-            <>
-      <p>{t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong> {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}</p>
-              <div className="mb-3">
-        <label className="form-label">{t('globalMods.modal.deleteCategory.move.selectTarget', 'Select destination category')}</label>
-                <select
-                  className="form-select"
-                  id="moveToCategory"
-                  defaultValue={modificationToMove.categoryId || ''}
+            {assemblyData.applyTo === 'type' && (
+              <>
+                <FormLabel className="mt-2">
+                  {t('settings.manufacturers.catalogMapping.assembly.selectItemType')}
+                </FormLabel>
+                <div
+                  className="border rounded p-3"
+                  style={{ maxHeight: '300px', overflowY: 'auto' }}
                 >
-      <option value="">{t('common.uncategorized', '-- Uncategorized --')}</option>
-                  {/* Gallery categories */}
-      <optgroup label={t('common.galleryCategories', 'Gallery Categories')}>
-                    {globalGallery.map(cat => (
-                      <option key={`gallery-${cat.id}`} value={cat.id}>
-        {cat.name} ({t('common.gallery', 'Gallery')})
-                      </option>
-                    ))}
-                  </optgroup>
-                  {/* Manufacturer categories */}
-      <optgroup label={t('common.manufacturerCategories', 'Manufacturer Categories')}>
-                    {manufacturerCategories.map(cat => (
-                      <option key={`mfg-${cat.id}`} value={cat.id}>
-        {cat.name} ({t('common.manufacturer', 'Manufacturer')})
-                      </option>
-                    ))}
-                  </optgroup>
-                </select>
-              </div>
-              <div className="alert alert-info">
-                <small>
-      <strong>{t('common.note', 'Note')}:</strong> {t('settings.manufacturers.catalogMapping.gallery.tooltips.move', 'Move to different category')}
-                </small>
-              </div>
-            </>
-          )}
-          <div className="d-flex gap-2 justify-content-end mt-3">
-    <CButton color="secondary" onClick={() => setShowMoveModificationModal(false)}>{t('common.cancel')}</CButton>
-            <CButton color="primary" onClick={async () => {
-              if (!modificationToMove) return;
+                  {availableTypes.map((typeItem) => {
+                    const isSelected = assemblyData.selectedItemType === typeItem.type
+                    const typeAssemblyCosts =
+                      assemblyCostsByType[typeItem.type]?.assemblyCosts || []
 
-              const newCategoryId = document.getElementById('moveToCategory').value;
-              await moveModification(modificationToMove.id, newCategoryId || null);
-              setShowMoveModificationModal(false);
-              setModificationToMove(null);
-    }}>
-      {t('common.move', 'Move')}
-            </CButton>
-          </div>
-        </CModalBody>
-      </CModal>
+                    return (
+                      <div key={typeItem.type} className="form-check mb-2">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="singleTypeSelection"
+                          id={`single-type-${typeItem.type}`}
+                          checked={isSelected}
+                          onChange={() =>
+                            setAssemblyData({ ...assemblyData, selectedItemType: typeItem.type })
+                          }
+                        />
+                        <label
+                          className="form-check-label d-flex justify-content-between align-items-center w-100"
+                          htmlFor={`single-type-${typeItem.type}`}
+                        >
+                          <div>
+                            <div className="fw-bold">{typeItem.type}</div>
+                            <small className="text-muted">{typeItem.count} items</small>
+                          </div>
+                          <div>
+                            {typeAssemblyCosts.map((cost, idx) => (
+                              <span
+                                key={idx}
+                                className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                                title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
+                              >
+                                ${cost.price.toFixed(2)}
+                              </span>
+                            ))}
+                          </div>
+                        </label>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
 
-      {/* Enhanced Edit Template Modal */}
-      <CModal visible={showQuickEditTemplateModal} onClose={() => setShowQuickEditTemplateModal(false)} size="xl">
-        <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
-        <CModalBody>
-          {/* Basic Information */}
-          <div className="border rounded p-3 mb-3">
-            <h6>{t('common.basicInformation', 'Basic Information')}</h6>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <CFormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</CFormLabel>
-                <CFormInput value={editTemplate.name} onChange={e=>setEditTemplate(t=>({...t, name:e.target.value}))} />
-              </div>
-              <div className="col-md-6">
-                <CFormLabel>{t('globalMods.modal.editTemplate.priceLabel', 'Default Price')} {editTemplate.saveAsBlueprint && t('common.disabledForBlueprints', '(disabled for blueprints)')}</CFormLabel>
-                <CFormInput
-                  type="number"
-                  step="0.01"
-                  value={editTemplate.saveAsBlueprint ? '' : editTemplate.defaultPrice}
-                  onChange={e=>setEditTemplate(t=>({...t, defaultPrice:e.target.value}))}
-                  disabled={editTemplate.saveAsBlueprint}
-                  placeholder={editTemplate.saveAsBlueprint ? t('common.blueprintsNoPrice', "Blueprints don't have prices") : t('globalMods.template.defaultPricePlaceholder', 'Enter default price')}
-                />
-              </div>
-              <div className="col-md-6">
-                <CFormLabel>{t('globalMods.template.statusLabel', 'Status')}</CFormLabel>
-                <CFormSelect value={editTemplate.isReady ? 'ready' : 'draft'} onChange={e=>setEditTemplate(t=>({...t, isReady: e.target.value === 'ready'}))}>
-                  <option value="draft">{t('globalMods.template.status.draft', 'Draft')}</option>
-                  <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
-                </CFormSelect>
-              </div>
-              <div className="col-md-6">
-                <div className="form-check form-switch mt-4">
+            {assemblyData.applyTo === 'types' && (
+              <>
+                <FormLabel className="mt-2">
+                  {t(
+                    'settings.manufacturers.catalogMapping.assembly.selectMultipleTypes',
+                    'Select Item Types',
+                  )}
+                </FormLabel>
+                <div
+                  className="border rounded p-3"
+                  style={{ maxHeight: '300px', overflowY: 'auto' }}
+                >
+                  {availableTypes.map((typeItem) => {
+                    const isSelected = assemblyData.selectedTypes.includes(typeItem.type)
+                    const typeAssemblyCosts =
+                      assemblyCostsByType[typeItem.type]?.assemblyCosts || []
+
+                    return (
+                      <div key={typeItem.type} className="form-check mb-2">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`type-${typeItem.type}`}
+                          checked={isSelected}
+                          onChange={(event) => {
+                            if (event.currentTarget.checked) {
+                              setAssemblyData((prev) => ({
+                                ...prev,
+                                selectedTypes: [...prev.selectedTypes, typeItem.type],
+                              }))
+                            } else {
+                              setAssemblyData((prev) => ({
+                                ...prev,
+                                selectedTypes: prev.selectedTypes.filter(
+                                  (t) => t !== typeItem.type,
+                                ),
+                              }))
+                            }
+                          }}
+                        />
+                        <label
+                          className="form-check-label d-flex justify-content-between align-items-center w-100"
+                          htmlFor={`type-${typeItem.type}`}
+                        >
+                          <div>
+                            <div className="fw-bold">{typeItem.type}</div>
+                            <small className="text-muted">{typeItem.count} items</small>
+                          </div>
+                          <div>
+                            {typeAssemblyCosts.map((cost, idx) => (
+                              <span
+                                key={idx}
+                                className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                                title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
+                              >
+                                ${cost.price.toFixed(2)}
+                              </span>
+                            ))}
+                          </div>
+                        </label>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="mt-3 d-flex gap-2">
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    onClick={() => {
+                      const allTypes = availableTypes.map((t) => t.type)
+                      setAssemblyData((prev) => ({ ...prev, selectedTypes: allTypes }))
+                    }}
+                  >
+                    {t('common.selectAll', 'Select All')}
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    onClick={() => setAssemblyData((prev) => ({ ...prev, selectedTypes: [] }))}
+                  >
+                    {t('common.selectNone', 'Select None')}
+                  </button>
+                </div>
+
+                {assemblyData.selectedTypes.length > 0 && (
+                  <div className="alert alert-info mt-3">
+                    <small>
+                      {t(
+                        'settings.manufacturers.catalogMapping.assembly.multipleTypesWarning',
+                        'This will apply the assembly cost to all items in {{count}} selected types.',
+                        { count: assemblyData.selectedTypes.length },
+                      )}
+                    </small>
+                  </div>
+                )}
+              </>
+            )}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setShowAssemblyModal(false)}
+              disabled={isAssemblyCostSaving}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={saveAssemblyCost}
+              disabled={isAssemblyCostSaving}
+            >
+              {isAssemblyCostSaving ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Applying...
+                </>
+              ) : (
+                t('common.save')
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
+          <ModalBody>
+            <FormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</FormLabel>
+            <Input
+              type="number"
+              value={hingesData.leftHingePrice}
+              onChange={(event) =>
+                setHingesData({ ...hingesData, leftHingePrice: event.currentTarget.value })
+              }
+              placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderLeft')}
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.hinges.right')}
+            </FormLabel>
+            <Input
+              type="number"
+              value={hingesData.rightHingePrice}
+              onChange={(event) =>
+                setHingesData({ ...hingesData, rightHingePrice: event.currentTarget.value })
+              }
+              placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderRight')}
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.hinges.both')}
+            </FormLabel>
+            <Input
+              type="number"
+              value={hingesData.bothHingePrice}
+              onChange={(event) =>
+                setHingesData({ ...hingesData, bothHingePrice: event.currentTarget.value })
+              }
+              placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderBoth')}
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.hinges.exposedSide')}
+            </FormLabel>
+            <Input
+              type="number"
+              value={hingesData.exposedSidePrice}
+              onChange={(event) =>
+                setHingesData({ ...hingesData, exposedSidePrice: event.currentTarget.value })
+              }
+              placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderExposed')}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowHingesModal(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={saveHingesDetails}
+            >
+              {t('common.save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
+          <ModalBody>
+            <FormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</FormLabel>
+            <Input
+              value={modificationData.modificationName}
+              onChange={(event) =>
+                setModificationData({
+                  ...modificationData,
+                  modificationName: event.currentTarget.value,
+                })
+              }
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.fields.description')}
+            </FormLabel>
+            <Textarea
+              value={modificationData.description}
+              onChange={(event) =>
+                setModificationData({ ...modificationData, description: event.currentTarget.value })
+              }
+              rows={3}
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.mod.notes')}
+            </FormLabel>
+            <Textarea
+              value={modificationData.notes}
+              onChange={(event) =>
+                setModificationData({ ...modificationData, notes: event.currentTarget.value })
+              }
+              rows={2}
+            />
+
+            <FormLabel className="mt-2">
+              {t('settings.manufacturers.catalogMapping.fields.price')}
+            </FormLabel>
+            <Input
+              type="number"
+              value={modificationData.price}
+              onChange={(event) =>
+                setModificationData({ ...modificationData, price: event.currentTarget.value })
+              }
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowModificationModal(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              onClick={saveModificationDetails}
+            >
+              {t('common.save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Delete Style Modal */}
+      <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', {
+              style: styleToDelete,
+            })}
+          />
+          <ModalBody>
+            <div className="mb-3">
+              <p>
+                You are about to delete the style "<strong>{styleToDelete}</strong>". This will
+                affect{' '}
+                <strong>{catalogData.filter((item) => item.style === styleToDelete).length}</strong>{' '}
+                catalog items.
+              </p>
+
+              <p>What would you like to do with the items that currently have this style?</p>
+
+              <div className="mt-3">
+                <div className="form-check mb-2">
                   <input
                     className="form-check-input"
-                    type="checkbox"
-                    id="showToBoth"
-                    checked={editTemplate.showToBoth || false}
-                    onChange={e=>setEditTemplate(t=>({...t, showToBoth: e.target.checked}))}
+                    type="radio"
+                    name="deleteOption"
+                    id="deleteItems"
+                    checked={!mergeToStyle}
+                    onChange={() => setMergeToStyle('')}
                   />
-                  <label className="form-check-label" htmlFor="showToBoth">
-                    {t('globalMods.builder.descriptions.customer', 'Customer description')} & {t('globalMods.builder.descriptions.installer', 'Installer description')} {t('common.showToBoth', 'shown to both')}
+                  <label className="form-check-label text-danger" htmlFor="deleteItems">
+                    <strong>Delete all items</strong> with this style permanently
+                  </label>
+                </div>
+
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="deleteOption"
+                    id="mergeItems"
+                    checked={!!mergeToStyle}
+                    onChange={() =>
+                      setMergeToStyle(sortedUniqueStyles.find((s) => s !== styleToDelete) || '')
+                    }
+                  />
+                  <label className="form-check-label text-primary" htmlFor="mergeItems">
+                    <strong>Merge items</strong> to another style
                   </label>
                 </div>
               </div>
+
+              {mergeToStyle !== '' && (
+                <div className="mt-3">
+                  <FormLabel>Select target style:</FormLabel>
+                  <Select
+                    value={mergeToStyle}
+                    onChange={(event) => setMergeToStyle(event.currentTarget.value)}
+                  >
+                    <option value="">Select a style...</option>
+                    {sortedUniqueStyles
+                      .filter((style) => style !== styleToDelete)
+                      .map((style, idx) => (
+                        <option key={idx} value={style}>
+                          {style}
+                        </option>
+                      ))}
+                  </Select>
+                </div>
+              )}
+
+              <div className="mt-3 p-3 bg-light rounded">
+                <small className="text-muted">
+                  {mergeToStyle ? (
+                    <>
+                      <strong>Smart Merge Action:</strong> All{' '}
+                      {catalogData.filter((item) => item.style === styleToDelete).length} items with
+                      style "{styleToDelete}" will be processed:
+                      <ul className="mt-1 mb-0">
+                        <li>Items with unique codes will be merged to style "{mergeToStyle}"</li>
+                        <li>Duplicate items (same code + style) will be automatically removed</li>
+                      </ul>
+                    </>
+                  ) : (
+                    <>
+                      <strong>Delete Action:</strong> All{' '}
+                      {catalogData.filter((item) => item.style === styleToDelete).length} items with
+                      style "{styleToDelete}" will be permanently deleted. This action cannot be
+                      undone.
+                    </>
+                  )}
+                </small>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setDeleteStyleModalVisible(false)}
+              disabled={isDeleting}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              color={mergeToStyle ? 'primary' : 'danger'}
+              onClick={handleDeleteStyle}
+              disabled={isDeleting || (mergeToStyle !== '' && !mergeToStyle)}
+            >
+              {isDeleting ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Processing...
+                </>
+              ) : mergeToStyle ? (
+                `Merge to "${mergeToStyle}"`
+              ) : (
+                'Delete Permanently'
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Individual Delete Item Modal */}
+      <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
+          <ModalBody>
+            {itemToDelete && (
+              <div>
+                <p>Are you sure you want to delete this catalog item?</p>
+                <div className="p-3 bg-light rounded">
+                  <strong>Code:</strong> {itemToDelete.code}
+                  <br />
+                  <strong>Description:</strong> {itemToDelete.description || 'N/A'}
+                  <br />
+                  <strong>Style:</strong> {itemToDelete.style || 'N/A'}
+                  <br />
+                  <strong>Price:</strong> ${itemToDelete.price || '0.00'}
+                </div>
+                <p className="text-danger mt-3">
+                  <small>⚠️ This action cannot be undone.</small>
+                </p>
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setDeleteItemModalVisible(false)}
+              disabled={isDeletingItem}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button colorScheme="red" onClick={handleDeleteItem} disabled={isDeletingItem}>
+              {isDeletingItem ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Deleting...
+                </>
+              ) : (
+                'Delete Item'
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Bulk Delete Modal */}
+      <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
+          <ModalBody>
+            <div>
+              <p>
+                Are you sure you want to delete <strong>{selectedItems.length}</strong> selected
+                catalog items?
+              </p>
+
+              <div className="p-3 bg-light rounded">
+                <strong>Items to be deleted:</strong>
+                <ul className="mt-2 mb-0">
+                  {currentItems
+                    .filter((item) => selectedItems.includes(item.id))
+                    .slice(0, 10) // Show first 10 items
+                    .map((item) => (
+                      <li key={item.id}>
+                        {item.code} - {item.description || 'N/A'}
+                      </li>
+                    ))}
+                  {selectedItems.length > 10 && (
+                    <li>
+                      <em>... and {selectedItems.length - 10} more items</em>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              <p className="text-danger mt-3">
+                <small>
+                  ⚠️ This action cannot be undone. All selected items will be permanently deleted.
+                </small>
+              </p>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setBulkDeleteModalVisible(false)}
+              disabled={isBulkDeleting}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button colorScheme="red" onClick={handleBulkDelete} disabled={isBulkDeleting}>
+              {isBulkDeleting ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Deleting {selectedItems.length} items...
+                </>
+              ) : (
+                `Delete ${selectedItems.length} Items`
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Rollback Modal */}
+      <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
+          <ModalBody>
+            <div className="mb-3">
+              <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>
+
+              {isLoadingBackups ? (
+                <div className="text-center py-3">
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Loading backups...
+                </div>
+              ) : availableBackups.length === 0 ? (
+                <div className="alert alert-info">
+                  {t('settings.manufacturers.catalogMapping.rollback.noBackups')}
+                </div>
+              ) : (
+                <div>
+                  {availableBackups.map((backup) => (
+                    <div key={backup.uploadSessionId} className="form-check mb-2">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="backupSelection"
+                        id={`backup-${backup.uploadSessionId}`}
+                        value={backup.uploadSessionId}
+                        checked={selectedBackup === backup.uploadSessionId}
+                        onChange={(event) => setSelectedBackup(event.currentTarget.value)}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor={`backup-${backup.uploadSessionId}`}
+                        aria-label={`Select backup ${backup.originalName}`}
+                      >
+                        <div>
+                          <strong>{backup.originalName}</strong>
+                          <br />
+                          <small className="text-muted">
+                            {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount}{' '}
+                            items
+                          </small>
+                        </div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {selectedBackup && (
+              <div className="alert alert-warning">
+                <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
+                <br />
+                {t('settings.manufacturers.catalogMapping.rollback.confirmText')}
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => {
+                setRollbackModalVisible(false)
+                setSelectedBackup('')
+                setAvailableBackups([])
+              }}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              color="warning"
+              onClick={handleRollback}
+              disabled={!selectedBackup || isRollingBack}
+            >
+              {isRollingBack ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  {t('settings.manufacturers.catalogMapping.rollback.rolling')}
+                </>
+              ) : (
+                t('settings.manufacturers.catalogMapping.rollback.rollbackButton')
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Bulk Edit Modal */}
+      <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t('settings.manufacturers.catalogMapping.bulkEdit.header', {
+              count: selectedItems.length,
+            })}
+          />
+          <ModalBody>
+            <div>
+              <p>
+                Edit the following fields for the selected {selectedItems.length} catalog items.
+                Leave fields empty to keep existing values.
+              </p>
+
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <FormLabel>Style</FormLabel>
+                  <Input
+                    type="text"
+                    value={bulkEditForm.style}
+                    onChange={(event) =>
+                      setBulkEditForm({ ...bulkEditForm, style: event.currentTarget.value })
+                    }
+                    placeholder="Leave empty to keep existing"
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <FormLabel>Type</FormLabel>
+                  <Input
+                    type="text"
+                    value={bulkEditForm.type}
+                    onChange={(event) =>
+                      setBulkEditForm({ ...bulkEditForm, type: event.currentTarget.value })
+                    }
+                    placeholder="Leave empty to keep existing"
+                  />
+                </div>
+
+                <div className="col-12">
+                  <FormLabel>Description</FormLabel>
+                  <Textarea
+                    value={bulkEditForm.description}
+                    onChange={(event) =>
+                      setBulkEditForm({ ...bulkEditForm, description: event.currentTarget.value })
+                    }
+                    placeholder="Leave empty to keep existing"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <FormLabel>Price</FormLabel>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={bulkEditForm.price}
+                    onChange={(event) =>
+                      setBulkEditForm({ ...bulkEditForm, price: event.currentTarget.value })
+                    }
+                    placeholder="Leave empty to keep existing"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-3 p-3 bg-light rounded">
+                <small className="text-muted">
+                  <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will
+                  preserve the existing values for each item.
+                </small>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setBulkEditModalVisible(false)}
+              disabled={isBulkEditing}
+            >
+              Cancel
+            </Button>
+            <Button colorScheme="blue" onClick={handleBulkEdit} disabled={isBulkEditing}>
+              {isBulkEditing ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Updating {selectedItems.length} Items...
+                </>
+              ) : (
+                `Update ${selectedItems.length} Items`
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Edit Style Name Modal */}
+      <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title="Edit Style Name" />
+          <ModalBody>
+            <div>
+              <p>
+                Rename the style for all items of this manufacturer. This will affect all catalog
+                items currently using this style.
+              </p>
+
+              <div className="mb-3">
+                <FormLabel>Current Style Name</FormLabel>
+                <Input
+                  type="text"
+                  value={styleNameEditForm.oldStyleName}
+                  disabled
+                  className="bg-light"
+                />
+              </div>
+
+              <div className="mb-3">
+                <FormLabel>New Style Name</FormLabel>
+                <Input
+                  type="text"
+                  value={styleNameEditForm.newStyleName}
+                  onChange={(event) =>
+                    setStyleNameEditForm({
+                      ...styleNameEditForm,
+                      newStyleName: event.currentTarget.value,
+                    })
+                  }
+                  placeholder="Enter new style name"
+                />
+              </div>
+
+              <div className="p-3 bg-warning bg-opacity-10 rounded">
+                <small className="text-muted">
+                  <strong>Warning:</strong> This will rename the style for all items currently using
+                  "{styleNameEditForm.oldStyleName}". The change applies to all{' '}
+                  {
+                    catalogData.filter((item) => item.style === styleNameEditForm.oldStyleName)
+                      .length
+                  }{' '}
+                  items with this style.
+                </small>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              onClick={() => setEditStyleNameModalVisible(false)}
+              disabled={isEditingStyleName}
+            >
+              Cancel
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={handleEditStyleName}
+              disabled={isEditingStyleName || !styleNameEditForm.newStyleName.trim()}
+            >
+              {isEditingStyleName ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Renaming Style...
+                </>
+              ) : (
+                'Rename Style'
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Main Modification Management Modal */}
+      <Modal
+        isOpen={showMainModificationModal}
+        onClose={() => setShowMainModificationModal(false)}
+        size="xl"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t(
+              'settings.manufacturers.catalogMapping.modManagement.title',
+              'Modification Management',
+            )}
+          />
+          <ModalBody>
+            {modificationView === 'cards' && (
+              <div>
+                {/* Main Action Buttons */}
+                <div className="d-flex gap-3 mb-4 justify-content-center">
+                  <Button
+                    colorScheme="blue"
+                    size="lg"
+                    onClick={() => {
+                      setEditingTemplateId(null)
+                      setSelectedModificationCategory('')
+                      setNewTemplate((n) => ({
+                        categoryId: '',
+                        name: '',
+                        defaultPrice: '',
+                        isReady: false,
+                        sampleImage: '',
+                        saveAsBlueprint: false,
+                      }))
+                      setGuidedBuilder(makeGuidedFromFields(null))
+                      setModificationView('addNew')
+                      setModificationStep(1)
+                    }}
+                  >
+                    {t('globalMods.ui.buttons.addModification', 'Add Modification')}
+                  </Button>
+                  <Button color="info" size="lg" onClick={() => setModificationView('gallery')}>
+                    {t('globalMods.ui.buttons.gallery', 'Gallery')}
+                  </Button>
+                  <Button
+                    color="success"
+                    size="lg"
+                    onClick={() => setShowAssignGlobalModsModal(true)}
+                  >
+                    {t('globalMods.ui.buttons.assignModification', 'Assign Modification')}
+                  </Button>
+                </div>
+
+                {/* Existing Modification Cards */}
+                <div className="row">
+                  {manufacturerCategories.map((category) => (
+                    <div key={category.id} className="col-md-6 mb-4">
+                      <div className="card h-100">
+                        <div className="card-header d-flex justify-content-between align-items-center">
+                          <h6 className="mb-0 d-flex align-items-center gap-2">
+                            {category.image && (
+                              <>
+                                <Image
+                                  src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${category.image}`}
+                                  alt={category.name}
+                                  width={24}
+                                  height={24}
+                                  style={{
+                                    objectFit: 'cover',
+                                    borderRadius: 4,
+                                    border: '1px solid #e9ecef',
+                                  }}
+                                  onError={(event) => {
+                                    event.currentTarget.src = '/images/nologo.png'
+                                  }}
+                                />
+                                <Badge
+                                  colorScheme="info"
+                                  title={t(
+                                    'globalMods.modal.gallery.categoryImageUploaded',
+                                    'Category image uploaded',
+                                  )}
+                                >
+                                  {t('settings.manufacturers.catalogMapping.gallery.badges.img')}
+                                </Badge>
+                              </>
+                            )}
+                            {category.name}
+                          </h6>
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge bg-secondary">
+                              {t('settings.manufacturers.catalogMapping.modManagement.modsCount', {
+                                count: category.templates?.length || 0,
+                              })}
+                            </span>
+                            <Button
+                              size="sm"
+                              color="warning"
+                              variant="outline"
+                              title={t('globalMods.category.editTooltip')}
+                              onClick={() => {
+                                setEditCategory({
+                                  id: category.id,
+                                  name: category.name || '',
+                                  orderIndex: category.orderIndex || 0,
+                                  image: category.image || '',
+                                })
+                                setShowEditCategoryModal(true)
+                              }}
+                            >
+                              ✏️ {t('common.edit')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              colorScheme="red"
+                              variant="outline"
+                              title={t('globalMods.category.deleteTooltip')}
+                              onClick={() => {
+                                setCategoryToDelete(category)
+                                setShowDeleteCategoryModal(true)
+                              }}
+                            >
+                              🗑️ {t('common.delete')}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="card-body">
+                          {category.templates?.length ? (
+                            category.templates.map((template) => (
+                              <div
+                                key={template.id}
+                                className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded"
+                              >
+                                <div className="d-flex align-items-center gap-2">
+                                  {template.sampleImage && (
+                                    <Image
+                                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
+                                      alt={template.name}
+                                      width={32}
+                                      height={32}
+                                      style={{
+                                        objectFit: 'cover',
+                                        borderRadius: 4,
+                                        border: '1px solid #e9ecef',
+                                      }}
+                                      onError={(event) => {
+                                        event.currentTarget.src = '/images/nologo.png'
+                                      }}
+                                    />
+                                  )}
+                                  <div>
+                                    <strong>{template.name}</strong>
+                                    {template.defaultPrice && (
+                                      <span className="text-muted">
+                                        {' '}
+                                        - ${Number(template.defaultPrice).toFixed(2)}
+                                      </span>
+                                    )}
+                                    <div className="d-flex gap-1 mt-1">
+                                      <Badge color={template.isReady ? 'success' : 'warning'}>
+                                        {template.isReady
+                                          ? t(
+                                              'settings.manufacturers.catalogMapping.gallery.badges.ready',
+                                            )
+                                          : t(
+                                              'settings.manufacturers.catalogMapping.gallery.badges.draft',
+                                            )}
+                                      </Badge>
+                                      {template.sampleImage && (
+                                        <Badge
+                                          colorScheme="info"
+                                          title={t(
+                                            'settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded',
+                                          )}
+                                        >
+                                          {t(
+                                            'settings.manufacturers.catalogMapping.gallery.badges.img',
+                                          )}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="d-flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    color="outline-primary"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.edit',
+                                    )}
+                                    onClick={() => {
+                                      // Preserve full state so PUT payload includes required fields
+                                      setEditTemplate({
+                                        id: template.id,
+                                        categoryId: String(template.categoryId || ''),
+                                        name: template.name || '',
+                                        defaultPrice:
+                                          template.defaultPrice !== null &&
+                                          template.defaultPrice !== undefined
+                                            ? String(template.defaultPrice)
+                                            : '',
+                                        sampleImage: template.sampleImage || '',
+                                        isReady: !!template.isReady,
+                                        fieldsConfig: template.fieldsConfig || null,
+                                      })
+                                      // Load guided builder state from fieldsConfig
+                                      setEditGuidedBuilder(
+                                        makeGuidedFromFields(template.fieldsConfig),
+                                      )
+                                      setShowQuickEditTemplateModal(true)
+                                    }}
+                                  >
+                                    ✏️
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-danger"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
+                                    )}
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          t(
+                                            'settings.manufacturers.catalogMapping.gallery.confirmDelete',
+                                            { name: template.name },
+                                          ),
+                                        )
+                                      ) {
+                                        deleteModificationTemplate(template.id)
+                                      }
+                                    }}
+                                  >
+                                    🗑️
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-warning"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.move',
+                                    )}
+                                    onClick={() => {
+                                      setModificationToMove(template)
+                                      setShowMoveModificationModal(true)
+                                    }}
+                                  >
+                                    📁
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-success"
+                                    title={t('globalMods.modal.assign.title')}
+                                    onClick={() => {
+                                      setAssignFormGM((f) => ({ ...f, templateId: template.id }))
+                                      setShowAssignGlobalModsModal(true)
+                                    }}
+                                  >
+                                    🎯
+                                  </Button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-muted">
+                              {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {!manufacturerCategories.length && (
+                    <div className="col-12 text-center">
+                      <p className="text-muted">
+                        {t('settings.manufacturers.catalogMapping.modManagement.noCategories', {
+                          addLabel: t('globalMods.ui.buttons.addModification', 'Add Modification'),
+                        })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {modificationView === 'addNew' && (
+              <div>
+                {modificationStep === 1 && (
+                  <div>
+                    <h5>{t('globalMods.modal.add.step1Title')}</h5>
+                    <div className="mb-3">
+                      <Select
+                        value={selectedModificationCategory}
+                        onChange={(event) =>
+                          setSelectedModificationCategory(event.currentTarget.value)
+                        }
+                      >
+                        <option value="">{t('globalMods.modal.add.selectExisting')}</option>
+                        {/* Show manufacturer categories only for manufacturer context */}
+                        {manufacturerCategories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                        <option value="new">{t('globalMods.modal.add.createNew')}</option>
+                      </Select>
+                    </div>
+
+                    {selectedModificationCategory === 'new' && (
+                      <div className="border rounded p-3 mb-3">
+                        <h6>{t('globalMods.modal.add.createNew')}</h6>
+                        <div className="row">
+                          <div className="col-md-8">
+                            <Input
+                              placeholder={t('globalMods.modal.add.newSubmenuName')}
+                              value={newCategory.name}
+                              onChange={(event) =>
+                                setNewCategory((n) => ({ ...n, name: event.currentTarget.value }))
+                              }
+                            />
+                          </div>
+                          <div className="col-md-4">
+                            <Input
+                              type="number"
+                              placeholder={t('globalMods.modal.add.orderIndex')}
+                              value={newCategory.orderIndex}
+                              onChange={(event) =>
+                                setNewCategory((n) => ({
+                                  ...n,
+                                  orderIndex: event.currentTarget.value,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="d-flex gap-2">
+                      <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
+                        Back to Overview
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        onClick={() => setModificationStep(2)}
+                        disabled={
+                          !selectedModificationCategory ||
+                          (selectedModificationCategory === 'new' && !newCategory.name)
+                        }
+                      >
+                        Next: Template Builder
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {modificationStep === 2 && (
+                  <div>
+                    <h5>Step 2: Build Modification Template</h5>
+
+                    {/* Default Required Fields */}
+                    <div className="border rounded p-3 mb-3">
+                      <h6>Required Fields</h6>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <Input
+                            placeholder="Modification name *"
+                            value={newTemplate.name}
+                            onChange={(event) =>
+                              setNewTemplate((n) => ({ ...n, name: event.currentTarget.value }))
+                            }
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <Input
+                            type="number"
+                            placeholder={
+                              newTemplate.saveAsBlueprint
+                                ? "Blueprints don't have prices"
+                                : 'Default price *'
+                            }
+                            value={newTemplate.saveAsBlueprint ? '' : newTemplate.defaultPrice}
+                            onChange={(event) =>
+                              setNewTemplate((n) => ({
+                                ...n,
+                                defaultPrice: event.currentTarget.value,
+                              }))
+                            }
+                            disabled={newTemplate.saveAsBlueprint}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Optional Field Builder */}
+                    <div className="border rounded p-3 mb-3">
+                      <h6>Optional Field Builder (Building Blocks)</h6>
+
+                      {/* Slider Controls */}
+                      <div className="row mb-3">
+                        <div className="col-md-4">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Height Slider"
+                                isChecked={guidedBuilder.sliders.height.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    sliders: {
+                                      ...g.sliders,
+                                      height: {
+                                        ...g.sliders.height,
+                                        enabled: event.currentTarget.checked,
+                                      },
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.sliders.height.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Min height"
+                                    value={guidedBuilder.sliders.height.min}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          height: {
+                                            ...g.sliders.height,
+                                            min: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Max height"
+                                    value={guidedBuilder.sliders.height.max}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          height: {
+                                            ...g.sliders.height,
+                                            max: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Select
+                                  value={
+                                    guidedBuilder.sliders.height.useCustomIncrements
+                                      ? 'custom'
+                                      : guidedBuilder.sliders.height.step
+                                  }
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      sliders: {
+                                        ...g.sliders,
+                                        height: {
+                                          ...g.sliders.height,
+                                          step:
+                                            event.currentTarget.value === 'custom'
+                                              ? 1
+                                              : event.currentTarget.value,
+                                          useCustomIncrements:
+                                            event.currentTarget.value === 'custom',
+                                        },
+                                      },
+                                    }))
+                                  }
+                                >
+                                  <option value="1">1 inch increments</option>
+                                  <option value="0.5">0.5 inch increments</option>
+                                  <option value="0.25">0.25 inch increments</option>
+                                  <option value="custom">
+                                    Custom fractions (1/8, 1/4, 3/8, etc.)
+                                  </option>
+                                </Select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-4">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Width Slider"
+                                isChecked={guidedBuilder.sliders.width.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    sliders: {
+                                      ...g.sliders,
+                                      width: {
+                                        ...g.sliders.width,
+                                        enabled: event.currentTarget.checked,
+                                      },
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.sliders.width.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Min width"
+                                    value={guidedBuilder.sliders.width.min}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          width: {
+                                            ...g.sliders.width,
+                                            min: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Max width"
+                                    value={guidedBuilder.sliders.width.max}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          width: {
+                                            ...g.sliders.width,
+                                            max: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Select
+                                  value={
+                                    guidedBuilder.sliders.width.useCustomIncrements
+                                      ? 'custom'
+                                      : guidedBuilder.sliders.width.step
+                                  }
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      sliders: {
+                                        ...g.sliders,
+                                        width: {
+                                          ...g.sliders.width,
+                                          step:
+                                            event.currentTarget.value === 'custom'
+                                              ? 1
+                                              : event.currentTarget.value,
+                                          useCustomIncrements:
+                                            event.currentTarget.value === 'custom',
+                                        },
+                                      },
+                                    }))
+                                  }
+                                >
+                                  <option value="1">1 inch increments</option>
+                                  <option value="0.5">0.5 inch increments</option>
+                                  <option value="0.25">0.25 inch increments</option>
+                                  <option value="custom">
+                                    Custom fractions (1/8, 1/4, 3/8, etc.)
+                                  </option>
+                                </Select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-4">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Depth Slider"
+                                isChecked={guidedBuilder.sliders.depth.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    sliders: {
+                                      ...g.sliders,
+                                      depth: {
+                                        ...g.sliders.depth,
+                                        enabled: event.currentTarget.checked,
+                                      },
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.sliders.depth.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Min depth"
+                                    value={guidedBuilder.sliders.depth.min}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          depth: {
+                                            ...g.sliders.depth,
+                                            min: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Max depth"
+                                    value={guidedBuilder.sliders.depth.max}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        sliders: {
+                                          ...g.sliders,
+                                          depth: {
+                                            ...g.sliders.depth,
+                                            max: event.currentTarget.value,
+                                          },
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Select
+                                  value={
+                                    guidedBuilder.sliders.depth.useCustomIncrements
+                                      ? 'custom'
+                                      : guidedBuilder.sliders.depth.step
+                                  }
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      sliders: {
+                                        ...g.sliders,
+                                        depth: {
+                                          ...g.sliders.depth,
+                                          step:
+                                            event.currentTarget.value === 'custom'
+                                              ? 1
+                                              : event.currentTarget.value,
+                                          useCustomIncrements:
+                                            event.currentTarget.value === 'custom',
+                                        },
+                                      },
+                                    }))
+                                  }
+                                >
+                                  <option value="1">1 inch increments</option>
+                                  <option value="0.5">0.5 inch increments</option>
+                                  <option value="0.25">0.25 inch increments</option>
+                                  <option value="custom">
+                                    Custom fractions (1/8, 1/4, 3/8, etc.)
+                                  </option>
+                                </Select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Additional Controls */}
+                      <div className="row mb-3">
+                        <div className="col-md-3">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Side Selector"
+                                isChecked={guidedBuilder.sideSelector.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    sideSelector: {
+                                      ...g.sideSelector,
+                                      enabled: event.currentTarget.checked,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.sideSelector.enabled && (
+                              <div className="card-body">
+                                <small className="text-muted d-block mb-2">
+                                  Limited to Left/Right options
+                                </small>
+                                <Input
+                                  placeholder="L,R"
+                                  value={guidedBuilder.sideSelector.options?.join(',')}
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      sideSelector: {
+                                        ...g.sideSelector,
+                                        options: event.currentTarget.value
+                                          .split(',')
+                                          .map((s) => s.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                  disabled
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-3">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Quantity Limits"
+                                isChecked={guidedBuilder.qtyRange.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    qtyRange: {
+                                      ...g.qtyRange,
+                                      enabled: event.currentTarget.checked,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.qtyRange.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    type="number"
+                                    placeholder="Min qty"
+                                    value={guidedBuilder.qtyRange.min}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        qtyRange: { ...g.qtyRange, min: event.currentTarget.value },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Input
+                                  type="number"
+                                  placeholder="Max qty"
+                                  value={guidedBuilder.qtyRange.max}
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      qtyRange: { ...g.qtyRange, max: event.currentTarget.value },
+                                    }))
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-3">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Customer Notes"
+                                isChecked={guidedBuilder.notes.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    notes: { ...g.notes, enabled: event.currentTarget.checked },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.notes.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    placeholder="Notes placeholder"
+                                    value={guidedBuilder.notes.placeholder}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        notes: {
+                                          ...g.notes,
+                                          placeholder: event.currentTarget.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Checkbox
+                                  label="Show in red for customer warning"
+                                  isChecked={guidedBuilder.notes.showInRed}
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      notes: { ...g.notes, showInRed: event.currentTarget.checked },
+                                    }))
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-3">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                label="Customer Upload"
+                                isChecked={guidedBuilder.customerUpload.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    customerUpload: {
+                                      ...g.customerUpload,
+                                      enabled: event.currentTarget.checked,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                            {guidedBuilder.customerUpload.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <Input
+                                    placeholder={t(
+                                      'settings.manufacturers.catalogMapping.builder.uploadTitlePh',
+                                    )}
+                                    value={guidedBuilder.customerUpload.title}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        customerUpload: {
+                                          ...g.customerUpload,
+                                          title: event.currentTarget.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <Checkbox
+                                  isChecked={guidedBuilder.customerUpload.required}
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      customerUpload: {
+                                        ...g.customerUpload,
+                                        required: event.currentTarget.checked,
+                                      },
+                                    }))
+                                  }
+                                >
+                                  {t(
+                                    'settings.manufacturers.catalogMapping.builder.requiredUpload',
+                                  )}
+                                </Checkbox>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description and Sample Image */}
+                      <div className="row mb-3">
+                        <div className="col-md-8">
+                          <div className="card">
+                            <div className="card-header">
+                              <h6 className="mb-0">
+                                {t(
+                                  'settings.manufacturers.catalogMapping.builder.descriptions.header',
+                                )}
+                              </h6>
+                            </div>
+                            <div className="card-body">
+                              <div className="row">
+                                <div className="col-md-4">
+                                  <Input
+                                    placeholder={t(
+                                      'settings.manufacturers.catalogMapping.builder.descriptions.internal',
+                                    )}
+                                    value={guidedBuilder.descriptions.internal}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        descriptions: {
+                                          ...g.descriptions,
+                                          internal: event.currentTarget.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="col-md-4">
+                                  <Input
+                                    placeholder={t(
+                                      'settings.manufacturers.catalogMapping.builder.descriptions.customer',
+                                    )}
+                                    value={guidedBuilder.descriptions.customer}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        descriptions: {
+                                          ...g.descriptions,
+                                          customer: event.currentTarget.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="col-md-4">
+                                  <Input
+                                    placeholder={t(
+                                      'settings.manufacturers.catalogMapping.builder.descriptions.installer',
+                                    )}
+                                    value={guidedBuilder.descriptions.installer}
+                                    onChange={(event) =>
+                                      setGuidedBuilder((g) => ({
+                                        ...g,
+                                        descriptions: {
+                                          ...g.descriptions,
+                                          installer: event.currentTarget.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="mt-2">
+                                <Checkbox
+                                  isChecked={guidedBuilder.descriptions.both}
+                                  onChange={(event) =>
+                                    setGuidedBuilder((g) => ({
+                                      ...g,
+                                      descriptions: {
+                                        ...g.descriptions,
+                                        both: event.currentTarget.checked,
+                                      },
+                                    }))
+                                  }
+                                >
+                                  {t(
+                                    'settings.manufacturers.catalogMapping.builder.descriptions.showBoth',
+                                  )}
+                                </Checkbox>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="card">
+                            <div className="card-header">
+                              <Checkbox
+                                isChecked={guidedBuilder.modSampleImage.enabled}
+                                onChange={(event) =>
+                                  setGuidedBuilder((g) => ({
+                                    ...g,
+                                    modSampleImage: {
+                                      ...g.modSampleImage,
+                                      enabled: event.currentTarget.checked,
+                                    },
+                                  }))
+                                }
+                              >
+                                {t(
+                                  'settings.manufacturers.catalogMapping.builder.sampleImage.label',
+                                )}
+                              </Checkbox>
+                            </div>
+                            {guidedBuilder.modSampleImage.enabled && (
+                              <div className="card-body">
+                                <div className="mb-2">
+                                  <FormLabel>
+                                    {t(
+                                      'settings.manufacturers.catalogMapping.builder.sampleImage.upload',
+                                    )}
+                                  </FormLabel>
+                                  <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={async (event) => {
+                                      const file = event.currentTarget.files?.[0]
+                                      const fname = await uploadImageFile(file)
+                                      if (fname)
+                                        setNewTemplate((n) => ({ ...n, sampleImage: fname }))
+                                    }}
+                                  />
+                                </div>
+                                {newTemplate.sampleImage && (
+                                  <div
+                                    className="p-2 bg-light border rounded"
+                                    style={{
+                                      height: 200,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}
+                                  >
+                                    <Image
+                                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`}
+                                      alt={t(
+                                        'settings.manufacturers.catalogMapping.builder.sampleImage.alt',
+                                      )}
+                                      style={{
+                                        maxHeight: '100%',
+                                        maxWidth: '100%',
+                                        objectFit: 'contain',
+                                      }}
+                                      onError={(event) => {
+                                        event.currentTarget.src = '/images/nologo.png'
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Ready Checkbox */}
+                      <div className="border-top pt-3">
+                        <Checkbox
+                          isChecked={newTemplate.isReady}
+                          onChange={(event) =>
+                            setNewTemplate((n) => ({ ...n, isReady: event.currentTarget.checked }))
+                          }
+                        >
+                          {t('settings.manufacturers.catalogMapping.builder.ready.markAsReady')}
+                        </Checkbox>
+                        {/* Task 5: Blueprint checkbox for saving to gallery */}
+                        <Checkbox
+                          isChecked={newTemplate.saveAsBlueprint}
+                          onChange={(event) =>
+                            setNewTemplate((n) => ({
+                              ...n,
+                              saveAsBlueprint: event.currentTarget.checked,
+                            }))
+                          }
+                          className="mt-2"
+                        >
+                          {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
+                        </Checkbox>
+                        <small className="text-muted d-block mt-1">
+                          {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div className="d-flex gap-2">
+                      <Button colorScheme="gray" onClick={() => setModificationStep(1)}>
+                        {t('settings.manufacturers.catalogMapping.builder.buttons.back')}
+                      </Button>
+                      <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
+                        {t('settings.manufacturers.catalogMapping.builder.buttons.cancel')}
+                      </Button>
+                      {editingTemplateId ? (
+                        <Button
+                          colorScheme="blue"
+                          onClick={async () => {
+                            setCreatingModification(true)
+                            try {
+                              let categoryIdToUse = selectedModificationCategory
+                              if (selectedModificationCategory === 'new') {
+                                const newCat = await createModificationCategory()
+                                categoryIdToUse = newCat.id
+                              }
+                              await updateModificationTemplate(editingTemplateId, categoryIdToUse)
+                              resetModificationForm()
+                              Swal.fire({
+                                toast: true,
+                                position: 'top',
+                                icon: 'success',
+                                title: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.updateSuccess',
+                                ),
+                                showConfirmButton: false,
+                                timer: 1500,
+                              })
+                            } catch (error) {
+                              console.error('Error updating template:', error)
+                              Swal.fire({
+                                toast: true,
+                                position: 'top',
+                                icon: 'error',
+                                title:
+                                  error.response?.data?.message ||
+                                  t(
+                                    'settings.manufacturers.catalogMapping.builder.toast.updateFailed',
+                                  ),
+                                showConfirmButton: false,
+                                timer: 1800,
+                              })
+                            } finally {
+                              setCreatingModification(false)
+                            }
+                          }}
+                          disabled={!newTemplate.name || creatingModification}
+                        >
+                          {creatingModification ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              {t('common.saving')}
+                            </>
+                          ) : (
+                            t('settings.manufacturers.catalogMapping.builder.buttons.saveChanges')
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          colorScheme="blue"
+                          onClick={async () => {
+                            // Task 5: Block creation if manufacturerId is missing
+                            if (!id) {
+                              Swal.fire({
+                                title: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle',
+                                ),
+                                text: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText',
+                                ),
+                                icon: 'error',
+                              })
+                              return
+                            }
+
+                            setCreatingModification(true)
+                            try {
+                              let categoryIdToUse = selectedModificationCategory
+
+                              // Create new category if needed
+                              if (selectedModificationCategory === 'new') {
+                                const newCat = await createModificationCategory()
+                                categoryIdToUse = newCat.id
+                              }
+
+                              // Create the template
+                              await createModificationTemplate(categoryIdToUse)
+
+                              // Reset form and go back to cards view
+                              resetModificationForm()
+
+                              // Show success message
+                              Swal.fire({
+                                title: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle',
+                                ),
+                                text: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.createSuccessText',
+                                ),
+                                icon: 'success',
+                                timer: 2000,
+                              })
+                            } catch (error) {
+                              console.error('Error creating template:', error)
+                              Swal.fire({
+                                title: t(
+                                  'settings.manufacturers.catalogMapping.builder.toast.createFailedTitle',
+                                ),
+                                text:
+                                  error.response?.data?.message ||
+                                  t(
+                                    'settings.manufacturers.catalogMapping.builder.toast.createFailedText',
+                                  ),
+                                icon: 'error',
+                              })
+                            } finally {
+                              setCreatingModification(false)
+                            }
+                          }}
+                          disabled={
+                            !newTemplate.name || !newTemplate.defaultPrice || creatingModification
+                          }
+                        >
+                          {creatingModification ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              {t('common.creating')}
+                            </>
+                          ) : (
+                            t('settings.manufacturers.catalogMapping.builder.buttons.create')
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {modificationView === 'gallery' && (
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
+                  <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
+                    {t('settings.manufacturers.catalogMapping.gallery.back')}
+                  </Button>
+                </div>
+
+                <div className="row">
+                  {globalGallery.map((category) => (
+                    <div key={category.id} className="col-md-6 mb-4">
+                      <div className="card">
+                        <div className="card-header d-flex justify-content-between align-items-center">
+                          <h6 className="mb-0">{category.name}</h6>
+                          <div className="d-flex gap-2">
+                            <Button
+                              size="sm"
+                              colorScheme="red"
+                              variant="outline"
+                              title={t(
+                                'settings.manufacturers.catalogMapping.gallery.tooltips.deleteCategory',
+                              )}
+                              onClick={() => {
+                                setCategoryToDelete(category)
+                                setShowDeleteCategoryModal(true)
+                              }}
+                            >
+                              {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="card-body">
+                          {category.templates?.length ? (
+                            category.templates.map((template) => (
+                              <div
+                                key={template.id}
+                                className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded"
+                              >
+                                <div className="d-flex align-items-center gap-2">
+                                  {template.sampleImage && (
+                                    <Image
+                                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
+                                      alt={template.name}
+                                      width={32}
+                                      height={32}
+                                      style={{
+                                        objectFit: 'cover',
+                                        borderRadius: 4,
+                                        border: '1px solid #e9ecef',
+                                      }}
+                                      onError={(event) => {
+                                        event.currentTarget.src = '/images/nologo.png'
+                                      }}
+                                    />
+                                  )}
+                                  <div>
+                                    <strong>{template.name}</strong>
+                                    {template.defaultPrice && (
+                                      <span className="text-muted">
+                                        {' '}
+                                        - ${Number(template.defaultPrice).toFixed(2)}
+                                      </span>
+                                    )}
+                                    <div className="d-flex gap-1 mt-1">
+                                      <Badge color={template.isReady ? 'success' : 'warning'}>
+                                        {template.isReady
+                                          ? t(
+                                              'settings.manufacturers.catalogMapping.gallery.badges.ready',
+                                            )
+                                          : t(
+                                              'settings.manufacturers.catalogMapping.gallery.badges.draft',
+                                            )}
+                                      </Badge>
+                                      {template.sampleImage && (
+                                        <Badge
+                                          colorScheme="info"
+                                          title={t(
+                                            'settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded',
+                                          )}
+                                        >
+                                          {t(
+                                            'settings.manufacturers.catalogMapping.gallery.badges.img',
+                                          )}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <div className="small text-muted">
+                                      {template.fieldsConfig?.descriptions?.customer ||
+                                        t(
+                                          'settings.manufacturers.catalogMapping.gallery.noDescription',
+                                        )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="d-flex gap-1 flex-wrap">
+                                  <Button
+                                    size="sm"
+                                    color="outline-primary"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.edit',
+                                    )}
+                                    onClick={() => {
+                                      // Set up edit state
+                                      setEditTemplate({
+                                        id: template.id,
+                                        categoryId: String(template.categoryId || ''),
+                                        name: template.name || '',
+                                        defaultPrice:
+                                          template.defaultPrice !== null &&
+                                          template.defaultPrice !== undefined
+                                            ? String(template.defaultPrice)
+                                            : '',
+                                        sampleImage: template.sampleImage || '',
+                                        isReady: !!template.isReady,
+                                        fieldsConfig: template.fieldsConfig || null,
+                                      })
+                                      setEditGuidedBuilder(
+                                        makeGuidedFromFields(template.fieldsConfig),
+                                      )
+                                      setShowQuickEditTemplateModal(true)
+                                    }}
+                                  >
+                                    ✏️
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-danger"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
+                                    )}
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          `Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`,
+                                        )
+                                      ) {
+                                        deleteModificationTemplate(template.id)
+                                      }
+                                    }}
+                                  >
+                                    🗑️
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-warning"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.move',
+                                    )}
+                                    onClick={() => {
+                                      setModificationToMove(template)
+                                      setShowMoveModificationModal(true)
+                                    }}
+                                  >
+                                    {t(
+                                      'settings.manufacturers.catalogMapping.gallery.actions.move',
+                                    )}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    colorScheme="blue"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.useAsBlueprint',
+                                    )}
+                                    onClick={async () => {
+                                      try {
+                                        await axiosInstance.post('/api/global-mods/templates', {
+                                          categoryId: template.categoryId || null,
+                                          name: `${template.name} (Copy)`,
+                                          defaultPrice: 0,
+                                          isReady: false,
+                                          fieldsConfig: template.fieldsConfig || {},
+                                          sampleImage: template.sampleImage || null,
+                                        })
+                                        await loadGlobalGallery()
+                                      } catch (e) {
+                                        alert(e?.response?.data?.message || e.message)
+                                      }
+                                    }}
+                                  >
+                                    📋
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="success"
+                                    title={t(
+                                      'settings.manufacturers.catalogMapping.gallery.tooltips.assignToManufacturer',
+                                    )}
+                                    onClick={() => {
+                                      // Assign this template
+                                      setAssignFormGM((prev) => ({
+                                        ...prev,
+                                        templateId: template.id,
+                                      }))
+                                      setShowAssignGlobalModsModal(true)
+                                    }}
+                                  >
+                                    🎯
+                                  </Button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-muted">
+                              {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowMainModificationModal(false)}>
+              {t('common.close', 'Close')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Edit Category Modal */}
+      <Modal
+        isOpen={showEditCategoryModal}
+        onClose={() => setShowEditCategoryModal(false)}
+        size="lg"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
+          <ModalBody>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <FormLabel>
+                  {t('globalMods.modal.editCategory.nameLabel', 'Category Name')}
+                </FormLabel>
+                <Input
+                  value={editCategory.name}
+                  onChange={(event) =>
+                    setEditCategory((c) => ({ ...c, name: event.currentTarget.value }))
+                  }
+                />
+              </div>
+              <div className="col-md-6">
+                <FormLabel>{t('globalMods.modal.editCategory.orderLabel', 'Order')}</FormLabel>
+                <Input
+                  type="number"
+                  value={editCategory.orderIndex}
+                  onChange={(event) =>
+                    setEditCategory((c) => ({ ...c, orderIndex: event.currentTarget.value }))
+                  }
+                />
+              </div>
               <div className="col-12">
-                <CFormLabel>{t('globalMods.modal.editTemplate.sampleUploadLabel', 'Sample Image')}</CFormLabel>
-                <CFormInput type="file" accept="image/*" onChange={async (e)=>{
-                  const file = e.target.files?.[0];
-                  const fname = await uploadImageFile(file);
-                  if (fname) setEditTemplate(t=>({...t, sampleImage: fname}));
-                }} />
-                {editTemplate.sampleImage && (
-                  <div className="mt-2 p-2 bg-light border rounded" style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`} alt={t('globalMods.modal.editTemplate.sampleAlt', 'Sample')} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={(e)=>{ e.currentTarget.src='/images/nologo.png'; }} />
+                <FormLabel>
+                  {t('globalMods.modal.editCategory.imageLabel', 'Category Image')}
+                </FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (event) => {
+                    const file = event.currentTarget.files?.[0]
+                    const fname = await uploadImageFile(file)
+                    if (fname) setEditCategory((c) => ({ ...c, image: fname }))
+                  }}
+                />
+                {editCategory.image && (
+                  <div
+                    className="mt-2 p-2 bg-light border rounded"
+                    style={{
+                      height: 220,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Image
+                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
+                      alt={t('globalMods.modal.editCategory.imageLabel', 'Category Image')}
+                      style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                      onError={(event) => {
+                        event.currentTarget.src = '/images/nologo.png'
+                      }}
+                    />
                   </div>
                 )}
               </div>
             </div>
-          </div>
+            <div className="d-flex gap-2 justify-content-end mt-3">
+              <Button colorScheme="gray" onClick={() => setShowEditCategoryModal(false)}>
+                {t('globalMods.modal.editCategory.cancel', 'Cancel')}
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  if (!editCategory.id || !editCategory.name.trim()) return
+                  await axiosInstance.put(`/api/global-mods/categories/${editCategory.id}`, {
+                    name: editCategory.name.trim(),
+                    orderIndex: Number(editCategory.orderIndex || 0),
+                    image: editCategory.image || null,
+                  })
+                  setShowEditCategoryModal(false)
+                  await loadGlobalGallery()
+                }}
+              >
+                {t('globalMods.modal.editCategory.save', 'Save')}
+              </Button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
-          {/* Advanced Field Configuration */}
-          <div className="border rounded p-3 mb-3">
-            <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
-
-            {/* Slider Controls */}
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.heightSlider', 'Height Slider')}
-                      checked={editGuidedBuilder.sliders.height.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, enabled:e.target.checked}}}))}
-                    />
-                  </div>
-                  {editGuidedBuilder.sliders.height.enabled && (
-                    <div className="card-body">
-                      <div className="row">
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.height.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, min:Number(e.target.value)||0}}}))} />
-                        </div>
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.height.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, height:{...g.sliders.height, max:Number(e.target.value)||0}}}))} />
-                        </div>
+      {/* Delete Category Modal */}
+      <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader
+            title={t('globalMods.modal.deleteCategory.title', {
+              name: categoryToDelete?.name || '',
+            })}
+          />
+          <ModalBody>
+            {categoryToDelete && (
+              <>
+                <p>
+                  <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
+                  {t('globalMods.modal.deleteCategory.aboutToDelete', {
+                    name: categoryToDelete.name,
+                  })}
+                </p>
+                {categoryToDelete.templates?.length > 0 && (
+                  <div className="alert alert-warning">
+                    <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
+                    {t('globalMods.modal.deleteCategory.contains', {
+                      count: categoryToDelete.templates.length,
+                    })}
+                    <div className="mt-2">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="deleteMode"
+                          id="deleteCancel"
+                          value="cancel"
+                          defaultChecked
+                        />
+                        <label className="form-check-label" htmlFor="deleteCancel">
+                          {t('globalMods.modal.deleteCategory.cancel')}
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="deleteMode"
+                          id="deleteWithMods"
+                          value="withMods"
+                        />
+                        <label className="form-check-label" htmlFor="deleteWithMods">
+                          {t('globalMods.modal.deleteCategory.deleteWithMods')}
+                        </label>
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.widthSlider', 'Width Slider')}
-                      checked={editGuidedBuilder.sliders.width.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, enabled:e.target.checked}}}))}
-                    />
                   </div>
-                  {editGuidedBuilder.sliders.width.enabled && (
-                    <div className="card-body">
-                      <div className="row">
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.width.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, min:Number(e.target.value)||0}}}))} />
-                        </div>
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.width.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, width:{...g.sliders.width, max:Number(e.target.value)||0}}}))} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                )}
+              </>
+            )}
+            <div className="d-flex gap-2 justify-content-end mt-3">
+              <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
+                {t('globalMods.modal.deleteCategory.cancel', 'Cancel')}
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={async () => {
+                  if (!categoryToDelete) return
+
+                  let deleteMode = 'only' // Default mode for empty categories
+                  if (categoryToDelete.templates?.length > 0) {
+                    const selectedMode = document.querySelector(
+                      'input[name="deleteMode"]:checked',
+                    )?.value
+                    if (selectedMode === 'withMods') {
+                      deleteMode = 'withMods'
+                    } else {
+                      // User chose to cancel deletion
+                      setShowDeleteCategoryModal(false)
+                      return
+                    }
+                  }
+
+                  await deleteCategory(categoryToDelete.id, deleteMode)
+                  setShowDeleteCategoryModal(false)
+                  setCategoryToDelete(null)
+                }}
+              >
+                {t('globalMods.modal.deleteCategory.deleteOnly', 'Delete Category')}
+              </Button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Move Modification Modal */}
+      <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('common.move', 'Move Modification')} />
+          <ModalBody>
+            {modificationToMove && (
+              <>
+                <p>
+                  {t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong>{' '}
+                  {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}
+                </p>
+                <div className="mb-3">
+                  <label className="form-label">
+                    {t(
+                      'globalMods.modal.deleteCategory.move.selectTarget',
+                      'Select destination category',
+                    )}
+                  </label>
+                  <select
+                    className="form-select"
+                    id="moveToCategory"
+                    defaultValue={modificationToMove.categoryId || ''}
+                  >
+                    <option value="">{t('common.uncategorized', '-- Uncategorized --')}</option>
+                    {/* Gallery categories */}
+                    <optgroup label={t('common.galleryCategories', 'Gallery Categories')}>
+                      {globalGallery.map((cat) => (
+                        <option key={`gallery-${cat.id}`} value={cat.id}>
+                          {cat.name} ({t('common.gallery', 'Gallery')})
+                        </option>
+                      ))}
+                    </optgroup>
+                    {/* Manufacturer categories */}
+                    <optgroup label={t('common.manufacturerCategories', 'Manufacturer Categories')}>
+                      {manufacturerCategories.map((cat) => (
+                        <option key={`mfg-${cat.id}`} value={cat.id}>
+                          {cat.name} ({t('common.manufacturer', 'Manufacturer')})
+                        </option>
+                      ))}
+                    </optgroup>
+                  </select>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.depthSlider', 'Depth Slider')}
-                      checked={editGuidedBuilder.sliders.depth.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, enabled:e.target.checked}}}))}
+                <div className="alert alert-info">
+                  <small>
+                    <strong>{t('common.note', 'Note')}:</strong>{' '}
+                    {t(
+                      'settings.manufacturers.catalogMapping.gallery.tooltips.move',
+                      'Move to different category',
+                    )}
+                  </small>
+                </div>
+              </>
+            )}
+            <div className="d-flex gap-2 justify-content-end mt-3">
+              <Button colorScheme="gray" onClick={() => setShowMoveModificationModal(false)}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  if (!modificationToMove) return
+
+                  const newCategoryId = document.getElementById('moveToCategory').value
+                  await moveModification(modificationToMove.id, newCategoryId || null)
+                  setShowMoveModificationModal(false)
+                  setModificationToMove(null)
+                }}
+              >
+                {t('common.move', 'Move')}
+              </Button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Enhanced Edit Template Modal */}
+      <Modal
+        isOpen={showQuickEditTemplateModal}
+        onClose={() => setShowQuickEditTemplateModal(false)}
+        size="xl"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
+          <ModalBody>
+            {/* Basic Information */}
+            <div className="border rounded p-3 mb-3">
+              <h6>{t('common.basicInformation', 'Basic Information')}</h6>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <FormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</FormLabel>
+                  <Input
+                    value={editTemplate.name}
+                    onChange={(event) =>
+                      setEditTemplate((t) => ({ ...t, name: event.currentTarget.value }))
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <FormLabel>
+                    {t('globalMods.modal.editTemplate.priceLabel', 'Default Price')}{' '}
+                    {editTemplate.saveAsBlueprint &&
+                      t('common.disabledForBlueprints', '(disabled for blueprints)')}
+                  </FormLabel>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editTemplate.saveAsBlueprint ? '' : editTemplate.defaultPrice}
+                    onChange={(event) =>
+                      setEditTemplate((t) => ({ ...t, defaultPrice: event.currentTarget.value }))
+                    }
+                    disabled={editTemplate.saveAsBlueprint}
+                    placeholder={
+                      editTemplate.saveAsBlueprint
+                        ? t('common.blueprintsNoPrice', "Blueprints don't have prices")
+                        : t('globalMods.template.defaultPricePlaceholder', 'Enter default price')
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <FormLabel>{t('globalMods.template.statusLabel', 'Status')}</FormLabel>
+                  <Select
+                    value={editTemplate.isReady ? 'ready' : 'draft'}
+                    onChange={(event) =>
+                      setEditTemplate((t) => ({
+                        ...t,
+                        isReady: event.currentTarget.value === 'ready',
+                      }))
+                    }
+                  >
+                    <option value="draft">{t('globalMods.template.status.draft', 'Draft')}</option>
+                    <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
+                  </Select>
+                </div>
+                <div className="col-md-6">
+                  <div className="form-check form-switch mt-4">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="showToBoth"
+                      checked={editTemplate.showToBoth || false}
+                      onChange={(event) =>
+                        setEditTemplate((t) => ({ ...t, showToBoth: event.currentTarget.checked }))
+                      }
                     />
+                    <label className="form-check-label" htmlFor="showToBoth">
+                      {t('globalMods.builder.descriptions.customer', 'Customer description')} &{' '}
+                      {t('globalMods.builder.descriptions.installer', 'Installer description')}{' '}
+                      {t('common.showToBoth', 'shown to both')}
+                    </label>
                   </div>
-                  {editGuidedBuilder.sliders.depth.enabled && (
-                    <div className="card-body">
-                      <div className="row">
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.min', 'Min')} type="number" value={editGuidedBuilder.sliders.depth.min} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, min:Number(e.target.value)||0}}}))} />
-                        </div>
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.max', 'Max')} type="number" value={editGuidedBuilder.sliders.depth.max} onChange={e=>setEditGuidedBuilder(g=>({...g, sliders:{...g.sliders, depth:{...g.sliders.depth, max:Number(e.target.value)||0}}}))} />
-                        </div>
-                      </div>
+                </div>
+                <div className="col-12">
+                  <FormLabel>
+                    {t('globalMods.modal.editTemplate.sampleUploadLabel', 'Sample Image')}
+                  </FormLabel>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (event) => {
+                      const file = event.currentTarget.files?.[0]
+                      const fname = await uploadImageFile(file)
+                      if (fname) setEditTemplate((t) => ({ ...t, sampleImage: fname }))
+                    }}
+                  />
+                  {editTemplate.sampleImage && (
+                    <div
+                      className="mt-2 p-2 bg-light border rounded"
+                      style={{
+                        height: 240,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Image
+                        src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
+                        alt={t('globalMods.modal.editTemplate.sampleAlt', 'Sample')}
+                        style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                        onError={(event) => {
+                          event.currentTarget.src = '/images/nologo.png'
+                        }}
+                      />
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Additional Controls */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.sideSelector.label', 'Side Selector')}
-                      checked={editGuidedBuilder.sideSelector.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, enabled:e.target.checked}}))}
-                    />
-                  </div>
-                  {editGuidedBuilder.sideSelector.enabled && (
-                    <div className="card-body">
-                      <CFormInput
-                        placeholder={t('globalMods.builder.sideSelector.placeholder', 'Options (comma-separated: L,R)')}
-                        value={Array.isArray(editGuidedBuilder.sideSelector.options) ? editGuidedBuilder.sideSelector.options.join(',') : 'L,R'}
-                        onChange={e=>setEditGuidedBuilder(g=>({...g, sideSelector:{...g.sideSelector, options:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}}))}
-                      />
+            {/* Advanced Field Configuration */}
+            <div className="border rounded p-3 mb-3">
+              <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
+
+              {/* Slider Controls */}
+              <div className="row mb-3">
+                <div className="col-md-4">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.sliders.height.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              height: { ...g.sliders.height, enabled: event.currentTarget.checked },
+                            },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.heightSlider', 'Height Slider')}
+                      </Checkbox>
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
-                      checked={editGuidedBuilder.qtyRange.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, enabled:e.target.checked}}))}
-                    />
-                  </div>
-                  {editGuidedBuilder.qtyRange.enabled && (
-                    <div className="card-body">
-                      <div className="row">
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')} type="number" value={editGuidedBuilder.qtyRange.min} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, min:Number(e.target.value)||1}}))} />
-                        </div>
-                        <div className="col-6">
-                          <CFormInput placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')} type="number" value={editGuidedBuilder.qtyRange.max} onChange={e=>setEditGuidedBuilder(g=>({...g, qtyRange:{...g.qtyRange, max:Number(e.target.value)||10}}))} />
+                    {editGuidedBuilder.sliders.height.enabled && (
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.min', 'Min')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.height.min}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    height: {
+                                      ...g.sliders.height,
+                                      min: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.max', 'Max')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.height.max}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    height: {
+                                      ...g.sliders.height,
+                                      max: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.sliders.width.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              width: { ...g.sliders.width, enabled: event.currentTarget.checked },
+                            },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.widthSlider', 'Width Slider')}
+                      </Checkbox>
                     </div>
-                  )}
+                    {editGuidedBuilder.sliders.width.enabled && (
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.min', 'Min')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.width.min}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    width: {
+                                      ...g.sliders.width,
+                                      min: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.max', 'Max')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.width.max}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    width: {
+                                      ...g.sliders.width,
+                                      max: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.sliders.depth.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              depth: { ...g.sliders.depth, enabled: event.currentTarget.checked },
+                            },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.depthSlider', 'Depth Slider')}
+                      </Checkbox>
+                    </div>
+                    {editGuidedBuilder.sliders.depth.enabled && (
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.min', 'Min')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.depth.min}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    depth: {
+                                      ...g.sliders.depth,
+                                      min: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.max', 'Max')}
+                              type="number"
+                              value={editGuidedBuilder.sliders.depth.max}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  sliders: {
+                                    ...g.sliders,
+                                    depth: {
+                                      ...g.sliders.depth,
+                                      max: Number(event.currentTarget.value) || 0,
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Controls */}
+              <div className="row mb-3">
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.sideSelector.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sideSelector: {
+                              ...g.sideSelector,
+                              enabled: event.currentTarget.checked,
+                            },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.sideSelector.label', 'Side Selector')}
+                      </Checkbox>
+                    </div>
+                    {editGuidedBuilder.sideSelector.enabled && (
+                      <div className="card-body">
+                        <Input
+                          placeholder={t(
+                            'globalMods.builder.sideSelector.placeholder',
+                            'Options (comma-separated: L,R)',
+                          )}
+                          value={
+                            Array.isArray(editGuidedBuilder.sideSelector.options)
+                              ? editGuidedBuilder.sideSelector.options.join(',')
+                              : 'L,R'
+                          }
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              sideSelector: {
+                                ...g.sideSelector,
+                                options: event.currentTarget.value
+                                  .split(',')
+                                  .map((s) => s.trim())
+                                  .filter(Boolean),
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.qtyRange.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            qtyRange: { ...g.qtyRange, enabled: event.currentTarget.checked },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
+                      </Checkbox>
+                    </div>
+                    {editGuidedBuilder.qtyRange.enabled && (
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')}
+                              type="number"
+                              value={editGuidedBuilder.qtyRange.min}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  qtyRange: {
+                                    ...g.qtyRange,
+                                    min: Number(event.currentTarget.value) || 1,
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Input
+                              placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')}
+                              type="number"
+                              value={editGuidedBuilder.qtyRange.max}
+                              onChange={(event) =>
+                                setEditGuidedBuilder((g) => ({
+                                  ...g,
+                                  qtyRange: {
+                                    ...g.qtyRange,
+                                    max: Number(event.currentTarget.value) || 10,
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes and Upload Controls */}
+              <div className="row mb-3">
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.notes.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            notes: { ...g.notes, enabled: event.currentTarget.checked },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
+                      </Checkbox>
+                    </div>
+                    {editGuidedBuilder.notes.enabled && (
+                      <div className="card-body">
+                        <Input
+                          placeholder={t(
+                            'globalMods.builder.customerNotes.placeholder',
+                            'Placeholder text',
+                          )}
+                          value={editGuidedBuilder.notes.placeholder}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              notes: { ...g.notes, placeholder: event.currentTarget.value },
+                            }))
+                          }
+                        />
+                        <Checkbox
+                          className="mt-2"
+                          isChecked={editGuidedBuilder.notes.showInRed}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              notes: { ...g.notes, showInRed: event.currentTarget.checked },
+                            }))
+                          }
+                        >
+                          {t('globalMods.builder.customerNotes.showInRed', 'Show in red')}
+                        </Checkbox>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <Checkbox
+                        isChecked={editGuidedBuilder.customerUpload.enabled}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            customerUpload: {
+                              ...g.customerUpload,
+                              enabled: event.currentTarget.checked,
+                            },
+                          }))
+                        }
+                      >
+                        {t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
+                      </Checkbox>
+                    </div>
+                    {editGuidedBuilder.customerUpload.enabled && (
+                      <div className="card-body">
+                        <Input
+                          placeholder={t(
+                            'globalMods.builder.customerUpload.titlePlaceholder',
+                            'Upload title',
+                          )}
+                          value={editGuidedBuilder.customerUpload.title}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              customerUpload: {
+                                ...g.customerUpload,
+                                title: event.currentTarget.value,
+                              },
+                            }))
+                          }
+                        />
+                        <Checkbox
+                          className="mt-2"
+                          isChecked={editGuidedBuilder.customerUpload.required}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              customerUpload: {
+                                ...g.customerUpload,
+                                required: event.currentTarget.checked,
+                              },
+                            }))
+                          }
+                        >
+                          {t('globalMods.builder.customerUpload.required', 'Required')}
+                        </Checkbox>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Descriptions */}
+              <div className="card">
+                <div className="card-header">
+                  <h6 className="mb-0">{t('globalMods.builder.title', 'Guided Builder')}</h6>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <Input
+                        placeholder={t(
+                          'globalMods.builder.descriptions.internal',
+                          'Internal description',
+                        )}
+                        value={editGuidedBuilder.descriptions.internal}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            descriptions: {
+                              ...g.descriptions,
+                              internal: event.currentTarget.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <Input
+                        placeholder={t(
+                          'globalMods.builder.descriptions.customer',
+                          'Customer description',
+                        )}
+                        value={editGuidedBuilder.descriptions.customer}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            descriptions: {
+                              ...g.descriptions,
+                              customer: event.currentTarget.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <Input
+                        placeholder={t(
+                          'globalMods.builder.descriptions.installer',
+                          'Installer description',
+                        )}
+                        value={editGuidedBuilder.descriptions.installer}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            descriptions: {
+                              ...g.descriptions,
+                              installer: event.currentTarget.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Notes and Upload Controls */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
-                      checked={editGuidedBuilder.notes.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, enabled:e.target.checked}}))}
-                    />
-                  </div>
-                  {editGuidedBuilder.notes.enabled && (
-                    <div className="card-body">
-                      <CFormInput
-                        placeholder={t('globalMods.builder.customerNotes.placeholder', 'Placeholder text')}
-                        value={editGuidedBuilder.notes.placeholder}
-                        onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, placeholder:e.target.value}}))}
-                      />
-                      <CFormCheck
-                        className="mt-2"
-                        label={t('globalMods.builder.customerNotes.showInRed', 'Show in red')}
-                        checked={editGuidedBuilder.notes.showInRed}
-                        onChange={e=>setEditGuidedBuilder(g=>({...g, notes:{...g.notes, showInRed:e.target.checked}}))}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="card">
-                  <div className="card-header">
-                    <CFormCheck
-                      label={t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
-                      checked={editGuidedBuilder.customerUpload.enabled}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, enabled:e.target.checked}}))}
-                    />
-                  </div>
-                  {editGuidedBuilder.customerUpload.enabled && (
-                    <div className="card-body">
-                      <CFormInput
-                        placeholder={t('globalMods.builder.customerUpload.titlePlaceholder', 'Upload title')}
-                        value={editGuidedBuilder.customerUpload.title}
-                        onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, title:e.target.value}}))}
-                      />
-                      <CFormCheck
-                        className="mt-2"
-                        label={t('globalMods.builder.customerUpload.required', 'Required')}
-                        checked={editGuidedBuilder.customerUpload.required}
-                        onChange={e=>setEditGuidedBuilder(g=>({...g, customerUpload:{...g.customerUpload, required:e.target.checked}}))}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
+            <div className="d-flex gap-2 justify-content-end mt-3">
+              <Button colorScheme="gray" onClick={() => setShowQuickEditTemplateModal(false)}>
+                {t('globalMods.modal.add.cancel', 'Cancel')}
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  if (!editTemplate.id || !editTemplate.name.trim()) return
+                  // Build fieldsConfig from edit guided builder
+                  const fieldsConfig = buildEditFieldsConfig()
+                  // Important: send full payload so server doesn't reset fields to null/false
+                  await axiosInstance.put(`/api/global-mods/templates/${editTemplate.id}`, {
+                    categoryId: editTemplate.categoryId ? Number(editTemplate.categoryId) : null,
+                    name: editTemplate.name.trim(),
+                    defaultPrice: editTemplate.defaultPrice
+                      ? Number(editTemplate.defaultPrice)
+                      : null,
+                    fieldsConfig,
+                    sampleImage: editTemplate.sampleImage || null,
+                    isReady: !!editTemplate.isReady,
+                  })
+                  setShowQuickEditTemplateModal(false)
+                  await loadGlobalGallery()
+                }}
+              >
+                {t('globalMods.modal.editTemplate.saveChanges', 'Save Changes')}
+              </Button>
             </div>
-
-            {/* Descriptions */}
-            <div className="card">
-              <div className="card-header">
-                <h6 className="mb-0">{t('globalMods.builder.title', 'Guided Builder')}</h6>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-4">
-                    <CFormInput
-                      placeholder={t('globalMods.builder.descriptions.internal', 'Internal description')}
-                      value={editGuidedBuilder.descriptions.internal}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, internal:e.target.value}}))}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <CFormInput
-                      placeholder={t('globalMods.builder.descriptions.customer', 'Customer description')}
-                      value={editGuidedBuilder.descriptions.customer}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, customer:e.target.value}}))}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <CFormInput
-                      placeholder={t('globalMods.builder.descriptions.installer', 'Installer description')}
-                      value={editGuidedBuilder.descriptions.installer}
-                      onChange={e=>setEditGuidedBuilder(g=>({...g, descriptions:{...g.descriptions, installer:e.target.value}}))}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="d-flex gap-2 justify-content-end mt-3">
-            <CButton color="secondary" onClick={() => setShowQuickEditTemplateModal(false)}>{t('globalMods.modal.add.cancel', 'Cancel')}</CButton>
-            <CButton color="primary" onClick={async ()=>{
-              if (!editTemplate.id || !editTemplate.name.trim()) return;
-              // Build fieldsConfig from edit guided builder
-              const fieldsConfig = buildEditFieldsConfig();
-              // Important: send full payload so server doesn't reset fields to null/false
-              await axiosInstance.put(`/api/global-mods/templates/${editTemplate.id}`, {
-                categoryId: editTemplate.categoryId ? Number(editTemplate.categoryId) : null,
-                name: editTemplate.name.trim(),
-                defaultPrice: editTemplate.defaultPrice ? Number(editTemplate.defaultPrice) : null,
-                fieldsConfig,
-                sampleImage: editTemplate.sampleImage || null,
-                isReady: !!editTemplate.isReady,
-              });
-              setShowQuickEditTemplateModal(false);
-              await loadGlobalGallery();
-            }}>{t('globalMods.modal.editTemplate.saveChanges', 'Save Changes')}</CButton>
-          </div>
-        </CModalBody>
-      </CModal>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
       {/* Sub-Type Create/Edit Modal */}
-      <CModal
-        visible={showSubTypeModal}
+      <Modal
+        isOpen={showSubTypeModal}
         onClose={() => {
-          setShowSubTypeModal(false);
-          setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
-          setEditingSubType(null);
+          setShowSubTypeModal(false)
+          setSubTypeForm({
+            name: '',
+            description: '',
+            requires_hinge_side: false,
+            requires_exposed_side: false,
+          })
+          setEditingSubType(null)
         }}
         size="lg"
       >
         <PageHeader
-          title={editingSubType ? t('settings.manufacturers.catalogMapping.subTypes.editTitle') : t('settings.manufacturers.catalogMapping.subTypes.create')}
+          title={
+            editingSubType
+              ? t('settings.manufacturers.catalogMapping.subTypes.editTitle')
+              : t('settings.manufacturers.catalogMapping.subTypes.create')
+          }
           className="rounded-0 border-0"
           cardClassName="rounded-0 border-bottom"
         />
-        <CModalBody>
-          <CForm>
+        <ModalBody>
+          <Box>
             <div className="mb-3">
-              <CFormLabel>{t('common.name', 'Name')} *</CFormLabel>
-              <CFormInput
+              <FormLabel>{t('common.name', 'Name')} *</FormLabel>
+              <Input
                 value={subTypeForm.name}
-                onChange={(e) => setSubTypeForm(prev => ({ ...prev, name: e.target.value }))}
-                placeholder={t('settings.manufacturers.catalogMapping.subTypes.namePlaceholder', 'e.g., Single Door Cabinets')}
+                onChange={(event) =>
+                  setSubTypeForm((prev) => ({ ...prev, name: event.currentTarget.value }))
+                }
+                placeholder={t(
+                  'settings.manufacturers.catalogMapping.subTypes.namePlaceholder',
+                  'e.g., Single Door Cabinets',
+                )}
               />
             </div>
             <div className="mb-3">
-              <CFormLabel>{t('common.description')}</CFormLabel>
-              <CFormTextarea
+              <FormLabel>{t('common.description')}</FormLabel>
+              <Textarea
                 rows={3}
                 value={subTypeForm.description}
-                onChange={(e) => setSubTypeForm(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={t('settings.manufacturers.catalogMapping.subTypes.descriptionPlaceholder', 'Optional description for this sub-type')}
+                onChange={(event) =>
+                  setSubTypeForm((prev) => ({ ...prev, description: event.currentTarget.value }))
+                }
+                placeholder={t(
+                  'settings.manufacturers.catalogMapping.subTypes.descriptionPlaceholder',
+                  'Optional description for this sub-type',
+                )}
               />
             </div>
             <div className="mb-3">
-              <CFormCheck
+              <Checkbox
                 id="requiresHingeSide"
-                label={t('settings.manufacturers.catalogMapping.subTypes.requiresHingeSelection')}
-                checked={subTypeForm.requires_hinge_side}
-                onChange={(e) => setSubTypeForm(prev => ({ ...prev, requires_hinge_side: e.target.checked }))}
-              />
+                isChecked={subTypeForm.requires_hinge_side}
+                onChange={(event) =>
+                  setSubTypeForm((prev) => ({
+                    ...prev,
+                    requires_hinge_side: event.currentTarget.checked,
+                  }))
+                }
+              >
+                {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeSelection')}
+              </Checkbox>
               <small className="text-muted">
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeHelp')}
               </small>
             </div>
             <div className="mb-3">
-              <CFormCheck
+              <Checkbox
                 id="requiresExposedSide"
-                label={t('settings.manufacturers.catalogMapping.subTypes.requiresExposedSelection')}
-                checked={subTypeForm.requires_exposed_side}
-                onChange={(e) => setSubTypeForm(prev => ({ ...prev, requires_exposed_side: e.target.checked }))}
-              />
+                isChecked={subTypeForm.requires_exposed_side}
+                onChange={(event) =>
+                  setSubTypeForm((prev) => ({
+                    ...prev,
+                    requires_exposed_side: event.currentTarget.checked,
+                  }))
+                }
+              >
+                {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedSelection')}
+              </Checkbox>
               <small className="text-muted">
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedHelp')}
               </small>
             </div>
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
+          </Box>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="gray"
             onClick={() => {
-              setShowSubTypeModal(false);
-              setSubTypeForm({ name: '', description: '', requires_hinge_side: false, requires_exposed_side: false });
-              setEditingSubType(null);
+              setShowSubTypeModal(false)
+              setSubTypeForm({
+                name: '',
+                description: '',
+                requires_hinge_side: false,
+                requires_exposed_side: false,
+              })
+              setEditingSubType(null)
             }}
           >
             {t('common.cancel')}
-          </CButton>
-          <CButton
-            color="primary"
+          </Button>
+          <Button
+            colorScheme="blue"
             onClick={handleSubTypeSave}
             disabled={!subTypeForm.name.trim()}
           >
-            {editingSubType ? t('common.update', 'Update') : t('common.create', 'Create')} {t('settings.manufacturers.catalogMapping.subTypes.singular', 'Sub-Type')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
+            {editingSubType ? t('common.update', 'Update') : t('common.create', 'Create')}{' '}
+            {t('settings.manufacturers.catalogMapping.subTypes.singular', 'Sub-Type')}
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       {/* Assign Items to Sub-Type Modal */}
-      <CModal
-        visible={showAssignSubTypeModal}
+      <Modal
+        isOpen={showAssignSubTypeModal}
         onClose={() => {
-          setShowAssignSubTypeModal(false);
-          setSelectedSubType(null);
-          setSelectedCatalogItem([]);
-          setSelectedCatalogCodes([]);
+          setShowAssignSubTypeModal(false)
+          setSelectedSubType(null)
+          setSelectedCatalogItem([])
+          setSelectedCatalogCodes([])
         }}
         size="xl"
       >
         <PageHeader
-          title={t('settings.manufacturers.catalogMapping.subTypes.assignModal.title', 'Assign Catalog Items to Sub-Type')}
+          title={t(
+            'settings.manufacturers.catalogMapping.subTypes.assignModal.title',
+            'Assign Catalog Items to Sub-Type',
+          )}
           className="rounded-0 border-0"
           cardClassName="rounded-0 border-bottom"
         />
-        <CModalBody>
+        <ModalBody>
           <div className="mb-3">
-            <CFormLabel>{t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel', 'Select catalog items to assign to this sub-type:')}</CFormLabel>
+            <FormLabel>
+              {t(
+                'settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel',
+                'Select catalog items to assign to this sub-type:',
+              )}
+            </FormLabel>
             <small className="d-block text-muted mb-3">
-              {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', { codes: selectedCatalogCodes.length, items: selectedCatalogItem.length })}
+              {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', {
+                codes: selectedCatalogCodes.length,
+                items: selectedCatalogItem.length,
+              })}
             </small>
           </div>
 
           <div className="table-responsive" style={{ maxHeight: '400px' }}>
-            <CTable hover>
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>
-                    <CFormCheck
-                      checked={selectedCatalogCodes.length === groupedCatalogData.length && groupedCatalogData.length > 0}
-                      onChange={(e) => {
-                        if (e.target.checked) {
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>
+                    <Checkbox
+                      isChecked={
+                        selectedCatalogCodes.length === groupedCatalogData.length &&
+                        groupedCatalogData.length > 0
+                      }
+                      onChange={(event) => {
+                        if (event.currentTarget.checked) {
                           // Select all codes
-                          const allCodes = groupedCatalogData.map(group => group.code);
-                          const allItemIds = groupedCatalogData.flatMap(group => group.itemIds);
-                          setSelectedCatalogCodes(allCodes);
-                          setSelectedCatalogItem(allItemIds);
+                          const allCodes = groupedCatalogData.map((group) => group.code)
+                          const allItemIds = groupedCatalogData.flatMap((group) => group.itemIds)
+                          setSelectedCatalogCodes(allCodes)
+                          setSelectedCatalogItem(allItemIds)
                         } else {
                           // Deselect all
-                          setSelectedCatalogCodes([]);
-                          setSelectedCatalogItem([]);
+                          setSelectedCatalogCodes([])
+                          setSelectedCatalogItem([])
                         }
                       }}
                     />
-                  </CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.code')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.description')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.table.type')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.catalogMapping.subTypes.assignModal.itemsCount', 'Items Count')}</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {groupedCatalogData.map(group => (
-                  <CTableRow key={group.code}>
-                    <CTableDataCell>
-                      <CFormCheck
-                        checked={selectedCatalogCodes.includes(group.code)}
-                        onChange={(e) => {
-                          handleCodeSelection(group.code, e.target.checked);
+                  </Th>
+                  <Th>{t('settings.manufacturers.catalogMapping.table.code')}</Th>
+                  <Th>{t('settings.manufacturers.catalogMapping.table.description')}</Th>
+                  <Th>{t('settings.manufacturers.catalogMapping.table.type')}</Th>
+                  <Th>
+                    {t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}
+                  </Th>
+                  <Th>
+                    {t(
+                      'settings.manufacturers.catalogMapping.subTypes.assignModal.itemsCount',
+                      'Items Count',
+                    )}
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {groupedCatalogData.map((group) => (
+                  <Tr key={group.code}>
+                    <Td>
+                      <Checkbox
+                        isChecked={selectedCatalogCodes.includes(group.code)}
+                        onChange={(event) => {
+                          handleCodeSelection(group.code, event.currentTarget.checked)
                         }}
                       />
-                    </CTableDataCell>
-                    <CTableDataCell>{group.code}</CTableDataCell>
-                    <CTableDataCell>{group.description}</CTableDataCell>
-                    <CTableDataCell>{group.type}</CTableDataCell>
-                    <CTableDataCell>
+                    </Td>
+                    <Td>{group.code}</Td>
+                    <Td>{group.description}</Td>
+                    <Td>{group.type}</Td>
+                    <Td>
                       <small className="text-muted">
                         {group.styles.slice(0, 3).join(', ')}
-                        {group.styles.length > 3 && ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}
+                        {group.styles.length > 3 &&
+                          ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}
                       </small>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color="info">{group.itemIds.length}</CBadge>
-                    </CTableDataCell>
-                  </CTableRow>
+                    </Td>
+                    <Td>
+                      <Badge colorScheme="info">{group.itemIds.length}</Badge>
+                    </Td>
+                  </Tr>
                 ))}
-              </CTableBody>
-            </CTable>
+              </Tbody>
+            </Table>
           </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="gray"
             onClick={() => {
-              setShowAssignSubTypeModal(false);
-              setSelectedSubType(null);
-              setSelectedCatalogItem([]);
-              setSelectedCatalogCodes([]);
+              setShowAssignSubTypeModal(false)
+              setSelectedSubType(null)
+              setSelectedCatalogItem([])
+              setSelectedCatalogCodes([])
             }}
           >
             {t('common.cancel')}
-          </CButton>
-          <CButton
-            color="primary"
+          </Button>
+          <Button
+            colorScheme="blue"
             onClick={() => {
               if (selectedSubType && selectedCatalogItem.length > 0) {
-                handleAssignToSubType();
-                setShowAssignSubTypeModal(false);
-                setSelectedSubType(null);
-                setSelectedCatalogItem([]);
-                setSelectedCatalogCodes([]);
+                handleAssignToSubType()
+                setShowAssignSubTypeModal(false)
+                setSelectedSubType(null)
+                setSelectedCatalogItem([])
+                setSelectedCatalogCodes([])
               }
             }}
             disabled={selectedCatalogItem.length === 0}
           >
-            {t('settings.manufacturers.catalogMapping.subTypes.assignModal.assignCTA', { count: selectedCatalogItem.length })}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
+            {t('settings.manufacturers.catalogMapping.subTypes.assignModal.assignCTA', {
+              count: selectedCatalogItem.length,
+            })}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default CatalogMappingTab;
+export default CatalogMappingTab

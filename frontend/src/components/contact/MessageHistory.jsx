@@ -1,95 +1,229 @@
 import React, { useEffect, useMemo } from 'react'
-import { CCard, CCardBody, CListGroup, CListGroupItem, CPagination, CPaginationItem, CBadge } from '@coreui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Flex,
+  HStack,
+  Icon,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { ChevronLeft, ChevronRight, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
-const MessageHistory = ({ loading, threads, page, totalPages, onPageChange, onSelect, isAdmin, groupByUser = false, onSelectUser }) => {
+const MessageHistory = ({
+  loading,
+  threads,
+  page,
+  totalPages,
+  onPageChange,
+  onSelect,
+  isAdmin,
+  groupByUser = false,
+  onSelectUser,
+}) => {
   const { t } = useTranslation()
-  const grouped = useMemo(() => {
+
+  const groupedThreads = useMemo(() => {
     if (!groupByUser || !isAdmin || !Array.isArray(threads)) return []
+
     const map = new Map()
-    for (const th of threads) {
-      const userId = th.owner?.id || 0
-      const name = th.owner?.name || t('contact.history.unknownUser')
-      const unread = Number(th.unreadCount) || 0
-      const lastAt = new Date(th.last_message_at || th.updatedAt || 0).getTime()
-      const entry = map.get(userId) || { userId, name, unread: 0, lastAt: 0, lastSubject: '' }
+
+    threads.forEach((thread) => {
+      const userId = thread.owner?.id || 0
+      const name = thread.owner?.name || t('contact.history.unknownUser')
+      const unread = Number(thread.unreadCount) || 0
+      const lastAt = new Date(thread.last_message_at || thread.updatedAt || 0).getTime()
+
+      const entry = map.get(userId) || {
+        userId,
+        name,
+        unread: 0,
+        lastAt: 0,
+        lastSubject: '',
+      }
+
       entry.unread += unread
-      if (lastAt > entry.lastAt) { entry.lastAt = lastAt; entry.lastSubject = th.subject }
+      if (lastAt > entry.lastAt) {
+        entry.lastAt = lastAt
+        entry.lastSubject = thread.subject
+      }
+
       map.set(userId, entry)
-    }
+    })
+
     return Array.from(map.values()).sort((a, b) => b.lastAt - a.lastAt)
   }, [groupByUser, isAdmin, threads, t])
-  useEffect(() => { /* could auto-load page 1 from parent */ }, [])
-  return (
-    <CCard className="border-0 shadow-sm">
-      <CCardBody>
-        <PageHeader title={t('contact.history.title')} subtitle={t('contact.history.subtitle')} mobileLayout="compact" />
-        {loading ? (
-          <div className="py-3 text-center text-muted">{t('common.loading')}</div>
-        ) : (
-          <>
-            {(groupByUser && (!grouped || grouped.length === 0)) || (!groupByUser && (!threads || threads.length === 0)) ? (
-              <div className="py-3 text-center text-muted">{t('contact.history.empty')}</div>
-            ) : (
-              <CListGroup>
-                {groupByUser ? (
-                  grouped.map((g) => (
-                    <CListGroupItem key={g.userId} className="d-flex justify-content-between align-items-center" role="button" onClick={() => onSelectUser && onSelectUser(g.userId)}>
-                      <div>
-                        <div className="fw-semibold">{g.name}</div>
-                        {g.lastAt > 0 && (
-                          <div className="small text-muted">{new Date(g.lastAt).toLocaleString()} • {g.lastSubject}</div>
-                        )}
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        {Number(g.unread) > 0 && (
-                          <CBadge color="danger">{g.unread}</CBadge>
-                        )}
-                      </div>
-                    </CListGroupItem>
-                  ))
-                ) : (
-                  threads.map((tItem) => (
-                    <CListGroupItem key={tItem.id} className="d-flex justify-content-between align-items-center" role="button" onClick={() => onSelect(tItem.id)}>
-                      <div className="d-flex flex-column">
-                        <div className="d-flex align-items-center gap-2 flex-wrap">
-                          <span className="fw-semibold">{tItem.subject}</span>
-                          {isAdmin && (
-                            <CBadge color="secondary">{tItem.owner?.name || t('contact.history.unknownUser')}</CBadge>
-                          )}
-                          <span className="small text-muted">{new Date(tItem.last_message_at || tItem.updatedAt).toLocaleString()}</span>
-                          {Number(tItem.unreadCount) > 0 && (
-                            <CBadge color="danger">{t('common.new') || 'New'}</CBadge>
-                          )}
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        {Number(tItem.unreadCount) > 0 && (
-                          <CBadge color="danger">{tItem.unreadCount}</CBadge>
-                        )}
-                        <CBadge color={tItem.status === 'open' ? 'success' : 'secondary'}>{t('contact.status.' + tItem.status)}</CBadge>
-                      </div>
-                    </CListGroupItem>
-                  ))
+
+  useEffect(() => {
+    // hook available for parent driven side-effects if needed
+  }, [])
+
+  const renderEmptyState = () => (
+    <Box py={3} textAlign="center">
+      <Text fontSize="sm" color="gray.500">
+        {t('contact.history.empty')}
+      </Text>
+    </Box>
+  )
+
+  const renderUserGroup = () => (
+    <Stack spacing={2}>
+      {groupedThreads.map((group) => (
+        <Box
+          key={group.userId}
+          borderWidth="1px"
+          borderRadius="md"
+          px={4}
+          py={3}
+          cursor="pointer"
+          _hover={{ bg: 'gray.50' }}
+          onClick={() => onSelectUser && onSelectUser(group.userId)}
+        >
+          <Flex justify="space-between" align="center" gap={3}>
+            <Box minW={0}>
+              <Text fontWeight="semibold" noOfLines={1}>
+                {group.name}
+              </Text>
+              {group.lastAt > 0 && (
+                <Text fontSize="xs" color="gray.500" noOfLines={1}>
+                  {new Date(group.lastAt).toLocaleString()} � {group.lastSubject}
+                </Text>
+              )}
+            </Box>
+            {Number(group.unread) > 0 && (
+              <Badge colorScheme="red" borderRadius="full" px={2}>
+                {group.unread}
+              </Badge>
+            )}
+          </Flex>
+        </Box>
+      ))}
+    </Stack>
+  )
+
+  const renderThreadList = () => (
+    <Stack spacing={2}>
+      {threads.map((thread) => (
+        <Box
+          key={thread.id}
+          borderWidth="1px"
+          borderRadius="md"
+          px={4}
+          py={3}
+          cursor="pointer"
+          _hover={{ bg: 'gray.50' }}
+          onClick={() => onSelect(thread.id)}
+        >
+          <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" gap={3}>
+            <Box minW={0}>
+              <HStack spacing={2} align="center" flexWrap="wrap">
+                <Text fontWeight="semibold" noOfLines={1}>
+                  {thread.subject}
+                </Text>
+                {isAdmin && (
+                  <Badge colorScheme="gray" borderRadius="md">
+                    {thread.owner?.name || t('contact.history.unknownUser')}
+                  </Badge>
                 )}
-              </CListGroup>
+                <Text fontSize="xs" color="gray.500">
+                  {new Date(thread.last_message_at || thread.updatedAt).toLocaleString()}
+                </Text>
+                {Number(thread.unreadCount) > 0 && (
+                  <Badge colorScheme="red">{t('common.new') || 'New'}</Badge>
+                )}
+              </HStack>
+            </Box>
+
+            <HStack spacing={2} align="center" justify={{ base: 'flex-start', md: 'flex-end' }}>
+              {Number(thread.unreadCount) > 0 && (
+                <Badge colorScheme="red" borderRadius="full" px={2}>
+                  {thread.unreadCount}
+                </Badge>
+              )}
+              <Badge colorScheme={thread.status === 'open' ? 'green' : 'gray'}>
+                {t(`contact.status.${thread.status}`)}
+              </Badge>
+            </HStack>
+          </Flex>
+        </Box>
+      ))}
+    </Stack>
+  )
+
+  const renderPagination = () => (
+    <HStack spacing={2} justify="center" mt={3}>
+      <Button
+        size="sm"
+        variant="ghost"
+        leftIcon={<Icon as={ChevronLeft} boxSize={4} />}
+        onClick={() => onPageChange(page - 1)}
+        isDisabled={page === 1}
+      >
+        {t('common.previous', 'Previous')}
+      </Button>
+      {Array.from({ length: totalPages }).map((_, index) => {
+        const pageNumber = index + 1
+        const isActive = pageNumber === page
+        return (
+          <Button
+            key={pageNumber}
+            size="sm"
+            variant={isActive ? 'solid' : 'ghost'}
+            colorScheme={isActive ? 'blue' : 'gray'}
+            onClick={() => onPageChange(pageNumber)}
+          >
+            {pageNumber}
+          </Button>
+        )
+      })}
+      <Button
+        size="sm"
+        variant="ghost"
+        rightIcon={<Icon as={ChevronRight} boxSize={4} />}
+        onClick={() => onPageChange(page + 1)}
+        isDisabled={page === totalPages}
+      >
+        {t('common.next', 'Next')}
+      </Button>
+    </HStack>
+  )
+
+  const hasThreads = groupByUser ? groupedThreads.length > 0 : (threads?.length || 0) > 0
+
+  return (
+    <Card borderRadius="lg" boxShadow="sm">
+      <CardBody>
+        <PageHeader
+          title={t('contact.history.title')}
+          subtitle={t('contact.history.subtitle')}
+          mobileLayout="compact"
+        />
+
+        {loading ? (
+          <Flex align="center" justify="center" py={6}>
+            <Spinner size="md" color="blue.500" />
+          </Flex>
+        ) : (
+          <Stack spacing={4}>
+            {!hasThreads ? (
+              renderEmptyState()
+            ) : groupByUser ? (
+              renderUserGroup()
+            ) : (
+              renderThreadList()
             )}
-            {totalPages > 1 && (
-              <div className="d-flex justify-content-center mt-3">
-                <CPagination size="sm">
-                  <CPaginationItem disabled={page === 1} onClick={() => onPageChange(page - 1)}>«</CPaginationItem>
-                  {[...Array(totalPages)].map((_, i) => (
-                    <CPaginationItem key={i+1} active={i+1 === page} onClick={() => onPageChange(i+1)}>{i+1}</CPaginationItem>
-                  ))}
-                  <CPaginationItem disabled={page === totalPages} onClick={() => onPageChange(page + 1)}>»</CPaginationItem>
-                </CPagination>
-              </div>
-            )}
-          </>
+
+            {totalPages > 1 && renderPagination()}
+          </Stack>
         )}
-      </CCardBody>
-    </CCard>
+      </CardBody>
+    </Card>
   )
 }
 

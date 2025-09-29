@@ -1,35 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { getContrastColor } from '../../../../utils/colorUtils';
-import {
-  CAlert,
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CContainer,
-  CForm,
-  CFormCheck,
-  CFormInput,
-  CFormLabel,
-  CFormText,
-  CFormTextarea,
-  CRow,
-} from '@coreui/react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import axiosInstance from '../../../../helpers/axiosInstance';
-import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice';
+import React, { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { getContrastColor } from '../../../../utils/colorUtils'
+import { Alert, Card, CardBody, CardHeader, Box, Container, FormControl, Checkbox, Input, FormLabel, FormHelperText, Textarea, Flex } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import axiosInstance from '../../../../helpers/axiosInstance'
+import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
 
 const EditManufacturerTab = ({ manufacturer, id }) => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const customization = useSelector((state) => state.customization);
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || '#667eea';
-  const textColor = getContrastColor(headerBg);
+  const headerBg = customization.headerBg || '#667eea'
+  const textColor = getContrastColor(headerBg)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -47,11 +32,11 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     orderEmailTemplate: '',
     orderEmailMode: 'pdf',
     autoEmailOnAccept: true,
-  });
-  const [files, setFiles] = useState([]);
-  const [logoImage, setLogoImage] = useState(null);
-  const [message, setMessage] = useState({ text: '', type: '' });
-  const [loading, setLoading] = useState(false);
+  })
+  const [files, setFiles] = useState([])
+  const [logoImage, setLogoImage] = useState(null)
+  const [message, setMessage] = useState({ text: '', type: '' })
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (manufacturer) {
@@ -71,115 +56,150 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         orderEmailTemplate: manufacturer.orderEmailTemplate || '',
         orderEmailMode: manufacturer.orderEmailMode || 'pdf',
         autoEmailOnAccept: manufacturer.autoEmailOnAccept ?? true,
-      });
+      })
     }
-  }, [manufacturer]);
+  }, [manufacturer])
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-  };
+    const { name, value, type, checked } = e.target
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
+  }
 
-  const handleFileChange = (e) => setFiles([...e.target.files]);
+  const handleFileChange = (e) => setFiles([...e.target.files])
 
-  const handlePriceTypeChange = (isPriceMSRP) => setFormData((prev) => ({ ...prev, isPriceMSRP }));
+  const handlePriceTypeChange = (isPriceMSRP) => setFormData((prev) => ({ ...prev, isPriceMSRP }))
 
   const calculateMultiplierExample = () => {
-    if (!formData.costMultiplier) return null;
-    const msrp = 200.0;
-    const cost = 100.0;
-    const multiplier = parseFloat(formData.costMultiplier);
+    if (!formData.costMultiplier) return null
+    const msrp = 200.0
+    const cost = 100.0
+    const multiplier = parseFloat(formData.costMultiplier)
     return (
-      <CFormText className="text-muted">
+      <FormHelperText className="text-muted">
         {t('settings.manufacturers.example.multiplier', {
           msrp: msrp.toFixed(2),
           cost: cost.toFixed(2),
           multiplier: multiplier.toFixed(1),
         })}
-      </CFormText>
-    );
-  };
+      </FormHelperText>
+  
+  )
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
-    console.log('Form data before submit:', formData);
+    console.log('Form data before submit:', formData)
 
     try {
-      const formDataToSend = new FormData();
+      const formDataToSend = new FormData()
       Object.keys(formData).forEach((key) => {
-        const value = formData[key] || '';
-        console.log(`Appending ${key}:`, value);
-        formDataToSend.append(key, value);
-      });
+        const value = formData[key] || ''
+        console.log(`Appending ${key}:`, value)
+        formDataToSend.append(key, value)
+      })
 
-      if (logoImage) formDataToSend.append('manufacturerImage', logoImage);
-      files.forEach((file) => formDataToSend.append('catalogFiles', file));
+      if (logoImage) formDataToSend.append('manufacturerImage', logoImage)
+      files.forEach((file) => formDataToSend.append('catalogFiles', file))
 
-      console.log('Sending update request...');
+      console.log('Sending update request...')
       const res = await axiosInstance.put(`/api/manufacturers/${id}/update`, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      })
 
-      console.log('Server response:', res.data);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      console.log('Server response:', res.data)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       if (res.data.status === 200) {
-        setMessage({ text: t('settings.manufacturers.edit.updated'), type: 'success' });
+        setMessage({ text: t('settings.manufacturers.edit.updated'), type: 'success' })
         // Refetch manufacturer data to update the form with latest values
-        dispatch(fetchManufacturerById({ id, includeCatalog: false }));
-        setTimeout(() => navigate('/settings/manufacturers'), 2000);
+        dispatch(fetchManufacturerById({ id, includeCatalog: false }))
+        setTimeout(() => navigate('/settings/manufacturers'), 2000)
       } else {
-        setMessage({ text: res.data.message || t('settings.manufacturers.edit.updateFailed'), type: 'danger' });
+        setMessage({
+          text: res.data.message || t('settings.manufacturers.edit.updateFailed'),
+          type: 'danger',
+        })
       }
     } catch (error) {
-      console.error('Update error:', error);
-      console.error('Error details:', error.response?.data);
-      setMessage({ text: `Error: ${error.response?.data?.message || t('settings.manufacturers.edit.updateFailed')}`, type: 'danger' });
+      console.error('Update error:', error)
+      console.error('Error details:', error.response?.data)
+      setMessage({
+        text: `Error: ${error.response?.data?.message || t('settings.manufacturers.edit.updateFailed')}`,
+        type: 'danger',
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <CContainer className="mt-4 mb-4">
-      <CCard>
-        <CCardHeader className="d-flex justify-content-between align-items-center bg-body border-bottom">
+    <Container className="mt-4 mb-4">
+      <Card>
+        <CardHeader className="d-flex justify-content-between align-items-center bg-body border-bottom">
           <h5 className="mb-0">{t('settings.manufacturers.edit.title')}</h5>
-          <CButton color="light" onClick={() => navigate(-1)} className="icon-btn" aria-label={t('settings.manufacturers.edit.back')}>
+          <CButton
+            status="light"
+            onClick={() => navigate(-1)}
+            className="icon-btn"
+            aria-label={t('settings.manufacturers.edit.back')}
+          >
             {t('settings.manufacturers.edit.back')}
           </CButton>
-        </CCardHeader>
-        <CCardBody>
+        </CardHeader>
+        <CardBody>
           {message.text && (
-            <CAlert color={message.type} dismissible onClose={() => setMessage({ text: '', type: '' })}>
+            <Alert
+              color={message.type}
+              dismissible
+              onClose={() => setMessage({ text: '', type: '' })}
+            >
               {message.text}
-            </CAlert>
+            </Alert>
           )}
 
-          <CForm onSubmit={handleSubmit}>
-            <CCard className="mb-4">
-              <CCardBody>
-                <CRow>
-                  <CCol md={6}>
+          <FormControl onSubmit={handleSubmit}>
+            <Card className="mb-4">
+              <CardBody>
+                <Flex>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="name">{t('settings.manufacturers.fields.manufacturerName')} *</CFormLabel>
-                      <CFormInput id="name" name="name" value={formData.name} onChange={handleChange} required />
+                      <FormLabel htmlFor="name">
+                        {t('settings.manufacturers.fields.manufacturerName')} *
+                      </FormLabel>
+                      <Input
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-                  </CCol>
-                  <CCol md={6}>
+                  </Box>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="email">{t('settings.manufacturers.fields.orderEmail')} *</CFormLabel>
-                      <CFormInput type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                      <FormLabel htmlFor="email">
+                        {t('settings.manufacturers.fields.orderEmail')} *
+                      </FormLabel>
+                      <Input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-                  </CCol>
-                </CRow>
+                  </Box>
+                </Flex>
 
-                <CRow>
-                  <CCol md={6}>
+                <Flex>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="phone">{t('settings.manufacturers.fields.phone')} *</CFormLabel>
-                      <CFormInput
+                      <FormLabel htmlFor="phone">
+                        {t('settings.manufacturers.fields.phone')} *
+                      </FormLabel>
+                      <Input
                         type="tel"
                         id="phone"
                         name="phone"
@@ -189,15 +209,20 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         inputMode="tel"
                         aria-describedby="phoneHelp"
                       />
-                      <CFormText id="phoneHelp" className="text-muted">
-                        {t('settings.manufacturers.help.phoneFormat', 'Include country/area code if needed')}
-                      </CFormText>
+                      <FormHelperText id="phoneHelp" className="text-muted">
+                        {t(
+                          'settings.manufacturers.help.phoneFormat',
+                          'Include country/area code if needed',
+                        )}
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                  <CCol md={6}>
+                  </Box>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="website">{t('settings.manufacturers.fields.website')} *</CFormLabel>
-                      <CFormInput
+                      <FormLabel htmlFor="website">
+                        {t('settings.manufacturers.fields.website')} *
+                      </FormLabel>
+                      <Input
                         type="url"
                         id="website"
                         name="website"
@@ -207,25 +232,33 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         inputMode="url"
                         aria-describedby="websiteHelp"
                       />
-                      <CFormText id="websiteHelp" className="text-muted">
+                      <FormHelperText id="websiteHelp" className="text-muted">
                         {t('settings.manufacturers.help.websiteFormat', 'https://example.com')}
-                      </CFormText>
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                </CRow>
+                  </Box>
+                </Flex>
 
                 <div className="mb-3">
-                  <CFormLabel htmlFor="address">{t('settings.manufacturers.fields.address')} *</CFormLabel>
-                  <CFormInput id="address" name="address" value={formData.address} onChange={handleChange} required />
+                  <FormLabel htmlFor="address">
+                    {t('settings.manufacturers.fields.address')} *
+                  </FormLabel>
+                  <Input
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
-                <CRow>
-                  <CCol md={6}>
+                <Flex>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="assembledEtaDays">
+                      <FormLabel htmlFor="assembledEtaDays">
                         {t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
-                      </CFormLabel>
-                      <CFormInput
+                      </FormLabel>
+                      <Input
                         type="text"
                         id="assembledEtaDays"
                         name="assembledEtaDays"
@@ -234,17 +267,23 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         placeholder="e.g., 7-14 days"
                         aria-describedby="assembledEtaHelp"
                       />
-                      <CFormText id="assembledEtaHelp" className="text-muted">
-                        {t('settings.manufacturers.help.assembledEta', 'Estimated delivery time for assembled cabinets')}
-                      </CFormText>
+                      <FormHelperText id="assembledEtaHelp" className="text-muted">
+                        {t(
+                          'settings.manufacturers.help.assembledEta',
+                          'Estimated delivery time for assembled cabinets',
+                        )}
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                  <CCol md={6}>
+                  </Box>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="unassembledEtaDays">
-                        {t('settings.manufacturers.fields.unassembledEtaDays', 'Unassembled Items ETA')}
-                      </CFormLabel>
-                      <CFormInput
+                      <FormLabel htmlFor="unassembledEtaDays">
+                        {t(
+                          'settings.manufacturers.fields.unassembledEtaDays',
+                          'Unassembled Items ETA',
+                        )}
+                      </FormLabel>
+                      <Input
                         type="text"
                         id="unassembledEtaDays"
                         name="unassembledEtaDays"
@@ -253,15 +292,20 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         placeholder="e.g., 3-7 days"
                         aria-describedby="unassembledEtaHelp"
                       />
-                      <CFormText id="unassembledEtaHelp" className="text-muted">
-                        {t('settings.manufacturers.help.unassembledEta', 'Estimated delivery time for unassembled cabinets')}
-                      </CFormText>
+                      <FormHelperText id="unassembledEtaHelp" className="text-muted">
+                        {t(
+                          'settings.manufacturers.help.unassembledEta',
+                          'Estimated delivery time for unassembled cabinets',
+                        )}
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                </CRow>
+                  </Box>
+                </Flex>
 
                 <div className="mb-3">
-                  <CFormLabel htmlFor="manufacturerImage">{t('settings.manufacturers.edit.updateImage')}</CFormLabel>
+                  <FormLabel htmlFor="manufacturerImage">
+                    {t('settings.manufacturers.edit.updateImage')}
+                  </FormLabel>
 
                   {/* Display current image if exists */}
                   {manufacturer?.image && !logoImage && (
@@ -276,19 +320,26 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     </div>
                   )}
 
-                  <CFormInput
+                  <Input
                     type="file"
                     id="manufacturerImage"
                     accept="image/*"
                     onChange={(e) => setLogoImage(e.target.files[0])}
                     aria-describedby="manufacturerImageHelp"
                   />
-                  <CFormText id="manufacturerImageHelp" className="text-muted">
-                    {t('settings.manufacturers.edit.imageHelp', 'PNG or JPG recommended. Max ~5MB.')}
-                  </CFormText>
+                  <FormHelperText id="manufacturerImageHelp" className="text-muted">
+                    {t(
+                      'settings.manufacturers.edit.imageHelp',
+                      'PNG or JPG recommended. Max ~5MB.',
+                    )}
+                  </FormHelperText>
                   {logoImage && (
                     <div className="mt-2">
-                      <div className="text-success">{t('settings.manufacturers.edit.newImageSelected', { name: logoImage.name })}</div>
+                      <div className="text-success">
+                        {t('settings.manufacturers.edit.newImageSelected', {
+                          name: logoImage.name,
+                        })}
+                      </div>
                       {/* Preview of new image */}
                       <img
                         src={URL.createObjectURL(logoImage)}
@@ -299,53 +350,92 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     </div>
                   )}
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
 
-            <CCard className="mb-4">
-              <CCardBody>
-                <CRow>
-                  <CCol md={6}>
+            <Card className="mb-4">
+              <CardBody>
+                <Flex>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="orderEmailSubject">Manufacturer Email Subject</CFormLabel>
-                      <CFormInput id="orderEmailSubject" name="orderEmailSubject" value={formData.orderEmailSubject} onChange={handleChange} />
-                      <CFormText>
-                        You can include the order number by adding {"{orderNumber}"} in the subject. Example: "New order {"{orderNumber}"} for ABC Cabinets".
-                      </CFormText>
+                      <FormLabel htmlFor="orderEmailSubject">
+                        Manufacturer Email Subject
+                      </FormLabel>
+                      <Input
+                        id="orderEmailSubject"
+                        name="orderEmailSubject"
+                        value={formData.orderEmailSubject}
+                        onChange={handleChange}
+                      />
+                      <FormHelperText>
+                        You can include the order number by adding {'{orderNumber}'} in the subject.
+                        Example: "New order {'{orderNumber}'} for ABC Cabinets".
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                  <CCol md={6}>
+                  </Box>
+                  <Box md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="orderEmailMode">Send Mode</CFormLabel>
-                      <select id="orderEmailMode" name="orderEmailMode" className="form-select" value={formData.orderEmailMode} onChange={handleChange}>
+                      <FormLabel htmlFor="orderEmailMode">Send Mode</FormLabel>
+                      <select
+                        id="orderEmailMode"
+                        name="orderEmailMode"
+                        className="form-select"
+                        value={formData.orderEmailMode}
+                        onChange={handleChange}
+                      >
                         <option value="pdf">PDF only</option>
                         <option value="plain">Plain text only</option>
                         <option value="both">Both</option>
                       </select>
-                      <div className="form-text">Choose whether to send a PDF, a plain email, or both.</div>
-                    </div>
-                  </CCol>
-                </CRow>
+                      <div className="form-text">
+                        Choose whether to send a PDF, a plain email, or both.
+                      </div>
+                  </Box>
+                </Flex>
                 <div className="mb-3">
-                  <CFormLabel htmlFor="orderEmailTemplate">Manufacturer Email Template (no prices)</CFormLabel>
-                  <CFormTextarea id="orderEmailTemplate" name="orderEmailTemplate" rows={6} value={formData.orderEmailTemplate} onChange={handleChange} placeholder="Dear Manufacturer, Please find the attached order PDF. ..." />
-                  <CFormText>Simple HTML allowed. Keep it minimal; prices are not included.</CFormText>
+                  <FormLabel htmlFor="orderEmailTemplate">
+                    Manufacturer Email Template (no prices)
+                  </FormLabel>
+                  <Textarea
+                    id="orderEmailTemplate"
+                    name="orderEmailTemplate"
+                    rows={6}
+                    value={formData.orderEmailTemplate}
+                    onChange={handleChange}
+                    placeholder="Dear Manufacturer, Please find the attached order PDF. ..."
+                  />
+                  <FormHelperText>
+                    Simple HTML allowed. Keep it minimal; prices are not included.
+                  </FormHelperText>
                 </div>
                 <div className="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" role="switch" id="autoEmailOnAccept" name="autoEmailOnAccept" checked={!!formData.autoEmailOnAccept} onChange={(e)=> setFormData(prev=> ({...prev, autoEmailOnAccept: e.target.checked}))} />
-                  <label className="form-check-label" htmlFor="autoEmailOnAccept">Automatically email manufacturer on acceptance</label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="autoEmailOnAccept"
+                    name="autoEmailOnAccept"
+                    checked={!!formData.autoEmailOnAccept}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, autoEmailOnAccept: e.target.checked }
+  )
+}
+                  />
+                  <label className="form-check-label" htmlFor="autoEmailOnAccept">
+                    Automatically email manufacturer on acceptance
+                  </label>
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
 
-            <CCard className="mb-4">
-              <CCardBody>
+            <Card className="mb-4">
+              <CardBody>
                 <fieldset className="mb-3">
-                  <CFormLabel as="legend">{t('settings.manufacturers.edit.priceInfo')}</CFormLabel>
+                  <FormLabel as="legend">{t('settings.manufacturers.edit.priceInfo')}</FormLabel>
                   <span className="visually-hidden" id="priceTypeDesc">
                     {t('settings.manufacturers.help.priceInfo', 'Choose how prices are handled')}
                   </span>
-                  <CFormCheck
+                  <Checkbox
                     type="radio"
                     name="priceType"
                     id="msrpPrices"
@@ -355,7 +445,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     className="mb-2"
                     aria-describedby="priceTypeDesc"
                   />
-                  <CFormCheck
+                  <Checkbox
                     type="radio"
                     name="priceType"
                     id="costPrices"
@@ -366,11 +456,13 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   />
                 </fieldset>
 
-                <CRow>
-                  <CCol md={4}>
+                <Flex>
+                  <Box md={4}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="costMultiplier">{t('settings.manufacturers.edit.costMultiplier')} *</CFormLabel>
-                      <CFormInput
+                      <FormLabel htmlFor="costMultiplier">
+                        {t('settings.manufacturers.edit.costMultiplier')} *
+                      </FormLabel>
+                      <Input
                         type="number"
                         step="0.1"
                         id="costMultiplier"
@@ -382,11 +474,13 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                       />
                       {calculateMultiplierExample()}
                     </div>
-                  </CCol>
-                  <CCol md={4}>
+                  </Box>
+                  <Box md={4}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="deliveryFee">{t('settings.manufacturers.edit.deliveryFee')}</CFormLabel>
-                      <CFormInput
+                      <FormLabel htmlFor="deliveryFee">
+                        {t('settings.manufacturers.edit.deliveryFee')}
+                      </FormLabel>
+                      <Input
                         type="number"
                         step="0.01"
                         min="0"
@@ -397,37 +491,51 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                         inputMode="decimal"
                         aria-describedby="deliveryFeeHelp"
                       />
-                      <CFormText id="deliveryFeeHelp" className="text-muted">{t('settings.manufacturers.edit.deliveryFeeHelp')}</CFormText>
+                      <FormHelperText id="deliveryFeeHelp" className="text-muted">
+                        {t('settings.manufacturers.edit.deliveryFeeHelp')}
+                      </FormHelperText>
                     </div>
-                  </CCol>
-                </CRow>
-              </CCardBody>
-            </CCard>
+                  </Box>
+                </Flex>
+              </CardBody>
+            </Card>
 
-            <CCard className="mb-4">
-              <CCardBody>
+            <Card className="mb-4">
+              <CardBody>
                 <div className="mb-3">
-                  <CFormLabel htmlFor="instructions">{t('settings.manufacturers.fields.instructions')}</CFormLabel>
-                  <CFormTextarea id="instructions" rows={4} name="instructions" value={formData.instructions} onChange={handleChange} />
+                  <FormLabel htmlFor="instructions">
+                    {t('settings.manufacturers.fields.instructions')}
+                  </FormLabel>
+                  <Textarea
+                    id="instructions"
+                    rows={4}
+                    name="instructions"
+                    value={formData.instructions}
+                    onChange={handleChange}
+                  />
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
 
-            <CCard className="mb-4">
-              <CCardBody>
+            <Card className="mb-4">
+              <CardBody>
                 <div className="mb-3">
-                  <CFormLabel htmlFor="catalogFiles">{t('settings.manufacturers.edit.uploadNewCatalog')}</CFormLabel>
-                  <CFormInput
+                  <FormLabel htmlFor="catalogFiles">
+                    {t('settings.manufacturers.edit.uploadNewCatalog')}
+                  </FormLabel>
+                  <Input
                     type="file"
                     id="catalogFiles"
                     multiple
                     onChange={handleFileChange}
                     aria-describedby="catalogFilesHelp"
                   />
-                  <CFormText id="catalogFilesHelp" className="text-muted">{t('settings.manufacturers.edit.supported')}</CFormText>
+                  <FormHelperText id="catalogFilesHelp" className="text-muted">
+                    {t('settings.manufacturers.edit.supported')}
+                  </FormHelperText>
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
 
             <div className="text-end">
               <CButton
@@ -436,17 +544,30 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                 style={{
                   background: headerBg,
                   color: textColor,
-                  border: 'none'
+                  border: 'none',
                 }}
               >
-                {loading ? t('settings.manufacturers.edit.saving') : t('settings.manufacturers.edit.saveChanges')}
+                {loading
+                  ? t('settings.manufacturers.edit.saving')
+                  : t('settings.manufacturers.edit.saveChanges')}
               </CButton>
             </div>
-          </CForm>
-        </CCardBody>
-      </CCard>
-    </CContainer>
-  );
-};
+          </FormControl>
+        </CardBody>
+      </Card>
+    </Container>
+  )
+}
+  )
+}
 
-export default EditManufacturerTab;
+</div>
+</Container>
+    </Card>
+        </CardBody>
+            </FormControl>
+                </Card>
+                    </CardBody>
+                        </div>
+                            </div>
+export default EditManufacturerTab

@@ -1,10 +1,10 @@
 {
-  "version": 1758991851228,
+  "version": 1759130220490,
   "colors": {
     "headerBg": "#000000",
     "headerText": "#ffffff",
     "sidebarBg": "#000000",
-    "sidebarText": "#ffffff",
+    "sidebarText": "#f2e3e3",
     "text": "#0f172a",
     "accent": "#2563eb",
     "surface": "#f8fafc",
@@ -35,7 +35,7 @@
   },
   "app": {
     "logoText": "NJ Contractors",
-    "logoImage": "/uploads/images/logoImage-1758991256253-579852597.png",
+    "logoImage": "/uploads/images/logoImage-1759094797803-321900315.png",
     "logoBg": "#000000",
     "companyName": ""
   },

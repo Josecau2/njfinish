@@ -1,32 +1,41 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice';
-import { useTranslation } from 'react-i18next';
-import { getFreshestToken } from '../../utils/authToken';
+import { useState, useEffect, useMemo } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
+import { useTranslation } from 'react-i18next'
+import { getFreshestToken } from '../../utils/authToken'
 import {
-  CContainer,
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CCardTitle,
-  CButton,
-  CNavbar,
-  CNavbarNav,
-  CNavItem,
-  CNavLink,
-  CBadge,
-  CListGroup,
-  CListGroupItem,
-  CSpinner,
-} from '@coreui/react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../helpers/axiosInstance';
-import ContractorDashboard from '../contractor/ContractorDashboard';
-import PageHeader from '../../components/PageHeader';
-
-// Authorization is handled centrally by axiosInstance interceptors
-
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  List,
+  ListItem,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import axiosInstance from '../../helpers/axiosInstance'
+import ContractorDashboard from '../contractor/ContractorDashboard'
+import PageHeader from '../../components/PageHeader'
+import {
+  ClipboardCheck,
+  ClipboardList,
+  ExternalLink,
+  File as FileIcon,
+  FileSpreadsheet,
+  FileText,
+  HelpCircle,
+  Link2,
+  Newspaper,
+  Video,
+} from 'lucide-react'
 
 const modernCardStyle = {
   borderRadius: '16px',
@@ -36,424 +45,469 @@ const modernCardStyle = {
   cursor: 'pointer',
   overflow: 'hidden',
   position: 'relative',
-};
+}
 
 const hoverStyle = {
   transform: 'translateY(-4px)',
   boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
-};
+}
 
-const gradientOverlay = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-  pointerEvents: 'none',
-};
+const fileIconMap = {
+  pdf: FileText,
+  doc: FileText,
+  docx: FileText,
+  word: FileText,
+  excel: FileSpreadsheet,
+  xls: FileSpreadsheet,
+  xlsx: FileSpreadsheet,
+  video: Video,
+}
+
+const linkIconMap = {
+  external: ExternalLink,
+  internal: Link2,
+  document: FileText,
+  help: HelpCircle,
+}
 
 const Dashboard = () => {
-  // Check if user is a contractor - stabilize user object
   const user = useMemo(() => {
-    return JSON.parse(localStorage.getItem('user') || '{}');
-  }, []);
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}')
+    } catch (error) {
+      console.warn('Failed to parse user from localStorage', error)
+      return {}
+    }
+  }, [])
 
-  const isContractor = user.group && user.group.group_type === 'contractor';
+  const isContractor = user?.group?.group_type === 'contractor'
 
-  // If contractor, show contractor dashboard
   if (isContractor) {
-    return <ContractorDashboard />;
+    return <ContractorDashboard />
   }
 
-  // Regular admin/user dashboard
-  const { t } = useTranslation();
-  const activeProposals = useSelector(state => state.dashboard.activeProposals);
-  const activeOrders = useSelector(state => state.dashboard.activeOrders);
-  const latestProposals = useSelector(state => state.dashboard.latestProposals);
-  const [displayedNumber, setDisplayedNumber] = useState(0);
-  const [displayedOrders, setDisplayedOrders] = useState(0);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [dummyLinks, setDummyLinks] = useState([]);
-  const [dummyFiles, setDummyFiles] = useState([]);
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('quick-access');
+  const { t } = useTranslation()
+  const activeProposals = useSelector((state) => state.dashboard.activeProposals)
+  const activeOrders = useSelector((state) => state.dashboard.activeOrders)
+  const latestProposals = useSelector((state) => state.dashboard.latestProposals || [])
+  const [displayedProposals, setDisplayedProposals] = useState(0)
+  const [displayedOrders, setDisplayedOrders] = useState(0)
+  const [hoveredCard, setHoveredCard] = useState(null)
+  const [resourceLinks, setResourceLinks] = useState([])
+  const [resourceFiles, setResourceFiles] = useState([])
+  const navigate = useNavigate()
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const dummyProductUpdates = [
-  ];
+  const productUpdates = []
 
-
-
-
-  // Ensure token is present before dispatching dashboard API calls to avoid race
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
+
     const kickoff = async () => {
-      let tok = getFreshestToken();
-      if (!tok) {
-        for (let i = 0; i < 6 && !tok; i++) {
-          // ~150ms max
+      let token = getFreshestToken()
+      if (!token) {
+        for (let attempt = 0; attempt < 6 && !token; attempt += 1) {
+          // Roughly 150ms backoff window to wait for token hydration
           // eslint-disable-next-line no-await-in-loop
-          await new Promise((r) => setTimeout(r, 25));
-          tok = getFreshestToken();
+          await new Promise((resolve) => setTimeout(resolve, 25))
+          token = getFreshestToken()
         }
       }
-      if (!cancelled && tok) {
-        dispatch(fetchDashboardCounts());
-        dispatch(fetchLatestProposals());
-      }
-    };
-    kickoff();
-    return () => { cancelled = true; };
-  }, [dispatch]);
 
-  // Delay these calls slightly to avoid race condition with token synchronization
+      if (!cancelled && token) {
+        dispatch(fetchDashboardCounts())
+        dispatch(fetchLatestProposals())
+      }
+    }
+
+    kickoff()
+
+    return () => {
+      cancelled = true
+    }
+  }, [dispatch])
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      const token = getFreshestToken();
+      const token = getFreshestToken()
       if (token) {
-        fetchLinks();
-        fetchFiles();
+        fetchLinks()
+        fetchFiles()
       }
-    }, 100); // Small delay to ensure token is synchronized
+    }, 100)
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   const fetchLinks = async () => {
     try {
-  const response = await axiosInstance.get('/api/resources/links');
+      const response = await axiosInstance.get('/api/resources/links')
       if (response.data.success) {
-        setDummyLinks(response.data.data);
+        setResourceLinks(response.data.data || [])
       }
     } catch (error) {
-      // Error fetching links and files
+      console.warn('Failed to load resource links', error)
     }
   }
 
   const fetchFiles = async () => {
     try {
-    const response = await axiosInstance.get('/api/resources/files');
-            if (response.data.success) {
-                setDummyFiles(response.data.data);
-            }
-
+      const response = await axiosInstance.get('/api/resources/files')
+      if (response.data.success) {
+        setResourceFiles(response.data.data || [])
+      }
     } catch (error) {
-      // Error fetching files
+      console.warn('Failed to load resource files', error)
     }
   }
 
-
   useEffect(() => {
-    let interval = null;
-    if (activeProposals && activeProposals > 0) {
+    let interval = null
+    if (typeof activeProposals === 'number' && activeProposals > 0) {
       interval = setInterval(() => {
-        setDisplayedNumber(prev => {
+        setDisplayedProposals((prev) => {
           if (prev < activeProposals) {
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            return prev;
+            return prev + 1
           }
-        });
-      }, 50);
+          clearInterval(interval)
+          return prev
+        })
+      }, 50)
+    } else if (activeProposals === 0) {
+      setDisplayedProposals(0)
     }
-    return () => clearInterval(interval);
-  }, [activeProposals]);
+
+    return () => clearInterval(interval)
+  }, [activeProposals])
 
   useEffect(() => {
-    let interval = null;
-    if (activeOrders && activeOrders > 0) {
+    let interval = null
+    if (typeof activeOrders === 'number' && activeOrders > 0) {
       interval = setInterval(() => {
-        setDisplayedOrders(prev => {
+        setDisplayedOrders((prev) => {
           if (prev < activeOrders) {
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            return prev;
+            return prev + 1
           }
-        });
-      }, 50);
+          clearInterval(interval)
+          return prev
+        })
+      }, 50)
+    } else if (activeOrders === 0) {
+      setDisplayedOrders(0)
     }
-    return () => clearInterval(interval);
-  }, [activeOrders]);
+
+    return () => clearInterval(interval)
+  }, [activeOrders])
 
   const handleCreateProposal = () => {
-    navigate('/quotes/create');
-  };
+    navigate('/quotes/create')
+  }
 
   const handleCreateQuickProposal = () => {
-    navigate('/quotes/create?quick=yes');
-  };
+    navigate('/quotes/create?quick=yes')
+  }
+
+  const handleViewAllProposals = () => {
+    navigate('/quotes')
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': case 'approved': return 'success';
-      case 'pending': case 'in-review': return 'warning';
-      case 'draft': return 'info';
-      case 'completed': return 'primary';
-      default: return 'secondary';
+      case 'active':
+      case 'approved':
+        return 'green'
+      case 'pending':
+      case 'in-review':
+        return 'yellow'
+      case 'draft':
+        return 'blue'
+      case 'completed':
+        return 'purple'
+      default:
+        return 'gray'
     }
-  };
+  }
 
   const translateStatus = (status) => {
-    if (!status) return '';
+    if (!status) return ''
+    const normalizedStatus = status.toLowerCase().replace(/\s+/g, '')
 
-    // Normalize the status string for mapping
-    const normalizedStatus = status.toLowerCase().replace(/\s+/g, '');
-
-    // Map specific status values to translation keys
     const statusMap = {
-      'draft': 'draft',
-      'sent': 'sent',
-      'accepted': 'accepted',
-      'rejected': 'rejected',
-      'expired': 'expired',
-      'proposaldone': 'proposalDone',
-      'measurementscheduled': 'measurementScheduled',
-      'measurementdone': 'measurementDone',
-      'designdone': 'designDone',
-      'followup1': 'followUp1',
-      'followup2': 'followUp2',
-      'followup3': 'followUp3',
-      'proposalaccepted': 'proposalAccepted',
-      'proposalrejected': 'proposalRejected'
-    };
+      draft: 'draft',
+      sent: 'sent',
+      accepted: 'accepted',
+      rejected: 'rejected',
+      expired: 'expired',
+      proposaldone: 'proposalDone',
+      measurementscheduled: 'measurementScheduled',
+      measurementdone: 'measurementDone',
+      designdone: 'designDone',
+      followup1: 'followUp1',
+      followup2: 'followUp2',
+      followup3: 'followUp3',
+      proposalaccepted: 'proposalAccepted',
+      proposalrejected: 'proposalRejected',
+    }
 
-    const translationKey = statusMap[normalizedStatus] || normalizedStatus;
-    return t(`status.${translationKey}`, status);
-  };
+    const translationKey = statusMap[normalizedStatus] || normalizedStatus
+    return t(`status.${translationKey}`, status)
+  }
 
   const getFileIcon = (type) => {
-    switch (type) {
-      case 'pdf': return '📄';
-      case 'excel': return '📊';
-      case 'video': return '🎥';
-      case 'word': return '📝';
-      default: return '📄';
-    }
-  };
+    const IconComponent = fileIconMap[type?.toLowerCase()] || FileIcon
+    return <Icon as={IconComponent} boxSize={5} color="blue.500" />
+  }
 
   const getLinkIcon = (type) => {
-    switch (type) {
-      case 'external': return '🔗';
-      case 'internal': return '🏠';
-      case 'document': return '📚';
-      case 'help': return '❓';
-      default: return '🔗';
-    }
-  };
+    const IconComponent = linkIconMap[type?.toLowerCase()] || Link2
+    return <Icon as={IconComponent} boxSize={5} color="blue.500" />
+  }
 
-  const handleViewAllProposals = () => {
-    navigate('/quotes');
-  };
+  const proposalStatLoading = typeof activeProposals !== 'number'
+  const ordersStatLoading = typeof activeOrders !== 'number'
 
+  const statCards = [
+    {
+      id: 'proposals',
+      label: t('dashboard.activeProposals'),
+      value: displayedProposals,
+      loading: proposalStatLoading,
+      icon: ClipboardList,
+      accent: 'blue.500',
+    },
+    {
+      id: 'orders',
+      label: t('dashboard.activeOrders'),
+      value: displayedOrders,
+      loading: ordersStatLoading,
+      icon: ClipboardCheck,
+      accent: 'green.500',
+    },
+  ]
 
   return (
-    <CContainer fluid className="dashboard-container">
-      <style>{`
-        /* Dashboard scoped mobile tweaks */
-        .dashboard-container .btn { min-height: 44px; }
-        .dashboard-container .btn.btn-sm { min-height: 40px; }
-        .dashboard-container .dashboard-header-actions { flex-wrap: wrap; }
-        .dashboard-container .list-group-item { min-height: 44px; }
-        .dashboard-container .btn-view-all { min-height: 44px; }
-
-        @media (max-width: 575.98px) {
-          .dashboard-container .dashboard-header-actions { width: 100%; }
-          .dashboard-container .dashboard-header-actions .btn { flex: 1 1 48%; }
-          .dashboard-container .stat-card-number { font-size: 1.75rem; }
-        }
-      `}</style>
-      <PageHeader
-        title={t('dashboard.title', 'Dashboard')}
-        mobileLayout="stack"
-        rightContent={
-          <div className="dashboard-header-actions d-flex gap-2">
-            <CButton
-              color="primary"
-              className="btn-gradient-cyan"
-              aria-label={t('dashboard.newProposal') || 'Create new proposal'}
+    <Container maxW="7xl" px={{ base: 4, md: 6 }} py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={t('dashboard.title', 'Dashboard')}
+          actions={[
+            <Button
+              key="new"
+              colorScheme="blue"
               onClick={handleCreateProposal}
             >
               {t('dashboard.newProposal')}
-            </CButton>
-            <CButton
-              color="success"
-              className="btn-gradient-green"
-              aria-label={t('dashboard.quickProposal') || 'Create quick proposal'}
+            </Button>,
+            <Button
+              key="quick"
+              colorScheme="green"
               onClick={handleCreateQuickProposal}
             >
               {t('dashboard.quickProposal')}
-            </CButton>
-          </div>
-        }
-      />
+            </Button>,
+          ]}
+        />
 
-      {/* Stats Cards Row */}
-      <CRow className="mb-4">
-        <CCol lg={3} md={6} className="mb-4">
-          <CCard className="stat-card stat-card-proposals">
-            <CCardBody>
-              <div className="d-flex align-items-center justify-content-center">
-                <div className="stat-card-icon">📊</div>
-                <div>
-                  <h6 className="stat-card-title">{t('dashboard.activeProposals')}</h6>
-                </div>
-              </div>
-              <h1 className="stat-card-number mt-3">
-                {displayedNumber || <CSpinner size="sm" />}
-              </h1>
-            </CCardBody>
-          </CCard>
-        </CCol>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+          {statCards.map(({ id, label, value, loading, icon, accent }) => (
+            <Card
+              key={id}
+              sx={{ ...modernCardStyle, ...(hoveredCard === id ? hoverStyle : {}) }}
+              onMouseEnter={() => setHoveredCard(id)}
+              onMouseLeave={() => setHoveredCard(null)}
+              role="group"
+            >
+              <CardBody>
+                <Flex justify="space-between" align="center">
+                  <HStack spacing={4} align="center">
+                    <Flex
+                      align="center"
+                      justify="center"
+                      w={12}
+                      h={12}
+                      borderRadius="full"
+                      bg={`${accent}20`}
+                      color={accent}
+                    >
+                      <Icon as={icon} boxSize={6} />
+                    </Flex>
+                    <Text fontSize="md" color="gray.600" fontWeight="medium">
+                      {label}
+                    </Text>
+                  </HStack>
+                  <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+                    {loading ? <Spinner size="sm" color={accent} /> : value}
+                  </Text>
+                </Flex>
+              </CardBody>
+            </Card>
+          ))}
+        </SimpleGrid>
 
-        <CCol lg={3} md={6} className="mb-4">
-          <CCard className="stat-card stat-card-orders">
-            <CCardBody>
-              <div className="d-flex align-items-center justify-content-center">
-                <div className="stat-card-icon">📦</div>
-                <div>
-                  <h6 className="stat-card-title">{t('dashboard.activeOrders')}</h6>
-                </div>
-              </div>
-              <h1 className="stat-card-number mt-3">
-                {displayedOrders || <CSpinner size="sm" />}
-              </h1>
-            </CCardBody>
-          </CCard>
-        </CCol>
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+          <Card>
+            <CardBody>
+              <HStack justify="space-between" mb={4}>
+                <HStack spacing={3}>
+                  <Icon as={Newspaper} boxSize={6} color="purple.500" />
+                  <Text fontSize="lg" fontWeight="semibold">
+                    {t('dashboard.latestProductUpdates')}
+                  </Text>
+                </HStack>
+              </HStack>
 
-        <CCol lg={6} className="mb-4">
-          <CCard className="dashboard-card">
-            <CCardBody>
-              <CCardTitle>
-                <span style={{ fontSize: '1.5rem' }}>📈</span>
-                {t('dashboard.latestProductUpdates')}
-              </CCardTitle>
-              <CListGroup flush>
-                {dummyProductUpdates.length > 0 ? (
-                  dummyProductUpdates.map((update) => (
-                    <CListGroupItem key={update.id}>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <div className="fw-semibold">{update.title}</div>
-                          <small className="text-muted">{update.date}</small>
-                        </div>
-                        <CBadge color={getStatusColor(update.status)} shape="rounded-pill">
+              {productUpdates.length > 0 ? (
+                <List spacing={4}>
+                  {productUpdates.map((update) => (
+                    <ListItem key={update.id}>
+                      <Flex justify="space-between" align="center" gap={4}>
+                        <Box>
+                          <Text fontWeight="semibold">{update.title}</Text>
+                          <Text fontSize="sm" color="gray.500">
+                            {update.date}
+                          </Text>
+                        </Box>
+                        <Badge colorScheme={getStatusColor(update.status)}>
                           {translateStatus(update.status)}
-                        </CBadge>
-                      </div>
-                    </CListGroupItem>
-                  ))
-                ) : (
-                  <div className="text-muted text-center py-5">{t('dashboard.noProductUpdates')}</div>
-                )}
-              </CListGroup>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+                        </Badge>
+                      </Flex>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box textAlign="center" py={8} color="gray.500">
+                  {t('dashboard.noProductUpdates')}
+                </Box>
+              )}
+            </CardBody>
+          </Card>
 
-      {/* Content Cards Row */}
-      <CRow>
-        <CCol lg={4} className="mb-4">
-          <CCard className="dashboard-card">
-            <CCardBody>
-              <CCardTitle>
-                <span style={{ fontSize: '1.5rem' }}>🔗</span>
-                {t('dashboard.quickLinks')}
-              </CCardTitle>
-              <CListGroup flush>
-                {dummyLinks.map((link) => (
-                  <CListGroupItem key={link.id}>
-                    <div className="d-flex align-items-start">
-                      <span className="me-3 fs-5">{getLinkIcon(link.type)}</span>
-                      <div>
-                        <div className="fw-semibold">{link.title}</div>
-                        <a
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-decoration-none text-primary small"
-                          style={{ wordBreak: 'break-all' }}
-                        >
-                          {link.url}
-                        </a>
-                      </div>
-                    </div>
-                  </CListGroupItem>
-                ))}
-              </CListGroup>
-            </CCardBody>
-          </CCard>
-        </CCol>
+          <Card>
+            <CardBody>
+              <HStack spacing={3} mb={4}>
+                <Icon as={Link2} boxSize={6} color="blue.500" />
+                <Text fontSize="lg" fontWeight="semibold">
+                  {t('dashboard.quickLinks')}
+                </Text>
+              </HStack>
 
-        <CCol lg={4} className="mb-4">
-          <CCard className="dashboard-card">
-            <CCardBody>
-              <CCardTitle>
-                <span style={{ fontSize: '1.5rem' }}>📁</span>
-                {t('dashboard.recentFiles')}
-              </CCardTitle>
-              <CListGroup flush>
-                {dummyFiles.map((file) => (
-                  <CListGroupItem key={file.id} style={{ cursor: 'pointer' }}>
-                    <div className="d-flex align-items-center">
-                      <span className="me-2">{getFileIcon(file.type)}</span>
-                      <div>
-                        <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{file.name}</div>
-                        <small className="text-muted">{file.size} • {file.date}</small>
-                      </div>
-                    </div>
-                  </CListGroupItem>
-                ))}
-              </CListGroup>
-            </CCardBody>
-          </CCard>
-        </CCol>
+              {resourceLinks.length > 0 ? (
+                <List spacing={3}>
+                  {resourceLinks.map((link) => (
+                    <ListItem key={link.id}>
+                      <HStack align="flex-start" spacing={3}>
+                        {getLinkIcon(link.type)}
+                        <Box>
+                          <Text fontWeight="medium">{link.title}</Text>
+                          <Button
+                            as="a"
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="link"
+                            colorScheme="blue"
+                            fontSize="sm"
+                            wordBreak="break-all"
+                          >
+                            {link.url}
+                          </Button>
+                        </Box>
+                      </HStack>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box textAlign="center" py={8} color="gray.500">
+                  {t('dashboard.noQuickLinks', 'No quick links yet')}
+                </Box>
+              )}
+            </CardBody>
+          </Card>
+        </SimpleGrid>
 
-        <CCol lg={4} className="mb-4">
-          <CCard className="dashboard-card">
-            <CCardBody>
-              <CCardTitle>
-                <span style={{ fontSize: '1.5rem' }}>📝</span>
-                {t('dashboard.myLatestProposals')}
-              </CCardTitle>
-              <CListGroup flush>
-                {latestProposals.slice(0, 5).map((proposal) => (
-                  <CListGroupItem key={proposal.id} style={{ cursor: 'pointer' }}>
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div className="flex-grow-1">
-                        <div className="fw-semibold text-dark small" style={{ wordBreak: 'break-all' }}>{proposal.description || 'No Description'}</div>
-                        <small className="text-muted">{new Date(proposal.createdAt).toLocaleDateString()}</small>
-                      </div>
-                      <CBadge color={getStatusColor(proposal.status)} shape="rounded-pill" className="ms-2">
-                        {translateStatus(proposal.status)}
-                      </CBadge>
-                    </div>
-                  </CListGroupItem>
-                ))}
-              </CListGroup>
-              <div className="text-center mt-3">
-                <CButton
-                  variant="outline"
-                  color="secondary"
-                  size="sm"
-                  className="btn-view-all"
-                  onClick={handleViewAllProposals}
-                >
+        <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6}>
+          <Card>
+            <CardBody>
+              <HStack spacing={3} mb={4}>
+                <Icon as={FileIcon} boxSize={6} color="orange.500" />
+                <Text fontSize="lg" fontWeight="semibold">
+                  {t('dashboard.recentFiles')}
+                </Text>
+              </HStack>
+
+              {resourceFiles.length > 0 ? (
+                <List spacing={3}>
+                  {resourceFiles.map((file) => (
+                    <ListItem key={file.id}>
+                      <HStack align="flex-start" spacing={3}>
+                        {getFileIcon(file.type)}
+                        <Box>
+                          <Text fontWeight="medium" fontSize="sm" wordBreak="break-all">
+                            {file.name}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            {file.size} | {file.date}
+                          </Text>
+                        </Box>
+                      </HStack>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box textAlign="center" py={8} color="gray.500">
+                  {t('dashboard.noRecentFiles', 'No files uploaded yet')}
+                </Box>
+              )}
+            </CardBody>
+          </Card>
+
+          <Card gridColumn={{ base: 'span 1', xl: 'span 2' }}>
+            <CardBody>
+              <HStack spacing={3} mb={4}>
+                <Icon as={ClipboardList} boxSize={6} color="teal.500" />
+                <Text fontSize="lg" fontWeight="semibold">
+                  {t('dashboard.myLatestProposals')}
+                </Text>
+              </HStack>
+
+              {latestProposals.length > 0 ? (
+                <List spacing={3}>
+                  {latestProposals.slice(0, 5).map((proposal) => (
+                    <ListItem key={proposal.id}>
+                      <Flex justify="space-between" align="flex-start" gap={4}>
+                        <Box>
+                          <Text fontWeight="medium" fontSize="sm" wordBreak="break-word">
+                            {proposal.description || t('dashboard.noDescription', 'No description')}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            {new Date(proposal.createdAt).toLocaleDateString()}
+                          </Text>
+                        </Box>
+                        <Badge colorScheme={getStatusColor(proposal.status)}>
+                          {translateStatus(proposal.status)}
+                        </Badge>
+                      </Flex>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box textAlign="center" py={8} color="gray.500">
+                  {t('dashboard.noRecentProposals', 'No proposals yet')}
+                </Box>
+              )}
+
+              <Box textAlign="center" mt={4}>
+                <Button variant="outline" colorScheme="gray" onClick={handleViewAllProposals}>
                   {t('dashboard.viewAllProposals')}
-                </CButton>
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
-  );
-};
+                </Button>
+              </Box>
+            </CardBody>
+          </Card>
+        </SimpleGrid>
+      </Stack>
+    </Container>
+  )
+}
 
-export default Dashboard;
+export default Dashboard

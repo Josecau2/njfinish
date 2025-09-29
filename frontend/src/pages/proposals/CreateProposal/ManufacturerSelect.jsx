@@ -1,428 +1,386 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import CreatableSelect from 'react-select/creatable';
-import { useDispatch, useSelector } from 'react-redux';
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import CreatableSelect from 'react-select/creatable'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-  CCard,
-  CCardBody,
-  CForm,
-  CFormLabel,
-  CFormFeedback,
-  CRow,
-  CCol,
-  CButton,
-  CFormInput,
-} from '@coreui/react';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { motion } from 'framer-motion';
-import { fetchManufacturers } from '../../../store/slices/manufacturersSlice';
-import { isAdmin } from '../../../helpers/permissions';
-import './ManufacturerSelect.css';
+  Box,
+  Card,
+  CardBody,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  Icon,
+  Input,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { useForm, Controller } from 'react-hook-form'
+import { fetchManufacturers } from '../../../store/slices/manufacturersSlice'
+import { isAdmin } from '../../../helpers/permissions'
+
+const MotionBox = motion(Box)
+const MotionButton = motion(Button)
+
+const buildSelectStyles = (hasError) => ({
+  control: (provided, state) => ({
+    ...provided,
+    minHeight: '44px',
+    borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
+    boxShadow: 'none',
+    '&:hover': {
+      borderColor: '#3182ce',
+    },
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 30,
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: '0.95rem',
+    backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
+    color: state.isFocused ? '#1a202c' : provided.color,
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0.25rem 0.75rem',
+  }),
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    paddingRight: '0.5rem',
+  }),
+})
 
 const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBack }) => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { list: allManufacturers, loading } = useSelector((state) => state.manufacturers);
-  const authUser = useSelector((state) => state.auth?.user);
-  const isUserAdmin = isAdmin(authUser);
-  const api_url = import.meta.env.VITE_API_URL;
-  const [selectedManufacturer, setSelectedManufacturer] = useState(null);
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const { list: allManufacturers, loading } = useSelector((state) => state.manufacturers)
+  const authUser = useSelector((state) => state.auth?.user)
+  const isUserAdmin = isAdmin(authUser)
+  const apiUrl = import.meta.env.VITE_API_URL
 
-  // Memoize enabled manufacturers to prevent unnecessary filtering and re-renders
-  const enabledManufacturers = useMemo(() => {
-    // Check both 'status' field (from backend) and 'enabled' field (legacy) for active manufacturers
-    return allManufacturers.filter(manufacturer =>
-      manufacturer.status !== false && manufacturer.enabled !== false
-    );
-  }, [allManufacturers]);
+  const [cardImageState, setCardImageState] = useState({})
 
   useEffect(() => {
-    dispatch(fetchManufacturers());
-  }, [dispatch]);
+    dispatch(fetchManufacturers())
+  }, [dispatch])
 
-  // Initialize selected manufacturer from form data
+  const enabledManufacturers = useMemo(
+    () =>
+      allManufacturers.filter(
+        (manufacturer) => manufacturer.status !== false && manufacturer.enabled !== false,
+      ),
+    [allManufacturers],
+  )
+
+  const defaultValues = useMemo(
+    () => ({
+      manufacturer: formData.manufacturer ? String(formData.manufacturer) : '',
+      versionName: formData.versionName || '',
+    }),
+    [formData.manufacturer, formData.versionName],
+  )
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues,
+    shouldUnregister: false,
+  })
+
   useEffect(() => {
-    if (formData.manufacturer && enabledManufacturers.length > 0) {
-      const manufacturer = enabledManufacturers.find(m => m.id == formData.manufacturer);
-      if (manufacturer) {
-        setSelectedManufacturer(manufacturer);
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
+  const selectedManufacturerId = watch('manufacturer')
+
+  const selectedManufacturer = useMemo(
+    () =>
+      enabledManufacturers.find(
+        (manufacturer) => String(manufacturer.id) === String(selectedManufacturerId),
+      ) || null,
+    [enabledManufacturers, selectedManufacturerId],
+  )
+
+  const cardBg = useColorModeValue('white', 'gray.800')
+  const cardHoverBorder = useColorModeValue('brand.400', 'brand.300')
+
+  const handleManufacturerSelect = useCallback(
+    (manufacturer) => {
+      const manufacturerId = String(manufacturer.id)
+      setValue('manufacturer', manufacturerId, { shouldValidate: true })
+
+      const versionName =
+        getValues('versionName')?.trim() || manufacturer.name || ''
+
+      if (isUserAdmin) {
+        setValue('versionName', versionName, { shouldValidate: true })
       }
-    }
-  }, [formData.manufacturer, enabledManufacturers]);
 
-  // Memoize validation schema to prevent recreation on every render
-  const validationSchema = useMemo(() => Yup.object().shape({
-    manufacturer: Yup.string().required(
-      t('proposals.create.manufacturer.validation.manufacturerRequired')
-    ),
-    ...(isUserAdmin
-      ? {
-          versionName: Yup.string().required(
-            t('proposals.create.manufacturer.validation.versionNameRequired')
-          ),
-        }
-      : {}),
-  }), [t, isUserAdmin]);
+      updateFormData({
+        ...formData,
+        manufacturer: manufacturer.id,
+        manufacturerId: manufacturer.id,
+        versionName,
+        manufacturersData: [
+          {
+            manufacturer: manufacturer.id,
+            versionName,
+          },
+        ],
+      })
+    },
+    [formData, isUserAdmin, getValues, setValue, updateFormData],
+  )
 
-  const handleManufacturerSelect = useCallback((manufacturer, setFieldValue) => {
-    setSelectedManufacturer(manufacturer);
+  const handleImageState = useCallback((manufacturerId, status) => {
+    setCardImageState((prev) => ({ ...prev, [manufacturerId]: status }))
+  }, [])
 
-    // Prefer existing versionName; otherwise default to the manufacturer name
-    const versionName = (formData.versionName && formData.versionName.trim())
-      ? formData.versionName
-      : (manufacturer.name || '');
+  const getImageSrc = useCallback(
+    (manufacturer) => {
+      const status = cardImageState[manufacturer.id]
+      if (!manufacturer.image || status === 'error') {
+        return '/images/nologo.png'
+      }
+      return `${apiUrl}/uploads/images/${manufacturer.image}`
+    },
+    [apiUrl, cardImageState],
+  )
 
-    // Keep Formik fields in sync so validation/UI stays consistent
-    setFieldValue('manufacturer', manufacturer.id);
-    setFieldValue('versionName', versionName);
-
-    // Persist selection in our proposal form data and prepare manufacturersData entry
-    const newEntry = {
-      manufacturer: manufacturer.id,
-      versionName: versionName || '',
-    };
+  const onSubmit = (values) => {
+    const manufacturerIdNumber = Number(values.manufacturer)
+    const manufacturerId = Number.isNaN(manufacturerIdNumber)
+      ? values.manufacturer
+      : manufacturerIdNumber
 
     updateFormData({
       ...formData,
-      manufacturer: manufacturer.id,
-      manufacturerId: manufacturer.id,
-      versionName,
-      manufacturersData: [newEntry],
-    });
+      manufacturer: manufacturerId,
+      manufacturerId,
+      versionName: values.versionName || '',
+      manufacturersData: [
+        {
+          manufacturer: manufacturerId,
+          versionName: values.versionName || '',
+        },
+      ],
+    })
 
-    // Immediately advance to Step 3
-    nextStep();
-  }, [formData, updateFormData, nextStep]);
+    nextStep()
+  }
 
-  const ManufacturerCard = React.memo(({ manufacturer, isSelected, onClick }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
+  const manufacturerValidation = {
+    required: t('proposals.create.manufacturer.validation.manufacturerRequired'),
+  }
 
-    const handleImageError = useCallback(() => {
-      setImageError(true);
-      setImageLoaded(true);
-    }, []);
-
-    const handleImageLoad = useCallback(() => {
-      setImageLoaded(true);
-      setImageError(false);
-    }, []);
-
-    // Determine image source - avoid re-renders by computing once
-    const imageSrc = useMemo(() => {
-      if (!manufacturer.image || imageError) {
-        return '/images/nologo.png';
+  const versionValidation = isUserAdmin
+    ? {
+        required: t('proposals.create.manufacturer.validation.versionNameRequired'),
       }
-      return `${api_url}/uploads/images/${manufacturer.image}`;
-    }, [manufacturer.image, imageError, api_url]);
+    : {}
 
-    // Memoize card styles to prevent re-renders
-    const cardStyles = useMemo(() => ({
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      borderWidth: isSelected ? '2px' : '1px',
-      backgroundColor: isSelected ? '#f8f9ff' : '#fff',
-      position: 'relative',
-      overflow: 'hidden'
-    }), [isSelected]);
-
-    const imageStyles = useMemo(() => ({
-      maxWidth: '100%',
-      maxHeight: '80px',
-      objectFit: 'contain',
-      borderRadius: '8px',
-      filter: isSelected ? 'brightness(1.1)' : 'brightness(1)',
-      transition: 'filter 0.3s ease',
-      backgroundColor: imageError ? '#f8f9fa' : 'transparent',
-      border: imageError ? '2px dashed #dee2e6' : 'none',
-      opacity: imageLoaded ? 1 : 0.7
-    }), [isSelected, imageError, imageLoaded]);
-
-    const nameStyles = useMemo(() => ({
-      fontSize: '0.9rem',
-      color: isSelected ? '#0d6efd' : '#495057',
-      transition: 'color 0.3s ease'
-    }), [isSelected]);
-
-    const handleKeyDown = useCallback((e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        onClick();
-      }
-    }, [onClick]);
-
-    return (
-      <motion.div
-        className="h-100"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.2 }}
-      >
-        <CCard
-          className={`h-100 manufacturer-card ${isSelected ? 'border-primary shadow-lg' : 'border-light shadow-sm'}`}
-          style={cardStyles}
-          onClick={onClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={handleKeyDown}
-          aria-pressed={isSelected}
-          aria-label={`${t('proposals.create.manufacturer.labels.manufacturer')}: ${manufacturer.name}`}
-        >
-          {isSelected && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                backgroundColor: '#0d6efd',
-                color: 'white',
-                borderRadius: '50%',
-                width: '24px',
-                height: '24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                zIndex: 2
-              }}
-            >
-              ✓
-            </div>
-          )}
-          <CCardBody className="text-center p-3 d-flex flex-column">
-            <div
-              className="manufacturer-logo-container mb-3"
-              style={{
-                flex: '1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '80px'
-              }}
-            >
-              <img
-                src={imageSrc}
-                alt={manufacturer.name}
-                style={imageStyles}
-                onError={handleImageError}
-                onLoad={handleImageLoad}
-                loading="lazy"
-              />
-            </div>
-            <h6
-              className="manufacturer-name mb-0 fw-semibold"
-              style={nameStyles}
-            >
-              {manufacturer.name}
-            </h6>
-
-            {/* ETA Information */}
-            {(manufacturer.assembledEtaDays || manufacturer.unassembledEtaDays) && (
-              <div className="mt-2">
-                <small className="text-muted d-block mb-1">
-                  <strong>{t('proposals.create.manufacturer.eta.title', 'Estimated Delivery Time')}</strong>
-                </small>
-                {manufacturer.assembledEtaDays && (
-                  <small className="text-success d-block">
-                    📦 {t('proposals.create.manufacturer.eta.assembled', 'Assembled')}: {manufacturer.assembledEtaDays} {t('proposals.create.manufacturer.eta.days', 'days')}
-                  </small>
-                )}
-                {manufacturer.unassembledEtaDays && (
-                  <small className="text-info d-block">
-                    📋 {t('proposals.create.manufacturer.eta.unassembled', 'Unassembled')}: {manufacturer.unassembledEtaDays} {t('proposals.create.manufacturer.eta.days', 'days')}
-                  </small>
-                )}
-              </div>
-            )}
-          </CCardBody>
-        </CCard>
-      </motion.div>
-    );
-  });
+  const gridColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 4 })
 
   return (
-    <div className="my-4 w-100 proposal-form-mobile">
-      <style>{`
-        .proposal-form-mobile .btn { min-height: 44px; }
-        @media (max-width: 576px) {
-          .manufacturer-grid-item { min-width: 0; }
-        }
-      `}</style>
-      <CCard>
-        <CCardBody className="p-4">
-          <h4 className="mb-4 fw-semibold">{t('proposals.create.manufacturer.title')}</h4>
-
-          <Formik
-            initialValues={{
-              manufacturer: formData.manufacturer || '',
-              versionName: formData.versionName || '',
-            }}
-            enableReinitialize
-            validationSchema={validationSchema}
-            onSubmit={(values) => {
-              const newEntry = {
-                manufacturer: values.manufacturer,
-                versionName: values.versionName || '',
-              };
-
-              updateFormData({
-                ...formData,
-                manufacturersData: [newEntry],
-                manufacturerId: values.manufacturer,
-              });
-
-              nextStep();
-            }}
-          >
-            {({ values, errors, touched, handleChange, handleBlur, setFieldValue, handleSubmit }) => {
-              return (
-                <CForm onSubmit={handleSubmit} noValidate>
-                  <div className="form-section">
-
-                    {/* Manufacturer Grid Selection */}
-                    <div className="mb-4">
-                      <CFormLabel className="fw-semibold mb-3">
-                        {t('proposals.create.manufacturer.labels.manufacturer')}{' '}
-                        <span className="text-danger">*</span>
-                      </CFormLabel>
-
-                      {loading ? (
-                        <div className="text-center py-5">
-                          <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                          <p className="text-muted mt-2 mb-0">Loading manufacturers...</p>
-                        </div>
-                      ) : (
-                        <>
-          <CRow className="g-3 mb-3">
-                            {enabledManufacturers.map((manufacturer) => (
-                              <CCol
-                                key={manufacturer.id}
-            xs={12}
-                                md={4}
-                                lg={3}
-                                className="manufacturer-grid-item"
-                              >
-                                <ManufacturerCard
-                                  manufacturer={manufacturer}
-                                  isSelected={selectedManufacturer?.id === manufacturer.id}
-                                  onClick={() => handleManufacturerSelect(manufacturer, setFieldValue)}
-                                />
-                              </CCol>
-                            ))}
-                          </CRow>
-
-                          {errors.manufacturer && touched.manufacturer && (
-                            <div className="text-danger small mt-2">
-                              {errors.manufacturer}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    {/* Version Name Field for Admin Users */}
-                    {isUserAdmin && (
-                      <CRow className="mb-4">
-                        <CCol>
-                          <CFormLabel htmlFor="versionName" className="fw-semibold">
-                            {t('proposals.create.manufacturer.labels.versionName')}{' '}
-                            <span className="text-danger">*</span>
-                          </CFormLabel>
-                          <CFormInput
-                            id="versionName"
-                            name="versionName"
-                            type="text"
-                            placeholder={t(
-                              'proposals.create.manufacturer.placeholders.enterVersionName'
-                            )}
-                            value={values.versionName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.versionName && touched.versionName}
-                            style={{ height: '42px', borderRadius: '6px' }}
-                          />
-                          <CFormFeedback invalid>{errors.versionName}</CFormFeedback>
-                        </CCol>
-                      </CRow>
-                    )}
-
-                  </div>
-
-                  <div className="button-group">
-                    {!hideBack && (
-                      <CButton
-                        color="secondary"
-                        variant="outline"
-                        onClick={prevStep}
-                        style={{ borderRadius: '6px', minWidth: '90px', minHeight: '44px' }}
-                        aria-label={t('common.back')}
-                      >
-                        {t('common.back')}
-                      </CButton>
-                    )}
-                    <CButton
-                      type="submit"
-                      color="primary"
-                      style={{ borderRadius: '6px', minWidth: '90px', minHeight: '44px' }}
-                      aria-label={t('common.next')}
-                      disabled={!selectedManufacturer}
+    <Box w="full" my={4}>
+      <Card shadow="md" borderRadius="xl">
+        <CardBody p={{ base: 4, md: 6 }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={6}>
+              <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
+                <Heading size="md" color="gray.800">
+                  {t('proposals.create.manufacturer.title')}
+                </Heading>
+                <Stack direction="row" spacing={3} align="center">
+                  {!hideBack && (
+                    <MotionButton
+                      variant="outline"
+                      colorScheme="gray"
+                      onClick={prevStep}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {t('common.next')}
-                    </CButton>
-                  </div>
-                </CForm>
-              );
-            }}
-          </Formik>
+                      {t('common.back')}
+                    </MotionButton>
+                  )}
+                  <MotionButton
+                    type="submit"
+                    colorScheme="brand"
+                    isDisabled={!selectedManufacturer}
+                    isLoading={isSubmitting}
+                    whileTap={{ scale: 0.98 }}
+                    minW="120px"
+                  >
+                    {t('common.next')}
+                  </MotionButton>
+                </Stack>
+              </Flex>
 
-          {isUserAdmin && (
-            <div
-              className="mt-5 p-4 rounded text-center"
-              style={{
-                backgroundColor: '#e9f0f6',
-                border: '1px solid #b3c7db',
-                color: '#2c3e50',
-                fontSize: '0.95rem',
-                margin: '0 auto',
-              }}
-            >
-              <h6 className="mb-2 fw-semibold" style={{ letterSpacing: '0.03em' }}>
-                {t('proposals.create.manufacturer.cta.needAnother')}
-              </h6>
-              <CButton
-                color="primary"
-                variant="outline"
-                size="sm"
-                style={{
-                  borderRadius: '25px',
-                  padding: '6px 20px',
-                  fontWeight: '600',
-                  letterSpacing: '0.05em',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#0275d8';
-                  e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.borderColor = '#0275d8';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#0275d8';
-                  e.currentTarget.style.borderColor = '#0275d8';
-                }}
-              >
-                {t('proposals.create.manufacturer.cta.addManufacturer')}
-              </CButton>
-            </div>
-          )}
-        </CCardBody>
-      </CCard>
-    </div>
-  );
-};
+              <Controller
+                name="manufacturer"
+                control={control}
+                rules={manufacturerValidation}
+                render={({ field }) => (
+                  <FormControl isInvalid={!!errors.manufacturer}>
+                    <Stack spacing={4}>
+                      {loading ? (
+                        <Spinner alignSelf="center" size="lg" color="brand.500" />
+                      ) : enabledManufacturers.length === 0 ? (
+                        <Text color="gray.500" fontStyle="italic" textAlign="center">
+                          {t('proposals.create.manufacturer.empty', 'No manufacturers available.')}
+                        </Text>
+                      ) : (
+                        <SimpleGrid columns={gridColumns} spacing={5}>
+                          {enabledManufacturers.map((manufacturer) => {
+                            const isSelected = String(manufacturer.id) === field.value
+                            const imageStatus = cardImageState[manufacturer.id]
+                            return (
+                              <MotionBox
+                                key={manufacturer.id}
+                                role="button"
+                                tabIndex={0}
+                                layout
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                overflow="hidden"
+                                bg={cardBg}
+                                cursor="pointer"
+                                onClick={() => {
+                                  field.onChange(String(manufacturer.id))
+                                  handleManufacturerSelect(manufacturer)
+                                }}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault()
+                                    field.onChange(String(manufacturer.id))
+                                    handleManufacturerSelect(manufacturer)
+                                  }
+                                }}
+                                outline="none"
+                                borderColor={isSelected ? cardHoverBorder : 'gray.200'}
+                                boxShadow={isSelected ? '0 0 0 2px rgba(49, 130, 206, 0.4)' : 'sm'}
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.98 }}
+                                transition="all 0.2s ease"
+                              >
+                                <Box position="relative" bg="gray.50" overflow="hidden" height="180px">
+                                  {!imageStatus && (
+                                    <Box
+                                      position="absolute"
+                                      inset={0}
+                                      display="flex"
+                                      alignItems="center"
+                                      justifyContent="center"
+                                      bg="gray.100"
+                                    >
+                                      <Spinner size="md" color="brand.500" />
+                                    </Box>
+                                  )}
+                                  <img
+                                    src={getImageSrc(manufacturer)}
+                                    alt={manufacturer.name}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    onLoad={() => handleImageState(manufacturer.id, 'loaded')}
+                                    onError={() => handleImageState(manufacturer.id, 'error')}
+                                  />
+                                  {isSelected && (
+                                    <Box
+                                      position="absolute"
+                                      top={3}
+                                      right={3}
+                                      px={3}
+                                      py={1}
+                                      borderRadius="full"
+                                      bg="brand.500"
+                                      color="white"
+                                      fontSize="xs"
+                                      fontWeight="semibold"
+                                      textTransform="uppercase"
+                                      letterSpacing="0.05em"
+                                    >
+                                      {t('common.selected')}
+                                    </Box>
+                                  )}
+                                </Box>
+                                <Stack spacing={2} p={4} align="center">
+                                  <Heading as="h3" size="sm" textAlign="center" color="gray.800">
+                                    {manufacturer.name}
+                                  </Heading>
+                                  <Text fontSize="sm" color="gray.500" textAlign="center">
+                                    {manufacturer.city || manufacturer.country || t('common.na')}
+                                  </Text>
+                                </Stack>
+                              </MotionBox>
+                            )
+                          })}
+                        </SimpleGrid>
+                      )}
+                    </Stack>
+                    <FormErrorMessage>
+                      {errors.manufacturer && errors.manufacturer.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                )}
+              />
 
-export default ManufacturerStep;
+              {isUserAdmin && (
+                <FormControl isInvalid={!!errors.versionName}>
+                  <FormLabel htmlFor="versionName">
+                    {t('proposals.create.manufacturer.labels.versionName')}
+                  </FormLabel>
+                  <Input
+                    id="versionName"
+                    type="text"
+                    placeholder={t('proposals.create.manufacturer.placeholders.enterVersionName')}
+                    {...register('versionName', {
+                      ...versionValidation,
+                      onChange: (event) => updateFormData({ versionName: event.target.value }),
+                    })}
+                  />
+                  <FormErrorMessage>{errors.versionName && errors.versionName.message}</FormErrorMessage>
+                </FormControl>
+              )}
+
+              {isUserAdmin && (
+                <Box
+                  mt={2}
+                  p={5}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  bg={useColorModeValue('blue.50', 'blue.900')}
+                  borderColor={useColorModeValue('blue.200', 'blue.600')}
+                  textAlign="center"
+                >
+                  <Heading as="h4" size="sm" mb={3} letterSpacing="0.05em" color={useColorModeValue('blue.700', 'blue.200')}>
+                    {t('proposals.create.manufacturer.cta.needAnother')}
+                  </Heading>
+                  <Button variant="outline" colorScheme="brand" size="sm">
+                    {t('proposals.create.manufacturer.cta.addManufacturer')}
+                  </Button>
+                </Box>
+              )}
+            </Stack>
+          </form>
+        </CardBody>
+      </Card>
+    </Box>
+  )
+}
+export default ManufacturerStep

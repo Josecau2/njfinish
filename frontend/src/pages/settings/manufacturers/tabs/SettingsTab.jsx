@@ -1,67 +1,62 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // Helper function to get auth headers
-import {
-  CCard, CCardBody, CFormInput, CInputGroup, CInputGroupText,
-  CTable, CTableHead, CTableBody, CTableRow, CTableDataCell,
-  CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem,
-  CFormCheck, CFormSelect, CFormLabel
-} from '@coreui/react';
-import PaginationControls from "../../../../components/PaginationControls";
-import axiosInstance from '../../../../helpers/axiosInstance';
+import { Card, CardBody, Input, Checkbox, Select, FormLabel } from '@chakra-ui/react'
+import PaginationControls from '../../../../components/PaginationControls'
+import axiosInstance from '../../../../helpers/axiosInstance'
 
 const SettingsTab = ({ manufacturer }) => {
-  const { t } = useTranslation();
-  const [styleCollection, setStyleCollection] = useState([]);
-  const [catalogData, setCatalogData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { t } = useTranslation()
+  const [styleCollection, setStyleCollection] = useState([])
+  const [catalogData, setCatalogData] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const [searchCode1, setSearchCode1] = useState('');
-  const [page1, setPage1] = useState(1);
-  const [itemsPerPage1, setItemsPerPage1] = useState(5);
-  const [multiplier1, setMultiplier1] = useState('');
-  const [selectedFields1, setSelectedFields1] = useState([]);
-  const [multiplier1Error, setMultiplier1Error] = useState('');
+  const [searchCode1, setSearchCode1] = useState('')
+  const [page1, setPage1] = useState(1)
+  const [itemsPerPage1, setItemsPerPage1] = useState(5)
+  const [multiplier1, setMultiplier1] = useState('')
+  const [selectedFields1, setSelectedFields1] = useState([])
+  const [multiplier1Error, setMultiplier1Error] = useState('')
 
-  const [searchCode2, setSearchCode2] = useState('');
-  const [page2, setPage2] = useState(1);
-  const [itemsPerPage2, setItemsPerPage2] = useState(5);
-  const [multiplier2, setMultiplier2] = useState('');
-  const [selectedFields2, setSelectedFields2] = useState([]);
-  const [multiplier2Error, setMultiplier2Error] = useState('');
+  const [searchCode2, setSearchCode2] = useState('')
+  const [page2, setPage2] = useState(1)
+  const [itemsPerPage2, setItemsPerPage2] = useState(5)
+  const [multiplier2, setMultiplier2] = useState('')
+  const [selectedFields2, setSelectedFields2] = useState([])
+  const [multiplier2Error, setMultiplier2Error] = useState('')
 
   // Create allFields from code and style columns (no description)
   const allFields = useMemo(() => {
-    const baseColumns = ['code'];
+    const baseColumns = ['code']
     const dynamicColumns = Array.isArray(styleCollection)
       ? styleCollection
-        .slice(0, 5) // Show up to 5 styles instead of 3
-        .map(style => style?.style)
-        .filter(v => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
-      : [];
-    return [...baseColumns, ...dynamicColumns];
-  }, [styleCollection]);
+          .slice(0, 5) // Show up to 5 styles instead of 3
+          .map((style) => style?.style)
+          .filter((v) => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
+      : []
+    return [...baseColumns, ...dynamicColumns]
+  }, [styleCollection])
 
   // Set default selected fields when allFields is ready (code + up to 4 styles)
   useEffect(() => {
     if (allFields.length > 0) {
       // Limit default selection to CODE and first 4 styles
-      const defaultFields = allFields.slice(0, 5); // code + 4 styles max
-      setSelectedFields1(defaultFields);
-      setSelectedFields2(defaultFields);
+      const defaultFields = allFields.slice(0, 5) // code + 4 styles max
+      setSelectedFields1(defaultFields)
+      setSelectedFields2(defaultFields)
     }
-  }, [allFields, catalogData]);
+  }, [allFields, catalogData])
 
   // Fetch catalog data for the manufacturer
   useEffect(() => {
     const fetchCatalogData = async () => {
       if (!manufacturer?.id) {
-        setCatalogData([]);
-        return;
+        setCatalogData([])
+        return
       }
 
-      setLoading(true);
+      setLoading(true)
       try {
         const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
           // Authorization handled by axios interceptors
@@ -70,123 +65,132 @@ const SettingsTab = ({ manufacturer }) => {
             page: 1,
             limit: 1000, // Get more items to show proper style comparison
             sortBy: 'code',
-            sortOrder: 'ASC'
-          }
-        });
+            sortOrder: 'ASC',
+          },
+        })
 
         if (response.data && Array.isArray(response.data.catalogData)) {
-          setCatalogData(response.data.catalogData);
+          setCatalogData(response.data.catalogData)
         } else {
-          setCatalogData([]);
+          setCatalogData([])
         }
       } catch (error) {
-        console.error('Error fetching catalog data:', error);
-        setCatalogData([]);
+        console.error('Error fetching catalog data:', error)
+        setCatalogData([])
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchCatalogData();
-  }, [manufacturer?.id]);
+    fetchCatalogData()
+  }, [manufacturer?.id])
 
   // Fetch styleCollection
   useEffect(() => {
     const fetchStyles = async () => {
-      if (!manufacturer?.id) return;
+      if (!manufacturer?.id) return
       try {
         const res = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`, {
           // Authorization handled by axios interceptors
-
-        });
-        setStyleCollection(res.data);
+        })
+        setStyleCollection(res.data)
       } catch (error) {
-        console.error('Error fetching styles:', error);
+        console.error('Error fetching styles:', error)
       }
-    };
+    }
 
-    fetchStyles();
-  }, [manufacturer?.id]);
+    fetchStyles()
+  }, [manufacturer?.id])
 
   // Set multipliers initially
   useEffect(() => {
     if (manufacturer?.costMultiplier) {
-      setMultiplier1(manufacturer.costMultiplier);
-      setMultiplier2(manufacturer.costMultiplier);
+      setMultiplier1(manufacturer.costMultiplier)
+      setMultiplier2(manufacturer.costMultiplier)
     }
-  }, [manufacturer]);
+  }, [manufacturer])
 
   const toggleField = (field, selectedFieldsSetter, selectedFields) => {
-    if (typeof field !== 'string' || field.trim() === '') return; // ignore invalid fields
-    selectedFieldsSetter(prev => {
-      let updated;
+    if (typeof field !== 'string' || field.trim() === '') return // ignore invalid fields
+    selectedFieldsSetter((prev) => {
+      let updated
 
       if (prev.includes(field)) {
         // Remove field if already selected
-        updated = prev.filter(f => f !== field);
+        updated = prev.filter((f) => f !== field)
       } else {
         // Add new field, but limit to maximum 6 columns total to prevent horizontal overflow
         if (prev.length >= 6) {
           // Replace the last non-essential column with the new one
-          const baseColumns = ['code', 'description'];
-          const nonBaseColumns = prev.filter(f => !baseColumns.includes(f));
+          const baseColumns = ['code', 'description']
+          const nonBaseColumns = prev.filter((f) => !baseColumns.includes(f))
           if (nonBaseColumns.length > 0) {
             // Remove the last style column and add the new one
-            updated = [...baseColumns, ...nonBaseColumns.slice(0, -1), field];
+            updated = [...baseColumns, ...nonBaseColumns.slice(0, -1), field]
           } else {
-            updated = prev; // Don't add if already at limit with base columns
+            updated = prev // Don't add if already at limit with base columns
           }
         } else {
-          updated = [...prev, field];
+          updated = [...prev, field]
         }
       }
 
       // Ensure CODE is always first, remove description, keep only style fields
-      const final = ['code', ...updated.filter(f => f !== 'code' && f !== 'description')];
-      return final;
-    });
-  };
-
+      const final = ['code', ...updated.filter((f) => f !== 'code' && f !== 'description')]
+      return final
+    })
+  }
 
   // Filter and paginate data - group by code to avoid duplicates
   const filterData = (searchCode) => {
-    const filtered = catalogData?.filter(item =>
-      typeof item.code === 'string' &&
-      item.code.toLowerCase().includes(searchCode.toLowerCase())
-    ) || [];
+    const filtered =
+      catalogData?.filter(
+        (item) =>
+          typeof item.code === 'string' &&
+          item.code.toLowerCase().includes(searchCode.toLowerCase()),
+      ) || []
 
     // Group by code to show unique codes only
     const groupedByCode = filtered.reduce((acc, item) => {
       if (!acc[item.code]) {
-        acc[item.code] = item; // Keep the first occurrence of each code
+        acc[item.code] = item // Keep the first occurrence of each code
       }
-      return acc;
-    }, {});
+      return acc
+    }, {})
 
-    return Object.values(groupedByCode);
-  };
+    return Object.values(groupedByCode)
+  }
 
-  const filteredData1 = filterData(searchCode1);
-  const totalPages1 = Math.ceil(filteredData1.length / itemsPerPage1);
-  const paginatedData1 = filteredData1.slice((page1 - 1) * itemsPerPage1, page1 * itemsPerPage1);
+  const filteredData1 = filterData(searchCode1)
+  const totalPages1 = Math.ceil(filteredData1.length / itemsPerPage1)
+  const paginatedData1 = filteredData1.slice((page1 - 1) * itemsPerPage1, page1 * itemsPerPage1)
 
-  const filteredData2 = filterData(searchCode2);
-  const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage2);
-  const paginatedData2 = filteredData2.slice((page2 - 1) * itemsPerPage2, page2 * itemsPerPage2);
+  const filteredData2 = filterData(searchCode2)
+  const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage2)
+  const paginatedData2 = filteredData2.slice((page2 - 1) * itemsPerPage2, page2 * itemsPerPage2)
 
   // Reset pages on filter/column changes
-  useEffect(() => { setPage1(1); }, [searchCode1, itemsPerPage1, selectedFields1]);
-  useEffect(() => { setPage2(1); }, [searchCode2, itemsPerPage2, selectedFields2]);
+  useEffect(() => {
+    setPage1(1)
+  }, [searchCode1, itemsPerPage1, selectedFields1])
+  useEffect(() => {
+    setPage2(1)
+  }, [searchCode2, itemsPerPage2, selectedFields2])
 
   // Shared render functions
   const renderDropdown = (selectedFields, toggleHandler, prefix) => (
     <div className="d-flex align-items-center">
       <CDropdown className="ms-2">
-        <CDropdownToggle color="secondary" variant="outline" size="sm" aria-label={t('common.displayedColumns', 'Displayed Columns')}>
+        <CDropdownToggle
+          colorScheme="gray"
+          variant="outline"
+          size="sm"
+          aria-label={t('common.displayedColumns', 'Displayed Columns')}
+        >
           {selectedFields.length > 0
             ? selectedFields
                 .slice(0, 3)
-                .map(f => (typeof f === 'string' && f ? f.toUpperCase() : t('common.na', 'N/A')))
+                .map((f) => (typeof f === 'string' && f ? f.toUpperCase() : t('common.na', 'N/A')))
                 .join(', ')
             : t('common.displayedColumns', 'Displayed Columns')}
           {selectedFields.length > 3 && '...'}
@@ -196,44 +200,56 @@ const SettingsTab = ({ manufacturer }) => {
             CODE is always shown. Select styles to see multiplied prices. Max 6 columns total.
           </CDropdownItem>
           <hr className="dropdown-divider" />
-          {allFields.map(field => {
-            const isBaseColumn = ['code'].includes(field);
+          {allFields.map((field) => {
+            const isBaseColumn = ['code'].includes(field)
             return (
               <CDropdownItem key={field} component="div" className="form-check">
-                <CFormCheck
+                <Checkbox
                   type="checkbox"
                   id={`checkbox-${prefix}-${field}`}
                   checked={selectedFields.includes(field)}
                   onChange={() => toggleHandler(field)}
                   disabled={isBaseColumn} // Disable base columns since they're always shown
                   label={
-                    <span className={isBaseColumn ? "text-muted" : ""}>
-                      {(typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A'))} {isBaseColumn ? "(always shown)" : ""}
+                    <span className={isBaseColumn ? 'text-muted' : ''}>
+                      {typeof field === 'string' && field
+                        ? field.toUpperCase()
+                        : t('common.na', 'N/A')}{' '}
+                      {isBaseColumn ? '(always shown)' : ''}
                     </span>
+    </div>
+    </div>
+  
+  )
                   }
                 />
               </CDropdownItem>
-            );
+            )
           })}
         </CDropdownMenu>
       </CDropdown>
     </div>
-  );
+  )
 
   const renderTable = (data, selectedFields, multiplierCalc) => (
     <div>
       <div className="mb-2 small text-muted">
-        Showing {Math.min(data.length, 5)} sample items with code and multiplied prices for selected styles
+        Showing {Math.min(data.length, 5)} sample items with code and multiplied prices for selected
+        styles
       </div>
       <CTable striped hover responsive>
         <CTableHead>
           <CTableRow>
-      {selectedFields.map((field, fieldIndex) => (
-              <CTableDataCell key={`header-${fieldIndex}`} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
-        {field === 'code'
-          ? 'CODE'
-          : (typeof field === 'string' && field ? `${field.toUpperCase()} PRICE` : t('common.na', 'N/A'))
-        }
+            {selectedFields.map((field, fieldIndex) => (
+              <CTableDataCell
+                key={`header-${fieldIndex}`}
+                style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}
+              >
+                {field === 'code'
+                  ? 'CODE'
+                  : typeof field === 'string' && field
+                    ? `${field.toUpperCase()} PRICE`
+                    : t('common.na', 'N/A')}
               </CTableDataCell>
             ))}
           </CTableRow>
@@ -246,7 +262,7 @@ const SettingsTab = ({ manufacturer }) => {
               </CTableDataCell>
             </CTableRow>
           ) : data.length > 0 ? (
-            data.map(item => (
+            data.map((item) => (
               <CTableRow key={item.id}>
                 {selectedFields.map((field, fieldIndex) => (
                   <CTableDataCell key={`${item.id}-${fieldIndex}`}>
@@ -254,14 +270,15 @@ const SettingsTab = ({ manufacturer }) => {
                       ? item[field]
                       : (() => {
                           // Find the price for this code in the specified style
-                          const styleVariant = data.find(d =>
-                            d.code === item.code &&
-                            d.style?.toLowerCase() === field.toLowerCase()
-                          );
+                          const styleVariant = data.find(
+                            (d) =>
+                              d.code === item.code &&
+                              d.style?.toLowerCase() === field.toLowerCase(),
+                          )
 
                           return styleVariant?.price
                             ? `$${multiplierCalc(styleVariant.price)}`
-                            : '--';
+                            : '--'
                         })()}
                   </CTableDataCell>
                 ))}
@@ -277,147 +294,216 @@ const SettingsTab = ({ manufacturer }) => {
         </CTableBody>
       </CTable>
     </div>
-  );
+  )
 
   return (
     <>
       {/* Cost Multiplier Card */}
-      <CCard>
-        <CCardBody>
-          <p><strong>{t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}</strong></p>
-          <div id="costMultiplierHelp" className="border rounded p-2 mb-3 small" style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}>
-            {t('settings.manufacturers.settings.costMultiplierHelp', 'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.')}
+      <Card>
+        <CardBody>
+          <p>
+            <strong>
+              {t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}
+            </strong>
+          </p>
+          <div
+            id="costMultiplierHelp"
+            className="border rounded p-2 mb-3 small"
+            style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}
+          >
+            {t(
+              'settings.manufacturers.settings.costMultiplierHelp',
+              'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.',
+            )}
           </div>
-          <CFormInput
+          <Input
             type="number"
             inputMode="decimal"
             min="0"
             step="0.001"
             value={multiplier1}
-            onChange={e => {
-              const value = e.target.value;
-              setMultiplier1(value);
-              setMultiplier1Error(value.trim() === '' ? t('settings.users.form.validation.required') : '');
+            onChange={(e) => {
+              const value = e.target.value
+              setMultiplier1(value)
+              setMultiplier1Error(
+                value.trim() === '' ? t('settings.users.form.validation.required') : '',
+              )
             }}
             placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
             aria-describedby="costMultiplierHelp"
-            aria-label={t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}
+            aria-label={t(
+              'settings.manufacturers.settings.costMultiplierTitle',
+              'Your cost multiplier',
+            )}
           />
           {multiplier1Error && <div className="text-danger mt-1 mb-2">{multiplier1Error}</div>}
 
           <CInputGroup className="mb-3">
-            <CFormInput
+            <Input
               value={searchCode1}
-              onChange={e => setSearchCode1(e.target.value)}
+              onChange={(e) => setSearchCode1(e.target.value)}
               placeholder={t('common.search') + '...'}
               aria-label={t('common.search', 'Search')}
             />
-            <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
-            {renderDropdown(selectedFields1, field => toggleField(field, setSelectedFields1, selectedFields1), '1')}
+            <CInputGroupText>
+              <i className="bi bi-search"></i>
+            </CInputGroupText>
+            {renderDropdown(
+              selectedFields1,
+              (field) => toggleField(field, setSelectedFields1, selectedFields1),
+              '1',
+            )}
           </CInputGroup>
 
-          {renderTable(paginatedData1, selectedFields1, value =>
-            (parseFloat(value) * parseFloat(multiplier1 || 1)).toFixed(2)
+          {renderTable(paginatedData1, selectedFields1, (value) =>
+            (parseFloat(value) * parseFloat(multiplier1 || 1)).toFixed(2),
           )}
 
           <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>{t('common.pageOf', { page: page1, total: totalPages1, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              <CFormLabel htmlFor="itemsPerPage1" className="me-2 mb-0">{t('common.itemsPerPage', 'Items per page:')}</CFormLabel>
-              <CFormSelect
+              {t('common.pageOf', {
+                page: page1,
+                total: totalPages1,
+                defaultValue: 'Page {{page}} of {{total}}',
+              })}
+            </div>
+            <div>
+              <FormLabel htmlFor="itemsPerPage1" className="me-2 mb-0">
+                {t('common.itemsPerPage', 'Items per page:')}
+              </FormLabel>
+              <Select
                 size="sm"
                 className="d-inline w-auto ms-2"
                 value={itemsPerPage1}
-                onChange={e => setItemsPerPage1(Number(e.target.value))}
+                onChange={(e) => setItemsPerPage1(Number(e.target.value))}
                 id="itemsPerPage1"
                 aria-label={t('common.itemsPerPage', 'Items per page:')}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
-              </CFormSelect>
+              </Select>
             </div>
             <PaginationControls
               page={page1}
               totalPages={totalPages1}
-              goPrev={() => setPage1(p => Math.max(1, p - 1))}
-              goNext={() => setPage1(p => Math.min(totalPages1, p + 1))}
+              goPrev={() => setPage1((p) => Math.max(1, p - 1))}
+              goNext={() => setPage1((p) => Math.min(totalPages1, p + 1))}
             />
           </div>
-        </CCardBody>
-      </CCard>
+        </CardBody>
+      </Card>
 
       {/* Customer Multiplier Card */}
-      <CCard className="mt-4">
-        <CCardBody>
-          <p><strong>{t('settings.manufacturers.settings.customerMultiplierTitle', 'Customer price multiplier')}</strong></p>
-          <div id="customerMultiplierHelp" className="border rounded p-2 mb-3 small" style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}>
-            {t('settings.manufacturers.settings.customerMultiplierHelp', 'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.')}
+      <Card className="mt-4">
+        <CardBody>
+          <p>
+            <strong>
+              {t(
+                'settings.manufacturers.settings.customerMultiplierTitle',
+                'Customer price multiplier',
+              )}
+            </strong>
+          </p>
+          <div
+            id="customerMultiplierHelp"
+            className="border rounded p-2 mb-3 small"
+            style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}
+          >
+            {t(
+              'settings.manufacturers.settings.customerMultiplierHelp',
+              'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.',
+            )}
           </div>
-          <CFormInput
+          <Input
             type="number"
             inputMode="decimal"
             min="0"
             step="0.001"
             value={multiplier2}
-            onChange={e => {
-              const value = e.target.value;
-              setMultiplier2(value);
-              setMultiplier2Error(value.trim() === '' ? t('settings.users.form.validation.required') : '');
+            onChange={(e) => {
+              const value = e.target.value
+              setMultiplier2(value)
+              setMultiplier2Error(
+                value.trim() === '' ? t('settings.users.form.validation.required') : '',
+              )
             }}
             placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
             style={{ width: '100px' }}
             className="mb-2"
             aria-describedby="customerMultiplierHelp"
-            aria-label={t('settings.manufacturers.settings.customerMultiplierTitle', 'Customer price multiplier')}
+            aria-label={t(
+              'settings.manufacturers.settings.customerMultiplierTitle',
+              'Customer price multiplier',
+            )}
           />
           {multiplier2Error && <div className="text-danger mt-1 mb-2">{multiplier2Error}</div>}
 
           <CInputGroup className="mb-3">
-            <CFormInput
+            <Input
               value={searchCode2}
-              onChange={e => setSearchCode2(e.target.value)}
+              onChange={(e) => setSearchCode2(e.target.value)}
               placeholder={t('common.search') + '...'}
               aria-label={t('common.search', 'Search')}
             />
-            <CInputGroupText><i className="bi bi-search"></i></CInputGroupText>
-            {renderDropdown(selectedFields2, field => toggleField(field, setSelectedFields2, selectedFields2), '2')}
+            <CInputGroupText>
+              <i className="bi bi-search"></i>
+            </CInputGroupText>
+            {renderDropdown(
+              selectedFields2,
+              (field) => toggleField(field, setSelectedFields2, selectedFields2),
+              '2',
+            )}
           </CInputGroup>
 
-          {renderTable(paginatedData2, selectedFields2, value =>
-            (parseFloat(value) * parseFloat(multiplier1 || 1) * parseFloat(multiplier2 || 1)).toFixed(2)
+          {renderTable(paginatedData2, selectedFields2, (value) =>
+            (
+              parseFloat(value) *
+              parseFloat(multiplier1 || 1) *
+              parseFloat(multiplier2 || 1)
+            ).toFixed(2),
           )}
 
           <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>{t('common.pageOf', { page: page2, total: totalPages2, defaultValue: 'Page {{page}} of {{total}}' })}</div>
             <div>
-              <CFormLabel htmlFor="itemsPerPage2" className="me-2 mb-0">{t('common.itemsPerPage', 'Items per page:')}</CFormLabel>
-              <CFormSelect
+              {t('common.pageOf', {
+                page: page2,
+                total: totalPages2,
+                defaultValue: 'Page {{page}} of {{total}}',
+              })}
+            </div>
+            <div>
+              <FormLabel htmlFor="itemsPerPage2" className="me-2 mb-0">
+                {t('common.itemsPerPage', 'Items per page:')}
+              </FormLabel>
+              <Select
                 size="sm"
                 className="d-inline w-auto ms-2"
                 value={itemsPerPage2}
-                onChange={e => setItemsPerPage2(Number(e.target.value))}
+                onChange={(e) => setItemsPerPage2(Number(e.target.value))}
                 id="itemsPerPage2"
                 aria-label={t('common.itemsPerPage', 'Items per page:')}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
-              </CFormSelect>
+              </Select>
             </div>
             <PaginationControls
               page={page2}
               totalPages={totalPages2}
-              goPrev={() => setPage2(p => Math.max(1, p - 1))}
-              goNext={() => setPage2(p => Math.min(totalPages2, p + 1))}
+              goPrev={() => setPage2((p) => Math.max(1, p - 1))}
+              goNext={() => setPage2((p) => Math.min(totalPages2, p + 1))}
             />
           </div>
-        </CCardBody>
-      </CCard>
+        </CardBody>
+      </Card>
     </>
-  );
-};
+  
+  )
+}
 
-export default SettingsTab;
+</CDropdownItem>
+export default SettingsTab

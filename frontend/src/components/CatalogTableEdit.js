@@ -2,21 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import {
-  CFormCheck,
-  CInputGroup,
-  CFormInput,
-  CModal,
-  CModalBody,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilCopy, cilSettings, cilTrash } from '@coreui/icons'
+import { Checkbox, Input, Modal, ModalBody, Icon } from '@chakra-ui/react'
+import { Copy, Settings, Trash } from 'lucide-react'
 import { BsTools } from 'react-icons/bs'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -54,16 +41,22 @@ const keyToLabel = (key) => {
 }
 const mapSide = (s) => {
   switch (s) {
-    case 'L': return 'Left'
-    case 'R': return 'Right'
-    case 'B': return 'Both'
-    default: return s
+    case 'L':
+      return 'Left'
+    case 'R':
+      return 'Right'
+    case 'B':
+      return 'Both'
+    default:
+      return s
   }
 }
 const buildSelectedOptionsText = (selectedOptions) => {
   if (!selectedOptions || typeof selectedOptions !== 'object') return ''
   const parts = []
-  const numericEntries = Object.entries(selectedOptions).filter(([k, v]) => typeof v === 'number' && isFinite(v))
+  const numericEntries = Object.entries(selectedOptions).filter(
+    ([k, v]) => typeof v === 'number' && isFinite(v),
+  )
   if (numericEntries.length === 1) {
     const [, v] = numericEntries[0]
     const m = formatMixedFraction(v)
@@ -105,24 +98,24 @@ const CatalogTableEdit = ({
   updateExposedSide,
   readOnly = false,
 }) => {
-  const { t } = useTranslation();
-  const customization = useSelector((state) => state.customization);
+  const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || '#667eea';
-  const textColor = getContrastColor(headerBg);
+  const headerBg = customization.headerBg || '#667eea'
+  const textColor = getContrastColor(headerBg)
 
-  const [partQuery, setPartQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchContainerRef = useRef(null);
-  const [typesMeta, setTypesMeta] = useState([]);
-  const [showTypeModal, setShowTypeModal] = useState(false);
-  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
+  const [partQuery, setPartQuery] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchContainerRef = useRef(null)
+  const [typesMeta, setTypesMeta] = useState([])
+  const [showTypeModal, setShowTypeModal] = useState(false)
+  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null)
   const [subTypeRequirements, setSubTypeRequirements] = useState({
     requiresHinge: false,
     requiresExposed: false,
-    itemRequirements: {}
-  });
-  const api_url = import.meta.env.VITE_API_URL;
+    itemRequirements: {},
+  })
+  const api_url = import.meta.env.VITE_API_URL
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -140,131 +133,140 @@ const CatalogTableEdit = ({
 
   const filteredOptions = useMemo(() => {
     const byStyle = Array.isArray(catalogData)
-      ? catalogData.filter((item) =>
-          Array.isArray(item.styleVariants) &&
-          item.styleVariants.length > 0 &&
-          item.style === selectedStyleData?.style
+      ? catalogData.filter(
+          (item) =>
+            Array.isArray(item.styleVariants) &&
+            item.styleVariants.length > 0 &&
+            item.style === selectedStyleData?.style,
         )
-      : [];
-    const q = (partQuery || '').toLowerCase().trim();
-    if (!q) return [];
+      : []
+    const q = (partQuery || '').toLowerCase().trim()
+    if (!q) return []
     return byStyle
-      .filter((item) =>
-        (item.code && String(item.code).toLowerCase().includes(q)) ||
-        (item.description && String(item.description).toLowerCase().includes(q))
+      .filter(
+        (item) =>
+          (item.code && String(item.code).toLowerCase().includes(q)) ||
+          (item.description && String(item.description).toLowerCase().includes(q)),
       )
-      .slice(0, 20);
-  }, [catalogData, selectedStyleData?.style, partQuery]);
+      .slice(0, 20)
+  }, [catalogData, selectedStyleData?.style, partQuery])
 
   // Fetch types metadata once per manufacturer (for Specs)
   useEffect(() => {
-    const manufacturerId = selectVersion?.manufacturerData?.id;
-    if (!manufacturerId) { setTypesMeta([]); return; }
-    let cancelled = false;
-    (async () => {
+    const manufacturerId = selectVersion?.manufacturerData?.id
+    if (!manufacturerId) {
+      setTypesMeta([])
+      return
+    }
+    let cancelled = false
+    ;(async () => {
       try {
-        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`);
-        const data = Array.isArray(res?.data) ? res.data : [];
-        if (!cancelled) setTypesMeta(data);
+        const res = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/types-meta`)
+        const data = Array.isArray(res?.data) ? res.data : []
+        if (!cancelled) setTypesMeta(data)
       } catch (err) {
-        console.error('Failed to fetch types metadata:', err);
-        if (!cancelled) setTypesMeta([]);
+        console.error('Failed to fetch types metadata:', err)
+        if (!cancelled) setTypesMeta([])
       }
-    })();
-    return () => { cancelled = true; };
-  }, [selectVersion?.manufacturerData?.id]);
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [selectVersion?.manufacturerData?.id])
 
   // Check sub-type requirements for conditional column display
   useEffect(() => {
     const checkRequirements = async () => {
-      const manufacturerId = selectVersion?.manufacturerData?.id;
-      const items = selectVersion?.items || [];
+      const manufacturerId = selectVersion?.manufacturerData?.id
+      const items = selectVersion?.items || []
       if (!manufacturerId || !Array.isArray(items) || items.length === 0) {
         setSubTypeRequirements({
           requiresHinge: false,
           requiresExposed: false,
-          itemRequirements: {}
-        });
-        return;
+          itemRequirements: {},
+        })
+        return
       }
 
       try {
-        const requirements = await checkSubTypeRequirements(items, manufacturerId);
-        setSubTypeRequirements(requirements);
+        const requirements = await checkSubTypeRequirements(items, manufacturerId)
+        setSubTypeRequirements(requirements)
       } catch (error) {
-        console.error('Failed to check sub-type requirements:', error);
+        console.error('Failed to check sub-type requirements:', error)
         setSubTypeRequirements({
           requiresHinge: false,
           requiresExposed: false,
-          itemRequirements: {}
-        });
+          itemRequirements: {},
+        })
       }
-    };
+    }
 
-    checkRequirements();
-  }, [selectVersion?.manufacturerData?.id, selectVersion?.items]);
+    checkRequirements()
+  }, [selectVersion?.manufacturerData?.id, selectVersion?.items])
 
   // Build quick map for type metadata
   const typeMap = useMemo(() => {
-    const m = new Map();
-    (typesMeta || []).forEach(t => { if (t?.type) m.set(String(t.type), t); });
-    return m;
-  }, [typesMeta]);
+    const m = new Map()
+    ;(typesMeta || []).forEach((t) => {
+      if (t?.type) m.set(String(t.type), t)
+    })
+    return m
+  }, [typesMeta])
 
   // Also map code -> type (many catalogs in edit don't carry `type` on items)
   const typeByCodeMap = useMemo(() => {
-    const m = new Map();
-    (typesMeta || []).forEach(t => {
-      if (t?.code && t?.type) m.set(String(t.code), String(t.type));
-    });
-    return m;
-  }, [typesMeta]);
+    const m = new Map()
+    ;(typesMeta || []).forEach((t) => {
+      if (t?.code && t?.type) m.set(String(t.code), String(t.type))
+    })
+    return m
+  }, [typesMeta])
 
   const getItemType = (item) => {
-    if (!item) return undefined;
-    return item.type || typeByCodeMap.get(String(item.code || ''));
-  };
+    if (!item) return undefined
+    return item.type || typeByCodeMap.get(String(item.code || ''))
+  }
 
   const hasTypeMetadata = (type) => {
-    if (!type) return false;
-    const meta = typeMap.get(String(type));
-    return meta && (meta.image || (meta.longDescription || meta.description || '').trim());
-  };
+    if (!type) return false
+    const meta = typeMap.get(String(type))
+    return meta && (meta.image || (meta.longDescription || meta.description || '').trim())
+  }
 
   const openTypeModal = (type) => {
-    const meta = typeMap.get(String(type));
+    const meta = typeMap.get(String(type))
     if (meta) {
-      setSelectedTypeInfo(meta);
-      setShowTypeModal(true);
+      setSelectedTypeInfo(meta)
+      setShowTypeModal(true)
     }
-  };
+  }
 
   const pickItem = (item) => {
-    if (!item) return;
-    handleCatalogSelect({ target: { value: `${item.code} -- ${item.description}` } });
-    setPartQuery('');
-    setShowSuggestions(false);
-  };
+    if (!item) return
+    handleCatalogSelect({ target: { value: `${item.code} -- ${item.description}` } })
+    setPartQuery('')
+    setShowSuggestions(false)
+  }
 
   // console.log('catalogData in Edit: ',catalogData);
   // console.log('selectedStyleData in Edit: ',selectedStyleData);
   // Close suggestions on outside click to avoid overlay blocking other controls
   useEffect(() => {
     const handleDocMouseDown = (e) => {
-      const node = searchContainerRef.current;
-      if (!node) return;
-      if (!node.contains(e.target)) setShowSuggestions(false);
-    };
-    if (showSuggestions) {
-      document.addEventListener('mousedown', handleDocMouseDown);
-      return () => document.removeEventListener('mousedown', handleDocMouseDown);
+      const node = searchContainerRef.current
+      if (!node) return
+      if (!node.contains(e.target)) setShowSuggestions(false)
     }
-  }, [showSuggestions]);
+    if (showSuggestions) {
+      document.addEventListener('mousedown', handleDocMouseDown)
+      return () => document.removeEventListener('mousedown', handleDocMouseDown)
+    }
+  }, [showSuggestions])
   return (
     <div className="mt-5 mb-5">
       {/* Detailed type info modal */}
-      <CModal
-        visible={showTypeModal}
+      <Modal
+        isOpen={showTypeModal}
         onClose={() => setShowTypeModal(false)}
         size="xl"
         className="specs-modal"
@@ -277,12 +279,19 @@ const CatalogTableEdit = ({
           title={selectedTypeInfo?.type || 'Type Specifications'}
           onClose={() => setShowTypeModal(false)}
         />
-        <CModalBody className="p-3 p-md-4">
+        <ModalBody className="p-3 p-md-4">
           {selectedTypeInfo ? (
             <div className="d-flex flex-column flex-md-row gap-4">
-              <div className="text-center text-md-start border rounded p-3 bg-light" style={{ width: '100%', maxWidth: '520px', margin: '0 auto' }}>
+              <div
+                className="text-center text-md-start border rounded p-3 bg-light"
+                style={{ width: '100%', maxWidth: '520px', margin: '0 auto' }}
+              >
                 <img
-                  src={selectedTypeInfo.image ? `${api_url}/uploads/types/${selectedTypeInfo.image}` : '/images/nologo.png'}
+                  src={
+                    selectedTypeInfo.image
+                      ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
+                      : '/images/nologo.png'
+                  }
                   alt={selectedTypeInfo.type}
                   className="img-fluid"
                   style={{
@@ -292,14 +301,14 @@ const CatalogTableEdit = ({
                     objectFit: 'contain',
                     background: '#ffffff',
                     borderRadius: '6px',
-                    border: '1px solid #dee2e6'
+                    border: '1px solid #dee2e6',
                   }}
                   onError={(e) => {
                     if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
-                      e.target.dataset.fallbackTried = '1';
-                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`;
+                      e.target.dataset.fallbackTried = '1'
+                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`
                     } else {
-                      e.target.src = '/images/nologo.png';
+                      e.target.src = '/images/nologo.png'
                     }
                   }}
                 />
@@ -310,22 +319,37 @@ const CatalogTableEdit = ({
                   <strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>
                 </div>
                 {selectedTypeInfo.code && (
-                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Code:</span> <strong>{selectedTypeInfo.code}</strong></div>
+                  <div className="mb-2 border-bottom pb-2">
+                    <span className="text-muted fw-medium">Code:</span>{' '}
+                    <strong>{selectedTypeInfo.code}</strong>
+                  </div>
                 )}
                 {selectedTypeInfo.name && (
-                  <div className="mb-2 border-bottom pb-2"><span className="text-muted fw-medium">Name:</span> <strong>{selectedTypeInfo.name}</strong></div>
+                  <div className="mb-2 border-bottom pb-2">
+                    <span className="text-muted fw-medium">Name:</span>{' '}
+                    <strong>{selectedTypeInfo.name}</strong>
+                  </div>
                 )}
                 {selectedTypeInfo.shortName && (
-                  <div className="mb-3 border-bottom pb-2"><span className="text-muted fw-medium">Short:</span> <strong>{selectedTypeInfo.shortName}</strong></div>
+                  <div className="mb-3 border-bottom pb-2">
+                    <span className="text-muted fw-medium">Short:</span>{' '}
+                    <strong>{selectedTypeInfo.shortName}</strong>
+                  </div>
                 )}
-                <div className="mt-3" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                <div
+                  className="mt-3"
+                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}
+                >
                   <strong className="text-muted d-block mb-2">Description:</strong>
-                  {selectedTypeInfo.longDescription || selectedTypeInfo.description || t('No description available for this type.')}
+                  {selectedTypeInfo.longDescription ||
+                    selectedTypeInfo.description ||
+                    t('No description available for this type.')}
                 </div>
-              </div>
             </div>
           ) : (
-            <div className="text-muted text-center p-4 border rounded bg-light">{t('No type information available.')}</div>
+            <div className="text-muted text-center p-4 border rounded bg-light">
+              {t('No type information available.')}
+            </div>
           )}
 
           {/* Mobile Close Button */}
@@ -337,32 +361,47 @@ const CatalogTableEdit = ({
               style={{
                 minWidth: '140px',
                 borderRadius: '8px',
-                fontWeight: '500'
+                fontWeight: '500',
               }}
             >
               Close
             </button>
           </div>
-        </CModalBody>
-      </CModal>
+        </ModalBody>
+      </Modal>
       {/* Controls - align with create (adds catalog-controls-mobile for responsive) */}
       <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
         {!readOnly && (
-          <div className="position-relative flex-grow-1" style={{ minWidth: '200px', maxWidth: '600px' }} ref={searchContainerRef}>
+          <div
+            className="position-relative flex-grow-1"
+            style={{ minWidth: '200px', maxWidth: '600px' }}
+            ref={searchContainerRef}
+          >
             <CInputGroup>
-              <CFormInput
+              <Input
                 placeholder={t('proposalUI.enterPartCode')}
                 value={partQuery}
-                onChange={(e) => { setPartQuery(e.target.value); setShowSuggestions(true); }}
+                onChange={(e) => {
+                  setPartQuery(e.target.value)
+                  setShowSuggestions(true)
+                }}
                 onFocus={() => setShowSuggestions(true)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && filteredOptions[0]) { e.preventDefault(); pickItem(filteredOptions[0]); }
-                  if (e.key === 'Escape') { setShowSuggestions(false); }
+                  if (e.key === 'Enter' && filteredOptions[0]) {
+                    e.preventDefault()
+                    pickItem(filteredOptions[0])
+                  }
+                  if (e.key === 'Escape') {
+                    setShowSuggestions(false)
+                  }
                 }}
               />
             </CInputGroup>
             {showSuggestions && filteredOptions.length > 0 && (
-              <div className="dropdown-menu show w-100" style={{ maxHeight: '260px', overflowY: 'auto' }}>
+              <div
+                className="dropdown-menu show w-100"
+                style={{ maxHeight: '260px', overflowY: 'auto' }}
+              >
                 {filteredOptions.map((item) => (
                   <div
                     key={item.id}
@@ -384,8 +423,8 @@ const CatalogTableEdit = ({
                         className="btn btn-sm btn-outline-info ms-2"
                         style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}
                         onClick={(e) => {
-                          e.stopPropagation();
-                          openTypeModal(getItemType(item));
+                          e.stopPropagation()
+                          openTypeModal(getItemType(item))
                         }}
                         title={`View ${getItemType(item)} specifications`}
                       >
@@ -402,17 +441,17 @@ const CatalogTableEdit = ({
         <div className="d-flex flex-wrap align-items-center gap-3 flex-shrink-0">
           {!readOnly && (
             <>
-              <CFormCheck
+              <Checkbox
                 label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.addOnTop')}</span>}
                 checked={addOnTop}
                 onChange={(e) => setAddOnTop(e.target.checked)}
                 style={{ transform: 'scale(1.1)' }}
               />
               <div className="d-flex align-items-center gap-2">
-                <CIcon icon={cilCopy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
+                <Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
                 <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t('proposalUI.copy')}</span>
               </div>
-              <CFormCheck
+              <Checkbox
                 label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.group')}</span>}
                 checked={groupEnabled}
                 onChange={(e) => setGroupEnabled(e.target.checked)}
@@ -428,7 +467,7 @@ const CatalogTableEdit = ({
             style={{ minWidth: '200px', maxWidth: '240px', width: '100%' }}
           >
             <CInputGroup>
-              <CFormInput
+              <Input
                 placeholder={t('proposalUI.findInCart')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -438,8 +477,8 @@ const CatalogTableEdit = ({
         )}
       </div>
 
-  {/* Desktop table view */}
-  <div className="table-responsive table-responsive-md desktop-only">
+      {/* Desktop table view */}
+      <div className="table-responsive table-responsive-md desktop-only">
         <CTable>
           <CTableHead>
             <CTableRow>
@@ -447,18 +486,24 @@ const CatalogTableEdit = ({
               <CTableHeaderCell>{t('proposalColumns.qty')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.item')}</CTableHeaderCell>
               {subTypeRequirements.requiresHinge && (
-                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                <CTableHeaderCell
+                  style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
+                >
                   {t('proposalColumns.hingeSide')}
                 </CTableHeaderCell>
               )}
               {subTypeRequirements.requiresExposed && (
-                <CTableHeaderCell style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}>
+                <CTableHeaderCell
+                  style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
+                >
                   {t('proposalColumns.exposedSide')}
                 </CTableHeaderCell>
               )}
               <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</CTableHeaderCell>
+              <CTableHeaderCell>
+                {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
+              </CTableHeaderCell>
               <CTableHeaderCell>{t('proposalColumns.total')}</CTableHeaderCell>
               <CTableHeaderCell>{t('proposals.headers.actions')}</CTableHeaderCell>
             </CTableRow>
@@ -472,17 +517,26 @@ const CatalogTableEdit = ({
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
               const assemblyFee = unitAssembly * qty
               const modsTotal = Array.isArray(item.modifications)
-                ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
+                ? item.modifications.reduce(
+                    (s, m) => s + Number(m.price || 0) * Number(m.qty || 1),
+                    0,
+                  )
                 : 0
               const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
 
-              const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
+              const rowStyle = item.unavailable
+                ? { color: '#b00020', textDecoration: 'line-through' }
+                : undefined
               return (
                 <React.Fragment key={idx}>
                   <CTableRow
                     className={item.unavailable ? 'table-danger' : ''}
                     style={{
-                      backgroundColor: item.unavailable ? undefined : (idx % 2 === 0 ? '#fbfdff' : '#ffffff'),
+                      backgroundColor: item.unavailable
+                        ? undefined
+                        : idx % 2 === 0
+                          ? '#fbfdff'
+                          : '#ffffff',
                       borderBottom: '2px solid #e6ebf1',
                       ...(idx === 0 ? { borderTop: '2px solid #e6ebf1' } : {}),
                     }}
@@ -502,7 +556,7 @@ const CatalogTableEdit = ({
                           color: textColor,
                           fontWeight: 700,
                           fontSize: '0.95rem',
-                          letterSpacing: '0.2px'
+                          letterSpacing: '0.2px',
                         }}
                         title={`Row ${idx + 1}`}
                       >
@@ -510,7 +564,7 @@ const CatalogTableEdit = ({
                       </span>
                     </CTableDataCell>
                     <CTableDataCell>
-                      <CFormInput
+                      <Input
                         type="number"
                         min="1"
                         value={item.qty}
@@ -522,25 +576,34 @@ const CatalogTableEdit = ({
 
                     <CTableDataCell style={rowStyle}>
                       <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
-                        <div className="d-flex align-items-baseline gap-2 flex-wrap" style={{ minWidth: 0 }}>
+                        <div
+                          className="d-flex align-items-baseline gap-2 flex-wrap"
+                          style={{ minWidth: 0 }}
+                        >
                           <strong>{item.code}</strong>
                           {item?.description ? (
                             <span
                               className="text-muted text-truncate"
-                              style={{ maxWidth: '420px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                              style={{
+                                maxWidth: '420px',
+                                display: 'inline-block',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
                               title={item.description}
                             >
                               — {item.description}
                             </span>
                           ) : null}
                         </div>
-            {hasTypeMetadata(getItemType(item)) && (
+                        {hasTypeMetadata(getItemType(item)) && (
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-info"
                             style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
-              onClick={() => openTypeModal(getItemType(item))}
-              title={`View ${getItemType(item)} specifications`}
+                            onClick={() => openTypeModal(getItemType(item))}
+                            title={`View ${getItemType(item)} specifications`}
                           >
                             Specs
                           </button>
@@ -551,18 +614,26 @@ const CatalogTableEdit = ({
                     {subTypeRequirements.requiresHinge && (
                       <CTableDataCell
                         style={{
-                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
-                            ? '#ffebee'
-                            : 'transparent'
+                          backgroundColor:
+                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                            (!item.hingeSide || item.hingeSide === '-')
+                              ? '#ffebee'
+                              : 'transparent',
                         }}
                       >
                         {assembled ? (
                           <div>
-                            {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
-                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
-                              </div>
-                            )}
+                            {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                              (!item.hingeSide || item.hingeSide === '-') && (
+                                <div
+                                  className="text-danger mb-1"
+                                  style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                                >
+                                  {t('validation.selectHingeSide', {
+                                    defaultValue: 'Select hinge side',
+                                  })}
+                                </div>
+                              )}
                             <div className="d-flex gap-1">
                               {hingeOptions.map((opt) => (
                                 <button
@@ -570,12 +641,14 @@ const CatalogTableEdit = ({
                                   type="button"
                                   className={`btn btn-sm ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
                                   style={{
-                                    ...(item.hingeSide === opt ? {
-                                      background: headerBg,
-                                      color: textColor,
-                                      border: `1px solid ${headerBg}`
-                                    } : {}),
-                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                                    ...(item.hingeSide === opt
+                                      ? {
+                                          background: headerBg,
+                                          color: textColor,
+                                          border: `1px solid ${headerBg}`,
+                                        }
+                                      : {}),
+                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {}),
                                   }}
                                   onClick={() => !readOnly && updateHingeSide(idx, opt)}
                                   disabled={readOnly}
@@ -584,7 +657,6 @@ const CatalogTableEdit = ({
                                 </button>
                               ))}
                             </div>
-                          </div>
                         ) : (
                           t('common.na')
                         )}
@@ -594,18 +666,26 @@ const CatalogTableEdit = ({
                     {subTypeRequirements.requiresExposed && (
                       <CTableDataCell
                         style={{
-                          backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
-                            ? '#ffebee'
-                            : 'transparent'
+                          backgroundColor:
+                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                            (!item.exposedSide || item.exposedSide === '-')
+                              ? '#ffebee'
+                              : 'transparent',
                         }}
                       >
                         {assembled ? (
                           <div>
-                            {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
-                              <div className="text-danger mb-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
-                              </div>
-                            )}
+                            {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                              (!item.exposedSide || item.exposedSide === '-') && (
+                                <div
+                                  className="text-danger mb-1"
+                                  style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                                >
+                                  {t('validation.selectExposedSide', {
+                                    defaultValue: 'Select exposed finished side',
+                                  })}
+                                </div>
+                              )}
                             <div className="d-flex gap-1">
                               {exposedOptions.map((opt) => (
                                 <button
@@ -613,12 +693,14 @@ const CatalogTableEdit = ({
                                   type="button"
                                   className={`btn btn-sm ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
                                   style={{
-                                    ...(item.exposedSide === opt ? {
-                                      background: headerBg,
-                                      color: textColor,
-                                      border: `1px solid ${headerBg}`
-                                    } : {}),
-                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {})
+                                    ...(item.exposedSide === opt
+                                      ? {
+                                          background: headerBg,
+                                          color: textColor,
+                                          border: `1px solid ${headerBg}`,
+                                        }
+                                      : {}),
+                                    ...(readOnly ? { pointerEvents: 'none', opacity: 0.6 } : {}),
                                   }}
                                   onClick={() => !readOnly && updateExposedSide(idx, opt)}
                                   disabled={readOnly}
@@ -627,37 +709,40 @@ const CatalogTableEdit = ({
                                 </button>
                               ))}
                             </div>
-                          </div>
                         ) : (
                           t('common.na')
                         )}
                       </CTableDataCell>
                     )}
 
-                    <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : item.price)}</CTableDataCell>
+                    <CTableDataCell style={rowStyle}>
+                      {formatPrice(item.unavailable ? 0 : item.price)}
+                    </CTableDataCell>
 
                     <CTableDataCell>
                       {assembled ? (
-                        <span style={rowStyle}>{formatPrice(item.unavailable ? 0 : assemblyFee)}</span>
+                        <span style={rowStyle}>
+                          {formatPrice(item.unavailable ? 0 : assemblyFee)}
+                        </span>
                       ) : (
                         <span className="text-muted">{formatPrice(0)}</span>
                       )}
                     </CTableDataCell>
 
                     <CTableDataCell>{formatPrice(modsTotal)}</CTableDataCell>
-                    <CTableDataCell style={rowStyle}>{formatPrice(item.unavailable ? 0 : total)}</CTableDataCell>
+                    <CTableDataCell style={rowStyle}>
+                      {formatPrice(item.unavailable ? 0 : total)}
+                    </CTableDataCell>
 
                     <CTableDataCell>
                       <div className="d-flex align-items-center">
                         {!readOnly && (
                           <>
-                            <CIcon
-                              icon={cilSettings}
+                            <Icon as={Settings}
                               style={{ cursor: 'pointer', color: 'black', marginRight: '16px' }}
                               onClick={() => handleOpenModificationModal(idx, item.id)}
                             />
-                            <CIcon
-                              icon={cilTrash}
+                            <Icon as={Trash}
                               style={{ cursor: 'pointer', color: 'red' }}
                               onClick={() => handleDelete(idx)}
                             />
@@ -666,125 +751,175 @@ const CatalogTableEdit = ({
                       </div>
                     </CTableDataCell>
                   </CTableRow>
-                  {Array.isArray(item.modifications) && item.modifications.length > 0 && (() => {
-                    // Group by submenu/category when available on mod.categoryName
-                    const groups = item.modifications.reduce((acc, m) => {
-                      const key = m.categoryName || 'Other';
-                      acc[key] = acc[key] || [];
-                      acc[key].push(m);
-                      return acc;
-                    }, {});
-                    const groupKeys = Object.keys(groups);
-                    return (
-                      <>
-                        <CTableRow className="modification-header">
-                          <CTableDataCell
-                            colSpan={10}
-                            style={{
-                              backgroundColor: headerBg,
-                              color: textColor,
-                              padding: '8px 16px',
-                              paddingLeft: '56px',
-                              fontSize: '0.9rem',
-                              borderTop: `2px solid ${headerBg}`,
-                              borderLeft: `6px solid ${headerBg}`,
-                              borderTopLeftRadius: '6px',
-                              borderTopRightRadius: '6px',
-                              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)'
-                            }}
-                          >
-                            <BsTools className="me-2" style={{ fontSize: '14px', color: textColor }} />
-                            <span className="fw-bold">{t('proposalDoc.modifications')}</span>
-                          </CTableDataCell>
-                        </CTableRow>
-                        {groupKeys.map((gkey, gi) => (
-                          <React.Fragment key={`modgrp-${idx}-${gkey}`}>
-                            <CTableRow className="modification-category" style={{ backgroundColor: '#f1f3f5' }}>
-                              <CTableDataCell colSpan={10} className="fw-semibold text-secondary" style={{ paddingLeft: '72px', fontSize: '0.85rem', borderLeft: `6px solid ${headerBg}`, borderBottom: '1px solid #dee2e6' }}>
-                                📂 {gkey}
-                              </CTableDataCell>
-                            </CTableRow>
-                            {groups[gkey].map((mod, modIdx) => {
-                              const isLastRow = gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1;
-                              return (
-                                <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
-                                  <CTableRow className="modification-item" style={{
-                                    backgroundColor: '#fcfcfd',
+                  {Array.isArray(item.modifications) &&
+                    item.modifications.length > 0 &&
+                    (() => {
+                      // Group by submenu/category when available on mod.categoryName
+                      const groups = item.modifications.reduce((acc, m) => {
+                        const key = m.categoryName || 'Other'
+                        acc[key] = acc[key] || []
+                        acc[key].push(m)
+                        return acc
+                      }, {})
+                      const groupKeys = Object.keys(groups)
+                      return (
+                        <>
+                          <CTableRow className="modification-header">
+                            <CTableDataCell
+                              colSpan={10}
+                              style={{
+                                backgroundColor: headerBg,
+                                color: textColor,
+                                padding: '8px 16px',
+                                paddingLeft: '56px',
+                                fontSize: '0.9rem',
+                                borderTop: `2px solid ${headerBg}`,
+                                borderLeft: `6px solid ${headerBg}`,
+                                borderTopLeftRadius: '6px',
+                                borderTopRightRadius: '6px',
+                                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
+                              }}
+                            >
+                              <BsTools
+                                className="me-2"
+                                style={{ fontSize: '14px', color: textColor }}
+                              />
+                              <span className="fw-bold">{t('proposalDoc.modifications')}</span>
+                            </CTableDataCell>
+                          </CTableRow>
+                          {groupKeys.map((gkey, gi) => (
+                            <React.Fragment key={`modgrp-${idx}-${gkey}`}>
+                              <CTableRow
+                                className="modification-category"
+                                style={{ backgroundColor: '#f1f3f5' }}
+                              >
+                                <CTableDataCell
+                                  colSpan={10}
+                                  className="fw-semibold text-secondary"
+                                  style={{
+                                    paddingLeft: '72px',
+                                    fontSize: '0.85rem',
                                     borderLeft: `6px solid ${headerBg}`,
-                                    fontSize: '0.9rem',
-                                    borderBottom: isLastRow ? `2px solid ${headerBg}` : '1px solid #e9ecef'
-                                  }}>
-                                    <CTableDataCell style={{ paddingLeft: '88px', color: '#6c757d' }}>
-                                      ↳
-                                    </CTableDataCell>
-                                    <CTableDataCell style={{ fontWeight: '500' }}>{mod.qty}</CTableDataCell>
-                                    <CTableDataCell colSpan={3} style={{ paddingLeft: '8px' }}>
-                                      <div className="d-flex align-items-center flex-wrap gap-2">
-                                        <span
-                                          className="shadow-sm"
-                                          style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            padding: '2px 10px',
-                                            borderRadius: '9999px',
-                                            backgroundColor: '#f3f5f7',
-                                            border: `1px solid ${headerBg}`,
-                                            color: '#212529',
-                                            fontWeight: 600,
-                                            lineHeight: 1.2
-                                          }}
-                                        >
-                                          {mod.name || t('proposalUI.mod.unnamed')}
-                                        </span>
-                                        {(() => {
-                                          const details = buildSelectedOptionsText(mod?.selectedOptions)
-                                          return details ? (
-                                            <span
-                                              className="text-muted"
-                                              style={{
-                                                fontSize: '0.8rem',
-                                                padding: '2px 8px',
-                                                borderRadius: '6px',
-                                                background: '#f8f9fa',
-                                                border: '1px dashed #ced4da'
-                                              }}
-                                            >
-                                              {details}
-                                            </span>
-                                          ) : null
-                                        })()}
-                                      </div>
-                                    </CTableDataCell>
-                                    <CTableDataCell className="fw-medium text-success">{formatPrice(mod.price || 0)}</CTableDataCell>
-                                    <CTableDataCell style={{ color: '#6c757d' }}>-</CTableDataCell>
-                                    <CTableDataCell>{/* Modifications column (per-item summary) not applicable on sub-rows */}</CTableDataCell>
-                                    <CTableDataCell className="fw-semibold text-success">{formatPrice((mod.price || 0) * (mod.qty || 1))}</CTableDataCell>
-                                    <CTableDataCell style={{ textAlign: 'center' }}>
-                                      {!readOnly && (
-                                        <CIcon
-                                          icon={cilTrash}
-                                          style={{ cursor: 'pointer', color: '#dc3545', fontSize: '14px' }}
-                                          onClick={() => handleDeleteModification(idx, item.modifications.findIndex(m=>m===mod))}
-                                          title="Remove modification"
-                                        />
-                                      )}
-                                    </CTableDataCell>
-                                  </CTableRow>
-                                  {isLastRow && (
-                                    <CTableRow>
-                                      <CTableDataCell colSpan={10} style={{ padding: 0 }}>
-                                        <div style={{ height: '10px', borderBottom: '1px dashed #cfd4da' }} />
+                                    borderBottom: '1px solid #dee2e6',
+                                  }}
+                                >
+                                  📂 {gkey}
+                                </CTableDataCell>
+                              </CTableRow>
+                              {groups[gkey].map((mod, modIdx) => {
+                                const isLastRow =
+                                  gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1
+                                return (
+                                  <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
+                                    <CTableRow
+                                      className="modification-item"
+                                      style={{
+                                        backgroundColor: '#fcfcfd',
+                                        borderLeft: `6px solid ${headerBg}`,
+                                        fontSize: '0.9rem',
+                                        borderBottom: isLastRow
+                                          ? `2px solid ${headerBg}`
+                                          : '1px solid #e9ecef',
+                                      }}
+                                    >
+                                      <CTableDataCell
+                                        style={{ paddingLeft: '88px', color: '#6c757d' }}
+                                      >
+                                        ↳
+                                      </CTableDataCell>
+                                      <CTableDataCell style={{ fontWeight: '500' }}>
+                                        {mod.qty}
+                                      </CTableDataCell>
+                                      <CTableDataCell colSpan={3} style={{ paddingLeft: '8px' }}>
+                                        <div className="d-flex align-items-center flex-wrap gap-2">
+                                          <span
+                                            className="shadow-sm"
+                                            style={{
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              padding: '2px 10px',
+                                              borderRadius: '9999px',
+                                              backgroundColor: '#f3f5f7',
+                                              border: `1px solid ${headerBg}`,
+                                              color: '#212529',
+                                              fontWeight: 600,
+                                              lineHeight: 1.2,
+                                            }}
+                                          >
+                                            {mod.name || t('proposalUI.mod.unnamed')}
+                                          </span>
+                                          {(() => {
+                                            const details = buildSelectedOptionsText(
+                                              mod?.selectedOptions,
+                                            )
+                                            return details ? (
+                                              <span
+                                                className="text-muted"
+                                                style={{
+                                                  fontSize: '0.8rem',
+                                                  padding: '2px 8px',
+                                                  borderRadius: '6px',
+                                                  background: '#f8f9fa',
+                                                  border: '1px dashed #ced4da',
+                                                }}
+                                              >
+                                                {details}
+                                              </span>
+                                            ) : null
+                                          })()}
+                                        </div>
+                                      </CTableDataCell>
+                                      <CTableDataCell className="fw-medium text-success">
+                                        {formatPrice(mod.price || 0)}
+                                      </CTableDataCell>
+                                      <CTableDataCell style={{ color: '#6c757d' }}>
+                                        -
+                                      </CTableDataCell>
+                                      <CTableDataCell>
+                                        {/* Modifications column (per-item summary) not applicable on sub-rows */}
+                                      </CTableDataCell>
+                                      <CTableDataCell className="fw-semibold text-success">
+                                        {formatPrice((mod.price || 0) * (mod.qty || 1))}
+                                      </CTableDataCell>
+                                      <CTableDataCell style={{ textAlign: 'center' }}>
+                                        {!readOnly && (
+                                          <Icon as={Trash}
+                                            style={{
+                                              cursor: 'pointer',
+                                              color: '#dc3545',
+                                              fontSize: '14px',
+                                            }}
+                                            onClick={() =>
+                                              handleDeleteModification(
+                                                idx,
+                                                item.modifications.findIndex((m) => m === mod),
+                                              )
+                                            }
+                                            title="Remove modification"
+                                          />
+                                        )}
                                       </CTableDataCell>
                                     </CTableRow>
-                                  )}
-                                </React.Fragment>
-                              )
-                            })}
-                          </React.Fragment>
-                        ))}
-                      </>
-                    )
-                  })()}
+                                    {isLastRow && (
+                                      <CTableRow>
+                                        <CTableDataCell colSpan={10} style={{ padding: 0 }}>
+                                          <div
+                                            style={{
+                                              height: '10px',
+                                              borderBottom: '1px dashed #cfd4da',
+                                            }}
+                                          />
+                                        </CTableDataCell>
+                                      </CTableRow>
+                                    )}
+                                  </React.Fragment>
+                                )
+                              })}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      )
+                    })()}
                 </React.Fragment>
               )
             })}
@@ -792,18 +927,20 @@ const CatalogTableEdit = ({
         </CTable>
       </div>
 
-  {/* Mobile card view to match create */}
-  <div className="mobile-card-view mobile-only">
+      {/* Mobile card view to match create */}
+      <div className="mobile-card-view mobile-only">
         {selectVersion?.items?.map((item, idx) => {
-          const assembled = !!isAssembled;
-          const qty = Number(item.qty || 1);
-          const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0;
-          const assemblyFee = unitAssembly * qty;
+          const assembled = !!isAssembled
+          const qty = Number(item.qty || 1)
+          const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
+          const assemblyFee = unitAssembly * qty
           const modsTotal = Array.isArray(item.modifications)
-            ? item.modifications.reduce((s, m) => s + (Number(m.price || 0) * Number(m.qty || 1)), 0)
-            : 0;
-          const total = Number(item.price || 0) * qty + assemblyFee + modsTotal;
-          const rowStyle = item.unavailable ? { color: '#b00020', textDecoration: 'line-through' } : undefined;
+            ? item.modifications.reduce((s, m) => s + Number(m.price || 0) * Number(m.qty || 1), 0)
+            : 0
+          const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
+          const rowStyle = item.unavailable
+            ? { color: '#b00020', textDecoration: 'line-through' }
+            : undefined
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
@@ -813,21 +950,27 @@ const CatalogTableEdit = ({
                   border: '2px solid #e6ebf1',
                   borderRadius: '8px',
                   backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
-                  marginBottom: '12px'
+                  marginBottom: '12px',
                 }}
               >
                 <div className="item-header">
                   <div className="item-number">{idx + 1}</div>
                   {!readOnly && (
                     <div className="item-actions">
-                      <CIcon
-                        icon={cilSettings}
-                        style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: '1.2rem' }}
+                      <Icon as={Settings}
+                        style={{
+                          cursor: 'pointer',
+                          color: 'var(--cui-primary)',
+                          fontSize: '1.2rem',
+                        }}
                         onClick={() => handleOpenModificationModal(idx, item.id)}
                       />
-                      <CIcon
-                        icon={cilTrash}
-                        style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: '1.2rem' }}
+                      <Icon as={Trash}
+                        style={{
+                          cursor: 'pointer',
+                          color: 'var(--cui-danger)',
+                          fontSize: '1.2rem',
+                        }}
                         onClick={() => handleDelete(idx)}
                       />
                     </div>
@@ -836,30 +979,39 @@ const CatalogTableEdit = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <div className="d-flex align-items-center gap-2 flex-wrap" style={{ minWidth: 0 }}>
-                    <span className="item-value item-code" style={rowStyle}><strong>{item.code}</strong></span>
+                  <div
+                    className="d-flex align-items-center gap-2 flex-wrap"
+                    style={{ minWidth: 0 }}
+                  >
+                    <span className="item-value item-code" style={rowStyle}>
+                      <strong>{item.code}</strong>
+                    </span>
                     {item?.description ? (
                       <span
                         className="text-muted text-truncate"
-                        style={{ maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                        style={{
+                          maxWidth: '220px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
                         title={item.description}
                       >
                         — {item.description}
                       </span>
                     ) : null}
-          {hasTypeMetadata(getItemType(item)) && (
+                    {hasTypeMetadata(getItemType(item)) && (
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-info"
                         style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
-            onClick={() => openTypeModal(getItemType(item))}
-            title={`View ${getItemType(item)} specifications`}
+                        onClick={() => openTypeModal(getItemType(item))}
+                        title={`View ${getItemType(item)} specifications`}
                       >
                         Specs
                       </button>
                     )}
                   </div>
-                </div>
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.qty')}</span>
@@ -875,36 +1027,53 @@ const CatalogTableEdit = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.price')}</span>
-                  <span className="item-value" style={rowStyle}>{formatPrice(item.unavailable ? 0 : item.price)}</span>
+                  <span className="item-value" style={rowStyle}>
+                    {formatPrice(item.unavailable ? 0 : item.price)}
+                  </span>
                 </div>
 
                 {assembled && (
                   <>
                     {subTypeRequirements.requiresHinge && (
-                      <div className="item-detail-row" style={{
-                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-')
-                          ? '#ffebee'
-                          : 'transparent',
-                        padding: '0.5rem',
-                        borderRadius: '4px'
-                      }}>
+                      <div
+                        className="item-detail-row"
+                        style={{
+                          backgroundColor:
+                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                            (!item.hingeSide || item.hingeSide === '-')
+                              ? '#ffebee'
+                              : 'transparent',
+                          padding: '0.5rem',
+                          borderRadius: '4px',
+                        }}
+                      >
                         <span className="item-label">{t('proposalColumns.hingeSide')}</span>
-                        {subTypeRequirements.itemRequirements[idx]?.requiresHinge && (!item.hingeSide || item.hingeSide === '-') && (
-                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
-                            {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
-                          </div>
-                        )}
+                        {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                          (!item.hingeSide || item.hingeSide === '-') && (
+                            <div
+                              className="text-danger mb-2"
+                              style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                            >
+                              {t('validation.selectHingeSide', {
+                                defaultValue: 'Select hinge side',
+                              })}
+                            </div>
+                          )}
                         <div className="btn-group-mobile">
                           {hingeOptions.map((opt) => (
                             <button
                               key={opt}
                               type="button"
                               className={`btn ${item.hingeSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
-                              style={item.hingeSide === opt ? {
-                                background: headerBg,
-                                color: textColor,
-                                border: `1px solid ${headerBg}`
-                              } : {}}
+                              style={
+                                item.hingeSide === opt
+                                  ? {
+                                      background: headerBg,
+                                      color: textColor,
+                                      border: `1px solid ${headerBg}`,
+                                    }
+                                  : {}
+                              }
                               onClick={() => !readOnly && updateHingeSide(idx, opt)}
                               disabled={readOnly}
                             >
@@ -912,34 +1081,48 @@ const CatalogTableEdit = ({
                             </button>
                           ))}
                         </div>
-                      </div>
                     )}
 
                     {subTypeRequirements.requiresExposed && (
-                      <div className="item-detail-row" style={{
-                        backgroundColor: subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-')
-                          ? '#ffebee'
-                          : 'transparent',
-                        padding: '0.5rem',
-                        borderRadius: '4px'
-                      }}>
+                      <div
+                        className="item-detail-row"
+                        style={{
+                          backgroundColor:
+                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                            (!item.exposedSide || item.exposedSide === '-')
+                              ? '#ffebee'
+                              : 'transparent',
+                          padding: '0.5rem',
+                          borderRadius: '4px',
+                        }}
+                      >
                         <span className="item-label">{t('proposalColumns.exposedSide')}</span>
-                        {subTypeRequirements.itemRequirements[idx]?.requiresExposed && (!item.exposedSide || item.exposedSide === '-') && (
-                          <div className="text-danger mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
-                            {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
-                          </div>
-                        )}
+                        {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                          (!item.exposedSide || item.exposedSide === '-') && (
+                            <div
+                              className="text-danger mb-2"
+                              style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                            >
+                              {t('validation.selectExposedSide', {
+                                defaultValue: 'Select exposed finished side',
+                              })}
+                            </div>
+                          )}
                         <div className="btn-group-mobile">
                           {exposedOptions.map((opt) => (
                             <button
                               key={opt}
                               type="button"
                               className={`btn ${item.exposedSide === opt ? 'btn-primary' : 'btn-outline-secondary'}`}
-                              style={item.exposedSide === opt ? {
-                                background: headerBg,
-                                color: textColor,
-                                border: `1px solid ${headerBg}`
-                              } : {}}
+                              style={
+                                item.exposedSide === opt
+                                  ? {
+                                      background: headerBg,
+                                      color: textColor,
+                                      border: `1px solid ${headerBg}`,
+                                    }
+                                  : {}
+                              }
                               onClick={() => !readOnly && updateExposedSide(idx, opt)}
                               disabled={readOnly}
                             >
@@ -947,29 +1130,34 @@ const CatalogTableEdit = ({
                             </button>
                           ))}
                         </div>
-                      </div>
                     )}
 
                     <div className="item-detail-row">
                       <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
-                      <span className="item-value" style={rowStyle}>{formatPrice(item.unavailable ? 0 : assemblyFee)}</span>
+                      <span className="item-value" style={rowStyle}>
+                        {formatPrice(item.unavailable ? 0 : assemblyFee)}
+                      </span>
                     </div>
                   </>
                 )}
 
                 {/* Modifications summary on mobile */}
                 <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.modifications', { defaultValue: 'Modifications' })}</span>
+                  <span className="item-label">
+                    {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
+                  </span>
                   <span className="item-value">{formatPrice(modsTotal)}</span>
                 </div>
 
                 <div className="total-highlight">
-                  <strong style={rowStyle}>{t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}</strong>
+                  <strong style={rowStyle}>
+                    {t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}
+                  </strong>
                 </div>
-              </div>
 
               {/* Mobile Modification Cards */}
-              {Array.isArray(item.modifications) && item.modifications.length > 0 && (
+              {Array.isArray(item.modifications) &&
+                item.modifications.length > 0 &&
                 item.modifications.map((mod, modIdx) => (
                   <div
                     key={`mobile-mod-${idx}-${modIdx}`}
@@ -985,83 +1173,95 @@ const CatalogTableEdit = ({
                       marginRight: 'auto',
                       maxWidth: '90%',
                       position: 'relative',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     }}
                   >
                     {/* Item indicator badge */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '-8px',
-                      left: '12px',
-                      background: textColor,
-                      color: headerBg,
-                      borderRadius: '50%',
-                      width: '24px',
-                      height: '24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      border: `2px solid ${headerBg}`
-                    }}>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        left: '12px',
+                        background: textColor,
+                        color: headerBg,
+                        borderRadius: '50%',
+                        width: '24px',
+                        height: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        border: `2px solid ${headerBg}`,
+                      }}
+                    >
                       {idx + 1}
                     </div>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '0.5rem'
-                    }}>
-                      <span style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '600',
-                        color: textColor,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}>{t('proposalDoc.modifications')}</span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          color: textColor,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                        }}
+                      >
+                        {t('proposalDoc.modifications')}
+                      </span>
                       {!readOnly && (
-                        <CIcon
-                          icon={cilTrash}
+                        <Icon as={Trash}
                           style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
                           onClick={() => handleDeleteModification(idx, modIdx)}
                         />
                       )}
                     </div>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '0.875rem',
-                      marginBottom: '0.25rem'
-                    }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '0.875rem',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
                       <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
                       {(() => {
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
-                        return details ? (
-                          <span style={{ opacity: 0.7 }}> — {details}</span>
-                        ) : null
+                        return details ? <span style={{ opacity: 0.7 }}> — {details}</span> : null
                       })()}
                       <span>Qty: {mod.qty}</span>
                     </div>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '0.875rem',
-                      marginBottom: '0'
-                    }}>
-                      <span>{t('proposalColumns.price')}: {formatPrice(mod.price || 0)}</span>
-                      <span><strong>{t('proposalColumns.total')}: {formatPrice((mod.price || 0) * (mod.qty || 1))}</strong></span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '0.875rem',
+                        marginBottom: '0',
+                      }}
+                    >
+                      <span>
+                        {t('proposalColumns.price')}: {formatPrice(mod.price || 0)}
+                      </span>
+                      <span>
+                        <strong>
+                          {t('proposalColumns.total')}:{' '}
+                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
+                        </strong>
+                      </span>
                     </div>
-                  </div>
-                ))
-              )}
+                ))}
             </React.Fragment>
-          );
+          )
         })}
       </div>
-    </div>
   )
 }
 
 export default CatalogTableEdit
-

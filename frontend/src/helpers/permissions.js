@@ -8,16 +8,16 @@ export const USER_ROLES = {
   sales: 2,
   manager: 3,
   admin: 4,
-  super_admin: 5
-};
+  super_admin: 5,
+}
 
 // Available modules for contractors
 export const CONTRACTOR_MODULES = {
   proposals: 'proposals',
   customers: 'customers',
   resources: 'resources',
-  calendar: 'calendar'
-};
+  calendar: 'calendar',
+}
 
 // Permission categories
 export const PERMISSIONS = {
@@ -62,7 +62,7 @@ export const PERMISSIONS = {
   'manufacturers:create': ['admin', 'super_admin'],
   'manufacturers:update': ['admin', 'super_admin'],
   'manufacturers:delete': ['admin', 'super_admin'],
-};
+}
 
 /**
  * Check if a user has a specific permission
@@ -71,75 +71,83 @@ export const PERMISSIONS = {
  * @returns {boolean} - Whether user has permission
  */
 export const hasPermission = (user, permission) => {
-  if (!user) return false;
+  if (!user) return false
 
   // ADMIN USERS HAVE ACCESS TO EVERYTHING - NO RESTRICTIONS
   if (isAdmin(user)) {
-    return true;
+    return true
   }
 
   // First check if user is a contractor by group_type (most reliable)
-  const isContractorByGroup = user.group && user.group.group_type === 'contractor';
-  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role;
+  const isContractorByGroup = user.group && user.group.group_type === 'contractor'
+  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role
 
   // Handle contractor permissions FIRST (before checking empty role)
   if (isContractorByGroup) {
-    let userModules = user.group.modules || {};
+    let userModules = user.group.modules || {}
 
     // Handle modules that might be stored as strings
     if (typeof userModules === 'string') {
       try {
-        userModules = JSON.parse(userModules);
+        userModules = JSON.parse(userModules)
       } catch (e) {
-        console.error('Failed to parse user modules in hasPermission:', userModules);
-        return false;
+        console.error('Failed to parse user modules in hasPermission:', userModules)
+        return false
       }
     }
 
     // Explicit contractor permissions - grant ALL operations for enabled modules
-    if (userModules.proposals === true && [
-      'proposals:read', 'proposals:create', 'proposals:update', 'proposals:status_change'
-    ].includes(permission)) {
-      return true;
+    if (
+      userModules.proposals === true &&
+      [
+        'proposals:read',
+        'proposals:create',
+        'proposals:update',
+        'proposals:status_change',
+      ].includes(permission)
+    ) {
+      return true
     }
 
-    if (userModules.customers === true && [
-      'customers:read', 'customers:create', 'customers:update'
-    ].includes(permission)) {
-      return true;
+    if (
+      userModules.customers === true &&
+      ['customers:read', 'customers:create', 'customers:update'].includes(permission)
+    ) {
+      return true
     }
 
-    if (userModules.resources === true && [
-      'resources:read', 'resources:create', 'resources:update'
-    ].includes(permission)) {
-      return true;
+    if (
+      userModules.resources === true &&
+      ['resources:read', 'resources:create', 'resources:update'].includes(permission)
+    ) {
+      return true
     }
 
     // All contractors can read manufacturer catalog data
     if (permission === 'manufacturers:read') {
-      return true;
+      return true
     }
 
     // Fallback: check if permission starts with module name
     if (permission.startsWith('customers:') && userModules.customers === true) {
-      return true;
+      return true
     }
     if (permission.startsWith('proposals:') && userModules.proposals === true) {
-      return true;
+      return true
     }
     if (permission.startsWith('resources:') && userModules.resources === true) {
-      return true;
+      return true
     }
   }
 
   // Check direct permission based on role (for non-contractors or as fallback)
-  const allowedRoles = PERMISSIONS[permission];
+  const allowedRoles = PERMISSIONS[permission]
   if (allowedRoles && role && allowedRoles.includes(role)) {
-    return true;
+    return true
   }
 
-  return false;
-};
+  return false
+}
 
 /**
  * Check if user is a contractor
@@ -148,9 +156,12 @@ export const hasPermission = (user, permission) => {
  */
 export const isContractor = (user) => {
   // Check both role and group_type to handle cases where role might be empty
-  return user && ((user.role && user.role.toLowerCase() === 'contractor') ||
-                  (user.group && user.group.group_type === 'contractor'));
-};
+  return (
+    user &&
+    ((user.role && user.role.toLowerCase() === 'contractor') ||
+      (user.group && user.group.group_type === 'contractor'))
+  )
+}
 
 /**
  * Check if user is admin or super admin
@@ -158,10 +169,10 @@ export const isContractor = (user) => {
  * @returns {boolean}
  */
 export const isAdmin = (user) => {
-  if (!user || !user.role) return false;
-  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role;
-  return role === 'admin' || role === 'super_admin';
-};
+  if (!user || !user.role) return false
+  const role = typeof user.role === 'string' ? user.role.toLowerCase() : user.role
+  return role === 'admin' || role === 'super_admin'
+}
 
 /**
  * Get contractor modules for a user
@@ -169,23 +180,23 @@ export const isAdmin = (user) => {
  * @returns {Array} - Array of enabled modules
  */
 export const getContractorModules = (user) => {
-  if (!isContractor(user)) return [];
+  if (!isContractor(user)) return []
 
-  let modules = user.group?.modules || {};
+  let modules = user.group?.modules || {}
 
   // Handle modules that might be stored as strings
   if (typeof modules === 'string') {
     try {
-      modules = JSON.parse(modules);
+      modules = JSON.parse(modules)
     } catch (e) {
-      console.error('Failed to parse contractor modules:', modules);
-      return [];
+      console.error('Failed to parse contractor modules:', modules)
+      return []
     }
   }
 
   // Convert object to array of enabled module names
-  return Object.keys(modules).filter(key => modules[key] === true);
-};
+  return Object.keys(modules).filter((key) => modules[key] === true)
+}
 
 /**
  * Check if contractor has access to a specific module
@@ -195,11 +206,11 @@ export const getContractorModules = (user) => {
  */
 export const hasModuleAccess = (user, module) => {
   // ADMIN USERS HAVE ACCESS TO ALL MODULES
-  if (isAdmin(user)) return true;
+  if (isAdmin(user)) return true
 
-  if (!isContractor(user)) return false;
-  return getContractorModules(user).includes(module);
-};
+  if (!isContractor(user)) return false
+  return getContractorModules(user).includes(module)
+}
 
 /**
  * Filter routes based on user permissions
@@ -208,63 +219,63 @@ export const hasModuleAccess = (user, module) => {
  * @returns {Array} - Filtered routes
  */
 export const filterRoutesByPermission = (routes, user) => {
-  if (!user) return [];
+  if (!user) return []
 
-  return routes.filter(route => {
+  return routes.filter((route) => {
     // Always allow dashboard and profile
     if (route.path === '/' || route.path === '/profile') {
-      return true;
+      return true
     }
 
     // Check specific route permissions
     if (route.path.startsWith('/customers')) {
-      return hasPermission(user, 'customers:read');
+      return hasPermission(user, 'customers:read')
     }
     if (route.path.startsWith('/quotes')) {
-      return hasPermission(user, 'proposals:read');
+      return hasPermission(user, 'proposals:read')
     }
     if (route.path.startsWith('/resources')) {
-      return hasPermission(user, 'resources:read');
+      return hasPermission(user, 'resources:read')
     }
     if (route.path.startsWith('/calender') || route.path.startsWith('/calendar')) {
-      return hasModuleAccess(user, 'calendar');
+      return hasModuleAccess(user, 'calendar')
     }
     if (route.path.startsWith('/contracts')) {
       // Explicitly block contractors from Contracts routes
-      if (isContractor(user)) return false;
-      return hasPermission(user, 'proposals:read');
+      if (isContractor(user)) return false
+      return hasPermission(user, 'proposals:read')
     }
-  if (route.path.startsWith('/settings')) {
+    if (route.path.startsWith('/settings')) {
       // Check specific settings permissions
       if (route.path.includes('/users') || route.path.includes('/group')) {
-        return hasPermission(user, 'settings:users');
+        return hasPermission(user, 'settings:users')
       }
       if (route.path.includes('/manufacturers')) {
-        return hasPermission(user, 'settings:manufacturers');
+        return hasPermission(user, 'settings:manufacturers')
       }
       if (route.path.includes('/locations')) {
-        return hasPermission(user, 'settings:locations');
+        return hasPermission(user, 'settings:locations')
       }
       if (route.path.includes('/taxes')) {
-        return hasPermission(user, 'settings:taxes');
+        return hasPermission(user, 'settings:taxes')
       }
       if (route.path.includes('/customization')) {
-        return hasPermission(user, 'settings:customization');
+        return hasPermission(user, 'settings:customization')
       }
       // Fallback - if no specific match, require admin
-      return isAdmin(user);
+      return isAdmin(user)
     }
     if (route.path.startsWith('/admin/notifications')) {
-      return hasPermission(user, 'admin:notifications');
+      return hasPermission(user, 'admin:notifications')
     }
     if (route.path.startsWith('/admin')) {
-      return isAdmin(user);
+      return isAdmin(user)
     }
 
     // Default: allow for any authenticated user (like 404 page)
-    return true;
-  });
-};
+    return true
+  })
+}
 
 /**
  * Check if user can perform an action on a button/UI element
@@ -276,27 +287,27 @@ export const filterRoutesByPermission = (routes, user) => {
  */
 export const canPerformAction = (user, action, resource, item = null) => {
   // Map singular resources used in UI to plural keys used in PERMISSIONS
-  const normalizedResource = resource && resource.endsWith('s') ? resource : `${resource}s`;
-  const permission = `${normalizedResource}:${action}`;
+  const normalizedResource = resource && resource.endsWith('s') ? resource : `${resource}s`
+  const permission = `${normalizedResource}:${action}`
 
   // Check basic permission first
   if (!hasPermission(user, permission)) {
-    return false;
+    return false
   }
 
   // For contractors, check group ownership
   if (isContractor(user) && item) {
-    const userGroupId = user.group_id;
-  if (normalizedResource === 'customers' && item.group_id !== userGroupId) {
-      return false;
+    const userGroupId = user.group_id
+    if (normalizedResource === 'customers' && item.group_id !== userGroupId) {
+      return false
     }
-  if (normalizedResource === 'proposals' && item.owner_group_id !== userGroupId) {
-      return false;
+    if (normalizedResource === 'proposals' && item.owner_group_id !== userGroupId) {
+      return false
     }
   }
 
-  return true;
-};
+  return true
+}
 
 /**
  * Get user role display name
@@ -309,10 +320,10 @@ export const getRoleDisplayName = (role) => {
     sales: 'Sales Representative',
     manager: 'Manager',
     admin: 'Administrator',
-    super_admin: 'Super Administrator'
-  };
-  return roleNames[role] || role;
-};
+    super_admin: 'Super Administrator',
+  }
+  return roleNames[role] || role
+}
 
 /**
  * Check if user can access navigation item
@@ -321,11 +332,6 @@ export const getRoleDisplayName = (role) => {
  * @returns {boolean}
  */
 export const canAccessNavItem = (user, navItem) => {
-  if (!navItem.permission) return true;
-  return hasPermission(user, navItem.permission);
-};
-
-
-
-
-
+  if (!navItem.permission) return true
+  return hasPermission(user, navItem.permission)
+}

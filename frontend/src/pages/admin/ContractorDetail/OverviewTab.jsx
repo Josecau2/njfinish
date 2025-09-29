@@ -1,159 +1,170 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { formatDate } from '../../../helpers/dateUtils';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { formatDate } from '../../../helpers/dateUtils'
+import { Flex, Box, Card, CardBody, CardHeader, Badge, List, ListItem, Progress } from '@chakra-ui/react'
 import {
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CBadge,
-  CProgress,
-  CListGroup,
-  CListGroupItem
-} from '@coreui/react';
-import { User, Users, BriefcaseBusiness, Calendar, CheckCircle, XCircle, LayoutGrid } from '@/icons-lucide';
+  User,
+  Users,
+  BriefcaseBusiness,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  LayoutGrid,
+} from 'lucide-react'
 
 const OverviewTab = ({ contractor }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const getModuleBadges = (modules) => {
-    if (!modules || typeof modules !== 'object') return [];
+    if (!modules || typeof modules !== 'object') return []
 
     const moduleLabels = {
       dashboard: { label: t('contractorsAdmin.modules.dashboard'), color: 'primary' },
       proposals: { label: t('contractorsAdmin.modules.proposals'), color: 'success' },
       customers: { label: t('contractorsAdmin.modules.customers'), color: 'warning' },
-      resources: { label: t('contractorsAdmin.modules.resources'), color: 'info' }
-    };
+      resources: { label: t('contractorsAdmin.modules.resources'), color: 'info' },
+    }
 
     // Parse modules if it's a string
-    let parsedModules = modules;
+    let parsedModules = modules
     if (typeof modules === 'string') {
       try {
-        parsedModules = JSON.parse(modules);
+        parsedModules = JSON.parse(modules)
       } catch (e) {
-        console.error('Error parsing modules:', e);
-        return [];
+        console.error('Error parsing modules:', e)
+        return []
       }
     }
 
     // Return all possible modules with their enabled status from the object
-    return ['dashboard', 'proposals', 'customers', 'resources'].map(key => ({
+    return ['dashboard', 'proposals', 'customers', 'resources'].map((key) => ({
       key,
       label: moduleLabels[key]?.label || key,
       color: moduleLabels[key]?.color || 'secondary',
-      enabled: parsedModules[key] === true
-    }));
-  };
+      enabled: parsedModules[key] === true,
+    }))
+  }
 
-  const moduleData = getModuleBadges(contractor.modules);
-  const enabledModules = moduleData.filter(m => m.enabled).length;
-  const totalModules = moduleData.length;
-  const modulePercentage = totalModules > 0 ? (enabledModules / totalModules) * 100 : 0;
+  const moduleData = getModuleBadges(contractor.modules)
+  const enabledModules = moduleData.filter((m) => m.enabled).length
+  const totalModules = moduleData.length
+  const modulePercentage = totalModules > 0 ? (enabledModules / totalModules) * 100 : 0
 
   return (
-    <CRow>
+    <Flex>
       {/* Stats Cards */}
-      <CCol sm={6} lg={3} className="mb-4">
-        <CCard className="text-center">
-          <CCardBody>
+      <Box sm={6} lg={3} className="mb-4">
+        <Card className="text-center">
+          <CardBody>
             <User size={32} className="text-primary mb-3" aria-hidden="true" />
             <h3 className="text-primary">{contractor.stats?.user_count || 0}</h3>
             <p className="text-muted mb-0">{t('contractorsAdmin.table.users')}</p>
-          </CCardBody>
-        </CCard>
-      </CCol>
+          </CardBody>
+        </Card>
+      </Box>
 
-      <CCol sm={6} lg={3} className="mb-4">
-        <CCard className="text-center">
-          <CCardBody>
+      <Box sm={6} lg={3} className="mb-4">
+        <Card className="text-center">
+          <CardBody>
             <Users size={32} className="text-warning mb-3" aria-hidden="true" />
             <h3 className="text-warning">{contractor.stats?.customer_count || 0}</h3>
             <p className="text-muted mb-0">{t('contractorsAdmin.table.customers')}</p>
-          </CCardBody>
-        </CCard>
-      </CCol>
+          </CardBody>
+        </Card>
+      </Box>
 
-      <CCol sm={6} lg={3} className="mb-4">
-        <CCard className="text-center">
-          <CCardBody>
+      <Box sm={6} lg={3} className="mb-4">
+        <Card className="text-center">
+          <CardBody>
             <BriefcaseBusiness size={32} className="text-success mb-3" aria-hidden="true" />
             <h3 className="text-success">{contractor.stats?.proposal_count || 0}</h3>
             <p className="text-muted mb-0">{t('contractorsAdmin.table.proposals')}</p>
-          </CCardBody>
-        </CCard>
-      </CCol>
+          </CardBody>
+        </Card>
+      </Box>
 
-      <CCol sm={6} lg={3} className="mb-4">
-        <CCard className="text-center">
-          <CCardBody>
+      <Box sm={6} lg={3} className="mb-4">
+        <Card className="text-center">
+          <CardBody>
             <LayoutGrid size={32} className="text-info mb-3" aria-hidden="true" />
-            <h3 className="text-info">{enabledModules}/{totalModules}</h3>
+            <h3 className="text-info">
+              {enabledModules}/{totalModules}
+            </h3>
             <p className="text-muted mb-0">{t('contractorsAdmin.table.modules')}</p>
-          </CCardBody>
-        </CCard>
-      </CCol>
+          </CardBody>
+        </Card>
+      </Box>
 
       {/* Basic Information */}
-      <CCol md={6} className="mb-4">
-        <CCard>
-          <CCardHeader>
+      <Box md={6} className="mb-4">
+        <Card>
+          <CardHeader>
             <strong>{t('contractorsAdmin.detail.basicInfo.title')}</strong>
-          </CCardHeader>
-          <CCardBody>
-            <CListGroup flush>
-              <CListGroupItem className="d-flex justify-content-between align-items-center">
+          </CardHeader>
+          <CardBody>
+            <List flush>
+              <ListItem className="d-flex justify-content-between align-items-center">
                 <span>
                   <Users size={16} className="me-2 text-muted" aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.contractorName')}
                 </span>
                 <strong>{contractor.name}</strong>
-              </CListGroupItem>
-              <CListGroupItem className="d-flex justify-content-between align-items-center">
+              </ListItem>
+              <ListItem className="d-flex justify-content-between align-items-center">
                 <span>
                   <Calendar size={16} className="me-2 text-muted" aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.createdDate')}
                 </span>
                 <span>{formatDate(contractor.created_at)}</span>
-              </CListGroupItem>
-              <CListGroupItem className="d-flex justify-content-between align-items-center">
+              </ListItem>
+              <ListItem className="d-flex justify-content-between align-items-center">
                 <span>{t('contractorsAdmin.detail.basicInfo.groupType')}</span>
-                <CBadge color="info">{contractor.group_type || 'contractor'}</CBadge>
-              </CListGroupItem>
+                <Badge status="info">{contractor.group_type || 'contractor'}</Badge>
+              </ListItem>
               {contractor.contractor_settings?.max_users && (
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
+                <ListItem className="d-flex justify-content-between align-items-center">
                   <span>{t('contractorsAdmin.detail.basicInfo.maxUsers')}</span>
                   <span>{contractor.contractor_settings.max_users}</span>
-                </CListGroupItem>
+                </ListItem>
               )}
-            </CListGroup>
-          </CCardBody>
-        </CCard>
-      </CCol>
+            </List>
+          </CardBody>
+        </Card>
+      </Box>
 
       {/* Module Access */}
-      <CCol md={6} className="mb-4">
-        <CCard>
-          <CCardHeader className="d-flex justify-content-between align-items-center">
+      <Box md={6} className="mb-4">
+        <Card>
+          <CardHeader className="d-flex justify-content-between align-items-center">
             <strong>{t('contractorsAdmin.detail.moduleAccess.title')}</strong>
             <div>
-              <small className="text-muted">{t('contractorsAdmin.detail.moduleAccess.enabledOfTotal', { enabled: enabledModules, total: totalModules })}</small>
+              <small className="text-muted">
+                {t('contractorsAdmin.detail.moduleAccess.enabledOfTotal', {
+                  enabled: enabledModules,
+                  total: totalModules,
+                })}
+              </small>
             </div>
-          </CCardHeader>
-          <CCardBody>
+          </CardHeader>
+          <CardBody>
             <div className="mb-3">
-              <CProgress
+              <Progress
                 value={modulePercentage}
-                color={modulePercentage > 75 ? 'success' : modulePercentage > 50 ? 'warning' : 'danger'}
+                colorScheme={
+                  modulePercentage > 75 ? 'green' : modulePercentage > 50 ? 'yellow' : 'red'
+                }
                 className="mb-2"
               />
-              <small className="text-muted">{t('contractorsAdmin.detail.moduleAccess.percentEnabled', { percent: Math.round(modulePercentage) })}</small>
+              <small className="text-muted">
+                {t('contractorsAdmin.detail.moduleAccess.percentEnabled', {
+                  percent: Math.round(modulePercentage),
+                })}
+              </small>
             </div>
 
-            <CListGroup flush>
-              {moduleData.map(module => (
-                <CListGroupItem
+            <List flush>
+              {moduleData.map((module) => (
+                <ListItem
                   key={module.key}
                   className="d-flex justify-content-between align-items-center"
                 >
@@ -165,51 +176,65 @@ const OverviewTab = ({ contractor }) => {
                     )}
                     {module.label}
                   </span>
-                  <CBadge color={module.enabled ? module.color : 'secondary'}>
-                    {module.enabled ? t('contractorsAdmin.detail.enabled') : t('contractorsAdmin.detail.disabled')}
-                  </CBadge>
-                </CListGroupItem>
+                  <Badge color={module.enabled ? module.color : 'secondary'}>
+                    {module.enabled
+                      ? t('contractorsAdmin.detail.enabled')
+                      : t('contractorsAdmin.detail.disabled')}
+                  </Badge>
+                </ListItem>
               ))}
-            </CListGroup>
-          </CCardBody>
-        </CCard>
-      </CCol>
+            </List>
+          </CardBody>
+        </Card>
+      </Box>
 
       {/* Activity Summary */}
-      <CCol xs={12}>
-        <CCard>
-          <CCardHeader>
+      <Box xs={12}>
+        <Card>
+          <CardHeader>
             <strong>{t('contractorsAdmin.detail.activity.title')}</strong>
-          </CCardHeader>
-          <CCardBody>
-            <CRow>
-              <CCol md={4} className="border-end">
+          </CardHeader>
+          <CardBody>
+            <Flex>
+              <Box md={4} className="border-end">
                 <div className="text-center">
                   <h4 className="text-primary">{contractor.stats?.user_count || 0}</h4>
-                  <p className="text-muted mb-0">{t('contractorsAdmin.detail.activity.totalUsers')}</p>
-                  <small className="text-muted">{t('contractorsAdmin.detail.activity.totalUsersHint')}</small>
+                  <p className="text-muted mb-0">
+                    {t('contractorsAdmin.detail.activity.totalUsers')}
+                  </p>
+                  <small className="text-muted">
+                    {t('contractorsAdmin.detail.activity.totalUsersHint')}
+                  </small>
                 </div>
-              </CCol>
-              <CCol md={4} className="border-end">
+              </Box>
+              <Box md={4} className="border-end">
                 <div className="text-center">
                   <h4 className="text-warning">{contractor.stats?.customer_count || 0}</h4>
-                  <p className="text-muted mb-0">{t('contractorsAdmin.detail.activity.totalCustomers')}</p>
-                  <small className="text-muted">{t('contractorsAdmin.detail.activity.totalCustomersHint')}</small>
+                  <p className="text-muted mb-0">
+                    {t('contractorsAdmin.detail.activity.totalCustomers')}
+                  </p>
+                  <small className="text-muted">
+                    {t('contractorsAdmin.detail.activity.totalCustomersHint')}
+                  </small>
                 </div>
-              </CCol>
-              <CCol md={4}>
+              </Box>
+              <Box md={4}>
                 <div className="text-center">
                   <h4 className="text-success">{contractor.stats?.proposal_count || 0}</h4>
-                  <p className="text-muted mb-0">{t('contractorsAdmin.detail.activity.totalProposals')}</p>
-                  <small className="text-muted">{t('contractorsAdmin.detail.activity.totalProposalsHint')}</small>
+                  <p className="text-muted mb-0">
+                    {t('contractorsAdmin.detail.activity.totalProposals')}
+                  </p>
+                  <small className="text-muted">
+                    {t('contractorsAdmin.detail.activity.totalProposalsHint')}
+                  </small>
                 </div>
-              </CCol>
-            </CRow>
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
-  );
-};
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      </Box>
+    </Flex>
+  )
+}
 
-export default OverviewTab;
+export default OverviewTab

@@ -1,9 +1,11 @@
 /* stylelint-disable scss/selector-no-redundant-nesting-selector */
-@use "@coreui/coreui/scss/variables" as * with (
+/* CoreUI imports commented out - migrated to Chakra UI
+@use '@coreui/coreui/scss/variables' as * with (
   $enable-deprecation-messages: false
 );
-@use "@coreui/coreui/scss/mixins/breakpoints" as *;
-@use "@coreui/coreui/scss/mixins/color-mode" as *;
+@use '@coreui/coreui/scss/mixins/breakpoints' as *;
+@use '@coreui/coreui/scss/mixins/color-mode' as *;
+*/
 
 .example {
   &:not(:first-child) {
@@ -11,7 +13,7 @@
   }
 
   .tab-content {
-    background-color: var(--#{$prefix}tertiary-bg);
+    background-color: var(--chakra-colors-gray-50);
   }
 
   & + p {
@@ -26,7 +28,7 @@
 
     > .form-control {
       + .form-control {
-        margin-top: .5rem;
+        margin-top: 0.5rem;
       }
     }
 
@@ -49,7 +51,7 @@
     // Images
     > svg + svg,
     > img + img {
-      margin-left: .5rem;
+      margin-left: 0.5rem;
     }
 
     // Buttons
@@ -57,10 +59,10 @@
     .col-auto > .btn,
     > .btn,
     > .btn-group {
-      margin: .25rem .125rem;
+      margin: 0.25rem 0.125rem;
     }
     > .btn-toolbar + .btn-toolbar {
-      margin-top: .5rem;
+      margin-top: 0.5rem;
     }
 
     // List groups
@@ -68,7 +70,7 @@
       max-width: 400px;
     }
 
-    > [class*="list-group-horizontal"] {
+    > [class*='list-group-horizontal'] {
       max-width: 100%;
     }
 
@@ -84,7 +86,7 @@
       margin: 1rem -1rem -1rem;
     }
 
-    @include media-breakpoint-up(sm) {
+    @media (min-width: 576px) {
       .fixed-top,
       .sticky-top {
         margin: -1.5rem -1.5rem 1rem;
@@ -96,8 +98,8 @@
 
     // Pagination
     .pagination {
-      margin-top: .5rem;
-      margin-bottom: .5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
     }
 
     .docs-example-modal {
@@ -109,8 +111,8 @@
   }
 }
 
-@include color-mode(dark) {
+@media (prefers-color-scheme: dark) {
   .example .tab-content {
-    background-color: var(--#{$prefix}secondary-bg);
+    background-color: var(--chakra-colors-gray-700);
   }
 }

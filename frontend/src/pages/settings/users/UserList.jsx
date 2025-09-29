@@ -1,160 +1,196 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react'
 import {
-  CFormInput,
-  CTable,
-  CTableBody,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableDataCell,
-  CSpinner,
-  CContainer,
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CBadge,
-  CButton,
-  CInputGroup,
-  CInputGroupText,
-} from '@coreui/react';
-import { Plus, Settings as Gear, Search, Pencil, Trash, Users, User as UserIcon } from '@/icons-lucide';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, fetchUsers } from '../../../store/slices/userSlice';
-import Swal from 'sweetalert2';
-import PaginationComponent from '../../../components/common/PaginationComponent';
-import { useTranslation } from 'react-i18next';
-import PageHeader from '../../../components/PageHeader';
-
+  Input,
+  Spinner,
+  Container,
+  Flex,
+  Box,
+  Card,
+  CardBody,
+  Badge,
+  Button,
+  useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  InputGroup,
+  InputLeftElement,
+  Select
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import {
+  Plus,
+  Settings as Gear,
+  Search,
+  Pencil,
+  Trash,
+  Users,
+  User as UserIcon,
+} from '@/icons-lucide'
+import { useNavigate } from 'react-router-dom'
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteUser, fetchUsers } from '../../../store/slices/userSlice'
+import PaginationComponent from '../../../components/common/PaginationComponent'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
 
 const UsersPage = () => {
-  const [filterText, setFilterText] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { list: users, loading, error } = useSelector((state) => state.users);
-  const { t } = useTranslation();
-  const loggedInUser = JSON.parse(localStorage.getItem('user'));
+  const [filterText, setFilterText] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { list: users, loading, error } = useSelector((state) => state.users)
+  const { t } = useTranslation()
+  const loggedInUser = JSON.parse(localStorage.getItem('user'))
   let loggedInUserId = loggedInUser.userId
 
+  // Delete confirmation dialog
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [deleteUserId, setDeleteUserId] = useState(null)
+  const cancelRef = useRef()
+  const toast = useToast()
+
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
+    dispatch(fetchUsers())
+  }, [dispatch])
 
   const filteredUsers = users
-    .filter(u => u && u.name && u.email)
-    .filter(u => u.id !== loggedInUserId)
+    .filter((u) => u && u.name && u.email)
+    .filter((u) => u.id !== loggedInUserId)
     .filter(
       (u) =>
         u.name.toLowerCase().includes(filterText.toLowerCase()) ||
-        u.email.toLowerCase().includes(filterText.toLowerCase())
-    );
+        u.email.toLowerCase().includes(filterText.toLowerCase()),
+    )
 
-  const totalPages = Math.ceil((filteredUsers.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((filteredUsers.length || 0) / itemsPerPage)
   const paginatedUsers = filteredUsers?.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+    currentPage * itemsPerPage,
+  )
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+    setCurrentPage(page)
+  }
 
   const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  };
+    setItemsPerPage(Number(e.target.value))
+    setCurrentPage(1)
+  }
 
-  const startIdx = (currentPage - 1) * itemsPerPage + 1;
-  const endIdx = Math.min(currentPage * itemsPerPage, filteredUsers.length);
+  const startIdx = (currentPage - 1) * itemsPerPage + 1
+  const endIdx = Math.min(currentPage * itemsPerPage, filteredUsers.length)
 
   const handleCreateUser = () => {
-    navigate("/settings/users/create");
+    navigate('/settings/users/create')
   }
 
   const handleCreateUserGroup = () => {
-    navigate("/settings/users/group/create");
+    navigate('/settings/users/group/create')
   }
 
   const handleUpdateUser = (id) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/users/edit/:id', { id });
-  navigate(noisy);
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/users/edit/:id', { id })
+    navigate(noisy)
   }
 
   const handleDelete = (id) => {
-    Swal.fire({
-      title: t('settings.users.confirm.title'),
-      text: t('settings.users.confirm.text'),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: t('settings.users.confirm.confirmYes'),
-      cancelButtonText: t('common.cancel'),
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await dispatch(deleteUser(id)).unwrap();
-          Swal.fire(t('common.deleted') + '!', t('settings.users.confirm.deletedText'), 'success');
-        } catch (error) {
-          Swal.fire(t('common.error') + '!', t('settings.users.confirm.errorText'), 'error');
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(t('settings.users.confirm.cancelledTitle'), t('settings.users.confirm.cancelledText'), 'info');
-      }
-    });
-  };
+    setDeleteUserId(id)
+    onOpen()
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteUserId) return
+
+    try {
+      await dispatch(deleteUser(deleteUserId)).unwrap()
+      toast({
+        title: t('common.deleted') + '!',
+        description: t('settings.users.confirm.deletedText'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+    } catch (error) {
+      toast({
+        title: t('common.error') + '!',
+        description: t('settings.users.confirm.errorText'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+    } finally {
+      setDeleteUserId(null)
+      onClose()
+    }
+  }
 
   const getRoleColor = (role) => {
     const roleColors = {
-      'Admin': 'primary',
-      'Manager': 'success',
-      'User': 'secondary',
-      'Editor': 'warning'
-    };
-    return roleColors[role] || 'secondary';
-  };
+      Admin: 'primary',
+      Manager: 'success',
+      User: 'secondary',
+      Editor: 'warning',
+    }
+    return roleColors[role] || 'secondary'
+  }
 
-  const adminCount = filteredUsers.filter(user => user.role === 'Admin').length;
-  const regularCount = filteredUsers.filter(user => user.role !== 'Admin').length;
+  const adminCount = filteredUsers.filter((user) => user.role === 'Admin').length
+  const regularCount = filteredUsers.filter((user) => user.role !== 'Admin').length
 
   return (
-    <CContainer fluid className="settings-container">
+    <Container fluid className="settings-container">
       <PageHeader
         title={t('settings.users.header')}
         subtitle={t('settings.users.subtitle')}
         rightContent={
           <div className="d-flex gap-2">
-            <CButton
-              color="light"
-              className="settings-action-button"
+            <Button
+              as={motion.button}
+              variant="outline"
+              colorScheme="gray"
               onClick={handleCreateUser}
               aria-label={t('settings.users.addUser')}
+              whileTap={{ scale: 0.98 }}
+              height="44px"
+              leftIcon={<Plus size={20} />}
             >
-              <Plus size={16} className="me-2" aria-hidden="true" />
               {t('settings.users.addUser')}
-            </CButton>
-            <CButton
-              color="success"
-              className="settings-action-button success"
+            </Button>
+            <Button
+              as={motion.button}
+              variant="solid"
+              colorScheme="brand"
               onClick={handleCreateUserGroup}
               aria-label={t('settings.users.addGroup')}
+              whileTap={{ scale: 0.98 }}
+              height="44px"
+              leftIcon={<Gear size={20} />}
             >
-              <Gear size={16} className="me-2" aria-hidden="true" />
               {t('settings.users.addGroup')}
-            </CButton>
+            </Button>
           </div>
         }
       />
 
       {/* Stats Cards */}
-      <CRow className="mb-2">
-        <CCol md={4}>
-          <CCard className="settings-stats-card">
-            <CCardBody>
+      <Flex className="mb-2">
+        <Box md={4}>
+          <Card className="settings-stats-card">
+            <CardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon primary">
                   <Users size={20} aria-hidden="true" />
@@ -164,12 +200,12 @@ const UsersPage = () => {
                   <small className="text-muted">{t('settings.users.stats.totalUsers')}</small>
                 </div>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol md={4}>
-          <CCard className="settings-stats-card">
-            <CCardBody>
+            </CardBody>
+          </Card>
+        </Box>
+        <Box md={4}>
+          <Card className="settings-stats-card">
+            <CardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon success">
                   <Gear size={20} aria-hidden="true" />
@@ -179,12 +215,12 @@ const UsersPage = () => {
                   <small className="text-muted">{t('settings.users.stats.administrators')}</small>
                 </div>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol md={4}>
-          <CCard className="settings-stats-card">
-            <CCardBody>
+            </CardBody>
+          </Card>
+        </Box>
+        <Box md={4}>
+          <Card className="settings-stats-card">
+            <CardBody>
               <div className="d-flex align-items-center justify-content-center mb-2">
                 <div className="settings-stat-icon warning">
                   <UserIcon size={20} aria-hidden="true" />
@@ -194,179 +230,173 @@ const UsersPage = () => {
                   <small className="text-muted">{t('settings.users.stats.regularUsers')}</small>
                 </div>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
 
       {/* Search Section */}
-      <CCard className="settings-search-card">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
-              <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
+      <Card className="settings-search-card">
+        <CardBody>
+          <Flex className="align-items-center">
+            <Box md={6} lg={4}>
+              <InputGroup>
+                <InputLeftElement>
                   <Search size={16} aria-hidden="true" />
-                </CInputGroupText>
-                <CFormInput
+                </InputLeftElement>
+                <Input
                   type="text"
                   placeholder={t('settings.users.searchPlaceholder')}
                   value={filterText}
                   onChange={(e) => {
-                    setFilterText(e.target.value);
-                    setCurrentPage(1);
+                    setFilterText(e.target.value)
+                    setCurrentPage(1)
                   }}
                   className="settings-search-input"
                   aria-label={t('settings.users.searchPlaceholder')}
                 />
-              </CInputGroup>
-            </CCol>
-            <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
+              </InputGroup>
+            </Box>
+            <Box md={6} lg={8} className="text-md-end mt-3 mt-md-0">
               <span className="text-muted small">
-                {t('settings.users.showing', { count: filteredUsers?.length || 0, total: users?.length || 0 })}
+                {t('settings.users.showing', {
+                  count: filteredUsers?.length || 0,
+                  total: users?.length || 0,
+                })}
               </span>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+            </Box>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Error State */}
       {error && (
-        <CCard className="settings-search-card">
-          <CCardBody>
+        <Card className="settings-search-card">
+          <CardBody>
             <div className="alert alert-danger mb-0">
-              <strong>{t('common.error')}:</strong> {t('settings.users.loadFailed')}: {error.message || error.toString() || t('common.error')}
+              <strong>{t('common.error')}:</strong> {t('settings.users.loadFailed')}:{' '}
+              {error.message || error.toString() || t('common.error')}
             </div>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Loading State */}
       {loading && (
-        <CCard className="settings-table-card">
-          <CCardBody className="settings-empty-state">
-            <CSpinner color="primary" size="lg" />
+        <Card className="settings-table-card">
+          <CardBody className="settings-empty-state">
+            <Spinner colorScheme="blue" size="lg" />
             <p className="text-muted mt-3 mb-0">{t('settings.users.loading')}</p>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Table */}
       {!loading && (
-        <CCard className="settings-table-card">
-          <CCardBody className="p-0">
+        <Card className="settings-table-card">
+          <CardBody className="p-0">
             {/* Desktop Table View */}
             <div className="d-none d-md-block table-wrap">
-              <CTable hover responsive className="mb-0 table-modern">
-                <CTableHead className="settings-table-header">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">
-                      #
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>
+              <Table variant="simple" className="mb-0 table-modern">
+                <Thead className="settings-table-header">
+                  <Tr>
+                    <Th className="text-center">#</Th>
+                    <Th>
                       <div className="d-flex align-items-center gap-2">
                         <UserIcon size={14} aria-hidden="true" />
                         {t('settings.users.table.name')}
                       </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>
-                      {t('settings.users.table.email')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">
-                      {t('settings.users.table.group')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">
-                      {t('settings.users.table.actions')}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+                    </Th>
+                    <Th>{t('settings.users.table.email')}</Th>
+                    <Th className="text-center">{t('settings.users.table.group')}</Th>
+                    <Th className="text-center">{t('settings.users.table.actions')}</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {paginatedUsers?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="5" className="settings-empty-state">
-                        <div className="text-muted">
+                    <Tr>
+                      <Td colSpan={5} className="settings-empty-state">
+                        <div className="settings-mobile-actions">
                           <Search size={20} className="settings-empty-icon" aria-hidden="true" />
                           <p className="mb-0">{t('settings.users.empty.title')}</p>
                           <small>{t('settings.users.empty.subtitle')}</small>
                         </div>
-                      </CTableDataCell>
-                    </CTableRow>
+                      </Td>
+                    </Tr>
                   ) : (
                     paginatedUsers.map((user, index) => (
-                      <CTableRow key={user.id} className="settings-table-row">
-                        <CTableDataCell className="text-center">
-                          <CBadge
-                            color="light"
+                      <Tr key={user.id} className="settings-table-row">
+                        <Td className="text-center">
+                          <Badge
+                            variant="subtle"
                             className="px-2 py-1"
                             style={{
                               borderRadius: '15px',
                               fontSize: '11px',
                               fontWeight: '500',
-                              color: '#6c757d'
+                              color: '#6c757d',
                             }}
                           >
                             {startIdx + index}
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          <div className="fw-medium text-dark">
-                            {user.name}
-                          </div>
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          <span className="text-muted">
-                            {user.email}
-                          </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="text-center">
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <div className="fw-medium text-dark">{user.name}</div>
+                        </Td>
+                        <Td>
+                          <span className="text-muted">{user.email}</span>
+                        </Td>
+                        <Td className="text-center">
                           {user.group ? (
-                            <CBadge
-                              color={getRoleColor(user.group.name)}
+                            <Badge
+                              colorScheme={getRoleColor(user.group.name)}
                               className="settings-badge"
                             >
                               {user.group.name}
-                            </CBadge>
+                            </Badge>
                           ) : (
-                            <CBadge
-                              color="secondary"
-                              className="settings-badge"
-                            >
+                            <Badge colorScheme="gray" className="settings-badge">
                               {t('settings.users.noGroup')}
-                            </CBadge>
+                            </Badge>
                           )}
-                        </CTableDataCell>
-                        <CTableDataCell className="text-center">
+                        </Td>
+                        <Td className="text-center">
                           <div className="d-flex justify-content-center gap-2">
-                            <CButton
-                              color="light"
+                            <Button
+                              as={motion.button}
+                              variant="ghost"
                               size="sm"
-                              className="icon-btn"
                               onClick={() => handleUpdateUser(user.id)}
                               title={t('common.edit')}
                               aria-label={t('common.edit')}
-                              style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                              whileTap={{ scale: 0.98 }}
+                              minW="44px"
+                              h="44px"
                             >
-                              <Pencil size={16} aria-hidden="true" />
-                            </CButton>
+                              <Pencil size={20} />
+                            </Button>
 
-                            <CButton
-                              color="light"
+                            <Button
+                              as={motion.button}
+                              variant="ghost"
+                              colorScheme="red"
                               size="sm"
-                              className="icon-btn"
                               onClick={() => handleDelete(user.id)}
                               title={t('common.delete')}
                               aria-label={t('common.delete')}
-                              style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                              whileTap={{ scale: 0.98 }}
+                              minW="44px"
+                              h="44px"
                             >
-                              <Trash size={16} aria-hidden="true" />
-                            </CButton>
+                              <Trash size={20} />
+                            </Button>
                           </div>
-                        </CTableDataCell>
-                      </CTableRow>
+                        </Td>
+                      </Tr>
                     ))
                   )}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </div>
 
             {/* Mobile Card View */}
@@ -385,47 +415,56 @@ const UsersPage = () => {
                     <div className="settings-mobile-card-header">
                       <div className="d-flex justify-content-between align-items-center">
                         <span>#{startIdx + index}</span>
-                        <CBadge
-                          color={user.group ? getRoleColor(user.group.name) : 'secondary'}
+                        <Badge
+                          colorScheme={user.group ? getRoleColor(user.group.name) : 'secondary'}
                           className="settings-badge"
                         >
                           {user.group ? user.group.name : t('settings.users.noGroup')}
-                        </CBadge>
+                        </Badge>
                       </div>
                     </div>
                     <div className="settings-mobile-card-body">
                       <div className="settings-mobile-field">
-                        <span className="settings-mobile-label">{t('settings.users.table.name')}</span>
+                        <span className="settings-mobile-label">
+                          {t('settings.users.table.name')}
+                        </span>
                         <span className="settings-mobile-value fw-medium">{user.name}</span>
                       </div>
                       <div className="settings-mobile-field">
-                        <span className="settings-mobile-label">{t('settings.users.table.email')}</span>
+                        <span className="settings-mobile-label">
+                          {t('settings.users.table.email')}
+                        </span>
                         <span className="settings-mobile-value text-muted">{user.email}</span>
                       </div>
-                    </div>
-                    <div className="settings-mobile-actions">
-                      <CButton
-                        color="light"
+                      <div className="settings-mobile-actions">
+                      <Button
+                        as={motion.button}
+                        variant="ghost"
                         size="sm"
-                        className="icon-btn"
                         onClick={() => handleUpdateUser(user.id)}
                         title={t('common.edit')}
                         aria-label={t('common.edit')}
-                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                        whileTap={{ scale: 0.98 }}
+                        minW="44px"
+                        h="44px"
                       >
-                        <Pencil size={16} aria-hidden="true" />
-                      </CButton>
-                      <CButton
-                        color="light"
+                        <Pencil size={20} />
+                      </Button>
+                      <Button
+                        as={motion.button}
+                        variant="ghost"
+                        colorScheme="red"
                         size="sm"
-                        className="icon-btn"
                         onClick={() => handleDelete(user.id)}
                         title={t('common.delete')}
                         aria-label={t('common.delete')}
-                        style={{ border: '1px solid #e3e6f0', borderRadius: '8px' }}
+                        whileTap={{ scale: 0.98 }}
+                        minW="44px"
+                        h="44px"
                       >
-                        <Trash size={16} aria-hidden="true" />
-                      </CButton>
+                        <Trash size={20} />
+                      </Button>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -441,11 +480,43 @@ const UsersPage = () => {
                 itemsPerPage={itemsPerPage}
               />
             </div>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
-    </CContainer>
-  );
-};
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('settings.users.confirm.title')}
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {t('settings.users.confirm.text')}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmDelete}
+                ml={3}
+                as={motion.button}
+                whileTap={{ scale: 0.98 }}
+              >
+                {t('settings.users.confirm.confirmYes')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Container>
+  )
+}
 
-export default UsersPage;
+export default UsersPage

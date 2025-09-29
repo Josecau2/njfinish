@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
-import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
-
+import { getLoginBrand, getBrandColors } from '../../brand/useBrand'
 
 const EMPTY_FORM = {
   firstName: '',
@@ -22,7 +21,6 @@ const EMPTY_FORM = {
 const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
-  const brand = getBrand()
   const loginBrand = getLoginBrand()
   const brandColors = getBrandColors()
   const logoHeight = Number(loginBrand.logoHeight) || 60
@@ -32,7 +30,6 @@ const RequestAccessPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
-
 
   const copy = {
     title: t('auth.requestAccess.title'),
@@ -127,6 +124,7 @@ const RequestAccessPage = () => {
 
   return (
     <div className="login-page-wrapper">
+      {/* Left Panel - Illustration and Branding */}
       <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
           <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
@@ -139,6 +137,7 @@ const RequestAccessPage = () => {
         </div>
       </div>
 
+      {/* Right Panel - Request Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
           <div className="text-center mb-4">

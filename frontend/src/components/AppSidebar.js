@@ -1,389 +1,190 @@
-import React, { useEffect, useRef, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useCallback } from 'react'
 import {
-  CCloseButton,
-  CSidebar,
-  CSidebarBrand,
-  CSidebarFooter,
-  CSidebarHeader,
-  CSidebarToggler,
-  CSpinner,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { AppSidebarNav } from './AppSidebarNav'
-import { logo } from 'src/assets/brand/logo'
-import { sygnet } from 'src/assets/brand/sygnet'
-// sidebar nav config
+  Box,
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { Pin, PinOff, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import useNavItems from '../_nav'
-import { setSidebarShow, setSidebarUnfoldable, setSidebarPinned } from '../store/slices/sidebarSlice'
-import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs'
-import { isAdmin } from '../helpers/permissions'
+import AppSidebarNav from './AppSidebarNav'
+import {
+  setSidebarShow,
+  setSidebarUnfoldable,
+  setSidebarPinned,
+} from '../store/slices/sidebarSlice'
 import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 import { resolveBrandAssetUrl } from '../utils/brandAssets'
+import { isAdmin } from '../helpers/permissions'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
-  const unfoldable = useSelector((state) => state.sidebar.sidebarUnfoldable)
-  const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
-  const navItems = useNavItems()
+  const { sidebarShow, sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
   const customization = useSelector((state) => state.customization)
   const authUser = useSelector((state) => state.auth?.user)
-  const sidebarRef = useRef(null)
+  const navItems = useNavItems()
+
+  const user = authUser || (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null')
+    } catch {
+      return null
+    }
+  })()
+
+  const isDesktop = useBreakpointValue({ base: false, lg: true })
+  const collapsed = !sidebarPinned && sidebarUnfoldable
+  const width = collapsed ? 72 : 280
+
+  const sidebarBg = customization.sidebarBg || '#0f172a'
+  const sidebarColor = customization.sidebarFontColor || '#f8fafc'
+  const borderColor = useColorModeValue('rgba(148,163,184,0.16)', 'rgba(148,163,184,0.24)')
+  const overlayColor = useColorModeValue('blackAlpha.400', 'blackAlpha.600')
+
   const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
 
-  // Get user data for admin check
-  const user = authUser || (() => {
-    const userData = localStorage.getItem('user')
-    return userData ? JSON.parse(userData) : null
-  })();
+  const handleCollapseToggle = () => {
+    if (collapsed) {
+      dispatch(setSidebarUnfoldable(false))
+    } else {
+      dispatch(setSidebarUnfoldable(true))
+      dispatch(setSidebarPinned(false))
+    }
+  }
 
-  // Close sidebar on outside click for mobile screens
-  useEffect(() => {
-    if (!sidebarShow) return
-    const isMobile = () => (typeof window !== 'undefined' && window.innerWidth < 768)
-    if (!isMobile()) return
-    const handleOutside = (e) => {
-      const el = sidebarRef.current
-      if (!el) return
-      if (!el.contains(e.target)) {
-        dispatch(setSidebarShow(false))
-      }
-    }
-    document.addEventListener('mousedown', handleOutside, true)
-    document.addEventListener('touchstart', handleOutside, true)
-    return () => {
-      document.removeEventListener('mousedown', handleOutside, true)
-      document.removeEventListener('touchstart', handleOutside, true)
-    }
-  }, [sidebarShow, dispatch])
-  // Hover handlers (desktop only). When collapsed (unfoldable=true) and NOT pinned, expand on hover.
-  const handleMouseEnter = useCallback(() => {
-    if (window.innerWidth < 992) return
-    if (sidebarPinned) return
-    // Only expand if currently narrow/collapsed
-    if (unfoldable) {
+  const handlePinToggle = () => {
+    const next = !sidebarPinned
+    dispatch(setSidebarPinned(next))
+    if (next) {
       dispatch(setSidebarUnfoldable(false))
     }
-  }, [dispatch, unfoldable, sidebarPinned])
+  }
 
-  const handleMouseLeave = useCallback(() => {
-    if (window.innerWidth < 992) return
+  const handleClose = () => dispatch(setSidebarShow(false))
+
+  const handleNavigate = useCallback(
+    () => {
+      if (!isDesktop) {
+        dispatch(setSidebarShow(false))
+      }
+    },
+    [dispatch, isDesktop],
+  )
+
+  const handleMouseEnter = () => {
+    if (!isDesktop) return
     if (sidebarPinned) return
-    // Collapse back after leaving if it was auto-expanded
-    if (!unfoldable) {
+    if (collapsed) {
+      dispatch(setSidebarUnfoldable(false))
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (!isDesktop) return
+    if (sidebarPinned) return
+    if (!sidebarUnfoldable) {
       dispatch(setSidebarUnfoldable(true))
     }
-  }, [dispatch, unfoldable, sidebarPinned])
+  }
+
+  const SidebarBody = (
+    <Flex
+      direction="column"
+      h="100%"
+      bg={sidebarBg}
+      color={sidebarColor}
+      borderRight={`1px solid ${borderColor}`}
+      role="navigation"
+    >
+      <Flex align="center" justify="space-between" px={collapsed ? 2 : 4} py={3} minH="60px">
+        <HStack spacing={3} minW={0} flex="1">
+          {resolvedLogo ? (
+            <LazyLoadImage
+              src={resolvedLogo}
+              alt="Logo"
+              style={{ maxHeight: '32px', maxWidth: '160px', objectFit: 'contain' }}
+              effect="blur"
+              placeholderSrc=""
+            />
+          ) : (
+            <Text fontWeight="bold" lineHeight="1" noOfLines={1}>
+              {customization.logoText || 'NJ Cabinets'}
+            </Text>
+          )}
+        </HStack>
+        {!isDesktop && (
+          <IconButton
+            aria-label="Close sidebar"
+            icon={<Icon as={X} boxSize={5} />}
+            variant="ghost"
+            color={sidebarColor}
+            onClick={handleClose}
+          />
+        )}
+      </Flex>
+
+      <Box flex="1" overflowY="auto" px={collapsed ? 1 : 0} py={2}>
+        <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} />
+      </Box>
+
+      <Stack spacing={3} px={collapsed ? 2 : 4} py={4} borderTop={`1px solid ${borderColor}`}>
+        {isAdmin(user) && <ShowroomModeToggle compact collapsed={collapsed} />}
+        <HStack spacing={2} justify={collapsed ? 'center' : 'space-between'}>
+          <IconButton
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            icon={<Icon as={collapsed ? ChevronRight : ChevronLeft} boxSize={5} />}
+            variant="ghost"
+            color={sidebarColor}
+            onClick={handleCollapseToggle}
+          />
+          <IconButton
+            aria-label={sidebarPinned ? 'Unpin sidebar' : 'Pin sidebar'}
+            icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={5} />}
+            variant="ghost"
+            color={sidebarColor}
+            onClick={handlePinToggle}
+          />
+        </HStack>
+      </Stack>
+    </Flex>
+  )
+
+  if (!isDesktop) {
+    return (
+      <Drawer isOpen={sidebarShow} placement="left" onClose={handleClose} size="xs">
+        <DrawerOverlay bg={overlayColor} />
+        <DrawerContent maxW="280px">{SidebarBody}</DrawerContent>
+      </Drawer>
+    )
+  }
 
   return (
-    <>
-      {/* Mobile-optimized sidebar CSS */}
-      <style>{`
-        .modern-sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100vh;
-          width: 260px;
-          z-index: 1040;
-          transform: translateX(-100%);
-          transition: transform 0.15s ease-in-out;
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modern-sidebar.show {
-          transform: translateX(0);
-        }
-
-        .modern-sidebar__header {
-          height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 1rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modern-sidebar__brand {
-          display: flex;
-          align-items: center;
-          text-decoration: none;
-          color: inherit;
-          min-width: 0;
-          flex: 1;
-        }
-
-        .modern-sidebar__close {
-          display: none;
-          background: transparent;
-          border: none;
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 1.25rem;
-          padding: 0.5rem;
-          cursor: pointer;
-          border-radius: 4px;
-          min-width: 44px;
-          min-height: 44px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .modern-sidebar__close:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
-
-        .modern-sidebar__footer {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 56px;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          display: none;
-        }
-
-        /* Mobile styles */
-        @media (max-width: 767.98px) {
-          .modern-sidebar {
-            width: 280px;
-            max-width: 85vw;
-          }
-
-          .modern-sidebar__close {
-            display: flex;
-          }
-
-          .modern-sidebar__footer {
-            display: none !important;
-          }
-        }
-
-        /* Tablet styles */
-        @media (min-width: 768px) and (max-width: 991.98px) {
-          .modern-sidebar {
-            transform: translateX(0);
-            position: relative;
-            height: 100vh;
-            overflow-y: auto;
-          }
-
-          .modern-sidebar__close {
-            display: none;
-          }
-
-          .modern-sidebar__footer {
-            display: flex;
-          }
-        }
-
-    /* Desktop styles */
-        @media (min-width: 992px) {
-          .modern-sidebar {
-            transform: translateX(0);
-            position: fixed;
-            height: 100vh;
-      overflow-y: auto; /* allow scrolling when content exceeds viewport */
-          }
-
-          .modern-sidebar.sidebar-narrow {
-            width: 56px;
-          }
-
-          .modern-sidebar__close {
-            display: none;
-          }
-
-          .modern-sidebar__footer {
-            display: flex;
-            position: relative;
-          }
-          /* Smooth width transition for expand / collapse */
-          .modern-sidebar { transition: width .18s ease, box-shadow .18s ease; }
-          .modern-sidebar.sidebar-narrow { overflow: hidden; }
-          .modern-sidebar.expanded-temp { box-shadow: 2px 0 8px rgba(0,0,0,.15); }
-        }
-
-        /* Fix for stuck sidebar issue - ensure proper initialization */
-        .modern-sidebar {
-          will-change: transform;
-        }
-
-        /* Ensure sidebar is properly shown/hidden based on state */
-        @media (min-width: 992px) {
-          .modern-sidebar:not(.show) {
-            transform: translateX(0) !important; /* Always show on desktop */
-          }
-        }
-
-        @media (max-width: 991.98px) {
-          .modern-sidebar:not(.show) {
-            transform: translateX(-100%) !important; /* Always hide on mobile when not shown */
-          }
-        }
-
-        /* Logo optimizations */
-        .sidebar-brand-full {
-          display: block;
-        }
-
-        .sidebar-brand-narrow {
-          display: none;
-        }
-
-        .modern-sidebar.sidebar-narrow .sidebar-brand-full {
-          display: none;
-        }
-
-        .modern-sidebar.sidebar-narrow .sidebar-brand-narrow {
-          display: block;
-        }
-
-        /* Navigation improvements */
-        .modern-sidebar .sidebar-nav {
-          padding: 0.5rem 0;
-          height: calc(100vh - 60px - 56px);
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-
-        @media (max-width: 767.98px) {
-          .modern-sidebar .sidebar-nav {
-            height: calc(100vh - 60px);
-            padding-bottom: 2rem;
-          }
-        }
-
-        /* Pin button adaptive styles */
-        .sidebar-footer-pin-btn { transition: all .18s ease; display:flex; align-items:center; gap:.35rem; }
-        .sidebar-footer-pin-btn .pin-label { display:inline; }
-        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn {
-          width:40px; min-width:40px; padding:.55rem .5rem; justify-content:center;
-        }
-        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn .pin-label { display:none; }
-        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn { font-size:0; }
-        .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn svg { font-size:16px; }
-  /* Center pin button horizontally when collapsed */
-  .modern-sidebar.sidebar-narrow .modern-sidebar__footer .d-flex { justify-content: center; }
-  .modern-sidebar.sidebar-narrow .sidebar-footer-pin-btn { margin-left:0 !important; margin-right:0 !important; }
-      `}</style>
-
-      <CSidebar
-        ref={sidebarRef}
-        className={`modern-sidebar border-end ${sidebarShow ? 'show' : ''} ${unfoldable ? 'sidebar-narrow' : ''} ${(!unfoldable && !sidebarPinned) ? 'expanded-temp' : ''}`}
-        colorScheme="dark"
-        position="fixed"
-        unfoldable={unfoldable}
-        visible={sidebarShow}
-        onVisibleChange={(visible) => {
-          dispatch(setSidebarShow(visible))
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          backgroundColor: customization.sidebarBg,
-          color: customization.sidebarFontColor,
-        }}
-      >
-        <CSidebarHeader
-          className="modern-sidebar__header border-bottom"
-          style={{
-            backgroundColor: customization.logoBg,
-          }}
-        >
-          <CSidebarBrand
-            to="/"
-            className="modern-sidebar__brand d-flex align-items-center text-decoration-none"
-            onClick={() => {
-              if (window.innerWidth < 768) {
-                dispatch(setSidebarShow(false))
-              }
-            }}
-          >
-            {resolvedLogo ? (
-              <>
-                {/* Full sidebar logo - visible when expanded */}
-                <img
-                  src={resolvedLogo}
-                  alt="Logo"
-                  className="sidebar-brand-full"
-                  style={{
-                    maxHeight: 40,
-                    maxWidth: 160,
-                    objectFit: 'contain',
-                  }}
-                />
-                {/* Collapsed sidebar logo - visible when collapsed */}
-                <img
-                  src={resolvedLogo}
-                  alt="Logo"
-                  className="sidebar-brand-narrow"
-                  style={{
-                    maxHeight: 28,
-                    maxWidth: 28,
-                    objectFit: 'contain',
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                <div className="sidebar-brand-full fw-bold fs-6" style={{ color: '#fff', cursor: 'pointer' }}>
-                  {customization.logoText}
-                </div>
-                <CIcon icon={sygnet} height={28} className="sidebar-brand-narrow" />
-              </>
-            )}
-          </CSidebarBrand>
-
-          <button
-            className="modern-sidebar__close d-lg-none"
-            onClick={() => dispatch(setSidebarShow(false))}
-            aria-label="Close sidebar"
-          >
-            ×
-          </button>
-        </CSidebarHeader>
-
-        {navItems.length > 0 ? (
-          <div className="sidebar-nav" style={{ color: customization.sidebarFontColor }}>
-            <AppSidebarNav items={navItems} fontColor={customization.sidebarFontColor} />
-          </div>
-        ) : (
-          <div className="text-white text-center py-4 d-flex justify-content-center">
-            <CSpinner color="light" />
-          </div>
-        )}
-
-        <CSidebarFooter className="modern-sidebar__footer border-top d-none d-lg-flex">
-          {/* Showroom Mode Toggle - Admin only (above pin button) */}
-          {isAdmin(user) && <ShowroomModeToggle compact collapsed={unfoldable} />}
-
-          {/* Single Pin / Unpin control replaces old toggler; when pinned, force expanded */}
-          <div className="d-flex align-items-center w-100 px-2">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-light ms-auto sidebar-footer-pin-btn"
-              onClick={() => {
-                const next = !sidebarPinned
-                dispatch(setSidebarPinned(next))
-                if (next) {
-                  // Ensure expanded when pinning
-                  if (unfoldable) dispatch(setSidebarUnfoldable(false))
-                }
-              }}
-              title={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
-              aria-label={sidebarPinned ? 'Unpin sidebar' : 'Pin sidebar'}
-            >
-              {sidebarPinned ? <BsPinAngleFill /> : <BsPinAngle />}
-              <span className="pin-label">{sidebarPinned ? 'Unpin' : 'Pin'}</span>
-            </button>
-          </div>
-        </CSidebarFooter>
-      </CSidebar>
-    </>
+    <Box
+      as="aside"
+      position="sticky"
+      top="0"
+      h="100vh"
+      w={`${width}px`}
+      transition="width 0.2s ease"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      zIndex="1010"
+    >
+      {SidebarBody}
+    </Box>
   )
 }
 
-export default React.memo(AppSidebar)
+export default AppSidebar
+

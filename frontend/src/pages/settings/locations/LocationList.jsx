@@ -1,419 +1,433 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react'
+import { Edit, Trash, Plus, Search, Mail, MapPin, Globe, ExternalLink } from 'lucide-react'
+import PaginationControls from '../../../components/PaginationControls'
+import { useNavigate } from 'react-router-dom'
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../../components/PageHeader'
+import { motion } from 'framer-motion'
 import {
-  CFormInput, CFormSelect,
-  CTable, CTableBody, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell,
-  CSpinner, CContainer, CRow, CCol, CCard, CCardBody, CBadge,
-  CInputGroup, CInputGroupText, CButton
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilPencil, cilTrash, cilPlus, cilSearch, cilLocationPin, cilEnvelopeClosed, cilGlobeAlt } from '@coreui/icons';
-import PaginationControls from '../../../components/PaginationControls';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../../utils/obfuscate';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice';
-import Swal from 'sweetalert2';
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { useTranslation } from 'react-i18next';
-import PageHeader from '../../../components/PageHeader';
+  Input,
+  Select,
+  Spinner,
+  Container,
+  Flex,
+  Box,
+  Card,
+  CardBody,
+  Badge,
+  Button,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Text,
+  VStack,
+  HStack,
+  InputGroup,
+  InputLeftElement,
+  Link,
+  Alert,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+  useToast,
+  useColorModeValue
+} from '@chakra-ui/react'
 
 const LocationPage = () => {
-  const { t } = useTranslation();
-  const [filterText, setFilterText] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { list: locations, loading, error } = useSelector((state) => state.locations);
+  const { t } = useTranslation()
+  const [filterText, setFilterText] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { list: locations, loading, error } = useSelector((state) => state.locations)
 
   useEffect(() => {
-    dispatch(fetchLocations());
-  }, [dispatch]);
+    dispatch(fetchLocations())
+  }, [dispatch])
 
   const filteredData = locations.filter((u) => {
-    const email = (u.email || '').toLowerCase();
-    const name = (u.locationName || '').toLowerCase();
-    const search = filterText.toLowerCase();
+    const email = (u.email || '').toLowerCase()
+    const name = (u.locationName || '').toLowerCase()
+    const search = filterText.toLowerCase()
 
-    return email.includes(search) || name.includes(search);
-  });
+    return email.includes(search) || name.includes(search)
+  })
 
-  const totalPages = Math.ceil((filteredData.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((filteredData.length || 0) / itemsPerPage)
   const paginatedLocation = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+    currentPage * itemsPerPage,
+  )
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  };
-
-  const startIdx = filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-  const endIdx = Math.min(currentPage * itemsPerPage, filteredData.length);
-
-  const handleCreateUser = () => {
-    navigate("/settings/locations/create");
+    setCurrentPage(page)
   }
 
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value))
+    setCurrentPage(1)
+  }
+
+  const startIdx = filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
+  const endIdx = Math.min(currentPage * itemsPerPage, filteredData.length)
+
+  const handleCreateUser = () => {
+    navigate('/settings/locations/create')
+  }
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [deleteLocationId, setDeleteLocationId] = useState(null)
+  const cancelRef = useRef()
+  const toast = useToast()
+
   const handleDelete = (id) => {
-    Swal.fire({
-      title: t('common.confirm'),
-      text: t('settings.locations.confirm.text'),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: t('settings.locations.confirm.confirmYes'),
-      cancelButtonText: t('common.cancel'),
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await dispatch(deleteLocation(id)).unwrap();
-          Swal.fire(t('settings.locations.confirm.deletedTitle'), t('settings.locations.confirm.deletedText'), 'success');
-        } catch (error) {
-          Swal.fire(t('settings.locations.confirm.errorTitle'), t('settings.locations.confirm.errorText'), 'error');
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(t('settings.locations.confirm.cancelledTitle'), t('settings.locations.confirm.cancelledText'), 'info');
-      }
-    });
-  };
+    setDeleteLocationId(id)
+    onOpen()
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteLocationId) return
+
+    try {
+      await dispatch(deleteLocation(deleteLocationId)).unwrap()
+      toast({
+        title: t('settings.locations.confirm.deletedTitle'),
+        description: t('settings.locations.confirm.deletedText'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+    } catch (error) {
+      toast({
+        title: t('settings.locations.confirm.errorTitle'),
+        description: t('settings.locations.confirm.errorText'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+    } finally {
+      setDeleteLocationId(null)
+      onClose()
+    }
+  }
 
   const handleUpdateLocation = (id) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/locations/edit/:id', { id });
-  navigate(noisy);
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/locations/edit/:id', { id })
+    navigate(noisy)
+  }
+
+  const tableBg = useColorModeValue('white', 'gray.800')
+  const headerBg = useColorModeValue('gray.50', 'gray.700')
+
+  if (loading) {
+    return (
+      <Container maxW="container.xl" py={8}>
+        <VStack spacing={4} justify="center" minH="200px">
+          <Spinner size="lg" color="brand.500" />
+          <Text color="gray.500">{t('settings.locations.loading')}</Text>
+        </VStack>
+      </Container>
+  
+  )
+  }
+
+  if (error) {
+    return (
+      <Container maxW="container.xl" py={8}>
+        <Alert status="error" borderRadius="md">
+          <Text fontWeight="semibold">{t('common.error')}:</Text>
+          <Text ml={2}>{t('settings.locations.errorLoad')}: {error}</Text>
+        </Alert>
+      </Container>
+  
+  )
   }
 
   return (
-    <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Container maxW="container.xl" py={8}>
       <PageHeader
-        title={
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: '48px',
-                height: '48px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px'
-              }}
-            >
-              <FaMapMarkerAlt className="text-white" style={{ fontSize: '24px' }} />
-            </div>
-            {t('settings.locations.header')}
-          </div>
-        }
+        title={t('settings.locations.header')}
         subtitle={t('settings.locations.subtitle')}
-        rightContent={
-          <CButton
-            color="light"
-            className="shadow-sm px-4 fw-semibold"
+        icon={MapPin}
+        actions={
+          <Button
+            leftIcon={<Plus size={16} />}
+            colorScheme="brand"
             onClick={handleCreateUser}
-            style={{
-              borderRadius: '5px',
-              border: 'none',
-              transition: 'all 0.3s ease'
-            }}
+            as={motion.button}
+            whileTap={{ scale: 0.98 }}
           >
-            <CIcon icon={cilPlus} className="me-2" />
             {t('settings.locations.add')}
-          </CButton>
+          </Button>
+  
+  )
         }
       />
 
       {/* Search and Stats */}
-      <CCard className="border-0 shadow-sm mb-1">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
-              <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
-                  type="text"
+      <Card mb={6}>
+        <CardBody>
+          <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
+            <Box flex={1} maxW={{ base: 'full', md: '400px' }}>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <Search size={16} color="gray.400" />
+                </InputLeftElement>
+                <Input
                   placeholder={t('settings.locations.searchPlaceholder')}
                   value={filterText}
                   onChange={(e) => {
-                    setFilterText(e.target.value);
-                    setCurrentPage(1);
+                    setFilterText(e.target.value)
+                    setCurrentPage(1)
                   }}
-                  style={{
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    padding: '12px 16px'
-                  }}
+                  borderRadius="md"
                 />
-              </CInputGroup>
-            </CCol>
-            <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-              <div className="d-flex justify-content-md-end align-items-center gap-3">
-                <CBadge
-                  color="info"
-                  className="px-3 py-2"
-                  style={{
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: '500'
-                  }}
-                >
-                  {t('settings.locations.stats.total', { count: locations?.length || 0 })}
-                </CBadge>
-                <span className="text-muted small">
-                  {t('settings.locations.stats.showingResults', { count: filteredData?.length || 0 })}
-                </span>
-              </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
-
-      {/* Error State */}
-      {error && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody>
-            <div className="alert alert-danger mb-0">
-              <strong>{t('common.error')}:</strong> {t('settings.locations.errorLoad')}: {error}
-            </div>
-          </CCardBody>
-        </CCard>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="text-center py-5">
-            <CSpinner color="primary" size="lg" />
-            <p className="text-muted mt-3 mb-0">{t('settings.locations.loading')}</p>
-          </CCardBody>
-        </CCard>
-      )}
+              </InputGroup>
+            </Box>
+            <HStack spacing={4} justify="flex-end">
+              <Badge
+                colorScheme="blue"
+                variant="subtle"
+                px={3}
+                py={1}
+                borderRadius="full"
+              >
+                {t('settings.locations.stats.total', { count: locations?.length || 0 })}
+              </Badge>
+              <Text fontSize="sm" color="gray.500">
+                {t('settings.locations.stats.showingResults', {
+                  count: filteredData?.length || 0,
+                })}
+              </Text>
+            </HStack>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Table */}
-      {!loading && !error && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="p-0">
-            <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
-                <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
-                      #
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilLocationPin} size="sm" />
-                        {t('settings.locations.table.locationName')}
-                      </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
-                      {t('settings.locations.table.address')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilEnvelopeClosed} size="sm" />
-                        {t('settings.locations.table.email')}
-                      </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilGlobeAlt} size="sm" />
-                        {t('settings.locations.table.website')}
-                      </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="border-0 fw-semibold text-muted py-3 text-center">
-                      {t('settings.locations.table.actions')}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {filteredData?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="6" className="text-center py-5">
-                        <div className="text-muted">
-                          <CIcon icon={cilLocationPin} size="xl" className="mb-3 opacity-25" />
-                          <p className="mb-0">{t('settings.locations.empty.title')}</p>
-                          <small>{t('settings.locations.empty.subtitle')}</small>
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ) : (
-                    paginatedLocation?.map((location, index) => (
-                      <CTableRow key={location.id} style={{ transition: 'all 0.2s ease' }}>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge
-                            color="secondary"
-                            className="px-2 py-1"
-                            style={{
-                              borderRadius: '12px',
-                              fontSize: '11px',
-                              fontWeight: '500'
-                            }}
+      <Card>
+        <CardBody p={0}>
+          <Box overflowX="auto">
+            <Table variant="simple" bg={tableBg}>
+              <Thead bg={headerBg}>
+                <Tr>
+                  <Th scope="col" textAlign="center">#</Th>
+                  <Th scope="col">
+                    <HStack spacing={2}>
+                      <MapPin size={14} />
+                      <Text>{t('settings.locations.table.locationName')}</Text>
+                    </HStack>
+                  </Th>
+                  <Th scope="col">{t('settings.locations.table.address')}</Th>
+                  <Th scope="col">
+                    <HStack spacing={2}>
+                      <Mail size={14} />
+                      <Text>{t('settings.locations.table.email')}</Text>
+                    </HStack>
+                  </Th>
+                  <Th scope="col">
+                    <HStack spacing={2}>
+                      <Globe size={14} />
+                      <Text>{t('settings.locations.table.website')}</Text>
+                    </HStack>
+                  </Th>
+                  <Th scope="col" textAlign="center">{t('settings.locations.table.actions')}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {filteredData?.length === 0 ? (
+                  <Tr>
+                    <Td colSpan={6} textAlign="center" py={8}>
+                      <VStack spacing={3} color="gray.500">
+                        <MapPin size={32} opacity={0.3} />
+                        <Text>{t('settings.locations.empty.title')}</Text>
+                        <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
+                      </VStack>
+                    </Td>
+                  </Tr>
+                ) : (
+                  paginatedLocation?.map((location, index) => (
+                    <Tr key={location.id} _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}>
+                      <Td textAlign="center">
+                        <Badge
+                          variant="subtle"
+                          colorScheme="gray"
+                          borderRadius="full"
+                          fontSize="xs"
+                        >
+                          {startIdx + index}
+                        </Badge>
+                      </Td>
+                      <Td>
+                        <Text fontWeight="semibold">
+                          {location.locationName || t('common.na')}
+                        </Text>
+                      </Td>
+                      <Td>
+                        <Text color="gray.600" fontSize="sm">
+                          {location.address || t('common.na')}
+                        </Text>
+                      </Td>
+                      <Td>
+                        {location.email ? (
+                          <Link
+                            href={`mailto:${location.email}`}
+                            color="brand.500"
+                            _hover={{ textDecoration: 'underline' }}
+                            fontSize="sm"
                           >
-                            {startIdx + index}
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <div className="fw-medium text-dark">
-                            {location.locationName || t('common.na')}
-                          </div>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <span className="text-muted small">
-                            {location.address || t('common.na')}
-                          </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          {location.email ? (
-                            <a
-                              href={`mailto:${location.email}`}
-                              className="text-decoration-none"
-                              style={{ color: '#0d6efd' }}
-                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                            >
-                              {location.email}
-                            </a>
-                          ) : (
-                            <span className="text-muted">{t('common.na')}</span>
-                          )}
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          {location.website ? (
-                            <a
-                              href={location.website?.startsWith('http') ? location.website : `https://${location.website}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-decoration-none"
-                              style={{ color: '#0d6efd' }}
-                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                            >
-                              {location.website}
-                            </a>
-                          ) : (
-                            <span className="text-muted">{t('common.na')}</span>
-                          )}
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
-                          <div className="d-flex justify-content-center gap-2">
-                            <CButton
-                              color="light"
-                              size="sm"
-                              className="p-2"
-                              onClick={() => handleUpdateLocation(location.id)}
-                              aria-label={t('settings.locations.actions.edit')}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease',
-                                minHeight: '44px',
-                                minWidth: '44px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e7f3ff';
-                                e.currentTarget.style.borderColor = '#0d6efd';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
-                            >
-                              <CIcon
-                                icon={cilPencil}
-                                size="sm"
-                                style={{ color: '#0d6efd' }}
-                              />
-                            </CButton>
+                            {location.email}
+                          </Link>
+                        ) : (
+                          <Text color="gray.400" fontSize="sm">{t('common.na')}</Text>
+                        )}
+                      </Td>
+                      <Td>
+                        {location.website ? (
+                          <Link
+                            href={
+                              location.website?.startsWith('http')
+                                ? location.website
+                                : `https://${location.website}`
+                            }
+                            isExternal
+                            color="brand.500"
+                            _hover={{ textDecoration: 'underline' }}
+                            fontSize="sm"
+                          >
+                            <HStack spacing={1}>
+                              <Text>{location.website}</Text>
+                              <ExternalLink size={12} />
+                            </HStack>
+                          </Link>
+                        ) : (
+                          <Text color="gray.400" fontSize="sm">{t('common.na')}</Text>
+                        )}
+                      </Td>
+                      <Td textAlign="center">
+                        <HStack spacing={2} justify="center">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUpdateLocation(location.id)}
+                            aria-label={t('settings.locations.actions.edit')}
+                            as={motion.button}
+                            whileTap={{ scale: 0.98 }}
+                            minW="44px"
+                            h="44px"
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            colorScheme="red"
+                            size="sm"
+                            onClick={() => handleDelete(location.id)}
+                            aria-label={t('settings.locations.actions.delete')}
+                            as={motion.button}
+                            whileTap={{ scale: 0.98 }}
+                            minW="44px"
+                            h="44px"
+                          >
+                            <Trash size={16} />
+                          </Button>
+                        </HStack>
+                      </Td>
+                    </Tr>
+                  ))
+                )}
+              </Tbody>
+            </Table>
+          </Box>
 
-                            <CButton
-                              color="light"
-                              size="sm"
-                              className="p-2"
-                              onClick={() => handleDelete(location.id)}
-                              aria-label={t('settings.locations.actions.delete')}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease',
-                                minHeight: '44px',
-                                minWidth: '44px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#ffe6e6';
-                                e.currentTarget.style.borderColor = '#dc3545';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
-                            >
-                              <CIcon
-                                icon={cilTrash}
-                                size="sm"
-                                style={{ color: '#dc3545' }}
-                              />
-                            </CButton>
-                          </div>
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))
-                  )}
-                </CTableBody>
-              </CTable>
-            </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box borderTop={1} borderColor="gray.200" p={4}>
+              <Flex justify="space-between" align="center" wrap="wrap" gap={3}>
+                <Text fontSize="sm" color="gray.500">
+                  {t('settings.locations.showingRange', {
+                    start: filteredData.length === 0 ? 0 : startIdx,
+                    end: endIdx,
+                    total: filteredData.length,
+                  })}
+                </Text>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="p-3 border-top border-light">
-                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                  {/* Left: Showing info */}
-                    <div className="text-muted small">
-                    {t('settings.locations.showingRange', { start: filteredData.length === 0 ? 0 : startIdx, end: endIdx, total: filteredData.length })}
-                  </div>
+                <Flex justify="center" flex={1}>
+                  <PaginationControls
+                    page={currentPage}
+                    totalPages={totalPages}
+                    goPrev={() => handlePageChange(currentPage - 1)}
+                    goNext={() => handlePageChange(currentPage + 1)}
+                  />
+                </Flex>
 
-                  {/* Center: Pagination arrows */}
-                  <div className="d-flex justify-content-center flex-grow-1">
-                    <PaginationControls
-                      page={currentPage}
-                      totalPages={totalPages}
-                      goPrev={() => handlePageChange(currentPage - 1)}
-                      goNext={() => handlePageChange(currentPage + 1)}
-                    />
-                  </div>
+                <Box minW="120px">
+                  <Select
+                    size="sm"
+                    value={itemsPerPage}
+                    onChange={handleItemsPerPageChange}
+                    borderRadius="md"
+                  >
+                    {[5, 10, 15, 20, 25].map((val) => (
+                      <option key={val} value={val}>
+                        {t('settings.locations.showItems', { count: val })}
+                      </option>
+                    ))}
+                  </Select>
+                </Box>
+              </Flex>
+            </Box>
+          )}
+        </CardBody>
+      </Card>
 
-                  {/* Right: Items per page selector */}
-                  <div style={{ width: '120px' }}>
-                    <CFormSelect
-                      size="sm"
-                      value={itemsPerPage}
-                      onChange={handleItemsPerPageChange}
-                      style={{
-                        borderRadius: '6px',
-                        fontSize: '12px'
-                      }}
-                    >
-            {[5, 10, 15, 20, 25].map((val) => (
-                        <option key={val} value={val}>
-              {t('settings.locations.showItems', { count: val })}
-                        </option>
-                      ))}
-                    </CFormSelect>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CCardBody>
-        </CCard>
-      )}
-    </CContainer>
-  );
-};
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {t('settings.locations.confirm.text')}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmDelete}
+                ml={3}
+                as={motion.button}
+                whileTap={{ scale: 0.98 }}
+              >
+                {t('settings.locations.confirm.confirmYes')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Container>
+  )
+}
 
-export default LocationPage;
+</Container>
+export default LocationPage

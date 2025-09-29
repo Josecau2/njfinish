@@ -1,48 +1,43 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  CAlert,
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CContainer,
-  CRow,
-  CSpinner,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilCreditCard, cilArrowLeft } from '../../icons';
-import PageHeader from '../../components/PageHeader';
-import { fetchPaymentById, fetchPublicPaymentConfig } from '../../store/slices/paymentsSlice';
-import { FaCreditCard } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import axiosInstance from '../../helpers/axiosInstance';
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Alert, Card, CardBody, CardHeader, Box, Container, Flex, Spinner, Icon, Button } from '@chakra-ui/react'
+import { ArrowLeft } from 'lucide-react'
+import PageHeader from '../../components/PageHeader'
+import { fetchPaymentById, fetchPublicPaymentConfig } from '../../store/slices/paymentsSlice'
+import { FaCreditCard } from 'react-icons/fa'
+import Swal from 'sweetalert2'
+import axiosInstance from '../../helpers/axiosInstance'
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
 
 const formatCurrency = (amountCents = 0, currency = 'USD') => {
-  const value = (amountCents || 0) / 100;
+  const value = (amountCents || 0) / 100
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency || 'USD',
-  }).format(value);
-};
+  }).format(value)
+}
 
-const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, onError, submitLabel }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [submitting, setSubmitting] = useState(false);
+const StripeCheckoutForm = ({
+  paymentId,
+  onPaymentComplete,
+  onProcessingChange,
+  onError,
+  submitLabel,
+}) => {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!stripe || !elements) return;
+    event.preventDefault()
+    if (!stripe || !elements) return
 
-    setSubmitting(true);
-    onProcessingChange(true);
-    onError(null);
+    setSubmitting(true)
+    onProcessingChange(true)
+    onError(null)
 
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
@@ -51,164 +46,167 @@ const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, 
           return_url: `${window.location.origin}/payments/success?paymentId=${paymentId}`,
         },
         redirect: 'if_required',
-      });
+      })
 
       if (error) {
-        onError(error.message || 'Payment failed.');
-        return;
+        onError(error.message || 'Payment failed.')
+        return
       }
 
       if (paymentIntent) {
-        await onPaymentComplete(paymentIntent);
+        await onPaymentComplete(paymentIntent)
       }
     } catch (err) {
-      onError(err.message || 'Unable to confirm payment.');
+      onError(err.message || 'Unable to confirm payment.')
     } finally {
-      setSubmitting(false);
-      onProcessingChange(false);
+      setSubmitting(false)
+      onProcessingChange(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="stack gap-3">
       <PaymentElement options={{ layout: 'tabs' }} />
       <div className="d-flex justify-content-end gap-2">
-        <CButton type="submit" color="primary" disabled={!stripe || !elements || submitting}>
-          {submitting ? <CSpinner size="sm" aria-hidden /> : null}
+        <Button type="submit" colorScheme="blue" disabled={!stripe || !elements || submitting}>
+          {submitting ? <Spinner size="sm" aria-hidden /> : null}
           <span className={submitting ? 'ms-2' : ''}>{submitLabel}</span>
-        </CButton>
+        </Button>
       </div>
     </form>
-  );
-};
+  
+  )
+}
 
 const PaymentPage = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments);
-  const [stripePromise, setStripePromise] = useState(null);
-  const [clientSecret, setClientSecret] = useState('');
-  const [intentLoading, setIntentLoading] = useState(false);
-  const [intentError, setIntentError] = useState(null);
-  const [processing, setProcessing] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [statusVariant, setStatusVariant] = useState('info');
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
+  const [stripePromise, setStripePromise] = useState(null)
+  const [clientSecret, setClientSecret] = useState('')
+  const [intentLoading, setIntentLoading] = useState(false)
+  const [intentError, setIntentError] = useState(null)
+  const [processing, setProcessing] = useState(false)
+  const [statusMessage, setStatusMessage] = useState('')
+  const [statusVariant, setStatusVariant] = useState('info')
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchPaymentById(id));
-      dispatch(fetchPublicPaymentConfig());
+      dispatch(fetchPaymentById(id))
+      dispatch(fetchPublicPaymentConfig())
     }
-  }, [dispatch, id]);
+  }, [dispatch, id])
 
   useEffect(() => {
     if (publicPaymentConfig?.publishableKey) {
-      setStripePromise(loadStripe(publicPaymentConfig.publishableKey));
+      setStripePromise(loadStripe(publicPaymentConfig.publishableKey))
     }
-  }, [publicPaymentConfig?.publishableKey]);
+  }, [publicPaymentConfig?.publishableKey])
 
   const refreshPayment = useCallback(async () => {
     try {
-      const result = await dispatch(fetchPaymentById(id)).unwrap();
-      return result;
+      const result = await dispatch(fetchPaymentById(id)).unwrap()
+      return result
     } catch (err) {
-      console.warn('Failed to refresh payment:', err?.message || err);
-      return null;
+      console.warn('Failed to refresh payment:', err?.message || err)
+      return null
     }
-  }, [dispatch, id]);
+  }, [dispatch, id])
 
   const pollForStatus = useCallback(async () => {
     for (let attempt = 0; attempt < 6; attempt += 1) {
-      const refreshed = await refreshPayment();
+      const refreshed = await refreshPayment()
       if (refreshed?.status === 'completed') {
-        setStatusVariant('success');
-        setStatusMessage(t('payment.status.completed', 'Payment completed successfully.'));
-        return 'completed';
+        setStatusVariant('success')
+        setStatusMessage(t('payment.status.completed', 'Payment completed successfully.'))
+        return 'completed'
       }
       if (refreshed?.status === 'failed') {
-        setStatusVariant('danger');
-        setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'));
-        setClientSecret('');
-        return 'failed';
+        setStatusVariant('danger')
+        setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'))
+        setClientSecret('')
+        return 'failed'
       }
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000))
     }
-    setStatusVariant('info');
-    setStatusMessage(t('payment.status.pending', 'Awaiting confirmation...'));
-    return 'pending';
-  }, [refreshPayment, t]);
+    setStatusVariant('info')
+    setStatusMessage(t('payment.status.pending', 'Awaiting confirmation...'))
+    return 'pending'
+  }, [refreshPayment, t])
 
   const initializeIntent = useCallback(async () => {
-    if (!id) return;
-    setIntentLoading(true);
-    setIntentError(null);
+    if (!id) return
+    setIntentLoading(true)
+    setIntentError(null)
     try {
-      const { data } = await axiosInstance.post(`/api/payments/${id}/stripe-intent`);
-      setClientSecret(data.clientSecret);
-      setStatusVariant('info');
-      setStatusMessage('');
-      await refreshPayment();
+      const { data } = await axiosInstance.post(`/api/payments/${id}/stripe-intent`)
+      setClientSecret(data.clientSecret)
+      setStatusVariant('info')
+      setStatusMessage('')
+      await refreshPayment()
     } catch (error) {
-      setIntentError(error.response?.data?.error || error.message || 'Unable to initialize payment.');
+      setIntentError(
+        error.response?.data?.error || error.message || 'Unable to initialize payment.',
+      )
     } finally {
-      setIntentLoading(false);
+      setIntentLoading(false)
     }
-  }, [id, refreshPayment]);
+  }, [id, refreshPayment])
 
   useEffect(() => {
     if (!publicPaymentConfig?.cardPaymentsEnabled || !publicPaymentConfig?.publishableKey) {
-      return;
+      return
     }
     if (!currentPayment || !['pending', 'failed'].includes(currentPayment.status)) {
-      return;
+      return
     }
     if (!clientSecret && !intentLoading) {
-      initializeIntent();
+      initializeIntent()
     }
-  }, [publicPaymentConfig, currentPayment?.status, clientSecret, intentLoading, initializeIntent]);
+  }, [publicPaymentConfig, currentPayment?.status, clientSecret, intentLoading, initializeIntent])
 
   useEffect(() => {
-    if (!currentPayment) return;
+    if (!currentPayment) return
 
     if (currentPayment.status === 'completed') {
-      setStatusVariant('success');
-      setStatusMessage(t('payment.status.completed', 'Payment completed successfully.'));
-      return;
+      setStatusVariant('success')
+      setStatusMessage(t('payment.status.completed', 'Payment completed successfully.'))
+      return
     }
 
     if (currentPayment.status === 'failed') {
-      setStatusVariant('danger');
-      setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'));
+      setStatusVariant('danger')
+      setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'))
       if (clientSecret) {
-        setClientSecret('');
+        setClientSecret('')
       }
-      return;
+      return
     }
 
     if (currentPayment.status === 'processing') {
-      setStatusVariant('info');
-      setStatusMessage(t('payment.status.processing', 'Payment is processing. Please wait...'));
-      return;
+      setStatusVariant('info')
+      setStatusMessage(t('payment.status.processing', 'Payment is processing. Please wait...'))
+      return
     }
 
     if (currentPayment.status === 'pending') {
-      setStatusVariant('info');
-      setStatusMessage('');
+      setStatusVariant('info')
+      setStatusMessage('')
     }
-  }, [currentPayment, clientSecret, t]);
+  }, [currentPayment, clientSecret, t])
 
   const handleGoBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   const handleViewPayments = useCallback(() => {
-    navigate('/payments');
-  }, [navigate]);
+    navigate('/payments')
+  }, [navigate])
 
   const handlePaymentComplete = useCallback(async () => {
-    const status = await pollForStatus();
+    const status = await pollForStatus()
 
     if (status === 'completed') {
       const result = await Swal.fire({
@@ -218,103 +216,115 @@ const PaymentPage = () => {
         showCancelButton: true,
         confirmButtonText: t('payment.success.viewPayments', 'View payments'),
         cancelButtonText: t('payment.success.stay', 'Stay here'),
-      });
+      })
       if (result.isConfirmed) {
-        handleViewPayments();
+        handleViewPayments()
       }
-      return;
+      return
     }
 
     if (status === 'failed') {
       await Swal.fire({
         title: t('payment.failed.title', 'Payment failed'),
-        text: t('payment.failed.message', 'Stripe was unable to complete the payment. Please try again.'),
+        text: t(
+          'payment.failed.message',
+          'Stripe was unable to complete the payment. Please try again.',
+        ),
         icon: 'error',
-      });
-      return;
+      })
+      return
     }
 
     await Swal.fire({
       title: t('payment.status.pendingTitle', 'Awaiting confirmation'),
       text: t('payment.status.pending', 'Awaiting confirmation...'),
       icon: 'info',
-    });
-  }, [pollForStatus, t, handleViewPayments]);
+    })
+  }, [pollForStatus, t, handleViewPayments])
 
   const handleRetryPayment = useCallback(() => {
-    setClientSecret('');
-    initializeIntent();
-  }, [initializeIntent]);
+    setClientSecret('')
+    initializeIntent()
+  }, [initializeIntent])
 
   const canAttemptPayment = Boolean(
-    publicPaymentConfig?.cardPaymentsEnabled
-    && publicPaymentConfig?.publishableKey
-    && currentPayment
-    && ['pending', 'failed'].includes(currentPayment.status),
-  );
+    publicPaymentConfig?.cardPaymentsEnabled &&
+      publicPaymentConfig?.publishableKey &&
+      currentPayment &&
+      ['pending', 'failed'].includes(currentPayment.status),
+  )
 
-  const isCompleted = currentPayment?.status === 'completed';
-  const isFailed = currentPayment?.status === 'failed';
-  const receiptUrl = currentPayment?.receipt_url;
+  const isCompleted = currentPayment?.status === 'completed'
+  const isFailed = currentPayment?.status === 'failed'
+  const receiptUrl = currentPayment?.receipt_url
 
-  const amountCents = currentPayment?.amount_cents
-    ?? Math.round((currentPayment?.amount || 0) * 100);
+  const amountCents =
+    currentPayment?.amount_cents ?? Math.round((currentPayment?.amount || 0) * 100)
 
-  const options = useMemo(() => (
-    clientSecret
-      ? {
-          clientSecret,
-          appearance: { theme: 'stripe' },
-        }
-      : null
-  ), [clientSecret]);
+  const options = useMemo(
+    () =>
+      clientSecret
+        ? {
+            clientSecret,
+            appearance: { theme: 'stripe' },
+          }
+        : null,
+    [clientSecret],
+  )
 
   if (loading || !currentPayment) {
     return (
-      <CContainer fluid className="py-5 text-center">
-        <CSpinner color="primary" />
-      </CContainer>
-    );
+      <Container fluid className="py-5 text-center">
+        <Spinner colorScheme="blue" />
+      </Container>
+  
+  )
   }
 
   if (!publicPaymentConfig?.cardPaymentsEnabled) {
     return (
-      <CContainer fluid className="payment-page">
+      <Container fluid className="payment-page">
         <PageHeader
           title={t('payment.unavailable.title', 'Payment Unavailable')}
           subtitle={t('payment.unavailable.subtitle', 'Card payments are currently disabled')}
           icon={FaCreditCard}
         />
-        <CCard>
-          <CCardBody className="text-center py-5">
-            <CAlert color="warning">
-              {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
-            </CAlert>
-            <CButton color="primary" onClick={handleGoBack}>
-              <CIcon icon={cilArrowLeft} className="me-2" />
+        <Card>
+          <CardBody className="text-center py-5">
+            <Alert status="warning">
+              {t(
+                'payment.unavailable.configuration',
+                'Please contact an administrator to enable Stripe payments.',
+              )}
+            </Alert>
+            <Button colorScheme="blue" onClick={handleGoBack}>
+              <Icon as={ArrowLeft} className="me-2" />
               {t('common.goBack', 'Go Back')}
-            </CButton>
-          </CCardBody>
-        </CCard>
-      </CContainer>
-    );
+            </Button>
+          </CardBody>
+        </Card>
+      </Container>
+  
+  )
   }
 
-  const showPaymentForm = Boolean(stripePromise && options && clientSecret && canAttemptPayment && !isCompleted);
-  const showUnavailableAlert = !canAttemptPayment && !isCompleted && !receiptUrl && !isFailed;
+  const showPaymentForm = Boolean(
+    stripePromise && options && clientSecret && canAttemptPayment && !isCompleted,
+  )
+  const showUnavailableAlert = !canAttemptPayment && !isCompleted && !receiptUrl && !isFailed
 
   return (
-    <CContainer fluid className="payment-page">
+    <Container fluid className="payment-page">
       <PageHeader
         title={t('payment.title', 'Make Payment')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
         icon={FaCreditCard}
       />
 
-      <CRow>
-        <CCol lg={8} className="mx-auto">
-          <CCard>
-            <CCardHeader className="d-flex justify-content-between align-items-center">
+      <Flex>
+        <Box lg={8} className="mx-auto">
+          <Card>
+            <CardHeader className="d-flex justify-content-between align-items-center">
               <div>
                 <h5 className="mb-0">{t('payment.details.title', 'Payment Details')}</h5>
                 <small className="text-muted">
@@ -322,66 +332,76 @@ const PaymentPage = () => {
                 </small>
               </div>
               <div className="text-end">
-                <h4 className="mb-0 text-primary">{formatCurrency(amountCents, currentPayment.currency)}</h4>
-                <small className="text-muted text-uppercase">{currentPayment.currency || 'USD'}</small>
+                <h4 className="mb-0 text-primary">
+                  {formatCurrency(amountCents, currentPayment.currency)}
+                </h4>
+                <small className="text-muted text-uppercase">
+                  {currentPayment.currency || 'USD'}
+                </small>
               </div>
-            </CCardHeader>
-            <CCardBody className="stack gap-4">
+            </CardHeader>
+            <CardBody className="stack gap-4">
               {processing ? (
-                <CAlert color="info" role="status" aria-live="polite">
-                  <CSpinner size="sm" className="me-2" aria-hidden />
+                <Alert status="info" role="status" aria-live="polite">
+                  <Spinner size="sm" className="me-2" aria-hidden />
                   {t('payment.processing', 'Processing payment...')}
-                </CAlert>
+                </Alert>
               ) : null}
 
               {statusMessage ? (
-                <CAlert color={statusVariant} role="status" aria-live="polite">
+                <Alert color={statusVariant} role="status" aria-live="polite">
                   <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                     <span>{statusMessage}</span>
                     {isFailed ? (
-                      <CButton
+                      <Button
                         size="sm"
-                        color="danger"
+                        colorScheme="red"
                         variant="outline"
                         onClick={handleRetryPayment}
                         disabled={intentLoading}
                       >
-                        {intentLoading ? <CSpinner size="sm" aria-hidden /> : null}
+                        {intentLoading ? <Spinner size="sm" aria-hidden /> : null}
                         <span className={intentLoading ? 'ms-2' : ''}>
                           {t('payment.retry', 'Retry Payment')}
                         </span>
-                      </CButton>
+                      </Button>
                     ) : null}
                   </div>
-                </CAlert>
+                </Alert>
               ) : null}
 
               {intentError ? (
                 <div className="stack gap-2">
-                  <CAlert color="danger" role="alert">
+                  <Alert status="error" role="alert">
                     {intentError}
-                  </CAlert>
+                  </Alert>
                   <div>
-                    <CButton color="primary" variant="outline" onClick={initializeIntent} disabled={intentLoading}>
-                      {intentLoading ? <CSpinner size="sm" aria-hidden /> : null}
-                      <span className={intentLoading ? 'ms-2' : ''}>{t('payment.retry', 'Retry Payment')}</span>
-                    </CButton>
+                    <Button
+                      colorScheme="blue"
+                      variant="outline"
+                      onClick={initializeIntent}
+                      disabled={intentLoading}
+                    >
+                      {intentLoading ? <Spinner size="sm" aria-hidden /> : null}
+                      <span className={intentLoading ? 'ms-2' : ''}>
+                        {t('payment.retry', 'Retry Payment')}
+                      </span>
+                    </Button>
                   </div>
-                </div>
               ) : null}
 
               {receiptUrl ? (
-                <CAlert color="success" role="status">
+                <Alert status="success" role="status">
                   <strong>{t('payment.receipt.available', 'Receipt available')}:</strong>{' '}
                   <a href={receiptUrl} target="_blank" rel="noopener noreferrer">
                     {t('payment.receipt.view', 'View Receipt')}
                   </a>
-                </CAlert>
+                </Alert>
               ) : null}
 
               {!clientSecret && intentLoading ? (
                 <div className="text-center py-4">
-                  <CSpinner color="primary" />
+                  <Spinner colorScheme="blue" />
                 </div>
               ) : null}
 
@@ -398,29 +418,32 @@ const PaymentPage = () => {
               ) : null}
 
               {showUnavailableAlert ? (
-                <CAlert color="warning">
-                  {t('payment.unavailable.status', 'This payment is not available for processing right now. Current status:')}{' '}
+                <Alert status="warning">
+                  {t(
+                    'payment.unavailable.status',
+                    'This payment is not available for processing right now. Current status:',
+                  )}{' '}
                   <strong>{currentPayment.status}</strong>
-                </CAlert>
+                </Alert>
               ) : null}
 
               <div className="d-flex justify-content-end gap-2">
                 {isCompleted ? (
-                  <CButton color="primary" onClick={handleViewPayments}>
+                  <Button colorScheme="blue" onClick={handleViewPayments}>
                     {t('payment.viewPayments', 'View Payments')}
-                  </CButton>
+                  </Button>
                 ) : null}
-                <CButton color="secondary" variant="outline" onClick={handleGoBack}>
-                  <CIcon icon={cilArrowLeft} className="me-2" />
+                <Button colorScheme="gray" variant="outline" onClick={handleGoBack}>
+                  <Icon as={ArrowLeft} className="me-2" />
                   {t('common.goBack', 'Go Back')}
-                </CButton>
+                </Button>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
-  );
-};
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
+    </Container>
+  )
+}
 
-export default PaymentPage;
+export default PaymentPage

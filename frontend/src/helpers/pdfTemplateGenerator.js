@@ -1,138 +1,174 @@
 // Centralized PDF template generator for consistent proposal formatting
 // This ensures all users get the same customized PDF when printing proposals
 
-import { buildUploadUrl } from '../utils/uploads';
+import { buildUploadUrl } from '../utils/uploads'
 
-export const generateProposalPdfTemplate = (formData, values, pdfCustomization, t, shortLabel, i18n) => {
-    const {
-        companyName,
-        companyPhone,
-        companyEmail,
-        companyAddress,
-        companyWebsite,
-        headerColor = '#5a2a2a',
-        headerLogo,
-        pdfFooter,
-        headerTxtColor = '#FFFFFF'
-    } = pdfCustomization || {};
+export const generateProposalPdfTemplate = (
+  formData,
+  values,
+  pdfCustomization,
+  t,
+  shortLabel,
+  i18n,
+) => {
+  const {
+    companyName,
+    companyPhone,
+    companyEmail,
+    companyAddress,
+    companyWebsite,
+    headerColor = '#5a2a2a',
+    headerLogo,
+    pdfFooter,
+    headerTxtColor = '#FFFFFF',
+  } = pdfCustomization || {}
 
-    // Construct logo URL consistently
-    const api_url = import.meta.env.VITE_API_URL;
-    const logoUrl = headerLogo
-        ? buildUploadUrl(`/uploads/manufacturer_catalogs/${headerLogo}`)
-        : null;
+  // Construct logo URL consistently
+  const api_url = import.meta.env.VITE_API_URL
+  const logoUrl = headerLogo ? buildUploadUrl(`/uploads/manufacturer_catalogs/${headerLogo}`) : null
 
-    // Get proposal data consistently
-    const proposalSummary = {
-        description: formData?.description || 'kitchen project',
-        customer: formData?.customerName || '',
-        date: new Date().toLocaleDateString(i18n.language || 'en-US'),
-    };
+  // Get proposal data consistently
+  const proposalSummary = {
+    description: formData?.description || 'kitchen project',
+    customer: formData?.customerName || '',
+    date: new Date().toLocaleDateString(i18n.language || 'en-US'),
+  }
 
-    // Get manufacturer data consistently
-    const manufacturerData = formData?.manufacturersData?.[0];
-    const selectedVersionData = manufacturerData?.items || [];
-    const summary = manufacturerData?.summary || {};
+  // Get manufacturer data consistently
+  const manufacturerData = formData?.manufacturersData?.[0]
+  const selectedVersionData = manufacturerData?.items || []
+  const summary = manufacturerData?.summary || {}
 
-    // Calculate price summary consistently
-    const priceSummary = selectedVersionData.length > 0 ? {
-        cabinets: summary.cabinets || 0,
-        assemblyFee: summary.assemblyFee || 0,
-        modifications: summary.modificationsCost || 0,
-        styleTotal: summary.styleTotal || 0,
-        total: summary.total || 0,
-        tax: summary.tax || 0,
-        grandTotal: summary.grandTotal || (summary.total || 0) + (summary.tax || 0)
-    } : {
-        cabinets: 0,
-        assemblyFee: 0,
-        modifications: 0,
-        styleTotal: 0,
-        total: 0,
-        tax: 0,
-        grandTotal: 0
-    };
+  // Calculate price summary consistently
+  const priceSummary =
+    selectedVersionData.length > 0
+      ? {
+          cabinets: summary.cabinets || 0,
+          assemblyFee: summary.assemblyFee || 0,
+          modifications: summary.modificationsCost || 0,
+          styleTotal: summary.styleTotal || 0,
+          total: summary.total || 0,
+          tax: summary.tax || 0,
+          grandTotal: summary.grandTotal || (summary.total || 0) + (summary.tax || 0),
+        }
+      : {
+          cabinets: 0,
+          assemblyFee: 0,
+          modifications: 0,
+          styleTotal: 0,
+          total: 0,
+          tax: 0,
+          grandTotal: 0,
+        }
 
-    // Filter proposal items based on user selections
-    let proposalItems = [];
-    if (values.showProposalItems && selectedVersionData?.length > 0) {
-        proposalItems = selectedVersionData.filter(item => {
-            if (!values.selectedVersions?.length) return true;
-            return values.selectedVersions.includes(item.versionName);
-        });
+  // Filter proposal items based on user selections
+  let proposalItems = []
+  if (values.showProposalItems && selectedVersionData?.length > 0) {
+    proposalItems = selectedVersionData.filter((item) => {
+      if (!values.selectedVersions?.length) return true
+      return values.selectedVersions.includes(item.versionName)
+    })
+  }
+
+  // Generate table headers based on selected columns
+  const generateTableHeaders = () => {
+    const columnMap = {
+      no: t('proposalColumns.no'),
+      qty: t('proposalColumns.qty'),
+      item: t('proposalColumns.item'),
+      assembled: t('proposalColumns.assembled'),
+      hingeSide: t('proposalColumns.hingeSide'),
+      exposedSide: t('proposalColumns.exposedSide'),
+      price: t('proposalColumns.price'),
+      assemblyCost: t('proposalColumns.assemblyCost'),
+      total: t('proposalColumns.total'),
     }
 
-    // Generate table headers based on selected columns
-    const generateTableHeaders = () => {
-        const columnMap = {
-            'no': t('proposalColumns.no'),
-            'qty': t('proposalColumns.qty'),
-            'item': t('proposalColumns.item'),
-            'assembled': t('proposalColumns.assembled'),
-            'hingeSide': t('proposalColumns.hingeSide'),
-            'exposedSide': t('proposalColumns.exposedSide'),
-            'price': t('proposalColumns.price'),
-            'assemblyCost': t('proposalColumns.assemblyCost'),
-            'total': t('proposalColumns.total')
-        };
+    return values.selectedColumns
+      .map(
+        (col) => `<th style="border: 1px solid #ccc; padding: 5px;">${columnMap[col] || col}</th>`,
+      )
+      .join('')
+  }
 
-        return values.selectedColumns.map(col =>
-            `<th style="border: 1px solid #ccc; padding: 5px;">${columnMap[col] || col}</th>`
-        ).join('');
-    };
+  // Generate table rows based on selected columns
+  const generateTableRows = () => {
+    return proposalItems
+      .map((item, index) => {
+        const cells = values.selectedColumns
+          .map((column) => {
+            switch (column) {
+              case 'no':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>`
+              case 'qty':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>`
+              case 'item':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>`
+              case 'assembled':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${item.assembled}</td>`
+              case 'hingeSide':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.hingeSide)}</td>`
+              case 'exposedSide':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.exposedSide)}</td>`
+              case 'price':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>`
+              case 'assemblyCost':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>`
+              case 'total':
+                return `<td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>`
+              default:
+                return '<td style="border: 1px solid #ccc; padding: 5px;"></td>'
+            }
+          })
+          .join('')
 
-    // Generate table rows based on selected columns
-    const generateTableRows = () => {
-        return proposalItems.map((item, index) => {
-            const cells = values.selectedColumns.map(column => {
-                switch (column) {
-                    case 'no': return `<td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>`;
-                    case 'qty': return `<td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>`;
-                    case 'item': return `<td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>`;
-                    case 'assembled': return `<td style="border: 1px solid #ccc; padding: 5px;">${item.assembled}</td>`;
-                    case 'hingeSide': return `<td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.hingeSide)}</td>`;
-                    case 'exposedSide': return `<td style="border: 1px solid #ccc; padding: 5px;">${shortLabel(item.exposedSide)}</td>`;
-                    case 'price': return `<td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>`;
-                    case 'assemblyCost': return `<td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>`;
-                    case 'total': return `<td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>`;
-                    default: return '<td style="border: 1px solid #ccc; padding: 5px;"></td>';
-                }
-            }).join('');
+        const itemRow = `<tr>${cells}</tr>`
 
-            const itemRow = `<tr>${cells}</tr>`;
-
-            // Add modifications if they exist
-            const modRows = item.modifications && item.modifications.length > 0
-                ? `
+        // Add modifications if they exist
+        const modRows =
+          item.modifications && item.modifications.length > 0
+            ? `
                 <tr>
                     <td colspan="${values.selectedColumns.length}" style="padding: 5px; background-color: #f9f9f9;"><strong>${t('proposalDoc.modifications')}</strong></td>
                 </tr>
-                ${item.modifications.map((mod, modIdx) => {
-                    const modTotal = (parseFloat(mod.price) || 0) * (mod.qty || 0);
-                    const modCells = values.selectedColumns.map(column => {
+                ${item.modifications
+                  .map((mod, modIdx) => {
+                    const modTotal = (parseFloat(mod.price) || 0) * (mod.qty || 0)
+                    const modCells = values.selectedColumns
+                      .map((column) => {
                         switch (column) {
-                            case 'no': return `<td style="border: 1px solid #ccc; padding: 5px;">-</td>`;
-                            case 'qty': return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.qty || ''}</td>`;
-                            case 'item': return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.name || ''}</td>`;
-                            case 'assembled':
-                            case 'hingeSide':
-                            case 'exposedSide':
-                            case 'assemblyCost': return `<td style="border: 1px solid #ccc; padding: 5px;"></td>`;
-                            case 'price': return `<td style="border: 1px solid #ccc; padding: 5px;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>`;
-                            case 'total': return `<td style="border: 1px solid #ccc; padding: 5px;">$${modTotal.toFixed(2)}</td>`;
-                            default: return '<td style="border: 1px solid #ccc; padding: 5px;"></td>';
+                          case 'no':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;">-</td>`
+                          case 'qty':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.qty || ''}</td>`
+                          case 'item':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;">${mod.name || ''}</td>`
+                          case 'assembled':
+                          case 'hingeSide':
+                          case 'exposedSide':
+                          case 'assemblyCost':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;"></td>`
+                          case 'price':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;">$${(parseFloat(mod.price) || 0).toFixed(2)}</td>`
+                          case 'total':
+                            return `<td style="border: 1px solid #ccc; padding: 5px;">$${modTotal.toFixed(2)}</td>`
+                          default:
+                            return '<td style="border: 1px solid #ccc; padding: 5px;"></td>'
                         }
-                    }).join('');
-                    return `<tr>${modCells}</tr>`;
-                }).join('')}
+                      })
+                      .join('')
+                    return `<tr>${modCells}</tr>`
+                  })
+                  .join('')}
                 `
-                : '';
+            : ''
 
-            return itemRow + modRows;
-        }).join('');
-    };
+        return itemRow + modRows
+      })
+      .join('')
+  }
 
-    return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -332,9 +368,10 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
     <!-- Header Section -->
     <div class="header">
         <div>
-            ${logoUrl ?
-                `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">` :
-                `<div class="company-name">${companyName || t('proposalDoc.fallbackCompanyName')}</div>`
+            ${
+              logoUrl
+                ? `<img src="${logoUrl}" alt="${t('proposalDoc.altCompanyLogo')}" class="logo">`
+                : `<div class="company-name">${companyName || t('proposalDoc.fallbackCompanyName')}</div>`
             }
         </div>
         <div class="company-info">
@@ -344,7 +381,6 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             ${companyWebsite ? `<div>${companyWebsite}</div>` : ''}
             ${companyAddress ? `<div>${companyAddress}</div>` : ''}
         </div>
-    </div>
 
     <!-- Greeting -->
     <div class="greeting">
@@ -371,7 +407,9 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
         </tbody>
     </table>
 
-    ${proposalItems && proposalItems.length > 0 ? `
+    ${
+      proposalItems && proposalItems.length > 0
+        ? `
     <!-- Proposal Items Section -->
     <div class="section-header">${t('proposalDoc.sections.proposalItems')}</div>
     <table class="items-table">
@@ -423,9 +461,13 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             </tr>
         </table>
     </div>
-    ` : ''}
+    `
+        : ''
+    }
 
-    ${formData?.selectedCatalog?.length > 0 ? `
+    ${
+      formData?.selectedCatalog?.length > 0
+        ? `
     <!-- Catalog Items -->
     <div class="section-header">${t('proposalDoc.sections.catalogItems')}</div>
     <table class="items-table">
@@ -438,17 +480,23 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
             </tr>
         </thead>
         <tbody>
-            ${formData.selectedCatalog.map(item => `
+            ${formData.selectedCatalog
+              .map(
+                (item) => `
             <tr>
                 <td>${item.itemName || ''}</td>
                 <td>${item.quantity || 0}</td>
                 <td>$${item.unitPrice || 0}</td>
                 <td>$${(item.unitPrice * item.quantity).toFixed(2)}</td>
             </tr>
-            `).join('')}
+            `,
+              )
+              .join('')}
         </tbody>
     </table>
-    ` : ''}
+    `
+        : ''
+    }
 
     <!-- Footer -->
     <div class="main-footer-div">
@@ -456,5 +504,5 @@ export const generateProposalPdfTemplate = (formData, values, pdfCustomization, 
     </div>
 </body>
 </html>
-    `;
-};
+    `
+}

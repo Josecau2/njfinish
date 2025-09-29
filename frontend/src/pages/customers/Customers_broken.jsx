@@ -1,31 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {
-  CTable,
-  CTableHead,
-  CTableBody,
-  CTableRow,
-  CTableHeaderCell,
-  CTableDataCell,
-  CFormInput,
-  CButton,
-  CSpinner,
-  CFormSelect,
-  CContainer,
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CBadge,
-  CInputGroup,
-  CInputGroupText,
-} from '@coreui/react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice';
-import { useNavigate } from 'react-router-dom';
+import { Input, Spinner, Select, Container, Flex, Box, Card, CardBody, Badge, Icon } from '@chakra-ui/react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice'
+import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import CIcon from '@coreui/icons-react';
-import { cilSearch, cilPencil, cilTrash, cilPlus, cilUser, cilEnvelopeClosed } from '@coreui/icons';
+import { Search, Edit, Trash, Plus, User, Mail } from 'lucide-react'
 import PaginationComponent from '../../components/common/PaginationComponent';
 import withContractorScope from '../../components/withContractorScope';
 import PermissionGate from '../../components/PermissionGate';
@@ -145,19 +125,19 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   };
 
   return (
-    <CContainer fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <CCard className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || '#321fdb', color: customization.headerTextColor || '#ffffff' }}>
-        <CCardBody className="py-4">
-          <CRow className="align-items-center">
-            <CCol>
+      <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || '#321fdb', color: customization.headerTextColor || '#ffffff' }}>
+        <CardBody className="py-4">
+          <Flex className="align-items-center">
+            <Box>
               <h3 className="text-white mb-1 fw-bold">Customers</h3>
               <p className="text-white-50 mb-0">Manage your customer database</p>
-            </CCol>
-            <CCol xs="auto">
+            </Box>
+            <Box xs="auto">
               <PermissionGate permission="customers:create">
                 <CButton 
-                  color="light" 
+                  status="light" 
                   className="shadow-sm px-4 fw-semibold"
                   onClick={handleNewCustomer}
                   style={{ 
@@ -166,25 +146,25 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  <CIcon icon={cilPlus} className="me-2" />
+                  <Icon as={Plus} className="me-2" />
                   New Customer
                 </CButton>
               </PermissionGate>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+            </Box>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Search and Stats */}
-      <CCard className="border-0 shadow-sm  mb-1 ">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
+      <Card className="border-0 shadow-sm  mb-1 ">
+        <CardBody>
+          <Flex className="align-items-center">
+            <Box md={6} lg={4}>
               <CInputGroup>
                 <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                  <CIcon icon={cilSearch} />
+                  <Icon as={Search} />
                 </CInputGroupText>
-                <CFormInput
+                <Input
                   type="text"
                   placeholder="Search by name or email..."
                   value={searchTerm}
@@ -200,11 +180,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   }}
                 />
               </CInputGroup>
-            </CCol>
-            <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
+            </Box>
+            <Box md={6} lg={8} className="text-md-end mt-3 mt-md-0">
               <div className="d-flex justify-content-md-end align-items-center gap-3">
-                <CBadge 
-                  color="info" 
+                <Badge 
+                  status="info" 
                   className="px-3 py-2"
                   style={{ 
                     borderRadius: '20px',
@@ -213,41 +193,41 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   }}
                 >
                   Total: {total || 0} customers
-                </CBadge>
+                </Badge>
                 <span className="text-muted small">
                   Showing {sortedFilteredCustomers?.length || 0} results
                 </span>
               </div>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+            </Box>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Loading State */}
       {loading && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="text-center py-5">
-            <CSpinner color="primary" size="lg" />
+        <Card className="border-0 shadow-sm">
+          <CardBody className="text-center py-5">
+            <Spinner colorScheme="blue" size="lg" />
             <p className="text-muted mt-3 mb-0">Loading customers...</p>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Error State */}
       {error && (
-        <CCard className="border-0 shadow-sm">
-          <CCardBody>
+        <Card className="border-0 shadow-sm">
+          <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>Error:</strong> {error}
             </div>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Desktop Table */}
       {!loading && !error && (
-        <CCard className="border-0 shadow-sm d-none d-md-block">
-          <CCardBody className="p-0">
+        <Card className="border-0 shadow-sm d-none d-md-block">
+          <CardBody className="p-0">
             <div style={{ overflowX: 'auto' }}>
               <CTable hover responsive className="mb-0">
                 <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
@@ -261,7 +241,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
                       <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilUser} size="sm" />
+                        <Icon as={User} size="sm" />
                         Name
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
                           {getSortIcon('name')}
@@ -274,7 +254,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
                       <div className="d-flex align-items-center gap-2">
-                        <CIcon icon={cilEnvelopeClosed} size="sm" />
+                        <Icon as={Mail} size="sm" />
                         Email
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
                           {getSortIcon('email')}
@@ -297,7 +277,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     <CTableRow>
                       <CTableDataCell colSpan="6" className="text-center py-5">
                         <div className="text-muted">
-                          <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+                          <Icon as={Search} size="xl" className="mb-3 opacity-25" />
                           <p className="mb-0">No customers found</p>
                           <small>Try adjusting your search criteria</small>
                         </div>
@@ -307,8 +287,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     sortedFilteredCustomers?.map((cust) => (
                       <CTableRow key={cust.id} style={{ transition: 'all 0.2s ease' }}>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="secondary" 
+                          <Badge 
+                            colorScheme="gray" 
                             className="px-3 py-2"
                             style={{ 
                               borderRadius: '15px',
@@ -317,7 +297,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             }}
                           >
                             Main
-                          </CBadge>
+                          </Badge>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
                           <div className="fw-medium text-dark">
@@ -330,8 +310,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           </span>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="info" 
+                          <Badge 
+                            status="info" 
                             className="px-3 py-2"
                             style={{ 
                               borderRadius: '20px',
@@ -340,11 +320,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             }}
                           >
                             {cust.proposalCount || 0} Proposals
-                          </CBadge>
+                          </Badge>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge 
-                            color="success" 
+                          <Badge 
+                            status="success" 
                             className="px-3 py-2"
                             style={{ 
                               borderRadius: '20px',
@@ -353,13 +333,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             }}
                           >
                             0 Orders
-                          </CBadge>
+                          </Badge>
                         </CTableDataCell>
                         <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
                           <div className="d-flex justify-content-center gap-2">
                             <PermissionGate action="update" resource="customer" item={cust}>
                               <CButton
-                                color="light"
+                                status="light"
                                 size="sm"
                                 onClick={() => handleEdit(cust)}
                                 title="Edit customer"
@@ -369,13 +349,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <CIcon icon={cilPencil} size="sm" className="me-1" />
+                                <Icon as={Edit} size="sm" className="me-1" />
                                 Edit
                               </CButton>
                             </PermissionGate>
                             <PermissionGate action="delete" resource="customer" item={cust}>
                               <CButton
-                                color="light"
+                                status="light"
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
                                 title="Delete customer"
@@ -386,7 +366,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <CIcon icon={cilTrash} size="sm" className="me-1" />
+                                <Icon as={Trash} size="sm" className="me-1" />
                                 Delete
                               </CButton>
                             </PermissionGate>
@@ -398,38 +378,38 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 </CTableBody>
               </CTable>
             </div>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div className="d-md-none">
           {sortedFilteredCustomers?.length === 0 ? (
-            <CCard className="border-0 shadow-sm">
-              <CCardBody className="text-center py-5">
+            <Card className="border-0 shadow-sm">
+              <CardBody className="text-center py-5">
                 <div className="text-muted">
-                  <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+                  <Icon as={Search} size="xl" className="mb-3 opacity-25" />
                   <p className="mb-0">No customers found</p>
                   <small>Try adjusting your search criteria</small>
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
           ) : (
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
-                <CCard key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
-                  <CCardBody className="p-3">
+                <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
+                  <CardBody className="p-3">
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                        <CIcon icon={cilUser} className="me-2 text-muted" size="lg" />
+                        <Icon as={User} className="me-2 text-muted" size="lg" />
                         <div className="flex-grow-1 min-width-0">
                           <div className="fw-medium text-dark text-truncate" title={cust.name || 'N/A'}>
                             {cust.name || 'N/A'}
                           </div>
-                          <CBadge 
-                            color="secondary" 
+                          <Badge 
+                            colorScheme="gray" 
                             className="px-2 py-1 mt-1"
                             style={{ 
                               borderRadius: '10px',
@@ -438,27 +418,25 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             }}
                           >
                             Main
-                          </CBadge>
+                          </Badge>
                         </div>
-                      </div>
                     </div>
 
                     {/* Contact Info */}
                     <div className="mb-3">
                       <div className="small text-muted">Email</div>
                       <div className="d-flex align-items-center">
-                        <CIcon icon={cilEnvelopeClosed} className="me-1 text-muted" size="sm" />
+                        <Icon as={Mail} className="me-1 text-muted" size="sm" />
                         <span className="text-truncate-mobile text-muted" title={cust.email || 'N/A'}>
                           {cust.email || 'N/A'}
                         </span>
                       </div>
-                    </div>
 
                     {/* Stats */}
                     <div className="row g-2 mb-3">
                       <div className="col-6">
-                        <CBadge 
-                          color="info" 
+                        <Badge 
+                          status="info" 
                           className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
                           style={{ 
                             borderRadius: '15px',
@@ -467,11 +445,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           }}
                         >
                           {cust.proposalCount || 0} Proposals
-                        </CBadge>
+                        </Badge>
                       </div>
                       <div className="col-6">
-                        <CBadge 
-                          color="success" 
+                        <Badge 
+                          status="success" 
                           className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
                           style={{ 
                             borderRadius: '15px',
@@ -480,15 +458,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           }}
                         >
                           0 Orders
-                        </CBadge>
+                        </Badge>
                       </div>
-                    </div>
 
                     {/* Actions */}
                     <div className="d-flex justify-content-center gap-2 customer-card-actions">
                       <PermissionGate action="update" resource="customer" item={cust}>
                         <CButton
-                          color="light"
+                          status="light"
                           size="sm"
                           onClick={() => handleEdit(cust)}
                           title="Edit customer"
@@ -498,13 +475,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <CIcon icon={cilPencil} size="sm" className="me-1" />
+                          <Icon as={Edit} size="sm" className="me-1" />
                           Edit
                         </CButton>
                       </PermissionGate>
                       <PermissionGate action="delete" resource="customer" item={cust}>
                         <CButton
-                          color="light"
+                          status="light"
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
                           title="Delete customer"
@@ -515,13 +492,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <CIcon icon={cilTrash} size="sm" className="me-1" />
+                          <Icon as={Trash} size="sm" className="me-1" />
                           Delete
                         </CButton>
                       </PermissionGate>
                     </div>
-                  </CCardBody>
-                </CCard>
+                  </CardBody>
+                </Card>
               ))}
             </div>
           )}
@@ -542,13 +519,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <CIcon icon={cilPencil} size="sm" className="me-1" />
+                                <Icon as={Edit} size="sm" className="me-1" />
                                 Edit
                               </CButton>
                             </PermissionGate>
                             <PermissionGate action="delete" resource="customer" item={cust}>
                               <CButton
-                                color="light"
+                                status="light"
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
                                 title="Delete customer"
@@ -559,7 +536,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <CIcon icon={cilTrash} size="sm" className="me-1" />
+                                <Icon as={Trash} size="sm" className="me-1" />
                                 Delete
                               </CButton>
                             </PermissionGate>
@@ -583,38 +560,38 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 />
               </div>
             
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div className="d-md-none">
           {sortedFilteredCustomers?.length === 0 ? (
-            <CCard className="border-0 shadow-sm">
-              <CCardBody className="text-center py-5">
+            <Card className="border-0 shadow-sm">
+              <CardBody className="text-center py-5">
                 <div className="text-muted">
-                  <CIcon icon={cilSearch} size="xl" className="mb-3 opacity-25" />
+                  <Icon as={Search} size="xl" className="mb-3 opacity-25" />
                   <p className="mb-0">No customers found</p>
                   <small>Try adjusting your search criteria</small>
                 </div>
-              </CCardBody>
-            </CCard>
+              </CardBody>
+            </Card>
           ) : (
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
-                <CCard key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
-                  <CCardBody className="p-3">
+                <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
+                  <CardBody className="p-3">
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                        <CIcon icon={cilUser} className="me-2 text-muted" size="lg" />
+                        <Icon as={User} className="me-2 text-muted" size="lg" />
                         <div className="flex-grow-1 min-width-0">
                           <div className="fw-medium text-dark text-truncate" title={cust.name || 'N/A'}>
                             {cust.name || 'N/A'}
                           </div>
-                          <CBadge 
-                            color="secondary" 
+                          <Badge 
+                            colorScheme="gray" 
                             className="px-2 py-1 mt-1"
                             style={{ 
                               borderRadius: '10px',
@@ -623,27 +600,25 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             }}
                           >
                             Main
-                          </CBadge>
+                          </Badge>
                         </div>
-                      </div>
                     </div>
 
                     {/* Contact Info */}
                     <div className="mb-3">
                       <div className="small text-muted">Email</div>
                       <div className="d-flex align-items-center">
-                        <CIcon icon={cilEnvelopeClosed} className="me-1 text-muted" size="sm" />
+                        <Icon as={Mail} className="me-1 text-muted" size="sm" />
                         <span className="text-truncate-mobile text-muted" title={cust.email || 'N/A'}>
                           {cust.email || 'N/A'}
                         </span>
                       </div>
-                    </div>
 
                     {/* Stats */}
                     <div className="row g-2 mb-3">
                       <div className="col-6">
-                        <CBadge 
-                          color="info" 
+                        <Badge 
+                          status="info" 
                           className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
                           style={{ 
                             borderRadius: '15px',
@@ -652,11 +627,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           }}
                         >
                           {cust.proposalCount || 0} Proposals
-                        </CBadge>
+                        </Badge>
                       </div>
                       <div className="col-6">
-                        <CBadge 
-                          color="success" 
+                        <Badge 
+                          status="success" 
                           className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
                           style={{ 
                             borderRadius: '15px',
@@ -665,15 +640,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           }}
                         >
                           0 Orders
-                        </CBadge>
+                        </Badge>
                       </div>
-                    </div>
 
                     {/* Actions */}
                     <div className="d-flex justify-content-center gap-2 customer-card-actions">
                       <PermissionGate action="update" resource="customer" item={cust}>
                         <CButton
-                          color="light"
+                          status="light"
                           size="sm"
                           onClick={() => handleEdit(cust)}
                           title="Edit customer"
@@ -683,13 +657,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <CIcon icon={cilPencil} size="sm" className="me-1" />
+                          <Icon as={Edit} size="sm" className="me-1" />
                           Edit
                         </CButton>
                       </PermissionGate>
                       <PermissionGate action="delete" resource="customer" item={cust}>
                         <CButton
-                          color="light"
+                          status="light"
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
                           title="Delete customer"
@@ -700,20 +674,28 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <CIcon icon={cilTrash} size="sm" className="me-1" />
+                          <Icon as={Trash} size="sm" className="me-1" />
                           Delete
                         </CButton>
                       </PermissionGate>
                     </div>
-                  </CCardBody>
-                </CCard>
+                  </CardBody>
+                </Card>
               ))}
             </div>
           )}
         </div>
       )}
-    </CContainer>
+    </Container>
   );
 };
 
+                    </div>
+            </div>
+        </div>
+  )
+}
+
+</div>
+</div>
 export default withContractorScope(CustomerTable, 'customers');

@@ -52,21 +52,23 @@ const AppInitializer = ({ children }) => {
     })()
 
     if (faviconHref) {
-      const favicon = document.querySelector("link[rel='shortcut icon']") || document.querySelector("link[rel='icon']")
+      const favicon =
+        document.querySelector("link[rel='shortcut icon']") ||
+        document.querySelector("link[rel='icon']")
 
       if (favicon) {
         favicon.href = faviconHref
       } else {
-        const newFavicon = document.createElement("link")
-        newFavicon.rel = "shortcut icon"
+        const newFavicon = document.createElement('link')
+        newFavicon.rel = 'shortcut icon'
         newFavicon.href = faviconHref
         document.head.appendChild(newFavicon)
       }
 
       let iconLink = document.querySelector("link[rel='icon']")
       if (!iconLink) {
-        iconLink = document.createElement("link")
-        iconLink.rel = "icon"
+        iconLink = document.createElement('link')
+        iconLink.rel = 'icon'
         document.head.appendChild(iconLink)
       }
       iconLink.href = faviconHref
@@ -103,9 +105,12 @@ const AppInitializer = ({ children }) => {
       root.style.setProperty('--brand-sidebar-text', customization.sidebarFontColor)
       root.style.setProperty('--sidebar-fg', customization.sidebarFontColor)
     }
-  }, [customization?.headerBg, customization?.headerFontColor, customization?.sidebarBg, customization?.sidebarFontColor])
-
-
+  }, [
+    customization?.headerBg,
+    customization?.headerFontColor,
+    customization?.sidebarBg,
+    customization?.sidebarFontColor,
+  ])
 
   useEffect(() => {
     // Fire and forget refresh – does not block initial render.

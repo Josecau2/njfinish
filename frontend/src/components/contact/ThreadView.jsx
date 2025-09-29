@@ -1,71 +1,150 @@
 import React, { useState } from 'react'
-import { CCard, CCardBody, CButton, CFormTextarea, CBadge } from '@coreui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Flex,
+  Stack,
+  Text,
+  Textarea,
+} from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
 const Bubble = ({ mine, author, text, time }) => (
-  <div className={`d-flex ${mine ? 'justify-content-end' : 'justify-content-start'} mb-2`}>
-    <div className="p-2 rounded" style={{ maxWidth: '85%', background: mine ? '#e9f5ff' : '#f8f9fa', border: '1px solid #e3e6f0' }}>
-      <div className="small text-muted mb-1">{author} â€¢ {new Date(time).toLocaleString()}</div>
-      <div className="fw-semibold" style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
-    </div>
-  </div>
+  <Flex justify={mine ? 'flex-end' : 'flex-start'} mb={2}>
+    <Box
+      maxW="85%"
+      px={3}
+      py={2}
+      borderWidth="1px"
+      borderColor="gray.200"
+      bg={mine ? 'blue.50' : 'gray.50'}
+      borderRadius="md"
+    >
+      <Text fontSize="xs" color="gray.500" mb={1}>
+        {author} • {new Date(time).toLocaleString()}
+      </Text>
+      <Text fontWeight="semibold" whiteSpace="pre-wrap">
+        {text}
+      </Text>
+    </Box>
+  </Flex>
 )
 
 const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
   const { t } = useTranslation()
   const [body, setBody] = useState('')
-  if (!thread) return (
-    <CCard className="border-0 shadow-sm">
-      <CCardBody>
-        <PageHeader title={t('contact.thread.title')} subtitle={t('contact.thread.empty')} mobileLayout="compact" />
-      </CCardBody>
-    </CCard>
-  )
-  const send = async () => { if (body.trim()) { await onReply(thread.id, body.trim()); setBody('') } }
+
+  if (!thread) {
+    return (
+      <Card borderRadius="lg" boxShadow="sm">
+        <CardBody>
+          <PageHeader
+            title={t('contact.thread.title')}
+            subtitle={t('contact.thread.empty')}
+            mobileLayout="compact"
+          />
+        </CardBody>
+      </Card>
+    )
+  }
+
+  const handleSend = async () => {
+    if (!body.trim()) return
+    await onReply(thread.id, body.trim())
+    setBody('')
+  }
+
+  const hasUnreadForViewer = Array.isArray(thread.messages)
+    ? thread.messages.some((message) => {
+        const unreadByRecipient = !message.read_by_recipient
+        if (!unreadByRecipient) return false
+        const messageIsFromAdmin = !!message.is_admin
+        return isAdmin ? !messageIsFromAdmin : messageIsFromAdmin
+      })
+    : false
+
   return (
-    <CCard className="border-0 shadow-sm">
-      <CCardBody>
-        <PageHeader title={thread.subject} subtitle={t('contact.thread.subtitle')} mobileLayout="compact" rightContent={
-          <div className="d-flex gap-2">
-            {thread.status === 'open' && (
-              <CButton size="sm" color="secondary" onClick={() => onClose && onClose(thread.id)}>{t('contact.thread.close')}</CButton>
-            )}
-          </div>
-        } leftContent={
-          isAdmin && thread.owner?.name ? (
-            <div className="d-flex align-items-center gap-2">
-              <CBadge color="secondary">{thread.owner.name}</CBadge>
-            </div>
-          ) : null
-        } />
+    <Card borderRadius="lg" boxShadow="sm">
+      <CardBody>
+        <PageHeader
+          title={thread.subject}
+          subtitle={t('contact.thread.subtitle')}
+          mobileLayout="compact"
+          rightContent={
+            thread.status === 'open' ? (
+              <Button size="sm" variant="outline" colorScheme="gray" onClick={() => onClose?.(thread.id)}>
+                {t('contact.thread.close')}
+              </Button>
+            ) : null
+          }
+          leftContent={
+            isAdmin && thread.owner?.name ? (
+              <Badge colorScheme="gray" borderRadius="md">
+                {thread.owner.name}
+              </Badge>
+            ) : null
+          }
+        />
+
         {loading ? (
-          <div className="py-4 text-center text-muted">{t('common.loading')}</div>
+          <Box py={4} textAlign="center">
+            <Text fontSize="sm" color="gray.500">
+              {t('common.loading')}
+            </Text>
+          </Box>
         ) : (
-          <>
-            <div className="mb-3" style={{ minHeight: 140 }}>
-              {(thread.messages || []).map((m) => (
-                <Bubble key={m.id} mine={m.is_admin === !!isAdmin} author={m.author?.name || (m.is_admin ? t('contact.thread.admin') : t('contact.thread.user'))} text={m.body} time={m.createdAt} />
+          <Stack spacing={4}>
+            <Box minH="140px">
+              {(thread.messages || []).map((message) => (
+                <Bubble
+                  key={message.id}
+                  mine={message.is_admin === !!isAdmin}
+                  author={
+                    message.author?.name ||
+                    (message.is_admin ? t('contact.thread.admin') : t('contact.thread.user'))
+                  }
+                  text={message.body}
+                  time={message.createdAt}
+                />
               ))}
+
               {thread.messages?.length === 0 && (
-                <div className="text-center text-muted py-4">{t('contact.thread.noMessages')}</div>
+                <Box textAlign="center" py={6}>
+                  <Text fontSize="sm" color="gray.500">
+                    {t('contact.thread.noMessages')}
+                  </Text>
+                </Box>
               )}
-            </div>
+            </Box>
+
             {thread.status === 'open' && (
-              <div className="d-flex gap-2 align-items-start">
-                <div className="flex-grow-1">
-                  <CFormTextarea rows={3} value={body} onChange={(e) => setBody(e.target.value)} placeholder={t('contact.compose.messagePh')} />
-                  {Array.isArray(thread.messages) && thread.messages.some(m => !m.read_by_recipient && (!!isAdmin ? !m.is_admin : m.is_admin)) && (
-                    <div className="mt-1"><CBadge color="danger">{t('common.new') || 'New'}</CBadge></div>
+              <Flex gap={3} align="flex-start" direction={{ base: 'column', md: 'row' }}>
+                <Box flex="1">
+                  <Textarea
+                    rows={3}
+                    value={body}
+                    onChange={(event) => setBody(event.target.value)}
+                    placeholder={t('contact.compose.messagePh')}
+                  />
+                  {hasUnreadForViewer && (
+                    <Badge colorScheme="red" mt={2}>
+                      {t('common.new') || 'New'}
+                    </Badge>
                   )}
-                </div>
-                <CButton color="primary" onClick={send}>{t('contact.thread.reply')}</CButton>
-              </div>
+                </Box>
+                <Button colorScheme="blue" onClick={handleSend} alignSelf={{ base: 'flex-end', md: 'center' }}>
+                  {t('contact.thread.reply')}
+                </Button>
+              </Flex>
             )}
-          </>
+          </Stack>
         )}
-      </CCardBody>
-    </CCard>
+      </CardBody>
+    </Card>
   )
 }
 

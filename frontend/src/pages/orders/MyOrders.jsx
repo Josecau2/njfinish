@@ -7,7 +7,9 @@ const MyOrders = ({ isContractor, contractorGroupId, contractorGroupName }) => {
   // For contractors, backend will scope by created_by_user_id; pass groupId for admins viewing a group if needed
   const title = t('orders.page.my.title', 'My Orders')
   const subtitle = contractorGroupName
-    ? t('orders.page.my.subtitleForGroup', 'Accepted & locked quotes for {{group}}', { group: contractorGroupName })
+    ? t('orders.page.my.subtitleForGroup', 'Accepted & locked quotes for {{group}}', {
+        group: contractorGroupName,
+      })
     : t('orders.page.my.subtitleDefault', 'Your accepted and locked quotes')
 
   return (
@@ -18,6 +20,7 @@ const MyOrders = ({ isContractor, contractorGroupId, contractorGroupName }) => {
       isContractor={isContractor}
       mineOnly={true}
     />
+  
   )
 }
 

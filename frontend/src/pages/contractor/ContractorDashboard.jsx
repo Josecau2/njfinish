@@ -1,152 +1,145 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-  CSpinner,
-  CAlert,
-  CContainer,
-  CButton
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilDescription, cilUser } from '@coreui/icons';
-import axiosInstance from '../../helpers/axiosInstance';
+import React, { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { Card, CardBody, CardHeader, Box, Flex, Spinner, Alert, Container, Icon, Button } from '@chakra-ui/react'
+import { FileText, User } from 'lucide-react'
+import axiosInstance from '../../helpers/axiosInstance'
 
 const ContractorDashboard = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+  const navigate = useNavigate()
+  const { t } = useTranslation()
   const [stats, setStats] = useState({
     proposals: 0,
-    customers: 0
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    customers: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Stabilize user object to prevent re-renders
   const user = useMemo(() => {
-    return JSON.parse(localStorage.getItem('user') || '{}');
-  }, []);
+    return JSON.parse(localStorage.getItem('user') || '{}')
+  }, [])
 
-  const groupName = user.group?.name || 'Unknown Group';
+  const groupName = user.group?.name || 'Unknown Group'
 
   // Stabilize groupId to prevent re-renders
   const groupId = useMemo(() => {
-    return user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null;
-  }, [user.group?.id, user.group_id, user.groupId, user.group?.group_id]);
+    return user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null
+  }, [user.group?.id, user.group_id, user.groupId, user.group?.group_id])
 
   const modulesList = useMemo(() => {
-    const raw = user.group?.modules;
+    const raw = user.group?.modules
     try {
-      if (Array.isArray(raw)) return raw;
+      if (Array.isArray(raw)) return raw
       if (typeof raw === 'string' && raw.trim()) {
-        const parsed = JSON.parse(raw);
+        const parsed = JSON.parse(raw)
         // Re-run normalization on parsed value
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) return parsed
         if (parsed && typeof parsed === 'object') {
           return Object.entries(parsed)
             .filter(([, v]) => !!v)
-            .map(([k]) => k);
+            .map(([k]) => k)
         }
-        return [];
+        return []
       }
       if (raw && typeof raw === 'object') {
         return Object.entries(raw)
           .filter(([, v]) => !!v)
-          .map(([k]) => k);
+          .map(([k]) => k)
       }
-      return [];
+      return []
     } catch (e) {
-      console.warn('Failed to parse modules JSON; defaulting to []', e);
-      return [];
+      console.warn('Failed to parse modules JSON; defaulting to []', e)
+      return []
     }
-  }, [JSON.stringify(user.group?.modules)]);
+  }, [JSON.stringify(user.group?.modules)])
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
 
         // Fetch real stats from APIs
-  // axiosInstance includes base URL and auth by default
+        // axiosInstance includes base URL and auth by default
 
-        let proposalsCount = 0;
-        let customersCount = 0;
-  // Removed users/team members count for contractor dashboard
+        let proposalsCount = 0
+        let customersCount = 0
+        // Removed users/team members count for contractor dashboard
 
         // Fetch proposals count if module is enabled
         if (modulesList.includes('proposals')) {
           try {
-            const proposalsResponse = await axiosInstance.get('/api/quotes');
-            const proposalsData = proposalsResponse.data;
+            const proposalsResponse = await axiosInstance.get('/api/quotes')
+            const proposalsData = proposalsResponse.data
             const allProposals = Array.isArray(proposalsData)
               ? proposalsData
-              : (proposalsData?.proposals || proposalsData?.data || proposalsData?.items || []);
+              : proposalsData?.proposals || proposalsData?.data || proposalsData?.items || []
 
             // Filter to contractor's own group if groupId present
             const ownProposals = groupId
-              ? allProposals.filter(p => {
-                  const og = p?.owner_group_id ?? p?.ownerGroupId ?? p?.group_id ?? p?.groupId;
-                  return og === groupId;
+              ? allProposals.filter((p) => {
+                  const og = p?.owner_group_id ?? p?.ownerGroupId ?? p?.group_id ?? p?.groupId
+                  return og === groupId
                 })
-              : allProposals;
+              : allProposals
 
-            proposalsCount = ownProposals.length;
+            proposalsCount = ownProposals.length
           } catch (err) {
-            console.warn('Failed to fetch proposals count:', err);
+            console.warn('Failed to fetch proposals count:', err)
           }
         }
 
         // Fetch customers count if module is enabled
         if (modulesList.includes('customers')) {
           try {
-            const customersResponse = await axiosInstance.get('/api/customers');
-            const customersData = customersResponse.data;
+            const customersResponse = await axiosInstance.get('/api/customers')
+            const customersData = customersResponse.data
             const allCustomers = Array.isArray(customersData)
               ? customersData
-              : (customersData?.customers || customersData?.data || customersData?.items || []);
+              : customersData?.customers || customersData?.data || customersData?.items || []
 
             const ownCustomers = groupId
-              ? allCustomers.filter(c => {
-                  const cg = c?.owner_group_id ?? c?.ownerGroupId ?? c?.group_id ?? c?.groupId;
-                  return cg === groupId;
+              ? allCustomers.filter((c) => {
+                  const cg = c?.owner_group_id ?? c?.ownerGroupId ?? c?.group_id ?? c?.groupId
+                  return cg === groupId
                 })
-              : allCustomers;
+              : allCustomers
 
-            customersCount = ownCustomers.length;
+            customersCount = ownCustomers.length
           } catch (err) {
-            console.warn('Failed to fetch customers count:', err);
+            console.warn('Failed to fetch customers count:', err)
           }
         }
 
         setStats({
           proposals: proposalsCount,
-          customers: customersCount
-        });
+          customers: customersCount,
+        })
       } catch (err) {
-  setError(t('dashboard.loadError'));
-        console.error('Dashboard error:', err);
+        setError(t('dashboard.loadError'))
+        console.error('Dashboard error:', err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchStats();
-  }, [groupId]); // Simplified dependencies - removed modulesList since it's used inside the effect
+    fetchStats()
+  }, [groupId]) // Simplified dependencies - removed modulesList since it's used inside the effect
 
   if (loading) {
     return (
-      <CContainer className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-  <CSpinner />
-      </CContainer>
-    );
+      <Container
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '200px' }}
+      >
+        <Spinner />
+      </Container>
+  
+  )
   }
 
   return (
-    <CContainer fluid>
+    <Container fluid>
       <style>{`
         /* Contractor dashboard mobile tweaks */
         .contractor-dashboard .btn { min-height: 44px; }
@@ -154,107 +147,109 @@ const ContractorDashboard = () => {
         .contractor-dashboard .quick-actions .btn { flex: 1 1 48%; }
         @media (max-width: 575.98px) {
           .contractor-dashboard .card .fs-4 { font-size: 1.25rem; }
+    </div>
+    </div>
+  
+  )
         }
       `}</style>
-      <CRow>
-        <CCol xs={12} className="contractor-dashboard">
-          <CCard className="mb-4">
-            <CCardHeader>
+      <Flex>
+        <Box xs={12} className="contractor-dashboard">
+          <Card className="mb-4">
+            <CardHeader>
               <h4 className="mb-0">{t('dashboard.welcome', { group: groupName })}</h4>
               <p className="text-muted mb-0">{t('dashboard.portal')}</p>
-            </CCardHeader>
-            <CCardBody>
+            </CardHeader>
+            <CardBody>
               {error && (
-                <CAlert color="danger" className="mb-3">
+                <Alert status="error" className="mb-3">
                   {error}
-                </CAlert>
+                </Alert>
               )}
 
               {/* Removed verbose Enabled Modules badges section for a cleaner dashboard */}
 
-              <CRow>
+              <Flex>
                 {modulesList.includes('proposals') && (
-                  <CCol sm={6} lg={4} className="mb-3">
-                    <CCard className="text-white bg-primary">
-                      <CCardBody className="pb-0 d-flex justify-content-between align-items-start">
+                  <Box sm={6} lg={4} className="mb-3">
+                    <Card className="text-white bg-primary">
+                      <CardBody className="pb-0 d-flex justify-content-between align-items-start">
                         <div>
                           <div className="fs-4 fw-semibold">{stats.proposals}</div>
                           <div>{t('nav.proposals')}</div>
-                        </div>
                         <div className="bg-body-secondary bg-opacity-25 rounded p-2">
-                          <CIcon icon={cilDescription} size="lg" />
+                          <Icon as={FileText} size="lg" />
                         </div>
-                      </CCardBody>
-                    </CCard>
-                  </CCol>
+                      </CardBody>
+                    </Card>
+                  </Box>
                 )}
 
                 {modulesList.includes('customers') && (
-                  <CCol sm={6} lg={4} className="mb-3">
-                    <CCard className="text-white bg-success">
-                      <CCardBody className="pb-0 d-flex justify-content-between align-items-start">
+                  <Box sm={6} lg={4} className="mb-3">
+                    <Card className="text-white bg-success">
+                      <CardBody className="pb-0 d-flex justify-content-between align-items-start">
                         <div>
                           <div className="fs-4 fw-semibold">{stats.customers}</div>
                           <div>{t('nav.customers')}</div>
-                        </div>
                         <div className="bg-body-secondary bg-opacity-25 rounded p-2">
-                          <CIcon icon={cilUser} size="lg" />
+                          <Icon as={User} size="lg" />
                         </div>
-                      </CCardBody>
-                    </CCard>
-                  </CCol>
+                      </CardBody>
+                    </Card>
+                  </Box>
                 )}
 
                 {/* Team Members card removed for contractor dashboard */}
-              </CRow>
+              </Flex>
 
-              <CRow>
-                <CCol xs={12}>
-                  <CCard>
-                    <CCardHeader>
+              <Flex>
+                <Box xs={12}>
+                  <Card>
+                    <CardHeader>
                       <h6 className="mb-0">{t('dashboard.quickActions')}</h6>
-                    </CCardHeader>
-                    <CCardBody>
+                    </CardHeader>
+                    <CardBody>
                       <div className="d-flex quick-actions gap-2">
                         {modulesList.includes('proposals') && (
-                          <CButton
-                            color="primary"
+                          <Button
+                            colorScheme="blue"
                             variant="outline"
                             aria-label={t('dashboard.createProposal')}
                             onClick={() => navigate('/quotes/create')}
                           >
                             {t('dashboard.createProposal')}
-                          </CButton>
+                          </Button>
                         )}
                         {modulesList.includes('customers') && (
-                          <CButton
-                            color="success"
+                          <Button
+                            colorScheme="green"
                             variant="outline"
                             aria-label={t('nav.addCustomer')}
                             onClick={() => navigate('/customers/add')}
                           >
                             {t('nav.addCustomer')}
-                          </CButton>
+                          </Button>
                         )}
-                        <CButton
-                          color="info"
+                        <Button
+                          colorScheme="blue"
                           variant="outline"
                           aria-label={t('dashboard.viewProfile')}
                           onClick={() => navigate('/profile')}
                         >
                           {t('dashboard.viewProfile')}
-                        </CButton>
+                        </Button>
                       </div>
-                    </CCardBody>
-                  </CCard>
-                </CCol>
-              </CRow>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
-  );
-};
+                    </CardBody>
+                  </Card>
+                </Box>
+              </Flex>
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
+    </Container>
+  )
+}
 
-export default ContractorDashboard;
+export default ContractorDashboard

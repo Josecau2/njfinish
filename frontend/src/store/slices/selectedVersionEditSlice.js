@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 const tableItemsEditSlice = createSlice({
   name: 'tableItems',
@@ -7,13 +7,13 @@ const tableItemsEditSlice = createSlice({
   },
   reducers: {
     setTableItemsEdit(state, action) {
-      state.data = action.payload; // Replace the whole tableItems list
+      state.data = action.payload // Replace the whole tableItems list
     },
     clearTableItemsEdit(state) {
-      state.data = [];
+      state.data = []
     },
   },
-});
+})
 
-export const { setTableItemsEdit, clearTableItemsEdit } = tableItemsEditSlice.actions;
-export default tableItemsEditSlice.reducer;
+export const { setTableItemsEdit, clearTableItemsEdit } = tableItemsEditSlice.actions
+export default tableItemsEditSlice.reducer

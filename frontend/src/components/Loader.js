@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Loader = () => {
   return (
@@ -6,8 +6,8 @@ const Loader = () => {
       <div style={styles.spinner} aria-hidden="true"></div>
       <p style={styles.text}>Loading…</p>
     </div>
-  );
-};
+  )
+}
 
 const styles = {
   container: {
@@ -25,7 +25,7 @@ const styles = {
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   },
-  text: { marginTop: 8, fontSize: 14, color: '#6c757d' }
-};
+  text: { marginTop: 8, fontSize: 14, color: '#6c757d' },
+}
 
-export default Loader;
+export default Loader

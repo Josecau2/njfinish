@@ -1,42 +1,24 @@
 import { useEffect, useState, useMemo } from 'react'
-import CIcon from '@coreui/icons-react'
-import {
-  cilCog,
-  cilDrop,
-  cilPuzzle,
-  cilSpeedometer,
-  cilCalendar,
-  cilFolderOpen,
-  cilPeople,
-  cilSettings,
-  cilUser,
-  cilGroup,
-  cilBell,
-  cilNotes,
-  cilLocationPin,
-  cilCalculator,
-  cilBrush,
-  cilIndustry
-} from '@coreui/icons'
-import { CNavGroup, CNavItem } from '@coreui/react'
+import { Icon, Box } from '@chakra-ui/react'
+import { Calendar, Settings, User, Users, FileText } from 'lucide-react'
 import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
 
 const useNavItems = () => {
   const [navItems, setNavItems] = useState([])
 
   const user = useMemo(() => {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
+    const userData = localStorage.getItem('user')
+    return userData ? JSON.parse(userData) : null
   }, [])
 
   useEffect(() => {
     const buildNavigation = () => {
       if (!user?.userId) {
-        setNavItems([]);
-        return;
+        setNavItems([])
+        return
       }
 
-      const navigationItems = [];
+      const navigationItems = []
 
       // Dashboard - always visible
       navigationItems.push({
@@ -44,21 +26,19 @@ const useNavItems = () => {
         name: 'Dashboard',
         to: '/',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-      });
+      })
 
       // Proposals section
       if (hasPermission(user, 'proposals:read')) {
-        const proposalItems = [
-          { component: CNavItem, name: 'View Proposals', to: '/quotes' }
-        ];
+        const proposalItems = [{ component: CNavItem, name: 'View Proposals', to: '/quotes' }]
 
         if (hasPermission(user, 'proposals:create')) {
-          proposalItems.push({ component: CNavItem, name: 'Create Quote', to: '/proposals/create' });
+          proposalItems.push({ component: CNavItem, name: 'Create Quote', to: '/proposals/create' })
         }
 
-  // Contracts: visible only to non-contractors
-  if (!isContractor(user)) {
-          proposalItems.push({ component: CNavItem, name: 'Contracts', to: '/contracts' });
+        // Contracts: visible only to non-contractors
+        if (!isContractor(user)) {
+          proposalItems.push({ component: CNavItem, name: 'Contracts', to: '/contracts' })
         }
 
         navigationItems.push({
@@ -66,17 +46,15 @@ const useNavItems = () => {
           name: 'Proposals',
           icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
           items: proposalItems,
-        });
+        })
       }
 
       // Customers section
       if (hasPermission(user, 'customers:read')) {
-        const customerItems = [
-          { component: CNavItem, name: 'View Customers', to: '/customers' }
-        ];
+        const customerItems = [{ component: CNavItem, name: 'View Customers', to: '/customers' }]
 
         if (hasPermission(user, 'customers:create')) {
-          customerItems.push({ component: CNavItem, name: 'Add Customer', to: '/customers/add' });
+          customerItems.push({ component: CNavItem, name: 'Add Customer', to: '/customers/add' })
         }
 
         navigationItems.push({
@@ -84,7 +62,7 @@ const useNavItems = () => {
           name: 'Customers',
           icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
           items: customerItems,
-        });
+        })
       }
 
       // Resources section
@@ -94,7 +72,7 @@ const useNavItems = () => {
           name: 'Resources',
           to: '/resources',
           icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
-        });
+        })
       }
 
       // Calendar section
@@ -103,20 +81,20 @@ const useNavItems = () => {
           component: CNavItem,
           name: 'Calendar',
           to: '/calender',
-          icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-        });
+          icon: <Icon as={Calendar} customClassName="nav-icon" />,
+        })
       }
 
       // Admin section
       if (isAdmin(user)) {
-        const adminItems = [];
+        const adminItems = []
 
         if (hasPermission(user, 'admin:contractors')) {
-          adminItems.push({ component: CNavItem, name: 'Contractors', to: '/admin/contractors' });
+          adminItems.push({ component: CNavItem, name: 'Contractors', to: '/admin/contractors' })
         }
 
         if (hasPermission(user, 'admin:notifications')) {
-          adminItems.push({ component: CNavItem, name: 'Notifications', to: '/notifications' });
+          adminItems.push({ component: CNavItem, name: 'Notifications', to: '/notifications' })
         }
 
         if (adminItems.length > 0) {
@@ -125,25 +103,25 @@ const useNavItems = () => {
             name: 'Admin',
             icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
             items: adminItems,
-          });
+          })
         }
       }
 
       // Settings section - only for admin users
       if (isAdmin(user)) {
-        const settingsItems = [];
+        const settingsItems = []
 
         // User Management
         if (hasPermission(user, 'settings:users')) {
           settingsItems.push({
             component: CNavGroup,
             name: 'User Management',
-            icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+            icon: <Icon as={User} customClassName="nav-icon" />,
             items: [
               { component: CNavItem, name: 'Users', to: '/settings/users' },
               { component: CNavItem, name: 'User Groups', to: '/settings/users/groups' },
             ],
-          });
+          })
         }
 
         // Manufacturers
@@ -156,7 +134,7 @@ const useNavItems = () => {
               { component: CNavItem, name: 'Manufacturers', to: '/settings/manufacturers' },
               { component: CNavItem, name: 'Multipliers', to: '/settings/usergroup/multipliers' },
             ],
-          });
+          })
         }
 
         // Locations
@@ -166,7 +144,7 @@ const useNavItems = () => {
             name: 'Locations',
             to: '/settings/locations',
             icon: <CIcon icon={cilLocationPin} customClassName="nav-icon" />,
-          });
+          })
         }
 
         // Taxes
@@ -176,7 +154,7 @@ const useNavItems = () => {
             name: 'Taxes',
             to: '/settings/taxes',
             icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
-          });
+          })
         }
 
         // Customization
@@ -191,26 +169,26 @@ const useNavItems = () => {
               { component: CNavItem, name: 'Login Page', to: '/settings/loginlayoutcustomization' },
               { component: CNavItem, name: 'UI Customization', to: '/settings/ui-customization' },
             ],
-          });
+          })
         }
 
         if (settingsItems.length > 0) {
           navigationItems.push({
             component: CNavGroup,
             name: 'Settings',
-            icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+            icon: <Icon as={Settings} customClassName="nav-icon" />,
             items: settingsItems,
-          });
+          })
         }
       }
 
-      setNavItems(navigationItems);
-    };
+      setNavItems(navigationItems)
+    }
 
-    buildNavigation();
-  }, [user]);
+    buildNavigation()
+  }, [user])
 
-  return navItems;
-};
+  return navItems
+}
 
-export default useNavItems;
+export default useNavItems

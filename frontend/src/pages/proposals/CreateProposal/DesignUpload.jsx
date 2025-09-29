@@ -1,285 +1,321 @@
-import React, { useState, useEffect } from 'react'
+
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  CCard,
-  CCardBody,
-  CNav,
-  CNavItem,
-  CNavLink,
-  CButton,
-  CFormInput,
-  CSpinner,
-} from '@coreui/react'
-import axiosInstance from '../../../helpers/axiosInstance';
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Tabs,
+  TabList,
+  Tab,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
+import { CloudUpload, PenSquare, UploadCloud } from 'lucide-react'
+import axiosInstance from '../../../helpers/axiosInstance'
 
-const DesignImportStep = ({ updateFormData, manufacturerData, onStyleSelect, formData, hideBack, prevStep }) => {
-  const { t } = useTranslation();
+const MotionButton = motion(Button)
 
-  const api_url = import.meta.env.VITE_API_URL;
+const DesignImportStep = ({
+  updateFormData,
+  manufacturerData,
+  onStyleSelect,
+  formData,
+  hideBack,
+  prevStep,
+}) => {
+  const { t } = useTranslation()
+  const apiUrl = import.meta.env.VITE_API_URL
+  const fileInputRef = useRef(null)
+
   const [activeTab, setActiveTab] = useState('manual')
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState('')
   const [hoveredId, setHoveredId] = useState(null)
-  const [stylesMeta, setStylesMeta] = useState([]);
+  const [stylesMeta, setStylesMeta] = useState([])
+  const [isFetchingStyles, setIsFetchingStyles] = useState(false)
 
-  const handleTabSelect = (tab) => {
-    setActiveTab(tab)
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const tabIndex = activeTab === 'import' ? 1 : 0
+
+  const handleTabSelect = (index) => {
+    setActiveTab(index === 1 ? 'import' : 'manual')
   }
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0]
-    updateFormData({ designFile: file })
+  const handleFileSelect = (event) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      updateFormData({ designFile: file })
+    }
   }
 
-  // const filteredCollections = manufacturerData?.collections.filter(c =>
-  //   c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //   c.short_name.toLowerCase().includes(searchTerm.toLowerCase())
-  // )
- const filteredCollections = stylesMeta?.length
-  ? stylesMeta.filter(s => {
-      const q = searchTerm.toLowerCase();
-      const matchStyle = (s.style || '').toLowerCase().includes(q);
-      const matchVariant = Array.isArray(s.styleVariants) && s.styleVariants.some(v => (v.shortName || '').toLowerCase().includes(q));
-      return !q || matchStyle || matchVariant;
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const filteredCollections = useMemo(() => {
+    if (!stylesMeta?.length) return []
+    const query = searchTerm.trim().toLowerCase()
+    if (!query) return stylesMeta
+
+    return stylesMeta.filter((style) => {
+      const styleName = (style.style || '').toLowerCase()
+      const variantMatch = Array.isArray(style.styleVariants)
+        ? style.styleVariants.some((variant) => (variant.shortName || '').toLowerCase().includes(query))
+        : false
+      return styleName.includes(query) || variantMatch
     })
-  : [];
+  }, [stylesMeta, searchTerm])
 
   useEffect(() => {
-    // Assuming we fetch collection only for the first manufacturer
-
-    const selectedManufacturerId = formData.manufacturersData?.[0]?.manufacturer;
-    if (selectedManufacturerId) {
-      fetchManufacturerStylesMeta(selectedManufacturerId);
+    const selectedManufacturerId = formData?.manufacturersData?.[0]?.manufacturer
+    if (!selectedManufacturerId) {
+      setStylesMeta([])
+      return
     }
-  }, [formData]);
 
-  const fetchManufacturerStylesMeta = async (manufacturerId) => {
-    try {
-  const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`);
-
-      // Handle both old array format and new object format
-      if (response.data && response.data.styles && Array.isArray(response.data.styles)) {
-        setStylesMeta(response.data.styles);
-      } else if (Array.isArray(response.data)) {
-        // Fallback for old format
-        setStylesMeta(response.data);
-      } else {
-        setStylesMeta([]);
+    const fetchStyles = async () => {
+      try {
+        setIsFetchingStyles(true)
+        const response = await axiosInstance.get(`/api/manufacturers/${selectedManufacturerId}/styles-meta`)
+        if (response?.data?.styles && Array.isArray(response.data.styles)) {
+          setStylesMeta(response.data.styles)
+        } else if (Array.isArray(response?.data)) {
+          setStylesMeta(response.data)
+        } else {
+          setStylesMeta([])
+        }
+      } catch (error) {
+        console.error('Error fetching styles meta', error)
+        setStylesMeta([])
+      } finally {
+        setIsFetchingStyles(false)
       }
-    } catch (error) {
-      console.error('Error fetching styles meta', error);
-      setStylesMeta([]);
     }
-  };
 
+    fetchStyles()
+  }, [formData])
 
   return (
-    <div className="w-100 proposal-form-mobile">
-      <style>{`
-        .proposal-form-mobile .btn { min-height: 44px; }
-        .design-upload-mobile-actions { position: sticky; bottom: 0; background: var(--cui-body-bg, #fff); border-top: 1px solid rgba(0,0,0,.06); }
-        .mobile-tab-button { min-height: 44px; }
-      `}</style>
-      <CCard className="my-4 shadow-sm w-100">
-        <CCardBody className="p-4">
-          <div className="d-flex justify-content-between">
-            <h5 className="mb-4 text-dark fw-semibold">{t('proposals.create.design.title')}</h5>
-
+    <Box w="full">
+      <Card my={4} shadow="md" w="full">
+        <CardBody p={{ base: 4, md: 6 }}>
+          <Flex justify="space-between" align="center" mb={6} gap={4} flexWrap="wrap">
+            <Heading size="md" color="gray.800">
+              {t('proposals.create.design.title')}
+            </Heading>
             {!hideBack && (
-              <CButton
-                color="secondary"
+              <MotionButton
                 variant="outline"
+                colorScheme="gray"
                 onClick={prevStep}
-                style={{ borderRadius: '6px', minWidth: '90px' }}
+                whileTap={{ scale: 0.98 }}
+                minW="90px"
               >
                 {t('common.back')}
-              </CButton>
+              </MotionButton>
             )}
-          </div>
+          </Flex>
 
-          {/* Desktop/Tablet tabs - hidden on mobile */}
-          <CNav variant="tabs" role="tablist" className="mb-4 tabs-container d-none d-md-flex">
-            <CNavItem>
-              <CNavLink
-                active={activeTab === 'manual'}
-                onClick={() => handleTabSelect('manual')}
-                style={{ cursor: 'pointer' }}
-              >
-                {t('proposals.create.design.tabs.manualEntry')}
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink
-                active={activeTab === 'import'}
-                onClick={() => handleTabSelect('import')}
-                style={{ cursor: 'pointer' }}
-              >
-                {t('proposals.create.design.tabs.import2020')}
-              </CNavLink>
-            </CNavItem>
-          </CNav>
+          <Tabs
+            index={tabIndex}
+            onChange={handleTabSelect}
+            variant="enclosed"
+            display={{ base: 'none', md: 'block' }}
+            mb={6}
+          >
+            <TabList>
+              <Tab>{t('proposals.create.design.tabs.manualEntry')}</Tab>
+              <Tab>{t('proposals.create.design.tabs.import2020')}</Tab>
+            </TabList>
+          </Tabs>
 
           {activeTab === 'import' ? (
-            <div className="form-section text-center py-5">
-              <p className="text-muted mb-4">{t('proposals.create.design.supportedTypes', { types: '.TXT, .CSV' })}</p>
+            <Stack spacing={6} align="center" textAlign="center" py={6}>
+              <Text color="gray.600">
+                {t('proposals.create.design.supportedTypes', { types: '.TXT, .CSV' })}
+              </Text>
 
-              <div
-                className="upload-area p-5 border border-dashed rounded mb-4 bg-light d-flex flex-column align-items-center justify-content-center"
-                style={{ cursor: 'pointer' }}
-                onClick={() => document.getElementById('fileInput').click()}
+              <Box
+                as="button"
+                onClick={handleBrowseClick}
+                w="full"
+                maxW="520px"
+                borderWidth="2px"
+                borderStyle="dashed"
+                borderRadius="xl"
+                bg="gray.50"
+                py={10}
+                px={6}
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                transition="all 0.2s"
+                _hover={{ borderColor: 'brand.400', bg: 'gray.100' }}
               >
-                <i className="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
-                <p className="text-muted mb-2">{t('proposals.create.design.selectExportedFile')}</p>
-                <CButton color="success" onClick={() => document.getElementById('fileInput').click()}>
+                <Icon as={CloudUpload} boxSize={12} color="gray.400" mb={3} />
+                <Text color="gray.600" mb={4}>
+                  {t('proposals.create.design.selectExportedFile')}
+                </Text>
+                <MotionButton
+                  colorScheme="brand"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleBrowseClick}
+                >
                   {t('proposals.create.design.selectFileCta')}
-                </CButton>
-                <CFormInput
+                </MotionButton>
+                <Input
+                  ref={fileInputRef}
                   type="file"
-                  id="fileInput"
-                  style={{ display: 'none' }}
-                  onChange={handleFileSelect}
+                  display="none"
                   accept=".txt,.csv"
+                  onChange={handleFileSelect}
                 />
-              </div>
+              </Box>
 
-              <p className="text-primary mb-2" style={{ cursor: 'pointer' }} onClick={() => handleTabSelect('manual')}>
+              <MotionButton
+                variant="link"
+                colorScheme="brand"
+                onClick={() => setActiveTab('manual')}
+                whileTap={{ scale: 0.98 }}
+              >
                 {t('proposals.create.design.no2020SwitchToManual')}
-              </p>
+              </MotionButton>
 
-              <CButton color="link" className="text-primary p-0">
-                <i className="bi bi-question-circle me-1"></i> {t('proposals.create.design.howToExport')}
-              </CButton>
-            </div>
+              <Button variant="link" colorScheme="brand">
+                {t('proposals.create.design.howToExport')}
+              </Button>
+            </Stack>
           ) : (
-            // filteredCollections &&
-            //   filteredCollections.length == 0 ? (
-            //   <div className="text-center py-5">
-            //     <h6 className="text-muted mb-3">Manual Entry</h6>
-            //     <p className="text-muted">You can manually select cabinet styles and enter individual parts here.</p>
-            //     <p className="text-muted">This section will guide you through step-by-step inputs.</p>
-            //     <CButton color="info" variant="outline" size="sm" onClick={() => alert('To be implemented')}>
-            //       Simulate Manual Form
-            //     </CButton>
-            //   </div>
-            // ) : (
-              <div className="form-section text-center py-5">
-                <div className="mb-4 d-flex justify-content-center">
-                  <CFormInput
-                    placeholder={t('proposals.create.design.searchStylePlaceholder')}
-                    style={{ maxWidth: 300 }}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+            <Stack spacing={6} align="center" py={6}>
+              <Input
+                placeholder={t('proposals.create.design.searchStylePlaceholder')}
+                maxW={{ base: '100%', md: '320px' }}
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
 
-                <div className="d-flex flex-wrap justify-content-center gap-4">
-                  <div className="d-flex flex-wrap justify-content-center gap-4">
-                    {filteredCollections?.map((style) => (
-                      <div
-                        key={style.id}
-                        className="position-relative text-center"
-                        style={{ width: 100, cursor: 'pointer' }}
-                        onMouseEnter={() => setHoveredId(style.id)}
-                        onMouseLeave={() => setHoveredId(null)}
-                        onClick={() => onStyleSelect(style.id)}
+              {isFetchingStyles ? (
+                <Spinner size="lg" color="brand.500" />
+              ) : filteredCollections.length === 0 ? (
+                <Text color="gray.500" fontStyle="italic">
+                  {t('proposals.create.design.noStylesFound', 'No styles found for this search.')}
+                </Text>
+              ) : (
+                <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5 }} spacing={5} w="full" justifyItems="center">
+                  {filteredCollections.map((style) => (
+                    <Box
+                      key={style.id}
+                      as="button"
+                      type="button"
+                      bg="transparent"
+                      border="none"
+                      position="relative"
+                      onMouseEnter={() => setHoveredId(style.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      onClick={() => onStyleSelect?.(style.id)}
+                      cursor="pointer"
+                    >
+                      <Box
+                        borderRadius="lg"
+                        overflow="hidden"
+                        boxShadow="sm"
+                        transition="transform 0.2s"
+                        transform={hoveredId === style.id ? 'scale(1.03)' : 'scale(1)'}
                       >
-                        <div
-                          className="collection-hover border rounded shadow-sm position-relative"
-                          style={{
-                            overflow: 'hidden',
-                            borderRadius: '8px',
-                            transition: 'transform 0.3s ease',
-                          }}
-                        >
-                          <img
-                            src={
-                              style.styleVariants?.[0]?.image
-                                ? `${api_url}/uploads/images/${style.styleVariants[0].image}`
-                                : "/images/nologo.png"
+                        <LazyLoadImage
+                          src={
+                            style.styleVariants?.[0]?.image
+                              ? `${apiUrl}/uploads/images/${style.styleVariants[0].image}`
+                              : '/images/nologo.png'
+                          }
+                          alt={style.styleVariants?.[0]?.shortName || style.style}
+                          style={{ width: '100%', height: 210, objectFit: 'cover' }}
+                          placeholderSrc="/images/nologo.png"
+                          effect="blur"
+                          onError={(event) => {
+                            const fileName = style.styleVariants?.[0]?.image
+                            if (fileName && !event.target.dataset.fallbackTried) {
+                              event.target.dataset.fallbackTried = '1'
+                              event.target.src = `${apiUrl}/uploads/manufacturer_catalogs/${fileName}`
+                            } else {
+                              event.target.src = '/images/nologo.png'
                             }
-                            alt={style.styleVariants?.[0]?.shortName || style.style}
-                            style={{
-                              width: '100%',
-                              height: 210,
-                              objectFit: 'cover',
-                              borderRadius: '8px',
-                              transition: 'transform 0.3s ease',
-                              transform: hoveredId === style.id ? 'scale(1.05)' : 'scale(1)',
-                            }}
-                            className="img-fluid"
-                            onError={(e) => {
-                              const fname = style.styleVariants?.[0]?.image;
-                              if (fname && !e.target.dataset.fallbackTried) {
-                                e.target.dataset.fallbackTried = '1';
-                                e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
-                              } else {
-                                e.target.src = '/images/nologo.png';
-                              }
-                            }}
-                          />
-                          <div
-                            className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                            style={{
-                              backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                              color: '#fff',
-                              opacity: hoveredId === style.id ? 1 : 0,
-                              transition: 'opacity 0.3s ease',
-                              fontSize: '0.85rem',
-                              fontWeight: '500',
-                              borderRadius: '8px',
-                            }}
-                          >
-              {style.style || t('common.na')}
-                          </div>
-                        </div>
-            <div className="mt-2 text-muted fw-semibold">{style.styleVariants?.[0]?.shortName || style.style}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                </div>
-              </div>
-            // )
+                          }}
+                        />
+                        <Box
+                          position="absolute"
+                          inset={0}
+                          bg="blackAlpha.600"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          opacity={hoveredId === style.id ? 1 : 0}
+                          transition="opacity 0.2s"
+                          px={3}
+                        >
+                          <Text color="white" fontWeight="medium" fontSize="sm" textAlign="center">
+                            {style.style || t('common.na')}
+                          </Text>
+                        </Box>
+                      </Box>
+                      <Text mt={2} color="gray.600" fontWeight="semibold" noOfLines={1}>
+                        {style.styleVariants?.[0]?.shortName || style.style}
+                      </Text>
+                    </Box>
+                  ))}
+                </SimpleGrid>
+              )}
+            </Stack>
           )}
+        </CardBody>
+      </Card>
 
-        </CCardBody>
-      </CCard>
-
-      {/* Mobile action buttons - fixed at bottom */}
-  <div className="d-md-none design-upload-mobile-actions">
-        <div className="container-fluid p-3">
-          <div className="row g-2">
-            <div className="col-6">
-              <CButton
-                color={activeTab === 'manual' ? 'primary' : 'light'}
-                className="w-100 mobile-tab-button"
-                onClick={() => handleTabSelect('manual')}
-                size="lg"
-        aria-label={t('proposals.create.design.tabs.manualEntry')}
-              >
-                <div className="text-center">
-                  <i className="bi bi-pencil-square d-block mb-1"></i>
-                  <small>{t('proposals.create.design.tabs.manualEntry')}</small>
-                </div>
-              </CButton>
-            </div>
-            <div className="col-6">
-              <CButton
-                color={activeTab === 'import' ? 'primary' : 'light'}
-                className="w-100 mobile-tab-button"
-                onClick={() => handleTabSelect('import')}
-                size="lg"
-        aria-label={t('proposals.create.design.tabs.import2020')}
-              >
-                <div className="text-center">
-                  <i className="bi bi-upload d-block mb-1"></i>
-                  <small>{t('proposals.create.design.tabs.import2020')}</small>
-                </div>
-              </CButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      {isMobile && (
+        <Box
+          position="sticky"
+          bottom={0}
+          bg="white"
+          borderTopWidth="1px"
+          boxShadow="md"
+          px={4}
+          py={3}
+          zIndex={1}
+        >
+          <SimpleGrid columns={2} spacing={3}>
+            <MotionButton
+              variant={activeTab === 'manual' ? 'solid' : 'outline'}
+              colorScheme="brand"
+              onClick={() => setActiveTab('manual')}
+              whileTap={{ scale: 0.98 }}
+              leftIcon={<Icon as={PenSquare} boxSize={4} />}
+            >
+              {t('proposals.create.design.tabs.manualEntry')}
+            </MotionButton>
+            <MotionButton
+              variant={activeTab === 'import' ? 'solid' : 'outline'}
+              colorScheme="brand"
+              onClick={() => setActiveTab('import')}
+              whileTap={{ scale: 0.98 }}
+              leftIcon={<Icon as={UploadCloud} boxSize={4} />}
+            >
+              {t('proposals.create.design.tabs.import2020')}
+            </MotionButton>
+          </SimpleGrid>
+        </Box>
+      )}
+    </Box>
   )
 }
 

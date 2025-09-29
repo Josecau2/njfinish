@@ -1,66 +1,66 @@
-import { buildUploadUrl, withAuthToken, getUploadApiBase } from './uploads';
+import { buildUploadUrl, withAuthToken, getUploadApiBase } from './uploads'
 
 function shouldSecure(url) {
-  if (!url || typeof url !== 'string') return false;
-  if (!url.includes('/uploads/')) return false;
-  if (url.startsWith('data:') || url.startsWith('blob:')) return false;
-  return true;
+  if (!url || typeof url !== 'string') return false
+  if (!url.includes('/uploads/')) return false
+  if (url.startsWith('data:') || url.startsWith('blob:')) return false
+  return true
 }
 
 function resolveRelativePart(url, base) {
   if (!base || !url.startsWith(base)) {
-    return null;
+    return null
   }
-  const slice = url.slice(base.length);
+  const slice = url.slice(base.length)
   if (!slice.startsWith('/')) {
-    return `/${slice}`;
+    return `/${slice}`
   }
-  return slice;
+  return slice
 }
 
 function secureUrl(url) {
   if (!shouldSecure(url)) {
-    return url;
+    return url
   }
 
   if (url.includes('token=')) {
-    return url;
+    return url
   }
 
   try {
-    const apiBase = getUploadApiBase();
+    const apiBase = getUploadApiBase()
     if (apiBase) {
-      const relative = resolveRelativePart(url, apiBase);
+      const relative = resolveRelativePart(url, apiBase)
       if (relative) {
-        return buildUploadUrl(relative);
+        return buildUploadUrl(relative)
       }
     }
 
     if (typeof window !== 'undefined') {
-      const origin = window.location?.origin;
+      const origin = window.location?.origin
       if (origin) {
-        const relative = resolveRelativePart(url, origin);
+        const relative = resolveRelativePart(url, origin)
         if (relative) {
-          return buildUploadUrl(relative);
+          return buildUploadUrl(relative)
         }
       }
     }
 
     if (url.startsWith('/')) {
-      return buildUploadUrl(url);
+      return buildUploadUrl(url)
     }
 
-    return withAuthToken(url);
+    return withAuthToken(url)
   } catch (error) {
-    return url;
+    return url
   }
 }
 
 function patchDescriptor(proto, key) {
-  if (!proto) return;
-  const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+  if (!proto) return
+  const descriptor = Object.getOwnPropertyDescriptor(proto, key)
   if (!descriptor || typeof descriptor.set !== 'function') {
-    return;
+    return
   }
 
   Object.defineProperty(proto, key, {
@@ -68,30 +68,38 @@ function patchDescriptor(proto, key) {
     enumerable: descriptor.enumerable,
     get: descriptor.get,
     set(value) {
-      const secured = secureUrl(value);
-      return descriptor.set.call(this, secured);
+      const secured = secureUrl(value)
+      return descriptor.set.call(this, secured)
     },
-  });
+  })
 }
 
 function patchSetAttribute() {
-  const originalSetAttribute = Element.prototype.setAttribute;
+  const originalSetAttribute = Element.prototype.setAttribute
   Element.prototype.setAttribute = function patchedSetAttribute(name, value) {
     if (name === 'src' || name === 'href') {
-      return originalSetAttribute.call(this, name, secureUrl(value));
+      return originalSetAttribute.call(this, name, secureUrl(value))
     }
-    return originalSetAttribute.call(this, name, value);
-  };
+    return originalSetAttribute.call(this, name, value)
+  }
 }
 
-let enabled = false;
+let enabled = false
 
 export function enableProtectedAssetInterceptor() {
-  if (enabled) return;
-  enabled = true;
+  if (enabled) return
+  enabled = true
 
-  try { patchDescriptor(HTMLImageElement.prototype, 'src'); } catch {}
-  try { patchDescriptor(HTMLImageElement.prototype, 'srcset'); } catch {}
-  try { patchDescriptor(HTMLAnchorElement.prototype, 'href'); } catch {}
-  try { patchSetAttribute(); } catch {}
+  try {
+    patchDescriptor(HTMLImageElement.prototype, 'src')
+  } catch {}
+  try {
+    patchDescriptor(HTMLImageElement.prototype, 'srcset')
+  } catch {}
+  try {
+    patchDescriptor(HTMLAnchorElement.prototype, 'href')
+  } catch {}
+  try {
+    patchSetAttribute()
+  } catch {}
 }

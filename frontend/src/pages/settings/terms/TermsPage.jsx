@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { CCard, CCardBody, CRow, CCol, CForm, CFormTextarea, CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CBadge } from '@coreui/react'
+import { Card, CardBody, Flex, Box, FormControl, Textarea, Badge } from '@chakra-ui/react'
 import PageHeader from '../../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
 import Swal from 'sweetalert2'
+import CButton from '../../../components/ui/CButton'
+import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 
 const TermsPage = () => {
   const { t } = useTranslation()
@@ -20,7 +22,13 @@ const TermsPage = () => {
     try {
       const res = await getLatestTerms()
       const terms = res?.data?.data
-      if (terms) { setContent(terms.content || ''); setVersion(terms.version) } else { setContent(''); setVersion(null) }
+      if (terms) {
+        setContent(terms.content || '')
+        setVersion(terms.version)
+      } else {
+        setContent('')
+        setVersion(null)
+      }
       if (isAdmin) {
         const acc = await getAcceptance()
         setAcceptance(acc?.data?.data || { version: null, users: [] })
@@ -31,7 +39,9 @@ const TermsPage = () => {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+  }, [])
 
   const onSave = async (bumpVersion) => {
     if (!isAdmin) return
@@ -41,18 +51,31 @@ const TermsPage = () => {
       // Success feedback
       await Swal.fire({
         icon: 'success',
-        title: bumpVersion ? t('settings.terms.publishedTitle','Published') : t('common.saved','Saved'),
+        title: bumpVersion
+          ? t('settings.terms.publishedTitle', 'Published')
+          : t('common.saved', 'Saved'),
         text: bumpVersion
-          ? t('settings.terms.publishedMessage','A new version of your Terms & Conditions has been published.')
-          : t('settings.terms.updatedMessage','Your Terms & Conditions have been updated.'),
+          ? t(
+              'settings.terms.publishedMessage',
+              'A new version of your Terms & Conditions has been published.',
+            )
+          : t('settings.terms.updatedMessage', 'Your Terms & Conditions have been updated.'),
         timer: 1600,
-        showConfirmButton: false
+        showConfirmButton: false,
       })
       await load()
     } catch (error) {
       console.error('Save terms error:', error)
-      Swal.fire({ icon: 'error', title: t('common.error','Error'), text: error?.response?.data?.message || t('settings.terms.saveError','Failed to save terms. Please try again.') })
-    } finally { setSaving(false) }
+      Swal.fire({
+        icon: 'error',
+        title: t('common.error', 'Error'),
+        text:
+          error?.response?.data?.message ||
+          t('settings.terms.saveError', 'Failed to save terms. Please try again.'),
+      })
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (!isAdmin) return null
@@ -62,52 +85,85 @@ const TermsPage = () => {
       <style>{`
         .settings-terms .btn, .btn { min-height: 44px; }
       `}</style>
-      <PageHeader title={t('settings.terms.title', 'Terms & Conditions')} subtitle={t('settings.terms.subtitle','Edit terms and track acceptance')} />
-      <CRow className="g-3">
-        <CCol lg={6}>
-          <CCard className="border-0 shadow-sm">
-            <CCardBody>
+      <PageHeader
+        title={t('settings.terms.title', 'Terms & Conditions')}
+        subtitle={t('settings.terms.subtitle', 'Edit terms and track acceptance')}
+      />
+      <Flex className="g-3">
+        <Box lg={6}>
+          <Card className="border-0 shadow-sm">
+            <CardBody>
               <h6 className="mb-3">{t('settings.terms.editor', 'Editor')}</h6>
-              <CForm>
-                <CFormTextarea rows={16} value={content} onChange={(e) => setContent(e.target.value)} placeholder={t('settings.terms.placeholder','Enter terms and conditions...')} />
+              <FormControl>
+                <Textarea
+                  rows={16}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder={t('settings.terms.placeholder', 'Enter terms and conditions...')}
+                />
                 <div className="mt-3 d-flex gap-2">
-                  <CButton color="primary" disabled={saving} onClick={() => onSave(false)}>{saving ? t('common.saving','Saving...') : t('common.save','Save')}</CButton>
-                  <CButton color="warning" variant="outline" disabled={saving} onClick={() => onSave(true)}>{t('settings.terms.publishNew','Publish as new version')}</CButton>
+                  <CButton colorScheme="blue" disabled={saving} onClick={() => onSave(false)}>
+                    {saving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+                  </CButton>
+                  <CButton
+                    status="warning"
+                    variant="outline"
+                    disabled={saving}
+                    onClick={() => onSave(true)}
+                  >
+                    {t('settings.terms.publishNew', 'Publish as new version')}
+                  </CButton>
                 </div>
-                {version && <div className="text-muted mt-2 small">{t('settings.terms.currentVersion','Current version')}: {version}</div>}
-              </CForm>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol lg={6}>
-          <CCard className="border-0 shadow-sm">
-            <CCardBody>
-              <h6 className="mb-3">{t('settings.terms.acceptance','Acceptance')}</h6>
-              <div className="text-muted small mb-2">{t('settings.terms.version','Version')}: {acceptance?.version ?? '-'}</div>
+                {version && (
+                  <div className="text-muted mt-2 small">
+                    {t('settings.terms.currentVersion', 'Current version')}: {version}
+                  </div>
+                )}
+              </FormControl>
+            </CardBody>
+          </Card>
+        </Box>
+        <Box lg={6}>
+          <Card className="border-0 shadow-sm">
+            <CardBody>
+              <h6 className="mb-3">{t('settings.terms.acceptance', 'Acceptance')}</h6>
+              <div className="text-muted small mb-2">
+                {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
+              </div>
               <CTable hover responsive>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell>{t('common.user','User')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('common.email','Email')}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-end">{t('settings.terms.status','Status')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('common.user', 'User')}</CTableHeaderCell>
+                    <CTableHeaderCell>{t('common.email', 'Email')}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-end">
+                      {t('settings.terms.status', 'Status')}
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {(acceptance.users || []).map(u => (
+                  {(acceptance.users || []).map((u) => (
                     <CTableRow key={u.id}>
                       <CTableDataCell>{u.name || '-'}</CTableDataCell>
                       <CTableDataCell>{u.email || '-'}</CTableDataCell>
                       <CTableDataCell className="text-end">
-                        {u.accepted ? <CBadge color="success">{t('settings.terms.accepted','Accepted')}</CBadge> : <CBadge color="secondary">{t('settings.terms.pending','Pending')}</CBadge>}
+                        {u.accepted ? (
+                          <Badge status="success">
+                            {t('settings.terms.accepted', 'Accepted')}
+                          </Badge>
+                        ) : (
+                          <Badge colorScheme="gray">
+                            {t('settings.terms.pending', 'Pending')}
+                          </Badge>
+                        )}
                       </CTableDataCell>
                     </CTableRow>
                   ))}
                 </CTableBody>
               </CTable>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
     </>
   )
 }

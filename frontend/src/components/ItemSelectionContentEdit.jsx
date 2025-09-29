@@ -1,10 +1,35 @@
 import { useEffect, useState, useCallback, useMemo, startTransition, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    CFormCheck, CFormSwitch,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilSettings, cilHome, cilBrush, cilChevronLeft, cilChevronRight, cilList } from '@coreui/icons';
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    Box,
+    Button,
+    Checkbox,
+    CloseButton,
+    Divider,
+    Flex,
+    Heading,
+    HStack,
+    Icon,
+    IconButton,
+    Image,
+    Input,
+    NumberInput,
+    NumberInputField,
+    Stack,
+    Switch,
+    Table,
+    TableContainer,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+} from '@chakra-ui/react';
+import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import ModificationBrowserModal from './model/ModificationBrowserModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
@@ -1312,34 +1337,46 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     };
 
     return (
-        <div className="item-selection-edit">
-            {!pricingReady && (
-                <div className="alert alert-info my-3" role="status">
-                    Applying your pricing... Please wait.
-                </div>
-            )}
+        <Box>
             {selectedStyleData && (
                 <>
-                    {/* Match Create step 4 layout and classes for mobile */}
-                    <div className="d-flex gap-5 mb-4 flex-wrap style-selection-mobile" style={{ alignItems: 'stretch' }}>
-                        <div className="current-style-section" style={{ minWidth: '250px', flex: '0 0 auto' }}>
-                            <h5 className="mb-3">{t('proposalUI.currentStyle')}</h5>
-                            <div className="current-style-content d-flex gap-4 align-items-start">
-                                <div className="current-style-image" style={{ width: '100px', flexShrink: 0 }}>
-                                    <img
+                    <Flex
+                        gap={5}
+                        mb={4}
+                        flexWrap="wrap"
+                        align="stretch"
+                        className="style-selection-mobile"
+                    >
+                        <Box
+                            className="current-style-section"
+                            minW="250px"
+                            flexShrink={0}
+                        >
+                            <Heading size="sm" mb={3}>
+                                {t('proposalUI.currentStyle')}
+                            </Heading>
+                            <Flex
+                                className="current-style-content"
+                                gap={3}
+                                align="flex-start"
+                            >
+                                <Box
+                                    className="current-style-image"
+                                    w="100px"
+                                    flexShrink={0}
+                                >
+                                    <Image
                                         src={
                                             selectedStyleData.styleVariants?.[0]?.image
                                                 ? `${api_url}/uploads/images/${selectedStyleData.styleVariants[0].image}`
-                                                : "/images/nologo.png"
+                                                : '/images/nologo.png'
                                         }
                                         alt="Selected Style"
-                                        style={{
-                                            width: '100%',
-                                            height: '240px',
-                                            objectFit: 'contain',
-                                            borderRadius: '10px',
-                                            backgroundColor: '#f8f9fa',
-                                        }}
+                                        w="100%"
+                                        h="240px"
+                                        objectFit="contain"
+                                        borderRadius="10px"
+                                        bg="#f8f9fa"
                                         onError={(e) => {
                                             const fname = selectedStyleData.styleVariants?.[0]?.image;
                                             if (fname && !e.target.dataset.fallbackTried) {
@@ -1350,187 +1387,238 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                             }
                                         }}
                                     />
-                                </div>
-                                <div className="current-style-info d-flex flex-column" style={{ gap: '1.5rem', flex: 1 }}>
-                                    <div className="d-flex align-items-center" style={{ fontSize: '1rem' }}>
-                                        <CIcon
-                                            icon={cilHome}
-                                            className="me-2 text-primary"
-                                            style={{ width: '20px', height: '20px' }}
-                                        />
-                                        <h5 className="mb-0">{selectVersion?.manufacturerData?.name}</h5>
-                                    </div>
-                                    <div className="d-flex align-items-center text-muted" style={{ fontSize: '1rem' }}>
-                                        <CIcon icon={cilBrush} className="me-2 text-secondary" style={{ width: '20px', height: '20px' }} />
-                                        <h5 className="mb-0">{selectedStyleData.style}</h5>
-                                    </div>
-                                    <div className="d-flex align-items-center" style={{ fontSize: '1.1rem' }}>
-                                        <CIcon icon={cilSettings} className="me-2 text-success" style={{ width: '20px', height: '20px' }} />
-                                        <span className="me-2">{t('proposalColumns.assembled')}</span>
-                                        <CFormSwitch
+                                </Box>
+                                <Stack
+                                    className="current-style-info"
+                                    spacing={6}
+                                    flex="1"
+                                >
+                                    <Flex align="center" fontSize="md">
+                                        <Icon as={Home} boxSize={5} color="blue.500" mr={2} />
+                                        <Heading size="sm" mb={0}>
+                                            {selectVersion?.manufacturerData?.name}
+                                        </Heading>
+                                    </Flex>
+                                    <Flex align="center" fontSize="md" color="gray.600">
+                                        <Icon as={Brush} boxSize={5} color="gray.500" mr={2} />
+                                        <Heading size="sm" mb={0}>
+                                            {selectedStyleData.style}
+                                        </Heading>
+                                    </Flex>
+                                    <Flex align="center" fontSize="lg">
+                                        <Icon as={Settings} boxSize={5} color="green.500" mr={2} />
+                                        <Text mr={2}>{t('proposalColumns.assembled')}</Text>
+                                        <Switch
                                             size="md"
-                                            shape="pill"
-                                            checked={isAssembled}
-                                            onChange={(e) => { if (!readOnly) setIsAssembled(e.target.checked); }}
-                                            disabled={readOnly}
+                                            colorScheme="teal"
+                                            isChecked={isAssembled}
+                                            onChange={(e) => {
+                                                if (!readOnly) setIsAssembled(e.target.checked);
+                                            }}
+                                            isDisabled={readOnly}
+                                            aria-label={t('proposalColumns.assembled')}
                                         />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    </Flex>
+                                </Stack>
+                            </Flex>
+                        </Box>
 
                         {!hideOtherStyles && (
                             <>
-                                <div
+                                <Box
                                     className="style-separator"
-                                    style={{
-                                        width: '1px',
-                                        backgroundColor: '#ccc',
-                                        marginInline: '16px',
-                                    }}
+                                    w="1px"
+                                    bg="#ccc"
+                                    mx={4}
+                                    display={{ base: 'none', lg: 'block' }}
                                 />
 
-                                <div className="other-styles-section" style={{ flex: 1 }}>
+                                <Box className="other-styles-section" flex="1">
                                     {unavailableCount > 0 && (
-                                        <div className="alert alert-warning py-2 px-3 mb-3" role="alert">
-                                            {unavailableCount} item{unavailableCount !== 1 ? 's' : ''} not available in this style. They remain listed in red with $0 and won’t affect totals.
-                                        </div>
+                                        <Alert status="warning" py={2} px={3} mb={3} borderRadius="md">
+                                            <AlertIcon />
+                                            <AlertDescription>
+                                                {unavailableCount} item
+                                                {unavailableCount !== 1 ? 's' : ''} not available in this style. They remain listed in red with $0 and won't affect totals.
+                                            </AlertDescription>
+                                        </Alert>
                                     )}
-                                    <div className="other-styles-header d-flex justify-content-between align-items-center mb-3" style={{ flexWrap: 'nowrap' }}>
-                                        <h5 className="mb-0">{t('proposalUI.otherStyles')}</h5>
-                                        <div className="d-flex align-items-center gap-2 flex-nowrap">
-                                            {/* View toggle button - show on all screen sizes */}
-                                            <button
-                                                type="button"
-                                                className={`btn btn-sm ${isStylesCollapsed ? 'btn-primary' : 'btn-outline-primary'}`}
+
+                                    <Flex
+                                        className="other-styles-header"
+                                        justify="space-between"
+                                        align="center"
+                                        mb={3}
+                                    >
+                                        <Heading size="sm" mb={0}>
+                                            {t('proposalUI.otherStyles')}
+                                        </Heading>
+                                        <HStack spacing={2} align="center">
+                                            <Button
+                                                size="sm"
+                                                variant={isStylesCollapsed ? 'solid' : 'outline'}
+                                                colorScheme="blue"
                                                 onClick={() => setIsStylesCollapsed(!isStylesCollapsed)}
-                                                style={{ padding: '0.25rem 0.75rem', minHeight: 44, minWidth: 44 }}
-                                                disabled={readOnly}
+                                                px={3}
+                                                minH="44px"
+                                                minW="44px"
                                                 aria-pressed={isStylesCollapsed}
-                                                aria-label={isStylesCollapsed ? t('proposalUI.expandImages') : t('proposalUI.compactView')}
+                                                aria-label={
+                                                    isStylesCollapsed
+                                                        ? t('proposalUI.expandImages')
+                                                        : t('proposalUI.compactView')
+                                                }
                                             >
-                                                {isStylesCollapsed ? (
-                                                    <>
-                                                        <CIcon icon={cilList} size="sm" className="me-1" />
-                                                        <span className="d-none d-sm-inline">{t('proposalUI.expandImages')}</span>
-                                                        <span className="d-sm-none">📋</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CIcon icon={cilList} size="sm" className="me-1" />
-                                                        <span className="d-none d-sm-inline">{t('proposalUI.compactView')}</span>
-                                                        <span className="d-sm-none">🖼️</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                            {/* Mobile carousel controls - always show when there are multiple styles */}
-                                            {stylesMeta.length > itemsPerPage && !isStylesCollapsed && (
-                                                <div className="btn-group btn-group-sm d-md-none" role="group" aria-label="Style navigation" style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
-                                                    <button
-                                                        type="button"
-                                                        className={`btn btn-outline-secondary btn-sm ${!canGoPrev() ? 'disabled' : ''}`}
+                                                <Icon as={List} boxSize={4} mr={1} />
+                                                <Text display={{ base: 'none', sm: 'inline' }}>
+                                                    {isStylesCollapsed
+                                                        ? t('proposalUI.expandImages')
+                                                        : t('proposalUI.compactView')}
+                                                </Text>
+                                                <Text
+                                                    aria-hidden="true"
+                                                    display={{ base: 'inline', sm: 'none' }}
+                                                    fontSize="lg"
+                                                    ml={1}
+                                                >
+                                                    {isStylesCollapsed ? 'List' : 'Images'}
+                                                </Text>
+                                            </Button>
+
+                                            {filteredItems.length > 0 && !isStylesCollapsed && (
+                                                <HStack
+                                                    spacing={2}
+                                                    display={{ base: 'flex', md: 'none' }}
+                                                >
+                                                    <IconButton
+                                                        icon={<ChevronLeft size={16} />}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        colorScheme="gray"
                                                         onClick={prevSlide}
-                                                        disabled={!canGoPrev() || readOnly}
-                                                        style={{ padding: '0.25rem 0.4rem', minHeight: 44, minWidth: 44 }}
+                                                        isDisabled={!canGoPrev() || readOnly}
                                                         aria-label="Previous styles"
-                                                    >
-                                                        <CIcon icon={cilChevronLeft} size="sm" />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className={`btn btn-outline-secondary btn-sm ${!canGoNext() ? 'disabled' : ''}`}
+                                                        minH="44px"
+                                                        minW="44px"
+                                                    />
+                                                    <IconButton
+                                                        icon={<ChevronRight size={16} />}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        colorScheme="gray"
                                                         onClick={nextSlide}
-                                                        disabled={!canGoNext() || readOnly}
-                                                        style={{ padding: '0.25rem 0.4rem', minHeight: 44, minWidth: 44 }}
+                                                        isDisabled={!canGoNext() || readOnly}
                                                         aria-label="Next styles"
-                                                    >
-                                                        <CIcon icon={cilChevronRight} size="sm" />
-                                                    </button>
-                                                </div>
+                                                        minH="44px"
+                                                        minW="44px"
+                                                    />
+                                                </HStack>
                                             )}
-                                        </div>
-                                    </div>
-                                    <div className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}>
+                                        </HStack>
+                                    </Flex>
+
+                                    <Box
+                                        className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}
+                                    >
                                         {collectionsLoading ? (
-                                            <div className="py-4 text-muted">{t('proposalUI.loadingStyles')}</div>
+                                            <Text py={4} color="gray.500">
+                                                {t('proposalUI.loadingStyles')}
+                                            </Text>
                                         ) : stylesMeta.length === 0 ? (
-                                            <div className="py-4 text-muted">{t('proposalUI.noStyles')}</div>
+                                            <Text py={4} color="gray.500">
+                                                {t('proposalUI.noStyles')}
+                                            </Text>
                                         ) : (
-                                            <div className="styles-carousel-container">
+                                            <Box className="styles-carousel-container">
                                                 {filteredItems.length === 0 ? (
-                                                    <div className="py-4 text-center text-muted" style={{ fontSize: '0.9rem' }}>
+                                                    <Text py={4} textAlign="center" color="gray.500" fontSize="0.9rem">
                                                         {t('proposalUI.styleComparison.selectItemsMessage')}
-                                                    </div>
+                                                    </Text>
                                                 ) : isStylesCollapsed ? (
-                                                    /* Collapsed/Compact View - List format */
-                                                    <div className="styles-compact-list">
+                                                    <Stack className="styles-compact-list" spacing={2}>
                                                         {stylesMeta.map((styleItem, index) => {
                                                             const isCurrentStyle = styleItem.id === selectedStyleData?.id;
                                                             const hasAnyItems = filteredItems.length > 0;
                                                             const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
 
                                                             return (
-                                                                <div
+                                                                <Flex
                                                                     key={`compact-style-${styleItem.id}-${index}`}
-                                                                    className={`compact-style-item ${isCurrentStyle ? 'current-style' : ''} styleCard`}
-                                                                    aria-disabled={disabled}
-                                                                    onClick={() => !readOnly && handleStyleSelect(styleItem.id)}
-                                                                    style={{ cursor: readOnly ? 'default' : 'pointer' }}
+                                                                    className={`compact-style-item styleCard ${isCurrentStyle ? 'current-style' : ''}`}
+                                                                    aria-disabled={disabled || readOnly}
+                                                                    align="center"
+                                                                    justify="space-between"
+                                                                    onClick={() => {
+                                                                        if (!readOnly) handleStyleSelect(styleItem.id);
+                                                                    }}
+                                                                    cursor={readOnly ? 'default' : 'pointer'}
                                                                 >
-                                                                    <div className="style-info">
-                                                                        <span className="style-name">{styleItem.style}</span>
+                                                                    <Box className="style-info">
+                                                                        <Text className="style-name">
+                                                                            {styleItem.style}
+                                                                        </Text>
                                                                         {isCurrentStyle && (
-                                                                            <span className="current-style-indicator">
+                                                                            <Text className="current-style-indicator">
                                                                                 {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
-                                                                            </span>
+                                                                            </Text>
                                                                         )}
-                                                                    </div>
-                                                                </div>
+                                                                    </Box>
+                                                                </Flex>
                                                             );
                                                         })}
-                                                    </div>
+                                                    </Stack>
                                                 ) : (
-                                                    <div
+                                                    <Box
                                                         className="styles-carousel-track"
-                                                        style={{
-                                                            display: 'flex',
-                                                            gap: '1rem',
-                                                            transform: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`,
-                                                            transition: 'transform 0.3s ease-in-out',
-                                                            width: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%'
-                                                        }}
+                                                        display="flex"
+                                                        gap="1rem"
+                                                        transform={`translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`}
+                                                        transition="transform 0.3s ease-in-out"
+                                                        width={
+                                                            stylesMeta.length > itemsPerPage
+                                                                ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%`
+                                                                : '100%'
+                                                        }
                                                     >
                                                         {stylesMeta.map((styleItem, index) => {
                                                             const variant = styleItem.styleVariants?.[0];
                                                             const hasAnyItems = filteredItems.length > 0;
                                                             const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
+
                                                             return (
-                                                                <div
+                                                                <Box
                                                                     key={`style-${styleItem.id}-${index}`}
-                                                                    className="style-carousel-item text-center styleCard"
-                                                                    aria-disabled={disabled}
-                                                                    style={{
-                                                                        cursor: readOnly ? 'default' : 'pointer',
-                                                                        transition: 'transform 0.2s ease',
-                                                                        flexShrink: 0
+                                                                    className="style-carousel-item styleCard"
+                                                                    textAlign="center"
+                                                                    aria-disabled={disabled || readOnly}
+                                                                    cursor={readOnly ? 'default' : 'pointer'}
+                                                                    transition="transform 0.2s ease"
+                                                                    flexShrink={0}
+                                                                    onClick={() => {
+                                                                        if (!readOnly) handleStyleSelect(styleItem.id);
                                                                     }}
-                                                                    onClick={() => !readOnly && handleStyleSelect(styleItem.id)}
-                                                                    onMouseEnter={(e) => { if (!readOnly) e.currentTarget.style.transform = 'scale(1.02)'; }}
-                                                                    onMouseLeave={(e) => { if (!readOnly) e.currentTarget.style.transform = 'scale(1)'; }}
+                                                                    onMouseEnter={(e) => {
+                                                                        if (!readOnly) e.currentTarget.style.transform = 'scale(1.02)';
+                                                                    }}
+                                                                    onMouseLeave={(e) => {
+                                                                        if (!readOnly) e.currentTarget.style.transform = 'scale(1)';
+                                                                    }}
                                                                 >
-                                                                    <img
-                                                                        src={variant?.image ? `${api_url}/uploads/images/${variant.image}` : "/images/nologo.png"}
+                                                                    <Image
+                                                                        src={
+                                                                            variant?.image
+                                                                                ? `${api_url}/uploads/images/${variant.image}`
+                                                                                : '/images/nologo.png'
+                                                                        }
                                                                         alt={variant?.shortName || styleItem.style}
-                                                                        style={{
-                                                                            width: '100%',
-                                                                            height: '220px',
-                                                                            objectFit: 'contain',
-                                                                            borderRadius: '10px',
-                                                                            backgroundColor: '#f8f9fa',
-                                                                            borderWidth: styleItem.id === selectedStyleData?.id ? '3px' : '1px',
-                                                                            borderStyle: 'solid',
-                                                                            borderColor: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef',
-                                                                        }}
+                                                                        w="100%"
+                                                                        h="220px"
+                                                                        objectFit="contain"
+                                                                        borderRadius="10px"
+                                                                        bg="#f8f9fa"
+                                                                        borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
+                                                                        borderStyle="solid"
+                                                                        borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef'}
                                                                         onError={(e) => {
                                                                             if (variant?.image && !e.target.dataset.fallbackTried) {
                                                                                 e.target.dataset.fallbackTried = '1';
@@ -1540,305 +1628,347 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="mt-2 p-2 rounded" style={{
-                                                                        backgroundColor: styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff',
-                                                                        borderWidth: styleItem.id === selectedStyleData?.id ? '2px' : '1px',
-                                                                        borderStyle: 'solid',
-                                                                        borderColor: styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da',
-                                                                        fontWeight: styleItem.id === selectedStyleData?.id ? '600' : 'normal',
-                                                                    }}>
-                                                                        <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>{styleItem.style}</div>
+                                                                    <Box
+                                                                        mt={2}
+                                                                        p={2}
+                                                                        borderRadius="md"
+                                                                        bg={styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff'}
+                                                                        borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
+                                                                        borderStyle="solid"
+                                                                        borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da'}
+                                                                        fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
+                                                                    >
+                                                                        <Text fontSize="0.875rem" mb="0.25rem">
+                                                                            {styleItem.style}
+                                                                        </Text>
                                                                         {styleItem.id === selectedStyleData?.id && (
-                                                                            <div style={{ fontSize: '0.75rem', color: '#1a73e8', marginBottom: '0.25rem' }}>
+                                                                            <Text fontSize="0.75rem" color="#1a73e8" mb="0.25rem">
                                                                                 {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
-                                                                            </div>
+                                                                            </Text>
                                                                         )}
-                                                                    </div>
-                                                                </div>
+                                                                    </Box>
+                                                                </Box>
                                                             );
                                                         })}
-                                                    </div>
+                                                    </Box>
                                                 )}
-                                            </div>
+                                            </Box>
                                         )}
-                                    </div>
-                                </div>
+                                    </Box>
+                                </Box>
                             </>
                         )}
-                    </div>
+                    </Flex>
                 </>
             )}
-            <hr />
+            <Divider my={6} />
 
-            {pricingReady && (
-            <CatalogTableEdit
-                catalogData={fetchedCollections}
-                handleCatalogSelect={handleCatalogSelect}
-                addOnTop={addOnTop}
-                setAddOnTop={readOnly ? () => {} : setAddOnTop}
-                handleCopy={handleCopy}
-                groupEnabled={groupEnabled}
-                setGroupEnabled={readOnly ? () => {} : setGroupEnabled}
-                searchTerm={searchTerm}
-                setSearchTerm={readOnly ? () => {} : setSearchTerm}
-                updateQty={readOnly ? () => {} : updateQty}
-                handleOpenModificationModal={readOnly ? () => {} : handleOpenModificationModal}
-                handleDelete={readOnly ? () => {} : handleDelete}
-                setModificationsMap={setModificationsMap}
-                modificationsMap={modificationsMap}
-                handleDeleteModification={readOnly ? () => {} : handleDeleteModification}
-                formatPrice={formatPrice}
-                selectVersion={selectVersion}
-                isAssembled={isAssembled}
-                selectedStyleData={selectedStyleData}
-                toggleRowAssembly={readOnly ? () => {} : toggleRowAssembly}
-                updateHingeSide={readOnly ? () => {} : updateHingeSide}
-                updateExposedSide={readOnly ? () => {} : updateExposedSide}
-                readOnly={readOnly}
-            />)}
+            {!pricingReady ? (
+                <Alert status="info" my={3} borderRadius="md">
+                    <AlertIcon />
+                    <AlertDescription>
+                        {t('proposalUI.applyingPricing', 'Applying pricing, please wait...')}
+                    </AlertDescription>
+                </Alert>
+            ) : (
+                <CatalogTableEdit
+                    catalogData={fetchedCollections}
+                    handleCatalogSelect={handleCatalogSelect}
+                    addOnTop={addOnTop}
+                    setAddOnTop={readOnly ? () => {} : setAddOnTop}
+                    handleCopy={handleCopy}
+                    groupEnabled={groupEnabled}
+                    setGroupEnabled={readOnly ? () => {} : setGroupEnabled}
+                    searchTerm={searchTerm}
+                    setSearchTerm={readOnly ? () => {} : setSearchTerm}
+                    updateQty={readOnly ? () => {} : updateQty}
+                    handleOpenModificationModal={readOnly ? () => {} : handleOpenModificationModal}
+                    handleDelete={readOnly ? () => {} : handleDelete}
+                    updateModification={updateModification}
+                    setModificationsMap={setModificationsMap}
+                    modificationsMap={modificationsMap}
+                    handleDeleteModification={readOnly ? () => {} : handleDeleteModification}
+                    formatPrice={formatPrice}
+                    selectVersion={selectVersion}
+                    isAssembled={isAssembled}
+                    selectedStyleData={selectedStyleData}
+                    toggleRowAssembly={readOnly ? () => {} : toggleRowAssembly}
+                    updateHingeSide={readOnly ? () => {} : updateHingeSide}
+                    updateExposedSide={readOnly ? () => {} : updateExposedSide}
+                    items={filteredItems}
+                    headerBg={headerBg}
+                    textColor={textColor}
+                    readOnly={readOnly}
+                />
+            )}
 
             {copied && (
-                <div
-                    className="position-fixed bottom-10 start-50 translate-middle-x p-3"
-                    style={{ zIndex: 9999 }}
+                <Box
+                    position="fixed"
+                    bottom={10}
+                    left="50%"
+                    transform="translateX(-50%)"
+                    zIndex={9999}
+                    px={3}
                 >
-                    <div className="toast show align-items-center text-white bg-success border-0">
-                        <div className="d-flex">
-                            <div className="toast-body">
-                                {textChanges ? t('proposalUI.toast.copyEmpty') : t('proposalUI.toast.copySuccess')}
-                            </div>
-                            <button
-                                type="button"
-                                className="btn-close btn-close-white me-2 m-auto"
-                                onClick={() => setCopied(false)}
-                            ></button>
-                        </div>
-                    </div>
-                </div>
+                    <Alert status="success" variant="solid" borderRadius="md" alignItems="center">
+                        <AlertIcon />
+                        <AlertDescription flex="1">
+                            {textChanges ? t('proposalUI.toast.copyEmpty') : t('proposalUI.toast.copySuccess')}
+                        </AlertDescription>
+                        <CloseButton color="white" onClick={() => setCopied(false)} />
+                    </Alert>
+                </Box>
             )}
-
             {!readOnly && isUserAdmin && (
-            <div className="mt-5 p-0" style={{ maxWidth: '100%' }}>
-                <div
-                    className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
-                    style={{ rowGap: '0.75rem' }}
-                >
-                    <h6 className="mb-0 w-100 w-md-auto">{t('proposalUI.custom.title')}</h6>
-
-                    <input
-                        type="text"
-                        placeholder={t('proposalUI.custom.itemName')}
-                        value={customItemName}
-                        onChange={e => {
-                            setCustomItemName(e.target.value);
-                            if (customItemError) setCustomItemError('');
-                        }}
-                        className="form-control"
-                        style={{ flex: 1, minWidth: '200px', maxWidth: '100%' }}
-                    />
-
-                    <input
-                        type="number"
-                        placeholder={t('proposalUI.custom.price')}
-                        value={customItemPrice}
-                        onChange={e => {
-                            setCustomItemPrice(e.target.value);
-                            if (customItemError) setCustomItemError('');
-                        }}
-                        className="form-control"
-                        style={{ width: '90px', minWidth: '70px' }}
-                        min="0"
-                        step="0.01"
-                    />
-
-                    <div className="form-check d-flex align-items-center">
-                        <CFormCheck
-                            checked={customItemTaxable}
-                            onChange={(e) => { if (isUserAdmin) setCustomItemTaxable(e.target.checked); }}
-                            disabled={!isUserAdmin}
-                            style={{ transform: 'scale(1.4)' }}
-                            label={<span style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>{t('proposalUI.custom.taxable')}</span>}
+                <Box mt={5} className="custom-items-mobile" maxW="100%">
+                    <Stack
+                        direction={{ base: 'column', md: 'row' }}
+                        spacing={3}
+                        align={{ base: 'stretch', md: 'center' }}
+                        mb={3}
+                    >
+                        <Heading size="sm" mb={{ base: 1, md: 0 }}>
+                            {t('proposalUI.custom.title')}
+                        </Heading>
+                        <Input
+                            placeholder={t('proposalUI.custom.itemName')}
+                            value={customItemName}
+                            onChange={(e) => {
+                                setCustomItemName(e.target.value);
+                                if (customItemError) setCustomItemError('');
+                            }}
+                            flex="1"
+                            minW={{ base: '0', md: '200px' }}
                         />
-                    </div>
+                        <NumberInput
+                            value={customItemPrice}
+                            min={0}
+                            step={0.01}
+                            precision={2}
+                            onChange={(valueString) => {
+                                setCustomItemPrice(valueString);
+                                if (customItemError) setCustomItemError('');
+                            }}
+                            w="110px"
+                        >
+                            <NumberInputField />
+                        </NumberInput>
+                        <Checkbox
+                            isChecked={customItemTaxable}
+                            onChange={(e) => setCustomItemTaxable(e.target.checked)}
+                            size="lg"
+                        >
+                            {t('proposalUI.custom.taxable')}
+                        </Checkbox>
+                        <Button
+                            colorScheme="blue"
+                            minW="80px"
+                            onClick={handleAddCustomItem}
+                        >
+                            {t('proposalUI.custom.add')}
+                        </Button>
+                    </Stack>
 
-                    <button className="btn btn-primary" style={{ minWidth: '80px' }} onClick={handleAddCustomItem}>
-                        {t('proposalUI.custom.add')}
-                    </button>
-                </div>
-
-                {customItemError && (
-                    <div style={{ color: 'red', marginTop: '0.25rem', marginBottom: '1rem' }}>
-                        {customItemError}
-                    </div>
-                )}
-
-                {/* Desktop Table */}
-                <div className="table-responsive d-none d-md-block">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>{t('proposalUI.custom.table.index')}</th>
-                                <th>{t('proposalUI.custom.table.itemName')}</th>
-                                <th>{t('proposalUI.custom.table.price')}</th>
-                                <th>{t('proposalUI.custom.table.taxable')}</th>
-                                <th>{t('proposalUI.custom.table.actions')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {customItems?.map((item, idx) => (
-                                <tr key={idx}>
-                                    <td>{idx + 1}</td>
-                                    <td>{item.name}</td>
-                                    <td>${(Number(item.price) || 0).toFixed(2)}</td>
-                                    <td>{item.taxable ? t('common.yes') : t('common.no')}</td>
-                                    <td>
-                                        <button
-                                            className="btn btn-sm btn-danger text-white"
-                                            onClick={() => handleDeleteCustomItem(idx)}
-                                            disabled={readOnly}
-                                            title={readOnly ? t('proposals.lockedTooltip') : undefined}
-                                        >
-                                            {t('proposalUI.custom.delete')}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Mobile List View */}
-                <div className="d-block d-md-none">
-                    {/* Mobile header - only show if there are items */}
-                    {customItems && customItems.length > 0 && (
-                        <div className="row fw-bold text-muted mb-2 px-2" style={{ fontSize: '0.85rem' }}>
-                            <div className="col-1">#</div>
-                            <div className="col-4">{t('proposalUI.custom.table.itemName')}</div>
-                            <div className="col-3">{t('proposalUI.custom.table.price')}</div>
-                            <div className="col-2">{t('proposalUI.custom.table.taxable')}</div>
-                            <div className="col-2">{t('proposalUI.custom.table.actions')}</div>
-                        </div>
+                    {customItemError && (
+                        <Text color="red.500" mt={1} mb={4}>
+                            {customItemError}
+                        </Text>
                     )}
 
-                    {/* Mobile items list */}
-                    {customItems?.map((item, idx) => (
-                        <div key={idx} className="row mb-2 py-2 border-bottom align-items-center">
-                            <div className="col-1 text-center">{idx + 1}</div>
-                            <div className="col-4" style={{ fontSize: '0.9rem' }}>{item.name}</div>
-                            <div className="col-3" style={{ fontSize: '0.9rem' }}>${(Number(item.price) || 0).toFixed(2)}</div>
-                            <div className="col-2 text-center" style={{ fontSize: '0.9rem' }}>{item.taxable ? t('common.yes') : t('common.no')}</div>
-                            <div className="col-2">
-                                <button
-                                    className="btn btn-sm btn-danger text-white"
-                                    onClick={() => handleDeleteCustomItem(idx)}
-                                    disabled={readOnly}
-                                    title={readOnly ? t('proposals.lockedTooltip') : undefined}
-                                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
-                                >
-                                    {t('proposalUI.custom.delete')}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                    <TableContainer display={{ base: 'none', md: 'block' }}>
+                        <Table size="sm">
+                            <Thead>
+                                <Tr>
+                                    <Th>{t('proposalUI.custom.table.index')}</Th>
+                                    <Th>{t('proposalUI.custom.table.itemName')}</Th>
+                                    <Th>{t('proposalUI.custom.table.price')}</Th>
+                                    <Th>{t('proposalUI.custom.table.taxable')}</Th>
+                                    <Th>{t('proposalUI.custom.table.actions')}</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                {customItems?.map((item, idx) => (
+                                    <Tr key={`${item.name}-${idx}`}>
+                                        <Td>{idx + 1}</Td>
+                                        <Td>{item.name}</Td>
+                                        <Td>${(Number(item.price) || 0).toFixed(2)}</Td>
+                                        <Td>{item.taxable ? t('common.yes') : t('common.no')}</Td>
+                                        <Td>
+                                            <Button
+                                                size="xs"
+                                                colorScheme="red"
+                                                onClick={() => handleDeleteCustomItem(idx)}
+                                            >
+                                                {t('proposalUI.custom.delete')}
+                                            </Button>
+                                        </Td>
+                                    </Tr>
+                                ))}
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
 
-                    {/* Show message if no custom items */}
-                    {(!customItems || customItems.length === 0) && (
-                        <div className="text-muted text-center py-3" style={{ fontSize: '0.9rem' }}>
-                            No custom items added yet
-                        </div>
-                    )}
-                </div>
-            </div>
-            )}
-
-            {/* Totals Summary */}
-            {pricingReady && (
-            <div className="mt-5 mb-5 d-flex justify-content-center">
-                <table className="table shadow-lg" style={{ maxWidth: '500px' }}>
-                    <tbody>
-                        <tr>
-                            <th className="bg-light">{t('proposalDoc.priceSummary.cabinets')}</th>
-                            <td className="text-center fw-medium">
-                                ${selectVersion?.summary?.cabinets || "0"}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th className="bg-light">{t('proposalDoc.priceSummary.assembly')}</th>
-                            <td className="text-center">${selectVersion?.summary?.assemblyFee || "0"}</td>
-                        </tr>
-
-                        <tr>
-                            <th className="bg-light">{t('proposalDoc.priceSummary.modifications')}</th>
-                            <td className="text-center">${selectVersion?.summary?.modificationsCost || "0"}</td>
-                        </tr>
-
-                        <tr className="table-secondary">
-                            <th>{t('proposalDoc.priceSummary.styleTotal')}</th>
-                            <td className="text-center fw-semibold">
-                                ${selectVersion?.summary?.styleTotal || "0"}
-                            </td>
-                        </tr>
-
-                        {isUserAdmin && (
-                            <tr>
-                                <th className="bg-light">{t('proposalUI.summary.discountPct')}</th>
-                                <td className="text-center">
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={selectVersion?.summary?.discountPercent || "0"}
-                                        onChange={(e) => {
-                                            const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
-                                            setDiscountPercent(val);
-                                        }}
-                                        style={{
-                                            border: 'none',
-                                            outline: 'none',
-                                            background: 'transparent',
-                                            width: '60px',
-                                            textAlign: 'right',
-                                            fontWeight: '500',
-                                        }}
-                                    />
-                                </td>
-                            </tr>
+                    <Box display={{ base: 'block', md: 'none' }}>
+                        {customItems && customItems.length > 0 && (
+                            <Flex
+                                fontWeight="semibold"
+                                color="gray.600"
+                                mb={2}
+                                px={2}
+                                fontSize="0.85rem"
+                            >
+                                <Text flex="0 0 10%" textAlign="center">#</Text>
+                                <Text flex="0 0 40%">{t('proposalUI.custom.table.itemName')}</Text>
+                                <Text flex="0 0 25%">{t('proposalUI.custom.table.price')}</Text>
+                                <Text flex="0 0 15%" textAlign="center">{t('proposalUI.custom.table.taxable')}</Text>
+                                <Text flex="0 0 10%">{t('proposalUI.custom.table.actions')}</Text>
+                            </Flex>
                         )}
 
-                        <tr>
-                            <th className="bg-light">{t('proposalDoc.priceSummary.total')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.total || "0"}
-                            </td>
-                        </tr>
+                        {customItems?.map((item, idx) => (
+                            <Flex
+                                key={`${item.name}-${idx}-mobile`}
+                                mb={2}
+                                py={2}
+                                px={2}
+                                borderBottom="1px solid"
+                                borderColor="gray.200"
+                                align="center"
+                            >
+                                <Text flex="0 0 10%" textAlign="center">{idx + 1}</Text>
+                                <Text flex="0 0 40%" fontSize="0.9rem">{item.name}</Text>
+                                <Text flex="0 0 25%" fontSize="0.9rem">
+                                    ${(Number(item.price) || 0).toFixed(2)}
+                                </Text>
+                                <Text flex="0 0 15%" fontSize="0.9rem" textAlign="center">
+                                    {item.taxable ? t('common.yes') : t('common.no')}
+                                </Text>
+                                <Button
+                                    flex="0 0 10%"
+                                    size="xs"
+                                    colorScheme="red"
+                                    onClick={() => handleDeleteCustomItem(idx)}
+                                >
+                                    {t('proposalUI.custom.delete')}
+                                </Button>
+                            </Flex>
+                        ))}
 
-                        <tr>
-                            <th className="bg-light">{t('settings.manufacturers.edit.deliveryFee')}</th>
-                            <td className="text-center">${(versionItems.length > 0 ? (selectVersion?.summary?.deliveryFee || "0") : "0")}</td>
-                        </tr>
+                        {(!customItems || customItems.length === 0) && (
+                            <Text color="gray.500" textAlign="center" py={3} fontSize="0.9rem">
+                                No custom items added yet
+                            </Text>
+                        )}
+                    </Box>
+                </Box>
+            )}
+            {pricingReady && (
+                <Flex
+                    mt={5}
+                    mb={5}
+                    justify="center"
+                >
+                    <TableContainer w="full" maxW="500px">
+                        <Table variant="simple" size="sm">
+                            <Tbody>
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.cabinets')}</Th>
+                                    <Td textAlign="center" fontWeight="semibold">
+                                        {`$${selectVersion?.summary?.cabinets || '0'}`}
+                                    </Td>
+                                </Tr>
 
-                        <tr>
-                            <th className="bg-light">{t('proposalUI.summary.taxRate')}</th>
-                            <td className="text-center">{selectVersion?.summary?.taxRate || "0"}%</td>
-                        </tr>
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.assembly')}</Th>
+                                    <Td textAlign="center">
+                                        {`$${selectVersion?.summary?.assemblyFee || '0'}`}
+                                    </Td>
+                                </Tr>
 
-                        <tr>
-                            <th className="bg-light">{t('proposalDoc.priceSummary.tax')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.taxAmount || "0"}
-                            </td>
-                        </tr>
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.modifications')}</Th>
+                                    <Td textAlign="center">
+                                        {`$${selectVersion?.summary?.modificationsCost || '0'}`}
+                                    </Td>
+                                </Tr>
 
-                        <tr className="table-success fw-bold">
-                            <th>{t('proposalDoc.priceSummary.grandTotal')}</th>
-                            <td className="text-center">
-                                ${selectVersion?.summary?.grandTotal || "0"}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                <Tr bg="gray.100">
+                                    <Th>{t('proposalDoc.priceSummary.styleTotal')}</Th>
+                                    <Td textAlign="center" fontWeight="semibold">
+                                        {`$${selectVersion?.summary?.styleTotal || '0'}`}
+                                    </Td>
+                                </Tr>
+
+                                {isUserAdmin && (
+                                    <Tr>
+                                        <Th bg="gray.50">{t('proposalUI.summary.discountPct')}</Th>
+                                        <Td textAlign="center">
+                                            <NumberInput
+                                                value={selectVersion?.summary?.discountPercent || 0}
+                                                min={0}
+                                                max={100}
+                                                onChange={(valueString, valueNumber) => {
+                                                    const next = Number.isFinite(valueNumber)
+                                                        ? valueNumber
+                                                        : parseFloat(valueString) || 0;
+                                                    const clamped = Math.max(0, Math.min(100, next));
+                                                    setDiscountPercent(clamped);
+                                                }}
+                                                w="60px"
+                                                mx="auto"
+                                                size="sm"
+                                                variant="flushed"
+                                                isDisabled={readOnly}
+                                            >
+                                                <NumberInputField
+                                                    textAlign="right"
+                                                    fontWeight="500"
+                                                    border="none"
+                                                />
+                                            </NumberInput>
+                                        </Td>
+                                    </Tr>
+                                )}
+
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.total')}</Th>
+                                    <Td textAlign="center">
+                                        {`$${selectVersion?.summary?.total || '0'}`}
+                                    </Td>
+                                </Tr>
+
+                                <Tr>
+                                    <Th bg="gray.50">{t('settings.manufacturers.edit.deliveryFee')}</Th>
+                                    <Td textAlign="center">
+                                        {`$${versionItems.length > 0 ? (selectVersion?.summary?.deliveryFee || '0') : '0'}`}
+                                    </Td>
+                                </Tr>
+
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalUI.summary.taxRate')}</Th>
+                                    <Td textAlign="center">
+                                        {`${selectVersion?.summary?.taxRate || '0'}%`}
+                                    </Td>
+                                </Tr>
+
+                                <Tr>
+                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.tax')}</Th>
+                                    <Td textAlign="center">
+                                        {`$${selectVersion?.summary?.taxAmount || '0'}`}
+                                    </Td>
+                                </Tr>
+
+                                <Tr bg="green.50">
+                                    <Th>{t('proposalDoc.priceSummary.grandTotal')}</Th>
+                                    <Td textAlign="center" fontWeight="bold">
+                                        {`$${selectVersion?.summary?.grandTotal || '0'}`}
+                                    </Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                </Flex>
             )}
 
             <ModificationBrowserModal
@@ -1848,8 +1978,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 selectedItemIndex={selectedItemIndexForMod}
                 catalogItemId={itemModificationID}
             />
-        </div>
+        </Box>
     );
 };
 
 export default ItemSelectionContentEdit;
+
+
+

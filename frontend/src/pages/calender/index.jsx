@@ -1,451 +1,320 @@
-import React, { useEffect, useState } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import React, { useEffect, useMemo, useState } from 'react'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
 import {
-    CContainer, CRow, CCol, CCard, CCardBody,
-    CFormSelect, CModal, CModalBody, CModalHeader, CModalTitle,
-    CSpinner, CBadge, CInputGroup, CInputGroupText, CButton
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilCalendar, cilFilter, cilReload, cilClock } from '@coreui/icons';
-import { formatDate, formatDisplayDate, parseDate, moment, getTodayFormatted, getStartOfWeek, getEndOfWeek, isBetween } from '../../utils/dateHelpers';
-import axiosInstance from '../../helpers/axiosInstance';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
-import { FaCalendarAlt, FaUsers, FaChartLine } from "react-icons/fa";
-import './CalendarView.css';
-import PageHeader from '../../components/PageHeader';
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { Calendar, Filter, RefreshCw } from 'lucide-react'
+import axiosInstance from '../../helpers/axiosInstance'
+import { useNavigate } from 'react-router-dom'
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
+import PageHeader from '../../components/PageHeader'
+import { FaCalendarAlt } from 'react-icons/fa'
+
+const EVENT_TYPES = [
+  'All',
+  'Measurement Scheduled',
+  'Design Scheduled',
+  'Follow Up 1',
+  'Follow Up 2',
+  'Follow Up 3',
+]
+
+const EVENT_COLORS = {
+  'Measurement Scheduled': '#0d6efd',
+  'Design Scheduled': '#198754',
+  'Follow Up 1': '#fd7e14',
+  'Follow Up 2': '#dc3545',
+  'Follow Up 3': '#6f42c1',
+}
+
+const BADGE_SCHEMES = {
+  'Measurement Scheduled': 'blue',
+  'Design Scheduled': 'green',
+  'Follow Up 1': 'orange',
+  'Follow Up 2': 'red',
+  'Follow Up 3': 'purple',
+}
 
 const CalendarView = () => {
-    const [events, setEvents] = useState([]);
-    const [filteredEvents, setFilteredEvents] = useState([]);
-    const [eventType, setEventType] = useState('All');
-    const [visibleModal, setVisibleModal] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+  const [events, setEvents] = useState([])
+  const [filteredEvents, setFilteredEvents] = useState([])
+  const [eventType, setEventType] = useState('All')
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-    const eventTypeOptions = [
-        'All',
-        'Measurement Scheduled',
-        'Design Scheduled',
-        'Follow Up 1',
-        'Follow Up 2',
-        'Follow Up 3'
-    ];
+  const fetchEvents = async () => {
+    try {
+      setLoading(true)
+      const response = await axiosInstance.get('/api/calendar-events')
+      const rawEvents = response.data?.events || []
 
-    // Event type colors - more professional and muted
-    const eventColors = {
-        'Measurement Scheduled': '#0d6efd', // Primary blue
-        'Design Scheduled': '#198754', // Success green
-        'Follow Up 1': '#fd7e14', // Warning orange
-        'Follow Up 2': '#dc3545', // Danger red
-        'Follow Up 3': '#6f42c1', // Purple
-    };
+      const formatted = rawEvents.map((event) => ({
+        id: event.id,
+        title: `${event.title}${event.salesRep ? ` - ${event.salesRep}` : ''}`,
+        baseTitle: event.title,
+        date: event.date,
+        allDay: true,
+        backgroundColor: EVENT_COLORS[event.title] || '#6c757d',
+        borderColor: EVENT_COLORS[event.title] || '#6c757d',
+        textColor: '#ffffff',
+        extendedProps: {
+          description: event.description || '',
+          salesRep: event.salesRep || '',
+          eventType: event.title,
+        },
+      }))
 
-    // Badge colors for event types
-    const badgeColors = {
-        'Measurement Scheduled': 'primary',
-        'Design Scheduled': 'success',
-        'Follow Up 1': 'warning',
-        'Follow Up 2': 'danger',
-        'Follow Up 3': 'info',
-    };
+      setEvents(formatted)
+      setFilteredEvents(formatted)
+    } catch (error) {
+      console.error('Failed to load calendar events:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
+  useEffect(() => {
+    fetchEvents()
+  }, [])
 
-    const fetchEvents = async () => {
-        try {
-            setLoading(true);
-            const res = await axiosInstance.get('/api/calendar-events');
-            const rawEvents = res.data.events;
+  const handleFilterChange = (event) => {
+    const selected = event.target.value
+    setEventType(selected)
 
-            const formatted = rawEvents.map(e => ({
-                id: e.id,
-                title: `${e.title}${e.salesRep ? ' - ' + e.salesRep : ''}`,
-                baseTitle: e.title, // For filtering
-                date: formatDate(e.date, 'yyyy-MM-dd'),
-                allDay: true,
-                backgroundColor: eventColors[e.title] || '#6c757d',
-                borderColor: eventColors[e.title] || '#6c757d',
-                textColor: '#ffffff',
-                extendedProps: {
-                    description: e.description || '',
-                    salesRep: e.salesRep || '',
-                    eventType: e.title
-                },
-            }));
+    if (selected === 'All') {
+      setFilteredEvents(events)
+    } else {
+      setFilteredEvents(events.filter((entry) => entry.baseTitle === selected))
+    }
+  }
 
-            setEvents(formatted);
-            setFilteredEvents(formatted);
-        } catch (err) {
-            console.error('Failed to fetch events:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleRefresh = () => {
+    fetchEvents()
+  }
 
-    const handleEventClick = (info) => {
-        const proposalId = info.event.id;
-    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/edit/:id', { id: proposalId });
-    navigate(noisy);
-    };
+  const handleEventClick = (info) => {
+    const proposalId = info.event.id
+    const noisyPath = `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/quotes/edit/:id', { id: proposalId })
+    navigate(noisyPath)
+  }
 
-    const handleFilterChange = (e) => {
-        const value = e.target.value;
-        setEventType(value);
+  const renderEventContent = (eventInfo) => (
+    <Box className="calendar-event" px={2} py={1} fontSize="xs">
+      <Text fontWeight="semibold" noOfLines={1}>
+        {eventInfo.event.extendedProps.eventType}
+      </Text>
+      {eventInfo.event.extendedProps.salesRep && (
+        <Text fontSize="2xs" opacity={0.8} noOfLines={1}>
+          {eventInfo.event.extendedProps.salesRep}
+        </Text>
+      )}
+    </Box>
+  )
 
-        if (value === 'All') {
-            setFilteredEvents(events);
-        } else {
-            const filtered = events.filter(ev => ev.baseTitle === value);
-            setFilteredEvents(filtered);
-        }
-    };
+  const metrics = useMemo(() => {
+    const total = events.length
+    const perType = EVENT_TYPES.filter((type) => type !== 'All').map((type) => ({
+      type,
+      count: events.filter((event) => event.baseTitle === type).length,
+    }))
 
-    const handleRefresh = () => {
-        fetchEvents();
-    };
+    return { total, perType }
+  }, [events])
 
-    // Custom event content renderer
-    const renderEventContent = (eventInfo) => {
-        return (
-            <div className="custom-event-content">
-                <div className="event-title">{eventInfo.event.extendedProps.eventType}</div>
-                {eventInfo.event.extendedProps.salesRep && (
-                    <div className="event-sales-rep">
-                        {eventInfo.event.extendedProps.salesRep}
-                    </div>
-                )}
-            </div>
-        );
-    };
+  return (
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title="Calendar"
+          subtitle="Track key proposal follow-ups and appointments"
+          icon={Calendar}
+        />
 
-    // Get event counts for filter
-    const getEventCounts = () => {
-        const counts = {};
-        eventTypeOptions.forEach(type => {
-            if (type === 'All') {
-                counts[type] = events.length;
-            } else {
-                counts[type] = events.filter(e => e.baseTitle === type).length;
-            }
-        });
-        return counts;
-    };
+        <Card>
+          <CardBody>
+            <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
+              <HStack spacing={3} flex="1">
+                <Icon as={Filter} color="gray.400" />
+                <Select value={eventType} onChange={handleFilterChange} maxW="240px">
+                  {EVENT_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
+              </HStack>
 
-    const eventCounts = getEventCounts();
+              <Button
+                leftIcon={<Icon as={RefreshCw} boxSize={4} />}
+                onClick={handleRefresh}
+                variant="outline"
+                colorScheme="blue"
+                alignSelf={{ base: 'flex-start', md: 'initial' }}
+              >
+                Refresh
+              </Button>
+            </Flex>
+          </CardBody>
+        </Card>
 
-    // Get today's events
-    const getTodaysEvents = () => {
-        const today = getTodayFormatted();
-        return filteredEvents.filter(event => event.date === today);
-    };
+        <Card>
+          <CardBody>
+            {loading ? (
+              <Flex align="center" justify="center" minH="360px">
+                <Spinner size="lg" color="blue.500" />
+              </Flex>
+            ) : (
+              <Stack spacing={6}>
+                <HStack spacing={4} flexWrap="wrap">
+                  <Badge colorScheme="blue" borderRadius="md" px={3} py={1}>
+                    Total events: {metrics.total}
+                  </Badge>
+                  {metrics.perType.map((metric) => (
+                    <Badge
+                      key={metric.type}
+                      colorScheme={BADGE_SCHEMES[metric.type] || 'gray'}
+                      borderRadius="md"
+                      px={3}
+                      py={1}
+                    >
+                      {metric.type}: {metric.count}
+                    </Badge>
+                  ))}
+                </HStack>
 
-    // Get this week's events
-    const getThisWeeksEvents = () => {
-        const startOfWeekDate = getStartOfWeek();
-        const endOfWeekDate = getEndOfWeek();
-        const startOfWeekStr = formatDate(startOfWeekDate, 'yyyy-MM-dd');
-        const endOfWeekStr = formatDate(endOfWeekDate, 'yyyy-MM-dd');
-        return filteredEvents.filter(event => {
-            const eventDate = parseDate(event.date);
-            return eventDate && isBetween(eventDate, startOfWeekDate, endOfWeekDate);
-        });
-    };
-
-    const todaysEvents = getTodaysEvents();
-    const thisWeeksEvents = getThisWeeksEvents();
-
-        return (
-                <CContainer fluid className="p-2 m-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-                        <style>{`
-                            .calendar-wrapper{ overflow-x:hidden; }
-                            .btn, .form-select, .form-control{ min-height:44px; }
-                        `}</style>
-            {/* Header Section */}
-            <PageHeader
-                title="Event Calendar"
-                subtitle="Manage your scheduled events and appointments"
-                icon={FaCalendarAlt}
-            >
-                <CButton
-                    color="light"
-                    className="shadow-sm px-4 fw-semibold"
-                    onClick={handleRefresh}
-                    disabled={loading}
-                    style={{
-                        borderRadius: '5px',
-                        border: 'none',
-                        transition: 'all 0.3s ease'
+                <Box>
+                  <FullCalendar
+                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                    initialView="dayGridMonth"
+                    headerToolbar={{
+                      left: 'prev,next today',
+                      center: 'title',
+                      right: 'dayGridMonth,timeGridWeek,timeGridDay',
                     }}
-                >
-                    <CIcon icon={cilReload} className="me-2" />
-                    Refresh
-                </CButton>
-            </PageHeader>
+                    events={filteredEvents}
+                    eventClick={handleEventClick}
+                    eventContent={renderEventContent}
+                    height="auto"
+                    dayMaxEvents={false}
+                    eventDisplay="block"
+                    views={{
+                      timeGridWeek: {
+                        allDaySlot: true,
+                        slotMinTime: '00:00:00',
+                        slotMaxTime: '00:00:00',
+                      },
+                      timeGridDay: {
+                        allDaySlot: true,
+                        slotMinTime: '00:00:00',
+                        slotMaxTime: '00:00:00',
+                      },
+                    }}
+                  />
+                </Box>
 
-            {/* Stats Row */}
-            <CRow className="mb-2">
-                <CCol md={4}>
-                    <CCard className="border-0 shadow-sm h-100">
-                        <CCardBody className="text-center">
-                            <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div
-                                    className="d-flex align-items-center justify-content-center me-3"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        backgroundColor: '#e7f3ff',
-                                        borderRadius: '10px'
-                                    }}
-                                >
-                                    <CIcon icon={cilCalendar} style={{ color: '#0d6efd', fontSize: '20px' }} />
-                                </div>
-                                <div className="text-start">
-                                    <h4 className="mb-0 fw-bold text-primary">{todaysEvents.length}</h4>
-                                    <small className="text-muted">Today's Events</small>
-                                </div>
-                            </div>
-                        </CCardBody>
-                    </CCard>
-                </CCol>
-                <CCol md={4}>
-                    <CCard className="border-0 shadow-sm h-100">
-                        <CCardBody className="text-center">
-                            <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div
-                                    className="d-flex align-items-center justify-content-center me-3"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        backgroundColor: '#e6ffed',
-                                        borderRadius: '10px'
-                                    }}
-                                >
-                                    <FaChartLine style={{ color: '#198754', fontSize: '20px' }} />
-                                </div>
-                                <div className="text-start">
-                                    <h4 className="mb-0 fw-bold text-success">{thisWeeksEvents.length}</h4>
-                                    <small className="text-muted">This Week</small>
-                                </div>
-                            </div>
-                        </CCardBody>
-                    </CCard>
-                </CCol>
-                <CCol md={4}>
-                    <CCard className="border-0 shadow-sm h-100">
-                        <CCardBody className="text-center">
-                            <div className="d-flex align-items-center justify-content-center mb-2">
-                                <div
-                                    className="d-flex align-items-center justify-content-center me-3"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        backgroundColor: '#fff7e6',
-                                        borderRadius: '10px'
-                                    }}
-                                >
-                                    <FaUsers style={{ color: '#fd7e14', fontSize: '20px' }} />
-                                </div>
-                                <div className="text-start">
-                                    <h4 className="mb-0 fw-bold text-warning">{filteredEvents.length}</h4>
-                                    <small className="text-muted">Total Events</small>
-                                </div>
-                            </div>
-                        </CCardBody>
-                    </CCard>
-                </CCol>
-            </CRow>
-
-            {/* Filter Section */}
-            <CCard className="border-0 shadow-sm mb-1">
-                <CCardBody>
-                    <CRow className="align-items-center">
-                        <CCol md={6} lg={4}>
-                            <CInputGroup>
-                                <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                                    <CIcon icon={cilFilter} />
-                                </CInputGroupText>
-                                <CFormSelect
-                                    value={eventType}
-                                    onChange={handleFilterChange}
-                                    style={{
-                                        border: '1px solid #e3e6f0',
-                                        borderRadius: '10px',
-                                        fontSize: '14px',
-                                        padding: '12px 16px'
-                                    }}
-                                >
-                                    {eventTypeOptions.map((type, idx) => (
-                                        <option key={idx} value={type}>
-                                            {type} ({eventCounts[type] || 0})
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-                            <div className="d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
-                                {eventTypeOptions.slice(1).map((type) => (
-                                    <CBadge
-                                        key={type}
-                                        color={badgeColors[type] || 'secondary'}
-                                        className="px-2 py-1"
-                                        style={{
-                                            borderRadius: '12px',
-                                            fontSize: '11px',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {type}: {eventCounts[type] || 0}
-                                    </CBadge>
-                                ))}
-                            </div>
-                        </CCol>
-                    </CRow>
-                </CCardBody>
-            </CCard>
-
-            {/* Loading State */}
-            {loading && (
-                <CCard className="border-0 shadow-sm">
-                    <CCardBody className="text-center py-5">
-                        <CSpinner color="primary" size="lg" />
-                        <p className="text-muted mt-3 mb-0">Loading calendar events...</p>
-                    </CCardBody>
-                </CCard>
+                {filteredEvents.length === 0 && (
+                  <Flex direction="column" align="center" py={10} color="gray.500" gap={2}>
+                    <Icon as={FaCalendarAlt} boxSize={12} opacity={0.3} />
+                    <Text fontSize="lg" fontWeight="medium">
+                      No events found
+                    </Text>
+                    <Text fontSize="sm" textAlign="center" maxW="320px">
+                      {eventType === 'All'
+                        ? 'There are no events scheduled for this period.'
+                        : `There are no events for "${eventType}".`}
+                    </Text>
+                  </Flex>
+                )}
+              </Stack>
             )}
+          </CardBody>
+        </Card>
 
-            {/* Calendar */}
-            {!loading && (
-                <CCard className="border-0 shadow-sm">
-                    <CCardBody className="p-0">
-                        <div className="p-3">
-                            <div className="calendar-wrapper" style={{ borderRadius: '8px', overflow: 'hidden' }}>
-                                <FullCalendar
-                                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                                    initialView="dayGridMonth"
-                                    headerToolbar={{
-                                        left: 'prev,next today',
-                                        center: 'title',
-                                        right: 'dayGridMonth,timeGridWeek,timeGridDay',
-                                    }}
-                                    events={filteredEvents}
-                                    eventClick={handleEventClick}
-                                    eventContent={renderEventContent}
-                                    height="auto"
-                                    allDaySlot={true}
-                                    // Week and day view customization to hide time slots
-                                    views={{
-                                        timeGridWeek: {
-                                            allDaySlot: true,
-                                            slotMinTime: "00:00:00",
-                                            slotMaxTime: "00:00:00"
-                                        },
-                                        timeGridDay: {
-                                            allDaySlot: true,
-                                            slotMinTime: "00:00:00",
-                                            slotMaxTime: "00:00:00"
-                                        }
-                                    }}
-                                    dayMaxEvents={false}
-                                    moreLinkClick="popover"
-                                    eventDisplay="block"
-                                />
-                            </div>
-                        </div>
+        <style>{`
+          .fc {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          }
 
-                        {/* Empty State */}
-                        {filteredEvents.length === 0 && (
-                            <div className="text-center py-5">
-                                <FaCalendarAlt className="text-muted mb-3" style={{ fontSize: '48px', opacity: 0.3 }} />
-                                <p className="text-muted mb-1 fs-5">No events found</p>
-                                <small className="text-muted">
-                                    {eventType === 'All'
-                                        ? "No events are scheduled at this time"
-                                        : `No events found for "${eventType}"`
-                                    }
-                                </small>
-                            </div>
-                        )}
-                    </CCardBody>
-                </CCard>
-            )}
+          .fc-toolbar {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #e3e6f0;
+          }
 
-            {/* Custom CSS for FullCalendar styling */}
-            <style>{`
-                .fc {
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                }
+          .fc-toolbar-title {
+            color: #495057;
+            font-weight: 600;
+          }
 
-                .fc-toolbar {
-                    background: #f8f9fa;
-                    padding: 1rem;
-                    border-radius: 8px 8px 0 0;
-                    border-bottom: 1px solid #e3e6f0;
-                }
+          .fc-button {
+            border-radius: 6px !important;
+            border: 1px solid #e3e6f0 !important;
+            background: white !important;
+            color: #495057 !important;
+            font-weight: 500;
+            transition: all 0.2s ease;
+          }
 
-                .fc-toolbar-title {
-                    color: #495057;
-                    font-weight: 600;
-                }
+          .fc-button:hover {
+            background: #e7f3ff !important;
+            border-color: #0d6efd !important;
+            color: #0d6efd !important;
+          }
 
-                .fc-button {
-                    border-radius: 6px !important;
-                    border: 1px solid #e3e6f0 !important;
-                    background: white !important;
-                    color: #495057 !important;
-                    font-weight: 500;
-                    transition: all 0.2s ease;
-                }
+          .fc-button-active {
+            background: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: white !important;
+          }
 
-                .fc-button:hover {
-                    background: #e7f3ff !important;
-                    border-color: #0d6efd !important;
-                    color: #0d6efd !important;
-                }
+          .fc-daygrid-day {
+            border-color: #e3e6f0;
+          }
 
-                .fc-button-active {
-                    background: #0d6efd !important;
-                    border-color: #0d6efd !important;
-                    color: white !important;
-                }
+          .fc-col-header-cell {
+            background: #f8f9fa;
+            border-color: #e3e6f0;
+            font-weight: 600;
+            color: #495057;
+          }
 
-                .fc-daygrid-day {
-                    border-color: #e3e6f0;
-                }
+          .fc-event {
+            border-radius: 6px !important;
+            border: none !important;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
 
-                .fc-col-header-cell {
-                    background: #f8f9fa;
-                    border-color: #e3e6f0;
-                    font-weight: 600;
-                    color: #495057;
-                }
+          .fc-event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
 
-                .fc-event {
-                    border-radius: 6px !important;
-                    border: none !important;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: transform 0.2s ease, box-shadow 0.2s ease;
-                }
+          .fc-day-today {
+            background: rgba(13, 110, 253, 0.05) !important;
+          }
+        `}</style>
+      </Stack>
+    </Container>
+  )
+}
 
-                .fc-event:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                }
-
-                .fc-day-today {
-                    background: rgba(13, 110, 253, 0.05) !important;
-                }
-            `}</style>
-        </CContainer>
-    );
-};
-
-export default CalendarView;
+export default CalendarView

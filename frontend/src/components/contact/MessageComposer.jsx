@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CCard, CCardBody, CForm, CFormLabel, CFormInput, CFormTextarea, CButton } from '@coreui/react'
+import { Card, CardBody, FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -13,20 +13,48 @@ const MessageComposer = ({ onSend }) => {
     e.preventDefault()
     if (!subject.trim() || !message.trim()) return
     setSending(true)
-    try { await onSend({ subject: subject.trim(), message: message.trim() }); setSubject(''); setMessage('') } finally { setSending(false) }
+    try {
+      await onSend({ subject: subject.trim(), message: message.trim() })
+      setSubject('')
+      setMessage('')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
-    <CCard className="border-0 shadow-sm">
-      <CCardBody>
-        <PageHeader title={t('contact.compose.title')} subtitle={t('contact.compose.subtitle')} mobileLayout="compact" />
-        <CForm onSubmit={submit} className="mt-2">
-          <div className="mb-2"><CFormLabel>{t('contact.compose.subject')}</CFormLabel><CFormInput value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={t('contact.compose.subjectPh')} /></div>
-          <div className="mb-2"><CFormLabel>{t('contact.compose.message')}</CFormLabel><CFormTextarea rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('contact.compose.messagePh')} /></div>
-          <CButton type="submit" color="primary">{sending ? t('contact.compose.sending') : t('contact.compose.send')}</CButton>
-        </CForm>
-      </CCardBody>
-    </CCard>
+    <Card className="border-0 shadow-sm">
+      <CardBody>
+        <PageHeader
+          title={t('contact.compose.title')}
+          subtitle={t('contact.compose.subtitle')}
+          mobileLayout="compact"
+        />
+        <FormControl onSubmit={submit} className="mt-2">
+          <div className="mb-2">
+            <FormLabel>{t('contact.compose.subject')}</FormLabel>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder={t('contact.compose.subjectPh')}
+            />
+          </div>
+          <div className="mb-2">
+            <FormLabel>{t('contact.compose.message')}</FormLabel>
+            <Textarea
+              rows={5}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={t('contact.compose.messagePh')}
+            />
+          </div>
+          <CButton type="submit" colorScheme="blue">
+            {sending ? t('contact.compose.sending') : t('contact.compose.send')}
+          </CButton>
+        </FormControl>
+      </CardBody>
+    </Card>
+  
   )
 }
 

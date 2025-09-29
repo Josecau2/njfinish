@@ -1,30 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import {
-  CBadge,
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CContainer,
-  CFormInput,
-  CFormSelect,
-  CFormTextarea,
-  CModal,
-  CModalBody,
-  CModalHeader,
-  CModalTitle,
-  CRow,
-  CSpinner,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react'
-import { cilReload, cilSend, cilNotes, cilX } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Badge, Card, CardBody, CardHeader, Box, Container, Input, Select, Textarea, Modal, ModalOverlay, ModalContent, ModalBody, ModalHeader, ModalCloseButton, Flex, Spinner, Icon, Button, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
+import { RefreshCw, Send, FileText, X } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
 import Swal from 'sweetalert2'
@@ -360,10 +336,10 @@ const LeadsPage = () => {
   return (
     <>
       <style>{modalStyles}</style>
-      <CContainer fluid className="py-4">
-        <CRow className="mb-3 align-items-end">
-          <CCol md={3} sm={6} className="mb-2">
-            <CFormSelect
+      <Container fluid className="py-4">
+        <Flex className="mb-3 align-items-end">
+          <Box md={3} sm={6} className="mb-2">
+            <Select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               label={t('leadsPage.filters.status.label')}
@@ -373,70 +349,71 @@ const LeadsPage = () => {
                   {option.label}
                 </option>
               ))}
-            </CFormSelect>
-          </CCol>
-          <CCol md={5} sm={6} className="mb-2">
-            <CFormInput
+            </Select>
+          </Box>
+          <Box md={5} sm={6} className="mb-2">
+            <Input
               type="search"
               placeholder={t('leadsPage.filters.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </CCol>
-          <CCol md={2} sm={3} className="mb-2">
-            <CButton
-              color="primary"
+          </Box>
+          <Box md={2} sm={3} className="mb-2">
+            <Button
+              colorScheme="blue"
               className="w-100"
               onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
               disabled={loading}
             >
-              <CIcon icon={cilReload} className="me-2" /> {t('common.refresh')}
-            </CButton>
-          </CCol>
-        </CRow>
+              <Icon as={RefreshCw} className="me-2" /> {t('common.refresh')}
+            </Button>
+          </Box>
+        </Flex>
 
-        <CCard className="border-0 shadow-sm">
-          <CCardHeader>
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
             <h5 className="mb-0">{t('leadsPage.title')}</h5>
-          </CCardHeader>
-          <CCardBody>
+          </CardHeader>
+          <CardBody>
             {loading ? (
               <div className="text-center py-5">
-                <CSpinner color="primary" />
+                <Spinner colorScheme="blue" />
               </div>
             ) : filteredLeads.length === 0 ? (
               <p className="text-muted mb-0">{t('leadsPage.table.noResults')}</p>
             ) : (
-              <CTable responsive hover align="middle">
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.name')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.email')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.phone')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.location')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.company')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.submitted')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('leadsPage.table.columns.status')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-end">
-                      {t('leadsPage.table.columns.actions')}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+              <TableContainer>
+                <Table variant="striped" size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>
+                        {t('leadsPage.table.columns.name')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.email')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.phone')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.location')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.company')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.submitted')}
+                      </Th>
+                      <Th>
+                        {t('leadsPage.table.columns.status')}
+                      </Th>
+                      <Th className="text-end">
+                        {t('leadsPage.table.columns.actions')}
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
                   {filteredLeads.map((lead) => {
                     const displayName = getLeadFullName(lead) || lead.name || '—'
                     const phone = getLeadValue(lead, 'phone') || '—'
@@ -446,15 +423,15 @@ const LeadsPage = () => {
                       ? new Date(lead.createdAt).toLocaleString()
                       : '—'
                     return (
-                      <CTableRow key={lead.id}>
-                        <CTableDataCell>{displayName}</CTableDataCell>
-                        <CTableDataCell>{lead.email}</CTableDataCell>
-                        <CTableDataCell>{phone}</CTableDataCell>
-                        <CTableDataCell>{location}</CTableDataCell>
-                        <CTableDataCell>{company}</CTableDataCell>
-                        <CTableDataCell>{submittedAt}</CTableDataCell>
-                        <CTableDataCell>
-                          <CFormSelect
+                      <Tr key={lead.id}>
+                        <Td>{displayName}</Td>
+                        <Td>{lead.email}</Td>
+                        <Td>{phone}</Td>
+                        <Td>{location}</Td>
+                        <Td>{company}</Td>
+                        <Td>{submittedAt}</Td>
+                        <Td>
+                          <Select
                             size="sm"
                             value={lead.status}
                             onChange={(e) => handleStatusChange(lead, e.target.value)}
@@ -465,36 +442,41 @@ const LeadsPage = () => {
                                 {option.label}
                               </option>
                             ))}
-                          </CFormSelect>
-                        </CTableDataCell>
-                        <CTableDataCell className="text-end">
-                          <CButton
+                          </Select>
+                        </Td>
+                        <Td className="text-end">
+                          <Button
                             size="sm"
-                            color="light"
+                            variant="outline"
+                            colorScheme="gray"
                             className="me-2"
                             onClick={() => setSelectedLead(normalizeLead(lead))}
                           >
-                            <CIcon icon={cilNotes} className="me-1" />{' '}
+                            <Icon as={FileText} className="me-1" />{' '}
                             {t('leadsPage.table.actions.details')}
-                          </CButton>
-                        </CTableDataCell>
-                      </CTableRow>
+                          </Button>
+                        </Td>
+                      </Tr>
                     )
                   })}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+                </Table>
+              </TableContainer>
             )}
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
 
-        <CModal
-          visible={!!selectedLead}
+        <Modal
+          isOpen={!!selectedLead}
           onClose={closeModal}
           size="lg"
           alignment="top"
           className="lead-details-modal"
         >
-          <CModalBody className="p-0">
+        <ModalOverlay>
+          <ModalContent>
+            <ModalCloseButton />
+            <ModalBody className="p-0">
             {selectedLead && (
               <>
                 <PageHeader
@@ -506,57 +488,57 @@ const LeadsPage = () => {
                   mobileLayout="compact"
                   cardClassName="mb-0 rounded-0 rounded-top"
                   rightContent={
-                    <CButton
-                      color="light"
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={closeModal}
                       className="border-0 rounded-circle p-2"
                       style={{ width: '40px', height: '40px' }}
                     >
-                      <CIcon icon={cilX} size="lg" />
-                    </CButton>
+                      <Icon as={X} size="lg" />
+                    </Button>
                   }
                 />
 
                 <div className="p-4">
                   {/* Contact Information Card */}
-                  <CCard className="border-0 shadow-sm mb-4 bg-light">
-                    <CCardBody className="p-3">
-                      <CRow>
-                        <CCol md={6}>
+                  <Card className="border-0 shadow-sm mb-4 bg-light">
+                    <CardBody className="p-3">
+                      <Flex>
+                        <Box md={6}>
                           <div className="mb-3 mb-md-0">
                             <h6 className="fw-bold text-primary mb-2 d-flex align-items-center">
                               <div
                                 className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
                                 style={{ width: '32px', height: '32px' }}
                               >
-                                <CIcon icon={cilNotes} size="sm" className="text-primary" />
+                                <Icon as={FileText} size="sm" className="text-primary" />
                               </div>
                               {t('leadsPage.modal.contact.heading')}
                             </h6>
                             <div className="ms-4">
-                              <CRow className="gy-3">
-                                <CCol md={12}>
+                              <Flex className="gy-3">
+                                <Box md={12}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.fullName')}
                                   </small>
                                   <div className="fw-semibold">
                                     {selectedLeadDisplayName || '—'}
                                   </div>
-                                </CCol>
-                                <CCol md={6}>
+                                </Box>
+                                <Box md={6}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.firstName')}
                                   </small>
                                   <div className="fw-semibold">{selectedLeadFirstName || '—'}</div>
-                                </CCol>
-                                <CCol md={6}>
+                                </Box>
+                                <Box md={6}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.lastName')}
                                   </small>
                                   <div className="fw-semibold">{selectedLeadLastName || '—'}</div>
-                                </CCol>
-                                <CCol md={6}>
+                                </Box>
+                                <Box md={6}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.email')}
                                   </small>
@@ -572,8 +554,8 @@ const LeadsPage = () => {
                                       '—'
                                     )}
                                   </div>
-                                </CCol>
-                                <CCol md={6}>
+                                </Box>
+                                <Box md={6}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.phone')}
                                   </small>
@@ -589,26 +571,26 @@ const LeadsPage = () => {
                                       '—'
                                     )}
                                   </div>
-                                </CCol>
-                                <CCol md={4}>
+                                </Box>
+                                <Box md={4}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.city')}
                                   </small>
                                   <div className="fw-semibold">{selectedLeadCity || '—'}</div>
-                                </CCol>
-                                <CCol md={4}>
+                                </Box>
+                                <Box md={4}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.state')}
                                   </small>
                                   <div className="fw-semibold">{selectedLeadState || '—'}</div>
-                                </CCol>
-                                <CCol md={4}>
+                                </Box>
+                                <Box md={4}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.zip')}
                                   </small>
                                   <div className="fw-semibold">{selectedLeadZip || '—'}</div>
-                                </CCol>
-                                <CCol md={12}>
+                                </Box>
+                                <Box md={12}>
                                   <small className="text-muted text-uppercase fw-semibold">
                                     {t('leadsPage.modal.contact.company')}
                                   </small>
@@ -616,23 +598,22 @@ const LeadsPage = () => {
                                     {selectedLead?.company ||
                                       t('leadsPage.modal.contact.companyMissing')}
                                   </div>
-                                </CCol>
-                              </CRow>
+                                </Box>
+                              </Flex>
                             </div>
-                          </div>
-                        </CCol>
-                        <CCol md={6}>
+                        </Box>
+                        <Box md={6}>
                           <h6 className="fw-bold text-primary mb-2 d-flex align-items-center">
                             <div
                               className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
                               style={{ width: '32px', height: '32px' }}
                             >
-                              <CBadge
+                              <Badge
                                 color={getStatusBadgeVariant(selectedLead.status)}
                                 className="p-1"
                               >
                                 <div style={{ width: '8px', height: '8px' }}></div>
-                              </CBadge>
+                              </Badge>
                             </div>
                             {t('leadsPage.modal.status.heading')}
                           </h6>
@@ -661,20 +642,20 @@ const LeadsPage = () => {
                             </div>
                             <p className="text-muted mb-0 small">{selectedLeadSubmittedText}</p>
                           </div>
-                        </CCol>
-                      </CRow>
-                    </CCardBody>
-                  </CCard>
+                        </Box>
+                      </Flex>
+                    </CardBody>
+                  </Card>
 
                   {/* Message Section */}
-                  <CCard className="border-0 shadow-sm mb-4">
-                    <CCardBody className="p-3">
+                  <Card className="border-0 shadow-sm mb-4">
+                    <CardBody className="p-3">
                       <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
                         <div
                           className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
                           style={{ width: '32px', height: '32px' }}
                         >
-                          <CIcon icon={cilSend} size="sm" className="text-primary" />
+                          <Icon as={Send} size="sm" className="text-primary" />
                         </div>
                         {t('leadsPage.modal.message.heading')}
                       </h6>
@@ -686,19 +667,18 @@ const LeadsPage = () => {
                               : t('leadsPage.modal.message.empty')}
                           </p>
                         </div>
-                      </div>
-                    </CCardBody>
-                  </CCard>
+                    </CardBody>
+                  </Card>
 
                   {/* Notes Section */}
-                  <CCard className="border-0 shadow-sm mb-4">
-                    <CCardBody className="p-3">
+                  <Card className="border-0 shadow-sm mb-4">
+                    <CardBody className="p-3">
                       <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
                         <div
                           className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
                           style={{ width: '32px', height: '32px' }}
                         >
-                          <CIcon icon={cilNotes} size="sm" className="text-primary" />
+                          <Icon as={FileText} size="sm" className="text-primary" />
                         </div>
                         {t('leadsPage.modal.notes.heading')}
                       </h6>
@@ -728,23 +708,23 @@ const LeadsPage = () => {
                           </div>
                         )}
                       </div>
-                    </CCardBody>
-                  </CCard>
+                    </CardBody>
+                  </Card>
 
                   {/* Add Note Section */}
-                  <CCard className="border-0 shadow-sm">
-                    <CCardBody className="p-3">
+                  <Card className="border-0 shadow-sm">
+                    <CardBody className="p-3">
                       <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
                         <div
                           className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
                           style={{ width: '32px', height: '32px' }}
                         >
-                          <CIcon icon={cilSend} size="sm" className="text-primary" />
+                          <Icon as={Send} size="sm" className="text-primary" />
                         </div>
                         {t('leadsPage.modal.addNote.heading')}
                       </h6>
                       <div className="ms-4">
-                        <CFormTextarea
+                        <Textarea
                           rows={4}
                           placeholder={t('leadsPage.modal.addNote.placeholder')}
                           value={noteText}
@@ -753,29 +733,30 @@ const LeadsPage = () => {
                           style={{ resize: 'vertical' }}
                         />
                         <div className="text-end mt-3">
-                          <CButton
-                            color="primary"
+                          <Button
+                            colorScheme="blue"
                             disabled={savingNote || !noteText.trim()}
                             onClick={handleNoteSubmit}
                             className="px-4 py-2 rounded-3"
                           >
                             {savingNote ? (
-                              <CSpinner size="sm" className="me-2" />
+                              <Spinner size="sm" className="me-2" />
                             ) : (
-                              <CIcon icon={cilSend} className="me-2" />
+                              <Icon as={Send} className="me-2" />
                             )}
                             {t('leadsPage.modal.addNote.submit')}
-                          </CButton>
+                          </Button>
                         </div>
-                      </div>
-                    </CCardBody>
-                  </CCard>
+                    </CardBody>
+                  </Card>
                 </div>
               </>
             )}
-          </CModalBody>
-        </CModal>
-      </CContainer>
+            </ModalBody>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+      </Container>
     </>
   )
 }

@@ -1,452 +1,531 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useMemo, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
-  CTable,
-  CTableHead,
-  CTableBody,
-  CTableRow,
-  CTableHeaderCell,
-  CTableDataCell,
-  CFormInput,
-  CButton,
-  CSpinner,
-  CFormSelect,
-  CContainer,
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CBadge,
-  CInputGroup,
-  CInputGroupText,
-} from '@coreui/react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice';
-import { useNavigate } from 'react-router-dom';
-import { buildEncodedPath, genNoise } from '../../utils/obfuscate';
-import Swal from 'sweetalert2';
-import { Search, Pencil, Trash, Plus, User, Mail, Phone, MapPin } from '@/icons-lucide';
-import PaginationComponent from '../../components/common/PaginationComponent';
-import withContractorScope from '../../components/withContractorScope';
-import PermissionGate from '../../components/PermissionGate';
-import PageHeader from '../../components/PageHeader';
-import { FaUsers } from 'react-icons/fa';
+  Alert,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertIcon,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  Text,
+  Select,
+  useDisclosure,
+  useToast,
+  Center,
+} from '@chakra-ui/react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { Search, Pencil, Trash, Plus, User, Mail, Phone, MapPin, Users, ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react'
 
-const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const customers = useSelector((state) => state.customers.list);
-  const loading = useSelector((state) => state.customers.loading);
-  const error = useSelector((state) => state.customers.error);
-  const totalPages = useSelector((state) => state.customers.totalPages);
-  const total = useSelector((state) => state.customers.total);
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice'
+import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
+import PaginationComponent from '../../components/common/PaginationComponent'
+import withContractorScope from '../../components/withContractorScope'
+import PermissionGate from '../../components/PermissionGate'
+import PageHeader from '../../components/PageHeader'
+
+const CustomerTable = ({
+  isContractor,
+  contractorGroupId,
+  contractorModules,
+  contractorGroupName,
+}) => {
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const customers = useSelector((state) => state.customers.list)
+  const loading = useSelector((state) => state.customers.loading)
+  const error = useSelector((state) => state.customers.error)
+  const totalPages = useSelector((state) => state.customers.totalPages)
+  const total = useSelector((state) => state.customers.total)
+
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [deleteCustomerId, setDeleteCustomerId] = useState(null)
+  const cancelRef = useRef()
+  const toast = useToast()
 
   useEffect(() => {
-    const groupId = isContractor ? contractorGroupId : null;
-    dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }));
-  }, [dispatch, currentPage, itemsPerPage, isContractor, contractorGroupId]);
+    const groupId = isContractor ? contractorGroupId : null
+    dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }))
+  }, [dispatch, currentPage, itemsPerPage, isContractor, contractorGroupId])
 
   const formatAddress = (customer) => {
-    const parts = [];
+    const parts = []
+    if (customer.address) parts.push(customer.address)
+    if (customer.aptOrSuite) parts.push(customer.aptOrSuite)
 
-    // Add street address
-    if (customer.address) {
-      parts.push(customer.address);
-    }
-
-    // Add apt/suite if present
-    if (customer.aptOrSuite) {
-      parts.push(customer.aptOrSuite);
-    }
-
-    // Create city, state zip line
-    const cityStateZip = [];
-    if (customer.city) {
-      cityStateZip.push(customer.city);
-    }
-    if (customer.state) {
-      cityStateZip.push(customer.state);
-    }
-    if (customer.zipCode) {
-      cityStateZip.push(customer.zipCode);
-    }
+    const cityStateZip = []
+    if (customer.city) cityStateZip.push(customer.city)
+    if (customer.state) cityStateZip.push(customer.state)
+    if (customer.zipCode) cityStateZip.push(customer.zipCode)
 
     if (cityStateZip.length > 0) {
-      parts.push(cityStateZip.join(', '));
+      parts.push(cityStateZip.join(', '))
     }
 
-    return parts.length > 0 ? parts.join(', ') : null;
-  };
+    return parts.length > 0 ? parts.join(', ') : null
+  }
 
   const handleSort = (key) => {
     setSortConfig((prev) => {
-      const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
-      return { key, direction };
-    });
-  };
+      const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+      return { key, direction }
+    })
+  }
 
   const handleEdit = (customer) => {
-  const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/customers/edit/:id', { id: customer.id });
-  navigate(noisy);
-  };
+    const noisyPath = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/customers/edit/:id', { id: customer.id })
+    navigate(noisyPath)
+  }
 
-  const handleDelete = async (id) => {
-    const result = await Swal.fire({
-  title: t('customers.confirmTitle', 'Are you sure?'),
-  text: t('customers.confirmText', 'This action cannot be undone!'),
-      icon: 'warning',
-      showCancelButton: true,
-  confirmButtonText: t('customers.confirmYes', 'Yes, delete it!'),
-  cancelButtonText: t('customers.confirmNo', 'No, cancel!'),
-      reverseButtons: true,
-    });
+  const handleDelete = (id) => {
+    setDeleteCustomerId(id)
+    onOpen()
+  }
 
-    if (result.isConfirmed) {
-      try {
-        await dispatch(deleteCustomer(id)).unwrap();
-  await Swal.fire(t('customers.deleted', 'Deleted!'), t('customers.deletedMsg', 'The customer has been deleted.'), 'success');
-        const groupId = isContractor ? contractorGroupId : null;
-        dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }));
-      } catch (err) {
-        console.error('Delete error:', err);
-  Swal.fire(t('common.error', 'Error!'), err.message || t('customers.deleteFailed', 'Failed to delete customer. Please try again.'), 'error');
-      }
-    } else {
-  Swal.fire(t('customers.cancelled', 'Cancelled'), t('customers.notDeleted', 'The customer was not deleted.'), 'info');
+  const confirmDelete = async () => {
+    if (!deleteCustomerId) return
+
+    try {
+      await dispatch(deleteCustomer(deleteCustomerId)).unwrap()
+      toast({
+        title: t('customers.deleted', 'Deleted!'),
+        description: t('customers.deletedMsg', 'The customer has been deleted.'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      const groupId = isContractor ? contractorGroupId : null
+      dispatch(fetchCustomers({ page: currentPage, limit: itemsPerPage, groupId }))
+    } catch (err) {
+      console.error('Delete error:', err)
+      toast({
+        title: t('common.error', 'Error!'),
+        description:
+          err.message || t('customers.deleteFailed', 'Failed to delete customer. Please try again.'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+    } finally {
+      setDeleteCustomerId(null)
+      onClose()
     }
-  };
+  }
 
   const sortedFilteredCustomers = useMemo(() => {
-    let filtered = customers.filter(
-      (cust) =>
-        cust.name?.toLowerCase().includes(searchTerm) || cust.email?.toLowerCase().includes(searchTerm),
-    );
+    const query = searchTerm.trim().toLowerCase()
+    let filtered = customers.filter((cust) =>
+      cust.name?.toLowerCase().includes(query) || cust.email?.toLowerCase().includes(query),
+    )
 
     if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        const aVal = a[sortConfig.key]?.toLowerCase?.() ?? '';
-        const bVal = b[sortConfig.key]?.toLowerCase?.() ?? '';
-        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
+      filtered = [...filtered].sort((a, b) => {
+        const aVal = a[sortConfig.key]?.toLowerCase?.() ?? ''
+        const bVal = b[sortConfig.key]?.toLowerCase?.() ?? ''
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1
+        return 0
+      })
     }
 
-    return filtered;
-  }, [customers, searchTerm, sortConfig]);
+    return filtered
+  }, [customers, searchTerm, sortConfig])
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  const handlePageChange = (page) => setCurrentPage(page)
 
-  const handleNewCustomer = () => {
-    navigate('/customers/add');
-  };
+  const handleNewCustomer = () => navigate('/customers/add')
 
   const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return '↕️';
-    return sortConfig.direction === 'asc' ? '↑' : '↓';
-  };
+    // Use lucide icons for sort indicators to avoid passing raw characters to Chakra Icon
+    if (sortConfig.key !== key) return ChevronsUpDown
+    return sortConfig.direction === 'asc' ? ChevronUp : ChevronDown
+  }
+
+  const activeCustomers = customers.filter((c) => !c.deleted_at).length
+  const customersWithEmail = customers.filter((c) => c.email).length
+  const filteredCount = sortedFilteredCustomers.length
 
   return (
-    <CContainer fluid className="dashboard-container">
-      {/* Header Section */}
-      <PageHeader
-        title={t('customers.header')}
-        subtitle={t('customers.subtitle')}
-        icon={FaUsers}
-      >
-        <PermissionGate permission="customers:create">
-          <CButton
-            color="light"
-            onClick={handleNewCustomer}
-          >
-            <Plus size={16} className="me-2" aria-hidden="true" />
-            {t('nav.addCustomer')}
-          </CButton>
-        </PermissionGate>
-      </PageHeader>
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={t('customers.header')}
+          subtitle={t('customers.subtitle')}
+          icon={Users}
+          actions={[
+            <PermissionGate permission="customers:create" key="create">
+              <Button colorScheme="brand" leftIcon={<Icon as={Plus} boxSize={4} />} onClick={handleNewCustomer}>
+                {t('nav.addCustomer')}
+              </Button>
+            </PermissionGate>,
+          ]}
+        />
 
-      {/* Stats Cards */}
-      <CRow className="mb-4 g-3">
-        <CCol sm={6} md={3}>
-          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-primary)' }}>
-            <CCardBody>
-              <div className="stat-number text-primary">{total || 0}</div>
-              <div className="stat-label">{t('customers.total')}</div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={6} md={3}>
-          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-success)' }}>
-            <CCardBody>
-              <div className="stat-number text-success">{customers.filter(c => !c.deleted_at).length}</div>
-              <div className="stat-label">{t('customers.active')}</div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={6} md={3}>
-          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-warning)' }}>
-            <CCardBody>
-              <div className="stat-number text-warning">{customers.filter(c => c.email).length}</div>
-              <div className="stat-label">{t('customers.withEmail')}</div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={6} md={3}>
-          <CCard className="stat-card-sm" style={{ borderColor: 'var(--cui-danger)' }}>
-            <CCardBody>
-              <div className="stat-number text-danger">{sortedFilteredCustomers.length}</div>
-              <div className="stat-label">{t('customers.filtered')}</div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={4}>
+          <Card variant="outline" borderColor="brand.500">
+            <CardBody>
+              <Stat>
+                <StatLabel color="gray.500">{t('customers.total')}</StatLabel>
+                <StatNumber>{total || 0}</StatNumber>
+              </Stat>
+            </CardBody>
+          </Card>
+          <Card variant="outline" borderColor="green.500">
+            <CardBody>
+              <Stat>
+                <StatLabel color="gray.500">{t('customers.active')}</StatLabel>
+                <StatNumber>{activeCustomers}</StatNumber>
+              </Stat>
+            </CardBody>
+          </Card>
+          <Card variant="outline" borderColor="blue.500">
+            <CardBody>
+              <Stat>
+                <StatLabel color="gray.500">{t('customers.withEmail')}</StatLabel>
+                <StatNumber>{customersWithEmail}</StatNumber>
+              </Stat>
+            </CardBody>
+          </Card>
+          <Card variant="outline" borderColor="red.500">
+            <CardBody>
+              <Stat>
+                <StatLabel color="gray.500">{t('customers.filtered')}</StatLabel>
+                <StatNumber>{filteredCount}</StatNumber>
+              </Stat>
+            </CardBody>
+          </Card>
+        </SimpleGrid>
 
-      {/* Search and Filters */}
-      <CCard className="filter-card">
-        <CCardBody>
-          <CRow className="align-items-center g-3">
-            <CCol md={6}>
-              <CInputGroup>
-                <CInputGroupText aria-hidden="true">
-                  <Search size={16} />
-                </CInputGroupText>
-                <CFormInput
+        <Card variant="outline">
+          <CardBody>
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ base: 'stretch', md: 'center' }}>
+              <InputGroup maxW={{ base: 'full', md: '360px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} color="gray.400" boxSize={4} />
+                </InputLeftElement>
+                <Input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value.toLowerCase())}
                   placeholder={t('customers.searchPlaceholder')}
                   aria-label={t('customers.searchAriaLabel', 'Search customers')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
                 />
-              </CInputGroup>
-            </CCol>
-            <CCol md={3}>
-              <CFormSelect
+              </InputGroup>
+
+              <Select
+                maxW={{ base: 'full', md: '200px' }}
                 value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                onChange={(event) => setItemsPerPage(Number(event.target.value))}
               >
-                <option value={5}>5 {t('customers.perPage', 'per page')}</option>
-                <option value={10}>10 {t('customers.perPage', 'per page')}</option>
-                <option value={25}>25 {t('customers.perPage', 'per page')}</option>
-                <option value={50}>50 {t('customers.perPage', 'per page')}</option>
-              </CFormSelect>
-            </CCol>
-            <CCol md={3} className="text-end">
-              <small className="text-muted">
-                {t('customers.showing', 'Showing')} {sortedFilteredCustomers.length} {t('customers.of', 'of')} {total} {t('customers.customersLower', 'customers')}
-                {isContractor && (
-                  <div className="text-primary small">({contractorGroupName})</div>
-                )}
-              </small>
-            </CCol>
-          </CRow>
-        </CCardBody>
-      </CCard>
+                {[5, 10, 25, 50].map((option) => (
+                  <option key={option} value={option}>
+                    {option} {t('customers.perPage', 'per page')}
+                  </option>
+                ))}
+              </Select>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="text-center py-5">
-          <CSpinner color="primary" />
-          <p className="mt-3 text-muted">{t('customers.loading', 'Loading customers...')}</p>
-        </div>
-      )}
+              <Box flex="1" textAlign={{ base: 'left', md: 'right' }}>
+                <Text fontSize="sm" color="gray.500">
+                  {t('customers.showing', 'Showing')} {filteredCount} {t('customers.of', 'of')} {total}{' '}
+                  {t('customers.customersLower', 'customers')}
+                  {isContractor && contractorGroupName && (
+                    <Text as="span" color="brand.500" ml={1}>
+                      ({contractorGroupName})
+                    </Text>
+                  )}
+                </Text>
+              </Box>
+            </Stack>
+          </CardBody>
+        </Card>
 
-      {/* Error State */}
-      {error && (
-        <div className="alert alert-danger">
-          <strong>{t('common.error', 'Error')}:</strong> {error}
-        </div>
-      )}
+        {loading && (
+          <Center py={16} flexDirection="column" gap={3}>
+            <Spinner size="lg" color="brand.500" />
+            <Text color="gray.500">{t('customers.loading', 'Loading customers...')}</Text>
+          </Center>
+        )}
 
-      {/* Desktop Table */}
-      {!loading && !error && (
-        <div className="table-wrap desktop-only">
-          <CCard className="data-table-card">
-            <CTable hover className="table-modern">
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>{t('customers.location', 'Location')}</CTableHeaderCell>
-                  <CTableHeaderCell onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                    <User size={16} className="me-2" aria-hidden="true" />
-                    {t('customers.name', 'Name')} {getSortIcon('name')}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
-                    <Mail size={16} className="me-2" aria-hidden="true" />
-                    {t('customers.email', 'Email')} {getSortIcon('email')}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell>{t('customers.phone', 'Phone')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('customers.address', 'Address')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('customers.proposalsHeader', 'Proposals')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('customers.ordersHeader', 'Orders')}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{t('customers.actions', 'Actions')}</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {sortedFilteredCustomers?.length === 0 ? (
-                  <CTableRow>
-                    <CTableDataCell colSpan="8" className="text-center py-5">
-                      <Search size={48} className="text-muted mb-3" aria-hidden="true" />
-                      <p className="mb-0">{t('customers.noResults')}</p>
-                      <small className="text-muted">{t('customers.tryAdjusting')}</small>
-                    </CTableDataCell>
-                  </CTableRow>
-                ) : (
-                  sortedFilteredCustomers?.map((cust) => (
-                    <CTableRow key={cust.id}>
-                      <CTableDataCell>
-                        <CBadge color="secondary" shape="rounded-pill">
-                          {t('customers.main', 'Main')}
-                        </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell className="fw-medium">{cust.name || 'N/A'}</CTableDataCell>
-                      <CTableDataCell className="text-muted">{cust.email || 'N/A'}</CTableDataCell>
-                      <CTableDataCell className="text-muted">{cust.mobile || cust.homePhone || 'No phone'}</CTableDataCell>
-                      <CTableDataCell className="text-muted">{formatAddress(cust) || 'No address'}</CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge color="info" shape="rounded-pill">
-                          {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
-                        </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge color="success" shape="rounded-pill">
-                          {t('customers.ordersCount', { count: 0 })}
-                        </CBadge>
-                      </CTableDataCell>
-          <CTableDataCell className="text-center">
-                        <div className="d-flex justify-content-center gap-2">
-                          <PermissionGate action="update" resource="customer" item={cust}>
-                            <CButton
-                              color="primary"
-            variant="outline"
-            className="icon-btn"
-                              onClick={() => handleEdit(cust)}
-                              title={t('customers.editTooltip', 'Edit customer')}
-            aria-label={t('customers.editTooltip', 'Edit customer')}
+        {error && !loading && (
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            <Text fontSize="sm">
+              {t('common.error', 'Error')}: {error}
+            </Text>
+          </Alert>
+        )}
+
+        {!loading && !error && (
+          <>
+            <Box display={{ base: 'none', md: 'block' }}>
+              <Card variant="outline">
+                <CardBody>
+                  <TableContainer>
+                    <Table variant="simple">
+                      <Thead>
+                        <Tr>
+                          <Th>{t('customers.location', 'Location')}</Th>
+                          <Th>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSort('name')}
+                              rightIcon={<Icon as={getSortIcon('name')} boxSize={4} />}
                             >
-            <Pencil size={16} aria-hidden="true" />
-                            </CButton>
+                              <HStack spacing={2}>
+                                <Icon as={User} boxSize={4} />
+                                <Text>{t('customers.name', 'Name')}</Text>
+                              </HStack>
+                            </Button>
+                          </Th>
+                          <Th>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSort('email')}
+                              rightIcon={<Icon as={getSortIcon('email')} boxSize={4} />}
+                            >
+                              <HStack spacing={2}>
+                                <Icon as={Mail} boxSize={4} />
+                                <Text>{t('customers.email', 'Email')}</Text>
+                              </HStack>
+                            </Button>
+                          </Th>
+                          <Th>
+                            <HStack spacing={2}>
+                              <Icon as={Phone} boxSize={4} />
+                              <Text>{t('customers.phone', 'Phone')}</Text>
+                            </HStack>
+                          </Th>
+                          <Th>
+                            <HStack spacing={2}>
+                              <Icon as={MapPin} boxSize={4} />
+                              <Text>{t('customers.address', 'Address')}</Text>
+                            </HStack>
+                          </Th>
+                          <Th>{t('customers.proposalsHeader', 'Proposals')}</Th>
+                          <Th>{t('customers.ordersHeader', 'Orders')}</Th>
+                          <Th textAlign="center">{t('customers.actions', 'Actions')}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {filteredCount === 0 ? (
+                          <Tr>
+                            <Td colSpan={8}>
+                              <Center py={12} flexDirection="column" gap={3}>
+                                <Icon as={Search} boxSize={10} color="gray.300" />
+                                <Text>{t('customers.noResults')}</Text>
+                                <Text fontSize="sm" color="gray.500">
+                                  {t('customers.tryAdjusting')}
+                                </Text>
+                              </Center>
+                            </Td>
+                          </Tr>
+                        ) : (
+                          sortedFilteredCustomers.map((cust) => (
+                            <Tr key={cust.id}>
+                              <Td>
+                                <Badge colorScheme="gray" variant="subtle">
+                                  {t('customers.main', 'Main')}
+                                </Badge>
+                              </Td>
+                              <Td fontWeight="medium">{cust.name || 'N/A'}</Td>
+                              <Td color="gray.600">{cust.email || 'N/A'}</Td>
+                              <Td color="gray.600">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
+                              <Td color="gray.600">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
+                              <Td>
+                                <Badge colorScheme="blue">
+                                  {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
+                                </Badge>
+                              </Td>
+                              <Td>
+                                <Badge colorScheme="green">
+                                  {t('customers.ordersCount', { count: 0 })}
+                                </Badge>
+                              </Td>
+                              <Td>
+                                <HStack spacing={2} justify="center">
+                                  <PermissionGate action="update" resource="customer" item={cust}>
+                                    <IconButton
+                                      aria-label={t('customers.editTooltip', 'Edit customer')}
+                                      icon={<Icon as={Pencil} boxSize={4} />}
+                                      variant="outline"
+                                      colorScheme="blue"
+                                      size="sm"
+                                      onClick={() => handleEdit(cust)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate action="delete" resource="customer" item={cust}>
+                                    <IconButton
+                                      aria-label={t('customers.deleteTooltip', 'Delete customer')}
+                                      icon={<Icon as={Trash} boxSize={4} />}
+                                      variant="outline"
+                                      colorScheme="red"
+                                      size="sm"
+                                      onClick={() => handleDelete(cust.id)}
+                                    />
+                                  </PermissionGate>
+                                </HStack>
+                              </Td>
+                            </Tr>
+                          ))
+                        )}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                </CardBody>
+              </Card>
+            </Box>
+
+            <Stack spacing={4} display={{ base: 'flex', md: 'none' }}>
+              {filteredCount === 0 ? (
+                <Card variant="outline">
+                  <CardBody>
+                    <Center flexDirection="column" gap={3}>
+                      <Icon as={Search} boxSize={10} color="gray.300" />
+                      <Text>{t('customers.noResults')}</Text>
+                      <Text fontSize="sm" color="gray.500">
+                        {t('customers.tryAdjusting')}
+                      </Text>
+                    </Center>
+                  </CardBody>
+                </Card>
+              ) : (
+                sortedFilteredCustomers.map((cust) => (
+                  <Card key={cust.id} variant="outline">
+                    <CardBody>
+                      <Stack spacing={4}>
+                        <HStack justify="space-between" align="flex-start">
+                          <Stack spacing={1}>
+                            <Text fontWeight="semibold">{cust.name || 'N/A'}</Text>
+                            <Badge colorScheme="gray" alignSelf="flex-start">
+                              {t('customers.main', 'Main')}
+                            </Badge>
+                          </Stack>
+                        </HStack>
+                        <Stack spacing={2} fontSize="sm" color="gray.600">
+                          <HStack spacing={2}>
+                            <Icon as={Mail} boxSize={4} />
+                            <Text>{cust.email || 'N/A'}</Text>
+                          </HStack>
+                          <HStack spacing={2}>
+                            <Icon as={Phone} boxSize={4} />
+                            <Text>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Text>
+                          </HStack>
+                          <HStack spacing={2}>
+                            <Icon as={MapPin} boxSize={4} />
+                            <Text>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Text>
+                          </HStack>
+                        </Stack>
+                        <HStack spacing={3}>
+                          <Badge colorScheme="blue" flexShrink={0}>
+                            {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
+                          </Badge>
+                          <Badge colorScheme="green" flexShrink={0}>
+                            {t('customers.ordersCount', { count: 0 })}
+                          </Badge>
+                        </HStack>
+                        <HStack spacing={3}>
+                          <PermissionGate action="update" resource="customer" item={cust}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              colorScheme="blue"
+                              leftIcon={<Icon as={Pencil} boxSize={4} />}
+                              flex="1"
+                              onClick={() => handleEdit(cust)}
+                            >
+                              {t('common.edit')}
+                            </Button>
                           </PermissionGate>
                           <PermissionGate action="delete" resource="customer" item={cust}>
-                            <CButton
-                              color="danger"
-            variant="outline"
-            className="icon-btn"
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              colorScheme="red"
+                              leftIcon={<Icon as={Trash} boxSize={4} />}
+                              flex="1"
                               onClick={() => handleDelete(cust.id)}
-                              title={t('customers.deleteTooltip', 'Delete customer')}
-            aria-label={t('customers.deleteTooltip', 'Delete customer')}
                             >
-            <Trash size={16} aria-hidden="true" />
-                            </CButton>
+                              {t('common.delete')}
+                            </Button>
                           </PermissionGate>
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))
-                )}
-              </CTableBody>
-            </CTable>
-          </CCard>
-        </div>
-      )}
+                        </HStack>
+                      </Stack>
+                    </CardBody>
+                  </Card>
+                ))
+              )}
+            </Stack>
 
-      {/* Mobile Card Layout */}
-      {!loading && !error && (
-        <div className="mobile-card-view mobile-only">
-      {sortedFilteredCustomers?.length === 0 ? (
-            <CCard>
-              <CCardBody className="text-center py-5">
-        <Search size={48} className="text-muted mb-3" aria-hidden="true" />
-                <p className="mb-0">{t('customers.noResults')}</p>
-                <small className="text-muted">{t('customers.tryAdjusting')}</small>
-              </CCardBody>
-            </CCard>
-          ) : (
-            sortedFilteredCustomers?.map((cust) => (
-              <CCard key={cust.id}>
-                <CCardBody>
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div className="customer-name">{cust.name || 'N/A'}</div>
-                      <CBadge color="secondary" shape="rounded-pill" className="mt-1">
-                        {t('customers.main', 'Main')}
-                      </CBadge>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="contact-info">
-          <Mail size={16} aria-hidden="true" />
-                      <span>{cust.email || 'N/A'}</span>
-                    </div>
-                    <div className="contact-info">
-          <Phone size={16} aria-hidden="true" />
-                      <span>{cust.mobile || cust.homePhone || 'No phone'}</span>
-                    </div>
-                    <div className="contact-info">
-          <MapPin size={16} aria-hidden="true" />
-                      <span>{formatAddress(cust) || 'No address'}</span>
-                    </div>
-                  </div>
-                  <div className="stats-pills">
-                    <CBadge color="info" shape="rounded-pill">
-                      {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
-                    </CBadge>
-                    <CBadge color="success" shape="rounded-pill">
-                      {t('customers.ordersCount', { count: 0 })}
-                    </CBadge>
-                  </div>
-                  <div className="actions">
-                    <PermissionGate action="update" resource="customer" item={cust}>
-                      <CButton
-                        color="primary"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(cust)}
-                        className="flex-grow-1"
-                      >
-        <Pencil size={16} className="me-1" aria-hidden="true" />
-                        {t('common.edit')}
-                      </CButton>
-                    </PermissionGate>
-                    <PermissionGate action="delete" resource="customer" item={cust}>
-                      <CButton
-                        color="danger"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(cust.id)}
-                        className="flex-grow-1"
-                      >
-        <Trash size={16} className="me-1" aria-hidden="true" />
-                        {t('common.delete')}
-                      </CButton>
-                    </PermissionGate>
-                  </div>
-                </CCardBody>
-              </CCard>
-            ))
-          )}
-        </div>
-      )}
+            {totalPages > 1 && (
+              <Card variant="outline">
+                <CardBody>
+                  <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
+                  />
+                </CardBody>
+              </Card>
+            )}
+          </>
+        )}
 
-      {/* Pagination */}
-      {!loading && !error && totalPages > 1 && (
-        <CCard className="data-table-card mt-4">
-          <CCardBody>
-            <PaginationComponent
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-            />
-          </CCardBody>
-        </CCard>
-      )}
-    </CContainer>
-  );
-};
+        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                {t('customers.confirmTitle', 'Are you sure?')}
+              </AlertDialogHeader>
+              <AlertDialogBody>{t('customers.confirmText', 'This action cannot be undone!')}</AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  {t('customers.confirmNo', 'No, cancel!')}
+                </Button>
+                <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                  {t('customers.confirmYes', 'Yes, delete it!')}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+      </Stack>
+    </Container>
+  )
+}
 
-export default withContractorScope(CustomerTable, 'customers');
+export default withContractorScope(CustomerTable, 'customers')

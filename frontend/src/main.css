@@ -73,26 +73,13 @@
   background: #161950 !important;
 }
 
-/* Timeline styles for proposal status */
-.timeline {
-  position: relative;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 50px;
-  bottom: 0;
-  width: 2px;
-  background-color: #e0e0e0;
-  z-index: 1;
-}
-
-.timeline .timeline-icon {
-  position: relative;
-  z-index: 2;
-}
+/* Timeline styles converted to Tailwind utilities for better performance
+ * Use these Tailwind classes instead:
+ * - .timeline → relative
+ * - .timeline::before → Use a proper div with: absolute left-5 top-12 bottom-0 w-0.5 bg-gray-300 z-10
+ * - .timeline-icon → relative z-20
+ * This approach eliminates custom CSS parsing and reduces bundle size
+ */
 
 /* Notification styles */
 .notification-unread {
@@ -153,12 +140,12 @@
 */
 
 .sidebar-dark {
-  --cui-body-color: rgba(255, 255, 255, .87);
+  --cui-body-color: rgba(255, 255, 255, 0.87);
   --cui-body-bg: #212631;
   --cui-emphasis-color: #fff;
-  --cui-secondary-color: rgba(255, 255, 255, .6);
+  --cui-secondary-color: rgba(255, 255, 255, 0.6);
   --cui-secondary-bg: #323a49;
-  --cui-tertiary-color: rgba(255, 255, 255, .38);
+  --cui-tertiary-color: rgba(255, 255, 255, 0.38);
   --cui-tertiary-bg: rgb(41.5, 48, 61);
   --cui-border-color: transparent !important;
 }
@@ -227,13 +214,13 @@
 }
 
 .pdf-customization .card h4::before {
-  content: "📄";
+  content: '📄';
   margin-right: 0.8rem;
   font-size: 1.2rem;
 }
 
 .pdf-customization .card:nth-child(3) h4::before {
-  content: "🏢";
+  content: '🏢';
 }
 
 .pdf-customization .form-input {
@@ -260,7 +247,7 @@
 }
 
 /* Logo Upload Styling */
-.pdf-customization input[type="file"] {
+.pdf-customization input[type='file'] {
   width: 100%;
   padding: 1rem;
   border: 2px dashed #dee2e6;
@@ -272,7 +259,7 @@
   text-align: center;
 }
 
-.pdf-customization input[type="file"]:hover {
+.pdf-customization input[type='file']:hover {
   border-color: #667eea;
   background: #f0f2ff;
 }
@@ -295,7 +282,7 @@
 }
 
 /* Color Input Styling */
-.pdf-customization input[type="color"] {
+.pdf-customization input[type='color'] {
   width: 100%;
   height: 50px;
   border: none;
@@ -700,8 +687,6 @@
   /* Safari support */
 }
 
-
-
 /* Only for mobile changes */
 @media (max-width: 668px) {
   /* Avoid forcing extra right padding globally which can cause overflow */
@@ -717,7 +702,6 @@
   .main-content-container .add-new-customer .form-buttons button {
     font-size: 14px !important;
     padding: 13px !important;
-
   }
 
   .main-content-container .add-new-customer .rounded-circle,
@@ -735,7 +719,6 @@
     border-right-color: rgb(219, 223, 230);
     border-bottom-color: rgb(219, 223, 230);
     border-left-color: rgb(219, 223, 230);
-
   }
 
   .setting-icon-div {
@@ -757,7 +740,6 @@
   }
 
   .main-div-cutomization .col-auto {
-
     padding: 10px 40px;
   }
 
@@ -776,7 +758,6 @@
   .main-div-custom-login .preview-save-button button {
     margin-bottom: 5px;
   }
-
 }
 
 /* Responsive modal styles for contractor detail page */
@@ -809,7 +790,9 @@
 @media (max-width: 768px) {
   /* Contractor Mobile Cards */
   .contractor-mobile-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .contractor-mobile-card:hover {
@@ -919,7 +902,7 @@
     .modern-header,
     .modern-header__container,
     .header,
-    [class*="header"] {
+    [class*='header'] {
       overflow: visible !important;
     }
 
@@ -954,7 +937,8 @@
   }
 
   /* Form elements mobile improvements */
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     min-height: 44px;
   }
 
@@ -1042,14 +1026,14 @@
 }
 
 /* Ensure step numbers are always readable regardless of header color */
-.proposal-step-number[style*="background-color"] {
+.proposal-step-number[style*='background-color'] {
   color: #ffffff !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8) !important;
   border: 2px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Force high contrast for inactive step numbers */
-.proposal-step-number:not([style*="var(--app-header-bg)"]) {
+.proposal-step-number:not([style*='var(--app-header-bg)']) {
   color: #495057 !important;
   font-weight: 600 !important;
   text-shadow: none !important;
@@ -1058,7 +1042,7 @@
 }
 
 /* Add extra contrast for active/completed steps */
-.proposal-step-number[style*="var(--app-header-bg)"] {
+.proposal-step-number[style*='var(--app-header-bg)'] {
   background-color: #212529 !important;
   color: #ffffff !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;

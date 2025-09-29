@@ -28,7 +28,9 @@ const readPin = () => {
     const v = localStorage.getItem('ui.sidebar.pinned')
     if (v === null) return false // default NOT pinned
     return v === 'true'
-  } catch { return false }
+  } catch {
+    return false
+  }
 }
 
 const initialState = {
@@ -47,16 +49,22 @@ const sidebarSlice = createSlice({
       state.sidebarShow = action.payload
       // Only store sidebar state for desktop to avoid mobile/desktop conflicts
       if (typeof window !== 'undefined' && window.innerWidth > 768) {
-        try { localStorage.setItem('ui.sidebar.show', String(state.sidebarShow)) } catch {}
+        try {
+          localStorage.setItem('ui.sidebar.show', String(state.sidebarShow))
+        } catch {}
       }
     },
     setSidebarUnfoldable(state, action) {
       state.sidebarUnfoldable = action.payload
-      try { localStorage.setItem('ui.sidebar.unfoldable', String(state.sidebarUnfoldable)) } catch {}
+      try {
+        localStorage.setItem('ui.sidebar.unfoldable', String(state.sidebarUnfoldable))
+      } catch {}
     },
     setSidebarPinned(state, action) {
       state.sidebarPinned = action.payload
-      try { localStorage.setItem('ui.sidebar.pinned', String(state.sidebarPinned)) } catch {}
+      try {
+        localStorage.setItem('ui.sidebar.pinned', String(state.sidebarPinned))
+      } catch {}
     },
     // New action to sync sidebar state with screen size
     syncSidebarWithScreenSize(state) {
@@ -81,5 +89,6 @@ const sidebarSlice = createSlice({
   },
 })
 
-export const { setSidebarShow, setSidebarUnfoldable, setSidebarPinned, syncSidebarWithScreenSize } = sidebarSlice.actions
+export const { setSidebarShow, setSidebarUnfoldable, setSidebarPinned, syncSidebarWithScreenSize } =
+  sidebarSlice.actions
 export default sidebarSlice.reducer

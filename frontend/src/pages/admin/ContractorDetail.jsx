@@ -1,199 +1,170 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
-import { decodeParam } from '../../utils/obfuscate';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useParams, useNavigate } from 'react-router-dom'
+import { decodeParam } from '../../utils/obfuscate'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-  CContainer,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CRow,
-  CCol,
-  CNav,
-  CNavItem,
-  CNavLink,
-  CTabContent,
-  CTabPane,
-  CBadge,
-  CSpinner,
-  CAlert,
-  CButton,
-  CButtonGroup
-} from '@coreui/react';
-import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from '@/icons-lucide';
-import { fetchContractor } from '../../store/slices/contractorSlice';
-import OverviewTab from './ContractorDetail/OverviewTab';
-import ProposalsTab from './ContractorDetail/ProposalsTab';
-import CustomersTab from './ContractorDetail/CustomersTab';
-import SettingsTab from './ContractorDetail/SettingsTab';
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  Icon,
+  Spinner,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from '@chakra-ui/react'
+import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from 'lucide-react'
+import { fetchContractor } from '../../store/slices/contractorSlice'
+import OverviewTab from './ContractorDetail/OverviewTab'
+import ProposalsTab from './ContractorDetail/ProposalsTab'
+import CustomersTab from './ContractorDetail/CustomersTab'
+import SettingsTab from './ContractorDetail/SettingsTab'
+
+const tabConfig = [
+  { key: 'overview', labelKey: 'contractorsAdmin.detail.tabs.overview', icon: BarChart3, component: OverviewTab },
+  { key: 'proposals', labelKey: 'contractorsAdmin.detail.tabs.proposals', icon: BriefcaseBusiness, component: ProposalsTab },
+  { key: 'customers', labelKey: 'contractorsAdmin.detail.tabs.customers', icon: UsersGroup, component: CustomersTab },
+  { key: 'settings', labelKey: 'contractorsAdmin.detail.tabs.settings', icon: Settings, component: SettingsTab },
+]
 
 const ContractorDetail = () => {
-  const { t } = useTranslation();
-  const { groupId: rawGroupId } = useParams();
-  const groupId = decodeParam(rawGroupId);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { groupId: rawGroupId } = useParams()
+  const groupId = useMemo(() => decodeParam(rawGroupId), [rawGroupId])
+  const dispatch = useDispatch()
 
-  const { selectedContractor: contractor, loading, error } = useSelector(state => state.contractors);
-
-  const [activeTab, setActiveTab] = useState('overview');
+  const { selectedContractor: contractor, loading, error } = useSelector((state) => state.contractors)
+  const [activeTabIndex, setActiveTabIndex] = useState(0)
 
   useEffect(() => {
     if (groupId) {
-      dispatch(fetchContractor(groupId));
+      dispatch(fetchContractor(groupId))
     }
-  }, [dispatch, groupId]);
+  }, [dispatch, groupId])
 
   const handleBack = () => {
-    navigate('/admin/contractors');
-  };
-
-  const tabs = [
-    {
-      key: 'overview',
-      label: t('contractorsAdmin.detail.tabs.overview'),
-  icon: 'chart',
-      component: OverviewTab
-    },
-    {
-      key: 'proposals',
-      label: t('contractorsAdmin.detail.tabs.proposals'),
-  icon: 'briefcase',
-      component: ProposalsTab
-    },
-    {
-      key: 'customers',
-      label: t('contractorsAdmin.detail.tabs.customers'),
-  icon: 'group',
-      component: CustomersTab
-    },
-    {
-      key: 'settings',
-      label: t('contractorsAdmin.detail.tabs.settings'),
-  icon: 'settings',
-      component: SettingsTab
-    }
-  ];
+    navigate('/admin/contractors')
+  }
 
   if (loading) {
     return (
-      <CContainer>
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
-          <CSpinner color="primary" />
-        </div>
-      </CContainer>
-    );
+      <Container maxW="6xl" py={16}>
+        <Flex align="center" justify="center" minH="300px">
+          <Spinner size="lg" color="blue.500" />
+        </Flex>
+      </Container>
+    )
   }
 
   if (error) {
     return (
-      <CContainer>
-        <CAlert color="danger">
-          <h4>{t('contractorsAdmin.detail.errorTitle')}</h4>
-          <p>{error}</p>
-          <CButton color="primary" onClick={handleBack} aria-label={t('common.back')} className="d-inline-flex align-items-center">
-            <ArrowLeft size={16} className="me-2" aria-hidden="true" />
-            {t('contractorsAdmin.detail.backToList')}
-          </CButton>
-        </CAlert>
-      </CContainer>
-    );
+      <Container maxW="3xl" py={8}>
+        <Alert status="error" borderRadius="md">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>{t('contractorsAdmin.detail.errorTitle')}</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+            <Button mt={4} leftIcon={<ArrowLeft size={16} />} onClick={handleBack} colorScheme="blue">
+              {t('contractorsAdmin.detail.backToList')}
+            </Button>
+          </Box>
+        </Alert>
+      </Container>
+    )
   }
 
   if (!contractor) {
     return (
-      <CContainer>
-        <CAlert color="warning">
-          <h4>{t('contractorsAdmin.detail.notFoundTitle')}</h4>
-          <p>{t('contractorsAdmin.detail.notFoundText')}</p>
-          <CButton color="primary" onClick={handleBack} aria-label={t('common.back')} className="d-inline-flex align-items-center">
-            <ArrowLeft size={16} className="me-2" aria-hidden="true" />
-            {t('contractorsAdmin.detail.backToList')}
-          </CButton>
-        </CAlert>
-      </CContainer>
-    );
+      <Container maxW="3xl" py={8}>
+        <Alert status="warning" borderRadius="md">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>{t('contractorsAdmin.detail.notFoundTitle')}</AlertTitle>
+            <AlertDescription>{t('contractorsAdmin.detail.notFoundText')}</AlertDescription>
+            <Button mt={4} leftIcon={<ArrowLeft size={16} />} onClick={handleBack} colorScheme="blue">
+              {t('contractorsAdmin.detail.backToList')}
+            </Button>
+          </Box>
+        </Alert>
+      </Container>
+    )
   }
 
   return (
-    <CContainer className="px-4">
-      <CRow>
-        <CCol xs={12}>
-          {/* Header */}
-          <div className="d-flex justify-content-between align-items-center mb-4 contractor-detail-header">
-            <div className="d-flex align-items-center">
-              <CButton
-                color="outline-secondary"
-                size="sm"
-                onClick={handleBack}
-                className="me-3 d-flex align-items-center"
-                style={{ minWidth: '44px', minHeight: '44px' }}
-              >
-                <ArrowLeft size={16} aria-hidden="true" />
-                <span className="d-none d-sm-inline ms-1">{t('common.back')}</span>
-              </CButton>
-              <div>
-                <h2 className="mb-0 d-flex align-items-center">
-                  <Users size={20} className="me-2" aria-hidden="true" />
-                  <span className="text-truncate" style={{ maxWidth: '200px' }}>
-                    {contractor.name}
-                  </span>
-                </h2>
-                <small className="text-muted">{t('contractorsAdmin.detail.contractorId')}: {contractor.id}</small>
-              </div>
-            </div>
-            <CBadge color="info" size="lg">
+    <Container maxW="6xl" py={8}>
+      <Stack spacing={6}>
+        <Flex align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
+          <Button onClick={handleBack} leftIcon={<ArrowLeft size={16} />} variant="outline" colorScheme="gray">
+            {t('common.back')}
+          </Button>
+
+          <Flex align="center" gap={4} flex="1" flexWrap="wrap">
+            <Flex align="center" gap={3} minW="0">
+              <Icon as={Users} boxSize={6} color="blue.500" />
+              <Box minW="0">
+                <Text fontSize="xl" fontWeight="semibold" noOfLines={1}>
+                  {contractor.name}
+                </Text>
+                <Text fontSize="sm" color="gray.500">
+                  {t('contractorsAdmin.detail.contractorId')}: {contractor.id}
+                </Text>
+              </Box>
+            </Flex>
+            <Badge colorScheme="blue" borderRadius="md" px={3} py={1} fontSize="sm">
               {contractor.group_type || t('contractorsAdmin.detail.contractor')}
-            </CBadge>
-          </div>
+            </Badge>
+          </Flex>
+        </Flex>
 
-          {/* Tabs Card */}
-          <CCard>
-            <CCardHeader className="pb-0">
-              <CNav variant="tabs" role="tablist">
-        {tabs.map(tab => (
-                  <CNavItem key={tab.key}>
-                    <CNavLink
-                      active={activeTab === tab.key}
-                      onClick={() => setActiveTab(tab.key)}
-                      className="cursor-pointer"
-          aria-current={activeTab === tab.key ? 'page' : undefined}
-          role="tab"
-                    >
-                      {tab.icon === 'chart' && <BarChart3 size={16} className="me-2" aria-hidden="true" />}
-          {tab.icon === 'briefcase' && <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />}
-          {tab.icon === 'group' && <UsersGroup size={16} className="me-2" aria-hidden="true" />}
-          {tab.icon === 'settings' && <Settings size={16} className="me-2" aria-hidden="true" />}
-          {tab.label}
-                    </CNavLink>
-                  </CNavItem>
+        <Card>
+          <Tabs
+            index={activeTabIndex}
+            onChange={setActiveTabIndex}
+            variant="soft-rounded"
+            colorScheme="blue"
+            isLazy
+          >
+            <CardHeader borderBottomWidth="1px" borderColor="gray.100">
+              <TabList flexWrap="wrap" gap={2}>
+                {tabConfig.map((tab) => (
+                  <Tab key={tab.key} px={4} py={2} display="flex" alignItems="center" gap={2}>
+                    <Icon as={tab.icon} boxSize={4} />
+                    {t(tab.labelKey)}
+                  </Tab>
                 ))}
-              </CNav>
-            </CCardHeader>
-
-            <CCardBody>
-              <CTabContent>
-                {tabs.map(tab => {
-                  const TabComponent = tab.component;
+              </TabList>
+            </CardHeader>
+            <CardBody>
+              <TabPanels>
+                {tabConfig.map((tab) => {
+                  const TabComponent = tab.component
                   return (
-                    <CTabPane
-                      key={tab.key}
-                      role="tabpanel"
-                      aria-labelledby={`${tab.key}-tab`}
-                      visible={activeTab === tab.key}
-                    >
+                    <TabPanel key={tab.key} px={0}>
                       <TabComponent contractor={contractor} groupId={groupId} />
-                    </CTabPane>
-                  );
+                    </TabPanel>
+                  )
                 })}
-              </CTabContent>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
-  );
-};
+              </TabPanels>
+            </CardBody>
+          </Tabs>
+        </Card>
+      </Stack>
+    </Container>
+  )
+}
 
-export default ContractorDetail;
+export default ContractorDetail

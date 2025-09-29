@@ -1,44 +1,43 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from "axios";
-
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const SignupPage = () => {
-  const navigate = useNavigate();
-  const api_url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate()
+  const api_url = import.meta.env.VITE_API_URL
 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-  });
+  })
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
     try {
-      const response = await axios.post(`${api_url}/api/signup`, formData); // Adjust URL if needed
+      const response = await axios.post(`${api_url}/api/signup`, formData) // Adjust URL if needed
 
-      alert('Signup successful!');
-      navigate('/login');
+      alert('Signup successful!')
+      navigate('/login')
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+        setError(err.response.data.message)
       } else {
-        setError('Something went wrong. Please try again.');
+        setError('Something went wrong. Please try again.')
       }
     }
-  };
+  }
 
   return (
     <div className="container-fluid vh-100 d-flex p-0">
@@ -134,15 +133,12 @@ const SignupPage = () => {
       {/* Right Panel */}
       <div className="col-md-6 text-white d-flex flex-column justify-content-center align-items-center login-right-panel">
         <div className="text-center px-5">
-          {/* <img src="/logo.png" alt="TailAdmin" className="mb-3" style={{ height: '60px' }} /> */}
           <h2>NJ Cabinets</h2>
-          {false && <p className="text-light"></p>}
           <p className="text-light">Dealer Portal</p>
-          {false && <p className="text-light"></p>}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignupPage;
+export default SignupPage

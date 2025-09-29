@@ -1,41 +1,21 @@
-import { useState, useRef } from "react";
-import {
-  CForm,
-  CFormInput,
-  CFormLabel,
-  CFormSelect,
-  CButton,
-  CRow,
-  CCol,
-  CCard,
-  CCardBody,
-  CFormFeedback,
-  CContainer,
-  CInputGroup,
-  CInputGroupText
-} from "@coreui/react";
-import CIcon from '@coreui/icons-react';
-import PageHeader from '../../components/PageHeader';
-import {
-  cilUser,
-  cilEnvelopeClosed,
-  cilLocationPin,
-  cilPhone,
-  cilBuilding,
-  cilArrowLeft,
-  cilSave,
-  cilUserPlus
-} from '@coreui/icons';
-import axiosInstance from '../../helpers/axiosInstance';
-import Swal from "sweetalert2";
-import { useSelector } from 'react-redux';
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from 'react-i18next';
+import { useState, useRef } from 'react'
+import { FormControl, Input, FormLabel, Select, Flex, Box, Card, CardBody, Container, Icon, Textarea } from '@chakra-ui/react'
+import PageHeader from '../../components/PageHeader'
+import { User, Mail, ArrowLeft, Save } from 'lucide-react'
+import axiosInstance from '../../helpers/axiosInstance'
+import Swal from 'sweetalert2'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import CButton from '../../components/ui/CButton'
+import { CIcon } from '@coreui/icons-react'
+import { CInputGroup, CInputGroupText, CFormFeedback } from '@coreui/react'
+import { cilUserPlus, cilUser, cilEnvelopeClosed, cilBuilding, cilLocationPin, cilPhone } from '@coreui/icons'
 
 // External component definitions to prevent re-rendering
-const FormSection = ({ title, icon, children, className = "" }) => (
-  <CCard className={`border-0 shadow-sm mb-4 ${className}`}>
-    <CCardBody className="p-4">
+const FormSection = ({ title, icon, children, className = '' }) => (
+  <Card className={`border-0 shadow-sm mb-4 ${className}`}>
+    <CardBody className="p-4">
       <div className="d-flex align-items-center mb-3">
         <div
           className="rounded-circle d-flex align-items-center justify-content-center me-3"
@@ -43,7 +23,7 @@ const FormSection = ({ title, icon, children, className = "" }) => (
             width: '40px',
             height: '40px',
             backgroundColor: '#e7f3ff',
-            color: '#0d6efd'
+            color: '#0d6efd',
           }}
         >
           <CIcon icon={icon} size="sm" />
@@ -51,17 +31,17 @@ const FormSection = ({ title, icon, children, className = "" }) => (
         <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
       </div>
       {children}
-    </CCardBody>
-  </CCard>
-);
+    </CardBody>
+  </Card>
+)
 
 const CustomFormInput = ({
   label,
   name,
-  type = "text",
+  type = 'text',
   required = false,
   icon = null,
-  placeholder = "",
+  placeholder = '',
   formData,
   validationErrors,
   handleChange,
@@ -69,23 +49,23 @@ const CustomFormInput = ({
   ...props
 }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
-    </CFormLabel>
+    </FormLabel>
     <CInputGroup>
       {icon && (
         <CInputGroupText
           style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
-            borderRight: 'none'
+            borderRight: 'none',
           }}
         >
           <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
         </CInputGroupText>
       )}
-      <CFormInput
+      <Input
         id={name}
         name={name}
         type={type}
@@ -100,18 +80,18 @@ const CustomFormInput = ({
           fontSize: '14px',
           padding: '12px 16px',
           transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
         }}
         onFocus={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#0d6efd';
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
+            e.target.style.borderColor = '#0d6efd'
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
           }
         }}
         onBlur={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#e3e6f0';
-            e.target.style.boxShadow = 'none';
+            e.target.style.borderColor = '#e3e6f0'
+            e.target.style.boxShadow = 'none'
           }
         }}
         {...props}
@@ -119,7 +99,7 @@ const CustomFormInput = ({
     </CInputGroup>
     <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
   </div>
-);
+)
 
 const CustomFormSelect = ({
   label,
@@ -134,23 +114,23 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
-    </CFormLabel>
+    </FormLabel>
     <CInputGroup>
       {icon && (
         <CInputGroupText
           style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             border: '1px solid #e3e6f0',
-            borderRight: 'none'
+            borderRight: 'none',
           }}
         >
           <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
         </CInputGroupText>
       )}
-      <CFormSelect
+      <Select
         id={name}
         name={name}
         value={formData[name]}
@@ -163,148 +143,148 @@ const CustomFormSelect = ({
           fontSize: '14px',
           padding: '12px 16px',
           transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0'
+          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
         }}
         onFocus={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#0d6efd';
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
+            e.target.style.borderColor = '#0d6efd'
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
           }
         }}
         onBlur={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#e3e6f0';
-            e.target.style.boxShadow = 'none';
+            e.target.style.borderColor = '#e3e6f0'
+            e.target.style.boxShadow = 'none'
           }
         }}
         {...props}
       >
         {children}
-      </CFormSelect>
+      </Select>
     </CInputGroup>
     <CFormFeedback invalid>{validationErrors[name]}</CFormFeedback>
   </div>
-);
+)
 
 const AddCustomerForm = () => {
-  const { t } = useTranslation();
-  const customization = useSelector((state) => state.customization);
-  const headerBg = customization?.headerBg || '#321fdb';
-  const textColor = customization?.headerTextColor || '#ffffff';
+  const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization)
+  const headerBg = customization?.headerBg || '#321fdb'
+  const textColor = customization?.headerTextColor || '#ffffff'
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    address: "",
-    aptOrSuite: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    homePhone: "",
-    mobile: "",
-    leadSource: "",
-    customerType: "Home Owner",
+    name: '',
+    email: '',
+    address: '',
+    aptOrSuite: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    homePhone: '',
+    mobile: '',
+    leadSource: '',
+    customerType: 'Home Owner',
     defaultDiscount: 0,
-    companyName: "",
-    note: "",
-  });
+    companyName: '',
+    note: '',
+  })
 
-  const [validationErrors, setValidationErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRefs = useRef({});
-  const api_url = import.meta.env.VITE_API_URL;
-  const navigate = useNavigate();
+  const [validationErrors, setValidationErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const inputRefs = useRef({})
+  const api_url = import.meta.env.VITE_API_URL
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValidationErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    setValidationErrors((prev) => ({ ...prev, [name]: '' }))
+  }
 
   const handleNoteChange = (data) => {
-    setFormData((prev) => ({ ...prev, note: data }));
-  };
+    setFormData((prev) => ({ ...prev, note: data }))
+  }
 
   const validateForm = () => {
-    const errors = {};
+    const errors = {}
     const required = [
-      "name",
-      "email",
-      "address",
-      "city",
-      "state",
-      "zipCode",
-      "mobile",
-      "leadSource",
-    ];
+      'name',
+      'email',
+      'address',
+      'city',
+      'state',
+      'zipCode',
+      'mobile',
+      'leadSource',
+    ]
     required.forEach((f) => {
       if (!formData[f]?.toString().trim()) {
-        errors[f] = t('form.validation.required');
+        errors[f] = t('form.validation.required')
       }
-    });
+    })
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = t('form.validation.invalidEmail');
+      errors.email = t('form.validation.invalidEmail')
     }
     if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
-      errors.zipCode = t('form.validation.zip5');
+      errors.zipCode = t('form.validation.zip5')
     }
     if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
-      errors.mobile = t('form.validation.mobile10');
+      errors.mobile = t('form.validation.mobile10')
     }
-    return errors;
-  };
+    return errors
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const errs = validateForm();
-    setValidationErrors(errs);
+    e.preventDefault()
+    const errs = validateForm()
+    setValidationErrors(errs)
     if (Object.keys(errs).length) {
-      const first = Object.keys(errs)[0];
-      inputRefs.current[first]?.focus();
-      return;
+      const first = Object.keys(errs)[0]
+      inputRefs.current[first]?.focus()
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      await axiosInstance.post(`/api/customers/add`, formData);
+      await axiosInstance.post(`/api/customers/add`, formData)
       Swal.fire({
-        icon: "success",
+        icon: 'success',
         title: t('form.alerts.createdTitle'),
         text: t('form.alerts.createdText'),
         timer: 2000,
         showConfirmButton: false,
-      });
+      })
       setFormData({
-        name: "",
-        email: "",
-        address: "",
-        aptOrSuite: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        homePhone: "",
-        mobile: "",
-        leadSource: "",
-        customerType: "Home Owner",
+        name: '',
+        email: '',
+        address: '',
+        aptOrSuite: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        homePhone: '',
+        mobile: '',
+        leadSource: '',
+        customerType: 'Home Owner',
         defaultDiscount: 0,
-        companyName: "",
-        note: "",
-      });
-      setValidationErrors({});
+        companyName: '',
+        note: '',
+      })
+      setValidationErrors({})
     } catch (err) {
-      console.error(err);
+      console.error(err)
       Swal.fire({
-        icon: "error",
-  title: t('common.error'),
-  text: t('form.alerts.createFailed'),
-      });
+        icon: 'error',
+        title: t('common.error'),
+        text: t('form.alerts.createFailed'),
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <CContainer fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
+    <Container fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
       <style>{`
         .add-new-customer .btn { min-height: 44px; }
       `}</style>
@@ -318,7 +298,7 @@ const AddCustomerForm = () => {
                 width: '48px',
                 height: '48px',
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px'
+                borderRadius: '12px',
               }}
             >
               <CIcon icon={cilUserPlus} style={{ fontSize: '24px', color: 'white' }} />
@@ -329,59 +309,59 @@ const AddCustomerForm = () => {
         subtitle="Create a new customer profile with detailed information"
         rightContent={
           <CButton
-            color="light"
+            status="light"
             className="shadow-sm px-4 fw-semibold"
-            onClick={() => navigate("/customers")}
+            onClick={() => navigate('/customers')}
             aria-label={t('form.actions.backToCustomers')}
             style={{
               borderRadius: '5px',
               border: 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
             }}
           >
-            <CIcon icon={cilArrowLeft} className="me-2" />
+            <Icon as={ArrowLeft} className="me-2" />
             {t('form.actions.backToCustomers')}
           </CButton>
         }
       />
 
-      <CForm onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         {/* Basic Information Section */}
-  <FormSection title={t('customers.form.titles.basicInfo')} icon={cilUser}>
-          <CRow>
-            <CCol md={6}>
+        <FormSection title={t('customers.form.titles.basicInfo')} icon={cilUser}>
+          <Flex>
+            <Box md={6}>
               <CustomFormInput
-    label={t('customers.form.labels.fullName')}
+                label={t('customers.form.labels.fullName')}
                 name="name"
                 required
                 icon={cilUser}
-    placeholder={t('customers.form.placeholders.fullName')}
+                placeholder={t('customers.form.placeholders.fullName')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-            <CCol md={6}>
+            </Box>
+            <Box md={6}>
               <CustomFormInput
-    label={t('customers.form.labels.email')}
+                label={t('customers.form.labels.email')}
                 name="email"
                 type="email"
                 required
                 icon={cilEnvelopeClosed}
-    placeholder={t('customers.form.placeholders.email')}
+                placeholder={t('customers.form.placeholders.email')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
 
-          <CRow>
-            <CCol md={6}>
+          <Flex>
+            <Box md={6}>
               <CustomFormSelect
-    label={t('customers.form.labels.customerType')}
+                label={t('customers.form.labels.customerType')}
                 name="customerType"
                 icon={cilUser}
                 formData={formData}
@@ -389,72 +369,72 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-    <option value="Home Owner">{t('form.types.homeOwner')}</option>
-    <option value="Landlord">{t('form.types.landlord')}</option>
-    <option value="Tenant">{t('form.types.tenant')}</option>
-    <option value="Other">{t('form.types.other')}</option>
+                <option value="Home Owner">{t('form.types.homeOwner')}</option>
+                <option value="Landlord">{t('form.types.landlord')}</option>
+                <option value="Tenant">{t('form.types.tenant')}</option>
+                <option value="Other">{t('form.types.other')}</option>
               </CustomFormSelect>
-            </CCol>
-            <CCol md={6}>
+            </Box>
+            <Box md={6}>
               <CustomFormInput
-    label={t('customers.form.labels.companyName')}
+                label={t('customers.form.labels.companyName')}
                 name="companyName"
                 icon={cilBuilding}
-    placeholder={t('customers.form.placeholders.companyName')}
+                placeholder={t('customers.form.placeholders.companyName')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
         </FormSection>
 
         {/* Address Information Section */}
-  <FormSection title={t('customers.form.titles.addressInfo')} icon={cilLocationPin}>
-          <CRow>
-            <CCol md={8}>
+        <FormSection title={t('customers.form.titles.addressInfo')} icon={cilLocationPin}>
+          <Flex>
+            <Box md={8}>
               <CustomFormInput
-    label={t('customers.form.labels.address')}
+                label={t('customers.form.labels.address')}
                 name="address"
                 required
                 icon={cilLocationPin}
-    placeholder={t('customers.form.placeholders.street')}
+                placeholder={t('customers.form.placeholders.street')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-            <CCol md={4}>
+            </Box>
+            <Box md={4}>
               <CustomFormInput
-    label={t('customers.form.labels.aptSuite')}
+                label={t('customers.form.labels.aptSuite')}
                 name="aptOrSuite"
-    placeholder={t('customers.form.placeholders.aptSuite')}
+                placeholder={t('customers.form.placeholders.aptSuite')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
 
-          <CRow>
-            <CCol md={4}>
+          <Flex>
+            <Box md={4}>
               <CustomFormInput
-    label={t('customers.form.labels.city')}
+                label={t('customers.form.labels.city')}
                 name="city"
                 required
-    placeholder={t('customers.form.placeholders.city')}
+                placeholder={t('customers.form.placeholders.city')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-            <CCol md={4}>
+            </Box>
+            <Box md={4}>
               <CustomFormSelect
-    label={t('customers.form.labels.state')}
+                label={t('customers.form.labels.state')}
                 name="state"
                 required
                 formData={formData}
@@ -462,7 +442,7 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-    <option value="">{t('customers.form.select.selectState')}</option>
+                <option value="">{t('customers.form.select.selectState')}</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -514,59 +494,59 @@ const AddCustomerForm = () => {
                 <option value="WI">Wisconsin</option>
                 <option value="WY">Wyoming</option>
               </CustomFormSelect>
-            </CCol>
-            <CCol md={4}>
+            </Box>
+            <Box md={4}>
               <CustomFormInput
-    label={t('customers.form.labels.zipCode')}
+                label={t('customers.form.labels.zipCode')}
                 name="zipCode"
                 required
-    placeholder={t('customers.form.placeholders.zip')}
+                placeholder={t('customers.form.placeholders.zip')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
         </FormSection>
 
         {/* Contact Information Section */}
-  <FormSection title={t('customers.form.titles.contactInfo')} icon={cilPhone}>
-          <CRow>
-            <CCol md={6}>
+        <FormSection title={t('customers.form.titles.contactInfo')} icon={cilPhone}>
+          <Flex>
+            <Box md={6}>
               <CustomFormInput
-    label={t('form.labels.mobile')}
+                label={t('form.labels.mobile')}
                 name="mobile"
                 required
                 icon={cilPhone}
-    placeholder={t('form.placeholders.mobile')}
+                placeholder={t('form.placeholders.mobile')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-            <CCol md={6}>
+            </Box>
+            <Box md={6}>
               <CustomFormInput
-    label={t('form.labels.homePhone')}
+                label={t('form.labels.homePhone')}
                 name="homePhone"
                 icon={cilPhone}
-    placeholder={t('form.placeholders.homePhone')}
+                placeholder={t('form.placeholders.homePhone')}
                 formData={formData}
                 validationErrors={validationErrors}
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
         </FormSection>
 
         {/* Business Information Section */}
-  <FormSection title={t('form.titles.businessInfo')} icon={cilBuilding}>
-          <CRow>
-            <CCol md={6}>
+        <FormSection title={t('form.titles.businessInfo')} icon={cilBuilding}>
+          <Flex>
+            <Box md={6}>
               <CustomFormSelect
-    label={t('form.labels.leadSource')}
+                label={t('form.labels.leadSource')}
                 name="leadSource"
                 required
                 formData={formData}
@@ -574,17 +554,17 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               >
-    <option value="">{t('form.select.selectSource')}</option>
-    <option value="Advertising">{t('form.sources.advertising')}</option>
-    <option value="Google">{t('form.sources.google')}</option>
-    <option value="Referral">{t('form.sources.referral')}</option>
-    <option value="Social Media">{t('form.sources.social')}</option>
-    <option value="Website">{t('form.sources.website')}</option>
+                <option value="">{t('form.select.selectSource')}</option>
+                <option value="Advertising">{t('form.sources.advertising')}</option>
+                <option value="Google">{t('form.sources.google')}</option>
+                <option value="Referral">{t('form.sources.referral')}</option>
+                <option value="Social Media">{t('form.sources.social')}</option>
+                <option value="Website">{t('form.sources.website')}</option>
               </CustomFormSelect>
-            </CCol>
-            <CCol md={6}>
+            </Box>
+            <Box md={6}>
               <CustomFormInput
-    label={t('form.labels.defaultDiscount')}
+                label={t('form.labels.defaultDiscount')}
                 name="defaultDiscount"
                 type="number"
                 min={0}
@@ -595,12 +575,12 @@ const AddCustomerForm = () => {
                 handleChange={handleChange}
                 inputRefs={inputRefs}
               />
-            </CCol>
-          </CRow>
+            </Box>
+          </Flex>
 
           <div className="mb-3">
-            <CFormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</CFormLabel>
-            <CFormTextarea
+            <FormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</FormLabel>
+            <Textarea
               id="note"
               name="note"
               rows={6}
@@ -612,21 +592,21 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <CCard className="border-0 shadow-sm">
-          <CCardBody className="p-4">
+        <Card className="border-0 shadow-sm">
+          <CardBody className="p-4">
             <div className="d-flex gap-3 justify-content-end form-buttons">
               <CButton
-                color="light"
+                status="light"
                 size="lg"
-                onClick={() => navigate("/customers")}
+                onClick={() => navigate('/customers')}
                 className="px-4 fw-semibold"
                 style={{
                   borderRadius: '5px',
                   border: '1px solid #e3e6f0',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
                 }}
               >
-                <CIcon icon={cilArrowLeft} className="me-2" />
+                <Icon as={ArrowLeft} className="me-2" />
                 {t('form.actions.cancel')}
               </CButton>
               <CButton
@@ -639,7 +619,7 @@ const AddCustomerForm = () => {
                   border: 'none',
                   backgroundColor: headerBg,
                   color: textColor,
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
                 }}
               >
                 {isSubmitting ? (
@@ -655,17 +635,17 @@ const AddCustomerForm = () => {
                   </>
                 ) : (
                   <>
-                    <CIcon icon={cilSave} className="me-2" />
+                    <Icon as={Save} className="me-2" />
                     {t('form.actions.saveCustomer')}
                   </>
                 )}
               </CButton>
             </div>
-          </CCardBody>
-        </CCard>
-      </CForm>
-    </CContainer>
-  );
-};
+          </CardBody>
+        </Card>
+      </form>
+    </Container>
+  )
+}
 
-export default AddCustomerForm;
+export default AddCustomerForm

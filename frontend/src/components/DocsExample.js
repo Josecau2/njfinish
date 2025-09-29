@@ -1,36 +1,53 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilCode, cilMediaPlay } from '@coreui/icons'
+import { Box, Flex, HStack, Icon, Link } from '@chakra-ui/react'
+import { Code, Play } from 'lucide-react'
 
-const DocsExample = (props) => {
-  const { children, href, tabContentClassName } = props
-
-  const _href = `https://coreui.io/react/docs/${href}`
+const DocsExample = ({ children, href, tabContentClassName }) => {
+  const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
 
   return (
-    <div className="example">
-      <CNav variant="underline-border">
-        <CNavItem>
-          <CNavLink href="#" active>
-            <CIcon icon={cilMediaPlay} className="me-2" />
-            Preview
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink href={_href} target="_blank">
-            <CIcon icon={cilCode} className="me-2" />
-            Code
-          </CNavLink>
-        </CNavItem>
-      </CNav>
-      <CTabContent className={`rounded-bottom ${tabContentClassName ? tabContentClassName : ''}`}>
-        <CTabPane className="p-3 preview" visible>
-          {children}
-        </CTabPane>
-      </CTabContent>
-    </div>
+    <Box className="example" borderWidth="1px" borderRadius="md" overflow="hidden" bg="white" boxShadow="sm">
+      <Flex justify="flex-end" gap={4} px={4} py={3} bg="gray.50" borderBottomWidth="1px" borderColor="gray.100">
+        <Link
+          href="#"
+          display="inline-flex"
+          alignItems="center"
+          color="brand.500"
+          fontWeight="medium"
+        >
+          <HStack spacing={2}>
+            <Icon as={Play} boxSize={4} />
+            <Box as="span">Preview</Box>
+          </HStack>
+        </Link>
+        {documentationLink && (
+          <Link
+            href={documentationLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            display="inline-flex"
+            alignItems="center"
+            color="brand.500"
+            fontWeight="medium"
+          >
+            <HStack spacing={2}>
+              <Icon as={Code} boxSize={4} />
+              <Box as="span">Code</Box>
+            </HStack>
+          </Link>
+        )}
+      </Flex>
+      <Box
+        bg="white"
+        p={4}
+        borderTopWidth="1px"
+        borderColor="gray.100"
+        className={tabContentClassName || ''}
+      >
+        {children}
+      </Box>
+    </Box>
   )
 }
 

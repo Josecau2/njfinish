@@ -1,61 +1,90 @@
 import React, { Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { CContainer, CSpinner } from '@coreui/react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Box, Center, Spinner } from '@chakra-ui/react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import routes from '../routes'
 import RouteGuard from './RouteGuard'
 import { filterRoutesByPermission } from '../helpers/permissions'
 
 const AppContent = () => {
-  const reduxUser = useSelector(state => state.auth?.user);
-  const user = reduxUser || (() => {
-    try { return JSON.parse(localStorage.getItem('user')) || null } catch { return null }
-  })();
+  const location = useLocation()
+  const prefersReducedMotion = useReducedMotion()
+  const reduxUser = useSelector((state) => state.auth?.user)
+  const user =
+    reduxUser ||
+    (() => {
+      try {
+        return JSON.parse(localStorage.getItem('user')) || null
+      } catch {
+        return null
+      }
+    })()
 
-  // Filter routes based on user permissions
-  const allowedRoutes = user ? filterRoutesByPermission(routes, user) : [];
+  const allowedRoutes = user ? filterRoutesByPermission(routes, user) : []
+
+  const transition = {
+    duration: prefersReducedMotion ? 0 : 0.32,
+    ease: 'easeOut',
+  }
+
+  const initial = prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }
+  const exit = prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }
 
   return (
-    <>
-      <style>{`
-        /* Main content paddings separated by breakpoints */
-        .modern-content { padding-left: 0; padding-right: 0; overflow-x: hidden; }
-        @media (max-width: 767.98px){ .modern-content { padding-left:.5rem; padding-right:.5rem; } }
-        @media (min-width: 768px) and (max-width: 991.98px){ .modern-content { padding-left:.75rem; padding-right:.75rem; } }
-        @media (min-width: 992px){ .modern-content { padding-left:1rem; padding-right:1rem; } }
-        @media (min-width: 1200px){ .modern-content { padding-left:1.5rem; padding-right:1.5rem; } }
-      `}</style>
-      <CContainer fluid className="modern-content">
-      <Suspense fallback={<CSpinner color="primary" />}>
-        <Routes>
-          {allowedRoutes.map((route, idx) => {
-            return (
-              route.element && (
-                <Route
-                  key={idx}
-                  path={route.path}
-                  exact={route.exact}
-                  name={route.name}
-                  element={
-                    <RouteGuard
-                      permission={route.permission}
-                      module={route.module}
-                      adminOnly={route.adminOnly}
-                    >
-                      <route.element />
-                    </RouteGuard>
-                  }
-                />
+    <Box
+      className="modern-content"
+      w="full"
+      maxW={{ base: '100%', xl: '1180px', '2xl': '1320px' }}
+      mx="auto"
+      px={{ base: 2, md: 3, lg: 4, xl: 6 }}
+      overflowX="hidden"
+    >
+      <Suspense
+        fallback={
+          <Center py={10}>
+            <Spinner size="lg" color="brand.500" thickness="3px" speed="0.65s" />
+          </Center>
+        }
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <Routes location={location} key={location.pathname}>
+            {allowedRoutes.map((route, idx) => {
+              return (
+                route.element && (
+                  <Route
+                    key={idx}
+                    path={route.path}
+                    exact={route.exact}
+                    name={route.name}
+                    element={
+                      <RouteGuard
+                        permission={route.permission}
+                        module={route.module}
+                        adminOnly={route.adminOnly}
+                      >
+                        <motion.div
+                          style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}
+                          initial={initial}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={exit}
+                          transition={transition}
+                        >
+                          <route.element />
+                        </motion.div>
+                      </RouteGuard>
+                    }
+                  />
+                )
               )
-            )
-          })}
-          {/* Fallback route for unauthorized access */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            })}
+            {/* Fallback route for unauthorized access */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AnimatePresence>
       </Suspense>
-      </CContainer>
-    </>
+    </Box>
   )
 }
 
-export default React.memo(AppContent)
+export default AppContent

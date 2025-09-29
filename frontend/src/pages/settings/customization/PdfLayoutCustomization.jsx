@@ -1,28 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import {
-  CFormInput,
-  CFormTextarea,
-  CAlert,
-  CSpinner,
-  CButton,
-  CModal,
-  CModalBody,
-  CModalHeader,
-  CModalTitle,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CContainer,
-  CBadge,
-  CFormLabel
-} from '@coreui/react'
+import { Input, Textarea, Alert, Spinner, Modal, ModalOverlay, ModalContent, ModalBody, ModalHeader, ModalCloseButton, Card, CardBody, Flex, Box, Container, Badge, FormLabel, Icon, Button } from '@chakra-ui/react'
 import axiosInstance from '../../../helpers/axiosInstance'
-import CIcon from '@coreui/icons-react'
-import { cilDescription, cilSettings, cilImage, cilBuilding, cilSave, cilGlobeAlt, cilTrash, cilColorPalette } from '@coreui/icons'
+import { FileText, Settings, Image, Save, Trash, Palette, Globe, Building } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import PageHeader from '../../../components/PageHeader'
+import CButton from '../../../components/ui/CButton'
 
 const PdfLayoutCustomization = () => {
   const api_url = import.meta.env.VITE_API_URL
@@ -31,17 +14,17 @@ const PdfLayoutCustomization = () => {
 
   // Color calculation for modal header
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff';
-    const hex = backgroundColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return brightness > 128 ? '#000000' : '#ffffff';
-  };
+    if (!backgroundColor) return '#ffffff'
+    const hex = backgroundColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000
+    return brightness > 128 ? '#000000' : '#ffffff'
+  }
 
-  const headerBgColor = customization?.headerBg || '#667eea';
-  const textColor = getContrastColor(headerBgColor);
+  const headerBgColor = customization?.headerBg || '#667eea'
+  const textColor = getContrastColor(headerBgColor)
 
   const [formData, setFormData] = useState({
     pdfHeader: '',
@@ -55,7 +38,7 @@ const PdfLayoutCustomization = () => {
     companyEmail: '',
     companyWebsite: '',
     companyAddress: '',
-    headerTxtColor:'#FFFFFF'
+    headerTxtColor: '#FFFFFF',
   })
 
   const [loading, setLoading] = useState(false)
@@ -89,7 +72,7 @@ const PdfLayoutCustomization = () => {
         companyEmail,
         companyWebsite,
         companyAddress,
-        headerTxtColor
+        headerTxtColor,
       } = res.data || {}
 
       const mockData = {
@@ -102,7 +85,7 @@ const PdfLayoutCustomization = () => {
         companyEmail: companyEmail,
         companyWebsite: companyWebsite,
         companyAddress: companyAddress,
-        headerTxtColor:headerTxtColor
+        headerTxtColor: headerTxtColor,
       }
 
       setFormData((prev) => ({
@@ -119,8 +102,8 @@ const PdfLayoutCustomization = () => {
         headerTxtColor: mockData.headerTxtColor || '#FFFFFF',
       }))
     } catch (err) {
-  console.error('Failed to load customization:', err)
-  setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.loadFailed') })
+      console.error('Failed to load customization:', err)
+      setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.loadFailed') })
     }
   }
 
@@ -138,9 +121,9 @@ const PdfLayoutCustomization = () => {
       return logoPreview
     }
 
-  // If it's a relative path (existing logo), prepend API URL
-  // Handle both undefined api_url and ensure no double slashes
-  const baseUrl = api_url || (typeof window !== 'undefined' ? window.location.origin : '')
+    // If it's a relative path (existing logo), prepend API URL
+    // Handle both undefined api_url and ensure no double slashes
+    const baseUrl = api_url || (typeof window !== 'undefined' ? window.location.origin : '')
     const cleanPath = logoPreview.startsWith('/') ? logoPreview : `/${logoPreview}`
     return `${baseUrl}${cleanPath}`
   }
@@ -148,9 +131,9 @@ const PdfLayoutCustomization = () => {
   const handleDrag = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true)
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false)
     }
   }
@@ -206,12 +189,23 @@ const PdfLayoutCustomization = () => {
     if (formData.previousBlobUrl) {
       URL.revokeObjectURL(formData.previousBlobUrl)
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       logo: null,
       logoPreview: null,
-      previousBlobUrl: null
+      previousBlobUrl: null,
     }))
+  }
+
+  const triggerLogoUpload = () => {
+    document.getElementById('pdf-logo-upload')?.click()
+  }
+
+  const handleLogoKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      triggerLogoUpload()
+    }
   }
 
   const handleSave = async () => {
@@ -221,7 +215,10 @@ const PdfLayoutCustomization = () => {
 
       // Validate required fields
       if (!formData.companyName.trim()) {
-        setMessage({ type: 'warning', text: t('settings.customization.pdf.validation.companyNameRequired') })
+        setMessage({
+          type: 'warning',
+          text: t('settings.customization.pdf.validation.companyNameRequired'),
+        })
         return
       }
 
@@ -252,18 +249,23 @@ const PdfLayoutCustomization = () => {
 
       // Refresh data to get updated logo URL from server
       await fetchCustomization()
-
     } catch (err) {
       console.error('Failed to save:', err)
 
       if (err.response?.status === 413) {
         setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.fileTooLarge') })
       } else if (err.response?.status === 400) {
-        setMessage({ type: 'danger', text: err.response.data?.message || t('settings.customization.pdf.alerts.invalidData') })
+        setMessage({
+          type: 'danger',
+          text: err.response.data?.message || t('settings.customization.pdf.alerts.invalidData'),
+        })
       } else if (err.response?.status === 500) {
         setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.serverError') })
       } else {
-        setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.saveFailedGeneric') })
+        setMessage({
+          type: 'danger',
+          text: t('settings.customization.pdf.alerts.saveFailedGeneric'),
+        })
       }
     } finally {
       setLoading(false)
@@ -275,8 +277,12 @@ const PdfLayoutCustomization = () => {
   }
 
   return (
-    <CContainer fluid className="p-2 m-2 main-pdf-cutome-div" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-    {/* Header Section */}
+    <Container
+      fluid
+      className="p-2 m-2 main-pdf-cutome-div"
+      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+    >
+      {/* Header Section */}
       <PageHeader
         title={
           <div className="d-flex align-items-center gap-3">
@@ -286,10 +292,10 @@ const PdfLayoutCustomization = () => {
                 width: '48px',
                 height: '48px',
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px'
+                borderRadius: '12px',
               }}
             >
-              <CIcon icon={cilDescription} style={{ color: 'white', fontSize: '20px' }} />
+              <Icon as={FileText} style={{ color: 'white', fontSize: '20px' }} />
             </div>
             {t('settings.customization.pdf.headerTitle')}
           </div>
@@ -297,8 +303,7 @@ const PdfLayoutCustomization = () => {
         subtitle={t('settings.customization.pdf.headerSubtitle')}
         rightContent={
           <div className="d-flex gap-2 preview-save-button">
-            <CButton
-              color="light"
+            <Button
               variant="outline"
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               onClick={() => setPreviewVisible(true)}
@@ -309,88 +314,85 @@ const PdfLayoutCustomization = () => {
                 color: 'white',
                 background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
               }}
             >
-              <CIcon icon={cilGlobeAlt} className="me-2" />
+              <Icon as={Globe} className="me-2" />
               {t('settings.customization.pdf.buttons.preview')}
-            </CButton>
-            <CButton
-              color="light"
+            </Button>
+            <Button
               className="shadow-sm px-4 fw-semibold d-flex align-items-center"
               onClick={handleSave}
               disabled={loading}
               style={{
                 borderRadius: '8px',
                 border: 'none',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
               }}
             >
               {loading ? (
                 <>
-                  <CSpinner size="sm" className="me-2" />
+                  <Spinner size="sm" className="me-2" />
                   {t('settings.customization.pdf.buttons.saving')}
                 </>
               ) : (
                 <>
-                  <CIcon icon={cilSave} className="me-2" />
+                  <Icon as={Save} className="me-2" />
                   {t('settings.customization.pdf.buttons.saveChanges')}
                 </>
               )}
-            </CButton>
+            </Button>
           </div>
         }
       />
 
       {/* Alert Messages */}
       {message.text && (
-        <CCard className="border-0 shadow-sm mb-2">
-          <CCardBody className="py-2">
-            <CAlert
-              color={message.type}
-              dismissible
-              onClose={clearMessage}
+        <Card className="border-0 shadow-sm mb-2">
+          <CardBody className="py-2">
+            <Alert
+              status={message.type === 'danger' ? 'error' : message.type}
               className="mb-0"
               role="status"
               aria-live="polite"
               style={{
                 border: 'none',
-                borderRadius: '8px'
+                borderRadius: '8px',
               }}
             >
               {message.text}
-            </CAlert>
-          </CCardBody>
-        </CCard>
+            </Alert>
+          </CardBody>
+        </Card>
       )}
 
       {/* Main Content */}
-      <CRow className="g-3">
+      <Flex className="g-3">
         {/* PDF Header & Footer Section */}
-        <CCol lg={6}>
-          <CCard className="border-0 shadow-sm h-100">
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{ backgroundColor: '#f8f9fa' }}
-            >
+        <Box lg={6}>
+          <Card className="border-0 shadow-sm h-100">
+            <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
               <div className="d-flex align-items-center gap-3">
-                <div
-                  className="d-flex align-items-center justify-content-center brand-logo"
-
-                >
-                  <CIcon icon={cilDescription} style={{ color: 'white', fontSize: '14px' }} />
+                <div className="d-flex align-items-center justify-content-center brand-logo">
+                  <Icon as={FileText} style={{ color: 'white', fontSize: '14px' }} />
                 </div>
                 <div>
-                  <h5 className="mb-0 fw-semibold text-dark">{t('settings.customization.pdf.sections.headerFooter.title')}</h5>
-                  <small className="text-muted">{t('settings.customization.pdf.sections.headerFooter.subtitle')}</small>
+                  <h5 className="mb-0 fw-semibold text-dark">
+                    {t('settings.customization.pdf.sections.headerFooter.title')}
+                  </h5>
+                  <small className="text-muted">
+                    {t('settings.customization.pdf.sections.headerFooter.subtitle')}
+                  </small>
                 </div>
               </div>
             </div>
 
-            <CCardBody className="p-4">
+            <CardBody className="p-4">
               <div className="mb-3">
-                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.headerText')}</CFormLabel>
-                <CFormInput
+                <FormLabel className="fw-medium text-dark mb-2">
+                  {t('settings.customization.pdf.labels.headerText')}
+                </FormLabel>
+                <Input
                   name="pdfHeader"
                   value={formData.pdfHeader}
                   onChange={handleChange}
@@ -399,14 +401,16 @@ const PdfLayoutCustomization = () => {
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',
-                    padding: '12px 16px'
+                    padding: '12px 16px',
                   }}
                 />
               </div>
 
               <div className="mb-3">
-                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.footerTerms')}</CFormLabel>
-                <CFormTextarea
+                <FormLabel className="fw-medium text-dark mb-2">
+                  {t('settings.customization.pdf.labels.footerTerms')}
+                </FormLabel>
+                <Textarea
                   name="pdfFooter"
                   value={formData.pdfFooter}
                   onChange={handleChange}
@@ -416,7 +420,7 @@ const PdfLayoutCustomization = () => {
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',
-                    padding: '12px 16px'
+                    padding: '12px 16px',
                   }}
                 />
               </div>
@@ -424,19 +428,21 @@ const PdfLayoutCustomization = () => {
               {/* Color Settings */}
               <div className="mb-4">
                 <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                  <CBadge
-                    color="info"
+                  <Badge
+                    colorScheme="blue"
                     className="px-2 py-1"
                     style={{ borderRadius: '4px', fontSize: '10px' }}
                   >
                     {t('settings.customization.pdf.badges.colors')}
-                  </CBadge>
+                  </Badge>
                   {t('settings.customization.pdf.labels.headerColors')}
                 </h6>
 
-                <CRow className="g-3">
-                  <CCol sm={6}>
-                    <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.pdf.labels.backgroundColor')}</CFormLabel>
+                <Flex className="g-3">
+                  <Box sm={6}>
+                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
+                      {t('settings.customization.pdf.labels.backgroundColor')}
+                    </FormLabel>
                     <div className="d-flex align-items-center gap-2">
                       <input
                         type="color"
@@ -449,26 +455,28 @@ const PdfLayoutCustomization = () => {
                           border: '1px solid #dee2e6',
                           borderRadius: '6px',
                           cursor: 'pointer',
-                          padding: '0'
+                          padding: '0',
                         }}
                       />
-                      <CBadge
-                        color="light"
+                      <Badge
+                        colorScheme="gray"
                         className="px-3 py-2"
                         style={{
                           fontFamily: 'monospace',
                           fontSize: '12px',
                           backgroundColor: '#f8f9fa',
                           color: '#6c757d',
-                          border: '1px solid #e9ecef'
+                          border: '1px solid #e9ecef',
                         }}
                       >
                         {formData.headerBgColor}
-                      </CBadge>
+                      </Badge>
                     </div>
-                  </CCol>
-                  <CCol sm={6}>
-                    <CFormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>{t('settings.customization.pdf.labels.textColor')}</CFormLabel>
+                  </Box>
+                  <Box sm={6}>
+                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
+                      {t('settings.customization.pdf.labels.textColor')}
+                    </FormLabel>
                     <div className="d-flex align-items-center gap-2">
                       <input
                         type="color"
@@ -481,54 +489,54 @@ const PdfLayoutCustomization = () => {
                           border: '1px solid #dee2e6',
                           borderRadius: '6px',
                           cursor: 'pointer',
-                          padding: '0'
+                          padding: '0',
                         }}
                       />
-                      <CBadge
-                        color="light"
+                      <Badge
+                        colorScheme="gray"
                         className="px-3 py-2"
                         style={{
                           fontFamily: 'monospace',
                           fontSize: '12px',
                           backgroundColor: '#f8f9fa',
                           color: '#6c757d',
-                          border: '1px solid #e9ecef'
+                          border: '1px solid #e9ecef',
                         }}
                       >
                         {formData.headerTxtColor}
-                      </CBadge>
+                      </Badge>
                     </div>
-                  </CCol>
-                </CRow>
+                  </Box>
+                </Flex>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
+            </CardBody>
+          </Card>
+        </Box>
 
         {/* Company Information Section */}
-        <CCol lg={6}>
-          <CCard className="border-0 shadow-sm h-100">
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{ backgroundColor: '#f8f9fa' }}
-            >
+        <Box lg={6}>
+          <Card className="border-0 shadow-sm h-100">
+            <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
               <div className="d-flex align-items-center gap-3">
-                <div
-                  className="d-flex align-items-center justify-content-center brand-logo"
-
-                >
-                  <CIcon icon={cilBuilding} style={{ color: 'white', fontSize: '14px' }} />
+                <div className="d-flex align-items-center justify-content-center brand-logo">
+                  <Icon as={Building} style={{ color: 'white', fontSize: '14px' }} />
                 </div>
                 <div>
-                  <h5 className="mb-0 fw-semibold text-dark">{t('settings.customization.pdf.sections.companyInfo.title')}</h5>
-                  <small className="text-muted">{t('settings.customization.pdf.sections.companyInfo.subtitle')}</small>
+                  <h5 className="mb-0 fw-semibold text-dark">
+                    {t('settings.customization.pdf.sections.companyInfo.title')}
+                  </h5>
+                  <small className="text-muted">
+                    {t('settings.customization.pdf.sections.companyInfo.subtitle')}
+                  </small>
                 </div>
               </div>
             </div>
 
-            <CCardBody className="p-4">
+            <CardBody className="p-4">
               <div className="mb-3">
-                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.companyLogo')}</CFormLabel>
+                <FormLabel className="fw-medium text-dark mb-2">
+                  {t('settings.customization.pdf.labels.companyLogo')}
+                </FormLabel>
                 <div className="position-relative">
                   <input
                     type="file"
@@ -542,7 +550,11 @@ const PdfLayoutCustomization = () => {
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
-                    onClick={() => document.getElementById('pdf-logo-upload').click()}
+                    onClick={triggerLogoUpload}
+                    onKeyDown={handleLogoKeyDown}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t('settings.customization.pdf.chooseLogo')}
                     className="position-absolute opacity-0 w-100 h-100"
                     style={{ zIndex: 2, cursor: 'pointer' }}
                   />
@@ -554,63 +566,78 @@ const PdfLayoutCustomization = () => {
                       backgroundColor: dragActive ? '#f0f8ff' : '#f8f9fa',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      minHeight: '120px'
+                      minHeight: '120px',
                     }}
                   >
                     <div>
-                      <CIcon icon={cilImage} className="mb-2" style={{ fontSize: '24px', color: '#6c757d' }} />
+                      <Icon as={Image}
+                        className="mb-2"
+                        style={{ fontSize: '24px', color: '#6c757d' }}
+                      />
                       <p className="mb-0 text-muted">
-                        {dragActive ? t('settings.customization.pdf.dropHere') : t('settings.customization.pdf.chooseLogo')}
+                        {dragActive
+                          ? t('settings.customization.pdf.dropHere')
+                          : t('settings.customization.pdf.chooseLogo')}
                       </p>
-                      <small className="text-muted">{t('settings.customization.pdf.supportedTypes')}</small>
+                      <small className="text-muted">
+                        {t('settings.customization.pdf.supportedTypes')}
+                      </small>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {formData.logoPreview && (
-                <div className="mb-3">
-                  <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.logoPreview')}</CFormLabel>
-                  <div
-                    className="d-flex align-items-center gap-3 p-3"
-                    style={{
-                      backgroundColor: '#f8f9fa',
-                      borderRadius: '8px',
-                      border: '1px solid #e9ecef'
-                    }}
-                  >
-                    <img
-                      src={getLogoUrl(formData.logoPreview)}
-                      alt={t('settings.customization.pdf.labels.logoPreview')}
+                {formData.logoPreview && (
+                  <div className="mb-3">
+                    <FormLabel className="fw-medium text-dark mb-2">
+                      {t('settings.customization.pdf.labels.logoPreview')}
+                    </FormLabel>
+                    <div
+                      className="d-flex align-items-center gap-3 p-3"
                       style={{
-                        height: '40px',
-                        width: 'auto',
-                        borderRadius: '4px',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <CButton
-                      color="light"
-                      size="sm"
-                      onClick={removeLogo}
-                      disabled={loading}
-                      className="p-2"
-                      style={{
-                        borderRadius: '6px',
-                        border: '1px solid #e3e6f0',
-                        transition: 'all 0.2s ease'
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: '8px',
+                        border: '1px solid #e9ecef',
                       }}
                     >
-                      {loading ? <CSpinner size="sm" /> : <CIcon icon={cilTrash} style={{ color: '#dc3545' }} />}
-                    </CButton>
+                      <img
+                        src={getLogoUrl(formData.logoPreview)}
+                        alt={t('settings.customization.pdf.labels.logoPreview')}
+                        style={{
+                          height: '40px',
+                          width: 'auto',
+                          borderRadius: '4px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        }}
+                      />
+                      <Button
+                        colorScheme="red"
+                        variant="outline"
+                        size="sm"
+                        onClick={removeLogo}
+                        disabled={loading}
+                        className="p-2"
+                        style={{
+                          borderRadius: '6px',
+                          border: '1px solid #e3e6f0',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {loading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <Icon as={Trash} style={{ color: '#dc3545' }} />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <CRow className="g-3 mb-3">
-                <CCol sm={6}>
-                  <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.companyName')} *</CFormLabel>
-                  <CFormInput
+              <Flex className="g-3 mb-3">
+                <Box sm={6}>
+                  <FormLabel className="fw-medium text-dark mb-2">
+                    {t('settings.customization.pdf.labels.companyName')} *
+                  </FormLabel>
+                  <Input
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
@@ -619,14 +646,16 @@ const PdfLayoutCustomization = () => {
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
-                      padding: '12px 16px'
+                      padding: '12px 16px',
                     }}
                     required
                   />
-                </CCol>
-                <CCol sm={6}>
-                  <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.phoneNumber')}</CFormLabel>
-                  <CFormInput
+                </Box>
+                <Box sm={6}>
+                  <FormLabel className="fw-medium text-dark mb-2">
+                    {t('settings.customization.pdf.labels.phoneNumber')}
+                  </FormLabel>
+                  <Input
                     name="companyPhone"
                     value={formData.companyPhone}
                     onChange={handleChange}
@@ -635,16 +664,18 @@ const PdfLayoutCustomization = () => {
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
-                      padding: '12px 16px'
+                      padding: '12px 16px',
                     }}
                   />
-                </CCol>
-              </CRow>
+                </Box>
+              </Flex>
 
-              <CRow className="g-3 mb-3">
-                <CCol sm={6}>
-                  <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.email')}</CFormLabel>
-                  <CFormInput
+              <Flex className="g-3 mb-3">
+                <Box sm={6}>
+                  <FormLabel className="fw-medium text-dark mb-2">
+                    {t('settings.customization.pdf.labels.email')}
+                  </FormLabel>
+                  <Input
                     name="companyEmail"
                     type="email"
                     value={formData.companyEmail}
@@ -654,13 +685,15 @@ const PdfLayoutCustomization = () => {
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
-                      padding: '12px 16px'
+                      padding: '12px 16px',
                     }}
                   />
-                </CCol>
-                <CCol sm={6}>
-                  <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.website')}</CFormLabel>
-                  <CFormInput
+                </Box>
+                <Box sm={6}>
+                  <FormLabel className="fw-medium text-dark mb-2">
+                    {t('settings.customization.pdf.labels.website')}
+                  </FormLabel>
+                  <Input
                     name="companyWebsite"
                     value={formData.companyWebsite}
                     onChange={handleChange}
@@ -669,15 +702,17 @@ const PdfLayoutCustomization = () => {
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
                       fontSize: '14px',
-                      padding: '12px 16px'
+                      padding: '12px 16px',
                     }}
                   />
-                </CCol>
-              </CRow>
+                </Box>
+              </Flex>
 
               <div className="mb-0">
-                <CFormLabel className="fw-medium text-dark mb-2">{t('settings.customization.pdf.labels.address')}</CFormLabel>
-                <CFormTextarea
+                <FormLabel className="fw-medium text-dark mb-2">
+                  {t('settings.customization.pdf.labels.address')}
+                </FormLabel>
+                <Textarea
                   name="companyAddress"
                   value={formData.companyAddress}
                   onChange={handleChange}
@@ -687,50 +722,55 @@ const PdfLayoutCustomization = () => {
                     border: '1px solid #e3e6f0',
                     borderRadius: '8px',
                     fontSize: '14px',
-                    padding: '12px 16px'
+                    padding: '12px 16px',
                   }}
                 />
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex>
 
       {/* Enhanced Preview Modal */}
-      <CModal
-        visible={previewVisible}
-        onClose={() => setPreviewVisible(false)}
-        size="xl"
-      >
-        <CModalHeader style={{
-          background: headerBgColor,
-          color: textColor,
-          borderRadius: '20px 20px 0 0',
-          padding: '1.5rem 2rem',
-          border: 'none'
-        }}>
-          <CModalTitle style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0, color: textColor }}>
-            📄 {t('settings.customization.pdf.preview.title')}
-          </CModalTitle>
-        </CModalHeader>
-        <CModalBody style={{ padding: '2rem', background: '#f8f9fa' }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-          }}>
+      <Modal isOpen={previewVisible} onClose={() => setPreviewVisible(false)} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            style={{
+              background: headerBgColor,
+              color: textColor,
+              borderRadius: '20px 20px 0 0',
+              padding: '1.5rem 2rem',
+              border: 'none',
+            }}
+          >
+            <div style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0, color: textColor }}>
+              📄 {t('settings.customization.pdf.preview.title')}
+            </div>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody style={{ padding: '2rem', background: '#f8f9fa' }}>
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
+          >
             {/* Header with company logo and info */}
-            <div style={{
-              backgroundColor: formData.headerBgColor,
-              color: formData.headerTxtColor,
-              padding: '2rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              minHeight: '120px'
-            }}>
+            <div
+              style={{
+                backgroundColor: formData.headerBgColor,
+                color: formData.headerTxtColor,
+                padding: '2rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                minHeight: '120px',
+              }}
+            >
               <div>
                 {formData.logoPreview ? (
                   <img
@@ -742,7 +782,7 @@ const PdfLayoutCustomization = () => {
                       objectFit: 'contain',
                       background: 'rgba(255,255,255,0.1)',
                       padding: '0.5rem',
-                      borderRadius: '8px'
+                      borderRadius: '8px',
                     }}
                   />
                 ) : (
@@ -767,24 +807,72 @@ const PdfLayoutCustomization = () => {
             {/* Project Details Section */}
             <div style={{ padding: '2rem' }}>
               <div style={{ marginBottom: '1.5rem', fontSize: '1rem', lineHeight: '1.6' }}>
-                {t('proposalDoc.greeting', { name: "User Name" })}<br />
+                {t('proposalDoc.greeting', { name: 'User Name' })}
+                <br />
                 {t('proposalDoc.descriptionIntro')}
               </div>
 
               {/* Project Information Table */}
-              <table style={{ width: '100%', marginBottom: '2rem', border: '1px solid #dee2e6', borderCollapse: 'collapse' }}>
+              <table
+                style={{
+                  width: '100%',
+                  marginBottom: '2rem',
+                  border: '1px solid #dee2e6',
+                  borderCollapse: 'collapse',
+                }}
+              >
                 <thead>
                   <tr style={{ backgroundColor: '#f8f9fa' }}>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposals.headers.description')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposals.headers.designer')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposals.headers.customer')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposals.headers.date')}</th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposals.headers.description')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposals.headers.designer')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposals.headers.customer')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposals.headers.date')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>kitchen project</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>Designer Name</td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      kitchen project
+                    </td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      Designer Name
+                    </td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>User Name</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>06/24/2025</td>
                   </tr>
@@ -792,53 +880,227 @@ const PdfLayoutCustomization = () => {
               </table>
 
               {/* Proposal Items Section */}
-              <h3 style={{ color: '#2563eb', fontSize: '1.5rem', fontWeight: 600, marginBottom: '1.5rem' }}>
-                {t('proposalDoc.sections.proposalItems')?.toUpperCase?.() || t('proposalDoc.sections.proposalItems')}
+              <h3
+                style={{
+                  color: '#2563eb',
+                  fontSize: '1.5rem',
+                  fontWeight: 600,
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {t('proposalDoc.sections.proposalItems')?.toUpperCase?.() ||
+                  t('proposalDoc.sections.proposalItems')}
               </h3>
 
               {/* Items Table */}
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  marginBottom: '1.5rem',
+                  border: '1px solid #dee2e6',
+                }}
+              >
                 <thead>
                   <tr style={{ backgroundColor: '#f8f9fa' }}>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.no')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.qty')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.item')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.assembled')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.hingeSide')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'left', fontWeight: 600 }}>{t('proposalColumns.exposedSide')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right', fontWeight: 600 }}>{t('proposalColumns.price')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right', fontWeight: 600 }}>{t('proposalColumns.assemblyCost')}</th>
-                    <th style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right', fontWeight: 600 }}>{t('proposalColumns.total')}</th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.no')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.qty')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.item')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.assembled')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.hingeSide')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'left',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.exposedSide')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.price')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.assemblyCost')}
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('proposalColumns.total')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', fontStyle: 'italic' }} colSpan={9}>Other</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        fontStyle: 'italic',
+                      }}
+                      colSpan={9}
+                    >
+                      Other
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>1.</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>1</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>DD B21FD</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.no')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.na')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.na')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$72.90</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$0.00</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$72.90</td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.no')}
+                    </td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.na')}
+                    </td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.na')}
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $72.90
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $0.00
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $72.90
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>2.</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>12</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>W2730</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.no')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.na')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.na')}</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$129.60</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$0.00</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$1,555.20</td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.no')}
+                    </td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.na')}
+                    </td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.na')}
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $129.60
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $0.00
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $1,555.20
+                    </td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', fontStyle: 'italic' }} colSpan={9}>{t('proposalDoc.modifications')}</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        fontStyle: 'italic',
+                      }}
+                      colSpan={9}
+                    >
+                      {t('proposalDoc.modifications')}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
@@ -847,34 +1109,111 @@ const PdfLayoutCustomization = () => {
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$31.00</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $31.00
+                    </td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$217.00</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $217.00
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>3.</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>1</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>W3012</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.yes')}</td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.yes')}
+                    </td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$88.20</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$0.00</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$88.20</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $88.20
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $0.00
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $88.20
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>4.</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>3</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>W2436</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>{t('common.yes')}</td>
+                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>
+                      {t('common.yes')}
+                    </td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$144.90</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$0.00</td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$434.70</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $144.90
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $0.00
+                    </td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $434.70
+                    </td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', fontStyle: 'italic' }} colSpan={9}>{t('proposalDoc.modifications')}</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        fontStyle: 'italic',
+                      }}
+                      colSpan={9}
+                    >
+                      {t('proposalDoc.modifications')}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}>-</td>
@@ -883,80 +1222,170 @@ const PdfLayoutCustomization = () => {
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$31.00</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $31.00
+                    </td>
                     <td style={{ padding: '0.75rem', border: '1px solid #dee2e6' }}></td>
-                    <td style={{ padding: '0.75rem', border: '1px solid #dee2e6', textAlign: 'right' }}>$31.00</td>
+                    <td
+                      style={{
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        textAlign: 'right',
+                      }}
+                    >
+                      $31.00
+                    </td>
                   </tr>
                 </tbody>
               </table>
 
               {/* Totals Section */}
-              <div style={{
-                backgroundColor: '#f8f9fa',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                marginBottom: '1.5rem',
-                border: '1px solid #dee2e6'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.cabinets')}</strong></span>
-                  <span><strong>$2,151.00</strong></span>
+              <div
+                style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: '1.5rem',
+                  borderRadius: '8px',
+                  marginBottom: '1.5rem',
+                  border: '1px solid #dee2e6',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.cabinets')}</strong>
+                  </span>
+                  <span>
+                    <strong>$2,151.00</strong>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.assembly')}</strong></span>
-                  <span><strong>$58.10</strong></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.assembly')}</strong>
+                  </span>
+                  <span>
+                    <strong>$58.10</strong>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.modifications')}</strong></span>
-                  <span><strong>$279.00</strong></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.modifications')}</strong>
+                  </span>
+                  <span>
+                    <strong>$279.00</strong>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem', paddingTop: '0.5rem', borderTop: '1px solid #dee2e6' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.styleTotal')}</strong></span>
-                  <span><strong>$2,488.10</strong></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                    paddingTop: '0.5rem',
+                    borderTop: '1px solid #dee2e6',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.styleTotal')}</strong>
+                  </span>
+                  <span>
+                    <strong>$2,488.10</strong>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.total')}</strong></span>
-                  <span><strong>$2,669.00</strong></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.total')}</strong>
+                  </span>
+                  <span>
+                    <strong>$2,669.00</strong>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-                  <span><strong>{t('proposalDoc.priceSummary.tax')}</strong></span>
-                  <span><strong>$26.69</strong></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span>
+                    <strong>{t('proposalDoc.priceSummary.tax')}</strong>
+                  </span>
+                  <span>
+                    <strong>$26.69</strong>
+                  </span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  paddingTop: '0.5rem',
-                  borderTop: '2px solid #495057',
-                  marginTop: '0.5rem'
-                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    paddingTop: '0.5rem',
+                    borderTop: '2px solid #495057',
+                    marginTop: '0.5rem',
+                  }}
+                >
                   <span>{t('proposalDoc.priceSummary.grandTotal')}</span>
                   <span>$2,695.69</span>
                 </div>
-              </div>
 
-              {/* Footer */}
-              {formData.pdfFooter && (
-                <div style={{
-                  padding: '1.5rem',
-                  backgroundColor: '#f8f9fa',
-                  color: '#6c757d',
-                  fontSize: '0.9rem',
-                  lineHeight: '1.6',
-                  borderTop: '1px solid #dee2e6',
-                  whiteSpace: 'pre-line',
-                  borderRadius: '8px',
-                  marginTop: '1.5rem'
-                }}>
-                  {formData.pdfFooter}
-                </div>
-              )}
+                {/* Footer */}
+                {formData.pdfFooter && (
+                  <div
+                    style={{
+                      padding: '1.5rem',
+                      backgroundColor: '#f8f9fa',
+                      color: '#6c757d',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.6',
+                      borderTop: '1px solid #dee2e6',
+                      whiteSpace: 'pre-line',
+                      borderRadius: '8px',
+                      marginTop: '1.5rem',
+                    }}
+                  >
+                    {formData.pdfFooter}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </CModalBody>
-      </CModal>
-    </CContainer>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Container>
   )
 }
 

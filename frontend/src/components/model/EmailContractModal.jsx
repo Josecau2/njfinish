@@ -1,39 +1,47 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
 import {
-        CModal,
-        CModalHeader,
-        CModalTitle,
-        CModalBody,
-        CModalFooter,
-        CButton,
-} from '@coreui/react';
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  Button,
+} from '@chakra-ui/react'
 
 const EmailContractModal = ({ show, onClose }) => {
-        const { t } = useTranslation();
-        return (
-                <CModal visible={show} onClose={onClose} alignment="center" size="lg" scrollable>
-                        {/* Scoped a11y/touch-target styles */}
-                        <style>{`
-                            .email-contract-modal .btn { min-height: 44px; }
-                        `}</style>
-                        <div className="email-contract-modal">
-                            <CModalHeader>
-                                <CModalTitle>{t('contracts.sendTitle', 'Send contract')}</CModalTitle>
-                            </CModalHeader>
-                            <CModalBody>
-                                <p className="text-center">
-                                    {t('contracts.noContractsMsg', 'No contracts available for selection. Please go to contract settings to add one.')}
-                                </p>
-                            </CModalBody>
-                            <CModalFooter>
-                                <CButton color="secondary" onClick={onClose} aria-label={t('common.close','Close')}>
-                                    {t('common.close','Close')}
-                                </CButton>
-                            </CModalFooter>
-                        </div>
-                </CModal>
-        );
-};
+  const { t } = useTranslation()
 
-export default EmailContractModal;
+  return (
+    <Modal isOpen={show} onClose={onClose} isCentered size='lg' scrollBehavior='inside'>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <p className='text-center'>
+            {t(
+              'contracts.noContractsMsg',
+              'No contracts available for selection. Please go to contract settings to add one.',
+            )}
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant='outline'
+            colorScheme='gray'
+            onClick={onClose}
+            minH='44px'
+            aria-label={t('common.close', 'Close')}
+          >
+            {t('common.close', 'Close')}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+export default EmailContractModal

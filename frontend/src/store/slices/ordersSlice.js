@@ -15,7 +15,7 @@ export const fetchOrders = createAsyncThunk(
       if (import.meta?.env?.DEV) console.error('fetchOrders error:', error.message)
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 export const fetchOrderById = createAsyncThunk(
@@ -27,7 +27,7 @@ export const fetchOrderById = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message)
     }
-  }
+  },
 )
 
 const ordersSlice = createSlice({
@@ -70,7 +70,7 @@ const ordersSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-  }
+  },
 })
 
 export const { clearCurrentOrder } = ordersSlice.actions

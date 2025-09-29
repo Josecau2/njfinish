@@ -1,0 +1,158 @@
+🔍 JSX Issue Counter Starting...
+
+📊 Counting JSX syntax issues across the codebase...
+
+📁 Analyzing 136 files matching ./frontend/src/**/*.jsx...
+❌ frontend\src\App.jsx: 4 issues
+❌ frontend\src\views\pages\page404\Page404.jsx: 2 issues
+❌ frontend\src\pages\settings\usersGroup\UserGroupList.jsx: 8 issues
+❌ frontend\src\pages\settings\usersGroup\EditUserGroup.jsx: 12 issues
+❌ frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx: 9 issues
+❌ frontend\src\pages\settings\users\UserList.jsx: 18 issues
+❌ frontend\src\pages\settings\users\EditUser.jsx: 3 issues
+❌ frontend\src\pages\settings\users\CreateUser.jsx: 10 issues
+❌ frontend\src\pages\settings\terms\TermsPage.jsx: 1 issues
+❌ frontend\src\pages\settings\taxes\TaxesPage.jsx: 14 issues
+❌ frontend\src\pages\settings\multipliers\ManuMultipliers.jsx: 8 issues
+❌ frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx: 1 issues
+❌ frontend\src\pages\settings\manufacturers\ManufacturersList.jsx: 19 issues
+❌ frontend\src\pages\settings\manufacturers\ManufacturersForm.jsx: 18 issues
+❌ frontend\src\pages\settings\manufacturers\EditManufacturer.jsx: 9 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx: 72 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\StylePicturesTab.jsx: 31 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\SettingsTab.jsx: 11 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\FilesHistoryTab.jsx: 1 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\EditManufacturerTab.jsx: 14 issues
+❌ frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx: 91 issues
+❌ frontend\src\pages\settings\locations\LocationList.jsx: 12 issues
+❌ frontend\src\pages\settings\locations\EditLocation.jsx: 9 issues
+❌ frontend\src\pages\settings\locations\CreateLocation.jsx: 17 issues
+❌ frontend\src\pages\settings\globalMods\GlobalModsPage.jsx: 64 issues
+❌ frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx: 55 issues
+❌ frontend\src\pages\settings\customization\LoginCustomizerPage.jsx: 23 issues
+❌ frontend\src\pages\settings\customization\index.jsx: 4 issues
+❌ frontend\src\pages\settings\customization\CustomizationPage.jsx: 14 issues
+❌ frontend\src\pages\Resources\index.jsx: 7 issues
+❌ frontend\src\pages\quotes\CreateQuote\QuoteEditorWrapper.jsx: 1 issues
+❌ frontend\src\pages\quotes\Create\QuoteEditor.jsx: 1 issues
+❌ frontend\src\pages\quotes\Create\CreateQuote.jsx: 1 issues
+❌ frontend\src\pages\public\PublicProposalPage.jsx: 5 issues
+❌ frontend\src\pages\proposals\Proposals.jsx: 9 issues
+❌ frontend\src\pages\proposals\ProposalEditor.jsx: 1 issues
+❌ frontend\src\pages\proposals\EditProposal.jsx: 45 issues
+❌ frontend\src\pages\proposals\CreateProposalForm.jsx: 19 issues
+❌ frontend\src\pages\proposals\EditProposal\EditProposal.jsx: 42 issues
+❌ frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx: 46 issues
+❌ frontend\src\pages\proposals\CreateProposal\ProposalEditor.jsx: 1 issues
+❌ frontend\src\pages\proposals\CreateProposal\ManufacturerSelect.jsx: 20 issues
+❌ frontend\src\pages\proposals\CreateProposal\FileUploadSection.jsx: 16 issues
+❌ frontend\src\pages\proposals\CreateProposal\FileUploadSection .jsx: 15 issues
+❌ frontend\src\pages\proposals\CreateProposal\DesignUpload.jsx: 13 issues
+❌ frontend\src\pages\proposals\CreateProposal\CustomerInfo.jsx: 5 issues
+❌ frontend\src\pages\profile\index.jsx: 6 issues
+❌ frontend\src\pages\payments\PaymentTest.jsx: 3 issues
+❌ frontend\src\pages\payments\PaymentSuccess.jsx: 3 issues
+❌ frontend\src\pages\payments\PaymentsList.jsx: 45 issues
+❌ frontend\src\pages\payments\PaymentPage.jsx: 7 issues
+❌ frontend\src\pages\payments\PaymentConfiguration.jsx: 15 issues
+❌ frontend\src\pages\payments\PaymentCancel.jsx: 2 issues
+❌ frontend\src\pages\orders\OrdersList.jsx: 9 issues
+❌ frontend\src\pages\orders\OrderDetails.jsx: 42 issues
+❌ frontend\src\pages\dashboard\Dashboard.jsx: 13 issues
+❌ frontend\src\pages\customers\EditCustomerPage.jsx: 10 issues
+❌ frontend\src\pages\customers\Customers_fixed.jsx: 18 issues
+❌ frontend\src\pages\customers\Customers_broken.jsx: 29 issues
+❌ frontend\src\pages\customers\Customers.jsx: 12 issues
+❌ frontend\src\pages\customers\CustomerForm.jsx: 4 issues
+❌ frontend\src\pages\customers\AddCustomerForm.jsx: 8 issues
+❌ frontend\src\pages\contracts\index.jsx: 25 issues
+❌ frontend\src\pages\contractor\ContractorDashboard.jsx: 9 issues
+❌ frontend\src\pages\contact\ContactUs.jsx: 4 issues
+❌ frontend\src\pages\calender\index.jsx: 8 issues
+❌ frontend\src\pages\auth\SignupPage.jsx: 1 issues
+❌ frontend\src\pages\auth\ResetPasswordPage.jsx: 2 issues
+❌ frontend\src\pages\auth\RequestAccessPage.jsx: 3 issues
+❌ frontend\src\pages\auth\LoginPage.jsx: 3 issues
+❌ frontend\src\pages\auth\ForgotPasswordPage.jsx: 2 issues
+❌ frontend\src\pages\admin\LeadsPage.jsx: 9 issues
+❌ frontend\src\pages\admin\Contractors.jsx: 17 issues
+❌ frontend\src\pages\admin\ContractorDetail.jsx: 12 issues
+❌ frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx: 2 issues
+❌ frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx: 27 issues
+❌ frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx: 1 issues
+❌ frontend\src\pages\admin\ContractorDetail\CustomersTab.jsx: 14 issues
+❌ frontend\src\layout\DefaultLayout.jsx: 3 issues
+❌ frontend\src\components\withDynamicContrast.jsx: 2 issues
+❌ frontend\src\components\TermsModal.jsx: 10 issues
+❌ frontend\src\components\StyleMerger.jsx: 3 issues
+❌ frontend\src\components\StyleCarousel.jsx: 5 issues
+❌ frontend\src\components\ProposalAcceptanceModal.jsx: 9 issues
+❌ frontend\src\components\PaymentModal.jsx: 1 issues
+❌ frontend\src\components\PageHeader.jsx: 7 issues
+❌ frontend\src\components\NeutralModal.jsx: 8 issues
+❌ frontend\src\components\MobileStickyActions.jsx: 3 issues
+❌ frontend\src\components\LoginPreview.jsx: 1 issues
+❌ frontend\src\components\LanguageSwitcher.jsx: 1 issues
+❌ frontend\src\components\ItemSelectionContentEdit.jsx: 22 issues
+❌ frontend\src\components\ItemSelectionContent.jsx: 18 issues
+❌ frontend\src\components\FileViewerModal.jsx: 18 issues
+❌ frontend\src\components\EmbeddedPaymentForm.jsx: 5 issues
+❌ frontend\src\components\EditManufacturerModal.jsx: 12 issues
+❌ frontend\src\components\BrandLogo.jsx: 1 issues
+❌ frontend\src\components\AppBreadcrumb.jsx: 1 issues
+❌ frontend\src\components\showroom\ShowroomModeToggle.jsx: 26 issues
+❌ frontend\src\components\pdf\MobilePdfViewer.jsx: 10 issues
+❌ frontend\src\components\pdf\DesktopPdfViewer.jsx: 13 issues
+❌ frontend\src\components\model\PrintProposalModal.jsx: 25 issues
+❌ frontend\src\components\model\PrintPaymentReceiptModal_backup.jsx: 5 issues
+❌ frontend\src\components\model\PrintPaymentReceiptModal.jsx: 6 issues
+❌ frontend\src\components\model\ModificationModalEdit.jsx: 12 issues
+❌ frontend\src\components\model\ModificationModal.jsx: 17 issues
+❌ frontend\src\components\model\ModificationBrowserModal.jsx: 24 issues
+❌ frontend\src\components\model\EmailProposalModal.jsx: 8 issues
+❌ frontend\src\components\model\EmailContractModal.jsx: 6 issues
+❌ frontend\src\components\model\EditManufacturerModal.jsx: 16 issues
+❌ frontend\src\components\model\EditGroupModal.jsx: 16 issues
+❌ frontend\src\components\ContentTile\index.jsx: 9 issues
+❌ frontend\src\components\contact\ThreadView.jsx: 1 issues
+❌ frontend\src\components\contact\MessageHistory.jsx: 6 issues
+❌ frontend\src\components\contact\ContactInfoCard.jsx: 2 issues
+❌ frontend\src\components\common\PaginationComponent.jsx: 11 issues
+📁 Analyzing 1 files matching ./frontend/src/**/*.tsx...
+
+📈 SUMMARY REPORT
+==================================================
+Total Files Analyzed: 137
+Files with Issues: 115
+Total Issues Found: 1509
+
+Issue Breakdown:
+  🏷️  Unclosed Tags: 221
+  ❌ Unexpected Closing Tags: 979
+  📦 Duplicate Imports: 1
+  🏗️  Malformed Structures: 157
+  📝 Missing Return Parentheses: 0
+  🚪 Orphaned JSX: 8
+  🖼️  Modal Structure Issues: 143
+
+📊 Impact: 83.9% of files have syntax issues
+
+🔥 Top 10 Most Problematic Files:
+--------------------------------------------------
+1. frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx: 91 issues
+2. frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx: 72 issues
+3. frontend\src\pages\settings\globalMods\GlobalModsPage.jsx: 64 issues
+4. frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx: 55 issues
+5. frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx: 46 issues
+6. frontend\src\pages\proposals\EditProposal.jsx: 45 issues
+7. frontend\src\pages\payments\PaymentsList.jsx: 45 issues
+8. frontend\src\pages\proposals\EditProposal\EditProposal.jsx: 42 issues
+9. frontend\src\pages\orders\OrderDetails.jsx: 42 issues
+10. frontend\src\pages\settings\manufacturers\tabs\StylePicturesTab.jsx: 31 issues
+
+📋 Detailed report saved to: ./jsx-issues-count-report.json
+
+💡 RECOMMENDATIONS:
+🚨 High number of issues. Comprehensive automated fixing required.
+
+✨ Analysis Complete!

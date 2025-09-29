@@ -1,22 +1,15 @@
 import React, { useMemo } from 'react'
 import {
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-} from '@coreui/react'
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+} from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 
-// A neutral, branded modal that uses solid colors from customization (no gradients)
-// Props:
-// - visible: boolean
-// - onClose: () => void
-// - title: string | ReactNode
-// - size: 'sm' | 'lg' | 'xl'
-// - footer: ReactNode (optional)
-// - children: ReactNode (modal body)
-// - className: string (optional)
 export default function NeutralModal({
   visible,
   onClose,
@@ -32,53 +25,50 @@ export default function NeutralModal({
     if (!backgroundColor || typeof backgroundColor !== 'string') return '#ffffff'
     const hex = backgroundColor.replace('#', '')
     if (hex.length !== 6) return '#ffffff'
-    const r = parseInt(hex.substr(0, 2), 16)
-    const g = parseInt(hex.substr(2, 2), 16)
-    const b = parseInt(hex.substr(4, 2), 16)
+    const r = parseInt(hex.substring(0, 2), 16)
+    const g = parseInt(hex.substring(2, 4), 16)
+    const b = parseInt(hex.substring(4, 6), 16)
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
     return luminance > 0.5 ? '#2d3748' : '#ffffff'
   }
 
   const headerBg = useMemo(() => {
-    const val = customization?.headerBg
-    if (!val) return customization?.primaryColor || '#0f172a'
-    if (typeof val === 'string') return val
-    if (typeof val === 'object') {
-      if (typeof val.hex === 'string' && val.hex.trim()) return val.hex.trim()
-      if (typeof val.value === 'string' && val.value.trim()) return val.value.trim()
+    const value = customization?.headerBg
+    if (!value) return customization?.primaryColor || '#0f172a'
+    if (typeof value === 'string') return value
+    if (typeof value === 'object') {
+      if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim()
+      if (typeof value.value === 'string' && value.value.trim()) return value.value.trim()
     }
     return customization?.primaryColor || '#0f172a'
   }, [customization])
 
   const headerTextColor = customization?.headerFontColor || getContrastColor(headerBg)
 
-  const headerStyle = useMemo(
-    () => ({
-      background: headerBg,
-      color: headerTextColor,
-      borderBottom: `1px solid ${headerBg}33`,
-      // Ensure CoreUI close button inherits our color
-      '--cui-btn-close-color': headerTextColor,
-      '--cui-btn-close-opacity': 0.9,
-      '--cui-btn-close-hover-opacity': 1,
-    }),
-    [headerBg, headerTextColor]
-  )
+  const chakraSize = size === 'xl' ? '6xl' : size === 'lg' ? '4xl' : '2xl'
 
   return (
-    <CModal
-      visible={visible}
+    <Modal
+      isOpen={visible}
       onClose={onClose}
-      alignment="center"
-      size={size}
-      scrollable={true}
-      className={`neutral-modal ${className}`}
+      isCentered
+      size={chakraSize}
+      scrollBehavior="inside"
+      className={`neutral-modal ${className}`.trim()}
     >
-      <CModalHeader closeButton className="border-0" style={headerStyle}>
-        <CModalTitle style={{ color: headerTextColor }}>{title}</CModalTitle>
-      </CModalHeader>
-      <CModalBody>{children}</CModalBody>
-      {footer && <CModalFooter>{footer}</CModalFooter>}
-    </CModal>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader
+          bg={headerBg}
+          color={headerTextColor}
+          borderBottom={`1px solid ${headerBg}33`}
+        >
+          {title}
+        </ModalHeader>
+        <ModalCloseButton color={headerTextColor} />
+        <ModalBody>{children}</ModalBody>
+        {footer ? <ModalFooter>{footer}</ModalFooter> : null}
+      </ModalContent>
+    </Modal>
   )
 }

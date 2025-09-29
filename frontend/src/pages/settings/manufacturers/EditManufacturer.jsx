@@ -1,141 +1,123 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import {
-  CNav,
-  CNavItem,
-  CNavLink,
-  CTabContent,
-  CTabPane,
-  CCard,
-  CCardBody,
-} from '@coreui/react';
-import EditManufacturerTab from './tabs/EditManufacturerTab';
-import SettingsTab from './tabs/SettingsTab';
-import CatalogMappingTab from './tabs/CatalogMappingTab';
-import StylePicturesTab from './tabs/StylePicturesTab';
-import TypesTab from './tabs/TypesTab';
-import FilesHistoryTab from './tabs/FilesHistoryTab';
-import { useParams } from 'react-router-dom';
-import { decodeParam } from '../../../utils/obfuscate';
-import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+  Box,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useBreakpointValue,
+} from '@chakra-ui/react'
+import EditManufacturerTab from './tabs/EditManufacturerTab'
+import SettingsTab from './tabs/SettingsTab'
+import CatalogMappingTab from './tabs/CatalogMappingTab'
+import StylePicturesTab from './tabs/StylePicturesTab'
+import TypesTab from './tabs/TypesTab'
+import FilesHistoryTab from './tabs/FilesHistoryTab'
+import { useParams } from 'react-router-dom'
+import { decodeParam } from '../../../utils/obfuscate'
+import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 const EditManufacturer = () => {
-  const { id: rawId } = useParams();
-  const id = decodeParam(rawId);
-  const dispatch = useDispatch();
-  const [activeKey, setActiveKey] = useState(0);
-  const manufacturer = useSelector((state) => state.manufacturers.selected);
-  const { t } = useTranslation();
+  const { id: rawId } = useParams()
+  const id = decodeParam(rawId)
+  const dispatch = useDispatch()
+  const [activeKey, setActiveKey] = useState(0)
+  const manufacturer = useSelector((state) => state.manufacturers.selected)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (id) {
       // Don't load catalog data initially for manufacturer editing - only load basic info
-      dispatch(fetchManufacturerById({ id, includeCatalog: false }));
+      dispatch(fetchManufacturerById({ id, includeCatalog: false }))
     }
-  }, [id, dispatch]);
+  }, [id, dispatch])
+
+  const tabColumns = useBreakpointValue({ base: 'repeat(2, minmax(0, 1fr))', md: 'none' })
+
+  const tabs = [
+    {
+      label: t('settings.manufacturers.tabs.editDetails', 'Edit Manufacturer Details'),
+      render: () => <EditManufacturerTab manufacturer={manufacturer} id={id} />,
+    },
+    {
+      label: t('settings.manufacturers.tabs.settings', 'Settings'),
+      render: () => <SettingsTab manufacturer={manufacturer} />,
+    },
+    {
+      label: t('settings.manufacturers.tabs.catalogMapping', 'Catalog Mapping'),
+      render: () => <CatalogMappingTab manufacturer={manufacturer} id={id} />,
+    },
+    {
+      label: t('settings.manufacturers.tabs.stylePictures', 'Style Pictures'),
+      render: () => <StylePicturesTab manufacturer={manufacturer} />,
+    },
+    {
+      label: t('settings.manufacturers.tabs.typePictures', 'Type Pictures'),
+      render: () => <TypesTab manufacturer={manufacturer} />,
+    },
+    {
+      label: t('settings.manufacturers.tabs.filesHistory', 'Files & History'),
+      render: () => <FilesHistoryTab manufacturer={manufacturer} />,
+    },
+  ]
 
   return (
-    <div className="edit-manufacturer-page">
-      {/* UI-TASK: Scoped responsive/touch styles for manufacturer tabs */}
-      <style>{`
-        .edit-manufacturer-page .manufacturer-tabs .nav-link { min-height: 44px; }
-        .edit-manufacturer-page .manufacturer-tabs .nav-link { border-radius: 8px; }
-        @media (max-width: 576px) {
-          .edit-manufacturer-page .manufacturer-tabs.nav {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-          }
-          .edit-manufacturer-page .manufacturer-tabs.nav .nav-item { width: 100%; }
-          .edit-manufacturer-page .manufacturer-tabs.nav .nav-link { width: 100%; text-align: center; padding: 10px 12px !important; }
-        }
-      `}</style>
-      <CNav variant="tabs" role="tablist" className="manufacturer-tabs border-bottom-0 mb-0">
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 0}
-            onClick={() => setActiveKey(0)}
-            className={activeKey === 0 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.editDetails', 'Edit Manufacturer Details')}
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 1}
-            onClick={() => setActiveKey(1)}
-            className={activeKey === 1 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.settings', 'Settings')}
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 2}
-            onClick={() => setActiveKey(2)}
-            className={activeKey === 2 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.catalogMapping', 'Catalog Mapping')}
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 3}
-            onClick={() => setActiveKey(3)}
-            className={activeKey === 3 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.stylePictures', 'Style Pictures')}
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 4}
-            onClick={() => setActiveKey(4)}
-            className={activeKey === 4 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.typePictures', 'Type Pictures')}
-          </CNavLink>
-        </CNavItem>
-        <CNavItem>
-          <CNavLink
-            style={{ cursor: 'pointer', padding: '12px 20px', fontSize: '0.95rem', fontWeight: '500' }}
-            active={activeKey === 5}
-            onClick={() => setActiveKey(5)}
-            className={activeKey === 5 ? 'bg-primary text-white border-primary' : 'text-primary border-light'}
-      >
-        {t('settings.manufacturers.tabs.filesHistory', 'Files & History')}
-          </CNavLink>
-        </CNavItem>
-      </CNav>
+    <Box className="edit-manufacturer-page">
+      <Tabs index={activeKey} onChange={setActiveKey} variant="unstyled" isLazy>
+        <TabList
+          gap={{ base: 2, md: 3 }}
+          flexWrap={{ base: 'wrap', md: 'nowrap' }}
+          display={{ base: 'grid', md: 'flex' }}
+          gridTemplateColumns={tabColumns}
+          borderBottom="1px solid"
+          borderColor="gray.200"
+          pb={{ base: 2, md: 0 }}
+          className="manufacturer-tabs"
+          sx={{
+            '& button[role="tab"]': {
+              minHeight: '44px',
+              borderRadius: '8px',
+              fontSize: '0.95rem',
+              fontWeight: 500,
+              paddingInline: '20px',
+              paddingBlock: '12px',
+              border: '1px solid',
+              borderColor: 'gray.200',
+              color: 'brand.600',
+              transition: 'all 0.15s ease',
+            },
+            '& button[role="tab"].chakra-tabs__tab--selected': {
+              backgroundColor: 'brand.500',
+              borderColor: 'brand.500',
+              color: 'white',
+              boxShadow: 'sm',
+            },
+            '& button[role="tab"]:hover': {
+              borderColor: 'brand.400',
+              boxShadow: 'xs',
+            },
+          }}
+        >
+          {tabs.map((tab, index) => (
+            <Tab key={tab.label} justifyContent="center">
+              {tab.label}
+            </Tab>
+          ))}
+        </TabList>
 
-  <CTabContent className="mt-4">
-        <CTabPane visible={activeKey === 0}>
-          <EditManufacturerTab manufacturer={manufacturer} id={id} />
-        </CTabPane>
-        <CTabPane visible={activeKey === 1}>
-          <SettingsTab manufacturer={manufacturer} />
-        </CTabPane>
-        <CTabPane visible={activeKey === 2}>
-          <CatalogMappingTab manufacturer={manufacturer} id={id} />
-        </CTabPane>
-        <CTabPane visible={activeKey === 3}>
-          <StylePicturesTab manufacturer={manufacturer} />
-        </CTabPane>
-        <CTabPane visible={activeKey === 4}>
-          <TypesTab manufacturer={manufacturer} />
-        </CTabPane>
-        <CTabPane visible={activeKey === 5}>
-          <FilesHistoryTab manufacturer={manufacturer} />
-        </CTabPane>
-      </CTabContent>
-    </div>
-  );
-};
+        <TabPanels mt={4}>
+          {tabs.map((tab) => (
+            <TabPanel key={tab.label} px={0}>
+              {tab.render()}
+            </TabPanel>
+          ))}
+        </TabPanels>
+      </Tabs>
+    </Box>
+  )
+}
 
-export default EditManufacturer;
+export default EditManufacturer

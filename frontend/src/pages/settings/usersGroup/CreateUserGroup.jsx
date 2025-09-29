@@ -1,506 +1,318 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-    CForm,
-    CFormInput,
-    CFormLabel,
-    CButton,
-    CCard,
-    CCardBody,
-    CContainer,
-    CRow,
-    CCol,
-    CFormFeedback,
-    CInputGroup,
-    CInputGroupText,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import PageHeader from '../../../components/PageHeader';
-import {
-    cilUser,
-    cilSettings,
-    cilArrowLeft,
-    cilSave,
-    cilUserFollow,
-    cilGroup
-} from '@coreui/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { addUser } from '../../../store/slices/userGroupSlice';
-import Swal from 'sweetalert2';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useRef, useState } from 'react'
+import { FormControl, Input, FormLabel, Card, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select } from '@chakra-ui/react'
+import PageHeader from '../../../components/PageHeader'
+import { Settings, ArrowLeft, UserPlus } from '@/icons-lucide'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { addUser } from '../../../store/slices/userGroupSlice'
+import Swal from 'sweetalert2'
+import { useTranslation } from 'react-i18next'
 
-// External components to avoid re-creation on each render
-const FormSection = ({ title, icon, children, className = "", customization = {} }) => (
-    <CCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
-        <CCardBody className="p-3 p-md-4">
-            <div className="d-flex align-items-center mb-3">
-                <div
-                    className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
-                    style={{
-                        width: '32px',
-                        height: '32px',
-                        backgroundColor: `${customization.headerBg || '#667eea'}20`,
-                        color: customization.headerBg || '#667eea'
-                    }}
-                >
-                    <CIcon icon={icon} size="sm" />
-                </div>
-                <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
-            </div>
-            {children}
-        </CCardBody>
-    </CCard>
-);
+const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
+  <Card className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
+    <CardBody className="p-3 p-md-4">
+      <HStack mb={3} align="center" spacing={3}>
+        <Box
+          borderRadius="full"
+          w="32px"
+          h="32px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bg={`${customization.headerBg || '#667eea'}20`}
+          color={customization.headerBg || '#667eea'}
+        >
+          <Icon as={icon || Settings} size={14} />
+        </Box>
+        <Text fontWeight="semibold" fontSize="sm">{title}</Text>
+      </HStack>
+      {children}
+    </CardBody>
+  </Card>
+)
 
 const CustomFormInput = ({
-    label,
-    name,
-    type = "text",
-    required = false,
-    icon = null,
-    placeholder = "",
-    value,
-    onChange,
-    isInvalid,
-    feedback,
-    ...props
+  label,
+  name,
+  type = 'text',
+  required = false,
+  placeholder = '',
+  value,
+  onChange,
+  isInvalid,
+  feedback,
+  ...props
 }) => (
-    <div className="mb-3">
-        <CFormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
-            {label}
-            {required && <span className="text-danger ms-1">*</span>}
-        </CFormLabel>
-        <CInputGroup>
-            {icon && (
-                <CInputGroupText
-                    className="d-none d-md-flex"
-                    style={{
-                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                        border: '1px solid #e3e6f0',
-                        borderRight: 'none'
-                    }}
-                >
-                    <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-                </CInputGroupText>
-            )}
-            <CFormInput
-                id={name}
-                name={name}
-                type={type}
-                value={value}
-                onChange={onChange}
-                invalid={isInvalid}
-                placeholder={placeholder}
-                style={{
-                    border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
-                    borderRadius: icon ? '0 8px 8px 0' : '8px',
-                    fontSize: '14px',
-                    padding: '12px 16px',
-                    transition: 'all 0.3s ease',
-                    borderLeft: (icon && window.innerWidth >= 768) ? 'none' : '1px solid #e3e6f0'
-                }}
-                {...props}
-            />
-        </CInputGroup>
-        {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
-    </div>
-);
+  <Box mb={3}>
+    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
+      {label}
+      {required && <span className="text-danger ms-1">*</span>}
+    </FormLabel>
+    <Input
+      id={name}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+      isInvalid={isInvalid}
+      placeholder={placeholder}
+      {...props}
+    />
+    {feedback && (
+      <Text color="red.500" fontSize="sm" mt={1}>
+        {feedback}
+      </Text>
+    )}
+  </Box>
+)
 
 const initialForm = {
-    name: '',
-    group_type: 'standard',
-    modules: {
-        dashboard: false,
-        proposals: false,
-        customers: false,
-        resources: false
-    }
-};
+  name: '',
+  group_type: 'standard',
+  modules: {
+    dashboard: false,
+    proposals: false,
+    customers: false,
+    resources: false,
+  },
+}
 
 const AddUserGroupForm = () => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState(initialForm);
-    const initialFormRef = useRef(initialForm);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-    const customization = useSelector((state) => state.customization);
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState(initialForm)
+  const initialFormRef = useRef(initialForm)
+  const [errors, setErrors] = useState({})
+  const [loading, setLoading] = useState(false)
+  const customization = useSelector((state) => state.customization)
 
-    // Function to get optimal text color for contrast
-    const getContrastColor = (backgroundColor) => {
-        if (!backgroundColor) return '#ffffff';
-        // Convert hex to RGB
-        const hex = backgroundColor.replace('#', '');
-        const r = parseInt(hex.substr(0, 2), 16);
-        const g = parseInt(hex.substr(2, 2), 16);
-        const b = parseInt(hex.substr(4, 2), 16);
+  const validate = () => {
+    const newErrors = {}
+    if (!formData.name.trim()) newErrors.name = t('settings.userGroups.form.validation.nameRequired')
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
-        // Calculate luminance
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target
+    if (name.startsWith('modules.')) {
+      const key = name.split('.')[1]
+      setFormData((prev) => ({
+        ...prev,
+        modules: { ...prev.modules, [key]: checked },
+      }))
+      return
+    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }))
+  }
 
-        // Return dark color for light backgrounds, light color for dark backgrounds
-        return luminance > 0.5 ? '#2d3748' : '#ffffff';
-    };
+  const handleBackClick = () => {
+    navigate('/settings/users/groups')
+  }
 
-    const validate = () => {
-        const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = t('settings.userGroups.form.validation.nameRequired');
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+  const handleSubmit = async (e, force = false) => {
+    e.preventDefault()
+    if (!validate()) return
+    setLoading(true)
+    try {
+      const action = await dispatch(addUser({ ...formData, force }))
+      const payload = action?.payload
+      if (payload?.status === 200) {
+        await Swal.fire(
+          t('common.success') + '!',
+          payload.message || t('settings.userGroups.alerts.created'),
+          'success',
+        )
+        navigate('/settings/users/groups')
+        return
+      }
+      const serverMsg = payload?.message || action?.error?.message || t('settings.userGroups.alerts.createFailed')
+      await Swal.fire(t('common.error'), serverMsg, 'error')
+    } catch (err) {
+      await Swal.fire(t('common.error'), err?.message || t('settings.userGroups.alerts.genericError'), 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+  const isFormDirty = () => JSON.stringify(formData) !== JSON.stringify(initialFormRef.current)
+
+  return (
+    <Container maxW="1200px" py={4}>
+      <style>{`.settings-form-container .btn, .notification-mobile-dropdown .btn, .btn { min-height: 44px; }`}</style>
+      <PageHeader
+        title={
+          <HStack spacing={3} align="center">
+            <Box
+              w="48px"
+              h="48px"
+              bg="rgba(255,255,255,0.2)"
+              borderRadius="12px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Icon as={UserPlus} fontSize="16px" color="white" />
+            </Box>
+            {t('settings.userGroups.create.title')}
+          </HStack>
         }
-    };
+        subtitle={t('settings.userGroups.create.subtitle')}
+        actions={[
+          <Button key="back" variant="outline" onClick={handleBackClick} aria-label={t('common.back')}>
+            <Icon as={ArrowLeft} mr={2} />
+            {t('common.back')}
+          </Button>,
+        ]}
+      />
 
-    const handleBackClick = () => {
-        navigate('/settings/users/groups');
-    };
+      <form onSubmit={handleSubmit}>
+        <FormControl>
+          <FormSection title={t('settings.userGroups.form.titles.groupInfo')} customization={customization}>
+            <Flex gap={3} wrap="wrap">
+              <Box flex="1 1 300px">
+                <CustomFormInput
+                  label={t('settings.userGroups.form.labels.name')}
+                  name="name"
+                  required
+                  placeholder={t('settings.userGroups.form.placeholders.name')}
+                  value={formData.name}
+                  onChange={handleChange}
+                  isInvalid={!!errors.name}
+                  feedback={errors.name}
+                />
+              </Box>
+              <Box flex="1 1 200px">
+                <Box mb={3}>
+                  <FormLabel className="fw-medium text-dark mb-2 small">
+                    {t('settings.userGroups.form.labels.type')}
+                    <span className="text-danger ms-1">*</span>
+                  </FormLabel>
+                  <Select
+                    name="group_type"
+                    value={formData.group_type}
+                    onChange={handleChange}
+                    borderColor="#e3e6f0"
+                    borderRadius="8px"
+                    fontSize="14px"
+                    minH="44px"
+                  >
+                    <option value="standard">{t('settings.userGroups.types.standard')}</option>
+                    <option value="contractor">{t('settings.userGroups.types.contractor')}</option>
+                  </Select>
+                </Box>
+              </Box>
+            </Flex>
 
-    const handleSubmit = async (e, force = false) => {
-        e.preventDefault();
-        if (!validate()) return;
+            <Box mt={4}>
+              <HStack mb={2} align="center" spacing={3}>
+                <Box w="24px" h="24px" bg="#e6ffed" color="#28a745" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+                  ✓
+                </Box>
+                <Text fontWeight="semibold" fontSize="sm">
+                  {t('settings.userGroups.create.afterCreateTitle')}
+                </Text>
+              </HStack>
+              <Flex gap={2} wrap="wrap">
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
+                </Box>
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.setPermissions')}</Text>
+                </Box>
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.manageAccess')}</Text>
+                </Box>
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.bulkManagement')}</Text>
+                </Box>
+              </Flex>
+            </Box>
+          </FormSection>
 
-        setLoading(true);
-        try {
-            const action = await dispatch(addUser({ ...formData, force }));
-            const payload = action?.payload;
+          {formData.group_type === 'contractor' && (
+            <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} customization={customization}>
+              <Box mb={4} p={3} borderRadius="md" bg="#e7f3ff" border="1px solid #b3d7ff">
+                <HStack spacing={3} align="start">
+                  <Box w="32px" h="32px" bg={customization.headerBg || '#667eea'} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+                    <Icon as={Settings} size={14} />
+                  </Box>
+                  <Box>
+                    <Text fontWeight="semibold" fontSize="sm">{t('settings.userGroups.moduleAccess.title')}</Text>
+                    <Text color="gray.600" fontSize="sm">{t('settings.userGroups.moduleAccess.description')}</Text>
+                  </Box>
+                </HStack>
+              </Box>
 
-            // Success path
-            if (payload?.status === 200) {
-                await Swal.fire(t('common.success') + '!', payload.message || t('settings.userGroups.alerts.created'), 'success');
-                navigate('/settings/users/groups');
-                return;
-            }
+              <Flex gap={3} wrap="wrap">
+                {Object.entries(formData.modules).map(([module, enabled]) => (
+                  <Box key={module} flex="1 1 180px">
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium">{module.charAt(0).toUpperCase() + module.slice(1)}</Text>
+                      <Switch
+                        id={`module-${module}`}
+                        isChecked={enabled}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            modules: { ...prev.modules, [module]: e.target.checked },
+                          }))
+                        }
+                        size="lg"
+                      />
+                    </HStack>
+                    <Text color="gray.500" fontSize="sm" mt={1}>
+                      {module === 'dashboard' && t('settings.userGroups.moduleDescriptions.dashboard')}
+                      {module === 'proposals' && t('settings.userGroups.moduleDescriptions.proposals')}
+                      {module === 'customers' && t('settings.userGroups.moduleDescriptions.customers')}
+                      {module === 'resources' && t('settings.userGroups.moduleDescriptions.resources')}
+                    </Text>
+                  </Box>
+                ))}
+              </Flex>
+            </FormSection>
+          )}
 
-            // Error path: show server message (e.g., duplicate name)
-            const serverMsg = payload?.message || action?.error?.message || t('settings.userGroups.alerts.createFailed');
-            await Swal.fire(t('common.error'), serverMsg, 'error');
-        } catch (err) {
-            await Swal.fire(t('common.error'), err?.message || t('settings.userGroups.alerts.genericError'), 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const isFormDirty = () => {
-        return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current);
-    };
-
-
-
-        return (
-                <CContainer fluid className="p-1 p-md-2 m-0 m-md-2" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-                        <style>{`
-                            .settings-form-container .btn, .notification-mobile-dropdown .btn, .btn { min-height: 44px; }
-                        `}</style>
-            {/* Header Section */}
-            <PageHeader
-                title={
-                    <div className="d-flex align-items-center gap-3">
-                        <div
-                            className="d-flex align-items-center justify-content-center"
-                            style={{
-                                width: '48px',
-                                height: '48px',
-                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                borderRadius: '12px'
-                            }}
-                        >
-                            <CIcon icon={cilUserFollow} style={{ fontSize: '16px', color: 'white' }} />
-                        </div>
-                        {t('settings.userGroups.create.title')}
-                    </div>
-                }
-                subtitle={t('settings.userGroups.create.subtitle')}
-                rightContent={
-                    <CButton
-                        variant="outline"
-                        onClick={handleBackClick}
-                        className="me-2"
-                        aria-label={t('common.back')}
-                        style={{
-                            borderColor: 'rgba(255, 255, 255, 0.3)',
-                            color: 'rgba(255, 255, 255, 0.9)',
-                        }}
-                    >
-                        <CIcon icon={cilArrowLeft} className="me-1" size="sm" />
-                        {t('common.back')}
-                    </CButton>
-                }
-            />
-
-            <CForm onSubmit={handleSubmit}>
-                {/* Group Information Section */}
-                <FormSection
-                    title={t('settings.userGroups.form.titles.groupInfo')}
-                    icon={cilGroup}
-                    customization={customization}
+          <Card>
+            <CardBody>
+              <HStack justify="flex-end" spacing={3}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    if (isFormDirty()) {
+                      Swal.fire({
+                        title: t('common.confirm'),
+                        text: t('settings.userGroups.alerts.leaveWarning'),
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
+                        cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
+                      }).then((result) => {
+                        if (result.isConfirmed) navigate('/settings/users/groups')
+                      })
+                    } else {
+                      navigate('/settings/users/groups')
+                    }
+                  }}
                 >
-                    {/* Info Card */}
-                    <div className="mb-4">
-                        <div className="d-flex align-items-start p-3 rounded-3"
-                             style={{ backgroundColor: '#fff3cd', border: '1px solid #ffecb5' }}>
-                            <div
-                                className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
-                                style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    backgroundColor: '#856404',
-                                    color: 'white'
-                                }}
-                            >
-                                <CIcon icon={cilSettings} size="sm" />
-                            </div>
-                            <div>
-                                <div className="fw-semibold text-dark small mb-1">{t('settings.userGroups.about.title')}</div>
-                                <div className="text-muted" style={{ fontSize: '12px', lineHeight: '1.4' }}>
-                                    {t('settings.userGroups.about.description')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  {t('common.cancel')}
+                </Button>
+                <Button type="submit" colorScheme="brand" isLoading={loading}>
+                  {t('common.save')}
+                </Button>
+              </HStack>
+            </CardBody>
+          </Card>
+        </FormControl>
+      </form>
+    </Container>
+  )
+}
 
-                    <CRow>
-                        <CCol xs={12} md={8} lg={6}>
-                            <CustomFormInput
-                                label={t('settings.userGroups.form.labels.name')}
-                                name="name"
-                                required
-                                icon={cilGroup}
-                                placeholder={t('settings.userGroups.form.placeholders.name')}
-                                value={formData.name}
-                                onChange={handleChange}
-                                isInvalid={!!errors.name}
-                                feedback={errors.name}
-                            />
-                        </CCol>
-                        <CCol xs={12} md={4} lg={6}>
-                            <div className="mb-3">
-                                <CFormLabel className="fw-medium text-dark mb-2 small">
-                                    {t('settings.userGroups.form.labels.type')}
-                                    <span className="text-danger ms-1">*</span>
-                                </CFormLabel>
-                                <select
-                                    name="group_type"
-                                    value={formData.group_type}
-                                    onChange={handleChange}
-                                    className="form-select"
-                                    style={{
-                                        border: '1px solid #e3e6f0',
-                                        borderRadius: '8px',
-                                        fontSize: '14px',
-                                        padding: '12px 16px'
-                                    }}
-                                >
-                                    <option value="standard">{t('settings.userGroups.types.standard')}</option>
-                                    <option value="contractor">{t('settings.userGroups.types.contractor')}</option>
-                                </select>
-                            </div>
-                        </CCol>
-                    </CRow>
-
-                    {/* Features Preview */}
-                    <div className="mt-4">
-                        <div className="d-flex align-items-center mb-3">
-                            <div
-                                className="rounded-circle d-flex align-items-center justify-content-center me-2"
-                                style={{
-                                    width: '24px',
-                                    height: '24px',
-                                    backgroundColor: '#e6ffed',
-                                    color: '#28a745'
-                                }}
-                            >
-                                <CIcon icon={cilSettings} size="sm" />
-                            </div>
-                <h6 className="mb-0 fw-semibold text-dark" style={{ fontSize: '13px' }}>{t('settings.userGroups.create.afterCreateTitle')}</h6>
-                        </div>
-
-                        <div className="row g-2">
-                            <div className="col-md-6">
-                                <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
-                                    <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.assignUsers')}</span>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
-                                    <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.setPermissions')}</span>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
-                                    <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.manageAccess')}</span>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="d-flex align-items-center p-2 rounded-2" style={{ backgroundColor: '#f8f9fa' }}>
-                                    <div className="me-2" style={{ color: '#28a745', fontSize: '12px' }}>✓</div>
-                    <span style={{ fontSize: '12px', color: '#6c757d' }}>{t('settings.userGroups.create.afterCreate.bulkManagement')}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </FormSection>
-
-                {/* Module Permissions Section - Only for Contractor Groups */}
-                {formData.group_type === 'contractor' && (
-                    <FormSection
-                        title={t('settings.userGroups.form.titles.modulePermissions')}
-                        icon={cilSettings}
-                        customization={customization}
-                    >
-                        <div className="mb-4">
-                            <div className="d-flex align-items-start p-3 rounded-3"
-                                 style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}>
-                                <div
-                                    className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        backgroundColor: customization.headerBg || '#667eea',
-                                        color: getContrastColor(customization.headerBg || '#667eea')
-                                    }}
-                                >
-                                    <CIcon icon={cilSettings} size="sm" />
-                                </div>
-                                <div>
-                                    <div className="fw-semibold text-dark small mb-1">{t('settings.userGroups.moduleAccess.title')}</div>
-                                    <div className="text-muted" style={{ fontSize: '12px', lineHeight: '1.4' }}>
-                                        {t('settings.userGroups.moduleAccess.description')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <CRow>
-                            {Object.entries(formData.modules).map(([module, enabled]) => (
-                                <CCol xs={12} sm={6} md={3} key={module} className="mb-3">
-                                    <div className="form-check form-switch">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id={`module-${module}`}
-                                            name={`modules.${module}`}
-                                            checked={enabled}
-                                            onChange={(e) => {
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    modules: {
-                                                        ...prev.modules,
-                                                        [module]: e.target.checked
-                                                    }
-                                                }));
-                                            }}
-                                            style={{
-                                                width: '3rem',
-                                                height: '1.5rem'
-                                            }}
-                                        />
-                                        <label className="form-check-label fw-medium" htmlFor={`module-${module}`}>
-                                            {module.charAt(0).toUpperCase() + module.slice(1)}
-                                        </label>
-                                    </div>
-                                    <small className="text-muted d-block mt-1">
-                                        {module === 'dashboard' && t('settings.userGroups.moduleDescriptions.dashboard')}
-                                        {module === 'proposals' && t('settings.userGroups.moduleDescriptions.proposals')}
-                                        {module === 'customers' && t('settings.userGroups.moduleDescriptions.customers')}
-                                        {module === 'resources' && t('settings.userGroups.moduleDescriptions.resources')}
-                                    </small>
-                                </CCol>
-                            ))}
-                        </CRow>
-                    </FormSection>
-                )}
-
-                {/* Action Buttons */}
-                <CCard className="border-0 shadow-sm">
-                    <CCardBody className="p-3 p-md-4">
-                        <div className="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-end">
-                            <CButton
-                                type="button"
-                                color="light"
-                                size="md"
-                                className="px-3 px-md-4 fw-semibold order-2 order-md-1"
-                                onClick={() => {
-                                    if (isFormDirty()) {
-                                        Swal.fire({
-                                            title: t('common.confirm'),
-                                            text: t('settings.userGroups.alerts.leaveWarning'),
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
-                                            cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
-                                            confirmButtonColor: '#d33',
-                                            cancelButtonColor: '#6c757d',
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                navigate('/settings/users');
-                                            }
-                                        });
-                                    } else {
-                                        navigate('/settings/users');
-                                    }
-                                }}
-                                style={{
-                                    borderRadius: '25px',
-                                    border: '1px solid #e3e6f0',
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                                <CIcon icon={cilArrowLeft} className="me-2" />
-                                {t('common.cancel')}
-                            </CButton>
-                            <CButton
-                                type="submit"
-                                color="primary"
-                                size="md"
-                                disabled={loading}
-                                className="px-4 px-md-5 fw-semibold order-1 order-md-2"
-                                style={{
-                                    borderRadius: '25px',
-                                    border: 'none',
-                                    background: customization.headerBg || '#667eea',
-                                    color: getContrastColor(customization.headerBg || '#667eea'),
-                                    transition: 'all 0.3s ease'
-                                }}
-                            >
-                                {loading ? (
-                                    <>
-                                        <div
-                                            className="spinner-border spinner-border-sm me-2"
-                                            role="status"
-                                            style={{ width: '14px', height: '14px' }}
-                                        >
-                                            <span className="visually-hidden">{t('common.loading')}</span>
-                                        </div>
-                                        {t('settings.userGroups.create.creating')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CIcon icon={cilSave} className="me-2" />
-                                        {t('settings.userGroups.create.submit')}
-                                    </>
-                                )}
-                            </CButton>
-                        </div>
-                    </CCardBody>
-                </CCard>
-            </CForm>
-        </CContainer>
-    );
-};
-
-export default AddUserGroupForm;
+export default AddUserGroupForm

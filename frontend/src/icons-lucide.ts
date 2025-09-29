@@ -11,6 +11,7 @@ import {
   Users,
   User,
   ArrowLeft,
+  X,
   Plus,
   Minus,
   Eye,
@@ -37,13 +38,15 @@ import {
   Shield,
   LogOut,
   // Additional commonly used icons
-  Factory,
-  Edit3,
-  Building2,
-  FileText,
-  SortAsc,
-  SortDesc,
-} from 'lucide-react';
+  import {
+    Factory,
+    Edit3,
+    Building2,
+    FileText,
+    SortAsc,
+    SortDesc,
+    
+  } from
 
 export {
   Search,
@@ -54,6 +57,7 @@ export {
   Users,
   User,
   ArrowLeft,
+  X,
   Plus,
   Minus,
   Eye,
@@ -84,10 +88,10 @@ export {
   FileText,
   SortAsc,
   SortDesc,
-};
+}
 
 // Aliases with stable names used across the app
-export const Trash = Trash2;
-export const Refresh = RefreshCw;
-export const BarChart = BarChart3;
-export const Briefcase = BriefcaseBusiness;
+export const Trash = Trash2
+export const Refresh = RefreshCw
+export const BarChart = BarChart3
+export const Briefcase = BriefcaseBusiness

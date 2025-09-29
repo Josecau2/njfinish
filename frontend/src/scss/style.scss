@@ -1,23 +1,14 @@
-@use "@coreui/coreui/scss/coreui" as * with ( 
-  $enable-deprecation-messages: false,
-);
-@use "@coreui/chartjs/scss/coreui-chartjs";
-@use "vendors/simplebar";
-
-body {
-  background-color: var(--cui-tertiary-bg);
-}
+/* Legacy styles - these can be gradually migrated to Chakra UI components */
 
 .wrapper {
   width: 100%;
-  padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
   will-change: auto;
-  @include transition(padding .15s);
+  transition: padding 0.15s ease;
 }
 
 .header > .container-fluid,
 .sidebar-header {
-  min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+  min-height: calc(4rem + 1px);
 }
 
 .sidebar-brand-full {
@@ -26,14 +17,14 @@ body {
 
 .sidebar-header {
   .nav-underline-border {
-    --cui-nav-underline-border-link-padding-x: 1rem;
-    --cui-nav-underline-border-gap: 0;
+    --nav-underline-border-link-padding-x: 1rem;
+    --nav-underline-border-gap: 0;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
-    min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+    min-height: calc(4rem + 1px);
   }
 }
 
@@ -53,15 +44,5 @@ body {
 }
 
 .footer {
-  min-height: calc(3rem + 1px); // stylelint-disable-line function-disallowed-list
-}
-
-@include color-mode(dark) {
-  body {
-    background-color: var(--cui-dark-bg-subtle);
-  }
-
-  .footer {
-    --cui-footer-bg: var(--cui-body-bg);
-  }
+  min-height: calc(3rem + 1px);
 }

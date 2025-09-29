@@ -1,86 +1,43 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  CContainer,
-  CRow,
-  CCol,
-  CButton,
-  CTable,
-  CTableHead,
-  CTableBody,
-  CTableRow,
-  CTableHeaderCell,
-  CTableDataCell,
-  CFormInput,
-  CFormSelect,
-  CButtonGroup,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCardTitle,
-  CCardText,
-  CBadge,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-  CInputGroup,
-  CInputGroupText,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import {
-  cilSearch,
-  cilFilter,
-  cilPlus,
-  cilCalendar,
-  cilUser,
-  cilDescription,
-  cilBriefcase,
-  cilOptions,
-  cilPencil,
-  cilTrash,
-} from '@coreui/icons';
-import { getContracts } from '../../store/slices/proposalSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import axiosInstance from '../../helpers/axiosInstance';
-import PaginationComponent from '../../components/common/PaginationComponent';
-import PageHeader from '../../components/PageHeader';
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Container, Flex, Box, Input, Select, Card, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
+import { Search, Filter, Plus, Calendar, User, FileText, Briefcase, MoreHorizontal, Edit, Trash, Trash2 } from 'lucide-react'
+import { getContracts } from '../../queries/proposalQueries'
+import { useDispatch, useSelector } from 'react-redux'
+import axiosInstance from '../../helpers/axiosInstance'
+import PaginationComponent from '../../components/common/PaginationComponent'
+import PageHeader from '../../components/PageHeader'
 
 const Contracts = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState('card');
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(null);
-  const contractsState = useSelector((state) => state.contracts);
-  const { data: contracts = [], loading, error } = contractsState;
-  const customization = useSelector((state) => state.customization);
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState('card')
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [showModal, setShowModal] = useState(false)
+  const [selectedContract, setSelectedContract] = useState(null)
+  const contractsState = useSelector((state) => state.contracts)
+  const { data: contracts = [], loading, error } = contractsState
+  const customization = useSelector((state) => state.customization)
 
   // Function to get optimal text color for contrast
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff';
+    if (!backgroundColor) return '#ffffff'
     // Convert hex to RGB
-    const hex = backgroundColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
+    const hex = backgroundColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
 
     // Calculate luminance
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
 
     // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? '#2d3748' : '#ffffff';
-  };
+    return luminance > 0.5 ? '#2d3748' : '#ffffff'
+  }
 
-  const contractsdata = Array.isArray(contracts) ? contracts : [];
+  const contractsdata = Array.isArray(contracts) ? contracts : []
 
   const defaultFormData = {
     manufacturersData: [],
@@ -95,77 +52,77 @@ const Contracts = () => {
     status: 'Draft',
     files: [],
     customerName: '',
-  };
+  }
 
-  const [loadings, setLoadings] = useState(true);
-  const [formData, setFormData] = useState(defaultFormData);
+  const [loadings, setLoadings] = useState(true)
+  const [formData, setFormData] = useState(defaultFormData)
 
   useEffect(() => {
-    dispatch(getContracts());
-  }, [dispatch]);
+    dispatch(getContracts())
+  }, [dispatch])
 
   const handleItemsPerPageChange = (newItemsPerPage) => {
-    setItemsPerPage(newItemsPerPage);
-    setCurrentPage(1);
-    localStorage.setItem('contractsItemsPerPage', newItemsPerPage.toString());
-  };
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1)
+    localStorage.setItem('contractsItemsPerPage', newItemsPerPage.toString())
+  }
 
   const getStatusColor = (status) => {
     const colors = {
-      'Draft': 'secondary',
+      Draft: 'secondary',
       'Measurement Scheduled': 'info',
       'Measurement done': 'primary',
       'Design done': 'success',
       'Follow up 1': 'warning',
       'Follow up 2': 'warning',
       'Follow up 3': 'danger',
-      'Proposal accepted': 'success'
-    };
-    return colors[status] || 'secondary';
-  };
+      'Proposal accepted': 'success',
+    }
+    return colors[status] || 'secondary'
+  }
 
   const filteredProposals = contractsdata?.filter((item) => {
-    const matchSearch = item.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchSearch;
-  });
+    const matchSearch = item.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchSearch
+  })
 
   const paginatedItems = filteredProposals?.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+    currentPage * itemsPerPage,
+  )
 
-  const totalPages = Math.ceil((filteredProposals?.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((filteredProposals?.length || 0) / itemsPerPage)
 
   const handlePageChange = (number) => {
-    setCurrentPage(number);
-  };
+    setCurrentPage(number)
+  }
 
   const handleNavigate = (id) => {
     axiosInstance
       .get(`/api/quotes/proposalByID/${id}`)
       .then((res) => {
-        setFormData(res.data || defaultFormData);
-        setLoadings(false);
+        setFormData(res.data || defaultFormData)
+        setLoadings(false)
       })
       .catch((err) => {
-        console.error('Error fetching proposal:', err);
-        setLoadings(false);
-      });
-    setShowModal(true);
-  };
+        console.error('Error fetching proposal:', err)
+        setLoadings(false)
+      })
+    setShowModal(true)
+  }
 
   const handleEdit = (id) => {
     // TODO: Implement edit functionality
-  };
+  }
 
   const handleDelete = (id) => {
     // TODO: Implement delete functionality
-  };
+  }
 
   const generateHTMLTemplate = (formData) => {
-    const headerColor = "#FFFFFF";
-    const headerTxtColor = "#000000";
-    const items = formData?.manufacturersData?.[0]?.items || [];
+    const headerColor = '#FFFFFF'
+    const headerTxtColor = '#000000'
+    const items = formData?.manufacturersData?.[0]?.items || []
 
     // Localized labels for the PDF/HTML template
     const pdf = {
@@ -197,7 +154,7 @@ const Contracts = () => {
       yes: t('common.yes'),
       no: t('common.no'),
       na: t('common.na'),
-    };
+    }
 
     const proposalItems = items.map((item) => ({
       qty: item.qty || 0,
@@ -208,10 +165,10 @@ const Contracts = () => {
       price: parseFloat(item.price) || 0,
       assemblyCost: item.includeAssemblyFee ? parseFloat(item.assemblyFee) || 0 : 0,
       total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
-      modifications: item.modifications || {}
-    }));
+      modifications: item.modifications || {},
+    }))
 
-    const summary = formData?.manufacturersData?.[0]?.summary || {};
+    const summary = formData?.manufacturersData?.[0]?.summary || {}
     const priceSummary = formData?.manufacturersData?.[0]?.items?.length
       ? {
           cabinets: summary.cabinets || 0,
@@ -230,9 +187,9 @@ const Contracts = () => {
           total: 0,
           tax: 0,
           grandTotal: 0,
-        };
+        }
 
-  return `
+    return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -264,7 +221,9 @@ const Contracts = () => {
           </style>
       </head>
       <body>
-          ${proposalItems && proposalItems.length > 0 ? `
+          ${
+            proposalItems && proposalItems.length > 0
+              ? `
       <div class="section-header">${pdf.sectionHeader}</div>
           <table class="items-table">
               <thead>
@@ -284,7 +243,9 @@ const Contracts = () => {
                   <tr class="category-row">
             <td colspan="9" style="padding: 6px;"><strong>${pdf.categories.items}</strong></td>
                   </tr>
-                  ${proposalItems.map((item, index) => `
+                  ${proposalItems
+                    .map(
+                      (item, index) => `
                       <tr>
                           <td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>
@@ -296,7 +257,9 @@ const Contracts = () => {
               <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>
                       </tr>
-                  `).join('')}
+                  `,
+                    )
+                    .join('')}
               </tbody>
           </table>
           <div class="price-summary">
@@ -331,16 +294,18 @@ const Contracts = () => {
                   </tr>
               </table>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
       </body>
       </html>
-    `;
-  };
+    `
+  }
 
-  const htmlContent = generateHTMLTemplate(formData);
+  const htmlContent = generateHTMLTemplate(formData)
 
   return (
-    <CContainer fluid className="contracts-container">
+    <Container fluid className="contracts-container">
       {/* Header Section */}
       <PageHeader
         title={
@@ -351,10 +316,10 @@ const Contracts = () => {
                 width: '48px',
                 height: '48px',
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px'
+                borderRadius: '12px',
               }}
             >
-              <CIcon icon={cilBriefcase} style={{ fontSize: '24px', color: 'white' }} />
+              <Icon as={Briefcase} style={{ fontSize: '24px', color: 'white' }} />
             </div>
             {t('nav.contracts')}
           </div>
@@ -363,29 +328,29 @@ const Contracts = () => {
       />
 
       {/* Search and Controls */}
-      <CCard className="contracts-controls-card">
-        <CCardBody>
-          <CRow className="align-items-center">
-            <CCol md={6} lg={4}>
-              <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
-                  <CIcon icon={cilSearch} />
-                </CInputGroupText>
-                <CFormInput
+      <Card className="contracts-controls-card">
+        <CardBody>
+          <Flex className="align-items-center">
+            <Box md={6} lg={4}>
+              <InputGroup>
+                <InputLeftElement style={{ background: 'none', border: 'none' }}>
+                  <Icon as={Search} />
+                </InputLeftElement>
+                <Input
                   type="text"
                   placeholder={t('contracts.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="contracts-search-input"
                 />
-              </CInputGroup>
-            </CCol>
+              </InputGroup>
+            </Box>
 
-            <CCol xs="auto" className="ms-auto">
+            <Box xs="auto" className="ms-auto">
               <div className="d-flex align-items-center gap-3">
                 <div className="d-flex align-items-center gap-2">
                   <small className="text-muted">{t('common.itemsPerPage')}</small>
-                  <CFormSelect
+                  <Select
                     size="sm"
                     value={itemsPerPage}
                     onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
@@ -394,64 +359,60 @@ const Contracts = () => {
                     <option value={10}>10</option>
                     <option value={20}>20</option>
                     <option value={30}>30</option>
-                  </CFormSelect>
+                  </Select>
                 </div>
 
-                <CButtonGroup size="sm">
-                  <CButton
-                    color={viewMode === 'card' ? 'primary' : 'light'}
+                <ButtonGroup size="sm" isAttached>
+                  <Button
+                    colorScheme={viewMode === 'card' ? 'brand' : 'gray'}
+                    variant={viewMode === 'card' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('card')}
-                    className="contracts-view-toggle"
-                    style={{ borderRadius: '8px 0 0 8px' }}
+                    borderRadius="8px 0 0 8px"
                   >
                     {t('contracts.view.cards')}
-                  </CButton>
-                  <CButton
-                    color={viewMode === 'table' ? 'primary' : 'light'}
+                  </Button>
+                  <Button
+                    colorScheme={viewMode === 'table' ? 'brand' : 'gray'}
+                    variant={viewMode === 'table' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('table')}
-                    className="contracts-view-toggle"
-                    style={{ borderRadius: '0 8px 8px 0' }}
+                    borderRadius="0 8px 8px 0"
                   >
                     {t('contracts.view.table')}
-                  </CButton>
-                </CButtonGroup>
+                  </Button>
+                </ButtonGroup>
               </div>
-            </CCol>
+            </Box>
 
-            {/* <CCol xs={12} className="mt-3">
+            {/* <Box xs={12} className="mt-3">
               <span className="text-muted small">
                 Showing {filteredProposals?.length || 0} of {contractsdata?.length || 0} contracts
               </span>
-            </CCol> */}
-          </CRow>
-        </CCardBody>
-      </CCard>
+            </Box> */}
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Content */}
-  {viewMode === 'card' ? (
+      {viewMode === 'card' ? (
         /* Card View */
-        <CRow className="g-3 mb-1">
+        <Flex className="g-3 mb-1">
           {paginatedItems?.length === 0 ? (
-            <CCol xs={12}>
-              <CCard className="contracts-empty-state">
-                <CCardBody>
+            <Box xs={12}>
+              <Card className="contracts-empty-state">
+                <CardBody>
                   <h5 className="text-muted mb-2">{t('contracts.empty.title')}</h5>
                   <p className="text-muted mb-0">{t('contracts.empty.subtitle')}</p>
-                </CCardBody>
-              </CCard>
-            </CCol>
+                </CardBody>
+              </Card>
+            </Box>
           ) : (
             paginatedItems?.map((item) => (
-              <CCol key={item.id} xs={12} sm={6} lg={4} xl={3}>
-                <CCard className="contracts-card">
-                  <CCardHeader className="contracts-card-header">
+              <Box key={item.id} xs={12} sm={6} lg={4} xl={3}>
+                <Card className="contracts-card">
+                  <CardHeader className="contracts-card-header">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center gap-2">
-                        <CIcon
-                          icon={cilCalendar}
-                          size="sm"
-                          className="contracts-card-date-icon"
-                        />
+                        <Icon as={Calendar} size="sm" className="contracts-card-date-icon" />
                         <small className="text-muted fw-medium">
                           {new Date(item.date || item.createdAt).toLocaleDateString()}
                         </small>
@@ -464,31 +425,31 @@ const Contracts = () => {
                           caret={false}
                           style={{ borderRadius: '8px' }}
                         >
-                          <CIcon icon={cilOptions} />
+                          <Icon as={MoreHorizontal} />
                         </CDropdownToggle>
                         <CDropdownMenu>
                           <CDropdownItem onClick={() => handleNavigate(item.id)}>
-                            <CIcon icon={cilDescription} className="me-2" />
+                            <Icon as={FileText} className="me-2" />
                             View Details
                           </CDropdownItem>
                           <CDropdownItem onClick={() => handleEdit(item.id)}>
-                            <CIcon icon={cilPencil} className="me-2" />
+                            <Icon as={Edit} className="me-2" />
                             Edit
                           </CDropdownItem>
                           <CDropdownItem
                             onClick={() => handleDelete(item.id)}
                             className="text-danger"
                           >
-                            <CIcon icon={cilTrash} className="me-2" />
+                            <Icon as={Trash} className="me-2" />
                             Delete
                           </CDropdownItem>
                         </CDropdownMenu>
                       </CDropdown> */}
                     </div>
-                  </CCardHeader>
+                  </CardHeader>
 
-                  <CCardBody className="pt-0">
-                    <CCardTitle className="contracts-card-title d-flex align-items-center gap-2">
+                  <CardBody className="pt-0">
+                    <div className="contracts-card-title d-flex align-items-center gap-2">
                       <div
                         className="d-flex align-items-center justify-content-center"
                         style={{
@@ -498,7 +459,7 @@ const Contracts = () => {
                           borderRadius: '8px',
                           fontSize: '14px',
                           fontWeight: 'bold',
-                          color: getContrastColor(customization.headerBg || '#667eea')
+                          color: getContrastColor(customization.headerBg || '#667eea'),
                         }}
                       >
                         {(item.customer?.name || 'N').charAt(0).toUpperCase()}
@@ -506,18 +467,15 @@ const Contracts = () => {
                       <span className="text-primary fw-semibold" style={{ cursor: 'pointer' }}>
                         {item.customer?.name || t('common.na')}
                       </span>
-                    </CCardTitle>
+                    </div>
 
-                    <CCardText className="contracts-card-customer">
+                    <div className="contracts-card-customer">
                       {item.description || t('contracts.noDescription')}
-                    </CCardText>
-                    <CCardText className="contracts-card-customer">
-                      {item.description || t('contracts.noDescription')}
-                    </CCardText>
+                    </div>
 
                     <div className="d-flex align-items-center gap-2 mb-3">
-                      <CIcon
-                        icon={cilBriefcase}
+                      <Icon
+                        as={Briefcase}
                         size="sm"
                         className="text-success"
                         style={{ backgroundColor: '#e6f7e6', padding: '4px', borderRadius: '4px' }}
@@ -528,13 +486,13 @@ const Contracts = () => {
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center">
-                      <CBadge
-                        color={getStatusColor(item.status || 'Draft')}
+                      <Badge
+                        colorScheme={getStatusColor(item.status || 'Draft')}
                         className="contracts-card-status"
                       >
                         {(() => {
                           const map = {
-                            'draft': 'draft',
+                            draft: 'draft',
                             'measurement scheduled': 'measurementScheduled',
                             'measurement done': 'measurementDone',
                             'design done': 'designDone',
@@ -542,107 +500,114 @@ const Contracts = () => {
                             'follow up 2': 'followUp2',
                             'follow up 3': 'followUp3',
                             'proposal accepted': 'proposalAccepted',
-                          };
-                          const key = map[(item.status || 'Draft').toLowerCase()] || null;
-                          return key ? t(`contracts.status.${key}`) : (item.status || t('contracts.status.draft'));
+                          }
+                          const key = map[(item.status || 'Draft').toLowerCase()] || null
+                          return key
+                            ? t(`contracts.status.${key}`)
+                            : item.status || t('contracts.status.draft')
                         })()}
-                      </CBadge>
+                      </Badge>
 
-                      <CButton
-                        color="primary"
+                      <Button
+                        colorScheme="brand"
                         variant="ghost"
                         size="sm"
                         onClick={() => handleNavigate(item.id)}
-                        className="px-3"
-                        style={{
-                          borderRadius: '20px',
-                          fontSize: '12px',
-                          fontWeight: '500'
-                        }}
+                        px={3}
+                        borderRadius="20px"
+                        fontSize="12px"
+                        fontWeight="500"
+                        whileTap={{ scale: 0.98 }}
                       >
                         {t('contracts.viewDetails')}
-                      </CButton>
+                      </Button>
                     </div>
-                  </CCardBody>
-                </CCard>
-              </CCol>
+                  </CardBody>
+                </Card>
+              </Box>
             ))
           )}
-        </CRow>
+        </Flex>
       ) : (
         /* Table View */
-        <CCard className="contracts-table-card">
-          <CCardBody className="p-0">
-            <div className="table-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <CTable hover responsive className="contracts-table table-modern">
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">{t('contracts.table.date')}</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">{t('contracts.table.customer')}</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">{t('contracts.table.description')}</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">{t('contracts.table.designer')}</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">{t('contracts.table.status')}</CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-center">{t('contracts.table.actions')}</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+        <Card className="contracts-table-card">
+          <CardBody className="p-0">
+            <div
+              className="table-wrap"
+              style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
+            >
+              <TableContainer>
+                <Table variant="striped" className="contracts-table table-modern">
+                  <Thead>
+                    <Tr>
+                      <Th>{t('contracts.table.date')}</Th>
+                      <Th>{t('contracts.table.customer')}</Th>
+                      <Th>
+                        {t('contracts.table.description')}
+                      </Th>
+                      <Th>{t('contracts.table.designer')}</Th>
+                      <Th>{t('contracts.table.status')}</Th>
+                      <Th className="text-center">
+                        {t('contracts.table.actions')}
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
                   {paginatedItems?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="6" className="text-center py-5">
+                    <Tr>
+                      <Td colSpan="6" className="text-center py-5">
                         <div className="text-muted">
                           <p className="mb-0">{t('contracts.empty.title')}</p>
                           <small>{t('contracts.empty.subtitle')}</small>
                         </div>
-                      </CTableDataCell>
-                    </CTableRow>
+                      </Td>
+                    </Tr>
                   ) : (
                     paginatedItems?.map((item, index) => (
-                      <CTableRow key={index} style={{ transition: 'all 0.2s ease' }}>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                      <Tr key={index} style={{ transition: 'all 0.2s ease' }}>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <span className="fw-medium">
                             {new Date(item.date || item.createdAt).toLocaleDateString()}
                           </span>
-                        </CTableDataCell>
-                        <CTableDataCell
+                        </Td>
+                        <Td
                           className="py-3 border-0 border-bottom border-light"
                           style={{
                             color: customization.headerBg || '#667eea',
                             cursor: 'pointer',
-                            fontWeight: '500'
+                            fontWeight: '500',
                           }}
                         >
                           {item.customer?.name || t('common.na')}
-                        </CTableDataCell>
-                        <CTableDataCell
+                        </Td>
+                        <Td
                           className="py-3 border-0 border-bottom border-light"
                           style={{
                             whiteSpace: 'normal',
                             wordBreak: 'break-word',
-                            maxWidth: '200px'
+                            maxWidth: '200px',
                           }}
                         >
-                          <span className="text-muted">
-                            {item.description || t('common.na')}
-                          </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                          <span className="text-muted">{item.description || t('common.na')}</span>
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <span className="fw-medium">
                             {item.designerData?.name || t('common.na')}
                           </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
-                          <CBadge
-                            color={getStatusColor(item.status || 'Draft')}
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
+                          <Badge
+                            colorScheme={getStatusColor(item.status || 'Draft')}
                             className="px-3 py-2"
                             style={{
                               borderRadius: '20px',
                               fontSize: '12px',
-                              fontWeight: '500'
+                              fontWeight: '500',
                             }}
                           >
                             {(() => {
                               const map = {
-                                'draft': 'draft',
+                                draft: 'draft',
                                 'measurement scheduled': 'measurementScheduled',
                                 'measurement done': 'measurementDone',
                                 'design done': 'designDone',
@@ -650,57 +615,47 @@ const Contracts = () => {
                                 'follow up 2': 'followUp2',
                                 'follow up 3': 'followUp3',
                                 'proposal accepted': 'proposalAccepted',
-                              };
-                              const key = map[(item.status || 'Draft').toLowerCase()] || null;
-                              return key ? t(`contracts.status.${key}`) : (item.status || t('contracts.status.draft'));
+                              }
+                              const key = map[(item.status || 'Draft').toLowerCase()] || null
+                              return key
+                                ? t(`contracts.status.${key}`)
+                                : item.status || t('contracts.status.draft')
                             })()}
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
+                          </Badge>
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light text-center">
                           <div className="d-flex justify-content-center gap-2">
-                            <CButton
-                              color="light"
+                            <Button
+                              variant="outline"
+                              colorScheme="gray"
                               size="sm"
-                              className="p-2 icon-btn"
+                              p={2}
                               onClick={() => handleNavigate(item.id)}
-                              style={{
-                                borderRadius: '8px',
-                                border: '1px solid #e3e6f0',
-                                transition: 'all 0.2s ease'
-                              }}
+                              borderRadius="8px"
                               aria-label={t('contracts.viewDetails')}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = `${customization.headerBg || '#667eea'}20`;
-                                e.currentTarget.style.borderColor = customization.headerBg || '#667eea';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '';
-                                e.currentTarget.style.borderColor = '#e3e6f0';
-                              }}
+                              whileTap={{ scale: 0.98 }}
                             >
-                              <CIcon
-                                icon={cilPencil}
-                                size="sm"
-                                style={{ color: '#28a745' }}
-                              />
-                            </CButton>
+                              <Icon as={Edit} boxSize={4} color="green.500" />
+                            </Button>
 
-                            <CButton
-                              color="light"
+                            <Button
+                              variant="outline"
+                              colorScheme="red"
                               size="sm"
-                              className="contracts-action-btn icon-btn"
+                              p={2}
                               onClick={() => handleDelete(item.id)}
                               aria-label={t('common.delete')}
+                              whileTap={{ scale: 0.98 }}
                             >
-                              <CIcon icon={cilTrash} size="sm" style={{ color: '#dc3545' }} />
-                            </CButton>
+                              <Icon as={Trash2} boxSize={4} />
+                            </Button>
                           </div>
-                        </CTableDataCell>
-                      </CTableRow>
+                        </Td>
+                      </Tr>
                     ))
                   )}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </div>
 
             {/* Pagination */}
@@ -712,30 +667,30 @@ const Contracts = () => {
                 itemsPerPage={itemsPerPage}
               />
             </div>
-          </CCardBody>
-        </CCard>
+          </CardBody>
+        </Card>
       )}
 
       {/* Contract Details Modal */}
-      <CModal
-        visible={showModal}
+      <Modal
+        isOpen={showModal}
         onClose={() => setShowModal(false)}
         size="xl"
         className="contract-modal"
       >
-        <CModalHeader
-          onClose={() => setShowModal(false)}
-          className="border-0"
-          style={{
-            background: customization.headerBg || '#667eea',
-            color: getContrastColor(customization.headerBg || '#667eea')
-          }}
-        >
-          <CModalTitle className="fw-bold">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            className="border-0 fw-bold"
+            style={{
+              background: customization.headerBg || '#667eea',
+              color: getContrastColor(customization.headerBg || '#667eea'),
+            }}
+          >
             {t('contracts.modal.title')}
-          </CModalTitle>
-        </CModalHeader>
-        <CModalBody className="p-4">
+            <ModalCloseButton />
+          </ModalHeader>
+          <ModalBody className="p-4">
           {loadings ? (
             <div className="text-center py-5">
               <div className="spinner-border text-primary" role="status">
@@ -752,7 +707,7 @@ const Contracts = () => {
                 border: '1px solid #e3e6f0',
                 borderRadius: '8px',
                 padding: '20px',
-                backgroundColor: 'var(--cui-body-bg)'
+                backgroundColor: 'var(--cui-body-bg)',
               }}
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
@@ -761,38 +716,22 @@ const Contracts = () => {
               <p className="text-muted mb-0">{t('contracts.noData')}</p>
             </div>
           )}
-        </CModalBody>
-  <CModalFooter className="border-0 bg-body-secondary">
-          <div className="d-flex gap-2 w-100 justify-content-end">
-            <CButton
-              color="secondary"
-              onClick={() => setShowModal(false)}
-              className="px-4"
-              style={{ borderRadius: '8px' }}
-            >
-              {t('common.close')}
-            </CButton>
-            {/* <CButton
-              color="primary"
-              className="px-4"
-              style={{ borderRadius: '8px' }}
-            >
-              <CIcon icon={cilPencil} className="me-2" />
-              Edit Contract
-            </CButton>
-            <CButton
-              color="success"
-              className="px-4"
-              style={{
-                borderRadius: '8px',
-                background: 'linear-gradient(45deg, #28a745, #20c997)'
-              }}
-            >
-              Download PDF
-            </CButton> */}
-          </div>
-        </CModalFooter>
-      </CModal>
+          </ModalBody>
+          <ModalFooter className="border-0 bg-body-secondary">
+            <div className="d-flex gap-2 w-100 justify-content-end">
+              <Button
+                variant="outline"
+                colorScheme="gray"
+                onClick={() => setShowModal(false)}
+                px={4}
+                borderRadius="8px"
+              >
+                {t('common.close')}
+              </Button>
+            </div>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <style>{`
         .contract-modal .modal-dialog {
@@ -817,8 +756,8 @@ const Contracts = () => {
           background: #a1a1a1;
         }
       `}</style>
-    </CContainer>
-  );
-};
+    </Container>
+  )
+}
 
-export default Contracts;
+export default Contracts

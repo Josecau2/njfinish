@@ -1,631 +1,602 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'
 import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CRow,
-  CCol,
-  CSpinner,
-  CAlert,
-  CBadge,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CButton,
-  CFormLabel
-} from '@coreui/react';
-import { useTranslation } from 'react-i18next';
-import axiosInstance from '../../../../helpers/axiosInstance';
-import PageHeader from '../../../../components/PageHeader';
-// Use lucide-only module via centralized alias
-import { Pencil, Trash } from '@/icons-lucide';
-
-// Helper function to get auth headers
+  Card,
+  CardBody,
+  CardHeader,
+  Spinner,
+  Alert,
+  Badge,
+  Input,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormLabel,
+  Button,
+  HStack,
+  Flex,
+  Box,
+  Text,
+} from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
+import axiosInstance from '../../../../helpers/axiosInstance'
 
 const StylePicturesTab = ({ manufacturer }) => {
-  const { t } = useTranslation();
-  const api_url = import.meta.env.VITE_API_URL;
-  const [stylesMeta, setStylesMeta] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [hoveredId, setHoveredId] = useState(null);
+  const { t } = useTranslation()
+  const api_url = import.meta.env.VITE_API_URL
 
-  // Edit modal states
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedStyle, setSelectedStyle] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  // Create/Delete style
-  const [createModal, setCreateModal] = useState(false);
-  const [createForm, setCreateForm] = useState({ name: '', shortName: '', description: '', code: '', imageFile: null });
-  const [createBusy, setCreateBusy] = useState(false);
-  const [deleteAsk, setDeleteAsk] = useState({ open: false, styleName: '' });
-  const [reassignTo, setReassignTo] = useState('');
+  const [stylesMeta, setStylesMeta] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [hoveredId, setHoveredId] = useState(null)
 
-  // Handle image load error - memoized to prevent re-renders
-  const handleImageError = useCallback((e, style) => {
-    const fname = style?.styleVariants?.[0]?.image;
-    // Prevent infinite loops by checking what's already been tried
-    if (fname && !e.target.dataset.fallbackTried && e.target.src.indexOf('/uploads/manufacturer_catalogs/') === -1) {
-      e.target.dataset.fallbackTried = '1';
-      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
-    } else if (e.target.src.indexOf('/images/nologo.png') === -1) {
-      e.target.src = '/images/nologo.png';
-    }
-  }, [api_url]);
+  // Edit image modal
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [selectedStyle, setSelectedStyle] = useState(null)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
-  // Add CSS styles for better mobile experience and collection hover effects
-  React.useEffect(() => {
-    const styleSheet = document.createElement('style');
-    styleSheet.innerHTML = `
-      .collection-hover {
-        transition: all 0.3s ease;
+  // Create style modal
+  const [createModal, setCreateModal] = useState(false)
+  const [createBusy, setCreateBusy] = useState(false)
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    shortName: '',
+    description: '',
+    code: '',
+    imageFile: null,
+  })
+
+  // Delete style modal
+  const [deleteAsk, setDeleteAsk] = useState({ open: false, styleName: '' })
+  const [reassignTo, setReassignTo] = useState('')
+
+  // Image error handler with fallbacks
+  const handleImageError = useCallback(
+    (e, style) => {
+      const fname = style?.styleVariants?.[0]?.image
+      if (fname && !e.target.dataset.fallbackTried) {
+        e.target.dataset.fallbackTried = '1'
+        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`
+      } else if (!e.target.src.includes('/images/nologo.png')) {
+        e.target.src = '/images/nologo.png'
       }
+    },
+    [api_url],
+  )
 
-      .collection-hover:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      @media (max-width: 576px) {
-        .collection-hover {
-          margin-bottom: 1rem;
-        }
-
-        .collection-hover:hover {
-          transform: none;
-        }
-
-        .collection-hover:active {
-          transform: scale(0.98);
-        }
-      }
-
-      @media (hover: none) and (pointer: coarse) {
-        .collection-hover:hover {
-          transform: none;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-      }
-    `;
-    document.head.appendChild(styleSheet);
-
-    return () => {
-      document.head.removeChild(styleSheet);
-    };
-  }, []);
-
-  // Fetch styles with images when component mounts or manufacturer changes
+  // Fetch styles with images
   useEffect(() => {
     if (manufacturer?.id) {
-      fetchStylesMeta();
+      fetchStylesMeta()
     }
-  }, [manufacturer?.id]);
+  }, [manufacturer?.id])
 
   const fetchStylesMeta = async () => {
-    if (!manufacturer?.id) return;
-
-    setLoading(true);
-    setError(null);
-
+    if (!manufacturer?.id) return
+    setLoading(true)
+    setError(null)
     try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles-meta`, {
-  // Authorization handled by axios interceptors
-      });
-
+      const response = await axiosInstance.get(
+        `/api/manufacturers/${manufacturer.id}/styles-meta`,
+      )
       if (response.data && response.data.styles && Array.isArray(response.data.styles)) {
-        setStylesMeta(response.data.styles);
+        setStylesMeta(response.data.styles)
       } else if (Array.isArray(response.data)) {
-        // Fallback for old format
-        setStylesMeta(response.data);
+        setStylesMeta(response.data)
       } else {
-        setStylesMeta([]);
+        setStylesMeta([])
       }
-    } catch (error) {
-      console.error('Error fetching styles meta:', error);
-      setError('Failed to load style pictures. Please try again.');
-      setStylesMeta([]);
+    } catch (err) {
+      console.error('Error fetching styles meta:', err)
+      setError(t('styles.loadFailed', 'Failed to load style pictures. Please try again.'))
+      setStylesMeta([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  // Filter styles based on search term
-  const filteredStyles = stylesMeta.filter(styleMeta =>
-    styleMeta.style?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    styleMeta.styleVariants?.[0]?.shortName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStyles = stylesMeta.filter((styleMeta) => {
+    const name = styleMeta.style?.toLowerCase() || ''
+    const short = styleMeta.styleVariants?.[0]?.shortName?.toLowerCase() || ''
+    const q = searchTerm.toLowerCase()
+    return name.includes(q) || short.includes(q)
+  })
 
-  // Handle edit image click
+  // Edit image modal open
   const handleEditImage = (style) => {
-    setSelectedStyle(style);
-    setSelectedFile(null);
-    setEditModalVisible(true);
-  };
+    setSelectedStyle(style)
+    setSelectedFile(null)
+    setEditModalVisible(true)
+  }
 
-  // Handle file selection
+  // File selection
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-  };
+    const file = e.target.files?.[0]
+    setSelectedFile(file || null)
+  }
 
-  // Handle image upload/update
+  // Upload image for style
   const handleImageUpload = async () => {
-    if (!selectedStyle || !selectedFile) return;
-
-    setUploadingImage(true);
-
+    if (!selectedStyle || !selectedFile || !manufacturer?.id) return
+    setUploadingImage(true)
     try {
-      const formData = new FormData();
-      formData.append('styleImage', selectedFile);
-      formData.append('name', selectedStyle.style);
-      formData.append('shortName', selectedStyle.styleVariants?.[0]?.shortName || '');
-      formData.append('description', selectedStyle.styleVariants?.[0]?.description || '');
-      formData.append('manufacturerId', manufacturer.id);
-      formData.append('catalogId', selectedStyle.id);
-      formData.append('code', selectedStyle.styleVariants?.[0]?.code || '');
+      const formData = new FormData()
+      formData.append('styleImage', selectedFile)
+      formData.append('name', selectedStyle.style)
+      formData.append('shortName', selectedStyle.styleVariants?.[0]?.shortName || '')
+      formData.append('description', selectedStyle.styleVariants?.[0]?.description || '')
+      formData.append('manufacturerId', manufacturer.id)
+      formData.append('catalogId', selectedStyle.id)
+      formData.append('code', selectedStyle.styleVariants?.[0]?.code || '')
 
       const response = await axiosInstance.post('/api/manufacturers/style/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          // Authorization handled by axios interceptors
-        }
-      });
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
 
-      if (response.data.success) {
-        // Refresh the styles data
-        await fetchStylesMeta();
-        setEditModalVisible(false);
-        setSelectedStyle(null);
-        setSelectedFile(null);
-
-        // Show success message (you can add a toast notification here)
-        console.log('Image updated successfully');
+      if (response.data?.success) {
+        await fetchStylesMeta()
+        setEditModalVisible(false)
+        setSelectedStyle(null)
+        setSelectedFile(null)
       }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      // Show error message (you can add a toast notification here)
+    } catch (err) {
+      console.error('Error uploading image:', err)
     } finally {
-      setUploadingImage(false);
+      setUploadingImage(false)
     }
-  };
+  }
+
+  // Create style submit
+  const handleCreateStyle = async () => {
+    if (!manufacturer?.id || !createForm.name.trim()) return
+    setCreateBusy(true)
+    try {
+      const fd = new FormData()
+      if (createForm.imageFile) fd.append('styleImage', createForm.imageFile)
+      fd.append('manufacturerId', manufacturer.id)
+      fd.append('name', createForm.name.trim())
+      fd.append('shortName', createForm.shortName || '')
+      fd.append('description', createForm.description || '')
+      fd.append('code', createForm.code || '')
+
+      await axiosInstance.post(
+        `/api/manufacturers/${manufacturer.id}/styles`,
+        fd,
+        { headers: { 'Content-Type': 'multipart/form-data' } },
+      )
+      await fetchStylesMeta()
+      setCreateModal(false)
+      setCreateForm({ name: '', shortName: '', description: '', code: '', imageFile: null })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setCreateBusy(false)
+    }
+  }
+
+  // Delete style submit
+  const handleDeleteStyle = async () => {
+    if (!manufacturer?.id || !deleteAsk.styleName) return
+    try {
+      await axiosInstance.delete(
+        `/api/manufacturers/${manufacturer.id}/styles/${encodeURIComponent(deleteAsk.styleName)}`,
+        { data: { reassignTo } },
+      )
+      await fetchStylesMeta()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setDeleteAsk({ open: false, styleName: '' })
+      setReassignTo('')
+    }
+  }
 
   if (loading) {
     return (
-      <CCard>
-        <CCardBody className="text-center p-5">
-          <CSpinner color="primary" />
-          <div className="mt-3">{t('styles.loading','Loading style pictures...')}</div>
-        </CCardBody>
-      </CCard>
-    );
+      <Card>
+        <CardBody textAlign="center" py={10}>
+          <Spinner color="brand.500" />
+          <Text mt={3}>{t('styles.loading', 'Loading style pictures...')}</Text>
+        </CardBody>
+      </Card>
+    )
   }
 
   if (error) {
     return (
-  <CCard>
-        <CCardBody>
-          <CAlert color="danger">
-    {t('styles.loadFailed','Failed to load style pictures. Please try again.')}
-          </CAlert>
-        </CCardBody>
-      </CCard>
-    );
+      <Card>
+        <CardBody>
+          <Alert status="error">{error}</Alert>
+        </CardBody>
+      </Card>
+    )
   }
 
   if (!manufacturer?.id) {
     return (
-  <CCard>
-        <CCardBody>
-          <CAlert color="info">
-    {t('styles.selectManufacturerInfo','Please select a manufacturer to view style pictures.')}
-          </CAlert>
-        </CCardBody>
-      </CCard>
-    );
+      <Card>
+        <CardBody>
+          <Alert status="info">
+            {t(
+              'styles.selectManufacturerInfo',
+              'Please select a manufacturer to view style pictures.',
+            )}
+          </Alert>
+        </CardBody>
+      </Card>
+    )
   }
 
-  if (stylesMeta.length === 0) {
+  if (!stylesMeta || stylesMeta.length === 0) {
     return (
-  <CCard>
-        <CCardBody>
-          <CAlert color="info">
-    {t('styles.noStylesInfo','No styles with pictures found for this manufacturer. Upload style images in the catalog mapping section to see them here.')}
-          </CAlert>
-        </CCardBody>
-      </CCard>
-    );
+      <Card>
+        <CardBody>
+          <Alert status="info">
+            {t(
+              'styles.noStylesInfo',
+              'No styles with pictures found for this manufacturer. Upload style images in the catalog mapping section to see them here.',
+            )}
+          </Alert>
+        </CardBody>
+      </Card>
+    )
   }
 
   return (
-    <div>
-      <style>{`
-        .overlay-action-btn {
-          min-width: 44px;
-          min-height: 44px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-        @media (max-width: 576px) {
-          .overlay-action-btn {
-            padding: 8px 10px !important;
-          }
-        }
-      `}</style>
-      <CCard>
-        <CCardHeader>
-          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-            <div>
-              <h5 className="mb-1">
-                {t('styles.header','Style Pictures for {{name}}',{ name: manufacturer.name })}
-                <CBadge color="primary" className="ms-2">
-                  {t('styles.count','{{count}} Styles',{ count: filteredStyles.length })} {searchTerm ? t('styles.filtered','(filtered from {{total}})',{ total: stylesMeta.length }) : ''}
-                </CBadge>
-              </h5>
-              <div className="d-flex gap-2 align-items-center" style={{ minWidth: '250px' }}>
-                <CButton color="success" size="sm" onClick={() => setCreateModal(true)}>
-                  {t('styles.create', 'Add Style')}
-                </CButton>
-                {/* Search Bar */}
-                <div style={{ minWidth: '250px' }}>
-                  <CInputGroup size="sm">
-                    <CInputGroupText>
-                      <i className="bi bi-search"></i>
-                    </CInputGroupText>
-                    <CFormInput
-                      placeholder={t('styles.searchPlaceholder','Search styles...')}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </CInputGroup>
-                </div>
-              </div>
-              <small className="text-muted">
-                {t('styles.helperText','View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.')}
-              </small>
-            </div>
+    <Box>
+      <Card mb={4}>
+        <CardHeader>
+          <Flex direction={{ base: 'column', md: 'row' }} gap={3} align={{ base: 'stretch', md: 'center' }} justify="space-between">
+            <Box>
+              <HStack spacing={2} align="center">
+                <Text as="h5" fontWeight="semibold">
+                  {t('styles.header', 'Style Pictures for {{name}}', { name: manufacturer.name })}
+                </Text>
+                <Badge colorScheme="blue">
+                  {t('styles.count', '{{count}} Styles', { count: filteredStyles.length })}
+                </Badge>
+                {searchTerm && (
+                  <Badge colorScheme="gray" variant="subtle">
+                    {t('styles.filtered', '(filtered from {{total}})', { total: stylesMeta.length })}
+                  </Badge>
+                )}
+              </HStack>
+              <Text mt={1} fontSize="sm" color="gray.500">
+                {t(
+                  'styles.helperText',
+                  'View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.',
+                )}
+              </Text>
+            </Box>
+            <HStack spacing={3} align="center">
+              <Input
+                placeholder={t('styles.searchPlaceholder', 'Search styles...')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                maxW={{ base: '100%', md: '260px' }}
+              />
+              <Button leftIcon={<Plus size={16} />} colorScheme="brand" onClick={() => setCreateModal(true)}>
+                {t('styles.create', 'Add Style')}
+              </Button>
+            </HStack>
+          </Flex>
+        </CardHeader>
+      </Card>
 
-            {/* Search Bar */}
-            <div style={{ minWidth: '250px' }}>
-              <CInputGroup size="sm">
-                <CInputGroupText>
-                  <i className="bi bi-search"></i>
-                </CInputGroupText>
-                <CFormInput
-                  placeholder={t('styles.searchPlaceholder','Search styles...')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </CInputGroup>
-            </div>
-          </div>
-        </CCardHeader>
-        <CCardBody>
-          {filteredStyles.length === 0 ? (
-            <CAlert color="info" className="text-center">
-              {searchTerm ? (
-                <>
-                  {t('styles.noneMatch','No styles found matching "{{term}}".',{ term: searchTerm })}
-                  <br />
-                  <small>{t('styles.tryAdjust','Try adjusting your search terms or clear the search to see all styles.')}</small>
-                </>
-              ) : (
-                t('styles.noneAvailable','No styles with pictures found for this manufacturer.')
-              )}
-            </CAlert>
-          ) : (
-            <div className="d-flex flex-wrap justify-content-start gap-3">
-              {filteredStyles.map((style, index) => (
-                <div key={style.id || index} className="text-center" style={{ minWidth: '80px', maxWidth: '120px' }}>
-                  <div
-                    className="position-relative"
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={() => setHoveredId(style.id)}
-                    onMouseLeave={() => setHoveredId(null)}
+      <Card>
+        <CardBody>
+          <Flex wrap="wrap" gap={3}>
+            {filteredStyles.map((style, index) => (
+              <Box
+                key={style.id || index}
+                textAlign="center"
+                minW="90px"
+                maxW="130px"
+              >
+                <Box
+                  position="relative"
+                  onMouseEnter={() => setHoveredId(style.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  cursor="pointer"
+                >
+                  <Box
+                    borderWidth="1px"
+                    borderRadius="md"
+                    overflow="hidden"
+                    bg="gray.50"
                   >
-                    <div
-                      className="collection-hover border rounded shadow-sm position-relative d-inline-block"
+                    <LazyLoadImage
+                      src={
+                        style.styleVariants?.[0]?.image
+                          ? `${api_url}/uploads/images/${style.styleVariants[0].image}`
+                          : '/images/nologo.png'
+                      }
+                      alt={style.styleVariants?.[0]?.shortName || style.style}
                       style={{
-                        overflow: 'hidden',
-                        borderRadius: '8px',
-                        transition: 'transform 0.3s ease',
-                        backgroundColor: '#f8f9fa',
-                        maxWidth: '100%'
+                        maxWidth: '120px',
+                        maxHeight: '150px',
+                        height: 'auto',
+                        width: 'auto',
+                        display: 'block',
                       }}
-                    >
-                      <img
-                        src={
-                          style.styleVariants?.[0]?.image
-                            ? `${api_url}/uploads/images/${style.styleVariants[0].image}`
-                            : "/images/nologo.png"
-                        }
-                        alt={style.styleVariants?.[0]?.shortName || style.style}
-                        style={{
-                          maxWidth: '120px',
-                          maxHeight: '150px',
-                          height: 'auto',
-                          width: 'auto',
-                          borderRadius: '8px',
-                          transition: 'transform 0.3s ease',
-                          transform: hoveredId === style.id ? 'scale(1.02)' : 'scale(1)',
-                          display: 'block'
+                      placeholderSrc="/images/nologo.png"
+                      effect="blur"
+                      onError={(e) => handleImageError(e, style)}
+                    />
+                  </Box>
+
+                  {/* Overlay actions */}
+                  <Flex
+                    position="absolute"
+                    inset={0}
+                    align="center"
+                    justify="center"
+                    bg="rgba(0,0,0,0.6)"
+                    color="white"
+                    opacity={hoveredId === style.id ? 1 : 0}
+                    transition="opacity 0.2s ease-in-out"
+                    borderRadius="md"
+                  >
+                    <HStack spacing={3}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEditImage(style)
                         }}
-                        className="img-fluid"
-                        onError={(e) => handleImageError(e, style)}
-                      />
-                      <div
-                        className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                        style={{
-                          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                          color: '#fff',
-                          opacity: hoveredId === style.id ? 1 : 0,
-                          transition: 'opacity 0.3s ease',
-                          fontSize: '0.85rem',
-                          fontWeight: '500',
-                          borderRadius: '8px',
-                        }}
+                        leftIcon={<Pencil size={14} />}
                       >
-                        <CButton
-                          color="light"
-                          size="sm"
-                          className="overlay-action-btn"
-                          aria-label={t('types.ui.uploadImage','Upload Image')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditImage(style);
-                          }}
-                          style={{ fontSize: '0.75rem' }}
-                        >
-                          <Pencil size={18} aria-hidden="true" className="me-1" /> {t('types.ui.uploadImage','Upload Image')}
-                        </CButton>
-                        <CButton
-                          color="danger"
-                          size="sm"
-                          className="ms-2 overlay-action-btn"
-                          aria-label={t('common.delete','Delete')}
-                          onClick={(e) => { e.stopPropagation(); setDeleteAsk({ open: true, styleName: style.style }); setReassignTo(''); }}
-                          style={{ fontSize: '0.75rem' }}
-                        >
-                          <Trash size={18} aria-hidden="true" />
-                        </CButton>
-                      </div>
-                    </div>
+                        {t('types.ui.uploadImage', 'Upload Image')}
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setDeleteAsk({ open: true, styleName: style.style })
+                          setReassignTo('')
+                        }}
+                        leftIcon={<Trash size={14} />}
+                      >
+                        {t('common.delete', 'Delete')}
+                      </Button>
+                    </HStack>
+                  </Flex>
+                </Box>
+
+                {/* Caption */}
+                <Box mt={2} maxW="120px" mx="auto">
+                  <Text fontSize="sm" noOfLines={1} title={style.styleVariants?.[0]?.shortName || style.style}>
+                    {style.styleVariants?.[0]?.shortName || style.style}
+                  </Text>
+                  {style.styleVariants?.length > 0 && (
+                    <Box textAlign="center" mt={1}>
+                      <Badge colorScheme="gray" fontSize="0.6rem">
+                        {style.styleVariants.length} {t('styles.variants', 'variants')}
+                      </Badge>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            ))}
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Create Style Modal */}
-      <CModal visible={createModal} onClose={() => setCreateModal(false)} className="no-gradient-modal">
-        <PageHeader title={t('styles.createHeader', 'Add Style')} />
-        <CModalBody>
-          <div className="row g-3">
-            <div className="col-md-6">
-              <CFormLabel>{t('styles.name','Style Name')}</CFormLabel>
-              <CFormInput value={createForm.name} onChange={(e)=>setCreateForm(p=>({...p,name:e.target.value}))}/>
-            </div>
-            <div className="col-md-6">
-              <CFormLabel>{t('styles.short','Short Name')}</CFormLabel>
-              <CFormInput value={createForm.shortName} onChange={(e)=>setCreateForm(p=>({...p,shortName:e.target.value}))}/>
-            </div>
-            <div className="col-12">
-              <CFormLabel>{t('common.description','Description')}</CFormLabel>
-              <CFormInput value={createForm.description} onChange={(e)=>setCreateForm(p=>({...p,description:e.target.value}))}/>
-            </div>
-            <div className="col-md-6">
-              <CFormLabel>{t('common.code','Code')}</CFormLabel>
-              <CFormInput value={createForm.code} onChange={(e)=>setCreateForm(p=>({...p,code:e.target.value}))}/>
-            </div>
-            <div className="col-md-6">
-              <CFormLabel>{t('common.image','Image')}</CFormLabel>
-              <input className="form-control" type="file" accept="image/*" onChange={(e)=>setCreateForm(p=>({...p,imageFile:e.target.files?.[0]||null}))}/>
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={()=>setCreateModal(false)} disabled={createBusy}>Cancel</CButton>
-          <CButton color="primary" disabled={createBusy || !createForm.name.trim()} onClick={async()=>{
-            setCreateBusy(true);
-            try{
-              const fd=new FormData();
-              if(createForm.imageFile) fd.append('styleImage', createForm.imageFile);
-              fd.append('manufacturerId', manufacturer.id);
-              fd.append('name', createForm.name.trim());
-              fd.append('shortName', createForm.shortName||'');
-              fd.append('description', createForm.description||'');
-              fd.append('code', createForm.code||'');
-              await axiosInstance.post(`/api/manufacturers/${manufacturer.id}/styles`, fd, { headers: { 'Content-Type': 'multipart/form-data' }});
-              await fetchStylesMeta();
-              setCreateModal(false);
-            }catch(e){ console.error(e); }
-            finally{ setCreateBusy(false);} }}>
-            {createBusy? <><CSpinner size="sm" className="me-2"/>Saving...</>: 'Save'}
-          </CButton>
-        </CModalFooter>
-      </CModal>
+      <Modal isOpen={createModal} onClose={() => setCreateModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('styles.createHeader', 'Add Style')}</ModalHeader>
+          <ModalBody>
+            <Flex direction="column" gap={3}>
+              <Box>
+                <FormLabel>{t('styles.name', 'Style Name')}</FormLabel>
+                <Input
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
+                />
+              </Box>
+              <Box>
+                <FormLabel>{t('styles.short', 'Short Name')}</FormLabel>
+                <Input
+                  value={createForm.shortName}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, shortName: e.target.value }))}
+                />
+              </Box>
+              <Box>
+                <FormLabel>{t('common.description', 'Description')}</FormLabel>
+                <Input
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))}
+                />
+              </Box>
+              <Box>
+                <FormLabel>{t('common.code', 'Code')}</FormLabel>
+                <Input
+                  value={createForm.code}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, code: e.target.value }))}
+                />
+              </Box>
+              <Box>
+                <FormLabel>{t('common.image', 'Image')}</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setCreateForm((p) => ({ ...p, imageFile: e.target.files?.[0] || null }))
+                  }
+                />
+              </Box>
+            </Flex>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={() => setCreateModal(false)} disabled={createBusy}>
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button colorScheme="brand" onClick={handleCreateStyle} isLoading={createBusy}>
+              {t('common.save', 'Save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-      {/* Delete Style Confirm */}
-      <CModal visible={deleteAsk.open} onClose={()=>setDeleteAsk({open:false,styleName:''})} className="no-gradient-modal">
-        <PageHeader title={t('styles.deleteHeader','Delete Style')} />
-        <CModalBody>
-          <p>{t('styles.deleteConfirm','Delete style')} <strong>{deleteAsk.styleName}</strong>?</p>
-          <CFormLabel>{t('styles.reassign','Reassign items to (leave empty to clear)')}</CFormLabel>
-          <CFormInput value={reassignTo} onChange={(e)=>setReassignTo(e.target.value)} placeholder={t('styles.reassignPh','New style name or blank')}/>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={()=>setDeleteAsk({open:false,styleName:''})}>Cancel</CButton>
-          <CButton color="danger" onClick={async()=>{
-            try{
-              await axiosInstance.delete(`/api/manufacturers/${manufacturer.id}/styles/${encodeURIComponent(deleteAsk.styleName)}`, { data: { reassignTo }});
-              await fetchStylesMeta();
-            }catch(e){ console.error(e); }
-            finally{ setDeleteAsk({open:false,styleName:''}); setReassignTo(''); }
-          }}>
-            {t('common.delete','Delete')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
+      {/* Delete Confirm Modal */}
+      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('styles.deleteHeader', 'Delete Style')}</ModalHeader>
+          <ModalBody>
+            <Text>
+              {t('styles.deleteConfirm', 'Delete style')}{' '}
+              <strong>{deleteAsk.styleName}</strong>?
+            </Text>
+            <Box mt={4}>
+              <FormLabel>
+                {t('styles.reassign', 'Reassign items to (leave empty to clear)')}
+              </FormLabel>
+              <Input
+                value={reassignTo}
+                onChange={(e) => setReassignTo(e.target.value)}
+                placeholder={t('styles.reassignPh', 'New style name or blank')}
+              />
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={() => setDeleteAsk({ open: false, styleName: '' })}>
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button colorScheme="red" onClick={handleDeleteStyle}>
+              {t('common.delete', 'Delete')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-                    {/* Style Info */}
-                    <div className="mt-2" style={{ maxWidth: '120px' }}>
-                      <div
-                        className="text-muted fw-semibold text-truncate"
-                        title={style.styleVariants?.[0]?.shortName || style.style}
-                        style={{ fontSize: '0.8rem', lineHeight: '1.2' }}
-                      >
-                        {style.styleVariants?.[0]?.shortName || style.style}
-                      </div>
-
-                      {style.styleVariants?.length > 0 && (
-                        <div className="text-center mt-1">
-                          <CBadge
-                            color="secondary"
-                            style={{ fontSize: '0.6rem' }}
-                          >
-                            {style.styleVariants.length} {t('styles.variants','variants')}
-                          </CBadge>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CCardBody>
-      </CCard>
-
-      {/* Image Edit Modal */}
-      <style>{`
-        .no-gradient-modal .modal-header {
-          background: #fff !important;
-          border-bottom: 1px solid #dee2e6 !important;
-          color: #212529 !important;
-        }
-        .no-gradient-modal .modal-title {
-          color: #212529 !important;
-        }
-      `}</style>
-      <CModal
-        visible={editModalVisible}
+      {/* Edit Image Modal */}
+      <Modal
+        isOpen={editModalVisible}
         onClose={() => {
-          setEditModalVisible(false);
-          setSelectedStyle(null);
-          setSelectedFile(null);
+          setEditModalVisible(false)
+          setSelectedStyle(null)
+          setSelectedFile(null)
         }}
         size="lg"
-        className="no-gradient-modal"
       >
-  <PageHeader title={t('styles.editImage','Edit Style Image')} />
-        <CModalBody>
-          {selectedStyle && (
-            <>
-              <div className="mb-3">
-    <strong>{t('common.style','Style')}:</strong> {selectedStyle.style}
-              </div>
-
-              {/* Current Image Preview */}
-              <div className="mb-4">
-    <h6>{t('types.ui.currentImage','Current Image:')}</h6>
-                <div
-                  className="d-flex justify-content-center p-3 border rounded"
-                  style={{ backgroundColor: '#f8f9fa' }}
-                >
-                  <img
-                    src={
-                      selectedStyle.styleVariants?.[0]?.image
-                        ? `${api_url}/uploads/images/${selectedStyle.styleVariants[0].image}`
-                        : '/default-image.png'
-                    }
-                    alt={selectedStyle.style}
-                    style={{
-                      maxWidth: '200px',
-                      maxHeight: '200px',
-                      objectFit: 'contain',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '4px'
-                    }}
-                    onError={(e) => handleImageError(e, selectedStyle)}
-                  />
-                </div>
-              </div>
-
-              {/* File Upload */}
-              <div className="mb-3">
-                <CFormLabel htmlFor="imageUpload">{t('styles.uploadNewImage','Upload New Image:')}</CFormLabel>
-                <input
-                  type="file"
-                  id="imageUpload"
-                  className="form-control"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-                <div className="mt-2 text-muted">
-                  {selectedFile ? (
-                    <>{t('styles.selected','Selected')}: {selectedFile.name}</>
-                  ) : selectedStyle.styleVariants?.[0]?.image ? (
-                    <>{t('types.ui.current','Current')}: {selectedStyle.styleVariants[0].image}</>
-                  ) : (
-                    <>{t('types.ui.noImage','No image uploaded')}</>
-                  )}
-                </div>
-              </div>
-
-              {/* Preview of new image */}
-              {selectedFile && (
-                <div className="mb-3">
-                  <h6>{t('styles.previewNewImage','New Image Preview:')}</h6>
-                  <div
-                    className="d-flex justify-content-center p-3 border rounded"
-                    style={{ backgroundColor: '#f8f9fa' }}
-                  >
-                    <img
-                      src={URL.createObjectURL(selectedFile)}
-                      alt="Preview"
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('styles.editImage', 'Edit Style Image')}</ModalHeader>
+          <ModalBody>
+            {selectedStyle && (
+              <>
+                <Box mb={3}>
+                  <Text>
+                    <strong>{t('common.style', 'Style')}:</strong> {selectedStyle.style}
+                  </Text>
+                </Box>
+                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg="gray.50">
+                  <Text fontWeight="semibold" mb={2}>
+                    {t('types.ui.currentImage', 'Current Image:')}
+                  </Text>
+                  <Flex justify="center">
+                    <LazyLoadImage
+                      src={
+                        selectedStyle.styleVariants?.[0]?.image
+                          ? `${api_url}/uploads/images/${selectedStyle.styleVariants[0].image}`
+                          : '/default-image.png'
+                      }
+                      alt={selectedStyle.style}
                       style={{
                         maxWidth: '200px',
                         maxHeight: '200px',
                         objectFit: 'contain',
                         border: '1px solid #dee2e6',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
                       }}
+                      placeholderSrc="/default-image.png"
+                      effect="blur"
+                      onError={(e) => handleImageError(e, selectedStyle)}
                     />
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setEditModalVisible(false);
-              setSelectedStyle(null);
-              setSelectedFile(null);
-            }}
-          >
-            {t('common.cancel','Cancel')}
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={handleImageUpload}
-            disabled={!selectedFile || uploadingImage}
-          >
-            {uploadingImage ? (
-              <>
-                <CSpinner size="sm" className="me-2" />
-                {t('common.uploading','Uploading...')}
-              </>
-            ) : (
-              t('types.ui.uploadImage','Upload Image')
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </div>
-  );
-};
+                  </Flex>
+                </Box>
 
-export default StylePicturesTab;
+                <Box mb={3}>
+                  <FormLabel htmlFor="imageUpload">
+                    {t('styles.uploadNewImage', 'Upload New Image:')}
+                  </FormLabel>
+                  <Input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <Text mt={2} color="gray.600" fontSize="sm">
+                    {selectedFile
+                      ? `${t('styles.selected', 'Selected')}: ${selectedFile.name}`
+                      : selectedStyle.styleVariants?.[0]?.image
+                        ? `${t('types.ui.current', 'Current')}: ${selectedStyle.styleVariants[0].image}`
+                        : t('types.ui.noImage', 'No image uploaded')}
+                  </Text>
+                </Box>
+
+                {selectedFile && (
+                  <Box>
+                    <Text fontWeight="semibold" mb={2}>
+                      {t('styles.previewNewImage', 'New Image Preview:')}
+                    </Text>
+                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg="gray.50">
+                      <LazyLoadImage
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="Preview"
+                        style={{
+                          maxWidth: '200px',
+                          maxHeight: '200px',
+                          objectFit: 'contain',
+                          border: '1px solid #dee2e6',
+                          borderRadius: '4px',
+                        }}
+                        placeholderSrc="/default-image.png"
+                        effect="blur"
+                      />
+                    </Flex>
+                  </Box>
+                )}
+              </>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              mr={3}
+              onClick={() => {
+                setEditModalVisible(false)
+                setSelectedStyle(null)
+                setSelectedFile(null)
+              }}
+            >
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              colorScheme="brand"
+              onClick={handleImageUpload}
+              isDisabled={!selectedFile || uploadingImage}
+              leftIcon={<Upload size={16} />}
+              isLoading={uploadingImage}
+            >
+              {t('types.ui.uploadImage', 'Upload Image')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
+  )
+}
+
+export default StylePicturesTab

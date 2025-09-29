@@ -1,8 +1,0 @@
-@mixin touch-target($size:44px){ min-height:$size; min-width:$size; } /* Apple 44pt / Material 48dp; WCAG 2.2 min 24×24 px. */
-@mixin clamp-lines($n){ display:-webkit-box; -webkit-line-clamp:$n; -webkit-box-orient:vertical; overflow:hidden; }
-@mixin sticky-top($z:20){ position:sticky; top:0; z-index:$z; background:var(--surface); }
-@mixin safe-area($pad:.5rem){
-  padding-left:calc(#{$pad} + env(safe-area-inset-left));
-  padding-right:calc(#{$pad} + env(safe-area-inset-right));
-  padding-bottom:calc(#{$pad} + env(safe-area-inset-bottom));
-}

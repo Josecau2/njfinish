@@ -1,48 +1,95 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
-  CBadge,
-  CButton,
-  CCard,
-  CCardBody,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CSpinner
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilBell, cilBellExclamation } from '@coreui/icons'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotifications, setUnreadCount, markNotificationAsRead } from '../store/notificationSlice'
+  Box,
+  IconButton,
+  Badge,
+  Spinner,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Flex,
+  Text,
+  Button,
+  Stack,
+  VisuallyHidden,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { Bell, BellRing, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
+import { useSelector } from 'react-redux'
 import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
 import { getFreshestToken } from '../utils/authToken'
 
+const ICON_CONFIG = {
+  proposal_accepted: { icon: CheckCircle2, color: 'brand.500' },
+  proposal_rejected: { icon: AlertTriangle, color: 'orange.500' },
+  customer_created: { icon: Info, color: 'brand.500' },
+  system: { icon: Info, color: 'muted' },
+  default: { icon: Info, color: 'muted' },
+}
+
 const NotificationBell = () => {
-  const user = (() => { try { return JSON.parse(localStorage.getItem('user')) } catch { return null } })()
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user'))
+    } catch {
+      return null
+    }
+  })()
   const token = getFreshestToken()
-  // Show bell for any authenticated user (admins and contractors)
-  if (!user || !token) return null
-  const isAdmin = user && (String(user.role).toLowerCase() === 'admin' || String(user.role).toLowerCase() === 'super_admin')
 
-  // Get customization for proper contrast
+  // Local state for notifications instead of Redux
+  const [notifications, setNotifications] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+
   const customization = useSelector((state) => state.customization) || {}
-  const optimalTextColor = getContrastColor(customization.headerBg || '#ffffff')
 
-  const dispatch = useDispatch()
-  const { notifications, unreadCount, loading } = useSelector((state) => state.notification)
-  const [isOpen, setIsOpen] = useState(false)
+  const fallbackTextColor = useColorModeValue('#0f172a', '#e2e8f0')
+  const optimalTextColor = customization.headerBg
+    ? getContrastColor(customization.headerBg)
+    : fallbackTextColor
+
+  const menuBg = useColorModeValue('white', 'slate.800')
+  const menuBorder = useColorModeValue('rgba(15,23,42,0.12)', 'rgba(148,163,184,0.24)')
+  const unreadBackground = useColorModeValue('brand.50', 'slate.700')
+  const emptyStateColor = useColorModeValue('muted', 'slate.300')
+
+  const [liveMessage, setLiveMessage] = useState('')
+  const prevUnreadCount = useRef()
+
+  const [menuOpen, setMenuOpen] = useState(false)
   const [fetching, setFetching] = useState(false)
   const intervalRef = useRef(null)
   const disabledRef = useRef(false)
 
-  // Fetch unread count periodically
-  useEffect(() => {
-  if (disabledRef.current) return
-  fetchUnreadCount()
+  const hasSession = Boolean(user && token)
 
-    // Poll for new notifications (configurable via VITE_NOTIFICATIONS_POLL_INTERVAL_MS)
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const tok = getFreshestToken()
+      if (!tok) return
+      const { data } = await axiosInstance.get('/api/notifications/unread-count', {
+        __suppressAuthLogout: true,
+      })
+      if (data && typeof data.unreadCount === 'number') {
+        setUnreadCount(data.unreadCount)
+      }
+    } catch (error) {
+      if (axios.isCancel && axios.isCancel(error)) return
+      const status = error?.response?.status
+      if (status === 401 || status === 403) {
+        setUnreadCount(0)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hasSession || disabledRef.current) return
+
+    fetchUnreadCount()
     const pollMs = Number(import.meta.env.VITE_NOTIFICATIONS_POLL_INTERVAL_MS) || 15000
     intervalRef.current = setInterval(() => {
       if (!disabledRef.current) {
@@ -55,54 +102,59 @@ const NotificationBell = () => {
         clearInterval(intervalRef.current)
       }
     }
-  }, [])
+  }, [fetchUnreadCount, hasSession])
 
-  const fetchUnreadCount = async () => {
-    try {
-      const token = getFreshestToken()
-      if (!token) return
-      const { data } = await axiosInstance.get('/api/notifications/unread-count', { __suppressAuthLogout: true })
-      if (data && typeof data.unreadCount === 'number') {
-        dispatch(setUnreadCount(data.unreadCount))
-      }
-    } catch (error) {
-      if (axios.isCancel && axios.isCancel(error)) return
-      const status = error?.response?.status
-      if (status === 401 || status === 403) {
-        // Stay silent & show zero; do NOT logout or stop entire app
-        dispatch(setUnreadCount(0))
-        return
-      }
-      if ((error?.message || '').toLowerCase() === 'auth-expired') return
-      // eslint-disable-next-line no-console
-      console.warn('Bell fetch error (non-auth):', error?.message || error)
+  useEffect(() => {
+    if (!hasSession || typeof unreadCount !== 'number') return
+
+    const prev = prevUnreadCount.current
+    let message
+
+    if (typeof prev !== 'number') {
+      message =
+        unreadCount === 0
+          ? 'No unread notifications.'
+          : unreadCount === 1
+            ? '1 unread notification.'
+            : `${unreadCount} unread notifications.`
+    } else if (unreadCount > prev) {
+      const delta = unreadCount - prev
+      message = delta === 1 ? '1 new notification.' : `${delta} new notifications.`
+    } else if (unreadCount < prev) {
+      message =
+        unreadCount === 0
+          ? 'No unread notifications remaining.'
+          : unreadCount === 1
+            ? '1 unread notification remaining.'
+            : `${unreadCount} unread notifications remaining.`
     }
+
+    if (message) {
+      setLiveMessage(message)
+    }
+    prevUnreadCount.current = unreadCount
+  }, [hasSession, unreadCount])
+
+  if (!hasSession) {
+    return null
   }
 
   const fetchNotifications = async () => {
     if (fetching) return
-
     setFetching(true)
     try {
-      const token = getFreshestToken()
-      if (!token) return
-
+      const tok = getFreshestToken()
+      if (!tok) return
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
-        __suppressAuthLogout: true
+        __suppressAuthLogout: true,
       })
       if (data) {
-        dispatch(setNotifications(data.data || []))
-        if (typeof data.unreadCount === 'number') dispatch(setUnreadCount(data.unreadCount))
+        setNotifications(data.data || [])
+        if (typeof data.unreadCount === 'number') setUnreadCount(data.unreadCount)
       }
     } catch (error) {
       if (axios.isCancel && axios.isCancel(error)) return
-      const status = error?.response?.status
-      if (status === 401 || status === 403) {
-        return
-      }
-      // eslint-disable-next-line no-console
-      console.warn('Error fetching notifications:', error?.message || error)
     } finally {
       setFetching(false)
     }
@@ -110,323 +162,235 @@ const NotificationBell = () => {
 
   const markAllReadSilently = async () => {
     try {
-      const token = getFreshestToken()
-      if (!token) return
-  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
-      // Optimistically zero the badge and mark local items as read
-      dispatch(setUnreadCount(0))
+      const tok = getFreshestToken()
+      if (!tok) return
+      await axiosInstance.post('/api/notifications/mark-all-read', null, {
+        __suppressAuthLogout: true,
+      })
+      setUnreadCount(0)
       const nowIso = new Date().toISOString()
       if (Array.isArray(notifications) && notifications.length > 0) {
-        const updated = notifications.map(n => n.is_read ? n : { ...n, is_read: true, read_at: nowIso })
-        dispatch(setNotifications(updated))
+        const updated = notifications.map((n) =>
+          n.is_read ? n : { ...n, is_read: true, read_at: nowIso },
+        )
+        setNotifications(updated)
       }
-  } catch (error) {
+    } catch (error) {
       if (axios.isCancel && axios.isCancel(error)) return
-      // Non-fatal; leave as-is if API fails
-      const status = error?.response?.status
-      if (status !== 401 && status !== 403) {
-        console.error('Error marking all read on open:', error?.message || error)
-      }
     }
   }
 
-  const handleToggle = async () => {
-    const nextOpen = !isOpen
-    setIsOpen(nextOpen)
+  const handleToggle = async (nextOpen) => {
+    setMenuOpen(nextOpen)
     if (nextOpen) {
-      // Always load a fresh preview
       await fetchNotifications()
-      // Zero the counter upon opening and mark as read
       await markAllReadSilently()
     }
   }
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const token = getFreshestToken()
-      if (!token) return
-
-  await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, { __suppressAuthLogout: true })
-      dispatch(markNotificationAsRead(notificationId))
+      const tok = getFreshestToken()
+      if (!tok) return
+      await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, {
+        __suppressAuthLogout: true,
+      })
+      // Update the specific notification as read locally
+      setNotifications(prevNotifications =>
+        prevNotifications.map(n =>
+          n.id === notificationId
+            ? { ...n, is_read: true, read_at: new Date().toISOString() }
+            : n
+        )
+      )
       fetchUnreadCount()
     } catch (error) {
       if (axios.isCancel && axios.isCancel(error)) return
-      const status = error?.response?.status
-      if (status === 401 || status === 403) {
-        return
-      }
-      console.error('Error marking notification as read:', error?.message || error)
     }
   }
 
   const handleMarkAllAsRead = async () => {
-    try {
-      const token = getFreshestToken()
-      if (!token) return
-
-  await axiosInstance.post('/api/notifications/mark-all-read', null, { __suppressAuthLogout: true })
-      dispatch(setUnreadCount(0))
-      fetchNotifications()
-    } catch (error) {
-      if (axios.isCancel && axios.isCancel(error)) return
-      const status = error?.response?.status
-      if (status === 401 || status === 403) {
-        return
-      }
-      console.error('Error marking all notifications as read:', error?.message || error)
-    }
+    await markAllReadSilently()
+    await fetchNotifications()
   }
 
-  const formatTimeAgo = (dateString) => {
-    if (!dateString) return 'N/A';
-
-    try {
-      const date = new Date(dateString);
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return 'N/A';
-      }
-
-      const now = new Date()
-      const diffInSeconds = Math.floor((now - date) / 1000)
-
-      if (diffInSeconds < 60) return 'Just now'
-      if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-      if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-      if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
-      return date.toLocaleDateString()
-    } catch (error) {
-      console.error('Error formatting time ago:', error);
-      return 'N/A';
-    }
-  }
-
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case 'proposal_accepted':
-        return '✅'
-      case 'proposal_rejected':
-        return '❌'
-      case 'customer_created':
-        return '👤'
-      case 'system':
-        return '⚙️'
-      default:
-        return '📧'
-    }
-  }
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
-        return 'danger'
-      case 'medium':
-        return 'warning'
-      case 'low':
-        return 'info'
-      default:
-        return 'secondary'
-    }
-  }
-
-  // Resolve a destination URL for a notification
   const resolveNotificationUrl = (n) => {
     if (!n) return null
     if (n.action_url) return n.action_url
-    const p = n.payload || {}
-    if (p.proposalId) return `/proposals/${p.proposalId}`
-    if (p.orderId) return `/orders/${p.orderId}`
-    if (p.customerId) return `/customers/edit/${p.customerId}`
+    const payload = n.payload || {}
+    if (payload.proposalId) return `/proposals/${payload.proposalId}`
+    if (payload.orderId) return `/orders/${payload.orderId}`
+    if (payload.customerId) return `/customers/edit/${payload.customerId}`
     return null
   }
 
+  const renderNotificationIcon = (type) => {
+    const config = ICON_CONFIG[type] || ICON_CONFIG.default
+    const Icon = config.icon || Info
+    return (
+      <Box color={config.color} mt={0.5} aria-hidden>
+        <Icon size={18} />
+      </Box>
+    )
+  }
+
   return (
-    <>
-      {/* Notification badge positioning fix */}
-      <style>{`
-        .notification-bell {
-          position: relative;
-          overflow: visible !important;
+    <Menu isOpen={menuOpen} onOpen={() => handleToggle(true)} onClose={() => handleToggle(false)}>
+      <VisuallyHidden aria-live="polite" role="status">
+        {liveMessage || ' '}
+      </VisuallyHidden>
+      <MenuButton
+        as={IconButton}
+        variant="ghost"
+        aria-label={
+          unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'
         }
-        .notification-bell .dropdown-toggle {
-          overflow: visible !important;
+        icon={
+          <Box position="relative">
+            {unreadCount > 0 ? (
+              <BellRing size={22} color={optimalTextColor} />
+            ) : (
+              <Bell size={22} color={optimalTextColor} />
+            )}
+            {unreadCount > 0 && (
+              <Badge
+                colorScheme="red"
+                position="absolute"
+                top="-1"
+                right="-2"
+                fontSize="0.65rem"
+                borderRadius="full"
+                minW="1.1rem"
+                h="1.1rem"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </Badge>
+            )}
+          </Box>
         }
-        .notification-badge {
-          position: absolute;
-          top: 4px;
-          right: 2px;
-          font-size: 0.7rem;
-          min-width: 1.1rem;
-          height: 1.1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #dc3545;
-          color: white;
-          font-weight: 600;
-          border: 2px solid ${customization.headerBg || '#ffffff'};
-          z-index: 10;
-          transform: none;
-        }
-        /* Mobile specific fixes */
-        @media (max-width: 767.98px) {
-          .notification-bell {
-            margin-right: 4px;
-          }
-          .notification-badge {
-            top: 0px;
-            right: 4px;
-            font-size: 0.65rem;
-            min-width: 1rem;
-            height: 1rem;
-          }
-        }
-
-        /* Preview list styles */
-        .notification-list { max-height: 320px; overflow-y: auto; }
-        .notification-item { border-radius: 8px; transition: background .15s ease; }
-        .notification-item:hover { background: rgba(0,0,0,.04); }
-        [data-coreui-theme="dark"] .notification-item:hover { background: rgba(255,255,255,.06); }
-        .notification-item.is-read { opacity: .7; }
-        .notif-icon { width: 24px; height: 24px; display: grid; place-items: center; font-size: 16px; }
-        .notif-title { line-height: 1.25; }
-        .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-      `}</style>
-
-      <CDropdown
-        variant="nav-item"
-        placement="bottom-end"
-        alignment="end"
-        visible={isOpen}
-        onToggle={handleToggle}
-        offset={[0, 12]}
-        portal
-        className="modern-header__nav-item notification-bell"
+      />
+      <MenuList
+        bg={menuBg}
+        borderColor={menuBorder}
+        minW="320px"
+        maxW="360px"
+        maxH="420px"
+        overflowY="auto"
+        p={0}
       >
-        <CDropdownToggle
-          caret={false}
-          className="modern-header__dropdown-toggle nav-link border-0 bg-transparent position-relative d-flex align-items-center justify-content-center"
-          style={{ border: 'none', background: 'transparent', minHeight: '44px', minWidth: '44px', overflow: 'visible' }}
-          aria-label={unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'}
-        >
-          <CIcon
-            icon={unreadCount > 0 ? cilBellExclamation : cilBell}
-            size="lg"
-            style={{
-              color: unreadCount > 0 ? '#ffc107' : optimalTextColor
-            }}
-          />
-          {unreadCount > 0 && (
-            <span
-              className="notification-badge"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-        </CDropdownToggle>
+        <Box px={4} py={3} borderBottom="1px solid" borderColor={menuBorder}>
+          <Flex align="center" justify="space-between">
+            <Text fontWeight="semibold">Notifications</Text>
+            {unreadCount > 0 && (
+              <Button size="sm" variant="ghost" onClick={handleMarkAllAsRead} isDisabled={fetching}>
+                Mark all read
+              </Button>
+            )}
+          </Flex>
+        </Box>
 
-      <CDropdownMenu
-        className="notification-mobile-dropdown header-dropdown__menu notification-bell__menu"
-        style={{
-          width: 'clamp(260px, 85vw, 360px)',
-          maxHeight: 'min(420px, calc(100vh - 96px))',
-          overflowY: 'auto',
-          zIndex: 2050
-        }}
-        aria-label="Notifications list"
-      >
-        <div className="dropdown-header d-flex justify-content-between align-items-center px-3 py-2">
-          <strong>Notifications</strong>
-          {unreadCount > 0 && (
-            <CButton
-              size="sm"
-              variant="ghost"
-              color="primary"
-              onClick={handleMarkAllAsRead}
-              type="button"
-              aria-label="Mark all notifications as read"
-              style={{ minHeight: '44px' }}
-            >
-              Mark all read
-            </CButton>
-          )}
-        </div>
-
-        {fetching && (
-          <div className="text-center py-4">
-            <CSpinner size="sm" />
-          </div>
-        )}
-
-        {!fetching && Array.isArray(notifications) && notifications.length > 0 ? (
-          <div className="notification-list px-2 pb-2">
+        {fetching ? (
+          <Flex py={6} align="center" justify="center">
+            <Spinner size="sm" />
+          </Flex>
+        ) : Array.isArray(notifications) && notifications.length > 0 ? (
+          <Stack spacing={1} px={2} py={2}>
             {notifications.map((n) => {
               const url = resolveNotificationUrl(n)
-              const aria = n.title || n.subject || 'Notification'
-              return (
-              <div
-                key={n.id || `${n.type}-${n.created_at}`}
-                className={`notification-item d-flex gap-2 align-items-start px-2 py-2 ${n.is_read ? 'is-read' : ''} ${url ? 'clickable' : ''}`}
-                role={url ? 'button' : undefined}
-                tabIndex={url ? 0 : undefined}
-                aria-label={url ? `Open ${aria}` : aria}
-                onClick={() => {
-                  const target = url
-                  if (target) {
-                    // Best effort mark-as-read, then navigate
-                    if (!n.is_read && n.id) {
-                      handleMarkAsRead(n.id)
-                    }
-                    window.location.href = target
-                  }
-                }}
-                onKeyDown={(e) => {
-                  const target = url
-                  if (!target) return
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    window.location.href = target
-                  }
-                }}
-              >
-                <div className="notif-icon" aria-hidden>
-                  {getNotificationIcon(n.type)}
-                </div>
-                <div className="flex-grow-1">
-                  <div className="notif-title fw-semibold">
-                    {n.title || n.subject || 'Notification'}
-                  </div>
-                  {n.message || n.body || n.preview ? (
-                    <div className="notif-body text-muted small clamp-2">
-                      {(n.message || n.body || n.preview).toString()}
-                    </div>
-                  ) : null}
-                  <div className="notif-meta text-muted small mt-1">
-                    {formatTimeAgo(n.created_at || n.createdAt || n.timestamp)}
-                  </div>
-                </div>
-              </div>
-            )})}
-          </div>
-        ) : (!fetching && (
-          <div className="text-center py-4 text-muted">No new notifications</div>
-        ))}
+              const iconMarkup = renderNotificationIcon(n.type)
+              const ariaLabel = n.title || n.subject || 'Notification'
+              const isRead = Boolean(n.is_read)
 
-        <CDropdownItem
-          className="text-center"
-          style={{ cursor: 'pointer' }}
-          onClick={() => window.location.href = isAdmin ? '/admin/notifications' : '/notifications'}
-          aria-label="View all notifications"
+              const handleNavigate = () => {
+                if (!url) return
+                if (!isRead && n.id) {
+                  handleMarkAsRead(n.id)
+                }
+                window.location.href = url
+              }
+
+              return (
+                <Box
+                  key={n.id || `${n.type}-${n.created_at}`}
+                  role={url ? 'button' : 'presentation'}
+                  tabIndex={url ? 0 : undefined}
+                  onClick={handleNavigate}
+                  onKeyDown={(e) => {
+                    if (!url) return
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleNavigate()
+                    }
+                  }}
+                  px={3}
+                  py={2}
+                  borderRadius="md"
+                  bg={isRead ? 'transparent' : unreadBackground}
+                  _hover={{ bg: unreadBackground }}
+                >
+                  <Flex gap={3} align="flex-start">
+                    {iconMarkup}
+                    <Box flex="1">
+                      <Text fontWeight="semibold" fontSize="sm" noOfLines={1}>
+                        {ariaLabel}
+                      </Text>
+                      {(n.message || n.body || n.preview) && (
+                        <Text fontSize="xs" color="muted" noOfLines={2}>
+                          {(n.message || n.body || n.preview).toString()}
+                        </Text>
+                      )}
+                      <Text fontSize="xs" color="muted" mt={1}>
+                        {formatTimeAgo(n.created_at || n.createdAt || n.timestamp)}
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Box>
+              )
+            })}
+          </Stack>
+        ) : (
+          <Flex py={6} align="center" justify="center">
+            <Text fontSize="sm" color={emptyStateColor}>
+              No new notifications
+            </Text>
+          </Flex>
+        )}
+
+        <MenuDivider my={0} />
+        <MenuItem
+          onClick={() =>
+            (window.location.href =
+              String(user.role).toLowerCase() === 'admin' ||
+              String(user.role).toLowerCase() === 'super_admin'
+                ? '/admin/notifications'
+                : '/notifications')
+          }
         >
           View all notifications
-        </CDropdownItem>
-      </CDropdownMenu>
-    </CDropdown>
-    </>
+        </MenuItem>
+      </MenuList>
+    </Menu>
   )
+}
+
+function formatTimeAgo(dateString) {
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return 'N/A'
+    const now = new Date()
+    const diffInSeconds = Math.floor((now - date) / 1000)
+    if (diffInSeconds < 60) return 'Just now'
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
+    return date.toLocaleDateString()
+  } catch (error) {
+    return 'N/A'
+  }
 }
 
 export default NotificationBell

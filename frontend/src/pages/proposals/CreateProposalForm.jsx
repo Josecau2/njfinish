@@ -1,40 +1,36 @@
-import { useEffect, useState } from 'react';
-import CustomerInfoStep from './CreateProposal/CustomerInfo';
-import ManufacturerStep from './CreateProposal/ManufacturerSelect';
-import DesignImportStep from './CreateProposal/DesignUpload';
-import ItemSelectionStep from './CreateProposal/ProposalSummary';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchManufacturerById } from '../../store/slices/manufacturersSlice';
-import { FaPrint, FaEnvelope, FaFileContract, FaClipboardList, FaCog } from 'react-icons/fa';
-import PrintProposalModal from '../../components/model/PrintProposalModal';
-import EmailProposalModal from '../../components/model/EmailProposalModal';
-import EmailContractModal from '../../components/model/EmailContractModal';
-import { sendFormDataToBackend } from '../../store/slices/proposalSlice';
-import { useNavigate, useLocation } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import withContractorScope from '../../components/withContractorScope';
-import { useTranslation } from 'react-i18next';
-import PageHeader from '../../components/PageHeader';
-import {
-  CContainer,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CButton,
-  CBadge,
-  CSpinner
-} from '@coreui/react';
+import { useEffect, useState } from 'react'
+import CustomerInfoStep from './CreateProposal/CustomerInfo'
+import ManufacturerStep from './CreateProposal/ManufacturerSelect'
+import DesignImportStep from './CreateProposal/DesignUpload'
+import ItemSelectionStep from './CreateProposal/ProposalSummary'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
+import { FaPrint, FaEnvelope, FaFileContract, FaClipboardList, FaCog } from 'react-icons/fa'
+import PrintProposalModal from '../../components/model/PrintProposalModal'
+import EmailProposalModal from '../../components/model/EmailProposalModal'
+import EmailContractModal from '../../components/model/EmailContractModal'
+import { sendFormDataToBackend } from '../../queries/proposalQueries'
+import { useNavigate, useLocation } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import withContractorScope from '../../components/withContractorScope'
+import { useTranslation } from 'react-i18next'
+import PageHeader from '../../components/PageHeader'
+import { Container, Card, CardBody, Flex, Box, Badge, Spinner, Button, Icon, HStack, Text } from '@chakra-ui/react'
 
-const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
-  const location = useLocation();
-  const { t } = useTranslation();
-  const queryParams = new URLSearchParams(location.search);
-  const isQuick = queryParams.get('quick') === 'yes';
-  const [currentStep, setCurrentStep] = useState(isQuick ? 2 : 1);
-  const [backStep, setBackStep] = useState(false);
+const ProposalForm = ({
+  isContractor,
+  contractorGroupId,
+  contractorModules,
+  contractorGroupName,
+}) => {
+  const location = useLocation()
+  const { t } = useTranslation()
+  const queryParams = new URLSearchParams(location.search)
+  const isQuick = queryParams.get('quick') === 'yes'
+  const [currentStep, setCurrentStep] = useState(isQuick ? 2 : 1)
+  const [backStep, setBackStep] = useState(false)
   const [formData, setFormData] = useState({
-    customerId: "",
+    customerId: '',
     customerName: '',
     customerEmail: '',
     designer: '',
@@ -56,116 +52,138 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
     // followUp2Date: '',
     // followUp3Date: '',
     manufacturersData: [],
-  });
-  const [showPrintModal, setShowPrintModal] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [showContractModal, setShowContractModal] = useState(false);
-  const dispatch = useDispatch();
-  const manufacturerData = useSelector((state) => state.manufacturers.selected);
-  const [hovered, setHovered] = useState(null);
-  const navigate = useNavigate();
+  })
+  const [showPrintModal, setShowPrintModal] = useState(false)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showContractModal, setShowContractModal] = useState(false)
+  const dispatch = useDispatch()
+  const manufacturerData = useSelector((state) => state.manufacturers.selected)
+  const [hovered, setHovered] = useState(null)
+  const navigate = useNavigate()
 
-  const [isFormDirty, setIsFormDirty] = useState(true);
+  const [isFormDirty, setIsFormDirty] = useState(true)
 
   useEffect(() => {
-    if (!isFormDirty) return;
+    if (!isFormDirty) return
 
     const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
+      e.preventDefault()
+      e.returnValue = ''
+    }
 
     const handlePopState = (e) => {
-  const confirmLeave = window.confirm(t('common.unsavedConfirm','You have unsaved changes. Are you sure you want to leave?'));
+      const confirmLeave = window.confirm(
+        t('common.unsavedConfirm', 'You have unsaved changes. Are you sure you want to leave?'),
+      )
       if (!confirmLeave) {
-        window.history.pushState(null, '', window.location.pathname);
+        window.history.pushState(null, '', window.location.pathname)
       } else {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('beforeunload', handleBeforeUnload)
       }
-    };
+    }
 
-    window.history.pushState(null, '', window.location.pathname);
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('popstate', handlePopState);
+    window.history.pushState(null, '', window.location.pathname)
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener('popstate', handlePopState)
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [isFormDirty]);
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [isFormDirty])
 
   useEffect(() => {
     if (formData.manufacturerId) {
       // Don't load full catalog data for proposal creation - only manufacturer info needed
-      dispatch(fetchManufacturerById({ id: formData.manufacturerId, includeCatalog: false }));
+      dispatch(fetchManufacturerById({ id: formData.manufacturerId, includeCatalog: false }))
     }
-  }, [formData.manufacturerId, dispatch]);
+  }, [formData.manufacturerId, dispatch])
 
   const updateFormData = (newData) => {
-    setFormData({ ...formData, ...newData });
-  };
+    setFormData({ ...formData, ...newData })
+  }
 
   const handleStyleSelect = (styleId) => {
-    const updatedData = [...formData.manufacturersData];
-    const lastEntry = updatedData[updatedData.length - 1];
+    const updatedData = [...formData.manufacturersData]
+    const lastEntry = updatedData[updatedData.length - 1]
 
     if (lastEntry) {
-      lastEntry.selectedStyle = styleId;
-      updatedData[updatedData.length - 1] = lastEntry;
+      lastEntry.selectedStyle = styleId
+      updatedData[updatedData.length - 1] = lastEntry
 
       updateFormData({
         ...formData,
         manufacturersData: updatedData,
-      });
+      })
     }
 
-    nextStep();
-  };
+    nextStep()
+  }
 
   const nextStep = () => {
-    setCurrentStep(currentStep + 1);
-  };
+    setCurrentStep(currentStep + 1)
+  }
 
   const prevStep = () => {
     // From step 1, go back to quotes list
     if (currentStep <= 1) {
-      navigate('/quotes');
-      return;
+      navigate('/quotes')
+      return
     }
-    let step = backStep ? 4 : currentStep - 1;
-    if (step < 1) step = 1;
-    setCurrentStep(step);
-  };
+    let step = backStep ? 4 : currentStep - 1
+    if (step < 1) step = 1
+    setCurrentStep(step)
+  }
 
   const sendToBackend = async (actionType) => {
     try {
-
       const payload = {
         action: actionType,
         formData: { ...formData, type: actionType },
-      };
+      }
 
-      const response = await dispatch(sendFormDataToBackend(payload));
+      const response = await sendFormDataToBackend(payload)
 
-      if (response.payload.success == true) {
-  Swal.fire(t('common.success','Success'), t('proposals.toast.successSend','Quote sent successfully'), 'success');
-        setIsFormDirty(false);
-        navigate('/quotes');
+      if (response.data.success == true) {
+        Swal.fire(
+          t('common.success', 'Success'),
+          t('proposals.toast.successSend', 'Quote sent successfully'),
+          'success',
+        )
+        setIsFormDirty(false)
+        navigate('/quotes')
       } else {
-  Swal.fire(t('common.error','Error'), response.payload?.message || t('proposals.errors.operationFailed','Operation failed. Please try again.'), 'error');
+        Swal.fire(
+          t('common.error', 'Error'),
+          response.data?.message ||
+            t('proposals.errors.operationFailed', 'Operation failed. Please try again.'),
+          'error',
+        )
       }
     } catch (error) {
-
       if (error.response?.status === 403) {
-  Swal.fire(t('common.error','Error'), t('settings.customization.ui.alerts.saveFailed','Failed to save customization. Please try again.'), 'error');
+        Swal.fire(
+          t('common.error', 'Error'),
+          t(
+            'settings.customization.ui.alerts.saveFailed',
+            'Failed to save customization. Please try again.',
+          ),
+          'error',
+        )
       } else if (error.response?.status === 400) {
-  const message = error.response?.data?.message || t('proposals.errors.operationFailed','Operation failed. Please try again.');
-  Swal.fire(t('common.error','Error'), message, 'error');
+        const message =
+          error.response?.data?.message ||
+          t('proposals.errors.operationFailed', 'Operation failed. Please try again.')
+        Swal.fire(t('common.error', 'Error'), message, 'error')
       } else {
-  Swal.fire(t('common.error','Error'), error.message || t('proposals.toast.errorGeneric','An error occurred'), 'error');
+        Swal.fire(
+          t('common.error', 'Error'),
+          error.message || t('proposals.toast.errorGeneric', 'An error occurred'),
+          'error',
+        )
       }
     }
-  };
+  }
 
   const getStepInfo = () => {
     const steps = [
@@ -173,75 +191,50 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       { number: 2, title: t('proposals.create.steps.2'), icon: FaCog },
       { number: 3, title: t('proposals.create.steps.3'), icon: FaFileContract },
       { number: 4, title: t('proposals.create.steps.4'), icon: FaPrint },
-    ];
-    return steps.find(step => step.number === currentStep) || steps[0];
-  };
+    ]
+    return steps.find((step) => step.number === currentStep) || steps[0]
+  }
 
-  const currentStepInfo = getStepInfo();
+  const currentStepInfo = getStepInfo()
 
   const renderActionButtons = () => {
-    if (currentStep !== 4) return null;
+    if (currentStep !== 4) return null
 
     return (
-      <div className="d-flex gap-2 flex-wrap">
-        <CButton
-          className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-          style={{
-            backgroundColor: hovered === 'print' ? '#218838' : '#28a745',
-            color: '#fff',
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={() => setHovered('print')}
-          onMouseLeave={() => setHovered(null)}
+      <HStack spacing={2} flexWrap="wrap">
+        <Button
+          colorScheme="green"
+          leftIcon={<Icon as={FaPrint} />}
+          minH="44px"
           onClick={() => setShowPrintModal(true)}
         >
-          <FaPrint className="me-2" />
           {t('proposals.create.actions.print')}
-        </CButton>
+        </Button>
         {!isContractor && (
           <>
-            <CButton
-              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-              style={{
-                backgroundColor: hovered === 'email' ? '#138496' : '#17a2b8',
-                color: '#fff',
-                borderRadius: '8px',
-                border: 'none',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={() => setHovered('email')}
-              onMouseLeave={() => setHovered(null)}
+            <Button
+              colorScheme="blue"
+              leftIcon={<Icon as={FaEnvelope} />}
+              minH="44px"
               onClick={() => setShowEmailModal(true)}
             >
-              <FaEnvelope className="me-2" />
               {t('proposals.create.actions.email')}
-            </CButton>
-
-            <CButton
-              className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-              style={{
-                backgroundColor: hovered === 'contract' ? '#e0a800' : '#ffc107',
-                color: '#212529',
-                borderRadius: '8px',
-                border: 'none',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={() => setHovered('contract')}
-              onMouseLeave={() => setHovered(null)}
+            </Button>
+            <Button
+              colorScheme="yellow"
+              leftIcon={<Icon as={FaFileContract} />}
+              minH="44px"
               onClick={() => setShowContractModal(true)}
             >
-              <FaFileContract className="me-2" />
               {t('proposals.create.actions.contract')}
-            </CButton>
+            </Button>
           </>
         )}
-      </div>
-    );
-  };
+      </HStack>
+    )
+  }
 
-  const renderStep = () => {
+const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
@@ -254,28 +247,29 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             isContractor={isContractor}
             contractorGroupId={contractorGroupId}
           />
-        );
-  case 2:
+        )
+      case 2:
         return (
           <ManufacturerStep
             formData={formData}
             updateFormData={updateFormData}
             nextStep={nextStep}
             prevStep={prevStep}
-    hideBack={false}
+            hideBack={false}
           />
-        );
-  case 3:
+        )
+      case 3:
         if (!manufacturerData || Object.keys(manufacturerData).length === 0) {
           return (
-            <CCard className="border-0 shadow-sm">
-              <CCardBody className="text-center py-5">
-                <CSpinner color="primary" size="lg" />
+            <Card className="border-0 shadow-sm">
+              <CardBody className="text-center py-5">
+                <Spinner colorScheme="blue" size="lg" />
                 <p className="text-muted mt-3 mb-0">{t('proposals.create.loadingManufacturer')}</p>
-              </CCardBody>
-            </CCard>
-          );
+              </CardBody>
+            </Card>
+          )
         }
+
         return (
           <DesignImportStep
             formData={formData}
@@ -286,8 +280,8 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             onStyleSelect={handleStyleSelect}
             hideBack={false}
           />
-        );
-  case 4:
+        )
+      case 4:
         return (
           <ItemSelectionStep
             setFormData={setFormData}
@@ -298,26 +292,34 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             setCurrentStep={setCurrentStep}
             setBackStep={setBackStep}
             sendToBackend={sendToBackend}
-    hideBack={false}
+            hideBack={false}
           />
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
+
+
 
   return (
-    <CContainer fluid className="dashboard-container proposal-create" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Container
+      fluid
+      className="dashboard-container proposal-create"
+      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+    >
       <style>{`
         /* Touch targets on this page */
         .proposal-create .btn { min-height: 44px; }
         /* Sticky bottom action bar (mobile) */
         .proposal-create__sticky {
-          position: sticky; bottom: 0; z-index: 1030;
-          background: rgba(255,255,255,0.96);
+          position: sticky;
+          bottom: 0;
+          z-index: 1030;
+          background: rgba(255, 255, 255, 0.96);
           backdrop-filter: saturate(140%) blur(8px);
           border-top: 1px solid #e5e7eb;
-          padding: .5rem .75rem env(safe-area-inset-bottom);
+          padding: 0.5rem 0.75rem env(safe-area-inset-bottom);
         }
       `}</style>
       {/* Header Section */}
@@ -327,14 +329,17 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
         subtitle={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
         badge={{
           text: isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode'),
-          variant: 'secondary'
+          variant: 'secondary',
         }}
         rightContent={renderActionButtons()}
       />
 
       {/* Progress Bar */}
-      <CCard className="proposal-progress-bar" aria-label={t('proposals.create.progress','Progress')}>
-        <CCardBody className="py-3">
+      <Card
+        className="proposal-progress-bar"
+        aria-label={t('proposals.create.progress', 'Progress')}
+      >
+        <CardBody className="py-3">
           <div className="d-flex align-items-center justify-content-between position-relative w-100">
             {/* Progress line - full width background */}
             <div
@@ -344,7 +349,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 backgroundColor: '#e9ecef',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                zIndex: 1
+                zIndex: 1,
               }}
             />
 
@@ -358,7 +363,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 transform: 'translateY(-50%)',
                 width: `${((currentStep - 1) / 3) * 100}%`,
                 transition: 'all 0.3s ease',
-                zIndex: 2
+                zIndex: 2,
               }}
               role="progressbar"
               aria-valuemin={0}
@@ -382,44 +387,69 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                   fontWeight: step <= currentStep ? '800' : '600',
                   transition: 'all 0.3s ease',
                   border: step <= currentStep ? '2px solid #343a40' : '2px solid #dee2e6',
-                  boxShadow: step <= currentStep ? '0 3px 6px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.05)',
+                  boxShadow:
+                    step <= currentStep
+                      ? '0 3px 6px rgba(0,0,0,0.2)'
+                      : '0 1px 2px rgba(0,0,0,0.05)',
                   zIndex: 3,
                   flexShrink: 0,
-                  textShadow: step <= currentStep ? '0 2px 4px rgba(0, 0, 0, 0.9)' : 'none'
+                  textShadow: step <= currentStep ? '0 2px 4px rgba(0, 0, 0, 0.9)' : 'none',
                 }}
               >
                 {step}
               </div>
             ))}
           </div>
-        </CCardBody>
-      </CCard>
+        </CardBody>
+      </Card>
 
       {/* Main Content */}
-      <div className="mb-4">
-        {renderStep()}
-      </div>
+      <div className="mb-4">{renderStep()}</div>
 
       {/* Sticky mobile actions (steps 1–3) */}
       {currentStep < 4 && (
         <div className="proposal-create__sticky d-md-none">
           <div className="d-flex gap-2">
-            <CButton color="secondary" variant="outline" onClick={prevStep} aria-label={t('common.back','Back')} className="flex-fill">
-              {t('common.back','Back')}
-            </CButton>
-            <CButton color="primary" onClick={nextStep} aria-label={t('common.next','Next')} className="flex-fill">
-              {t('common.next','Next')}
-            </CButton>
+            <Button
+              variant="outline"
+              colorScheme="gray"
+              onClick={prevStep}
+              aria-label={t('common.back', 'Back')}
+              className="flex-fill"
+            >
+              {t('common.back', 'Back')}
+            </Button>
+            <Button
+              colorScheme="brand"
+              onClick={nextStep}
+              aria-label={t('common.next', 'Next')}
+              className="flex-fill"
+            >
+              {t('common.next', 'Next')}
+            </Button>
           </div>
-        </div>
       )}
 
       {/* Modals */}
-      <PrintProposalModal show={showPrintModal} onClose={() => setShowPrintModal(false)} formData={formData} />
-      <EmailProposalModal show={showEmailModal} onClose={() => setShowEmailModal(false)} formData={formData} />
+      <PrintProposalModal
+        show={showPrintModal}
+        onClose={() => setShowPrintModal(false)}
+        formData={formData}
+      />
+      <EmailProposalModal
+        show={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        formData={formData}
+      />
       <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
-    </CContainer>
-  );
-};
+    </Container>
+  )
+}
 
-export default withContractorScope(ProposalForm, 'proposals', ['proposals:create']);
+      </EmailContractModal>
+  )
+}
+
+</div>
+</style>
+export default withContractorScope(ProposalForm, 'proposals', ['proposals:create'])

@@ -2,20 +2,29 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import {
-  CBadge,
-  CButton,
-  CContainer,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilSearch, cilCreditCard, cilCloudDownload } from '@coreui/icons'
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Badge,
+  Button,
+  Box,
+  Flex,
+  Text,
+  VStack,
+  HStack,
+  Card,
+  CardBody,
+  Alert,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { Search, CreditCard, Download, ShoppingCart } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
-import { FaShoppingCart } from 'react-icons/fa'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PrintPaymentReceiptModal from '../../components/model/PrintPaymentReceiptModal'
 import { fetchOrders } from '../../store/slices/ordersSlice'
@@ -25,7 +34,13 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
 import Swal from 'sweetalert2'
 
-const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, mineOnly = false }) => {
+const OrdersList = ({
+  title,
+  subtitle,
+  groupId = null,
+  isContractor = false,
+  mineOnly = false,
+}) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: orders, loading } = useSelector((s) => s.orders)
@@ -47,34 +62,38 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     try {
       // NEW: First try the manufacturer association from enhanced API
       if (item?.manufacturer?.name) {
-        return item.manufacturer.name;
+        return item.manufacturer.name
       }
 
       // Second, try to resolve manufacturer ID from snapshot to actual manufacturer name
-      const snap = item?.snapshot;
+      const snap = item?.snapshot
       if (snap) {
         // Parse snapshot if it's a string
-        const parsedSnap = typeof snap === 'string' ? JSON.parse(snap) : snap;
+        const parsedSnap = typeof snap === 'string' ? JSON.parse(snap) : snap
 
         if (parsedSnap?.manufacturers?.[0]?.manufacturer) {
-          const manuId = parsedSnap.manufacturers[0].manufacturer;
+          const manuId = parsedSnap.manufacturers[0].manufacturer
           // Try to find manufacturer name from Redux store by ID
-          const fromMap = manuById?.[manuId] || manuById?.[String(manuId)];
-          if (fromMap?.name) return fromMap.name;
+          const fromMap = manuById?.[manuId] || manuById?.[String(manuId)]
+          if (fromMap?.name) return fromMap.name
 
-          const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId));
-          if (fromList?.name) return fromList.name;
+          const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId))
+          if (fromList?.name) return fromList.name
         }
 
         // Fallback to manufacturerName in snapshot (but this might be incorrect as shown in the data)
         if (parsedSnap?.manufacturers?.[0]?.manufacturerName) {
-          return parsedSnap.manufacturers[0].manufacturerName;
+          return parsedSnap.manufacturers[0].manufacturerName
         }
       }
 
       // Prefer snapshot-based fields (order shape) - keeping existing logic as fallback
       if (snap) {
-        const mArr = Array.isArray(snap.manufacturers) ? snap.manufacturers : (Array.isArray(snap) ? snap : [])
+        const mArr = Array.isArray(snap.manufacturers)
+          ? snap.manufacturers
+          : Array.isArray(snap)
+            ? snap
+            : []
         if (mArr.length) {
           const m0 = mArr[0]
           const name = m0.manufacturerName || m0.name
@@ -99,7 +118,8 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         const embedded = parsed.manufacturerData?.name || parsed.manufacturer?.name
         if (embedded) return embedded
         // 2) Derive id and try caches
-        const manuIdRaw = parsed.manufacturer ?? parsed.manufacturerId ?? parsed.manufacturer_id ?? parsed.id
+        const manuIdRaw =
+          parsed.manufacturer ?? parsed.manufacturerId ?? parsed.manufacturer_id ?? parsed.id
         const manuIdNum = manuIdRaw != null && manuIdRaw !== '' ? Number(manuIdRaw) : null
         if (manuIdNum != null && !Number.isNaN(manuIdNum)) {
           const fromMap = manuById?.[manuIdNum] || manuById?.[String(manuIdNum)]
@@ -122,11 +142,13 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
 
       // 1b) If block embeds manufacturer object/name, use it
       const embeddedWithName = arr.find((b) => b?.manufacturerData?.name || b?.manufacturer?.name)
-      if (embeddedWithName) return embeddedWithName.manufacturerData?.name || embeddedWithName.manufacturer?.name
+      if (embeddedWithName)
+        return embeddedWithName.manufacturerData?.name || embeddedWithName.manufacturer?.name
 
       // 2) Determine manufacturer id from first block (support multiple keys)
       const first = arr[0]
-      const manuIdRaw = first?.manufacturer ?? first?.manufacturerId ?? first?.manufacturer_id ?? first?.id
+      const manuIdRaw =
+        first?.manufacturer ?? first?.manufacturerId ?? first?.manufacturer_id ?? first?.id
       const manuIdNum = manuIdRaw != null && manuIdRaw !== '' ? Number(manuIdRaw) : null
 
       // 3) Try store cache by id (coerce id when comparing)
@@ -180,7 +202,12 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
       if (customerName.includes(term)) return true
 
       if (!isContractor) {
-        const contractor = (p?.Owner?.name || p?.ownerGroup?.name || p?.Owner?.group?.name || '').toLowerCase()
+        const contractor = (
+          p?.Owner?.name ||
+          p?.ownerGroup?.name ||
+          p?.Owner?.group?.name ||
+          ''
+        ).toLowerCase()
         if (contractor.includes(term)) return true
       }
       return false
@@ -196,16 +223,39 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
   const statusColor = (status) => {
     const map = {
       accepted: 'success',
-  'Proposal accepted': 'success',
+      'Proposal accepted': 'success',
       sent: 'info',
       draft: 'secondary',
     }
     return map[status] || 'success'
   }
 
+  const getStatusColorScheme = (status) => {
+    const map = {
+      accepted: 'green',
+      'Proposal accepted': 'green',
+      sent: 'blue',
+      draft: 'gray',
+    }
+    return map[status] || 'green'
+  }
+
+  const getPaymentColorScheme = (status) => {
+    switch (status) {
+      case 'paid':
+        return 'green'
+      case 'pending':
+        return 'orange'
+      case 'overdue':
+        return 'red'
+      default:
+        return 'gray'
+    }
+  }
+
   // Get payment status for an order
   const getOrderPayment = (orderId) => {
-    return payments?.find(payment => payment.orderId === orderId)
+    return payments?.find((payment) => payment.orderId === orderId)
   }
 
   // Get payment status badge info
@@ -217,7 +267,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         status: 'payment_required',
         label: t('payments.status.paymentRequired', 'Payment Required'),
         color: 'warning',
-        showButton: true
+        showButton: true,
       }
     }
 
@@ -228,35 +278,35 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
           label: t('payments.status.paid', 'Paid'),
           color: 'success',
           showButton: false,
-          paidAt: payment.paidAt
+          paidAt: payment.paidAt,
         }
       case 'pending':
         return {
           status: 'payment_required',
           label: t('payments.status.paymentRequired', 'Payment Required'),
           color: 'warning',
-          showButton: true
+          showButton: true,
         }
       case 'processing':
         return {
           status: 'processing',
           label: t('payments.status.processing', 'Processing'),
           color: 'info',
-          showButton: false
+          showButton: false,
         }
       case 'failed':
         return {
           status: 'payment_required',
           label: t('payments.status.paymentRequired', 'Payment Required'),
           color: 'danger',
-          showButton: true
+          showButton: true,
         }
       default:
         return {
           status: 'payment_required',
           label: t('payments.status.paymentRequired', 'Payment Required'),
           color: 'warning',
-          showButton: true
+          showButton: true,
         }
     }
   }
@@ -268,7 +318,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     } else {
       // If no payment exists, create one automatically for this order
       try {
-        const order = orders.find(o => o.id === orderId)
+        const order = orders.find((o) => o.id === orderId)
         if (!order) {
           console.error('Order not found for payment creation:', orderId)
           navigate('/payments')
@@ -276,7 +326,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         }
 
         // Calculate payment amount from order total
-        const amount = order.grand_total_cents ? (order.grand_total_cents / 100) : 0
+        const amount = order.grand_total_cents ? order.grand_total_cents / 100 : 0
         if (amount <= 0) {
           Swal.fire('Error', 'Cannot create payment: Order total is invalid', 'error')
           return
@@ -286,7 +336,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         const response = await axiosInstance.post('/api/payments', {
           orderId: orderId,
           amount: amount,
-          currency: 'USD'
+          currency: 'USD',
         })
 
         if (response.data && response.data.id) {
@@ -344,254 +394,279 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
     // Enhanced customer name resolution with multiple fallbacks
     const getCustomerName = () => {
       // Try direct customer association first
-      if (item?.customer?.name) return item.customer.name;
+      if (item?.customer?.name) return item.customer.name
 
       // Try proposal customerName
-      if (item?.proposal?.customerName) return item.proposal.customerName;
+      if (item?.proposal?.customerName) return item.proposal.customerName
 
       // Try customer_name field (legacy)
-      if (item?.customer_name) return item.customer_name;
+      if (item?.customer_name) return item.customer_name
 
-      return t('common.na');
-    };
+      return t('common.na')
+    }
 
     // For admins: show contractor (group or owner) on top, end-customer below
     if (!isContractor) {
-      const contractor = item?.Owner?.name || item?.ownerGroup?.name || item?.Owner?.group?.name || t('common.na')
-      const endUser = getCustomerName();
+      const contractor =
+        item?.Owner?.name || item?.ownerGroup?.name || item?.Owner?.group?.name || t('common.na')
+      const endUser = getCustomerName()
       return (
         <div>
           <div className="fw-semibold">{contractor}</div>
-          <div className="text-muted" style={{ fontSize: 12 }}>{endUser}</div>
+          <div className="text-muted" style={{ fontSize: 12 }}>
+            {endUser}
+          </div>
         </div>
       )
     }
     // Contractors just see their end-customer
-    return getCustomerName();
+    return getCustomerName()
   }
 
   return (
-    <CContainer fluid>
-      <PageHeader title={title} subtitle={subtitle} icon={FaShoppingCart} />
+    <Box maxW="1200px" mx="auto" p={4}>
+      <PageHeader title={title} subtitle={subtitle} icon={ShoppingCart} />
 
       {/* Toolbar: search + count */}
-      <div className="toolbar" role="search">
-        <div className="toolbar__start" style={{ flex: 1 }}>
-          <div className="search" style={{ maxWidth: 520 }}>
-            <CIcon icon={cilSearch} className="search__icon" />
-            <input
-              type="search"
-              className="search__input"
-              placeholder={t('orders.searchPlaceholder', 'Search by customer')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label={t('orders.searchAria', 'Search orders by customer name')}
-            />
-          </div>
-        </div>
-        <div className="toolbar__end">
-          <small className="text-muted">
-            {t('orders.showingCount', { count: filtered.length, total: Array.isArray(orders) ? orders.length : 0 })}
-          </small>
-        </div>
-      </div>
+      <Flex justify="space-between" align="center" mb={4} role="search">
+        <InputGroup maxW="520px">
+          <InputLeftElement>
+            <Search size={16} />
+          </InputLeftElement>
+          <Input
+            type="search"
+            placeholder={t('orders.searchPlaceholder', 'Search by customer')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label={t('orders.searchAria', 'Search orders by customer name')}
+          />
+        </InputGroup>
+        <Text fontSize="sm" color="gray.500">
+          {t('orders.showingCount', {
+            count: filtered.length,
+            total: Array.isArray(orders) ? orders.length : 0,
+          })}
+        </Text>
+      </Flex>
 
       {/* Desktop / tablet table */}
-      <div className="u-desktop">
-        <div className="table-scroll">
-          <CTable hover className="table-modern">
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell className="sticky-col">{t('orders.headers.date', 'Date')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.orderNumber', 'Order #')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.customer', 'Customer')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.description', 'Description')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.manufacturer', 'Manufacturer')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.status', 'Status')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.payment', 'Payment')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('orders.headers.actions', 'Actions')}</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {paged.length === 0 ? (
-                <CTableRow>
-                  <CTableDataCell colSpan={8} className="text-center py-5">
-                    <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
-                    <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
-                    <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
-                  </CTableDataCell>
-                </CTableRow>
-              ) : (
+      <Box display={{ base: 'none', lg: 'block' }} overflowX="auto">
+        <Table size="sm" variant="simple">
+          <Thead>
+            <Tr>
+              <Th position="sticky" left={0} bg={useColorModeValue('white', 'gray.800')} zIndex={1}>
+                {t('orders.headers.date', 'Date')}
+              </Th>
+              <Th>{t('orders.headers.orderNumber', 'Order #')}</Th>
+              <Th>{t('orders.headers.customer', 'Customer')}</Th>
+              <Th>{t('orders.headers.description', 'Description')}</Th>
+              <Th>{t('orders.headers.manufacturer', 'Manufacturer')}</Th>
+              <Th>{t('orders.headers.status', 'Status')}</Th>
+              <Th>{t('orders.headers.payment', 'Payment')}</Th>
+              <Th>{t('orders.headers.actions', 'Actions')}</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {paged.length === 0 ? (
+              <Tr>
+                <Td colSpan={8} textAlign="center" py={5}>
+                  <VStack spacing={3}>
+                    <Search size={48} color="gray" />
+                    <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
+                    </Text>
+                  </VStack>
+                </Td>
+              </Tr>
+            ) : (
                 paged.map((item) => {
                   const paymentInfo = getPaymentStatus(item.id)
                   return (
-                    <CTableRow key={item.id} onClick={() => openDetails(item.id)} style={{ cursor: 'pointer' }}>
-                      <CTableDataCell className="sticky-col">
-                        {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}
-                      </CTableDataCell>
-                      <CTableDataCell>{getDisplayOrderNumber(item)}</CTableDataCell>
-                      <CTableDataCell>{renderCustomerCell(item)}</CTableDataCell>
-                      <CTableDataCell className="text-muted">
-                        {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
-                      </CTableDataCell>
-                      <CTableDataCell>{resolveManuName(item)}</CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
-                          {item.status || 'accepted'}
-                        </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex flex-column">
-                          <CBadge color={paymentInfo.color} shape="rounded-pill" className="align-self-start">
-                            {paymentInfo.label}
-                          </CBadge>
-                          {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                            <small className="text-muted" style={{ fontSize: 11 }}>
-                              {t('payments.appliedOn','Applied on')} {new Date(paymentInfo.paidAt).toLocaleDateString()}
-                            </small>
-                          )}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex gap-2">
-                          {paymentInfo.showButton && (
-                            <CButton
-                              color="primary"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleMakePayment(item.id)
-                              }}
-                            >
-                              <CIcon icon={cilCreditCard} className="me-1" size="sm" />
-                              {t('orders.actions.makePayment', 'Make Payment')}
-                            </CButton>
-                          )}
-                          {paymentInfo.status === 'paid' && (
-                            <CButton
-                              color="success"
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                const payment = getOrderPayment(item.id)
-                                handleDownloadReceipt(item, payment)
-                              }}
-                            >
-                              <CIcon icon={cilCloudDownload} className="me-1" size="sm" />
-                              {t('orders.actions.downloadInvoice', 'Download Invoice')}
-                            </CButton>
-                          )}
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
+                    <Tr
+                      key={item.id}
+                      cursor="pointer"
+                      _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
+                      onClick={() => openDetails(item.id)}
+                    >
+                    <Td position="sticky" left={0} bg={useColorModeValue('white', 'gray.800')} zIndex={1}>
+                      {new Date(
+                        item.accepted_at || item.date || item.createdAt,
+                      ).toLocaleDateString()}
+                    </Td>
+                    <Td>{getDisplayOrderNumber(item)}</Td>
+                    <Td>{renderCustomerCell(item)}</Td>
+                    <Td color="gray.500">
+                      {(item.description || item?.proposal?.description || '').trim() ||
+                        t('common.na')}
+                    </Td>
+                    <Td>{resolveManuName(item)}</Td>
+                    <Td>
+                      <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
+                        {item.status || 'accepted'}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <VStack align="start" spacing={1}>
+                        <Badge colorScheme={getPaymentColorScheme(paymentInfo.status)} borderRadius="full">
+                          {paymentInfo.label}
+                        </Badge>
+                        {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                          <Text fontSize="xs" color="gray.500">
+                            {t('payments.appliedOn', 'Applied on')}{' '}
+                            {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                          </Text>
+                        )}
+                      </VStack>
+                    </Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        {paymentInfo.showButton && (
+                          <Button
+                            colorScheme="blue"
+                            size="sm"
+                            leftIcon={<CreditCard size={16} />}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleMakePayment(item.id)
+                            }}
+                          >
+                            {t('orders.actions.makePayment', 'Make Payment')}
+                          </Button>
+                        )}
+                        {paymentInfo.status === 'paid' && (
+                          <Button
+                            colorScheme="green"
+                            size="sm"
+                            variant="outline"
+                            leftIcon={<Download size={16} />}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const payment = getOrderPayment(item.id)
+                              handleDownloadReceipt(item, payment)
+                            }}
+                          >
+                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                          </Button>
+                        )}
+                      </HStack>
+                    </Td>
+                    </Tr>
                   )
                 })
               )}
-            </CTableBody>
-          </CTable>
-        </div>
-      </div>
+          </Tbody>
+        </Table>
+      </Box>
 
       {/* Mobile card list */}
-      <div className="u-mobile">
+      <VStack display={{ base: 'flex', lg: 'none' }} spacing={2}>
         {paged.length === 0 ? (
-          <div className="text-center py-5">
-            <CIcon icon={cilSearch} size="3xl" className="text-muted mb-3" />
-            <p className="mb-0">{t('orders.empty.title', 'No orders found')}</p>
-            <small className="text-muted">{t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}</small>
-          </div>
+          <VStack spacing={3} textAlign="center" py={5}>
+            <Search size={48} color="gray" />
+            <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
+            <Text fontSize="sm" color="gray.500">
+              {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
+            </Text>
+          </VStack>
         ) : (
-          <div className="stack gap-2">
-            {paged.map((item) => {
-              const paymentInfo = getPaymentStatus(item.id)
-              return (
-                <article
-                  key={item.id}
-                  className="card card--compact"
-                  role="button"
-                  onClick={() => openDetails(item.id)}
-                  aria-label={t('orders.openDetails', 'Open order details')}
-                >
-                  <div className="card__head">
-                    <div className="card__title">
-                      {isContractor ? (
-                        <span className="fw-semibold">{item.customer?.name || t('common.na')}</span>
-                      ) : (
-                        <div className="d-flex flex-column">
-                          <span className="fw-semibold">{item?.Owner?.group?.name || item?.ownerGroup?.name || item?.Owner?.name || t('common.na')}</span>
-                          <small className="text-muted">{item?.customer?.name || t('common.na')}</small>
-                        </div>
-                      )}
-                    </div>
-                    <div className="d-flex flex-column gap-1">
-                      <CBadge color={statusColor(item.status || 'accepted')} shape="rounded-pill">
-                        {item.status || 'accepted'}
-                      </CBadge>
-                      <div className="d-flex flex-column">
-                        <CBadge color={paymentInfo.color} shape="rounded-pill" size="sm" className="align-self-start">
-                          {paymentInfo.label}
-                        </CBadge>
-                        {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                          <small className="text-muted" style={{ fontSize: 10 }}>
-                            {t('payments.appliedOn','Applied on')} {new Date(paymentInfo.paidAt).toLocaleDateString()}
-                          </small>
+          paged.map((item) => {
+            const paymentInfo = getPaymentStatus(item.id)
+            return (
+              <Card key={item.id} size="sm" as="article">
+                <CardBody>
+                  <VStack align="stretch" spacing={3}>
+                    <Flex justify="space-between" align="center">
+                      <VStack align="start" spacing={1}>
+                        {isContractor ? (
+                          <Text fontWeight="semibold">{item.customer?.name || t('common.na')}</Text>
+                        ) : (
+                          <VStack align="start" spacing={0}>
+                            <Text fontWeight="semibold">
+                              {item?.Owner?.group?.name ||
+                                item?.ownerGroup?.name ||
+                                item?.Owner?.name ||
+                                t('common.na')}
+                            </Text>
+                            <Text fontSize="sm" color="gray.500">
+                              {item?.customer?.name || t('common.na')}
+                            </Text>
+                          </VStack>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="card__meta">
-                    <span>
-                      {new Date(item.accepted_at || item.date || item.createdAt).toLocaleDateString()}
-                    </span>
-                    <span>
-                      {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
-                    </span>
-                    <span>
-                      {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
-                    </span>
-                  </div>
-                  <div className="card__content text-muted">
-                    {(item.description || item?.proposal?.description || '').trim() || t('common.na')}
-                  </div>
-                  {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
-                    <div className="card__actions d-flex gap-2 flex-wrap">
-                      {paymentInfo.showButton && (
-                        <CButton
-                          color="primary"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleMakePayment(item.id)
-                          }}
-                        >
-                          <CIcon icon={cilCreditCard} className="me-1" size="sm" />
-                          {t('orders.actions.makePayment', 'Make Payment')}
-                        </CButton>
-                      )}
-                      {paymentInfo.status === 'paid' && (
-                        <CButton
-                          color="success"
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            const payment = getOrderPayment(item.id)
-                            handleDownloadReceipt(item, payment)
-                          }}
-                        >
-                          <CIcon icon={cilCloudDownload} className="me-1" size="sm" />
-                          {t('orders.actions.downloadInvoice', 'Download Invoice')}
-                        </CButton>
-                      )}
-                    </div>
-                  )}
-                </article>
-              )
-            })}
-          </div>
+                      </VStack>
+                      <VStack align="end" spacing={1}>
+                        <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
+                          {item.status || 'accepted'}
+                        </Badge>
+                        <VStack align="end" spacing={0}>
+                          <Badge colorScheme={getPaymentColorScheme(paymentInfo.status)} borderRadius="full" size="sm">
+                            {paymentInfo.label}
+                          </Badge>
+                          {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                            <Text fontSize="xs" color="gray.500">
+                              {t('payments.appliedOn', 'Applied on')}{' '}
+                              {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                            </Text>
+                          )}
+                        </VStack>
+                      </VStack>
+                    </Flex>
+                    <VStack align="stretch" spacing={1}>
+                      <Text fontSize="sm" color="gray.600">
+                        {new Date(
+                          item.accepted_at || item.date || item.createdAt,
+                        ).toLocaleDateString()}
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
+                      </Text>
+                    </VStack>
+                    <Text fontSize="sm" color="gray.500">
+                      {(item.description || item?.proposal?.description || '').trim() ||
+                        t('common.na')}
+                    </Text>
+                    {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
+                      <HStack spacing={2} flexWrap="wrap">
+                        {paymentInfo.showButton && (
+                          <Button
+                            colorScheme="blue"
+                            size="sm"
+                            leftIcon={<CreditCard size={16} />}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleMakePayment(item.id)
+                            }}
+                          >
+                            {t('orders.actions.makePayment', 'Make Payment')}
+                          </Button>
+                        )}
+                        {paymentInfo.status === 'paid' && (
+                          <Button
+                            colorScheme="green"
+                            size="sm"
+                            variant="outline"
+                            leftIcon={<Download size={16} />}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const payment = getOrderPayment(item.id)
+                              handleDownloadReceipt(item, payment)
+                            }}
+                          >
+                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                          </Button>
+                        )}
+                      </HStack>
+                    )}
+                  </VStack>
+                </CardBody>
+              </Card>
+            )
+          })
         )}
-      </div>
+      </VStack>
 
       <div className="mt-4">
         <PaginationComponent
@@ -609,7 +684,7 @@ const OrdersList = ({ title, subtitle, groupId = null, isContractor = false, min
         payment={selectedPaymentForReceipt}
         order={selectedOrderForReceipt}
       />
-    </CContainer>
+    </Box>
   )
 }
 

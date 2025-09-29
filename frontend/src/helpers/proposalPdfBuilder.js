@@ -1,50 +1,60 @@
-const DEFAULT_COLUMNS = ['no', 'qty', 'item', 'assembled', 'hingeSide', 'exposedSide', 'price', 'assemblyCost', 'total'];
+const DEFAULT_COLUMNS = [
+  'no',
+  'qty',
+  'item',
+  'assembled',
+  'hingeSide',
+  'exposedSide',
+  'price',
+  'assemblyCost',
+  'total',
+]
 
-const defaultTranslator = (key, defaultValue) => (defaultValue !== undefined ? defaultValue : key);
-const identityShortLabel = (code) => code ?? '';
+const defaultTranslator = (key, defaultValue) => (defaultValue !== undefined ? defaultValue : key)
+const identityShortLabel = (code) => code ?? ''
 
 const toNumber = (value) => {
   if (typeof value === 'number') {
-    return Number.isFinite(value) ? value : 0;
+    return Number.isFinite(value) ? value : 0
   }
   if (value === null || value === undefined) {
-    return 0;
+    return 0
   }
-  const parsed = parseFloat(String(value).replace(/[^0-9.-]/g, ''));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
+  const parsed = parseFloat(String(value).replace(/[^0-9.-]/g, ''))
+  return Number.isFinite(parsed) ? parsed : 0
+}
 
-const safeToFixed = (value, decimals = 2) => toNumber(value).toFixed(decimals);
+const safeToFixed = (value, decimals = 2) => toNumber(value).toFixed(decimals)
 
 const ensureArray = (value) => {
   if (!value) {
-    return [];
+    return []
   }
   if (Array.isArray(value)) {
-    return value;
+    return value
   }
   if (typeof value === 'object') {
-    return Object.values(value);
+    return Object.values(value)
   }
   try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
   } catch (error) {
-    return [];
+    return []
   }
-};
+}
 
 const escapeHtml = (str = '') => {
   if (typeof str !== 'string') {
-    return str ?? '';
+    return str ?? ''
   }
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
+    .replace(/'/g, '&#39;')
+}
 
 const computeManufacturerName = (formData, manufacturerData, manufacturerNameData) => {
   return (
@@ -55,12 +65,12 @@ const computeManufacturerName = (formData, manufacturerData, manufacturerNameDat
     manufacturerNameData?.manufacturer?.name ||
     formData?.manufacturerData?.name ||
     ''
-  );
-};
+  )
+}
 
 const computeStyleName = (manufacturerData, styleData) => {
   if (!manufacturerData) {
-    return '';
+    return ''
   }
 
   return (
@@ -69,8 +79,8 @@ const computeStyleName = (manufacturerData, styleData) => {
     styleData?.style ||
     manufacturerData?.styleData?.style ||
     ''
-  );
-};
+  )
+}
 
 const buildColumnHeaders = (cols, t) => {
   return cols
@@ -85,18 +95,20 @@ const buildColumnHeaders = (cols, t) => {
         price: t('proposalColumns.price', 'Price'),
         assemblyCost: t('proposalColumns.assemblyCost', 'Assembly Cost'),
         total: t('proposalColumns.total', 'Total'),
-      };
+      }
 
-      const alignRight = ['price', 'assemblyCost', 'total'].includes(col) ? 'text-align: right;' : '';
-      return `<th style="border: 1px solid #dee2e6; padding: 0.75rem; ${alignRight}">${columnTranslations[col] || col}</th>`;
+      const alignRight = ['price', 'assemblyCost', 'total'].includes(col)
+        ? 'text-align: right;'
+        : ''
+      return `<th style="border: 1px solid #dee2e6; padding: 0.75rem; ${alignRight}">${columnTranslations[col] || col}</th>`
     })
-    .join('');
-};
+    .join('')
+}
 
 const buildItemRows = (items, cols, t, shortLabel) => {
-  const yesLabel = t('common.yes', 'Yes');
-  const noLabel = t('common.no', 'No');
-  const naLabel = t('common.na', 'N/A');
+  const yesLabel = t('common.yes', 'Yes')
+  const noLabel = t('common.no', 'No')
+  const naLabel = t('common.na', 'N/A')
 
   return items
     .map((item, index) => {
@@ -104,83 +116,83 @@ const buildItemRows = (items, cols, t, shortLabel) => {
         .map((col) => {
           switch (col) {
             case 'no':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${index + 1}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${index + 1}</td>`
             case 'qty':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${toNumber(item.qty)}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${toNumber(item.qty)}</td>`
             case 'item':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${escapeHtml(item.code || '')}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${escapeHtml(item.code || '')}</td>`
             case 'assembled':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.isRowAssembled ? yesLabel : noLabel}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.isRowAssembled ? yesLabel : noLabel}</td>`
             case 'hingeSide':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide || naLabel)}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide || naLabel)}</td>`
             case 'exposedSide':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide || naLabel)}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide || naLabel)}</td>`
             case 'price':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.price)}</td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.price)}</td>`
             case 'assemblyCost': {
-              const assemblyCost = item.includeAssemblyFee ? item.assemblyFee : 0;
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(assemblyCost)}</td>`;
+              const assemblyCost = item.includeAssemblyFee ? item.assemblyFee : 0
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(assemblyCost)}</td>`
             }
             case 'total': {
-              const totalValue = item.includeAssemblyFee ? item.total : item.price;
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(totalValue)}</td>`;
+              const totalValue = item.includeAssemblyFee ? item.total : item.price
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(totalValue)}</td>`
             }
             default:
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>`;
+              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>`
           }
         })
-        .join('');
+        .join('')
 
       const descriptionRow = item.description
         ? `<tr class="item-description-row"><td colspan="${cols.length}" style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; font-size: 10px; color: #555; background:#fff; font-style: italic;">${escapeHtml(item.description)}</td></tr>`
-        : '';
+        : ''
 
-      const mods = ensureArray(item.modifications);
-      let modificationsRows = '';
+      const mods = ensureArray(item.modifications)
+      let modificationsRows = ''
 
       if (mods.length > 0) {
-        const modsHeader = `<tr class="mods-header-row"><td colspan="${cols.length}" style="padding: 0.5rem 0.75rem; background:#f9f9f9; font-style: italic; font-weight:600;">${t('proposalDoc.modifications', 'Modifications')}</td></tr>`;
+        const modsHeader = `<tr class="mods-header-row"><td colspan="${cols.length}" style="padding: 0.5rem 0.75rem; background:#f9f9f9; font-style: italic; font-weight:600;">${t('proposalDoc.modifications', 'Modifications')}</td></tr>`
         const modRows = mods
           .map((mod) => {
-            const price = toNumber(mod.price);
-            const qty = toNumber(mod.qty || 1);
-            const total = price * qty;
+            const price = toNumber(mod.price)
+            const qty = toNumber(mod.qty || 1)
+            const total = price * qty
 
             const modCells = cols
               .map((col) => {
                 switch (col) {
                   case 'no':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">-</td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">-</td>`
                   case 'qty':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${qty || ''}</td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${qty || ''}</td>`
                   case 'item':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${escapeHtml(mod.name || mod.description || '')}</td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${escapeHtml(mod.name || mod.description || '')}</td>`
                   case 'price':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(price)}</td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(price)}</td>`
                   case 'total':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(total)}</td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(total)}</td>`
                   case 'assemblyCost':
                   case 'assembled':
                   case 'hingeSide':
                   case 'exposedSide':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`
                   default:
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`;
+                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`
                 }
               })
-              .join('');
+              .join('')
 
-            return `<tr class="mod-row">${modCells}</tr>`;
+            return `<tr class="mod-row">${modCells}</tr>`
           })
-          .join('');
+          .join('')
 
-        modificationsRows = modsHeader + modRows;
+        modificationsRows = modsHeader + modRows
       }
 
-      return `<tr>${rowCells}</tr>${descriptionRow}${modificationsRows}`;
+      return `<tr>${rowCells}</tr>${descriptionRow}${modificationsRows}`
     })
-    .join('');
-};
+    .join('')
+}
 
 const buildPriceSummary = (summary, t) => {
   return `
@@ -216,8 +228,8 @@ const buildPriceSummary = (summary, t) => {
                 </tr>
             </table>
         </div>
-    `;
-};
+    `
+}
 
 export const buildProposalPdfHtml = ({
   formData = {},
@@ -229,7 +241,8 @@ export const buildProposalPdfHtml = ({
   styleData,
   manufacturerNameData,
 } = {}) => {
-  const apiUrl = typeof import.meta !== 'undefined' && import.meta?.env ? import.meta.env.VITE_API_URL || '' : '';
+  const apiUrl =
+    typeof import.meta !== 'undefined' && import.meta?.env ? import.meta.env.VITE_API_URL || '' : ''
 
   const {
     selectedColumns = DEFAULT_COLUMNS,
@@ -238,33 +251,41 @@ export const buildProposalPdfHtml = ({
     selectedVersions = [],
     includeCatalog = true,
     suppressPrices = false,
-  } = options;
+  } = options
 
   // If suppressPrices, remove price-related columns and hide summaries/catalog pricing
   const effectiveColumns = Array.isArray(selectedColumns)
-    ? selectedColumns.filter((c) => (suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true))
-    : DEFAULT_COLUMNS.filter((c) => (suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true));
+    ? selectedColumns.filter((c) =>
+        suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true,
+      )
+    : DEFAULT_COLUMNS.filter((c) =>
+        suppressPrices ? !['price', 'assemblyCost', 'total'].includes(c) : true,
+      )
 
-  let manufacturersData = formData?.manufacturersData;
+  let manufacturersData = formData?.manufacturersData
   if (typeof manufacturersData === 'string') {
     try {
-      manufacturersData = JSON.parse(manufacturersData);
+      manufacturersData = JSON.parse(manufacturersData)
     } catch (_) {
-      manufacturersData = [];
+      manufacturersData = []
     }
   }
   if (!Array.isArray(manufacturersData)) {
-    manufacturersData = ensureArray(manufacturersData);
+    manufacturersData = ensureArray(manufacturersData)
   }
 
-  const manufacturerData = manufacturersData[0] || {};
-  const items = ensureArray(manufacturerData.items);
+  const manufacturerData = manufacturersData[0] || {}
+  const items = ensureArray(manufacturerData.items)
 
   const filteredItems = !selectedVersions?.length
     ? items
-    : items.filter((item) => selectedVersions.includes(item.versionName) || selectedVersions.includes(item.selectVersion));
+    : items.filter(
+        (item) =>
+          selectedVersions.includes(item.versionName) ||
+          selectedVersions.includes(item.selectVersion),
+      )
 
-  const summaryRaw = manufacturerData?.summary || {};
+  const summaryRaw = manufacturerData?.summary || {}
   const priceSummary = {
     cabinets: toNumber(summaryRaw.cabinets),
     assemblyFee: toNumber(summaryRaw.assemblyFee),
@@ -273,11 +294,11 @@ export const buildProposalPdfHtml = ({
     total: toNumber(summaryRaw.total),
     tax: toNumber(summaryRaw.taxAmount ?? summaryRaw.tax),
     grandTotal: toNumber(summaryRaw.grandTotal),
-  };
+  }
 
-  const yesLabel = t('common.yes', 'Yes');
-  const noLabel = t('common.no', 'No');
-  const naLabel = t('common.na', 'N/A');
+  const yesLabel = t('common.yes', 'Yes')
+  const noLabel = t('common.no', 'No')
+  const naLabel = t('common.na', 'N/A')
 
   const proposalItems = filteredItems.map((item) => ({
     ...item,
@@ -291,10 +312,10 @@ export const buildProposalPdfHtml = ({
     modifications: ensureArray(item.modifications),
     description: item.description || '',
     code: item.code || item.itemNumber || '',
-  }));
+  }))
 
-  const columnHeaders = buildColumnHeaders(effectiveColumns, t);
-  const proposalItemRows = buildItemRows(proposalItems, effectiveColumns, t, shortLabel);
+  const columnHeaders = buildColumnHeaders(effectiveColumns, t)
+  const proposalItemRows = buildItemRows(proposalItems, effectiveColumns, t, shortLabel)
 
   const {
     companyName,
@@ -306,22 +327,25 @@ export const buildProposalPdfHtml = ({
     headerLogo,
     pdfFooter,
     headerTxtColor = '#FFFFFF',
-  } = pdfCustomization || {};
+  } = pdfCustomization || {}
 
   const proposalSummary = {
-    description: formData?.description || t('proposalDoc.defaultProjectDescription', 'Kitchen Project'),
+    description:
+      formData?.description || t('proposalDoc.defaultProjectDescription', 'Kitchen Project'),
     customer: formData?.customerName || formData?.customer?.name || '',
     date: new Date(formData?.date || Date.now()).toLocaleDateString(i18n?.language || 'en-US'),
-  };
+  }
 
-  const designerName = formData?.designerData?.name || '';
-  const manufacturerName = computeManufacturerName(formData, manufacturerData, manufacturerNameData);
-  const styleName = computeStyleName(manufacturerData, styleData);
-  const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId;
+  const designerName = formData?.designerData?.name || ''
+  const manufacturerName = computeManufacturerName(formData, manufacturerData, manufacturerNameData)
+  const styleName = computeStyleName(manufacturerData, styleData)
+  const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId
 
-  const logoUrl = headerLogo ? `${apiUrl}${headerLogo.startsWith('/') ? headerLogo : `/${headerLogo}`}` : null;
+  const logoUrl = headerLogo
+    ? `${apiUrl}${headerLogo.startsWith('/') ? headerLogo : `/${headerLogo}`}`
+    : null
 
-  const selectedCatalog = includeCatalog ? ensureArray(formData?.selectedCatalog) : [];
+  const selectedCatalog = includeCatalog ? ensureArray(formData?.selectedCatalog) : []
 
   return `
         <!DOCTYPE html>
@@ -536,7 +560,6 @@ export const buildProposalPdfHtml = ({
                 ${companyWebsite ? `<div>${escapeHtml(companyWebsite)}</div>` : ''}
                 ${companyAddress ? `<div style="white-space: pre-line; font-style: italic; margin-top: 0.5rem;">${escapeHtml(companyAddress)}</div>` : ''}
             </div>
-        </div>
     </div>
 
     <div class="content-wrapper">
@@ -567,23 +590,26 @@ export const buildProposalPdfHtml = ({
             </tbody>
         </table>
 
-        ${(styleName || manufacturerName || manufacturerId) ? `
+        ${
+          styleName || manufacturerName || manufacturerId
+            ? `
         <div class="style-info">
             <h4>${t('proposalDoc.styleInformation', 'Style Information')}</h4>
             <div class="style-details">
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.manufacturer', 'Manufacturer')}:</div>
                     <div class="style-detail-value">${escapeHtml(manufacturerName || (manufacturerId ? t('common.loading', 'Loading...') : t('common.na', 'N/A')))}</div>
-                </div>
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.styleName', 'Style')}:</div>
                     <div class="style-detail-value">${escapeHtml(styleName || t('common.na', 'N/A'))}</div>
-                </div>
             </div>
-        </div>
-        ` : ''}
+        `
+            : ''
+        }
 
-        ${(showProposalItems && proposalItems.length > 0) ? `
+        ${
+          showProposalItems && proposalItems.length > 0
+            ? `
     <div class="section-header">${t('proposalDoc.sections.proposalItems', 'Proposal Items')}</div>
         <table class="items-table">
             <thead>
@@ -596,10 +622,14 @@ export const buildProposalPdfHtml = ({
                 ${proposalItemRows}
             </tbody>
         </table>
-    ${suppressPrices ? '' : (showPriceSummary ? buildPriceSummary(priceSummary, t) : '')}
-        ` : ''}
+    ${suppressPrices ? '' : showPriceSummary ? buildPriceSummary(priceSummary, t) : ''}
+        `
+            : ''
+        }
 
-    ${((includeCatalog && !suppressPrices) && selectedCatalog.length > 0) ? `
+    ${
+      includeCatalog && !suppressPrices && selectedCatalog.length > 0
+        ? `
         <div class="section-header">${t('proposalDoc.sections.catalogItems', 'Catalog Items')}</div>
         <table class="items-table">
             <thead>
@@ -612,24 +642,28 @@ export const buildProposalPdfHtml = ({
             </thead>
             <tbody>
                 ${selectedCatalog
-                  .map((item) => `
+                  .map(
+                    (item) => `
                 <tr>
                     <td>${escapeHtml(item.itemName || '')}</td>
                     <td>${toNumber(item.quantity)}</td>
                     <td>$${safeToFixed(item.unitPrice)}</td>
                     <td>$${safeToFixed(toNumber(item.unitPrice) * toNumber(item.quantity))}</td>
                 </tr>
-                `)
+                `,
+                  )
                   .join('')}
             </tbody>
         </table>
-        ` : ''}
+        `
+        : ''
+    }
 
         ${pdfFooter ? `<div class="main-footer-div">${pdfCustomization?.allowRawFooter ? pdfFooter : escapeHtml(pdfFooter)}</div>` : ''}
     </div>
 </body>
 </html>
-        `;
-};
+        `
+}
 
-export const DEFAULT_PROPOSAL_PDF_COLUMNS = DEFAULT_COLUMNS.slice();
+export const DEFAULT_PROPOSAL_PDF_COLUMNS = DEFAULT_COLUMNS.slice()

@@ -1,43 +1,42 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import {
-  CButton, CCol, CForm, CFormInput, CRow,
-  CTabs, CNav, CNavItem, CNavLink, CBadge,
-  CFormLabel, CDropdown, CDropdownToggle,
-  CDropdownMenu, CDropdownItem, CModal,
-  CModalHeader, CModalTitle, CModalBody,
-  CModalFooter,
-} from '@coreui/react'
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice';
-import { sendFormDataToBackend } from '../../../store/slices/proposalSlice';
-import axiosInstance from '../../../helpers/axiosInstance';
-import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation';
-import CreatableSelect from 'react-select/creatable';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import CIcon from '@coreui/icons-react';
-import { cilCopy, cilFile, cilList, cilOptions, cilPencil, cilTrash } from '@coreui/icons';
-import { FaCalendarAlt } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import ItemSelectionContent from '../../../components/ItemSelectionContent';
-import FileUploadSection from './FileUploadSection';
-import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice';
+import { Box, FormControl, Input, Flex, Link, Badge, FormLabel, Icon, Button } from '@chakra-ui/react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
+import { sendFormDataToBackend } from '../../../queries/proposalQueries'
+import axiosInstance from '../../../helpers/axiosInstance'
+import CreatableSelect from 'react-select/creatable'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
+import DatePicker from 'react-datepicker'
+import { Copy, Edit, Trash2 } from 'lucide-react'
+import Swal from 'sweetalert2'
+import ItemSelectionContent from '../../../components/ItemSelectionContent'
+import FileUploadSection from './FileUploadSection'
+import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
+import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation'
+import 'react-datepicker/dist/react-datepicker.css'
 
-
-const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentStep, setBackStep, sendToBackend, prevStep, hideBack }) => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+const ItemSelectionStep = ({
+  setFormData,
+  formData,
+  updateFormData,
+  setCurrentStep,
+  setBackStep,
+  sendToBackend,
+  prevStep,
+  hideBack,
+}) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const validationSchema = Yup.object().shape({
     customerName: Yup.string().required(t('proposals.create.customerInfo.validation.customerName')),
     description: Yup.string().required(t('proposals.create.customerInfo.validation.description')),
     designer: Yup.string().required(t('proposals.create.customerInfo.validation.designer')),
-  });
+  })
 
   const statusOptions = [
     { label: t('proposals.status.draft'), value: 'Draft' },
@@ -49,80 +48,84 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
     { label: t('proposals.status.designDone'), value: 'Design done' },
     { label: t('proposals.status.proposalAccepted'), value: 'Proposal accepted' },
     { label: t('proposals.status.proposalRejected'), value: 'Proposal rejected' },
-  ];
+  ]
 
-  const [activeTab, setActiveTab] = useState("item");
-  const { list: users } = useSelector((state) => state.users);
-  const loggedInUser = JSON.parse(localStorage.getItem('user'));
-  const loggedInUserId = loggedInUser.userId;
+  const [activeTab, setActiveTab] = useState('item')
+  const { list: users } = useSelector((state) => state.users)
+  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUserId = loggedInUser.userId
 
   // Check if user is a contractor (should not see manufacturer version names)
-  const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor';
+  const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor'
 
-  const manufacturersById = useSelector((state) => state.manufacturers.byId);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [currentEditIndex, setCurrentEditIndex] = useState(null);
-  const [currentDeleteIndex, setCurrentDeleteIndex] = useState(null);
-  const [editedVersionName, setEditedVersionName] = useState('');
-  const [selectedVersionIndex, setSelectedVersionIndex] = useState(null);
-  const [selectedVersion, setSelectedVersion] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const manufacturersById = useSelector((state) => state.manufacturers.byId)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [currentEditIndex, setCurrentEditIndex] = useState(null)
+  const [currentDeleteIndex, setCurrentDeleteIndex] = useState(null)
+  const [editedVersionName, setEditedVersionName] = useState('')
+  const [selectedVersionIndex, setSelectedVersionIndex] = useState(null)
+  const [selectedVersion, setSelectedVersion] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleBadgeClick = (index, version) => {
-    setSelectedVersionIndex(index);
-    setSelectedVersion(version);
+    setSelectedVersionIndex(index)
+    setSelectedVersion(version)
   }
 
   useEffect(() => {
     // Mirror the currently selected version into Redux only when it changes meaningfully
     if (selectedVersion && typeof selectedVersion === 'object') {
-      dispatch(setSelectVersionNew(selectedVersion));
+      dispatch(setSelectVersionNew(selectedVersion))
     }
-  }, [selectedVersion?.versionName, selectedVersion?.manufacturer, dispatch]);
+  }, [selectedVersion?.versionName, selectedVersion?.manufacturer, dispatch])
 
   useEffect(() => {
     formData.manufacturersData?.forEach((item) => {
       if (item.manufacturer) {
         // Don't load full catalog data for proposal summary - only manufacturer info needed
-        dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }));
+        dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }))
       }
-    });
-  }, [formData.manufacturersData, dispatch]);
+    })
+  }, [formData.manufacturersData, dispatch])
 
-  const versionDetails = formData?.manufacturersData?.map(item => ({
+  const versionDetails = formData?.manufacturersData?.map((item) => ({
     ...item,
-    manufacturerData: manufacturersById[item.manufacturer]
-  }));
+    manufacturerData: manufacturersById[item.manufacturer],
+  }))
   const selectVersion = versionDetails[selectedVersionIndex]
 
   useEffect(() => {
     if (versionDetails?.length > 0 && selectedVersionIndex === null) {
-      setSelectedVersionIndex(0);
+      setSelectedVersionIndex(0)
       // Initialize with the first version object, not the whole array
-      setSelectedVersion(versionDetails[0]);
+      setSelectedVersion(versionDetails[0])
     }
-  }, [versionDetails, selectedVersionIndex]);
+  }, [versionDetails, selectedVersionIndex])
 
   const handleSaveOrder = () => {
-    sendToBackend('0');
-  };
+    sendToBackend('0')
+  }
 
   const handleAcceptOrder = async () => {
-    if (isSubmitting) return; // Prevent duplicate submissions
+    if (isSubmitting) return // Prevent duplicate submissions
 
     try {
       // First, validate sub-type requirements if there are items and a manufacturer
       if (selectedVersion?.items && selectedVersion.items.length > 0 && formData.manufacturerId) {
         const validation = await validateProposalSubTypeRequirements(
           selectedVersion.items,
-          formData.manufacturerId
-        );
+          formData.manufacturerId,
+        )
 
         if (!validation.isValid) {
-          if (import.meta?.env?.DEV) console.warn('Sub-type validation failed in ProposalSummary:', validation.missingRequirements);
-          await showSubTypeValidationError(validation.missingRequirements, Swal);
-          return;
+          if (import.meta?.env?.DEV)
+            console.warn(
+              'Sub-type validation failed in ProposalSummary:',
+              validation.missingRequirements,
+            )
+          await showSubTypeValidationError(validation.missingRequirements, Swal)
+          return
         }
       }
 
@@ -140,125 +143,137 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
         cancelButtonText: t('proposals.confirm.goBack', 'Go Back'),
         reverseButtons: true,
         focusCancel: true,
-      });
+      })
 
       if (result.isConfirmed) {
-        setIsSubmitting(true);
+        setIsSubmitting(true)
 
         try {
           // Step 1: First create the proposal (save as draft)
           const createPayload = {
             action: '0', // Save as draft first
             formData: { ...formData, type: '0' },
-          };
-
-          const createResponse = await dispatch(sendFormDataToBackend(createPayload));
-
-          if (!createResponse.payload.success) {
-            throw new Error(createResponse.payload.message || 'Failed to create quote');
           }
 
-          const newProposalId = createResponse.payload.data?.id;
+          const createResponse = await dispatch(sendFormDataToBackend(createPayload))
+
+          if (!createResponse.payload.success) {
+            throw new Error(createResponse.payload.message || 'Failed to create quote')
+          }
+
+          const newProposalId = createResponse.payload.data?.id
 
           if (!newProposalId) {
-            throw new Error('Quote created but no ID returned');
+            throw new Error('Quote created but no ID returned')
           }
 
           // Step 2: Now accept the newly created proposal using the acceptance API
-          const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {
-            // No additional data needed for internal acceptance
-          });
+          const acceptResponse = await axiosInstance.post(
+            `/api/proposals/${newProposalId}/accept`,
+            {
+              // No additional data needed for internal acceptance
+            },
+          )
 
           if (acceptResponse.data.success) {
-            Swal.fire(t('common.success','Success'), t('proposals.success.acceptConverted','Quote accepted and converted to order!'), 'success');
+            Swal.fire(
+              t('common.success', 'Success'),
+              t('proposals.success.acceptConverted', 'Quote accepted and converted to order!'),
+              'success',
+            )
             // Navigate away to prevent duplicate submissions
-            navigate('/orders'); // Navigate to orders since it's now an accepted quote
+            navigate('/orders') // Navigate to orders since it's now an accepted quote
           } else {
-            throw new Error(acceptResponse.data.message || 'Failed to accept quote');
+            throw new Error(acceptResponse.data.message || 'Failed to accept quote')
           }
-
         } catch (error) {
-          if (import.meta?.env?.DEV) console.error('Error in handleAcceptOrder:', {
-            error: error.message,
-            response: error.response?.data,
-            stack: error.stack,
-            timestamp: new Date().toISOString()
-          });
+          if (import.meta?.env?.DEV)
+            console.error('Error in handleAcceptOrder:', {
+              error: error.message,
+              response: error.response?.data,
+              stack: error.stack,
+              timestamp: new Date().toISOString(),
+            })
 
           // Check if this is a sub-type validation error from backend
           if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
-            await showSubTypeValidationError(error.response.data.missingRequirements, Swal);
+            await showSubTypeValidationError(error.response.data.missingRequirements, Swal)
           } else {
-            Swal.fire(t('common.error','Error'), error.message || t('proposals.errors.acceptFailed','Failed to accept quote. Please try again.'), 'error');
+            Swal.fire(
+              t('common.error', 'Error'),
+              error.message ||
+                t('proposals.errors.acceptFailed', 'Failed to accept quote. Please try again.'),
+              'error',
+            )
           }
-          setIsSubmitting(false);
+          setIsSubmitting(false)
         }
       }
     } catch (_) {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleRejectOrder = () => {
-    sendToBackend('2');
-  };
+    sendToBackend('2')
+  }
 
   const handleTabSelect = (tab) => {
     setActiveTab(tab)
   }
 
   const handleSubmit = (values) => {
-    updateFormData(values);
-  };
+    updateFormData(values)
+  }
 
   const openEditModal = (index) => {
-    setCurrentEditIndex(index);
-    setEditedVersionName(versionDetails[index].versionName);
-    setEditModalOpen(true);
-  };
+    setCurrentEditIndex(index)
+    setEditedVersionName(versionDetails[index].versionName)
+    setEditModalOpen(true)
+  }
 
   const saveEditVersionName = () => {
     const existingEntry = formData.manufacturersData.find(
-      (entry) => entry.versionName === editedVersionName
-    );
+      (entry) => entry.versionName === editedVersionName,
+    )
 
     if (existingEntry) {
       Swal.fire({
         icon: 'error',
-        title: t('common.error','Error'),
-        text: t('proposals.create.summary.duplicate','Duplicate'),
-      });
-      return;
+        title: t('common.error', 'Error'),
+        text: t('proposals.create.summary.duplicate', 'Duplicate'),
+      })
+      return
     }
 
-    const updatedManufacturersData = [...formData.manufacturersData];
-    updatedManufacturersData[currentEditIndex].versionName = editedVersionName;
-    updateFormData({ manufacturersData: updatedManufacturersData });
-    setEditModalOpen(false);
-  };
+    const updatedManufacturersData = [...formData.manufacturersData]
+    updatedManufacturersData[currentEditIndex].versionName = editedVersionName
+    updateFormData({ manufacturersData: updatedManufacturersData })
+    setEditModalOpen(false)
+  }
 
   const openDeleteModal = (index) => {
-    setCurrentDeleteIndex(index);
-    setDeleteModalOpen(true);
-  };
+    setCurrentDeleteIndex(index)
+    setDeleteModalOpen(true)
+  }
 
   const confirmDelete = () => {
     const updatedManufacturersData = formData.manufacturersData.filter(
-      (_, i) => i !== currentDeleteIndex
-    );
-    updateFormData({ manufacturersData: updatedManufacturersData });
-    setDeleteModalOpen(false);
-  };
+      (_, i) => i !== currentDeleteIndex,
+    )
+    updateFormData({ manufacturersData: updatedManufacturersData })
+    setDeleteModalOpen(false)
+  }
 
   const duplicateVersion = (index) => {
-    const copy = { ...formData.manufacturersData[index] };
-  copy.versionName = `${t('common.copyOf','Copy of')} ${copy.versionName}`;
-    updateFormData({ manufacturersData: [...formData.manufacturersData, copy] });
-  };
+    const copy = { ...formData.manufacturersData[index] }
+    copy.versionName = `${t('common.copyOf', 'Copy of')} ${copy.versionName}`
+    updateFormData({ manufacturersData: [...formData.manufacturersData, copy] })
+  }
 
   const designerOptions = users
     .filter((user) => user.id !== loggedInUserId)
-    .map((user) => ({ value: user.id, label: user.name }));
+    .map((user) => ({ value: user.id, label: user.name }))
 
   return (
     <>
@@ -269,15 +284,17 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
       <div className="quote-form-mobile">
         <div className="button-group">
           {!hideBack && (
-            <CButton
-              color="secondary"
+            <Button
               variant="outline"
+              colorScheme="gray"
               onClick={prevStep}
-              aria-label={t('common.back','Back')}
-              style={{ borderRadius: '6px', minWidth: '90px' }}
+              aria-label={t('common.back', 'Back')}
+              borderRadius="6px"
+              minW="90px"
+              minH="44px"
             >
               Back
-            </CButton>
+            </Button>
           )}
         </div>
         <Formik
@@ -286,183 +303,187 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-          }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
             <>
-              <CForm onSubmit={handleSubmit} className="proposal-summary-form">
+              <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
                 <div className="form-section">
-                  <CRow>
-                    <CCol xs={12} md={2} className="mt-4">
-                      <CFormLabel htmlFor="designer">Designer *</CFormLabel>
+                  <Flex>
+                    <Box xs={12} md={2} className="mt-4">
+                      <FormLabel htmlFor="designer">Designer *</FormLabel>
                       <CreatableSelect
                         isClearable
                         id="designer"
                         name="designer"
                         options={designerOptions}
-                        value={
-                          designerOptions.find(
-                            (opt) => opt.value === values.designer
-                          ) || null
-                        }
+                        value={designerOptions.find((opt) => opt.value === values.designer) || null}
                         onChange={(selectedOption) => {
                           updateFormData({
                             ...formData,
                             designer: selectedOption?.value || '',
-                          });
+                          })
                         }}
                         onBlur={handleBlur}
                       />
                       {errors.designer && touched.designer && (
-                        <div className="text-danger small mt-1">
-                          {errors.designer}
-                        </div>
-                    )}
-                  </CCol>
+                        <div className="text-danger small mt-1">{errors.designer}</div>
+                      )}
+                    </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="description">{t('proposals.create.customerInfo.description')} *</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={values.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
-                    />
-                    {errors.description && touched.description && (
-                      <div className="text-danger small mt-1">
-                        {errors.description}
+                    <Box xs={12} md={2} className="mt-4">
+                      <FormLabel htmlFor="description">
+                        {t('proposals.create.customerInfo.description')} *
+                      </FormLabel>
+                      <Input
+                        type="text"
+                        id="description"
+                        name="description"
+                        value={values.description}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
+                      />
+                      {errors.description && touched.description && (
+                        <div className="text-danger small mt-1">{errors.description}</div>
+                      )}
+                    </Box>
+
+                    <Box xs={12} md={2} className="mt-4">
+                      <FormLabel htmlFor="status">{t('proposals.headers.status')}</FormLabel>
+                      <CreatableSelect
+                        isClearable
+                        options={statusOptions}
+                        value={statusOptions.find(
+                          (opt) => opt.value === (values.status || 'Draft'),
+                        )}
+                        onChange={(selectedOption) => {
+                          updateFormData({
+                            ...formData,
+                            status: selectedOption?.value || 'Draft',
+                          })
+                        }}
+                        onBlur={handleBlur}
+                        inputId="status"
+                      />
+                    </Box>
+
+                    <Box xs={12} md={2} className="mt-4">
+                      <div style={{ position: 'relative' }}>
+                        <FormLabel htmlFor="date">{t('proposals.headers.date')}</FormLabel>
+                        <DatePicker
+                          id="date"
+                          selected={values.date ? new Date(values.date) : null}
+                          onChange={(date) => {
+                            const current = values.date ? new Date(values.date) : null
+                            const changed =
+                              (!current && !!date) ||
+                              (!!current && !date) ||
+                              (!!current && !!date && current.getTime() !== date.getTime())
+                            if (changed) {
+                              handleChange({ target: { name: 'date', value: date } })
+                              updateFormData({ ...formData, date }
+  )
+}
+                          }}
+                          className="form-control"
+                          dateFormat="MM/dd/yyyy"
+                          wrapperClassName="w-100"
+                          placeholderText={t('proposals.headers.date')}
+                        />
+                        <FaCalendarAlt
+                          style={{
+                            position: 'absolute',
+                            top: '70%',
+                            right: '12px',
+                            transform: 'translateY(-50%)',
+                            color: '#6c757d',
+                            pointerEvents: 'none',
+                          }}
+                        />
                       </div>
-                    )}
-                  </CCol>
+                    </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
-                    <CFormLabel htmlFor="status">{t('proposals.headers.status')}</CFormLabel>
-                    <CreatableSelect
-                      isClearable
-                      options={statusOptions}
-                      value={
-                        statusOptions.find(opt => opt.value === (values.status || 'Draft'))
-                      }
-                      onChange={(selectedOption) => {
-                        updateFormData({
-                          ...formData,
-                          status: selectedOption?.value || 'Draft',
-                        });
-                      }}
-                      onBlur={handleBlur}
-                      inputId="status"
-                    />
-                  </CCol>
+                    <Box xs={12} md={2} className="mt-4">
+                      <div style={{ position: 'relative' }}>
+                        <FormLabel htmlFor="designDate">
+                          {t('proposals.create.customerInfo.designDoneDate')}
+                        </FormLabel>
+                        <DatePicker
+                          id="designDate"
+                          selected={values.designDate ? new Date(values.designDate) : null}
+                          onChange={(date) => {
+                            const current = values.designDate ? new Date(values.designDate) : null
+                            const changed =
+                              (!current && !!date) ||
+                              (!!current && !date) ||
+                              (!!current && !!date && current.getTime() !== date.getTime())
+                            if (changed) {
+                              handleChange({ target: { name: 'designDate', value: date } })
+                              updateFormData({ ...formData, designDate: date })
+                            }
+                          }}
+                          className="form-control"
+                          dateFormat="MM/dd/yyyy"
+                          wrapperClassName="w-100"
+                          placeholderText={t('proposals.create.customerInfo.designDoneDate')}
+                        />
+                        <FaCalendarAlt
+                          style={{
+                            position: 'absolute',
+                            top: '70%',
+                            right: '12px',
+                            transform: 'translateY(-50%)',
+                            color: '#6c757d',
+                            pointerEvents: 'none',
+                          }}
+                        />
+                      </div>
+                    </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="date">{t('proposals.headers.date')}</CFormLabel>
-                      <DatePicker
-                        id="date"
-                        selected={values.date ? new Date(values.date) : null}
-                        onChange={(date) => {
-                          const current = values.date ? new Date(values.date) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'date', value: date } });
-                            updateFormData({ ...formData, date });
+                    <Box xs={12} md={2} className="mt-4">
+                      <div style={{ position: 'relative' }}>
+                        <FormLabel htmlFor="measurementDate">
+                          {t('proposals.create.customerInfo.measurementDoneDate')}
+                        </FormLabel>
+                        <DatePicker
+                          id="measurementDate"
+                          selected={
+                            values.measurementDate ? new Date(values.measurementDate) : null
                           }
-                        }}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText={t('proposals.headers.date')}
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
+                          onChange={(date) => {
+                            const current = values.measurementDate
+                              ? new Date(values.measurementDate)
+                              : null
+                            const changed =
+                              (!current && !!date) ||
+                              (!!current && !date) ||
+                              (!!current && !!date && current.getTime() !== date.getTime())
+                            if (changed) {
+                              handleChange({ target: { name: 'measurementDate', value: date } })
+                              updateFormData({ ...formData, measurementDate: date })
+                            }
+                          }}
+                          className="form-control"
+                          dateFormat="MM/dd/yyyy"
+                          wrapperClassName="w-100"
+                          placeholderText={t('proposals.create.customerInfo.measurementDoneDate')}
+                        />
+                        <FaCalendarAlt
+                          style={{
+                            position: 'absolute',
+                            top: '70%',
+                            right: '12px',
+                            transform: 'translateY(-50%)',
+                            color: '#6c757d',
+                            pointerEvents: 'none',
+                          }}
+                        />
+                      </div>
+                    </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
+                    {/* Follow up dates commented out
+                  <Box xs={12} md={2} className="mt-4">
                     <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="designDate">{t('proposals.create.customerInfo.designDoneDate')}</CFormLabel>
-                      <DatePicker
-                        id="designDate"
-                        selected={values.designDate ? new Date(values.designDate) : null}
-                        onChange={(date) => {
-                          const current = values.designDate ? new Date(values.designDate) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'designDate', value: date } });
-                            updateFormData({ ...formData, designDate: date });
-                          }
-                        }}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText={t('proposals.create.customerInfo.designDoneDate')}
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="measurementDate">
-                        {t('proposals.create.customerInfo.measurementDoneDate')}</CFormLabel>
-                      <DatePicker
-                        id="measurementDate"
-                        selected={values.measurementDate ? new Date(values.measurementDate) : null}
-                        onChange={(date) => {
-                          const current = values.measurementDate ? new Date(values.measurementDate) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'measurementDate', value: date } });
-                            updateFormData({ ...formData, measurementDate: date });
-                          }
-                        }}
-                        className="form-control"
-                        dateFormat="MM/dd/yyyy"
-                        wrapperClassName="w-100"
-                        placeholderText={t('proposals.create.customerInfo.measurementDoneDate')}
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: '#6c757d',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </CCol>
-
-                  {/* Follow up dates commented out
-                  <CCol xs={12} md={2} className="mt-4">
-                    <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</CFormLabel>
+                      <FormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
                         id="followUp1Date"
                         selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
@@ -490,11 +511,11 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         }}
                       />
                     </div>
-                  </CCol>
+                  </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
+                  <Box xs={12} md={2} className="mt-4">
                     <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2')} {t('proposals.headers.date')}</CFormLabel>
+                      <FormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
                         id="followUp2Date"
                         selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
@@ -522,11 +543,11 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         }}
                       />
                     </div>
-                  </CCol>
+                  </Box>
 
-                  <CCol xs={12} md={2} className="mt-4">
+                  <Box xs={12} md={2} className="mt-4">
                     <div style={{ position: 'relative' }}>
-                      <CFormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3')} {t('proposals.headers.date')}</CFormLabel>
+                      <FormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
                         id="followUp3Date"
                         selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
@@ -554,17 +575,17 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         }}
                       />
                     </div>
-                  </CCol>
+                  </Box>
                   */}
-                </CRow>
+                  </Flex>
                 </div>
-              </CForm>
+              </FormControl>
 
               <div className="proposal-version-badges">
                 {versionDetails.map((version, index) => {
-                  const isSelected = index === selectedVersionIndex;
+                  const isSelected = index === selectedVersionIndex
                   return (
-                    <CBadge
+                    <Badge
                       key={index}
                       className={`proposal-version-badge p-2 d-flex ${isSelected ? 'selected' : ''}`}
                       style={{
@@ -580,7 +601,9 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         {!isContractor && (
                           <strong style={{ display: 'block' }}>{version.versionName}</strong>
                         )}
-                        <small style={{ fontSize: '0.7rem', color: isSelected ? '#a9c7ff' : '#4a6fa5' }}>
+                        <small
+                          style={{ fontSize: '0.7rem', color: isSelected ? '#a9c7ff' : '#4a6fa5' }}
+                        >
                           $ {version.manufacturerData?.costMultiplier || 'N/A'}
                         </small>
                       </div>
@@ -597,10 +620,10 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                               border: 'none',
                               outline: 'none',
                               boxShadow: 'none',
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
                             }}
                           >
-                            <CIcon icon={cilOptions} />
+                            <Icon as={MoreHorizontal} />
                           </CDropdownToggle>
                           <CDropdownMenu
                             style={{
@@ -608,7 +631,7 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                               border: '1px solid #e0e0e0',
                               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                               borderRadius: '4px',
-                              padding: '4px 0'
+                              padding: '4px 0',
                             }}
                           >
                             <CDropdownItem
@@ -617,10 +640,10 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                                 padding: '6px 12px',
                                 fontSize: '0.875rem',
                                 color: '#333',
-                                transition: 'all 0.2s ease'
+                                transition: 'all 0.2s ease',
                               }}
                             >
-                              <CIcon icon={cilPencil} className="me-2" /> {t('common.edit')}
+                              <Icon as={Edit} className="me-2" /> {t('common.edit')}
                             </CDropdownItem>
                             <CDropdownItem
                               onClick={() => openDeleteModal(index)}
@@ -628,10 +651,10 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                                 padding: '6px 12px',
                                 fontSize: '0.875rem',
                                 color: '#dc3545',
-                                transition: 'all 0.2s ease'
+                                transition: 'all 0.2s ease',
                               }}
                             >
-                                <CIcon icon={cilTrash} className="me-2" /> {t('common.delete')}
+                              <Icon as={Trash} className="me-2" /> {t('common.delete')}
                             </CDropdownItem>
                             <CDropdownItem
                               onClick={() => duplicateVersion(index)}
@@ -639,25 +662,26 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                                 padding: '6px 12px',
                                 fontSize: '0.875rem',
                                 color: '#333',
-                                transition: 'all 0.2s ease'
+                                transition: 'all 0.2s ease',
                               }}
                             >
-                                <CIcon icon={cilCopy} className="me-2" /> {t('proposals.create.summary.duplicate')}
+                              <Icon as={Copy} className="me-2" />{' '}
+                              {t('proposals.create.summary.duplicate')}
                             </CDropdownItem>
                           </CDropdownMenu>
                         </CDropdown>
                       )}
-                    </CBadge>
-                  );
+                    </Badge>
+                  )
                 })}
               </div>
 
               <hr />
 
               <CTabs className="quote-tabs">
-                <CNav variant="tabs" className="border-0">
-                  <CNavItem>
-                    <CNavLink
+                <Flex variant="tabs" className="border-0">
+                  <Box>
+                    <Link
                       active={activeTab === 'item'}
                       onClick={() => handleTabSelect('item')}
                       style={{
@@ -666,25 +690,26 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         padding: '10px 20px',
                         fontWeight: 600,
                         color: activeTab === 'item' ? '#084298' : '#6c757d',
-                        backgroundColor: activeTab === 'item' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
+                        backgroundColor:
+                          activeTab === 'item' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
                         borderBottom: activeTab === 'item' ? '3px solid #084298' : 'none',
                         transition: 'all 0.3s ease',
                         borderRadius: '4px 4px 0 0',
                         marginRight: '4px',
                         ':hover': {
                           color: '#084298',
-                          backgroundColor: 'rgba(8, 66, 152, 0.05)'
-                        }
+                          backgroundColor: 'rgba(8, 66, 152, 0.05)',
+                        },
                       }}
                     >
                       <span className="d-flex align-items-center">
-                        <CIcon icon={cilList} className="me-2" />
+                        <Icon as={List} className="me-2" />
                         {t('proposalColumns.items')}
                       </span>
-                    </CNavLink>
-                  </CNavItem>
-                  <CNavItem>
-                    {/* <CNavLink
+                    </Link>
+                  </Box>
+                  <Box>
+                    {/* <Link
                       active={activeTab === 'file'}
                       onClick={() => handleTabSelect('file')}
                       style={{
@@ -700,16 +725,18 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
                         ':hover': {
                           color: '#084298',
                           backgroundColor: 'rgba(8, 66, 152, 0.05)'
+
+  )
                         }
                       }}
                     >
                       <span className="d-flex align-items-center">
-                        <CIcon icon={cilFile} className="me-2" />
+                        <Icon as={File} className="me-2" />
                         Files
                       </span>
-                    </CNavLink> */}
-                  </CNavItem>
-                </CNav>
+                    </Link> */}
+                  </Box>
+                </Flex>
               </CTabs>
 
               {activeTab === 'item' && (
@@ -738,88 +765,74 @@ const ItemSelectionStep = ({ setFormData, formData, updateFormData, setCurrentSt
               <hr />
               <div className="proposal-actions">
                 <div className="proposal-actions-grid">
-                  <CButton
-                    color="secondary"
+                  <Button
                     variant="outline"
+                    colorScheme="gray"
                     onClick={handleSaveOrder}
                     className="proposal-action-btn"
                   >
                     {t('common.save')}
-                  </CButton>
-                  <CButton
-                    color="success"
+                  </Button>
+                  <Button
+                    colorScheme="green"
                     onClick={handleAcceptOrder}
-                    disabled={isSubmitting}
+                    isDisabled={isSubmitting}
                     className="proposal-action-btn proposal-primary-action"
+                    whileTap={{ scale: 0.98 }}
                   >
                     {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
-                  </CButton>
-                  <CButton
-                    color="danger"
+                  </Button>
+                  <Button
                     variant="outline"
+                    colorScheme="red"
                     onClick={handleRejectOrder}
                     className="proposal-action-btn"
                   >
                     {t('proposals.create.summary.rejectAndArchive')}
-                  </CButton>
+                  </Button>
                 </div>
-              </div>
             </>
           )}
-        </Formik >
-      </div >
+        </Formik>
+      </div>
 
-      <CModal
-        visible={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        alignment="center"
-        backdrop="static"
-        className="modal-lg"
-      >
-        <CModalHeader closeButton>
-          <CModalTitle>{t('proposals.create.summary.editVersionTitle')}</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CFormInput
-            className="mb-3"
-            value={editedVersionName}
-            onChange={(e) => setEditedVersionName(e.target.value)}
-            placeholder={t('proposals.create.manufacturer.labels.versionName')}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setEditModalOpen(false)}>
-            {t('common.cancel')}
-          </CButton>
-          <CButton color="primary" onClick={saveEditVersionName}>
-            {t('common.save')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
+      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('proposals.create.summary.editVersionTitle')}</ModalHeader>
+          <ModalBody>
+            <Input
+              value={editedVersionName}
+              onChange={(e) => setEditedVersionName(e.target.value)}
+              placeholder={t('proposals.create.manufacturer.labels.versionName')}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" colorScheme="gray" onClick={() => setEditModalOpen(false)} mr={3}>
+              {t('common.cancel')}
+            </Button>
+            <Button colorScheme="brand" onClick={saveEditVersionName}>
+              {t('common.save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-      <CModal
-        visible={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        alignment="center"
-        backdrop="static"
-        className="modal-sm"
-      >
-        <CModalHeader closeButton>
-          <CModalTitle>{t('customers.confirmTitle')}</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {t('proposals.create.summary.confirmDeleteVersion')}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setDeleteModalOpen(false)}>
-            {t('common.cancel')}
-          </CButton>
-          <CButton color="danger" onClick={confirmDelete}>
-            {t('common.delete')}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
+      <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('customers.confirmTitle')}</ModalHeader>
+          <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" colorScheme="gray" onClick={() => setDeleteModalOpen(false)} mr={3}>
+              {t('common.cancel')}
+            </Button>
+            <Button colorScheme="red" onClick={confirmDelete}>
+              {t('common.delete')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

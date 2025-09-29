@@ -1,63 +1,154 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useFormik } from 'formik';
-import {
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CButton,
-  CFormSwitch,
-  CFormLabel,
-  CSpinner,
-} from '@coreui/react';
-import axiosInstance from '../../helpers/axiosInstance';
-import PageHeader from '../PageHeader';
-import { buildProposalPdfHtml, DEFAULT_PROPOSAL_PDF_COLUMNS } from '../../helpers/proposalPdfBuilder';
 
-const BASE_PAGE_WIDTH_PX = 794;
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import {
+  Box,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Divider,
+  HStack,
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Switch,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { Controller, useForm } from 'react-hook-form'
+import { Eye, Printer, Download } from 'lucide-react'
+import axiosInstance from '../../helpers/axiosInstance'
+import {
+  buildProposalPdfHtml,
+  DEFAULT_PROPOSAL_PDF_COLUMNS,
+} from '../../helpers/proposalPdfBuilder'
+
+const BASE_PAGE_WIDTH_PX = 794
+const MotionButton = motion(Button)
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
-  const { t, i18n } = useTranslation();
-  const [pdfCustomization, setPdfCustomization] = useState(null);
-  const [styleData, setStyleData] = useState(null);
-  const [manufacturerNameData, setManufacturerNameData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState('');
-  const [modalSize, setModalSize] = useState('xl');
-  const [containerPadding, setContainerPadding] = useState(20);
-  const [isMobile, setIsMobile] = useState(false);
+  const { t, i18n } = useTranslation()
+  const [pdfCustomization, setPdfCustomization] = useState(null)
+  const [styleData, setStyleData] = useState(null)
+  const [manufacturerNameData, setManufacturerNameData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewHtml, setPreviewHtml] = useState('')
 
-  const previewContainerRef = useRef(null);
-  const previewIframeRef = useRef(null);
+  const previewIframeRef = useRef(null)
+
+  const defaultValues = useMemo(
+    () => ({
+      showProposalItems: true,
+      showGroupItems: true,
+      showPriceSummary: true,
+      selectedVersions: [],
+      selectedColumns: DEFAULT_PROPOSAL_PDF_COLUMNS.slice(),
+    }),
+    [],
+  )
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues,
+    shouldUnregister: false,
+  })
+
+  useEffect(() => {
+    if (show) {
+      reset(defaultValues)
+      setShowPreview(false)
+      setPreviewHtml('')
+    }
+  }, [show, defaultValues, reset])
+
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const mainModalSize = useBreakpointValue({ base: 'full', md: '4xl' })
+  const previewModalSize = useBreakpointValue({ base: 'full', md: '6xl' })
+  const previewPadding = useBreakpointValue({ base: 3, md: 6 })
+  const previewMaxHeight = useBreakpointValue({
+    base: 'calc(100vh - 180px)',
+    md: '70vh',
+    lg: '80vh',
+  })
 
   const shortLabel = useCallback(
     (code) => {
       switch (code) {
         case 'L':
-          return t('common.short.left', { defaultValue: 'L' });
+          return t('common.short.left', { defaultValue: 'L' })
         case 'R':
-          return t('common.short.right', { defaultValue: 'R' });
+          return t('common.short.right', { defaultValue: 'R' })
         case 'B':
-          return t('common.short.both', { defaultValue: 'B' });
+          return t('common.short.both', { defaultValue: 'B' })
         default:
-          return code ?? t('common.na', 'N/A');
+          return code ?? t('common.na', 'N/A')
       }
     },
-    [t]
-  );
+    [t],
+  )
 
-  const isContractor = useMemo(() => {
+  const fetchPdfCustomization = useCallback(async () => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      if (!storedUser) return false;
-      const groupType = storedUser?.group?.group_type || storedUser?.group_type;
-      const role = (storedUser?.role || '').toLowerCase();
-      return groupType === 'contractor' || role === 'contractor';
+      const response = await axiosInstance.get('/api/settings/customization/pdf')
+      setPdfCustomization(response.data || {})
     } catch (error) {
-      return false;
+      console.error('Error fetching PDF customization:', error)
     }
-  }, []);
+  }, [])
+
+  const fetchStyleData = useCallback(async (manufacturerId, styleId) => {
+    if (!manufacturerId || !styleId) return
+    try {
+      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`)
+      const styles = response.data?.styles || []
+      const matchedStyle = styles.find((style) => style.id === styleId)
+      setStyleData(matchedStyle || null)
+    } catch (error) {
+      console.error('Error fetching style data:', error)
+    }
+  }, [])
+
+  const fetchManufacturerName = useCallback(async (manufacturerId) => {
+    if (!manufacturerId) return
+    try {
+      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}`)
+      setManufacturerNameData(response.data || null)
+    } catch (error) {
+      console.error('Error fetching manufacturer data:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!show) return
+    fetchPdfCustomization()
+  }, [show, fetchPdfCustomization])
+
+  useEffect(() => {
+    if (!show) return
+    const manufacturerData = Array.isArray(formData?.manufacturersData)
+      ? formData.manufacturersData[0]
+      : null
+    const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId
+    const styleId = manufacturerData?.selectedStyle || manufacturerData?.styleId
+    fetchStyleData(manufacturerId, styleId)
+    fetchManufacturerName(manufacturerId)
+  }, [show, formData?.manufacturersData, fetchStyleData, fetchManufacturerName])
 
   const buildHtml = useCallback(
     (values) =>
@@ -77,137 +168,28 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         styleData,
         manufacturerNameData,
       }),
-    [formData, pdfCustomization, t, i18n, shortLabel, styleData, manufacturerNameData]
-  );
-
-  const fetchPdfCustomization = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/api/settings/customization/pdf');
-      setPdfCustomization(response.data || {});
-    } catch (error) {
-      console.error('Error fetching PDF customization:', error);
-    }
-  }, []);
-
-  const fetchStyleData = useCallback(async (manufacturerId, styleId) => {
-    if (!manufacturerId || !styleId) return;
-    try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}/styles-meta`);
-      const styles = response.data?.styles || [];
-      const matchedStyle = styles.find((style) => style.id === styleId);
-      setStyleData(matchedStyle || null);
-    } catch (error) {
-      console.error('Error fetching style data:', error);
-    }
-  }, []);
-
-  const fetchManufacturerName = useCallback(async (manufacturerId) => {
-    if (!manufacturerId) return;
-    try {
-      const response = await axiosInstance.get(`/api/manufacturers/${manufacturerId}`);
-      setManufacturerNameData(response.data || null);
-    } catch (error) {
-      console.error('Error fetching manufacturer data:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!show) return;
-    fetchPdfCustomization();
-  }, [show, fetchPdfCustomization]);
-
-  useEffect(() => {
-    if (!show) return;
-    const manufacturerData = Array.isArray(formData?.manufacturersData)
-      ? formData.manufacturersData[0]
-      : null;
-    const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId;
-    const styleId = manufacturerData?.selectedStyle || manufacturerData?.styleId;
-    fetchStyleData(manufacturerId, styleId);
-    fetchManufacturerName(manufacturerId);
-  }, [show, formData?.manufacturersData, fetchStyleData, fetchManufacturerName]);
-
-  const calculateModalSize = useCallback(() => {
-    const width = window.innerWidth || document.documentElement.clientWidth || 0;
-    if (width < 576) return 'fullscreen';
-    if (width < 768) return 'lg';
-    if (width < 992) return 'xl';
-    return 'xl';
-  }, []);
-
-  const updateResponsiveState = useCallback(() => {
-    const newSize = calculateModalSize();
-    setModalSize(newSize);
-    setIsMobile(newSize === 'fullscreen');
-
-    const width = window.innerWidth || document.documentElement.clientWidth || 0;
-    const dynamicPadding = Math.max(12, Math.min(32, Math.round(width * 0.04)));
-    setContainerPadding(dynamicPadding);
-  }, [calculateModalSize]);
-
-  useLayoutEffect(() => {
-    updateResponsiveState();
-    window.addEventListener('resize', updateResponsiveState);
-    return () => window.removeEventListener('resize', updateResponsiveState);
-  }, [updateResponsiveState]);
-
-  useEffect(() => {
-    if (!showPreview) return;
-    const iframe = previewIframeRef.current;
-    if (!iframe) return;
-
-    const adjustHeight = () => {
-      try {
-        const body = iframe.contentDocument?.body;
-        if (body) iframe.style.height = `${body.scrollHeight}px`;
-      } catch (error) {
-        /* ignore cross-domain errors */
-      }
-    };
-
-    iframe.addEventListener('load', adjustHeight);
-    const timeoutId = setTimeout(adjustHeight, 150);
-    return () => {
-      iframe.removeEventListener('load', adjustHeight);
-      clearTimeout(timeoutId);
-    };
-  }, [previewHtml, showPreview]);
-
-  const formik = useFormik({
-    initialValues: {
-      showProposalItems: true,
-      showGroupItems: true,
-      showPriceSummary: true,
-      selectedVersions: [],
-      selectedColumns: DEFAULT_PROPOSAL_PDF_COLUMNS,
-    },
-    enableReinitialize: false,
-    onSubmit: async (values, helpers) => {
-      await handleDownload(values);
-      helpers.setSubmitting(false);
-    },
-  });
+    [formData, pdfCustomization, t, i18n, shortLabel, styleData, manufacturerNameData],
+  )
 
   const refreshPreview = useCallback(
-    (nextValues) => {
-      if (!showPreview) return;
-      const html = buildHtml(nextValues);
-      setPreviewHtml(html);
+    (overrides = {}) => {
+      if (!showPreview) return
+      const nextValues = { ...getValues(), ...overrides }
+      setPreviewHtml(buildHtml(nextValues))
     },
-    [buildHtml, showPreview]
-  );
+    [buildHtml, getValues, showPreview],
+  )
 
   useEffect(() => {
-    if (!showPreview) return;
-    const html = buildHtml(formik.values);
-    setPreviewHtml(html);
-  }, [showPreview, buildHtml, pdfCustomization, styleData, manufacturerNameData]);
+    if (!showPreview) return
+    refreshPreview()
+  }, [showPreview, pdfCustomization, styleData, manufacturerNameData, refreshPreview])
 
   const handleDownload = useCallback(
     async (values) => {
       try {
-        setIsLoading(true);
-        const htmlContent = buildHtml(values);
+        setIsLoading(true)
+        const htmlContent = buildHtml(values)
         const response = await axiosInstance.post(
           '/api/generate-pdf',
           {
@@ -222,113 +204,98 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               },
             },
           },
-          { responseType: 'blob' }
-        );
+          { responseType: 'blob' },
+        )
 
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'quote.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'quote.pdf'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       } catch (error) {
-        console.error('Error generating PDF:', error);
+        console.error('Error generating PDF:', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     },
-    [buildHtml]
-  );
+    [buildHtml],
+  )
 
   const handlePrint = useCallback(
     (values) => {
-      const htmlContent = buildHtml(values);
-      const printWindow = window.open('', '_blank');
+      const htmlContent = buildHtml(values)
+      const printWindow = window.open('', '_blank')
       if (printWindow) {
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        printWindow.focus();
+        printWindow.document.write(htmlContent)
+        printWindow.document.close()
+        printWindow.focus()
         printWindow.onload = () => {
-          printWindow.print();
-          printWindow.close();
-        };
+          printWindow.print()
+          printWindow.close()
+        }
       } else {
-        const iframe = document.createElement('iframe');
-        iframe.style.position = 'fixed';
-        iframe.style.right = '0';
-        iframe.style.bottom = '0';
-        iframe.style.width = '0';
-        iframe.style.height = '0';
-        document.body.appendChild(iframe);
-        const doc = iframe.contentWindow?.document;
+        const iframe = document.createElement('iframe')
+        iframe.style.position = 'fixed'
+        iframe.style.right = '0'
+        iframe.style.bottom = '0'
+        iframe.style.width = '0'
+        iframe.style.height = '0'
+        document.body.appendChild(iframe)
+        const doc = iframe.contentWindow?.document
         if (doc) {
-          doc.open();
-          doc.write(htmlContent);
-          doc.close();
+          doc.open()
+          doc.write(htmlContent)
+          doc.close()
           iframe.onload = () => {
-            iframe.contentWindow?.print();
-            setTimeout(() => document.body.removeChild(iframe), 1000);
-          };
+            iframe.contentWindow?.print()
+            setTimeout(() => document.body.removeChild(iframe), 1000)
+          }
         }
       }
     },
-    [buildHtml]
-  );
+    [buildHtml],
+  )
 
   const openPreview = useCallback(
-    (values) => {
-      setShowPreview(true);
-      const htmlContent = buildHtml(values);
-      setPreviewHtml(htmlContent);
-      requestAnimationFrame(() => requestAnimationFrame(() => updateResponsiveState()));
+    () => {
+      const values = getValues()
+      setShowPreview(true)
+      setPreviewHtml(buildHtml(values))
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const iframe = previewIframeRef.current
+          if (iframe?.contentWindow) {
+            iframe.contentWindow.focus()
+          }
+        })
+      })
     },
-    [buildHtml, updateResponsiveState]
-  );
-
-  const onToggle = useCallback(
-    (field) => (event) => {
-      formik.handleChange(event);
-      const nextValues = { ...formik.values, [field]: event.target.checked };
-      refreshPreview(nextValues);
-    },
-    [formik, refreshPreview]
-  );
-
-  const onCheckboxListChange = useCallback(
-    (field, value) => (event) => {
-      const nextValues = { ...formik.values };
-      const list = new Set(nextValues[field]);
-      if (event.target.checked) {
-        list.add(value);
-      } else {
-        list.delete(value);
-      }
-      if (field === 'selectedColumns' && list.size === 0) return; // keep at least one column
-      nextValues[field] = Array.from(list);
-      formik.setFieldValue(field, nextValues[field]);
-      refreshPreview(nextValues);
-    },
-    [formik, refreshPreview]
-  );
+    [buildHtml, getValues],
+  )
 
   const manufacturerData = useMemo(() => {
-    if (!formData?.manufacturersData) return [];
-    if (Array.isArray(formData.manufacturersData)) return formData.manufacturersData;
+    if (!formData?.manufacturersData) return []
+    if (Array.isArray(formData.manufacturersData)) return formData.manufacturersData
     try {
-      const parsed = JSON.parse(formData.manufacturersData);
-      return Array.isArray(parsed) ? parsed : [];
+      const parsed = JSON.parse(formData.manufacturersData)
+      return Array.isArray(parsed) ? parsed : []
     } catch (error) {
-      return [];
+      return []
     }
-  }, [formData?.manufacturersData]);
+  }, [formData?.manufacturersData])
 
-  const versionOptions = manufacturerData.map((item) => ({
-    value: item.versionName,
-    label: item.versionName,
-  }));
+  const versionOptions = useMemo(
+    () =>
+      manufacturerData.map((item) => ({
+        value: item.versionName,
+        label: item.versionName,
+      })),
+    [manufacturerData],
+  )
 
   const columnOptions = useMemo(
     () => [
@@ -342,298 +309,377 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
       { value: 'assemblyCost', label: t('proposalColumns.assemblyCost') },
       { value: 'total', label: t('proposalColumns.total') },
     ],
-    [t]
-  );
+    [t],
+  )
+
+  const fixedColumns = useMemo(
+    () => columnOptions.filter((option) => option.isFixed).map((option) => option.value),
+    [columnOptions],
+  )
+
+  const selectAllVersions = () => {
+    const all = versionOptions.map((option) => option.value)
+    setValue('selectedVersions', all)
+    refreshPreview({ selectedVersions: all })
+  }
+
+  const clearVersions = () => {
+    setValue('selectedVersions', [])
+    refreshPreview({ selectedVersions: [] })
+  }
+
+  const selectAllColumns = () => {
+    setValue('selectedColumns', DEFAULT_PROPOSAL_PDF_COLUMNS)
+    refreshPreview({ selectedColumns: DEFAULT_PROPOSAL_PDF_COLUMNS })
+  }
+
+  const clearColumns = () => {
+    const minimal = ['no', ...fixedColumns]
+    setValue('selectedColumns', Array.from(new Set(minimal)))
+    refreshPreview({ selectedColumns: Array.from(new Set(minimal)) })
+  }
+
+  const handleMainClose = () => {
+    if (isLoading) return
+    setShowPreview(false)
+    setPreviewHtml('')
+    onClose()
+  }
+
+  const onSubmit = handleSubmit(async (values) => {
+    await handleDownload(values)
+  })
 
   return (
     <>
-      <CModal
-        visible={show}
-        onClose={onClose}
-        size={isMobile ? 'fullscreen' : 'lg'}
-        alignment="center"
-        scrollable
-        className={isMobile ? 'print-quote-mobile-modal' : ''}
+      <Modal
+        isOpen={show}
+        onClose={handleMainClose}
+        size={mainModalSize}
+        scrollBehavior="inside"
+        isCentered
       >
-        <PageHeader title={t('proposalCommon.printTitle')} onClose={onClose} />
-        <form onSubmit={formik.handleSubmit}>
-          <CModalBody className="pt-0">
-            <div className="mb-4 p-3 bg-light rounded" style={{ border: '1px solid #e3e6ea' }}>
-              <div className="fw-semibold text-uppercase small mb-2" style={{ letterSpacing: '.5px' }}>
-                {t('proposalCommon.visibilityOptions', 'Visibility Options')}
-              </div>
-              <div className="row g-3">
-                <div className="col-12 col-md-4 d-flex align-items-center">
-                  <CFormSwitch
-                    id="showProposalItems"
-                    label={<span className="fw-medium">{t('proposalCommon.showProposalItems')}</span>}
-                    checked={formik.values.showProposalItems}
-                    onChange={onToggle('showProposalItems')}
-                    className="me-2"
-                  />
-                </div>
-                <div className="col-12 col-md-4 d-flex align-items-center">
-                  <CFormSwitch
-                    id="showGroupItems"
-                    label={<span className="fw-medium">{t('proposalCommon.showGroupItems')}</span>}
-                    checked={formik.values.showGroupItems}
-                    onChange={onToggle('showGroupItems')}
-                    className="me-2"
-                  />
-                </div>
-                <div className="col-12 col-md-4 d-flex align-items-center">
-                  <CFormSwitch
-                    id="showPriceSummary"
-                    label={<span className="fw-medium">{t('proposalCommon.showPriceSummary', 'Show Price Summary')}</span>}
-                    checked={formik.values.showPriceSummary}
-                    onChange={onToggle('showPriceSummary')}
-                    className="me-2"
-                  />
-                </div>
-              </div>
-            </div>
+        <ModalOverlay>
+          <ModalContent>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('proposalCommon.printTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
 
-            {!isContractor && versionOptions.length > 0 && (
-              <div className="mb-4 p-3 border rounded" style={{ border: '1px solid #e3e6ea' }}>
-                <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                  <CFormLabel htmlFor="selectedVersions" className="fw-medium mb-0">
-                    {t('proposalCommon.selectVersion')}
-                  </CFormLabel>
-                  {versionOptions.length > 1 && (
-                    <div className="small d-flex gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => {
-                          const all = versionOptions.map((option) => option.value);
-                          formik.setFieldValue('selectedVersions', all);
-                          refreshPreview({ ...formik.values, selectedVersions: all });
+          <ModalBody>
+            <Stack spacing={6}>
+              <Box borderWidth="1px" borderRadius="lg" p={4}>
+                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color="gray.500" mb={4}>
+                  {t('proposalCommon.visibilityOptions', 'Visibility Options')}
+                </Text>
+                <SimpleGrid columns={isMobile ? 1 : 3} spacing={4}>
+                  <Controller
+                    control={control}
+                    name="showProposalItems"
+                    render={({ field }) => (
+                      <HStack spacing={3} align="center">
+                        <Switch
+                          id="showProposalItems"
+                          colorScheme="brand"
+                          size="lg"
+                          isChecked={field.value}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            field.onChange(checked)
+                            refreshPreview({ showProposalItems: checked })
+                          }}
+                        />
+                        <Text fontWeight="medium">
+                          {t('proposalCommon.showProposalItems')}
+                        </Text>
+                      </HStack>
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="showGroupItems"
+                    render={({ field }) => (
+                      <HStack spacing={3} align="center">
+                        <Switch
+                          id="showGroupItems"
+                          colorScheme="brand"
+                          size="lg"
+                          isChecked={field.value}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            field.onChange(checked)
+                            refreshPreview({ showGroupItems: checked })
+                          }}
+                        />
+                        <Text fontWeight="medium">
+                          {t('proposalCommon.showGroupItems')}
+                        </Text>
+                      </HStack>
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="showPriceSummary"
+                    render={({ field }) => (
+                      <HStack spacing={3} align="center">
+                        <Switch
+                          id="showPriceSummary"
+                          colorScheme="brand"
+                          size="lg"
+                          isChecked={field.value}
+                          onChange={(event) => {
+                            const checked = event.target.checked
+                            field.onChange(checked)
+                            refreshPreview({ showPriceSummary: checked })
+                          }}
+                        />
+                        <Text fontWeight="medium">
+                          {t('proposalCommon.showPriceSummary', 'Show Price Summary')}
+                        </Text>
+                      </HStack>
+                    )}
+                  />
+                </SimpleGrid>
+              </Box>
+
+              {versionOptions.length > 0 && (
+                <Box borderWidth="1px" borderRadius="lg" p={4}>
+                  <HStack justify="space-between" align="center" mb={3} spacing={4} flexWrap="wrap">
+                    <Text fontWeight="semibold">
+                      {t('proposalCommon.selectVersion')}
+                    </Text>
+                    {versionOptions.length > 1 && (
+                      <HStack spacing={2}>
+                        <Button size="sm" variant="outline" onClick={selectAllVersions}>
+                          {t('common.selectAll', 'Select All')}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={clearVersions}>
+                          {t('common.clear', 'Clear')}
+                        </Button>
+                      </HStack>
+                    )}
+                  </HStack>
+                  <Controller
+                    control={control}
+                    name="selectedVersions"
+                    render={({ field }) => (
+                      <CheckboxGroup
+                        value={field.value}
+                        onChange={(next) => {
+                          field.onChange(next)
+                          refreshPreview({ selectedVersions: next })
                         }}
                       >
-                        {t('common.selectAll', 'Select All')}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => {
-                          formik.setFieldValue('selectedVersions', []);
-                          refreshPreview({ ...formik.values, selectedVersions: [] });
-                        }}
-                      >
-                        {t('common.clear', 'Clear')}
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className={isMobile ? 'd-flex flex-column gap-2' : 'row g-2'} role="group" aria-label={t('proposalCommon.selectVersion')}>
-                  {versionOptions.map((opt) => {
-                    const checked = formik.values.selectedVersions.includes(opt.value);
-                    return (
-                      <div key={opt.value} className={isMobile ? '' : 'col-6 col-md-4'}>
-                        <label
-                          className={`d-flex align-items-center rounded border p-2 small ${isMobile ? 'w-100' : ''}`}
-                          style={{ gap: '8px', background: checked ? '#eef6ff' : '#fff', cursor: 'pointer', minHeight: 42 }}
-                        >
-                          <input
-                            type="checkbox"
-                            value={opt.value}
-                            checked={checked}
-                            onChange={onCheckboxListChange('selectedVersions', opt.value)}
-                            style={{ marginRight: 4 }}
-                          />
-                          <span className="text-truncate" style={{ maxWidth: '100%' }}>
-                            {opt.label}
-                          </span>
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                        <SimpleGrid columns={isMobile ? 1 : 2} spacing={3}>
+                          {versionOptions.map((opt) => (
+                            <Checkbox
+                              key={opt.value}
+                              value={opt.value}
+                              alignItems="flex-start"
+                              py={2}
+                              px={3}
+                              borderWidth="1px"
+                              borderRadius="md"
+                              _checked={{ bg: 'brand.50', borderColor: 'brand.300' }}
+                            >
+                              <Text isTruncated>{opt.label}</Text>
+                            </Checkbox>
+                          ))}
+                        </SimpleGrid>
+                      </CheckboxGroup>
+                    )}
+                  />
+                </Box>
+              )}
 
-            <div className="mb-3 p-3 border rounded" style={{ border: '1px solid #e3e6ea' }}>
-              <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                <CFormLabel htmlFor="selectedColumns" className="fw-medium mb-0">
-                  {t('proposalCommon.selectColumns')}
-                </CFormLabel>
-                <div className="small d-flex gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={() => {
-                      formik.setFieldValue('selectedColumns', DEFAULT_PROPOSAL_PDF_COLUMNS);
-                      refreshPreview({ ...formik.values, selectedColumns: DEFAULT_PROPOSAL_PDF_COLUMNS });
-                    }}
-                  >
-                    {t('common.selectAll', 'Select All')}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={() => {
-                      const minimal = ['no'];
-                      formik.setFieldValue('selectedColumns', minimal);
-                      refreshPreview({ ...formik.values, selectedColumns: minimal });
-                    }}
-                  >
-                    {t('common.clear', 'Clear')}
-                  </button>
-                </div>
-              </div>
-              <div className={isMobile ? 'd-flex flex-column gap-2' : 'row g-2'} role="group" aria-label={t('proposalCommon.selectColumns')}>
-                {columnOptions.map((opt) => {
-                  const checked = formik.values.selectedColumns.includes(opt.value);
-                  return (
-                    <div key={opt.value} className={isMobile ? '' : 'col-6 col-md-4'}>
-                      <label
-                        className={`d-flex align-items-center rounded border p-2 small ${isMobile ? 'w-100' : ''}`}
-                        style={{ gap: '8px', background: checked ? '#eef6ff' : '#fff', cursor: 'pointer', minHeight: 42 }}
-                      >
-                          <input
-                            type="checkbox"
+              <Box borderWidth="1px" borderRadius="lg" p={4}>
+                <HStack justify="space-between" align="center" mb={3} spacing={4} flexWrap="wrap">
+                  <Text fontWeight="semibold">
+                    {t('proposalCommon.selectColumns')}
+                  </Text>
+                  <HStack spacing={2}>
+                    <Button size="sm" variant="outline" onClick={selectAllColumns}>
+                      {t('common.selectAll', 'Select All')}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={clearColumns}>
+                      {t('common.clear', 'Clear')}
+                    </Button>
+                  </HStack>
+                <Controller
+                  control={control}
+                  name="selectedColumns"
+                  render={({ field }) => (
+                    <CheckboxGroup
+                      value={field.value}
+                      onChange={(next) => {
+                        const withFixed = Array.from(new Set([...next, ...fixedColumns]))
+                        field.onChange(withFixed)
+                        refreshPreview({ selectedColumns: withFixed })
+                      }}
+                    >
+                      <SimpleGrid columns={isMobile ? 1 : 2} spacing={3}>
+                        {columnOptions.map((opt) => (
+                          <Checkbox
+                            key={opt.value}
                             value={opt.value}
-                            checked={checked}
-                            onChange={onCheckboxListChange('selectedColumns', opt.value)}
-                            disabled={opt.isFixed}
-                            style={{ marginRight: 4, cursor: opt.isFixed ? 'not-allowed' : 'pointer' }}
-                          />
-                          <span
-                            className="text-truncate"
-                            style={{ maxWidth: '100%', color: opt.isFixed ? '#6c757d' : undefined }}
+                            alignItems="flex-start"
+                            py={2}
+                            px={3}
+                            borderWidth="1px"
+                            borderRadius="md"
+                            isDisabled={opt.isFixed}
+                            _checked={{ bg: 'brand.50', borderColor: 'brand.300' }}
+                            _disabled={{ cursor: 'not-allowed', color: 'gray.500' }}
                           >
-                            {opt.label}
-                          </span>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </CModalBody>
-
-          <CModalFooter className={`border-top-0 pt-0 ${isMobile ? 'flex-column gap-2' : ''}`}>
-            <div className={`d-flex ${isMobile ? 'w-100 flex-column gap-2' : 'align-items-center gap-2'}`} style={{ width: '100%' }}>
-              <div className={`d-flex ${isMobile ? 'w-100 flex-column gap-2' : 'gap-2 ms-auto'}`}>
-                <CButton color="secondary" onClick={onClose} variant="outline" className={isMobile ? 'w-100' : 'px-4'}>
-                  {t('common.cancel')}
-                </CButton>
-                {!isMobile && (
-                  <CButton
-                    color="info"
-                    onClick={() => openPreview(formik.values)}
-                    variant="outline"
-                    className="px-4"
-                  >
-                    <i className="cil-magnifying-glass me-2"></i>
-                    {t('proposalCommon.preview', 'Preview')}
-                  </CButton>
-                )}
-                <CButton
-                  color="success"
-                  onClick={() => handlePrint(formik.values)}
-                  variant="outline"
-                  className={isMobile ? 'w-100' : 'px-4'}
-                >
-                  <i className="cil-print me-2"></i>
-                  {t('proposalCommon.print', 'Print')}
-                </CButton>
-                <CButton
-                  color="primary"
-                  type="submit"
-                  className={isMobile ? 'w-100' : 'px-4'}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <CSpinner size="sm" className="me-2" />
-                      {t('proposalCommon.downloading')}
-                    </>
-                  ) : (
-                    <>
-                      <i className="cil-cloud-download me-2"></i>
-                      {t('proposalCommon.downloadPdf')}
-                    </>
+                            <Text isTruncated>
+                              {opt.label}
+                            </Text>
+                          </Checkbox>
+                        ))}
+                      </SimpleGrid>
+                    </CheckboxGroup>
                   )}
-                </CButton>
-              </div>
-            </div>
-          </CModalFooter>
-        </form>
-      </CModal>
+                />
+              </Box>
+            </Stack>
+          </ModalBody><ModalFooter>
+            <HStack spacing={3} flexWrap={isMobile ? 'wrap' : 'nowrap'} width="100%" justify={isMobile ? 'stretch' : 'flex-end'}>
+              <MotionButton
+                variant="outline"
+                colorScheme="gray"
+                onClick={openPreview}
+                whileTap={{ scale: 0.98 }}
+                flex={isMobile ? '1' : 'unset'}
+              >
+                <HStack spacing={2} justify="center" width="100%">
+                  <Icon as={Eye} boxSize={4} />
+                  <Text>{t('proposalCommon.preview', 'Preview')}</Text>
+                </HStack>
+              </MotionButton>
+              <MotionButton
+                variant="outline"
+                colorScheme="brand"
+                onClick={() => handlePrint(getValues())}
+                whileTap={{ scale: 0.98 }}
+                flex={isMobile ? '1' : 'unset'}
+              >
+                <HStack spacing={2} justify="center" width="100%">
+                  <Icon as={Printer} boxSize={4} />
+                  <Text>{t('proposalCommon.print', 'Print')}</Text>
+                </HStack>
+              </MotionButton>
+              <MotionButton
+                type="submit"
+                colorScheme="brand"
+                isDisabled={isLoading}
+                whileTap={{ scale: 0.98 }}
+                flex={isMobile ? '1' : 'unset'}
+              >
+                {isLoading ? (
+                  <HStack spacing={2} justify="center" width="100%">
+                    <Spinner size="sm" />
+                    <Text>{t('proposalCommon.downloading')}</Text>
+                  </HStack>
+                ) : (
+                  <HStack spacing={2} justify="center" width="100%">
+                    <Icon as={Download} boxSize={4} />
+                    <Text>{t('proposalCommon.downloadPdf')}</Text>
+                  </HStack>
+                )}
+              </MotionButton>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+        
+      </Modal>
 
-      {isMobile && (
-        <style>{`
-          .print-quote-mobile-modal .modal-content { border-radius: 0; min-height: 100vh; }
-          .print-quote-mobile-modal .modal-body { max-height: calc(100vh - 160px); overflow-y: auto; }
-          .print-quote-mobile-modal .modal-footer { position: sticky; bottom: 0; background: #fff; box-shadow: 0 -2px 4px rgba(0,0,0,0.06); }
-          @media (max-width: 575.98px) {
-            .print-quote-mobile-modal .btn { font-size: 0.95rem; }
-          }
-        `}</style>
-      )}
-
-      <CModal
-        visible={showPreview}
-        onClose={() => setShowPreview(false)}
-        size={modalSize}
-        alignment="center"
-        scrollable
-        data-testid="quote-preview"
+      <Modal
+        isOpen={showPreview}
+        onClose={() =>
+        <ModalOverlay>
+          <ModalContent>setShowPreview(false)}
+        size={previewModalSize}
+        scrollBehavior="inside"
+        isCentered
       >
-        <PageHeader title={t('proposalCommon.previewTitle', 'Quote Preview')} onClose={() => setShowPreview(false)} />
-        <CModalBody style={{ padding: 0 }} className="quote-preview-content">
-          <div
-            ref={previewContainerRef}
-            style={{
-              maxHeight:
-                window.innerWidth < 768
-                  ? 'calc(100vh - 120px)'
-                  : window.innerWidth < 992
-                  ? '75vh'
-                  : '80vh',
-              overflow: 'auto',
-              background: '#f8f9fa',
-              padding: containerPadding,
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <iframe
-                ref={previewIframeRef}
-                title="quote-preview-frame"
-                srcDoc={previewHtml || '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'}
-                style={{
-                  width: BASE_PAGE_WIDTH_PX,
-                  minHeight: '1120px',
-                  border: '1px solid #d0d7de',
-                  background: 'white',
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                }}
-              />
-            </div>
-          </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowPreview(false)} variant="outline">
-            {t('common.close')}
-          </CButton>
-          <CButton color="primary" onClick={() => handleDownload(formik.values)} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <CSpinner size="sm" className="me-2" />
-                {t('proposalCommon.downloading')}
-              </>
-            ) : (
-              <>
-                <i className="cil-cloud-download me-2"></i>
-                {t('proposalCommon.downloadPdf')}
-              </>
-            )}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </>
-  );
-};
+          
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('proposalCommon.previewTitle', 'Quote Preview')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
 
-export default PrintProposalModal;
+          <ModalBody p={0}>
+            <Box px={previewPadding} py={4} bg="gray.50">
+              <Box
+                maxH={previewMaxHeight}
+                overflow="auto"
+                bg="white"
+                borderWidth="1px"
+                borderRadius="lg"
+                boxShadow="base"
+                display="flex"
+                justifyContent="center"
+                p={4}
+              >
+                <iframe
+                  ref={previewIframeRef}
+                  title="quote-preview-frame"
+                  srcDoc={
+                    previewHtml ||
+                    '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'
+                  }
+                  style={{
+                    width: BASE_PAGE_WIDTH_PX,
+                    minHeight: '1120px',
+                    border: 'none',
+                  }}
+                />
+              </Box>
+          </ModalBody>
+
+          <Divider /><ModalFooter>
+            <HStack spacing={3}>
+              <MotionButton
+                variant="outline"
+                colorScheme="gray"
+                onClick={() => setShowPreview(false)}
+                whileTap={{ scale: 0.98 }}
+              >
+                {t('common.close')}
+              </MotionButton>
+              <MotionButton
+                colorScheme="brand"
+                onClick={() => handleDownload(getValues())}
+                isDisabled={isLoading}
+                whileTap={{ scale: 0.98 }}
+              >
+                {isLoading ? (
+                  <HStack spacing={2}>
+                    <Spinner size="sm" />
+                    <Text>{t('proposalCommon.downloading')}</Text>
+                  </HStack>
+                ) : (
+                  <HStack spacing={2}>
+                    <Icon as={Download} boxSize={4} />
+                    <Text>{t('proposalCommon.downloadPdf')}</Text>
+                  </HStack>
+                )}
+              </MotionButton>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+        
+      </Modal>
+    </>
+  )
+}
+
+                </HStack>
+</ModalOverlay>
+    </HStack>
+        </ModalOverlay>
+            </ModalBody>
+                </Box>
+export default PrintProposalModal

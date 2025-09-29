@@ -1,34 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CContainer,
-  CRow,
-  CSpinner,
-  CBadge,
-  CAlert,
-  CPagination,
-  CPaginationItem,
-  CButtonGroup,
-  CFormCheck
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilCheckAlt, cilReload } from '@coreui/icons'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotifications, setLoading, setError, markNotificationAsRead, markAllAsRead } from '../../store/notificationSlice'
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  Heading,
+  Icon,
+  HStack,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { Bell, Check, CheckCircle2, Info, RefreshCw, UserPlus, XCircle } from 'lucide-react'
+import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import EmptyState from '../../components/common/EmptyState'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
 
 const NotificationsPage = () => {
-  const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { notifications, loading, error } = useSelector((state) => state.notification)
   const authUser = useSelector((state) => state.auth?.user)
+
+  // Local state management instead of Redux
+  const [notifications, setNotifications] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const isAdmin = (() => {
     const role = String(authUser?.role || '').toLowerCase()
     return role === 'admin' || role === 'super_admin'
@@ -42,62 +48,68 @@ const NotificationsPage = () => {
 
   const itemsPerPage = 20
 
+  const fetchNotifications = useCallback(
+    async (showSpinner = true) => {
+      if (showSpinner) {
+        setLoading(true)
+      }
+
+      try {
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          ...(filter === 'unread' && { unread_only: 'true' }),
+          ...(filter === 'read' && { read_only: 'true' }),
+          ...(typeFilter && { type: typeFilter }),
+        }
+
+        const { data } = await axiosInstance.get('/api/notifications', { params })
+        setNotifications(data.data)
+        setTotalPages(data?.pagination?.totalPages || 1)
+        setError(null)
+      } catch (error) {
+        // Do not force logout on notifications auth errors
+        const status = error?.response?.status
+        if (status === 401 || status === 403) {
+          setError('Not authorized to view notifications.')
+        } else {
+          console.error('Error fetching notifications:', error)
+          setError(error.message)
+        }
+      } finally {
+        setLoading(false)
+        setRefreshing(false)
+      }
+    },
+    [currentPage, filter, itemsPerPage, typeFilter],
+  )
+
   useEffect(() => {
     fetchNotifications()
-  }, [currentPage, filter, typeFilter])
+  }, [fetchNotifications])
 
   // Contractors: auto mark all read when landing on the page
   useEffect(() => {
-    if (!isAdmin && notifications && notifications.some(n => !n.is_read)) {
-      (async () => {
+    if (!isAdmin && notifications && notifications.some((n) => !n.is_read)) {
+      ;(async () => {
         try {
           await axiosInstance.post('/api/notifications/mark-all-read')
-          dispatch(markAllAsRead())
+          // Update local state
+          setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
         } catch (err) {
           // Non-fatal; ignore
         }
       })()
     }
-  }, [isAdmin, notifications?.length])
-
-  const fetchNotifications = async (showSpinner = true) => {
-    if (showSpinner) {
-      dispatch(setLoading(true))
-    }
-
-    try {
-      const params = {
-        page: currentPage,
-        limit: itemsPerPage,
-        ...(filter === 'unread' && { unread_only: 'true' }),
-        ...(filter === 'read' && { read_only: 'true' }),
-        ...(typeFilter && { type: typeFilter })
-      }
-
-      const { data } = await axiosInstance.get('/api/notifications', { params })
-      dispatch(setNotifications(data.data))
-      setTotalPages(data?.pagination?.totalPages || 1)
-      dispatch(setError(null))
-
-    } catch (error) {
-      // Do not force logout on notifications auth errors
-      const status = error?.response?.status
-      if (status === 401 || status === 403) {
-        dispatch(setError('Not authorized to view notifications.'))
-      } else {
-        console.error('Error fetching notifications:', error)
-        dispatch(setError(error.message))
-      }
-    } finally {
-      dispatch(setLoading(false))
-      setRefreshing(false)
-    }
-  }
+  }, [isAdmin, notifications])
   useEffect(() => {
     if (error) {
-      notifyError(t('notifications.errors.load','Failed to load notifications'), typeof error === 'string' ? error : '')
+      notifyError(
+        t('notifications.errors.load', 'Failed to load notifications'),
+        typeof error === 'string' ? error : '',
+      )
     }
-  }, [error])
+  }, [error, t])
 
   const handleRefresh = () => {
     setRefreshing(true)
@@ -107,51 +119,58 @@ const NotificationsPage = () => {
   const handleMarkAsRead = async (notificationId) => {
     try {
       await axiosInstance.post(`/api/notifications/${notificationId}/read`)
-      dispatch(markNotificationAsRead(notificationId))
+      // Update local state
+      setNotifications(prev =>
+        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      )
     } catch (error) {
-  console.error('Error marking notification as read:', error)
-  notifyError(t('notifications.errors.markOne','Failed to mark as read'), error.message)
+      console.error('Error marking notification as read:', error)
+      notifyError(t('notifications.errors.markOne', 'Failed to mark as read'), error.message)
     }
   }
 
   const handleMarkAllAsRead = async () => {
     try {
       await axiosInstance.post('/api/notifications/mark-all-read')
-      dispatch(markAllAsRead())
+      // Update local state
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       // Refresh to update the list
       fetchNotifications(false)
-  notifySuccess(t('notifications.success.allReadTitle','All caught up'), t('notifications.success.allReadText','All notifications marked as read'))
+      notifySuccess(
+        t('notifications.success.allReadTitle', 'All caught up'),
+        t('notifications.success.allReadText', 'All notifications marked as read'),
+      )
     } catch (error) {
-  console.error('Error marking all notifications as read:', error)
-  notifyError(t('notifications.errors.markAll','Failed to mark all as read'), error.message)
+      console.error('Error marking all notifications as read:', error)
+      notifyError(t('notifications.errors.markAll', 'Failed to mark all as read'), error.message)
     }
   }
 
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'proposal_accepted':
-        return '✅'
+        return CheckCircle2
       case 'proposal_rejected':
-        return '❌'
+        return XCircle
       case 'customer_created':
-        return '👤'
+        return UserPlus
       case 'system':
-        return '⚙️'
+        return Info
       default:
-        return '📧'
+        return Bell
     }
   }
 
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'danger'
+        return 'red'
       case 'medium':
-        return 'warning'
+        return 'orange'
       case 'low':
-        return 'info'
+        return 'blue'
       default:
-        return 'secondary'
+        return 'gray'
     }
   }
 
@@ -160,13 +179,30 @@ const NotificationsPage = () => {
     return date.toLocaleString()
   }
 
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification) => {
     if (filter === 'unread') return !notification.is_read
     if (filter === 'read') return notification.is_read
     return true
   })
 
-  const unreadCount = notifications.filter(n => !n.is_read).length
+  const unreadCount = notifications.filter((n) => !n.is_read).length
+
+  const emptyTitle = (() => {
+    if (filter === 'unread') {
+      return t('notifications.empty.unread', 'No unread notifications')
+    }
+    if (filter === 'read') {
+      return t('notifications.empty.read', 'No read notifications')
+    }
+    return t('notifications.empty.none', 'No notifications')
+  })()
+
+  const emptySubtitle = typeFilter
+    ? t('notifications.empty.byType', "No notifications for type \"" + typeFilter + "\"")
+    : t('notifications.empty.caughtUp', 'You are all caught up.')
+
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+
 
   const onCardKeyDown = (e, url) => {
     if (!url) return
@@ -176,244 +212,267 @@ const NotificationsPage = () => {
     }
   }
 
+
   return (
-    <CContainer fluid className="py-4" aria-busy={loading}>
-      <CRow>
-        <CCol>
-          <CCard>
-            <CCardHeader className="d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">{t('notifications.header','Notifications')}</h4>
-              <div className="d-flex gap-2">
-                <CButton
-                  variant="outline"
-                  color="primary"
+    <Container maxW="6xl" py={6} aria-busy={loading}>
+      <Card>
+        <CardHeader>
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            justify="space-between"
+            align={{ base: 'flex-start', md: 'center' }}
+            gap={4}
+            flexWrap="wrap"
+          >
+            <Heading size="md">{t('notifications.header', 'Notifications')}</Heading>
+            <HStack spacing={3} align="center" flexWrap="wrap">
+              <Button
+                variant="outline"
+                colorScheme="brand"
+                size="sm"
+                minH="44px"
+                onClick={handleRefresh}
+                isLoading={refreshing}
+                loadingText={t('notifications.actions.refreshing', 'Refreshing...')}
+                leftIcon={!refreshing ? <Icon as={RefreshCw} boxSize={4} /> : undefined}
+                type="button"
+                aria-label={refreshing ? t('notifications.actions.refreshing', 'Refreshing notifications') : t('notifications.actions.refresh', 'Refresh notifications')}
+              >
+                {t('notifications.actions.refresh', 'Refresh')}
+              </Button>
+              {unreadCount > 0 && (
+                <Button
+                  colorScheme="brand"
                   size="sm"
-                  onClick={handleRefresh}
-                  disabled={refreshing}
+                  minH="44px"
+                  onClick={handleMarkAllAsRead}
                   type="button"
-                  aria-label={refreshing ? 'Refreshing notifications' : 'Refresh notifications'}
-                  style={{ minHeight: '44px' }}
+                  leftIcon={<Icon as={Check} boxSize={4} />}
+                  aria-label={t('notifications.actions.markAllReadAria', 'Mark all notifications as read')}
                 >
-                  <CIcon icon={cilReload} className={refreshing ? 'fa-spin' : ''} />
-                  {refreshing ? ' Refreshing...' : ' Refresh'}
-                </CButton>
-                {unreadCount > 0 && (
-                  <CButton
-                    color="success"
-                    size="sm"
-                    onClick={handleMarkAllAsRead}
-                    type="button"
-                    aria-label={`Mark all notifications as read (${unreadCount} unread)`}
-                    style={{ minHeight: '44px' }}
-                  >
-                    <CIcon icon={cilCheckAlt} />
-                    Mark All Read ({unreadCount})
-                  </CButton>
-                )}
-              </div>
-            </CCardHeader>
-
-            <CCardBody>
-              {/* Filter Buttons */}
-              <div className="mb-3 d-flex flex-wrap gap-2 align-items-center">
-                <CButtonGroup role="group" aria-label="Filter notifications">
-                  <CFormCheck
-                    type="radio"
-                    button={{ color: 'outline-primary', variant: 'outline' }}
-                    name="filter"
-                    id="filter-all"
-                    label="All"
-                    checked={filter === 'all'}
-                    onChange={() => {
-                      setFilter('all')
-                      setCurrentPage(1)
-                    }}
-                  />
-                  <CFormCheck
-                    type="radio"
-                    button={{ color: 'outline-primary', variant: 'outline' }}
-                    name="filter"
-                    id="filter-unread"
-                    label={`Unread (${unreadCount})`}
-                    checked={filter === 'unread'}
-                    onChange={() => {
-                      setFilter('unread')
-                      setCurrentPage(1)
-                    }}
-                  />
-                  <CFormCheck
-                    type="radio"
-                    button={{ color: 'outline-primary', variant: 'outline' }}
-                    name="filter"
-                    id="filter-read"
-                    label="Read"
-                    checked={filter === 'read'}
-                    onChange={() => {
-                      setFilter('read')
-                      setCurrentPage(1)
-                    }}
-                  />
-                </CButtonGroup>
-                <div className="ms-2 d-flex align-items-center">
-                  <label htmlFor="type-filter" className="me-2 mb-0 small text-muted">Type</label>
-                  <select
-                    id="type-filter"
-                    className="form-select form-select-sm"
-                    style={{ width: '220px' }}
-                    value={typeFilter}
-                    onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1) }}
-                    aria-label="Filter by type"
-                  >
-                    <option value=''>All types</option>
-                    <option value='proposal_accepted'>Proposal accepted</option>
-                    <option value='proposal_rejected'>Proposal rejected</option>
-                    <option value='customer_created'>Customer created</option>
-                    <option value='system'>System</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Error Alert */}
-              {error && (
-                <div className="mb-3" role="alert" aria-live="assertive">
-                  <EmptyState title="Could not load notifications" subtitle={error} />
-                </div>
+                  {t('notifications.actions.markAllRead', 'Mark all as read')} ({unreadCount})
+                </Button>
               )}
+            </HStack>
+          </Flex>
+        </CardHeader>
+        <CardBody>
+          <Stack spacing={6}>
+            <Flex
+              direction={{ base: 'column', xl: 'row' }}
+              align={{ base: 'stretch', xl: 'center' }}
+              justify="space-between"
+              gap={4}
+              flexWrap="wrap"
+            >
+              <HStack spacing={2} flexWrap="wrap">
+                <Button
+                  variant={filter === 'all' ? 'solid' : 'outline'}
+                  colorScheme={filter === 'all' ? 'brand' : 'gray'}
+                  size="sm"
+                  minH="44px"
+                  onClick={() => {
+                    setFilter('all')
+                    setCurrentPage(1)
+                  }}
+                  aria-pressed={filter === 'all'}
+                >
+                  {t('notifications.filters.all', 'All')}
+                </Button>
+                <Button
+                  variant={filter === 'unread' ? 'solid' : 'outline'}
+                  colorScheme={filter === 'unread' ? 'brand' : 'gray'}
+                  size="sm"
+                  minH="44px"
+                  onClick={() => {
+                    setFilter('unread')
+                    setCurrentPage(1)
+                  }}
+                  aria-pressed={filter === 'unread'}
+                >
+                  {t('notifications.filters.unread', 'Unread')} ({unreadCount})
+                </Button>
+                <Button
+                  variant={filter === 'read' ? 'solid' : 'outline'}
+                  colorScheme={filter === 'read' ? 'brand' : 'gray'}
+                  size="sm"
+                  minH="44px"
+                  onClick={() => {
+                    setFilter('read')
+                    setCurrentPage(1)
+                  }}
+                  aria-pressed={filter === 'read'}
+                >
+                  {t('notifications.filters.read', 'Read')}
+                </Button>
+              </HStack>
+              <HStack spacing={3} align="center" flexWrap="wrap">
+                <Text fontSize="sm" color="gray.600">{t('notifications.filters.typeLabel', 'Type')}</Text>
+                <Select
+                  id="type-filter"
+                  size="sm"
+                  maxW="220px"
+                  value={typeFilter}
+                  onChange={(e) => {
+                    setTypeFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  aria-label={t('notifications.filters.typeAria', 'Filter by type')}
+                >
+                  <option value="">{t('notifications.filters.allTypes', 'All types')}</option>
+                  <option value="proposal_accepted">{t('notifications.filters.proposalAccepted', 'Proposal accepted')}</option>
+                  <option value="proposal_rejected">{t('notifications.filters.proposalRejected', 'Proposal rejected')}</option>
+                  <option value="customer_created">{t('notifications.filters.customerCreated', 'Customer created')}</option>
+                  <option value="system">{t('notifications.filters.system', 'System')}</option>
+                </Select>
+              </HStack>
+            </Flex>
 
-              {/* Loading Spinner */}
-              {loading && (
-                <div className="text-center py-4">
-                  <CSpinner />
-                </div>
-              )}
+            {error && (
+              <Alert status="error" borderRadius="md">
+                <AlertIcon />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-              {/* Notifications List */}
-              {!loading && filteredNotifications.length === 0 && (
-                <EmptyState
-                  title={filter === 'unread' ? 'No unread notifications' : filter === 'read' ? 'No read notifications' : 'No notifications'}
-                  subtitle={typeFilter ? `No notifications for type "${typeFilter}"` : 'You are all caught up.'}
-                />
-              )}
+            {loading && (
+              <Flex justify="center" py={6}>
+                <Spinner size="lg" />
+              </Flex>
+            )}
 
-              {!loading && filteredNotifications.map((notification) => {
-                const clickable = Boolean(notification.action_url)
-                return (
-                  <CCard
-                    key={notification.id}
-                    className={`mb-3 notification-card ${!notification.is_read ? 'notification-unread' : ''}`}
-                    style={{
-                      borderLeft: !notification.is_read ? '4px solid #007bff' : '1px solid #dee2e6',
-                      backgroundColor: !notification.is_read ? '#f8f9fa' : 'white',
-                      cursor: clickable ? 'pointer' : 'default'
-                    }}
-                    onClick={() => {
-                      if (clickable) {
-                        window.location.href = notification.action_url
-                      }
-                    }}
-                    role={clickable ? 'button' : undefined}
-                    tabIndex={clickable ? 0 : undefined}
-                    aria-label={clickable ? `Open notification: ${notification.title}` : undefined}
-                    onKeyDown={(e) => onCardKeyDown(e, notification.action_url)}
-                  >
-                    <CCardBody className="py-3">
-                      <div className="d-flex justify-content-between align-items-start">
-                        <div className="d-flex align-items-start flex-grow-1">
-                          <div className="me-3 mt-1" aria-hidden="true">
-                            <span style={{ fontSize: '1.5rem' }}>
-                              {getNotificationIcon(notification.type)}
-                            </span>
-                          </div>
-                          <div className="flex-grow-1">
-                            <div className="d-flex justify-content-between align-items-start mb-1">
-                              <h6 className="mb-1">
-                                {notification.title}
-                                {!notification.is_read && (
-                                  <>
-                                    <CBadge color="primary" className="ms-2" aria-label="Unread">New</CBadge>
-                                    <span className="visually-hidden">Unread</span>
-                                  </>
+            {!loading && filteredNotifications.length === 0 && (
+              <EmptyState title={emptyTitle} subtitle={emptySubtitle} />
+            )}
+
+            {!loading && filteredNotifications.length > 0 && (
+              <Stack spacing={3}>
+                {filteredNotifications.map((notification) => {
+                  const NotificationIcon = getNotificationIcon(notification.type)
+                  const priorityColor = getPriorityColor(notification.priority)
+                  const clickable = Boolean(notification.action_url)
+                  return (
+                    <Card
+                      key={notification.id}
+                      borderWidth={1}
+                      borderLeftWidth={!notification.is_read ? 4 : 2}
+                      borderLeftColor={!notification.is_read ? 'brand.500' : 'gray.200'}
+                      bg={!notification.is_read ? 'gray.50' : 'white'}
+                      shadow="sm"
+                      cursor={clickable ? 'pointer' : 'default'}
+                      transition="all 0.2s ease"
+                      _hover={clickable ? { shadow: 'md', transform: 'translateY(-1px)' } : undefined}
+                      _focusVisible={{ boxShadow: 'outline' }}
+                      onClick={() => {
+                        if (clickable) {
+                          window.location.href = notification.action_url
+                        }
+                      }}
+                      role={clickable ? 'button' : undefined}
+                      tabIndex={clickable ? 0 : undefined}
+                      aria-label={clickable ? t('notifications.aria.openNotification', { defaultValue: 'Open notification: {{title}}', title: notification.title }) : undefined}
+                      onKeyDown={(e) => onCardKeyDown(e, notification.action_url)}
+                    >
+                      <CardBody py={3}>
+                        <Flex justify="space-between" align="flex-start" gap={3}>
+                          <Flex align="flex-start" gap={3} flex="1">
+                            <Box mt={1} color="brand.500">
+                              <Icon as={NotificationIcon} boxSize={6} />
+                            </Box>
+                            <Box flex="1">
+                              <Flex justify="space-between" align="flex-start" gap={3} flexWrap="wrap" mb={1}>
+                                <Heading size="sm">
+                                  {notification.title}
+                                  {!notification.is_read && (
+                                    <Badge ml={2} colorScheme="blue">{t('notifications.badges.new', 'New')}</Badge>
+                                  )}
+                                </Heading>
+                                {notification.priority && (
+                                  <Badge colorScheme={priorityColor} textTransform="capitalize">
+                                    {notification.priority}
+                                  </Badge>
                                 )}
-                              </h6>
-                              <CBadge color={getPriorityColor(notification.priority)}>
-                                {notification.priority}
-                              </CBadge>
-                            </div>
-                            <p className="text-muted mb-2">{notification.message}</p>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <small className="text-muted">
-                                {formatDate(notification.createdAt)}
-                                {notification.createdByUser && (
-                                  <> • by {notification.createdByUser.name}</>
-                                )}
-                              </small>
-                              <div>
+                              </Flex>
+                              <Text color="gray.600" mb={2}>
+                                {notification.message}
+                              </Text>
+                              <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3} flexWrap="wrap">
+                                <Text fontSize="sm" color="gray.500">
+                                  {formatDate(notification.createdAt)}
+                                  {notification.createdByUser && ' by ' + notification.createdByUser.name}
+                                </Text>
                                 {isAdmin && !notification.is_read && (
-                                  <CButton
+                                  <Button
                                     size="sm"
                                     variant="ghost"
-                                    color="primary"
+                                    colorScheme="brand"
+                                    minH="36px"
                                     onClick={(e) => {
                                       e.stopPropagation()
                                       handleMarkAsRead(notification.id)
                                     }}
                                     type="button"
-                                    aria-label="Mark notification as read"
-                                    style={{ minHeight: '44px' }}
                                   >
-                                    Mark as read
-                                  </CButton>
+                                    {t('notifications.actions.markRead', 'Mark as read')}
+                                  </Button>
                                 )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CCardBody>
-                  </CCard>
-                )
-              })}
+                              </Flex>
+                            </Box>
+                          </Flex>
+                        </Flex>
+                      </CardBody>
+                    </Card>
+                  )
+                })}
+              </Stack>
+            )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                  <CPagination aria-label="Notifications pagination" role="navigation">
-                    <CPaginationItem
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      aria-label="Previous page"
-                    >
-                      Previous
-                    </CPaginationItem>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <CPaginationItem
-                        key={page}
-                        active={page === currentPage}
-                        onClick={() => setCurrentPage(page)}
-                        aria-current={page === currentPage ? 'page' : undefined}
-                        aria-label={`Go to page ${page}`}
-                      >
-                        {page}
-                      </CPaginationItem>
-                    ))}
-
-                    <CPaginationItem
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      aria-label="Next page"
-                    >
-                      Next
-                    </CPaginationItem>
-                  </CPagination>
-                </div>
-              )}
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
+            {totalPages > 1 && (
+              <HStack justify="center" spacing={2}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  minH="44px"
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                  isDisabled={currentPage === 1}
+                  aria-label={t('notifications.pagination.previous', 'Previous page')}
+                >
+                  {t('notifications.pagination.previousShort', 'Previous')}
+                </Button>
+                {pageNumbers.map((page) => (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? 'solid' : 'outline'}
+                    colorScheme={page === currentPage ? 'brand' : 'gray'}
+                    size="sm"
+                    minH="44px"
+                    onClick={() => setCurrentPage(page)}
+                    aria-current={page === currentPage ? 'page' : undefined}
+                    aria-label={t('notifications.pagination.goTo', { defaultValue: 'Go to page {{page}}', page })}
+                  >
+                    {page}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  minH="44px"
+                  onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                  isDisabled={currentPage === totalPages}
+                  aria-label={t('notifications.pagination.next', 'Next page')}
+                >
+                  {t('notifications.pagination.nextShort', 'Next')}
+                </Button>
+              </HStack>
+            )}
+          </Stack>
+        </CardBody>
+      </Card>
+    </Container>
   )
+
 }
 
 export default NotificationsPage
+
+

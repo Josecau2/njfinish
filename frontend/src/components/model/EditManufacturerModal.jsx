@@ -1,178 +1,148 @@
 import React, { useEffect, useState } from 'react'
 import {
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CModalFooter,
-    CButton,
-    CForm,
-    CFormInput,
-    CFormLabel,
-    CAlert,
-    CContainer,
-    CRow,
-    CCol,
-} from '@coreui/react'
-import { Pencil, Save, X } from '@/icons'
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
+  Switch,
+  Alert,
+  AlertIcon,
+  Stack,
+  Button,
+} from '@chakra-ui/react'
+
+const DEFAULT_FORM = {
+  name: '',
+  email: '',
+  multiplier: '',
+  enabled: false,
+}
+
+const multiplierRegex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
 
 const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        multiplier: '',
-        enabled: false,
-    })
+  const [formData, setFormData] = useState(DEFAULT_FORM)
+  const [error, setError] = useState(null)
 
-    const [error, setError] = useState(null)
-
-    useEffect(() => {
-        if (manufacturer) {
-            setFormData({
-                name: manufacturer.name || '',
-                email: manufacturer.email || '',
-                multiplier: manufacturer.multiplier || '',
-                enabled: manufacturer.enabled || false,
-            })
-        }
-    }, [manufacturer])
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }))
+  useEffect(() => {
+    if (manufacturer) {
+      setFormData({
+        name: manufacturer.name || '',
+        email: manufacturer.email || '',
+        multiplier: manufacturer.multiplier?.toString() || '',
+        enabled: Boolean(manufacturer.enabled),
+      })
+    } else {
+      setFormData(DEFAULT_FORM)
     }
+  }, [manufacturer])
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setError(null)
-        onSave(formData)
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
+
+  const handleMultiplierChange = (event) => {
+    const { value } = event.target
+    if (value === '' || multiplierRegex.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        multiplier: value,
+      }))
     }
+  }
 
-    const inputStyle = {
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #dcdcdc',
-        borderRadius: '8px',
-        padding: '10px 14px',
-        fontSize: '15px',
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    setError(null)
+    onSave(formData)
+  }
 
-    const readOnlyStyle = {
-        ...inputStyle,
-        backgroundColor: '#f1f3f5',
-        color: '#6c757d',
-        cursor: 'not-allowed',
-    }
+  return (
+    <Modal isOpen={show} onClose={onClose} size='lg' isCentered>
+      <ModalOverlay />
+      <ModalContent as='form' onSubmit={handleSubmit} className='edit-manufacturer-modal'>
+        <ModalHeader>Edit Manufacturer</ModalHeader>
+        <ModalBody>
+          <Stack spacing={4}>
+            {error ? (
+              <Alert status='error'>
+                <AlertIcon />
+                {error}
+              </Alert>
+            ) : null}
 
-        return (
-                <CModal visible={show} onClose={onClose} size="lg" backdrop="static" alignment="center"  scrollable>
-                        {/* UI-TASK: Scoped responsive/touch styles */}
-                        <style>{`
-                            .edit-manufacturer-modal .form-control, .edit-manufacturer-modal .form-select { min-height: 44px; }
-                            .edit-manufacturer-modal .btn { min-height: 44px; }
-                            @media (max-width: 576px) {
-                                .edit-manufacturer-modal .modal-footer { flex-wrap: wrap; }
-                                .edit-manufacturer-modal .modal-footer .btn { width: 100%; }
-                            }
-                        `}</style>
-                        <CForm onSubmit={handleSubmit} className="edit-manufacturer-modal">
-                                <CModalHeader>
-                                        <CModalTitle>Edit Manufacturer</CModalTitle>
-                                </CModalHeader>
-                <CModalBody>
-                    {error && <CAlert color="danger">{error}</CAlert>}
+            <FormControl>
+              <FormLabel htmlFor='name'>Name</FormLabel>
+              <Input
+                id='name'
+                name='name'
+                value={formData.name}
+                isReadOnly
+                variant='filled'
+                placeholder='Manufacturer name'
+              />
+            </FormControl>
 
-                    <CContainer fluid>
-                        <CRow className="mb-3">
-                            <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="name">Name</CFormLabel>
-                                <CFormInput
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    readOnly
-                                    placeholder="Manufacturer name"
-                                    style={readOnlyStyle}
-                                />
-                            </CCol>
-                            <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="email">Email</CFormLabel>
-                                <CFormInput
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    readOnly
-                                    placeholder="Manufacturer email"
-                                    style={readOnlyStyle}
-                                />
-                            </CCol>
-                        </CRow>
+            <FormControl>
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <Input
+                id='email'
+                name='email'
+                type='email'
+                value={formData.email}
+                isReadOnly
+                variant='filled'
+                placeholder='Manufacturer email'
+              />
+            </FormControl>
 
-                        <CRow>
-                            <CCol xs={6} md={6}>
-                                <CFormLabel htmlFor="multiplier">Multiplier</CFormLabel>
-                                <CFormInput
-                                    type="number"
-                                    step="0.01"
-                                    id="multiplier"
-                                    name="multiplier"
-                                    value={formData.multiplier}
-                                    onChange={(e) => {
-                                        const value = e.target.value
-                                        const regex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
-                                        if (value === '' || regex.test(value)) {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                multiplier: value,
-                                            }))
-                                        }
-                                    }}
-                                    placeholder="Enter multiplier"
-                                    style={inputStyle}
-                                />
-                            </CCol>
-                            <CCol xs={6} md={6}>
-                                <div
-                                    className="form-check form-switch mt-5"
-                                    style={{ transform: 'scale(1.0)', display: 'flex', alignItems: 'center' }}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="enabled"
-                                        name="enabled"
-                                        checked={formData.enabled}
-                                        onChange={handleChange}
-                                    />
-                                    <label
-                                        className="form-check-label ms-2"
-                                        htmlFor="enabled"
-                                        style={{ fontSize: '1.1rem' }}
-                                    >
-                                        Enabled
-                                    </label>
-                                </div>
-                            </CCol>
-                        </CRow>
-                    </CContainer>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="secondary" variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
-                        {/* <X size={16} className="me-2" /> */}
-                        Cancel
-                    </CButton>
-                    <CButton color="primary" type="submit" aria-label="Save manufacturer changes">
-                        {/* <Save size={16} className="me-2" /> */}
-                        Save Changes
-                    </CButton>
-                </CModalFooter>
-            </CForm>
-        </CModal>
-    )
+            <FormControl>
+              <FormLabel htmlFor='multiplier'>Multiplier</FormLabel>
+              <Input
+                id='multiplier'
+                name='multiplier'
+                type='number'
+                step='0.01'
+                value={formData.multiplier}
+                onChange={handleMultiplierChange}
+                placeholder='Enter multiplier'
+              />
+            </FormControl>
+
+            <FormControl display='flex' alignItems='center'>
+              <Switch
+                id='enabled'
+                name='enabled'
+                isChecked={formData.enabled}
+                onChange={handleChange}
+                mr={3}
+              />
+              <FormLabel htmlFor='enabled' mb={0}>
+                Enabled
+              </FormLabel>
+            </FormControl>
+          </Stack>
+        </ModalBody>
+        <ModalFooter gap={3}>
+          <Button variant='outline' onClick={onClose} aria-label='Cancel editing manufacturer'>
+            Cancel
+          </Button>
+          <Button colorScheme='blue' type='submit' aria-label='Save manufacturer changes'>
+            Save Changes
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
 }
 
 export default EditManufacturerModal

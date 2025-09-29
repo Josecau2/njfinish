@@ -1,734 +1,488 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import {
-  CAlert,
-  CBadge,
-  CButton,
-  CContainer,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilSearch, cilCreditCard, cilPlus } from '../../icons';
-import { FaCreditCard } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import PageHeader from '../../components/PageHeader';
-import PaginationComponent from '../../components/common/PaginationComponent';
-import withContractorScope from '../../components/withContractorScope';
-import {
-  fetchPayments,
-  fetchPublicPaymentConfig,
-  createPayment,
-  applyPayment,
-} from '../../store/slices/paymentsSlice';
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Badge,
+  Button,
+  Box,
+  Flex,
+  Text,
+  VStack,
+  HStack,
+  Card,
+  CardBody,
+  Alert,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  RadioGroup,
+  Radio,
+  Stack,
+  useDisclosure,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { Search, CreditCard as CreditCardIcon, Plus } from 'lucide-react'
+import { useForm, Controller } from 'react-hook-form'
+import PageHeader from '../../components/PageHeader'
+import PaginationComponent from '../../components/common/PaginationComponent'
+import withContractorScope from '../../components/withContractorScope'
+import { usePayments, useCreatePayment, useApplyPayment } from '../../queries/paymentsQueries'
 
-const paymentTabsStyles = `
-  .payment-tabs {
-    padding: 0.5rem;
-    background: var(--surface);
-    border-radius: var(--radius);
-    margin-bottom: 1rem;
-    box-shadow: var(--elev-1);
-  }
-
-  .payment-tabs__container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 0.375rem;
-  }
-
-  .payment-tab {
-    position: relative;
-    display: grid;
-    place-items: center;
-    min-height: 44px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #fff;
-    transition: all 0.12s ease;
-    cursor: pointer;
-    text-align: center;
-  }
-
-  .payment-tab__input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .payment-tab__text {
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-transform: capitalize;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .payment-tab--active {
-    background: color-mix(in oklch, var(--brand) 12%, white);
-    border-color: color-mix(in oklch, var(--brand) 40%, #e5e7eb);
-    box-shadow: 0 0 0 2px color-mix(in oklch, var(--brand) 30%, transparent);
-  }
-
-  .payment-tab--active .payment-tab__text {
-    font-weight: 600;
-    color: var(--brand);
-  }
-
-  @media (max-width: 576px) {
-    .payment-tabs__container {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.25rem;
-    }
-
-    .payment-tab {
-      min-height: 40px;
-      padding: 0.375rem 0.5rem;
-    }
-
-    .payment-tab__text {
-      font-size: 0.8125rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .payment-tabs__container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-`;
-
-const PAYMENT_TABS_STYLE_ID = 'payments-tabs-style';
-const STATUS_OPTIONS = ['all', 'pending', 'processing', 'completed', 'failed', 'cancelled'];
+const STATUS_OPTIONS = ['all', 'pending', 'processing', 'completed', 'failed', 'cancelled']
 
 const formatCurrency = (amountCents = 0, currency = 'USD') => {
-  const value = (amountCents || 0) / 100;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency || 'USD',
-  }).format(value);
-};
+  const value = (amountCents || 0) / 100
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD' }).format(value)
+}
 
-const PaymentsList = ({ isContractor, contractorGroupId, contractorGroupName }) => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const {
-    payments,
-    pagination,
-    loading,
-    error,
-    publicPaymentConfig,
-  } = useSelector((state) => state.payments);
-  const user = useSelector((s) => s.auth.user);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [page, setPage] = useState(1);
+const PaymentsList = ({ isContractor }) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [page, setPage] = useState(1)
 
-  useEffect(() => {
-    if (typeof document === 'undefined') {
-      return undefined;
-    }
+  const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure()
+  const { isOpen: isGatewayModalOpen, onOpen: onGatewayModalOpen, onClose: onGatewayModalClose } = useDisclosure()
+  const toast = useToast()
 
-    let styleEl = document.getElementById(PAYMENT_TABS_STYLE_ID);
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = PAYMENT_TABS_STYLE_ID;
-      styleEl.innerHTML = paymentTabsStyles;
-      document.head.appendChild(styleEl);
+  const { publicPaymentConfig } = useSelector((state) => state.payments)
+  const { user } = useSelector((state) => state.auth)
 
-      return () => {
-        if (styleEl?.parentNode) {
-          styleEl.parentNode.removeChild(styleEl);
-        }
-      };
-    }
+  const { data: paymentsData, isLoading: loading, error } = usePayments({
+    page,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+  })
 
-    styleEl.innerHTML = paymentTabsStyles;
-    return undefined;
-  }, []);
+  const createPaymentMutation = useCreatePayment()
+  const applyPaymentMutation = useApplyPayment()
 
-  useEffect(() => {
-    dispatch(
-      fetchPayments({
-        page,
-        status: statusFilter !== 'all' ? statusFilter : undefined,
-      }),
-    );
-  }, [dispatch, page, statusFilter]);
+  const createPaymentForm = useForm({ mode: 'onBlur', defaultValues: { orderId: '' } })
+  const gatewayForm = useForm({ mode: 'onBlur', defaultValues: { gateway: 'stripe' } })
+  const [pendingOrderId, setPendingOrderId] = useState(null)
 
-  useEffect(() => {
-    const loadPublicConfig = async () => {
-      try {
-        await dispatch(fetchPublicPaymentConfig()).unwrap();
-      } catch (err) {
-        // Stripe may be disabled; ignore 4xx errors.
-      }
-    };
+  const payments = paymentsData?.pages?.flatMap((p) => p.data) || []
+  const pagination = paymentsData?.pages?.[paymentsData.pages.length - 1]?.pagination
 
-    loadPublicConfig();
-  }, [dispatch]);
+  const cardPaymentsEnabled = Boolean(publicPaymentConfig?.cardPaymentsEnabled)
 
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter]);
-
-  const cardPaymentsEnabled = Boolean(publicPaymentConfig?.cardPaymentsEnabled);
-
-  const computeAmountCents = (payment) => (
-    payment?.amount_cents ?? Math.round((payment?.amount || 0) * 100)
-  );
-
-  const formatPaymentAmount = (payment) => (
-    formatCurrency(computeAmountCents(payment), payment?.currency)
-  );
+  const computeAmountCents = (payment) => payment?.amount_cents ?? Math.round((payment?.amount || 0) * 100)
+  const formatPaymentAmount = (payment) => formatCurrency(computeAmountCents(payment), payment?.currency)
 
   const renderGatewayBadge = (gateway) => {
-    const normalized = (gateway || 'manual').toLowerCase();
-    const isStripe = normalized === 'stripe';
-    const label = isStripe
-      ? t('payments.gateway.stripe', 'Stripe')
-      : t('payments.gateway.manual', 'Manual');
+    const normalized = (gateway || 'manual').toLowerCase()
+    const isStripe = normalized === 'stripe'
+    const label = isStripe ? t('payments.gateway.stripe', 'Stripe') : t('payments.gateway.manual', 'Manual')
     return (
-      <CBadge color={isStripe ? 'info' : 'secondary'} shape="rounded-pill" title={label}>
+      <Badge colorScheme={isStripe ? 'blue' : 'gray'} borderRadius="full" title={label}>
         {label}
-      </CBadge>
-    );
-  };
+      </Badge>
+    )
+  }
 
   const filtered = useMemo(() => {
-    if (!search) return payments;
-    const term = search.toLowerCase();
+    if (!search) return payments
+    const term = search.toLowerCase()
     return payments.filter((payment) => {
-      const customerName = payment.order?.customer?.name
-        || payment.order?.proposal?.customerName
-        || '';
-      const contractorName = payment.order?.group?.name
-        || payment.order?.creator?.name
-        || '';
+      const customerName = payment.order?.customer?.name || payment.order?.proposal?.customerName || ''
+      const contractorName = payment.order?.group?.name || payment.order?.creator?.name || ''
       return (
-        customerName.toLowerCase().includes(term)
-        || contractorName.toLowerCase().includes(term)
-        || payment.transactionId?.toLowerCase().includes(term)
-      );
-    });
-  }, [payments, search]);
+        customerName.toLowerCase().includes(term) ||
+        contractorName.toLowerCase().includes(term) ||
+        payment.transactionId?.toLowerCase().includes(term)
+      )
+    })
+  }, [payments, search])
 
-  const getStatusColor = (status) => {
+  const getStatusColorScheme = (status) => {
     switch (status) {
       case 'completed':
-        return 'success';
+        return 'green'
       case 'processing':
-        return 'info';
+        return 'blue'
       case 'pending':
-        return 'warning';
+        return 'orange'
       case 'failed':
-        return 'danger';
+        return 'red'
       case 'cancelled':
-        return 'secondary';
+        return 'gray'
       default:
-        return 'secondary';
+        return 'gray'
     }
-  };
+  }
 
   const getStatusLabel = (status) => {
-    if (status === 'all') {
-      return t('payments.status.all', 'All');
-    }
-
+    if (status === 'all') return t('payments.status.all', 'All')
     switch (status) {
       case 'completed':
-        return t('payments.status.completed', 'Paid');
+        return t('payments.status.completed', 'Paid')
       case 'processing':
-        return t('payments.status.processing', 'Processing');
+        return t('payments.status.processing', 'Processing')
       case 'pending':
-        return t('payments.status.pending', 'Payment Required');
+        return t('payments.status.pending', 'Payment Required')
       case 'failed':
-        return t('payments.status.failed', 'Failed');
+        return t('payments.status.failed', 'Failed')
       case 'cancelled':
-        return t('payments.status.cancelled', 'Cancelled');
+        return t('payments.status.cancelled', 'Cancelled')
       default:
-        return status;
+        return status
     }
-  };
+  }
 
   const getDisplayOrderNumber = (payment) => {
-    const order = payment?.order;
-    if (order?.order_number) return order.order_number;
+    const order = payment?.order
+    if (order?.order_number) return order.order_number
     try {
-      const snap = typeof order?.snapshot === 'string'
-        ? JSON.parse(order.snapshot)
-        : order?.snapshot;
-      const num = snap?.info?.orderNumber;
-      if (num) return num;
-    } catch (err) {
-      // ignore malformed snapshot
-    }
-    return `#${payment?.orderId ?? payment?.order?.id ?? ''}`;
-  };
+      const snap = typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot
+      const num = snap?.info?.orderNumber
+      if (num) return num
+    } catch {}
+    return `#${payment?.orderId ?? payment?.order?.id ?? ''}`
+  }
 
-  const handleCreatePayment = async () => {
-    const { value: orderIdInput } = await Swal.fire({
-      title: t('payments.create.title', 'Create Payment'),
-      input: 'number',
-      inputLabel: t('payments.create.orderIdLabel', 'Order ID'),
-      inputPlaceholder: t('payments.create.orderIdPlaceholder', 'Enter order ID'),
-      inputAttributes: {
-        min: '1',
-      },
-      showCancelButton: true,
-      confirmButtonText: t('common.create', 'Create'),
-      cancelButtonText: t('common.cancel', 'Cancel'),
-      inputValidator: (value) => {
-        if (!value || Number(value) <= 0) {
-          return t('payments.create.invalidOrderId', 'Please enter a valid order ID');
-        }
-        return undefined;
-      },
-    });
+  const handleCreatePayment = () => onCreateModalOpen()
 
-    if (!orderIdInput) {
-      return;
-    }
+  const onCreatePaymentSubmit = async (data) => {
+    const orderId = parseInt(data.orderId, 10)
+    setPendingOrderId(orderId)
+    onCreateModalClose()
+    if (cardPaymentsEnabled) onGatewayModalOpen()
+    else await processPaymentCreation(orderId, 'manual')
+  }
 
-    const orderId = parseInt(orderIdInput, 10);
+  const onGatewaySubmit = async (data) => {
+    onGatewayModalClose()
+    await processPaymentCreation(pendingOrderId, data.gateway)
+  }
 
-    let gateway = 'manual';
-    if (cardPaymentsEnabled) {
-      const { value: selectedGateway } = await Swal.fire({
-        title: t('payments.create.gatewayTitle', 'Select payment type'),
-        input: 'radio',
-        inputOptions: {
-          stripe: t('payments.gateway.stripe', 'Stripe'),
-          manual: t('payments.gateway.manual', 'Manual'),
-        },
-        inputValue: 'stripe',
-        showCancelButton: true,
-        confirmButtonText: t('common.continue', 'Continue'),
-        cancelButtonText: t('common.cancel', 'Cancel'),
-        inputValidator: (value) => {
-          if (!value) {
-            return t('payments.create.gatewayRequired', 'Select a payment type');
-          }
-          return undefined;
-        },
-      });
-
-      if (!selectedGateway) {
-        return;
-      }
-
-      gateway = selectedGateway;
-    }
-
+  const processPaymentCreation = async (orderId, gateway) => {
     try {
-      await dispatch(createPayment({ orderId, gateway })).unwrap();
-
-      const successMessage = gateway === 'stripe'
-        ? t('payments.create.successStripe', 'Stripe payment created successfully. Customers can now complete payment online.')
-        : t('payments.create.success', 'Payment created successfully');
-
-      Swal.fire(t('common.success', 'Success'), successMessage, 'success');
-      dispatch(
-        fetchPayments({
-          page,
-          status: statusFilter !== 'all' ? statusFilter : undefined,
-        }),
-      );
+      await createPaymentMutation.mutateAsync({ orderId, gateway })
+      toast({
+        title: t('common.success', 'Success'),
+        description:
+          gateway === 'stripe'
+            ? t('payments.create.successStripe', 'Stripe payment created successfully. Customers can now complete payment online.')
+            : t('payments.create.success', 'Payment created successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
     } catch (err) {
-      Swal.fire(
-        t('common.error', 'Error'),
-        err?.message || t('payments.create.error', 'Failed to create payment'),
-        'error',
-      );
+      toast({
+        title: t('common.error', 'Error'),
+        description: err?.message || t('payments.create.error', 'Failed to create payment'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
-  };
+  }
 
   const handlePaymentClick = (payment) => {
-    if (payment.gateway === 'stripe' && payment.status === 'pending') {
-      navigate(`/payments/${payment.id}/pay`);
-    } else {
-      navigate(`/payments/${payment.id}`);
-    }
-  };
+    if (payment.gateway === 'stripe' && payment.status === 'pending') navigate(`/payments/${payment.id}/pay`)
+    else navigate(`/payments/${payment.id}`)
+  }
 
   const renderCustomerCell = (payment) => {
-    const customerName = payment.order?.customer?.name
-      || payment.order?.proposal?.customerName
-      || t('common.na');
-
+    const customerName = payment.order?.customer?.name || payment.order?.proposal?.customerName || t('common.na')
     if (!isContractor) {
-      const contractorName = payment.order?.group?.name
-        || payment.order?.creator?.name
-        || t('common.na');
+      const contractorName = payment.order?.group?.name || payment.order?.creator?.name || t('common.na')
       return (
         <div>
           <div className="fw-semibold">{contractorName}</div>
           <div className="text-muted" style={{ fontSize: 12 }}>{customerName}</div>
         </div>
-      );
+      )
     }
+    return customerName
+  }
 
-    return customerName;
-  };
-
-  const title = isContractor
-    ? t('payments.title.contractor', 'My Payments')
-    : t('payments.title.admin', 'All Payments');
-
+  const title = isContractor ? t('payments.title.contractor', 'My Payments') : t('payments.title.admin', 'All Payments')
   const subtitle = isContractor
     ? t('payments.subtitle.contractor', 'View your payment history and make payments')
-    : t('payments.subtitle.admin', 'Manage all payments and payment configurations');
+    : t('payments.subtitle.admin', 'Manage all payments and payment configurations')
 
-  const userRole = (user?.role || '').toLowerCase();
+  const userRole = (user?.role || '').toLowerCase()
+  // Compute color values once (hooks cannot be used inside loops/maps)
+  const stickyBg = useColorModeValue('white', 'gray.800')
+  const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
 
   return (
-    <CContainer fluid>
-      <PageHeader title={title} subtitle={subtitle} icon={FaCreditCard} />
+    <Box maxW="1200px" mx="auto" p={4}>
+      <PageHeader title={title} subtitle={subtitle} icon={CreditCardIcon} />
 
       {error ? (
-        <CAlert color="danger" className="mb-3" role="alert">
-          {error}
-        </CAlert>
+        <Alert status="error" mb={3} role="alert">{String(error)}</Alert>
       ) : null}
 
-      <div className="payment-tabs" role="tablist">
-        <div className="payment-tabs__container">
-          {STATUS_OPTIONS.map((status) => (
-            <label
-              key={status}
-              className={`payment-tab ${statusFilter === status ? 'payment-tab--active' : ''}`}
-            >
-              <input
-                type="radio"
-                name="paymentStatus"
-                value={status}
-                checked={statusFilter === status}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                aria-label={getStatusLabel(status)}
-                className="payment-tab__input"
-              />
-              <span className="payment-tab__text">{getStatusLabel(status)}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      <HStack spacing={2} wrap="wrap" mb={4}>
+        {STATUS_OPTIONS.map((status) => (
+          <Button
+            key={status}
+            variant={statusFilter === status ? 'solid' : 'outline'}
+            colorScheme={statusFilter === status ? 'blue' : 'gray'}
+            size="sm"
+            onClick={() => setStatusFilter(status)}
+          >
+            {getStatusLabel(status)}
+          </Button>
+        ))}
+      </HStack>
 
-      <div className="toolbar" role="search">
-        <div className="toolbar__start" style={{ flex: 1 }}>
-          <div className="search" style={{ maxWidth: 520 }}>
-            <CIcon icon={cilSearch} className="search__icon" />
-            <input
+      <Flex justify="space-between" align="center" mb={4}>
+        <Box flex={1} maxW="520px">
+          <InputGroup>
+            <InputLeftElement>
+              <Search size={16} />
+            </InputLeftElement>
+            <Input
               type="search"
-              className="search__input"
               placeholder={t('payments.searchPlaceholder', 'Search by customer, contractor, or transaction ID')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               aria-label={t('payments.searchAria', 'Search payments')}
             />
-          </div>
-        </div>
-        <div className="toolbar__end">
+          </InputGroup>
+        </Box>
+        <HStack spacing={3}>
           {!isContractor && (
-            <CButton
-              color="primary"
-              onClick={handleCreatePayment}
-              className="icon-btn"
-              aria-label={t('payments.create.button', 'Create payment')}
-            >
-              <CIcon icon={cilPlus} />
-              <span className="u-desktop">{t('payments.create.button', 'Create Payment')}</span>
-            </CButton>
+            <Button colorScheme="blue" onClick={handleCreatePayment} leftIcon={<Plus size={16} />} aria-label={t('payments.create.button', 'Create payment')}>
+              <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
+            </Button>
           )}
-          <small className="text-muted ms-3">
+          <Text fontSize="sm" color="gray.500">
             {t('payments.showingCount', { count: filtered.length, total: payments.length })}
-          </small>
-        </div>
-      </div>
+          </Text>
+        </HStack>
+      </Flex>
 
-      <div className="u-desktop">
-        <div className="table-scroll">
-          <CTable hover className="table-modern">
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell className="sticky-col">
-                  {t('payments.headers.date', 'Date')}
-                </CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.customer', 'Customer')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.orderNumber', 'Order #')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.amount', 'Amount')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.status', 'Status')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.transaction', 'Transaction ID')}</CTableHeaderCell>
-                <CTableHeaderCell>{t('payments.headers.actions', 'Actions')}</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {loading ? (
-                <CTableRow>
-                  <CTableDataCell colSpan={7} className="text-center py-4">
-                    {t('common.loading', 'Loading...')}
-                  </CTableDataCell>
-                </CTableRow>
-              ) : filtered.length === 0 ? (
-                <CTableRow>
-                  <CTableDataCell colSpan={7} className="text-center py-5">
-                    <CIcon icon={cilCreditCard} size="3xl" className="text-muted mb-3" />
-                    <p className="mb-0">{t('payments.empty.title', 'No payments found')}</p>
-                    <small className="text-muted">
-                      {t('payments.empty.subtitle', 'Payments will appear here when created')}
-                    </small>
-                  </CTableDataCell>
-                </CTableRow>
-              ) : (
-                filtered.map((payment) => {
-                  const manualApplyEnabled =
-                    userRole === 'admin'
-                    && payment.gateway === 'manual'
-                    && payment.status !== 'completed';
-                  const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending';
-
-                  return (
-                    <CTableRow
-                      key={payment.id}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => handlePaymentClick(payment)}
-                    >
-                      <CTableDataCell className="sticky-col">
-                        {new Date(payment.createdAt).toLocaleDateString()}
-                      </CTableDataCell>
-                      <CTableDataCell>{renderCustomerCell(payment)}</CTableDataCell>
-                      <CTableDataCell>{getDisplayOrderNumber(payment)}</CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex align-items-center gap-2">
-                          <span>{formatPaymentAmount(payment)}</span>
-                          {renderGatewayBadge(payment.gateway)}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex flex-column gap-1">
-                          <CBadge
-                            color={getStatusColor(payment.status)}
-                            shape="rounded-pill"
-                            className="align-self-start"
-                          >
-                            {getStatusLabel(payment.status)}
-                          </CBadge>
-                          {payment.status === 'completed' && payment.paidAt ? (
-                            <small className="text-muted" style={{ fontSize: 11 }}>
-                              {t('payments.appliedOn', 'Applied on')}{' '}
-                              {new Date(payment.paidAt).toLocaleDateString()}
-                            </small>
-                          ) : null}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-muted">
-                        {payment.transactionId || t('common.na')}
-                      </CTableDataCell>
-                      <CTableDataCell>
+      <Box display={{ base: 'none', lg: 'block' }} overflowX="auto">
+        <Table size="sm" variant="simple">
+          <Thead>
+            <Tr>
+              <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>{t('payments.headers.date', 'Date')}</Th>
+              <Th>{t('payments.headers.customer', 'Customer')}</Th>
+              <Th>{t('payments.headers.orderNumber', 'Order #')}</Th>
+              <Th>{t('payments.headers.amount', 'Amount')}</Th>
+              <Th>{t('payments.headers.status', 'Status')}</Th>
+              <Th>{t('payments.headers.transaction', 'Transaction ID')}</Th>
+              <Th>{t('payments.headers.actions', 'Actions')}</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <Tr><Td colSpan={7} textAlign="center" py={4}>{t('common.loading', 'Loading...')}</Td></Tr>
+            ) : filtered.length === 0 ? (
+              <Tr>
+                <Td colSpan={7} textAlign="center" py={5}>
+                  <VStack spacing={3}>
+                    <CreditCardIcon size={48} />
+                    <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
+                    <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
+                  </VStack>
+                </Td>
+              </Tr>
+            ) : (
+              filtered.map((payment) => {
+                const manualApplyEnabled = userRole === 'admin' && payment.gateway === 'manual' && payment.status !== 'completed'
+                const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending'
+                return (
+                  <Tr key={payment.id} cursor="pointer" _hover={{ bg: rowHoverBg }} onClick={() => handlePaymentClick(payment)}>
+                    <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>{new Date(payment.createdAt).toLocaleDateString()}</Td>
+                    <Td>{renderCustomerCell(payment)}</Td>
+                    <Td>{getDisplayOrderNumber(payment)}</Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        <Text>{formatPaymentAmount(payment)}</Text>
+                        {renderGatewayBadge(payment.gateway)}
+                      </HStack>
+                    </Td>
+                    <Td>
+                      <VStack align="start" spacing={1}>
+                        <Badge colorScheme={getStatusColorScheme(payment.status)} borderRadius="full">{getStatusLabel(payment.status)}</Badge>
+                        {payment.status === 'completed' && payment.paidAt ? (
+                          <Text fontSize="xs" color="gray.500">{t('payments.appliedOn', 'Applied on')} {new Date(payment.paidAt).toLocaleDateString()}</Text>
+                        ) : null}
+                      </VStack>
+                    </Td>
+                    <Td color="gray.500">{payment.transactionId || t('common.na')}</Td>
+                    <Td>
+                      <HStack spacing={2}>
                         {canPayOnline ? (
-                          <CButton
-                            color="primary"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/payments/${payment.id}/pay`);
-                            }}
-                          >
+                          <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment.id}/pay`) }}>
                             {t('payments.actions.makePayment', 'Make Payment')}
-                          </CButton>
+                          </Button>
                         ) : null}
                         {manualApplyEnabled ? (
-                          <CButton
-                            color="success"
-                            size="sm"
-                            className={canPayOnline ? 'ms-2' : ''}
-                            onClick={async (e) => {
-                              e.stopPropagation();
-
-                              const html = `
-                                <p>${t('payments.apply.confirmText', 'This will mark the payment as completed.')}</p>
-                                <div class="mt-3">
-                                  <label for="paymentMethod" class="form-label">${t('payments.apply.methodLabel', 'Payment Method')}:</label>
-                                  <select id="paymentMethod" class="form-select">
-                                    <option value="">${t('payments.apply.selectMethodPlaceholder', 'Select payment method')}</option>
-                                    <option value="cash">${t('paymentReceipt.paymentMethod.cash', 'Cash')}</option>
-                                    <option value="debit_card">${t('paymentReceipt.paymentMethod.debitCard', 'Debit Card')}</option>
-                                    <option value="credit_card">${t('paymentReceipt.paymentMethod.creditCard', 'Credit Card')}</option>
-                                    <option value="check">${t('paymentReceipt.paymentMethod.check', 'Check')}</option>
-                                    <option value="other">${t('paymentReceipt.paymentMethod.other', 'Other')}</option>
-                                  </select>
-                                </div>
-                                <div class="mt-2" id="checkNumberDiv" style="display: none;">
-                                  <label for="checkNumber" class="form-label">${t('payments.apply.checkNumberLabel', 'Check Number')}:</label>
-                                  <input type="text" id="checkNumber" class="form-control" placeholder="${t('payments.apply.checkNumberPlaceholder', 'Enter check number')}">
-                                </div>`;
-
-                              const { value: paymentMethod } = await Swal.fire({
-                                title: t('payments.apply.confirmTitle', 'Apply Payment?'),
-                                html,
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonText: t('payments.apply.confirmYes', 'Yes, apply it'),
-                                cancelButtonText: t('common.cancel', 'Cancel'),
-                                preConfirm: () => {
-                                  const methodSelect = document.getElementById('paymentMethod');
-                                  const checkNumberInput = document.getElementById('checkNumber');
-
-                                  const method = methodSelect.value;
-                                  const checkNumber = checkNumberInput.value;
-
-                                  if (!method) {
-                                    Swal.showValidationMessage(
-                                      t('payments.apply.validation.selectMethod', 'Please select a payment method'),
-                                    );
-                                    return false;
-                                  }
-
-                                  if (method === 'check' && !checkNumber.trim()) {
-                                    Swal.showValidationMessage(
-                                      t('payments.apply.validation.checkNumber', 'Please enter a check number'),
-                                    );
-                                    return false;
-                                  }
-
-                                  return method === 'check' ? `check #${checkNumber}` : method;
-                                },
-                                didOpen: () => {
-                                  const methodSelect = document.getElementById('paymentMethod');
-                                  const checkNumberDiv = document.getElementById('checkNumberDiv');
-                                  methodSelect.addEventListener('change', () => {
-                                    if (methodSelect.value === 'check') {
-                                      checkNumberDiv.style.display = 'block';
-                                    } else {
-                                      checkNumberDiv.style.display = 'none';
-                                    }
-                                  });
-                                },
-                              });
-
-                              if (paymentMethod) {
-                                try {
-                                  await dispatch(
-                                    applyPayment({
-                                      id: payment.id,
-                                      paymentMethod,
-                                    }),
-                                  ).unwrap();
-                                  Swal.fire(
-                                    t('common.success', 'Success'),
-                                    t('payments.apply.success', 'Payment applied'),
-                                    'success',
-                                  );
-                                } catch (applyErr) {
-                                  Swal.fire(
-                                    t('common.error', 'Error'),
-                                    applyErr?.message || t('payments.apply.error', 'Failed to apply'),
-                                    'error',
-                                  );
-                                }
-                              }
-                            }}
-                          >
+                          <Button colorScheme="green" size="sm" onClick={async (e) => {
+                            e.stopPropagation()
+                            const method = window.prompt(t('payments.apply.methodLabel', 'Payment Method (cash, credit_card, debit_card, check, other):'))
+                            if (!method) return
+                            let finalMethod = method
+                            if (method === 'check') {
+                              const checkNumber = window.prompt(t('payments.apply.checkNumberLabel', 'Check Number:'))
+                              if (!checkNumber) return
+                              finalMethod = `check #${checkNumber}`
+                            }
+                            try {
+                              await applyPaymentMutation.mutateAsync({ paymentId: payment.id, data: { method: finalMethod } })
+                              toast({ title: t('common.success', 'Success'), description: t('payments.apply.success', 'Payment applied'), status: 'success', duration: 3000 })
+                            } catch (applyErr) {
+                              toast({ title: t('common.error', 'Error'), description: applyErr?.message || t('payments.apply.error', 'Failed to apply'), status: 'error', duration: 4000 })
+                            }
+                          }}>
                             {t('payments.apply.button', 'Apply')}
-                          </CButton>
+                          </Button>
                         ) : null}
-                      </CTableDataCell>
-                    </CTableRow>
-                  );
-                })
-              )}
-            </CTableBody>
-          </CTable>
-        </div>
-      </div>
+                      </HStack>
+                    </Td>
+                  </Tr>
+                )
+              })
+            )}
+          </Tbody>
+        </Table>
+      </Box>
 
-      <div className="u-mobile">
+      <VStack display={{ base: 'flex', lg: 'none' }} spacing={2}>
         {loading ? (
-          <div className="text-center py-4">{t('common.loading', 'Loading...')}</div>
+          <Text textAlign="center" py={4}>{t('common.loading', 'Loading...')}</Text>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-5">
-            <CIcon icon={cilCreditCard} size="3xl" className="text-muted mb-3" />
-            <p className="mb-0">{t('payments.empty.title', 'No payments found')}</p>
-            <small className="text-muted">
-              {t('payments.empty.subtitle', 'Payments will appear here when created')}
-            </small>
-          </div>
+          <VStack spacing={3} textAlign="center" py={5}>
+            <CreditCardIcon size={48} />
+            <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
+            <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
+          </VStack>
         ) : (
-          <div className="stack gap-2">
-            {filtered.map((payment) => {
-              const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending';
-              return (
-                <article
-                  key={payment.id}
-                  className="card card--compact"
-                  role="button"
-                  onClick={() => handlePaymentClick(payment)}
-                  aria-label={t('payments.openDetails', 'Open payment details')}
-                >
-                  <div className="card__head">
-                    <div className="card__title">{renderCustomerCell(payment)}</div>
-                    <CBadge color={getStatusColor(payment.status)} shape="rounded-pill">
-                      {getStatusLabel(payment.status)}
-                    </CBadge>
-                  </div>
-                  <div className="card__meta">
-                    <span>{new Date(payment.createdAt).toLocaleDateString()}</span>
-                    <span className="d-flex align-items-center gap-2">
-                      {formatPaymentAmount(payment)}
-                      {renderGatewayBadge(payment.gateway)}
-                    </span>
-                    <span>
-                      {t('payments.mobile.orderNumber', 'Order #{{id}}', {
-                        id: getDisplayOrderNumber(payment),
-                      })}
-                    </span>
-                  </div>
-                  {payment.transactionId ? (
-                    <div className="card__content text-muted">
-                      {t('payments.headers.transaction', 'Transaction ID')}: {payment.transactionId}
-                    </div>
-                  ) : null}
-                  {canPayOnline ? (
-                    <div className="card__actions">
-                      <CButton
-                        color="primary"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/payments/${payment.id}/pay`);
-                        }}
-                      >
+          filtered.map((payment) => {
+            const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending'
+            return (
+              <Card key={payment.id} size="sm" as="article">
+                <CardBody>
+                  <VStack align="stretch" spacing={3}>
+                    <Flex justify="space-between" align="center">
+                      <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
+                      <Badge colorScheme={getStatusColorScheme(payment.status)} borderRadius="full">{getStatusLabel(payment.status)}</Badge>
+                    </Flex>
+                    <VStack align="stretch" spacing={1}>
+                      <Text fontSize="sm" color="gray.600">{new Date(payment.createdAt).toLocaleDateString()}</Text>
+                      <Flex justify="space-between" align="center">
+                        <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment.gateway)}</Text>
+                        <Text fontSize="sm" color="gray.600">{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
+                      </Flex>
+                      {payment.transactionId ? (
+                        <Text fontSize="sm" color="gray.500">{t('payments.headers.transaction', 'Transaction ID')}: {payment.transactionId}</Text>
+                      ) : null}
+                    </VStack>
+                    {canPayOnline ? (
+                      <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment.id}/pay`) }}>
                         {t('payments.actions.makePayment', 'Make Payment')}
-                      </CButton>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
+                      </Button>
+                    ) : null}
+                  </VStack>
+                </CardBody>
+              </Card>
+            )
+          })
         )}
-      </div>
+      </VStack>
 
       {!loading && filtered.length > 0 ? (
         <div className="mt-4">
           <PaginationComponent
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
+            currentPage={pagination?.currentPage || page}
+            totalPages={pagination?.totalPages || 1}
             onPageChange={setPage}
-            itemsPerPage={pagination.itemsPerPage}
+            itemsPerPage={pagination?.itemsPerPage || 20}
           />
         </div>
       ) : null}
-    </CContainer>
-  );
-};
 
-export default withContractorScope(PaymentsList);
+      {/* Create Payment Modal */}
+      <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose}>
+        <ModalOverlay />
+        <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)}>
+          <ModalHeader>{t('payments.create.title', 'Create Payment')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl isInvalid={!!createPaymentForm.formState.errors.orderId}>
+              <FormLabel>{t('payments.create.orderIdLabel', 'Order ID')}</FormLabel>
+              <Controller
+                name="orderId"
+                control={createPaymentForm.control}
+                rules={{
+                  required: t('payments.create.orderIdRequired', 'Order ID is required'),
+                  min: { value: 1, message: t('payments.create.invalidOrderId', 'Please enter a valid order ID') },
+                }}
+                render={({ field }) => (
+                  <Input {...field} type="number" placeholder={t('payments.create.orderIdPlaceholder', 'Enter order ID')} min={1} />
+                )}
+              />
+              <FormErrorMessage>{createPaymentForm.formState.errors.orderId?.message}</FormErrorMessage>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onCreateModalClose}>{t('common.cancel', 'Cancel')}</Button>
+            <Button type="submit" variant="solid" colorScheme="brand" isLoading={createPaymentForm.formState.isSubmitting}>
+              {t('common.create', 'Create')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Gateway Selection Modal */}
+      <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose}>
+        <ModalOverlay />
+        <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)}>
+          <ModalHeader>{t('payments.create.gatewayTitle', 'Select payment type')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl isInvalid={!!gatewayForm.formState.errors.gateway}>
+              <Controller
+                name="gateway"
+                control={gatewayForm.control}
+                rules={{ required: t('payments.create.gatewayRequired', 'Select a payment type') }}
+                render={({ field }) => (
+                  <RadioGroup {...field}>
+                    <Stack>
+                      <Radio value="stripe">{t('payments.gateway.stripe', 'Stripe')}</Radio>
+                      <Radio value="manual">{t('payments.gateway.manual', 'Manual')}</Radio>
+                    </Stack>
+                  </RadioGroup>
+                )}
+              />
+              <FormErrorMessage>{gatewayForm.formState.errors.gateway?.message}</FormErrorMessage>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onGatewayModalClose}>{t('common.cancel', 'Cancel')}</Button>
+            <Button type="submit" variant="solid" colorScheme="brand" isLoading={gatewayForm.formState.isSubmitting}>
+              {t('common.continue', 'Continue')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
+  )
+}
+
+export default withContractorScope(PaymentsList)
