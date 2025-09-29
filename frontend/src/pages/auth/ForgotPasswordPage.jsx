@@ -151,7 +151,7 @@ const ForgotPasswordPage = () => {
                 required: t('auth.emailRequired'),
                 pattern: {
                   value: /[^\s]+@[^\s]+\.[^\s]+/,
-                  message: t('auth.forgotPassword.error'),
+                  message: t('auth.emailInvalid'),
                 },
               })}
             />
