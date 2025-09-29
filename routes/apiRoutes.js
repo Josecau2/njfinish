@@ -14,6 +14,7 @@ const upload = require('../middleware/upload');
 const emailController = require('../controllers/emailController');
 const loginCustomizationController = require('../controllers/loginCustomizationController');
 const resourcesController = require('../controllers/resourcesController');
+const newUiDashboardController = require('../controllers/newUiDashboardController');
 const { uploadImage } = require('../controllers/uploadController');
 const calenderController = require('../controllers/calenderController');
 const contractorController = require('../controllers/contractorController');
@@ -477,6 +478,12 @@ router.post('/brand/refresh', verifyTokenWithGroup, requirePermission('admin:set
 	}
 });
 
+router.get(
+  '/dashboard/summary',
+  ...fullAccessControl,
+  requirePermission('proposals:read'),
+  newUiDashboardController.getDashboardSummary
+);
 router.get('/dashboard/counts', verifyTokenWithGroup, proposalsController.getCounts);
 router.get('/dashboard/latest-proposals', verifyTokenWithGroup, proposalsController.getLatestProposals);
 
