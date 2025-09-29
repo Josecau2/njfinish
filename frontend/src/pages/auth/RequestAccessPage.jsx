@@ -1,11 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import {
+  Alert,
+  AlertIcon,
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
+  Text,
+  Textarea,
+  useToast,
+} from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
+import { motion, useReducedMotion } from 'framer-motion'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
-
+import AuthShell from '../../components/auth/AuthShell'
 
 const EMPTY_FORM = {
   firstName: '',
@@ -19,55 +35,65 @@ const EMPTY_FORM = {
   message: '',
 }
 
+const MotionButton = motion(Button)
+
 const RequestAccessPage = () => {
   const { t } = useTranslation()
   const apiUrl = import.meta.env.VITE_API_URL
+  const toast = useToast()
   const brand = getBrand()
   const loginBrand = getLoginBrand()
   const brandColors = getBrandColors()
   const logoHeight = Number(loginBrand.logoHeight) || 60
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446'
+  const rightPanelColors = useMemo(() => getOptimalColors(loginBackground), [loginBackground])
+  const prefersReducedMotion = useReducedMotion()
 
-  const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues: { ...EMPTY_FORM },
+  })
 
-
-  const copy = {
-    title: t('auth.requestAccess.title'),
-    subtitle: t('auth.requestAccess.subtitle'),
-    description: t('auth.requestAccess.description'),
-    success: t('auth.requestAccess.success'),
-    submit: t('auth.requestAccess.submit'),
-    submitting: t('auth.requestAccess.submitting'),
-    submitError: t('auth.requestAccess.submitError'),
-    benefitsHeading: t('auth.requestAccess.benefitsHeading'),
-    alreadyHaveAccess: t('auth.requestAccess.alreadyHaveAccess'),
-    signIn: t('auth.signIn'),
-    logoAlt: t('auth.logoAlt'),
-    fields: {
-      firstNameLabel: t('auth.requestAccess.fields.firstNameLabel'),
-      firstNamePlaceholder: t('auth.requestAccess.fields.firstNamePlaceholder'),
-      lastNameLabel: t('auth.requestAccess.fields.lastNameLabel'),
-      lastNamePlaceholder: t('auth.requestAccess.fields.lastNamePlaceholder'),
-      emailLabel: t('auth.requestAccess.fields.emailLabel'),
-      emailPlaceholder: t('auth.requestAccess.fields.emailPlaceholder'),
-      phoneLabel: t('auth.requestAccess.fields.phoneLabel'),
-      phonePlaceholder: t('auth.requestAccess.fields.phonePlaceholder'),
-      cityLabel: t('auth.requestAccess.fields.cityLabel'),
-      cityPlaceholder: t('auth.requestAccess.fields.cityPlaceholder'),
-      stateLabel: t('auth.requestAccess.fields.stateLabel'),
-      statePlaceholder: t('auth.requestAccess.fields.statePlaceholder'),
-      zipLabel: t('auth.requestAccess.fields.zipLabel'),
-      zipPlaceholder: t('auth.requestAccess.fields.zipPlaceholder'),
-      companyLabel: t('auth.requestAccess.fields.companyLabel'),
-      companyPlaceholder: t('auth.requestAccess.fields.companyPlaceholder'),
-      messageLabel: t('auth.requestAccess.fields.messageLabel'),
-      messagePlaceholder: t('auth.requestAccess.fields.messagePlaceholder'),
+  const mutation = useMutation({
+    mutationFn: async (values) => {
+      const trimmedForm = Object.fromEntries(
+        Object.entries(values).map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value]),
+      )
+      const payload = {
+        ...trimmedForm,
+        name: `${trimmedForm.firstName} ${trimmedForm.lastName}`.trim(),
+      }
+      const response = await axios.post(`${apiUrl}/api/request-access`, payload)
+      return response?.data || {}
     },
-  }
-  const requiredAsterisk = <span className="text-danger">*</span>
+    onSuccess: (data) => {
+      const message = data?.message || t('auth.requestAccess.success')
+      toast({
+        status: 'success',
+        title: t('auth.requestAccess.title'),
+        description: message,
+        duration: 3500,
+        isClosable: true,
+      })
+      reset({ ...EMPTY_FORM })
+    },
+    onError: (error) => {
+      const message = error?.response?.data?.message || t('auth.requestAccess.submitError')
+      toast({
+        status: 'error',
+        title: t('auth.requestAccess.title'),
+        description: message,
+        duration: 3500,
+        isClosable: true,
+      })
+    },
+  })
 
   useEffect(() => {
     try {
@@ -77,289 +103,243 @@ const RequestAccessPage = () => {
     }
   }, [])
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-    const nextValue = name === 'state' ? value.toUpperCase() : value
-    setForm((prev) => ({ ...prev, [name]: nextValue }))
-  }
-
-  const rightPanelColors = getOptimalColors(loginBackground)
   const benefits = Array.isArray(loginBrand.requestAccessBenefits)
     ? loginBrand.requestAccessBenefits
     : String(loginBrand.requestAccessBenefits || '')
         .split(/\r?\n/)
         .map((line) => line.trim())
         .filter(Boolean)
-  const pageTitle = loginBrand.requestAccessTitle || copy.title
-  const pageSubtitle = loginBrand.requestAccessSubtitle || copy.subtitle
-  const pageDescription = loginBrand.requestAccessDescription || copy.description
-  const successCopy = loginBrand.requestAccessSuccessMessage || copy.success
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setIsSubmitting(true)
-    setErrorMessage('')
-    setSuccessMessage('')
+  const pageTitle = loginBrand.requestAccessTitle || t('auth.requestAccess.title')
+  const pageSubtitle = loginBrand.requestAccessSubtitle || t('auth.requestAccess.subtitle')
+  const pageDescription = loginBrand.requestAccessDescription || t('auth.requestAccess.description')
 
-    const trimmedForm = Object.fromEntries(
-      Object.entries(form).map(([key, value]) => [
-        key,
-        typeof value === 'string' ? value.trim() : value,
-      ]),
-    )
-    const payload = {
-      ...trimmedForm,
-      name: `${trimmedForm.firstName} ${trimmedForm.lastName}`.trim(),
-    }
+  const onSubmit = handleSubmit((values) => {
+    mutation.mutate(values)
+  })
 
-    try {
-      const res = await axios.post(`${apiUrl}/api/request-access`, payload)
-      const data = res?.data || {}
-      setSuccessMessage(data.message || successCopy)
-      setForm(() => ({ ...EMPTY_FORM }))
-    } catch (err) {
-      const message = err?.response?.data?.message || copy.submitError
-      setErrorMessage(message)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const messageValue = watch('message') || ''
 
   return (
-    <div className="login-page-wrapper">
-      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
-        <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
-            {loginBrand.rightTitle}
-          </h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
-            {loginBrand.rightSubtitle}
-          </p>
-          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
-        </div>
-      </div>
-
-      <div className="login-right-panel">
-        <div className="login-form-container">
-          <div className="text-center mb-4">
-            <BrandLogo size={logoHeight} />
-          </div>
-          <h2 className="mb-2 fw-bold">{pageTitle}</h2>
-          <p className="text-muted mb-2 small">{pageSubtitle}</p>
-          {pageDescription && <p className="text-muted small">{pageDescription}</p>}
-          {benefits.length > 0 && (
-            <div className="mb-3">
-              <p className="mb-1 fw-medium text-muted small">{copy.benefitsHeading}</p>
-              <ul
-                className="list-unstyled text-muted small mb-0"
-                style={{ fontSize: '0.85rem', lineHeight: '1.3' }}
-              >
-                {benefits.map((item, idx) => (
-                  <li key={idx}>&bull; {item}</li>
+    <AuthShell
+      backgroundColor={loginBackground}
+      title={loginBrand.rightTitle}
+      subtitle={loginBrand.rightSubtitle}
+      description={loginBrand.rightDescription}
+      textColor={rightPanelColors.text}
+      subtitleColor={rightPanelColors.subtitle}
+    >
+      <div className="flex flex-col space-y-8">
+        <div className="flex flex-col items-center space-y-4 text-center">
+          <BrandLogo size={logoHeight} />
+          <Heading as="h2" className="text-2xl font-semibold text-text-primary">
+            {pageTitle}
+          </Heading>
+          <Text className="text-sm text-text-muted max-w-xl">{pageSubtitle}</Text>
+          {pageDescription ? (
+            <Text className="text-xs text-text-muted max-w-xl">{pageDescription}</Text>
+          ) : null}
+          {benefits.length > 0 ? (
+            <div className="w-full rounded-lg bg-white/60 backdrop-blur p-4 border border-white/70">
+              <Text className="text-xs font-semibold uppercase tracking-wide text-brand-700">
+                {t('auth.requestAccess.benefitsHeading')}
+              </Text>
+              <ul className="mt-2 space-y-1 text-xs text-text-muted">
+                {benefits.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span aria-hidden className="mt-1 h-1.5 w-1.5 rounded-full bg-brand-500" />
+                    <span>{item}</span>
+                  </li>
                 ))}
               </ul>
             </div>
-          )}
+          ) : null}
+        </div>
 
-          {successMessage && (
-            <div className="alert alert-success" role="status" aria-live="polite">
-              {successMessage}
-            </div>
-          )}
+        <form onSubmit={onSubmit} noValidate className="space-y-6">
+          {mutation.isSuccess ? (
+            <Alert status="success" borderRadius="md" role="status" aria-live="polite">
+              <AlertIcon />
+              {mutation.data?.message || t('auth.requestAccess.success')}
+            </Alert>
+          ) : null}
 
-          {errorMessage && (
-            <div className="alert alert-danger" role="alert" aria-live="assertive">
-              {errorMessage}
-            </div>
-          )}
+          {mutation.isError ? (
+            <Alert status="error" borderRadius="md" role="alert" aria-live="assertive">
+              <AlertIcon />
+              {mutation.error?.response?.data?.message || t('auth.requestAccess.submitError')}
+            </Alert>
+          ) : null}
 
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Name fields in one row */}
-            <div className="row g-2 mb-3">
-              <div className="col-md-6">
-                <label htmlFor="firstName" className="form-label fw-medium">
-                  {copy.fields.firstNameLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  className="form-control"
-                  placeholder={copy.fields.firstNamePlaceholder}
-                  value={form.firstName}
-                  onChange={handleChange}
-                  required
-                  maxLength={191}
-                  autoComplete="given-name"
-                />
-              </div>
-              <div className="col-md-6">
-                <label htmlFor="lastName" className="form-label fw-medium">
-                  {copy.fields.lastNameLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  className="form-control"
-                  placeholder={copy.fields.lastNamePlaceholder}
-                  value={form.lastName}
-                  onChange={handleChange}
-                  required
-                  maxLength={191}
-                  autoComplete="family-name"
-                />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormControl isInvalid={Boolean(errors.firstName)} className="space-y-2">
+              <FormLabel htmlFor="firstName" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.firstNameLabel')} <span className="text-red-600">*</span>
+              </FormLabel>
+              <Input
+                id="firstName"
+                placeholder={t('auth.requestAccess.fields.firstNamePlaceholder')}
+                autoComplete="given-name"
+                {...register('firstName', {
+                  required: t('auth.requestAccess.validation.firstNameRequired'),
+                  maxLength: { value: 191, message: t('auth.requestAccess.validation.nameTooLong') },
+                })}
+              />
+              <FormErrorMessage>{errors.firstName?.message}</FormErrorMessage>
+            </FormControl>
 
-            {/* Email and Phone in one row */}
-            <div className="row g-2 mb-3">
-              <div className="col-md-7">
-                <label htmlFor="email" className="form-label fw-medium">
-                  {copy.fields.emailLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="form-control"
-                  placeholder={copy.fields.emailPlaceholder}
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="col-md-5">
-                <label htmlFor="phone" className="form-label fw-medium">
-                  {copy.fields.phoneLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  className="form-control"
-                  placeholder={copy.fields.phonePlaceholder}
-                  value={form.phone}
-                  onChange={handleChange}
-                  required
-                  maxLength={32}
-                  autoComplete="tel"
-                />
-              </div>
-            </div>
+            <FormControl isInvalid={Boolean(errors.lastName)} className="space-y-2">
+              <FormLabel htmlFor="lastName" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.lastNameLabel')} <span className="text-red-600">*</span>
+              </FormLabel>
+              <Input
+                id="lastName"
+                placeholder={t('auth.requestAccess.fields.lastNamePlaceholder')}
+                autoComplete="family-name"
+                {...register('lastName', {
+                  required: t('auth.requestAccess.validation.lastNameRequired'),
+                  maxLength: { value: 191, message: t('auth.requestAccess.validation.nameTooLong') },
+                })}
+              />
+              <FormErrorMessage>{errors.lastName?.message}</FormErrorMessage>
+            </FormControl>
 
-            {/* Location fields in one row */}
-            <div className="row g-2 mb-3">
-              <div className="col-md-5">
-                <label htmlFor="city" className="form-label fw-medium">
-                  {copy.fields.cityLabel}
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  className="form-control"
-                  placeholder={copy.fields.cityPlaceholder}
-                  value={form.city}
-                  onChange={handleChange}
-                  maxLength={191}
-                  autoComplete="address-level2"
-                />
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="state" className="form-label fw-medium">
-                  {copy.fields.stateLabel}
-                </label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  className="form-control"
-                  placeholder={copy.fields.statePlaceholder}
-                  value={form.state}
-                  onChange={handleChange}
-                  maxLength={64}
-                  autoComplete="address-level1"
-                />
-              </div>
-              <div className="col-md-4">
-                <label htmlFor="zip" className="form-label fw-medium">
-                  {copy.fields.zipLabel}
-                </label>
-                <input
-                  type="text"
-                  id="zip"
-                  name="zip"
-                  className="form-control"
-                  placeholder={copy.fields.zipPlaceholder}
-                  value={form.zip}
-                  onChange={handleChange}
-                  maxLength={32}
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                />
-              </div>
-            </div>
+            <FormControl isInvalid={Boolean(errors.email)} className="space-y-2 md:col-span-1">
+              <FormLabel htmlFor="email" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.emailLabel')} <span className="text-red-600">*</span>
+              </FormLabel>
+              <Input
+                id="email"
+                type="email"
+                placeholder={t('auth.requestAccess.fields.emailPlaceholder')}
+                autoComplete="email"
+                {...register('email', {
+                  required: t('auth.requestAccess.validation.emailRequired'),
+                  pattern: {
+                    value: /[^\s]+@[^\s]+\.[^\s]+/,
+                    message: t('auth.requestAccess.validation.emailInvalid'),
+                  },
+                })}
+              />
+              <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            </FormControl>
 
-            {/* Company field */}
-            <div className="mb-3">
-              <label htmlFor="company" className="form-label fw-medium">
-                {copy.fields.companyLabel}
-              </label>
-              <input
-                type="text"
+            <FormControl isInvalid={Boolean(errors.phone)} className="space-y-2">
+              <FormLabel htmlFor="phone" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.phoneLabel')} <span className="text-red-600">*</span>
+              </FormLabel>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder={t('auth.requestAccess.fields.phonePlaceholder')}
+                autoComplete="tel"
+                {...register('phone', {
+                  required: t('auth.requestAccess.validation.phoneRequired'),
+                  maxLength: { value: 32, message: t('auth.requestAccess.validation.phoneInvalid') },
+                })}
+              />
+              <FormErrorMessage>{errors.phone?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl className="space-y-2">
+              <FormLabel htmlFor="city" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.cityLabel')}
+              </FormLabel>
+              <Input
+                id="city"
+                placeholder={t('auth.requestAccess.fields.cityPlaceholder')}
+                autoComplete="address-level2"
+                {...register('city', {
+                  maxLength: { value: 191, message: t('auth.requestAccess.validation.cityTooLong') },
+                })}
+              />
+              <FormErrorMessage>{errors.city?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl className="space-y-2">
+              <FormLabel htmlFor="state" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.stateLabel')}
+              </FormLabel>
+              <Input
+                id="state"
+                placeholder={t('auth.requestAccess.fields.statePlaceholder')}
+                autoComplete="address-level1"
+                {...register('state', {
+                  maxLength: { value: 64, message: t('auth.requestAccess.validation.stateTooLong') },
+                  setValueAs: (value) => (typeof value === 'string' ? value.toUpperCase() : value),
+                })}
+              />
+              <FormErrorMessage>{errors.state?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl className="space-y-2">
+              <FormLabel htmlFor="zip" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.zipLabel')}
+              </FormLabel>
+              <Input
+                id="zip"
+                placeholder={t('auth.requestAccess.fields.zipPlaceholder')}
+                inputMode="numeric"
+                autoComplete="postal-code"
+                {...register('zip', {
+                  maxLength: { value: 32, message: t('auth.requestAccess.validation.zipTooLong') },
+                })}
+              />
+              <FormErrorMessage>{errors.zip?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl className="space-y-2 md:col-span-2">
+              <FormLabel htmlFor="company" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.companyLabel')}
+              </FormLabel>
+              <Input
                 id="company"
-                name="company"
-                className="form-control"
-                placeholder={copy.fields.companyPlaceholder}
-                value={form.company}
-                onChange={handleChange}
-                maxLength={191}
+                placeholder={t('auth.requestAccess.fields.companyPlaceholder')}
                 autoComplete="organization"
+                {...register('company', {
+                  maxLength: { value: 191, message: t('auth.requestAccess.validation.companyTooLong') },
+                })}
               />
-            </div>
+              <FormErrorMessage>{errors.company?.message}</FormErrorMessage>
+            </FormControl>
 
-            {/* Message field - smaller */}
-            <div className="mb-3">
-              <label htmlFor="message" className="form-label fw-medium">
-                {copy.fields.messageLabel}
-              </label>
-              <textarea
+            <FormControl className="space-y-2 md:col-span-2">
+              <FormLabel htmlFor="message" className="text-sm font-semibold">
+                {t('auth.requestAccess.fields.messageLabel')}
+              </FormLabel>
+              <Textarea
                 id="message"
-                name="message"
-                className="form-control"
-                placeholder={copy.fields.messagePlaceholder}
-                rows={3}
-                value={form.message}
-                onChange={handleChange}
-                maxLength={2000}
+                rows={4}
+                placeholder={t('auth.requestAccess.fields.messagePlaceholder')}
+                {...register('message', {
+                  maxLength: { value: 2000, message: t('auth.requestAccess.validation.messageTooLong') },
+                })}
               />
-              <div className="form-text text-end small">{form.message.length}/2000</div>
-            </div>
-
-            <div className="d-grid">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ minHeight: 40 }}
-                disabled={isSubmitting}
-                aria-busy={isSubmitting}
-              >
-                {isSubmitting ? copy.submitting : copy.submit}
-              </button>
-            </div>
-          </form>
-
-          <div className="text-center mt-3">
-            <span className="text-muted small">{copy.alreadyHaveAccess}</span>
-            <Link to="/login" className="fw-semibold text-decoration-none small">
-              {copy.signIn}
-            </Link>
+              <div className="text-right text-xs text-text-muted">{messageValue.length}/2000</div>
+              <FormErrorMessage>{errors.message?.message}</FormErrorMessage>
+            </FormControl>
           </div>
+
+          <MotionButton
+            type="submit"
+            colorScheme="brand"
+            className="w-full h-11"
+            isLoading={mutation.isPending}
+            loadingText={t('auth.requestAccess.submitting')}
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+          >
+            {t('auth.requestAccess.submit')}
+          </MotionButton>
+        </form>
+
+        <div className="text-center text-sm text-text-muted">
+          <span>{t('auth.requestAccess.alreadyHaveAccess')} </span>
+          <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+            {t('auth.signIn')}
+          </Link>
         </div>
       </div>
-    </div>
+    </AuthShell>
   )
 }
 

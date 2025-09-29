@@ -219,6 +219,7 @@
   },
   "auth": {
     "signIn": "Iniciar sesión",
+    "signingIn": "Iniciando sesión...",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "keepMeLoggedIn": "Mantener sesión iniciada",
@@ -262,6 +263,20 @@
         "companyPlaceholder": "Tu empresa (opcional)",
         "messageLabel": "Mensaje",
         "messagePlaceholder": "Cuéntanos un poco sobre tu negocio y cómo podemos ayudar."
+      },
+      "validation": {
+        "firstNameRequired": "El nombre es obligatorio.",
+        "lastNameRequired": "El apellido es obligatorio.",
+        "nameTooLong": "Mantén los nombres por debajo de 191 caracteres.",
+        "emailRequired": "El correo electrónico es obligatorio.",
+        "emailInvalid": "Ingresa un correo válido.",
+        "phoneRequired": "El teléfono es obligatorio.",
+        "phoneInvalid": "El teléfono es demasiado largo.",
+        "cityTooLong": "La ciudad es demasiado larga.",
+        "stateTooLong": "El estado es demasiado largo.",
+        "zipTooLong": "El código postal es demasiado largo.",
+        "companyTooLong": "El nombre de la empresa es demasiado largo.",
+        "messageTooLong": "El mensaje es demasiado largo."
       }
     },
     "forgotPassword": {
@@ -280,6 +295,8 @@
     "emailRequired": "El correo electrónico es obligatorio",
     "noAccountPrompt": "¿No tienes una cuenta?",
     "backToLogin": "Volver a iniciar sesión",
+    "passwordRequired": "La contraseña es obligatoria.",
+    "passwordTooShort": "Usa al menos 6 caracteres.",
     "resetPassword": {
       "title": "Restablecer contraseña",
       "subtitle": "Actualiza tu contraseña de forma segura.",
@@ -292,6 +309,36 @@
       "success": "Contraseña restablecida correctamente.",
       "error": "No se pudo restablecer la contraseña.",
       "requestError": "Error al restablecer la contraseña."
+    },
+    "signup": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Cuéntanos un poco sobre ti para obtener acceso completo al portal.",
+      "cta": "Crear cuenta",
+      "submitting": "Creando...",
+      "successTitle": "Cuenta creada",
+      "successDescription": "¡Listo! Inicia sesión con tus nuevas credenciales.",
+      "errorTitle": "No pudimos crear tu cuenta",
+      "error": "No pudimos crear tu cuenta en este momento. Inténtalo de nuevo más tarde.",
+      "heroTitle": "Colabora con nuestro equipo",
+      "heroSubtitle": "Gabinetes premium, flujos optimizados y soporte dedicado.",
+      "heroDescription": "Únete a la comunidad de distribuidores que confían en nosotros para precios precisos, tiempos transparentes y soporte integral.",
+      "fields": {
+        "usernameLabel": "Nombre de usuario",
+        "usernamePlaceholder": "juan_perez",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "tu@ejemplo.com",
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Crea una contraseña segura"
+      },
+      "validation": {
+        "usernameRequired": "El nombre de usuario es obligatorio.",
+        "usernameLength": "Usa al menos 3 caracteres.",
+        "emailRequired": "El correo electrónico es obligatorio.",
+        "emailInvalid": "Ingresa un correo válido.",
+        "passwordRequired": "La contraseña es obligatoria.",
+        "passwordLength": "Usa al menos 8 caracteres."
+      },
+      "loginPrompt": "¿Ya tienes una cuenta? <1>Inicia sesión</1>"
     }
   },
   "nav": {

@@ -365,6 +365,7 @@
   },
   "auth": {
     "signIn": "Sign In",
+    "signingIn": "Signing in...",
     "email": "Email",
     "password": "Password",
     "keepMeLoggedIn": "Keep me logged in",
@@ -408,6 +409,20 @@
         "companyPlaceholder": "Your company (optional)",
         "messageLabel": "Message",
         "messagePlaceholder": "Tell us a bit about your business and how we can help."
+      },
+      "validation": {
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required.",
+        "nameTooLong": "Please keep names under 191 characters.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "phoneRequired": "Phone number is required.",
+        "phoneInvalid": "Phone number is too long.",
+        "cityTooLong": "City name is too long.",
+        "stateTooLong": "State value is too long.",
+        "zipTooLong": "ZIP code is too long.",
+        "companyTooLong": "Company name is too long.",
+        "messageTooLong": "Message is too long."
       }
     },
     "forgotPassword": {
@@ -426,6 +441,8 @@
     "emailRequired": "Email is required",
     "noAccountPrompt": "Don't have an account?",
     "backToLogin": "Back to sign in",
+    "passwordRequired": "Password is required.",
+    "passwordTooShort": "Use at least 6 characters.",
     "resetPassword": {
       "title": "Reset Password",
       "subtitle": "Securely update your password.",
@@ -438,6 +455,36 @@
       "success": "Password reset successful.",
       "error": "Password reset failed.",
       "requestError": "Failed to reset password."
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Tell us a little about you to get full access to the dealer portal.",
+      "cta": "Create account",
+      "submitting": "Creating...",
+      "successTitle": "Account created",
+      "successDescription": "You're all set! Sign in with your new credentials.",
+      "errorTitle": "We couldn't create your account",
+      "error": "We couldn't create your account right now. Please try again shortly.",
+      "heroTitle": "Partner with our team",
+      "heroSubtitle": "Premium cabinetry, streamlined workflows, and dedicated support.",
+      "heroDescription": "Join a community of dealers who rely on us for accurate pricing, transparent timelines, and end-to-end support.",
+      "fields": {
+        "usernameLabel": "Username",
+        "usernamePlaceholder": "john_doe",
+        "emailLabel": "Email",
+        "emailPlaceholder": "you@example.com",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Create a strong password"
+      },
+      "validation": {
+        "usernameRequired": "Username is required.",
+        "usernameLength": "Use at least 3 characters.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordLength": "Use at least 8 characters."
+      },
+      "loginPrompt": "Already have an account? <1>Sign in</1>"
     }
   },
   "nav": {

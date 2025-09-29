@@ -3,6 +3,7 @@
 );
 @use "@coreui/chartjs/scss/coreui-chartjs";
 @use "vendors/simplebar";
+@use "../styles/auth";
 
 body {
   background-color: var(--cui-tertiary-bg);
