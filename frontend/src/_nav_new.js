@@ -46,6 +46,13 @@ const useNavItems = () => {
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       });
 
+      navigationItems.push({
+        component: CNavItem,
+        name: 'Modern Dashboard',
+        to: '/modern-dashboard',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      });
+
       // Proposals section
       if (hasPermission(user, 'proposals:read')) {
         const proposalItems = [
