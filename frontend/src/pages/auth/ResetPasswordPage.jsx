@@ -157,10 +157,10 @@ const ResetPasswordPage = () => {
               placeholder={t('auth.resetPassword.passwordPlaceholder')}
               autoComplete="new-password"
               {...register('password', {
-                required: t('auth.resetPassword.requestError'),
+                required: t('auth.passwordRequired'),
                 minLength: {
                   value: 8,
-                  message: t('auth.resetPassword.error'),
+                  message: t('auth.passwordTooShort'),
                 },
               })}
             />
