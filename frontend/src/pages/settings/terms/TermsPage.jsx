@@ -1,7 +1,7 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Card, CardBody, Flex, Box, FormControl, Textarea, Badge } from '@chakra-ui/react'
+import { Card, CardBody, Flex, Box, FormControl, Textarea, Badge, Button } from '@chakra-ui/react'
 import PageHeader from '../../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'

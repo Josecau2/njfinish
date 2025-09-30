@@ -400,7 +400,7 @@ const ManufacturerForm = () => {
 
   return (
     <Container
-      fluid
+      maxW="full"
       className="p-2 m-2 manufacturer-form"
       style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
     >

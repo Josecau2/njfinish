@@ -153,7 +153,7 @@ const LocationForm = () => {
 
   return (
     <Container
-      fluid
+      maxW="full"
       className="p-2 m-2"
       style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
     >

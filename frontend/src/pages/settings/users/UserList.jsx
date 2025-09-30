@@ -152,7 +152,7 @@ const UsersPage = () => {
   const regularCount = filteredUsers.filter((user) => user.role !== 'Admin').length
 
   return (
-    <Container fluid className="settings-container">
+    <Container maxW="full" className="settings-container">
       <PageHeader
         title={t('settings.users.header')}
         subtitle={t('settings.users.subtitle')}
