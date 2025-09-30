@@ -1,12 +1,12 @@
 # PROGRESS
-- [ ] 1 Baseline & guardrails
-- [ ] 2 Global no-overflow & viewport
-- [ ] 3 App shell (header/sidebar) responsive
-- [ ] 4 Sticky header & secondary toolbar & 44px taps
-- [ ] 5 Sidebar (expanded/collapsed + mobile drawer)
-- [ ] 6 Page containers & spacing tokens
-- [ ] 7 Modals & submodals sizing/behavior
-- [ ] 8 Grids/tiles for products & quotes
+- [x] 1 Baseline & guardrails
+- [x] 2 Global no-overflow & viewport
+- [x] 3 App shell (header/sidebar) responsive
+- [x] 4 Sticky header & secondary toolbar & 44px taps
+- [x] 5 Sidebar (expanded/collapsed + mobile drawer)
+- [x] 6 Page containers & spacing tokens
+- [x] 7 Modals & submodals sizing/behavior
+- [x] 8 Grids/tiles for products & quotes
 - [ ] 9 Icon sizes & 44px hit-area enforced
 - [ ] 10 Dark mode contrast pass
 - [ ] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
