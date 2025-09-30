@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Alert, Card, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Icon, Button } from '@chakra-ui/react'
+import { Alert, Card, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Button } from '@chakra-ui/react'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import { useState } from 'react'
@@ -21,7 +21,7 @@ const PaymentTest = () => {
   }
 
   return (
-    <Container fluid className="payment-test">
+    <Container maxW="full" className="payment-test">
       <style>{`
         .payment-test .btn { min-height: 44px; }
       `}</style>
@@ -53,7 +53,7 @@ const PaymentTest = () => {
                     onClick={handleDispatchSuccess}
                     aria-label={t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   >
-                    <Icon as={CreditCard} className="me-2" />
+                    <CreditCard size={18} className="me-2" />
                     {t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   </Button>
                   <Button
@@ -70,7 +70,7 @@ const PaymentTest = () => {
                     onClick={() => navigate(-1)}
                     aria-label={t('common.goBack', 'Go Back')}
                   >
-                    <Icon as={ArrowLeft} className="me-2" />
+                    <ArrowLeft size={18} className="me-2" />
                     {t('common.goBack', 'Go Back')}
                   </Button>
                 </div>

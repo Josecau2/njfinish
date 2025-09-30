@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Container, Card, CardBody, Box, Button, Icon } from '@chakra-ui/react'
+import { Container, Card, CardBody, Box, Button } from '@chakra-ui/react'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 
@@ -9,7 +9,7 @@ const PaymentCancel = () => {
   const navigate = useNavigate()
 
   return (
-    <Container fluid className="payment-result">
+    <Container maxW="full" className="payment-result">
       <style>{`
         .payment-result .btn { min-height: 44px; }
       `}</style>
@@ -49,7 +49,7 @@ const PaymentCancel = () => {
                   whileTap={{ scale: 0.98 }}
                   minH="44px"
                 >
-                  <Icon as={ArrowLeft} mr={2} boxSize={4} />
+                  <ArrowLeft size={18} style={{ marginRight: '0.5rem' }} />
                   {t('common.goBack', 'Go Back')}
                 </Button>
               </div>
