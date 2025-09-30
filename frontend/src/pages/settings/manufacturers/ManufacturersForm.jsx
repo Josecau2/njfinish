@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addManufacturer } from '../../../store/slices/manufacturersSlice'
 import { getContrastColor } from '../../../utils/colorUtils'
+import { Info } from 'lucide-react'
 import {
   FormControl,
   Input,
@@ -22,7 +23,6 @@ import {
   InputLeftAddon,
   Spinner,
   Button,
-  Icon,
   VStack,
   HStack,
   Text,
@@ -389,12 +389,11 @@ const ManufacturerForm = () => {
     const multiplier = parseFloat(formData.costMultiplier)
 
     return (
-      <FormHelperText className="text-info mt-2">
-        <Icon as={Info} mr={1} boxSize={4} />
+      <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
+        <Info size={16} style={{ marginRight: '0.25rem' }} />
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
-      </FormHelperText>
-
+      </Text>
   )
   }
 

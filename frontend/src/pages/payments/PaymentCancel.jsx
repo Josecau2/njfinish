@@ -36,7 +36,6 @@ const PaymentCancel = () => {
                   colorScheme="brand"
                   onClick={() => navigate('/payments')}
                   aria-label={t('payments.title.admin', 'All Payments')}
-                  whileTap={{ scale: 0.98 }}
                   minH="44px"
                 >
                   {t('payments.title.admin', 'All Payments')}
@@ -46,7 +45,6 @@ const PaymentCancel = () => {
                   colorScheme="gray"
                   onClick={() => navigate(-1)}
                   aria-label={t('common.goBack', 'Go Back')}
-                  whileTap={{ scale: 0.98 }}
                   minH="44px"
                 >
                   <ArrowLeft size={18} style={{ marginRight: '0.5rem' }} />
