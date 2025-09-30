@@ -1,0 +1,16 @@
+# PROGRESS
+- [ ] 1 Baseline & guardrails
+- [ ] 2 Global no-overflow & viewport
+- [ ] 3 App shell (header/sidebar) responsive
+- [ ] 4 Sticky header & secondary toolbar & 44px taps
+- [ ] 5 Sidebar (expanded/collapsed + mobile drawer)
+- [ ] 6 Page containers & spacing tokens
+- [ ] 7 Modals & submodals sizing/behavior
+- [ ] 8 Grids/tiles for products & quotes
+- [ ] 9 Icon sizes & 44px hit-area enforced
+- [ ] 10 Dark mode contrast pass
+- [ ] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
+- [ ] 12 Full AUDIT (pages, components, modals, buttons)
+- [ ] 13 Automated layout + a11y tests (Playwright + Axe)
+- [ ] 14 CI pipeline for audit on push/PR
+- [ ] 15 Final QA matrix + closeout

@@ -1,0 +1,23 @@
+{
+  "routes": [
+    { "path": "/", "title": "Dashboard" },
+    { "path": "/quotes", "title": "Quotes" },
+    { "path": "/orders", "title": "Orders" },
+    { "path": "/products", "title": "Products" },
+    { "path": "/customers", "title": "Customers" },
+    { "path": "/settings", "title": "Settings" },
+    { "path": "/login", "title": "Login" },
+    { "path": "/password-reset", "title": "Password Reset" },
+    { "path": "/request-access", "title": "Request Access" }
+  ],
+  "modals": [
+    "CreateQuoteModal", "CreateOrderModal", "CustomerEditModal", "ProductDetailModal"
+  ],
+  "components": [
+    "AppShell","AppHeader","AppSidebar","SecondaryToolbar","PageContainer","TileCard",
+    "DataTable","AnimatedButton","StatusBadge","Toast","Alert"
+  ],
+  "buttons": [
+    "Primary","Secondary","Tertiary","Destructive","IconOnly"
+  ]
+}
