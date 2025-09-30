@@ -241,8 +241,8 @@ const PaymentsList = ({ isContractor }) => {
   }
 
   const handlePaymentClick = (payment) => {
-    if (payment.gateway === 'stripe' && payment.status === 'pending') navigate(`/payments/${payment.id}/pay`)
-    else navigate(`/payments/${payment.id}`)
+    if (payment?.gateway === 'stripe' && payment?.status === 'pending') navigate(`/payments/${payment?.id}/pay`)
+    else navigate(`/payments/${payment?.id}`)
   }
 
   const renderCustomerCell = (payment) => {
@@ -346,11 +346,11 @@ const PaymentsList = ({ isContractor }) => {
               </Tr>
             ) : (
               filtered.map((payment) => {
-                const manualApplyEnabled = userRole === 'admin' && payment.gateway === 'manual' && payment.status !== 'completed'
-                const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending'
+                const manualApplyEnabled = userRole === 'admin' && payment?.gateway === 'manual' && payment?.status !== 'completed'
+                const canPayOnline = payment?.gateway === 'stripe' && payment?.status === 'pending'
                 return (
-                  <Tr key={payment.id} cursor="pointer" _hover={{ bg: rowHoverBg }} onClick={() => handlePaymentClick(payment)}>
-                    <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>{new Date(payment.createdAt).toLocaleDateString()}</Td>
+                  <Tr key={payment?.id || Math.random()} cursor="pointer" _hover={{ bg: rowHoverBg }} onClick={() => handlePaymentClick(payment)}>
+                    <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Td>
                     <Td>{renderCustomerCell(payment)}</Td>
                     <Td>{getDisplayOrderNumber(payment)}</Td>
                     <Td>
