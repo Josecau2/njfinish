@@ -2,9 +2,9 @@
 - [x] 0 Pre-flight & memory setup
 - [x] 1 Baseline & guardrails
 - [x] 2 Global no-overflow & viewport
-- [ ] 3 App shell (header/sidebar) responsive
-- [ ] 3.5 Error boundary
-- [ ] 4 Sticky header & secondary toolbar & 44px taps
+- [x] 3 App shell (header/sidebar) responsive
+- [x] 3.5 Error boundary
+- [x] 4 Sticky header & secondary toolbar & 44px taps
 - [ ] 5 Sidebar (expanded/collapsed + mobile drawer)
 - [ ] 6 Page containers & spacing tokens
 - [ ] 6.5 Loading states & skeletons
