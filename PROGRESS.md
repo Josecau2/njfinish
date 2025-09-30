@@ -12,10 +12,10 @@
 - [x] 8 Grids/tiles for products & quotes
 - [x] 8.2 Mobile table strategy
 - [x] 9 Icon sizes & 44px hit-area enforced
-- [ ] 10 Dark mode contrast pass
-- [ ] 10.2 Reduced motion support
-- [ ] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
-- [ ] 12 Full AUDIT (pages, components, modals, buttons)
+- [x] 10 Dark mode contrast pass
+- [x] 10.2 Reduced motion support
+- [x] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
+- [x] 12 Full AUDIT (pages, components, modals, buttons)
 - [ ] 12.2 Audit playground implementation
 - [ ] 12.3 Auto-generate manifest
 - [ ] 13 Automated layout + a11y tests (Playwright + Axe)
