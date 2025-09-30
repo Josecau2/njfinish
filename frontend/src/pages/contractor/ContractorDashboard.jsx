@@ -1,9 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardBody, CardHeader, Box, Flex, Spinner, Alert, Container, Icon, Button } from '@chakra-ui/react'
+import {
+  Alert,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Heading,
+  Icon,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  Wrap,
+} from '@chakra-ui/react'
 import { FileText, User } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
+import PageContainer from '../../components/PageContainer'
 
 const ContractorDashboard = () => {
   const navigate = useNavigate()
@@ -126,129 +141,115 @@ const ContractorDashboard = () => {
     fetchStats()
   }, [groupId]) // Simplified dependencies - removed modulesList since it's used inside the effect
 
+  const showProposals = modulesList.includes('proposals')
+  const showCustomers = modulesList.includes('customers')
+  const hasStatsCards = showProposals || showCustomers
+
   if (loading) {
     return (
-      <Container
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: '200px' }}
-      >
-        <Spinner />
-      </Container>
-  
-  )
+      <Flex align="center" justify="center" minH="200px">
+        <Spinner size="lg" />
+      </Flex>
+    )
   }
 
   return (
-    <Container fluid>
-      <style>{`
-        /* Contractor dashboard mobile tweaks */
-        .contractor-dashboard .btn { min-height: 44px; }
-        .contractor-dashboard .quick-actions { flex-wrap: wrap; }
-        .contractor-dashboard .quick-actions .btn { flex: 1 1 48%; }
-        @media (max-width: 575.98px) {
-          .contractor-dashboard .card .fs-4 { font-size: 1.25rem; }
-    </div>
-    </div>
-  
-  )
-        }
-      `}</style>
-      <Flex>
-        <Box xs={12} className="contractor-dashboard">
-          <Card className="mb-4">
-            <CardHeader>
-              <h4 className="mb-0">{t('dashboard.welcome', { group: groupName })}</h4>
-              <p className="text-muted mb-0">{t('dashboard.portal')}</p>
-            </CardHeader>
-            <CardBody>
-              {error && (
-                <Alert status="error" className="mb-3">
-                  {error}
-                </Alert>
-              )}
+    <PageContainer maxW="container.xl" py={{ base: 6, md: 10 }}>
+      <Card>
+        <CardHeader borderBottomWidth="1px">
+          <Stack spacing={1}>
+            <Heading size="md">{t('dashboard.welcome', { group: groupName })}</Heading>
+            <Text color="gray.500">{t('dashboard.portal')}</Text>
+          </Stack>
+        </CardHeader>
+        <CardBody>
+          <Stack spacing={6}>
+            {error && (
+              <Alert status="error" variant="left-accent">
+                {error}
+              </Alert>
+            )}
 
-              {/* Removed verbose Enabled Modules badges section for a cleaner dashboard */}
-
-              <Flex>
-                {modulesList.includes('proposals') && (
-                  <Box sm={6} lg={4} className="mb-3">
-                    <Card className="text-white bg-primary">
-                      <CardBody className="pb-0 d-flex justify-content-between align-items-start">
-                        <div>
-                          <div className="fs-4 fw-semibold">{stats.proposals}</div>
-                          <div>{t('nav.proposals')}</div>
-                        <div className="bg-body-secondary bg-opacity-25 rounded p-2">
-                          <Icon as={FileText} size="lg" />
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Box>
-                )}
-
-                {modulesList.includes('customers') && (
-                  <Box sm={6} lg={4} className="mb-3">
-                    <Card className="text-white bg-success">
-                      <CardBody className="pb-0 d-flex justify-content-between align-items-start">
-                        <div>
-                          <div className="fs-4 fw-semibold">{stats.customers}</div>
-                          <div>{t('nav.customers')}</div>
-                        <div className="bg-body-secondary bg-opacity-25 rounded p-2">
-                          <Icon as={User} size="lg" />
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Box>
-                )}
-
-                {/* Team Members card removed for contractor dashboard */}
-              </Flex>
-
-              <Flex>
-                <Box xs={12}>
-                  <Card>
-                    <CardHeader>
-                      <h6 className="mb-0">{t('dashboard.quickActions')}</h6>
-                    </CardHeader>
-                    <CardBody>
-                      <div className="d-flex quick-actions gap-2">
-                        {modulesList.includes('proposals') && (
-                          <Button
-                            colorScheme="blue"
-                            variant="outline"
-                            aria-label={t('dashboard.createProposal')}
-                            onClick={() => navigate('/quotes/create')}
-                          >
-                            {t('dashboard.createProposal')}
-                          </Button>
-                        )}
-                        {modulesList.includes('customers') && (
-                          <Button
-                            colorScheme="green"
-                            variant="outline"
-                            aria-label={t('nav.addCustomer')}
-                            onClick={() => navigate('/customers/add')}
-                          >
-                            {t('nav.addCustomer')}
-                          </Button>
-                        )}
-                        <Button
-                          colorScheme="blue"
-                          variant="outline"
-                          aria-label={t('dashboard.viewProfile')}
-                          onClick={() => navigate('/profile')}
-                        >
-                          {t('dashboard.viewProfile')}
-                        </Button>
-                      </div>
+            {hasStatsCards && (
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} gap={4}>
+                {showProposals && (
+                  <Card bg="brand.600" color="white" shadow="lg">
+                    <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
+                      <Stack spacing={1}>
+                        <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
+                          {stats.proposals}
+                        </Text>
+                        <Text fontSize="sm" color="whiteAlpha.800">
+                          {t('nav.proposals')}
+                        </Text>
+                      </Stack>
+                      <Flex align="center" justify="center" bg="whiteAlpha.300" borderRadius="lg" p={2}>
+                        <Icon as={FileText} boxSize={6} />
+                      </Flex>
                     </CardBody>
                   </Card>
-                </Box>
-              </Flex>
-            </CardBody>
-          </Card>
-        </Box>
-      </Flex>
-    </Container>
+                )}
+
+                {showCustomers && (
+                  <Card bg="green.600" color="white" shadow="lg">
+                    <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
+                      <Stack spacing={1}>
+                        <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
+                          {stats.customers}
+                        </Text>
+                        <Text fontSize="sm" color="whiteAlpha.800">
+                          {t('nav.customers')}
+                        </Text>
+                      </Stack>
+                      <Flex align="center" justify="center" bg="whiteAlpha.300" borderRadius="lg" p={2}>
+                        <Icon as={User} boxSize={6} />
+                      </Flex>
+                    </CardBody>
+                  </Card>
+                )}
+              </SimpleGrid>
+            )}
+
+            <Stack spacing={3}>
+              <Heading size="sm">{t('dashboard.quickActions')}</Heading>
+              <Wrap spacing={3} shouldWrapChildren>
+                {showProposals && (
+                  <Button
+                    minH="44px"
+                    variant="outline"
+                    colorScheme="brand"
+                    aria-label={t('dashboard.createProposal')}
+                    onClick={() => navigate('/quotes/create')}
+                  >
+                    {t('dashboard.createProposal')}
+                  </Button>
+                )}
+                {showCustomers && (
+                  <Button
+                    minH="44px"
+                    variant="outline"
+                    colorScheme="green"
+                    aria-label={t('nav.addCustomer')}
+                    onClick={() => navigate('/customers/add')}
+                  >
+                    {t('nav.addCustomer')}
+                  </Button>
+                )}
+                <Button
+                  minH="44px"
+                  variant="outline"
+                  colorScheme="brand"
+                  aria-label={t('dashboard.viewProfile')}
+                  onClick={() => navigate('/profile')}
+                >
+                  {t('dashboard.viewProfile')}
+                </Button>
+              </Wrap>
+            </Stack>
+          </Stack>
+        </CardBody>
+      </Card>
+    </PageContainer>
   )
 }
 
