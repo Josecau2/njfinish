@@ -419,7 +419,7 @@ const PaymentsList = ({ isContractor }) => {
                       <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                     </Flex>
                     <VStack align="stretch" spacing={1}>
-                      <Text fontSize="sm" color="gray.600">{new Date(payment.createdAt).toLocaleDateString()}</Text>
+                      <Text fontSize="sm" color="gray.600">{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Text>
                       <Flex justify="space-between" align="center">
                         <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment?.gateway)}</Text>
                         <Text fontSize="sm" color="gray.600">{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
