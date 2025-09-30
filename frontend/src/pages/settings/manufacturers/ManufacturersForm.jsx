@@ -567,12 +567,12 @@ const ManufacturerForm = () => {
                 value={formData.assembledEtaDays}
                 onChange={handleChange}
               />
-              <FormHelperText className="text-muted ms-3">
+              <Text fontSize="sm" className="text-muted ms-3">
                 {t(
                   'settings.manufacturers.help.assembledEta',
                   'Estimated delivery time for assembled cabinets',
                 )}
-              </FormHelperText>
+              </Text>
             </Box>
             <Box md={6}>
               <CustomFormInput
@@ -587,12 +587,12 @@ const ManufacturerForm = () => {
                 value={formData.unassembledEtaDays}
                 onChange={handleChange}
               />
-              <FormHelperText className="text-muted ms-3">
+              <Text fontSize="sm" className="text-muted ms-3">
                 {t(
                   'settings.manufacturers.help.unassembledEta',
                   'Estimated delivery time for unassembled cabinets',
                 )}
-              </FormHelperText>
+              </Text>
             </Box>
           </Flex>
         </FormSection>
@@ -695,14 +695,14 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.costMultiplier}
               />
               {formData.costMultiplier && (
-                <FormHelperText className="text-info mt-2">
+                <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
                   <Info size={16} style={{ marginRight: '0.25rem' }} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
                     cost: (100.0).toFixed(2),
                     multiplier: parseFloat(formData.costMultiplier).toFixed(1),
                   })}
-                </FormHelperText>
+                </Text>
               )}
             </Box>
           </Flex>
