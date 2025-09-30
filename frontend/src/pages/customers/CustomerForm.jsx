@@ -16,7 +16,6 @@ import {
   Spinner,
   Alert,
   Container,
-  Icon,
   Button,
   InputGroup,
   InputLeftAddon,
@@ -488,7 +487,7 @@ const CustomerForm = ({
                     disabled={loading}
                     className="d-flex align-items-center gap-2"
                   >
-                    {loading ? <Spinner size="sm" /> : <Icon as={Save} boxSize={4} />}
+                    {loading ? <Spinner size="sm" /> : <Save size={18} />}
                     {isEditing
                       ? t('customers.form.actions.update')
                       : t('customers.form.actions.create')}
