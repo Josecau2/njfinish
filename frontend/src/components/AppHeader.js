@@ -51,7 +51,7 @@ const AppHeader = () => {
         color={headerTextColor}
         borderBottom="1px solid"
         borderColor="rgba(15,23,42,0.15)"
-        _dark={{ borderColor: 'rgba(226,232,240,0.12)' }}
+        _dark={{ borderColor: 'rgba(255,255,255,0.08)' }}
         h="60px"
         px={{ base: 4, md: 6 }}
         align="center"

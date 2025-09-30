@@ -3,7 +3,7 @@ import { Flex, HStack, Badge, useColorModeValue } from '@chakra-ui/react'
 
 const SecondaryToolbar = ({ children, ...props }) => {
   const bg = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('blackAlpha.200', 'whiteAlpha.200')
+  const borderColor = useColorModeValue('rgba(15,23,42,0.15)', 'rgba(255,255,255,0.08)')
 
   return (
     <Flex
