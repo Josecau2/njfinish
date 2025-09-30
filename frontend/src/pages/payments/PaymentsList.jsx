@@ -357,7 +357,7 @@ const PaymentsList = ({ isContractor }) => {
                     <Td>
                       <HStack spacing={2}>
                         <Text>{formatPaymentAmount(payment)}</Text>
-                        {renderGatewayBadge(payment.gateway)}
+                        {renderGatewayBadge(payment?.gateway)}
                       </HStack>
                     </Td>
                     <Td>
@@ -409,7 +409,7 @@ const PaymentsList = ({ isContractor }) => {
           </VStack>
         ) : (
           filtered.map((payment) => {
-            const canPayOnline = payment.gateway === 'stripe' && payment.status === 'pending'
+            const canPayOnline = payment?.gateway === 'stripe' && payment?.status === 'pending'
             return (
               <Card key={payment.id} size="sm" as="article">
                 <CardBody>
@@ -421,7 +421,7 @@ const PaymentsList = ({ isContractor }) => {
                     <VStack align="stretch" spacing={1}>
                       <Text fontSize="sm" color="gray.600">{new Date(payment.createdAt).toLocaleDateString()}</Text>
                       <Flex justify="space-between" align="center">
-                        <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment.gateway)}</Text>
+                        <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment?.gateway)}</Text>
                         <Text fontSize="sm" color="gray.600">{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
                       </Flex>
                       {payment.transactionId ? (
