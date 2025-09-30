@@ -1,7 +1,7 @@
 # PROGRESS
-- [ ] 0 Pre-flight & memory setup
-- [ ] 1 Baseline & guardrails
-- [ ] 2 Global no-overflow & viewport
+- [x] 0 Pre-flight & memory setup
+- [x] 1 Baseline & guardrails
+- [x] 2 Global no-overflow & viewport
 - [ ] 3 App shell (header/sidebar) responsive
 - [ ] 3.5 Error boundary
 - [ ] 4 Sticky header & secondary toolbar & 44px taps
