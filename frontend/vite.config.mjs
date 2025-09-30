@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
             // Vendor chunks for better caching
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             'ui-vendor': ['@coreui/react', '@coreui/icons-react', '@coreui/utils'],
-            'form-vendor': ['formik', 'yup', 'react-select'],
+            'form-vendor': ['formik', 'yup', 'react-select', 'react-select/creatable'],
             'date-vendor': ['date-fns', 'date-fns-tz', 'react-datepicker'],
             'redux-vendor': ['@reduxjs/toolkit', 'react-redux', 'redux'],
             'icons-vendor': ['react-icons', 'lucide-react', '@fortawesome/react-fontawesome'],
@@ -76,7 +76,12 @@ export default defineConfig(({ mode }) => {
         'date-fns',
         'date-fns-tz',
         'axios',
-        'sweetalert2'
+        'sweetalert2',
+        'react-select',
+        'react-select/creatable',
+        'formik',
+        'yup',
+        'react-datepicker'
       ],
       esbuildOptions: {
         loader: {
@@ -104,6 +109,8 @@ export default defineConfig(({ mode }) => {
           replacement: `${path.resolve(__dirname, 'src')}/`,
         },
       ],
+      // Ensure only a single copy of React/ReactDOM is used across dependencies
+      dedupe: ['react', 'react-dom'],
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
     server: {

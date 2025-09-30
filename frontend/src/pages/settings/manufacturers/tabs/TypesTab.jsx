@@ -36,6 +36,9 @@ import {
   InputGroup,
   InputLeftElement,
   IconButton,
+  Stack,
+  SimpleGrid,
+  Image,
   useToast,
 } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
@@ -883,116 +886,104 @@ const TypesTab = ({ manufacturer }) => {
                   </Text>
                 </VStack>
               ) : (
-                <div className="row g-2">
+                <Stack spacing={6}>
                   {Object.entries(groupedTypes).map(([typeName, typeItems]) => (
-                    <div key={typeName} className="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-                      <div className="mb-2">
-                        <h6 className="fw-bold text-primary mb-2" style={{ fontSize: '0.95rem' }}>
-                          {typeName}
-                        </h6>
-                      </div>
-                      <div className="row g-2">
-                        {typeItems.map((type) => (
-                          <div key={type.id} className="col-4 col-md-3 col-lg-2 col-xl-2">
-                            <div
-                              className="card h-100 border-0"
-                              style={{
-                                backgroundColor: '#f8f9fa',
-                                aspectRatio: '1',
-                                minHeight: '220px',
-                              }}
+                    <Box key={typeName}>
+                      <Text fontWeight="semibold" color="brand.600" mb={2}>
+                        {typeName}
+                      </Text>
+                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={3}>
+                        {typeItems.map((type) => {
+                          const isSelected = selectedItems.includes(type.id)
+                          return (
+                            <Box
+                              key={type.id}
+                              bg="gray.50"
+                              borderRadius="md"
+                              borderWidth="1px"
+                              borderColor={isSelected ? 'brand.200' : 'gray.200'}
+                              overflow="hidden"
+                              onMouseEnter={() => setHoveredId(type.id)}
+                              onMouseLeave={() => setHoveredId(null)}
                             >
-                              <div
-                                className="position-relative flex-grow-1 d-flex align-items-center justify-content-center p-2"
-                                style={{ cursor: 'pointer' }}
-                                onMouseEnter={() => setHoveredId(type.id)}
-                                onMouseLeave={() => setHoveredId(null)}
-                              >
-                                <img
+                              <Box position="relative" p={3} display="flex" justifyContent="center" minH="170px">
+                                <Image
                                   src={getImageSrc(type)}
                                   alt={type.type}
-                                  style={{
-                                    width: '100%',
-                                    height: '120px',
-                                    objectFit: 'contain',
-                                    backgroundColor: '#ffffff',
-                                    borderRadius: '4px',
-                                  }}
                                   onError={handleImageError}
+                                  maxH="130px"
+                                  objectFit="contain"
+                                  bg="white"
+                                  borderRadius="md"
+                                  w="full"
                                 />
-                                <div
-                                  className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                                  style={{
-                                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                                    color: '#fff',
-                                    opacity: hoveredId === type.id ? 1 : 0,
-                                    transition: 'opacity 0.3s ease',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '500',
-                                    borderRadius: '8px',
-                                  }}
-                                >
-                                  <CButton
-                                    status="light"
-                                    className="overlay-action-btn"
-                                    aria-label={t('types.meta.editType', 'Edit Type')}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      handleEditType(type)
-                                    }}
-                                    style={{ fontSize: '0.75rem' }}
+                                {!isContractor && (
+                                  <Flex
+                                    position="absolute"
+                                    inset={0}
+                                    align="center"
+                                    justify="center"
+                                    bg="rgba(0, 0, 0, 0.6)"
+                                    opacity={hoveredId === type.id ? 1 : 0}
+                                    transition="opacity 0.3s ease"
+                                    gap={2}
                                   >
-                                    <Pencil size={18} aria-hidden="true" className="me-1" />{' '}
-                                    {t('types.meta.editType', 'Edit Type')}
-                                  </CButton>
-                                  <CButton
-                                    status="error"
-                                    className="ms-2 overlay-action-btn"
-                                    aria-label={t('common.delete', 'Delete')}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setDeleteTypeAsk({ open: true, typeName: type.type })
-                                      setReassignTypeTo('')
-                                    }}
-                                    style={{ fontSize: '0.75rem' }}
-                                  >
-                                    <Trash size={18} aria-hidden="true" />
-                                  </CButton>
-                                </div>
-                              {/* Close image container and then show description under the picture */}
-                              </div>
-                              <div className="px-2 pt-2">
-                                <div className="small text-muted" style={{ minHeight: '2.5em' }}>
+                                    <Button
+                                      size="sm"
+                                      colorScheme="brand"
+                                      onClick={(event) => {
+                                        event.stopPropagation()
+                                        handleEditType(type)
+                                      }}
+                                    >
+                                      <Pencil size={16} aria-hidden="true" mr={1} />{' '}
+                                      {t('types.meta.editType', 'Edit Type')}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      colorScheme="red"
+                                      onClick={(event) => {
+                                        event.stopPropagation()
+                                        setDeleteTypeAsk({ open: true, typeName: type.type })
+                                        setReassignTypeTo('')
+                                      }}
+                                    >
+                                      <Trash size={16} aria-hidden="true" />
+                                    </Button>
+                                  </Flex>
+                                )}
+                              </Box>
+                              <Stack spacing={2} px={3} pb={3}>
+                                <Text fontSize="sm" color="gray.600" minH="2.5em">
                                   {type.longDescription ||
                                     t(
                                       'types.meta.descriptionPlaceholder',
                                       'Add a description for this type',
                                     )}
-                                </div>
-                                <div className="d-flex justify-content-end align-items-center mt-2">
+                                </Text>
+                                <Flex justify="flex-end">
                                   <Checkbox
                                     id={`type-${type.id}`}
-                                    checked={selectedItems.includes(type.id)}
-                                    onChange={(e) => handleTypeSelection(type.id, e.target.checked)}
-                                    style={{ transform: 'scale(1.2)' }}
+                                    isChecked={selectedItems.includes(type.id)}
+                                    onChange={(event) => handleTypeSelection(type.id, event.target.checked)}
                                   />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                                </Flex>
+                              </Stack>
+                            </Box>
+                          )
+                        })}
+                      </SimpleGrid>
+                    </Box>
                   ))}
-                </div>
+                </Stack>
               )}
             </>
           ) : (
             // Table View
-            <CTable hover responsive>
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>
+            <Table hover responsive>
+              <Thead>
+                <Tr>
+                  <Th>
                     <Checkbox
                       id="selectAllTable"
                       checked={
@@ -1000,24 +991,24 @@ const TypesTab = ({ manufacturer }) => {
                       }
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
-                  </CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.types.table.image')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.types.table.type')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.types.table.description')}</CTableHeaderCell>
-                  <CTableHeaderCell>{t('settings.manufacturers.types.table.actions')}</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
+                  </Th>
+                  <Th>{t('settings.manufacturers.types.table.image')}</Th>
+                  <Th>{t('settings.manufacturers.types.table.type')}</Th>
+                  <Th>{t('settings.manufacturers.types.table.description')}</Th>
+                  <Th>{t('settings.manufacturers.types.table.actions')}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {filteredTypes.map((type) => (
-                  <CTableRow key={type.id}>
-                    <CTableDataCell>
+                  <Tr key={type.id}>
+                    <Td>
                       <Checkbox
                         id={`table-type-${type.id}`}
                         checked={selectedItems.includes(type.id)}
                         onChange={(e) => handleTypeSelection(type.id, e.target.checked)}
                       />
-                    </CTableDataCell>
-                    <CTableDataCell>
+                    </Td>
+                    <Td>
                       <img
                         src={getImageSrc(type)}
                         alt={type.type}
@@ -1030,25 +1021,25 @@ const TypesTab = ({ manufacturer }) => {
                         }}
                         onError={handleImageError}
                       />
-                    </CTableDataCell>
-                    <CTableDataCell>
+                    </Td>
+                    <Td>
                       <Badge colorScheme="gray">{type.type}</Badge>
-                    </CTableDataCell>
-                    <CTableDataCell>{type.description || 'No description'}</CTableDataCell>
-                    <CTableDataCell>
-                      <CButton
+                    </Td>
+                    <Td>{type.description || 'No description'}</Td>
+                    <Td>
+                      <Button
                         colorScheme="blue"
                         aria-label={t('types.meta.editType', 'Edit Type')}
                         onClick={() => handleEditType(type)}
                         style={{ minHeight: '44px', minWidth: '44px' }}
                       >
                         <Pencil size={18} aria-hidden="true" />
-                      </CButton>
-                    </CTableDataCell>
-                  </CTableRow>
+                      </Button>
+                    </Td>
+                  </Tr>
                 ))}
-              </CTableBody>
-            </CTable>
+              </Tbody>
+            </Table>
           )}
         </CardBody>
       </Card>
@@ -1340,7 +1331,7 @@ const TypesTab = ({ manufacturer }) => {
                         )}
                       </>
                     )}
-                  </div>
+                  </Box>
 
                   {/* Assignment Button */}
                   {selectedModalItems.length > 0 && (
@@ -1781,3 +1772,4 @@ const TypesTab = ({ manufacturer }) => {
 }
 
 export default TypesTab
+

@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Container, Card, CardBody, Box, Button, Icon } from '@chakra-ui/react'
 import PageHeader from '../../components/PageHeader'
-import { FaCreditCard } from 'react-icons/fa'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, CreditCard } from 'lucide-react'
 
 const PaymentCancel = () => {
   const { t } = useTranslation()
@@ -20,7 +19,7 @@ const PaymentCancel = () => {
           'payment.unavailable.subtitle',
           'This payment cannot be processed at this time',
         )}
-        icon={FaCreditCard}
+        icon={CreditCard}
       />
       <Box maxW="800px" mx="auto">
         <Card>

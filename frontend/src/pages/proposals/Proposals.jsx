@@ -439,9 +439,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         },
       })
 
-      // Refresh list to reflect possible sent_at/status updates
-      const groupId = isContractor ? contractorGroupId : null
-      dispatch(getProposal(groupId))
+      // TanStack Query will automatically refresh the list after mutations
     } catch (err) {
       console.error('Create share link error:', err)
       Swal.fire(t('common.error'), err.message || t('proposals.share.error'), 'error')

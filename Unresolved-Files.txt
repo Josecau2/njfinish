@@ -1,0 +1,141 @@
+✅ frontend\src\components\StyleMerger.jsx
+✅ frontend\src\components\EmbeddedPaymentForm.jsx
+✅ frontend\src\components\ItemSelectionContent.jsx
+✅ frontend\src\components\ItemSelectionContentEdit.jsx (parity checked vs legacy; Chakra port fixes applied)
+✅ frontend\src\components\ContentTile\index.jsx
+✅ frontend\src\components\contact\ContactInfoCard.jsx
+✅ frontend\src\components\contact\MessageHistory.jsx
+✅ frontend\src\components\contact\MessageComposer.jsx
+✅ frontend\src\components\contact\ThreadView.jsx
+✅ frontend\src\components\common\EmptyState.jsx
+✅ frontend\src\components\FileViewerModal\index.jsx (parity checked vs legacy; Chakra modal restored & exports wired)
+✅ frontend\src\components\model\ManufacturerPdfModal.jsx
+✅ frontend\src\components\NoisyRedirects.jsx
+✅ frontend\src\components\pdf\TestPdfViewer.jsx
+✅ frontend\src\components\PdfViewer.jsx
+✅ frontend\src\components\PermissionGate.jsx
+✅ frontend\src\components\ProtectedRoute.jsx
+✅ frontend\src\components\PublicRoute.jsx
+✅ frontend\src\components\RouteGuard.jsx
+✅ frontend\src\components\SessionRefresher.jsx
+✅ frontend\src\components\withAuth.jsx
+✅ frontend\src\components\withAuthGuard.jsx
+✅ frontend\src\components\PaymentModal.jsx
+✅ frontend\src\components\ProposalAcceptanceModal.jsx
+✅ frontend\src\components\NeutralModal.jsx
+✅ frontend\src\components\model\PrintPaymentReceiptModal.jsx
+✅ frontend\src\components\model\PrintProposalModal.jsx
+✅ frontend\src\components\model\ModificationModalEdit.jsx
+✅ frontend\src\components\model\ModificationModal.jsx
+✅ frontend\src\components\model\ModificationBrowserModal.jsx
+✅ frontend\src\components\TermsModal.jsx
+✅ frontend\src\components\model\EmailProposalModal.jsx
+✅ frontend\src\components\model\EmailContractModal.jsx
+✅ frontend\src\components\EditManufacturerModal.jsx
+✅ frontend\src\components\model\EditGroupModal.jsx
+✅ frontend\src\components\showroom\ShowroomModeToggle.jsx (POSITION FIXED: restored legacy layout - above pin button, not side-by-side)
+✅ frontend\src\components\AppBreadcrumb.jsx (AUDIT COMPLETE: enhanced vs legacy with playbook compliance)
+🔍 NAVIGATION AUDIT COMPLETE vs main branch legacy:
+   ✅ AppSidebar.js - FIXED mobile outside-click, hover behavior, exact breakpoints
+   ✅ AppSidebarNav.js - PASS (more comprehensive than legacy with SimpleBar/badges)
+   ✅ AppHeader.js - FIXED (removed non-legacy floating mobile CTA)
+   ✅ DefaultLayout.jsx - PASS (Chakra migration with playbook breadcrumb enhancement)
+   ✅ MobileStickyActions.jsx - REMOVED (non-legacy component)
+   ✅ Responsive breakpoints: Chakra lg:992px matches legacy exactly
+   ✅ Build tested: all changes working correctly
+✅ frontend\src\components\BrandLogo.jsx
+✅ frontend\src\components\LanguageSwitcher.jsx
+✅ frontend\src\components\LoginPreview.jsx
+✅ frontend\src\components\MobileStickyActions.jsx
+✅ frontend\src\components\PageHeader.jsx
+✅ frontend\src\components\StyleCarousel.jsx
+✅ frontend\src\components\withContractorScope.jsx
+✅ frontend\src\components\withDynamicContrast.jsx
+✅ frontend\src\components\common\PaginationComponent.jsx
+✅ frontend\src\components\contact\ContactInfoEditor.jsx
+✅ frontend\src\components\pdf\DesktopPdfViewer.jsx
+✅ frontend\src\components\pdf\MobilePdfViewer.jsx
+✅ frontend\src\layout\DefaultLayout.jsx
+✅ frontend\src\App.jsx
+✅ frontend\src\icons.tsx
+✅ frontend\src\views\pages\page404\Page404.jsx
+✅ frontend\src\pages\admin\ContractorDetail\CustomersTab.jsx
+✅ frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx
+✅ frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx
+✅ frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx
+✅ frontend\src\pages\admin\Contractors.jsx
+✅ frontend\src\pages\admin\LeadsPage.jsx
+✅ frontend\src\pages\admin\contact\AdminContactSettings.js
+✅ frontend\src\pages\admin\contact\AdminMessages.js
+✅ frontend\src\pages\auth\ForgotPasswordPage.jsx
+✅ frontend\src\pages\auth\LoginPage.jsx
+✅ frontend\src\pages\auth\RequestAccessPage.jsx
+✅ frontend\src\pages\auth\ResetPasswordPage.jsx
+✅ frontend\src\pages\auth\SignupPage.jsx
+✅ frontend\src\pages\calender\index.jsx
+✅ frontend\src\pages\contact\ContactUs.jsx
+✅ frontend\src\pages\contractor\ContractorDashboard.jsx
+✅ frontend\src\pages\contracts\index.jsx (FIXED: TypeError resolved - replaced broken Redux state access with local state management)
+✅ frontend\src\pages\customers\AddCustomerForm.jsx
+✅ frontend\src\pages\customers\CustomerForm.jsx
+❓ frontend\src\pages\customers\Customers_broken.jsx (test/backup file)
+❓ frontend\src\pages\customers\Customers_fixed.jsx (test/backup file)
+✅ frontend\src\pages\customers\Customers.jsx
+✅ frontend\src\pages\customers\EditCustomerPage.jsx
+✅ frontend\src\pages\dashboard\Dashboard.jsx
+✅ frontend\src\pages\orders\AdminOrders.jsx
+✅ frontend\src\pages\orders\MyOrders.jsx
+✅ frontend\src\pages\orders\OrderDetails.jsx
+✅ frontend\src\pages\orders\OrdersList.jsx
+✅ frontend\src\pages\payments\PaymentCancel.jsx
+✅ frontend\src\pages\payments\PaymentConfiguration.jsx
+✅ frontend\src\pages\payments\PaymentPage.jsx
+✅ frontend\src\pages\payments\PaymentsList.jsx
+✅ frontend\src\pages\payments\PaymentSuccess.jsx
+✅ frontend\src\pages\payments\PaymentTest.jsx
+✅ frontend\src\pages\profile\index.jsx (parity checked vs legacy; Chakra layout/forms updated)
+✅ frontend\src\pages\proposals\ProposalEditor.jsx
+✅ frontend\src\pages\proposals\Proposals.jsx
+✅ frontend\src\pages\public\PublicProposalPage.jsx
+✅ frontend\src\pages\quotes\Create\CreateQuote.jsx
+✅ frontend\src\pages\quotes\Create\QuoteEditor.jsx
+✅ frontend\src\pages\quotes\CreateQuote\QuoteEditorWrapper.jsx
+✅ frontend\src\pages\proposals\CreateProposal\CustomerInfo.jsx
+✅ frontend\src\pages\proposals\CreateProposal\DesignUpload.jsx
+✅ frontend\src\pages\proposals\CreateProposal\FileUploadSection .jsx (file doesn't exist - typo)
+✅ frontend\src\pages\proposals\CreateProposal\FileUploadSection.jsx
+✅ frontend\src\pages\proposals\CreateProposal\ManufacturerSelect.jsx
+✅ frontend\src\pages\proposals\CreateProposal\ProposalEditor.jsx
+✅ frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx
+✅ frontend\src\pages\proposals\CreateProposalForm.jsx
+✅ frontend\src\pages\proposals\EditProposal.jsx
+✅ frontend\src\pages\proposals\EditProposal\EditProposal.jsx
+✅ frontend\src\pages\settings\customization\CustomizationPage.jsx
+✅ frontend\src\pages\settings\customization\index.jsx
+✅ frontend\src\pages\settings\customization\LoginCustomizerPage.jsx
+✅ frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx
+✅ frontend\src\pages\settings\globalMods\GlobalModsPage.jsx
+✅ frontend\src\pages\settings\locations\CreateLocation.jsx
+✅ frontend\src\pages\settings\locations\EditLocation.jsx
+✅ frontend\src\pages\settings\locations\LocationList.jsx
+✅ frontend\src\pages\settings\manufacturers\EditManufacturer.jsx
+✅ frontend\src\pages\settings\manufacturers\ManufacturersForm.jsx
+✅ frontend\src\pages\settings\manufacturers\ManufacturersList.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\EditManufacturerTab.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\FilesHistoryTab.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\SettingsTab.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\StylePicturesTab.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx
+❓ frontend\src\pages\settings\multipliers\AddManuMultiplier.jsx (file appears empty/corrupted)
+✅ frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx
+✅ frontend\src\pages\settings\multipliers\ManuMultipliers.jsx
+✅ frontend\src\pages\settings\taxes\TaxesPage.jsx
+✅ frontend\src\pages\settings\terms\TermsPage.jsx
+✅ frontend\src\pages\settings\users\CreateUser.jsx
+✅ frontend\src\pages\settings\users\EditUser.jsx
+✅ frontend\src\pages\settings\users\UserList.jsx
+✅ frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx
+✅ frontend\src\pages\settings\usersGroup\EditUserGroup.jsx
+✅ frontend\src\pages\settings\usersGroup\UserGroupList.jsx
+✅ frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx
+✅ frontend\src\pages\Resources\index.jsx (COMPLETELY REWRITTEN: Full legacy functionality restored - category tiles, file upload/download, filtering, tabbed interface, CRUD operations, pinning system, file viewer, all buttons working + console warnings fixed)

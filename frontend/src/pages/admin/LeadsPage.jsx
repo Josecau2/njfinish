@@ -1,74 +1,55 @@
+
 import React, { useEffect, useMemo, useState } from 'react'
-import { Badge, Card, CardBody, CardHeader, Box, Container, Input, Select, Textarea, Modal, ModalOverlay, ModalContent, ModalBody, ModalHeader, ModalCloseButton, Flex, Spinner, Icon, Button, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
-import { RefreshCw, Send, FileText, X } from 'lucide-react'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightAddon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from '@chakra-ui/react'
+import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 
-// Custom styles for enhanced modal appearance
-const modalStyles = `
-  .lead-details-modal .modal-content {
-    border: none;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  }
-
-  .lead-details-modal .modal-body {
-    padding: 0;
-  }
-
-  .lead-details-modal .card {
-    transition: all 0.2s ease;
-  }
-
-  .lead-details-modal .card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  }
-
-  .lead-details-modal .badge {
-    font-weight: 500;
-    letter-spacing: 0.025em;
-  }
-
-  .lead-details-modal .form-control {
-    border: 2px solid #e9ecef;
-    transition: all 0.2s ease;
-  }
-
-  .lead-details-modal .form-control:focus {
-    border-color: var(--cui-primary);
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-  }
-
-  .lead-details-modal .btn {
-    font-weight: 500;
-    letter-spacing: 0.025em;
-    transition: all 0.2s ease;
-  }
-
-  .lead-details-modal .btn:hover {
-    transform: translateY(-1px);
-  }
-
-  /* Ensure SweetAlert overlays above CoreUI modal/backdrop */
-  .swal2-container {
-    z-index: 200000 !important;
-  }
-  .swal2-container.swal2-backdrop-show,
-  .swal2-container.swal2-shown {
-    z-index: 200000 !important;
-  }
-`
-
 const STATUS_VALUES = ['all', 'new', 'reviewing', 'contacted', 'closed']
 const statusBadgeColor = {
-  new: 'primary',
-  reviewing: 'info',
-  contacted: 'success',
-  closed: 'secondary',
+  new: 'blue',
+  reviewing: 'teal',
+  contacted: 'green',
+  closed: 'gray',
 }
 
 const formatSubmittedDate = (value) => {
@@ -82,7 +63,6 @@ const formatSubmittedDate = (value) => {
   }
 }
 
-// --- Metadata normalization helpers (frontend safety) ---
 const safeParseJson = (value) => {
   if (!value) return null
   if (typeof value === 'object') return value
@@ -130,21 +110,6 @@ const getLeadLocation = (lead) => {
   return [city, state, zip].filter(Boolean).join(', ')
 }
 
-const getStatusBadgeVariant = (status) => {
-  switch ((status || '').toLowerCase()) {
-    case 'new':
-      return 'success' // Changed from 'light' to 'success' for better contrast
-    case 'reviewing':
-      return 'info'
-    case 'contacted':
-      return 'success'
-    case 'closed':
-      return 'secondary'
-    default:
-      return 'secondary' // Changed from 'light' to 'secondary' for better contrast
-  }
-}
-
 const LeadsPage = () => {
   const { t } = useTranslation()
   const [leads, setLeads] = useState([])
@@ -181,12 +146,12 @@ const LeadsPage = () => {
 
   const selectedLeadSubmittedAt = selectedLead ? formatSubmittedDate(selectedLead.createdAt) : null
   const selectedLeadStatusText = selectedLead
-    ? (statusLabelMap[selectedLead.status] ?? statusLabelMap.unknown)
+    ? statusLabelMap[selectedLead.status] ?? statusLabelMap.unknown
     : statusLabelMap.unknown
   const selectedLeadStatusBadge = selectedLead
     ? {
         text: selectedLeadStatusText,
-        variant: getStatusBadgeVariant(selectedLead.status),
+        colorScheme: statusBadgeColor[selectedLead.status] || 'gray',
       }
     : null
   const selectedLeadSubmittedText = selectedLeadSubmittedAt
@@ -194,8 +159,6 @@ const LeadsPage = () => {
     : t('leadsPage.modal.status.submittedUnknown')
 
   const selectedLeadFullName = selectedLead ? getLeadFullName(selectedLead) : ''
-  const selectedLeadFirstName = selectedLead ? getLeadValue(selectedLead, 'firstName') : ''
-  const selectedLeadLastName = selectedLead ? getLeadValue(selectedLead, 'lastName') : ''
   const selectedLeadPhone = selectedLead ? getLeadValue(selectedLead, 'phone') : ''
   const selectedLeadCity = selectedLead ? getLeadValue(selectedLead, 'city') : ''
   const selectedLeadState = selectedLead ? getLeadValue(selectedLead, 'state') : ''
@@ -275,7 +238,6 @@ const LeadsPage = () => {
         })
       } catch (putErr) {
         const status = putErr?.response?.status
-        // Fallback to PATCH if PUT is not available (404/405 on older backend)
         if (status === 404 || status === 405) {
           patchResponse = await axiosInstance.patch(`/api/admin/leads/${selectedLead.id}`, {
             adminNote: note,
@@ -285,8 +247,6 @@ const LeadsPage = () => {
         }
       }
       let updatedLeadFromServer = normalizeLead(patchResponse.data.lead)
-
-      // Ensure the new note is visible immediately (optimistic safety)
       if (updatedLeadFromServer && updatedLeadFromServer.id === selectedLead.id) {
         const now = new Date().toISOString()
         const ensuredMeta = normalizeMetadata(updatedLeadFromServer.metadata)
@@ -301,12 +261,9 @@ const LeadsPage = () => {
         updatedLeadFromServer = { ...updatedLeadFromServer, metadata: ensuredMeta }
       }
 
-      // Update the leads array with the new data
       setLeads((prevLeads) =>
         prevLeads.map((lead) => (lead.id === selectedLead.id ? updatedLeadFromServer : lead)),
       )
-
-      // Update the selected lead with the server response
       setSelectedLead(updatedLeadFromServer)
       setNoteText('')
       Swal.fire({
@@ -333,431 +290,298 @@ const LeadsPage = () => {
     setNoteText('')
   }
 
-  return (
-    <>
-      <style>{modalStyles}</style>
-      <Container fluid className="py-4">
-        <Flex className="mb-3 align-items-end">
-          <Box md={3} sm={6} className="mb-2">
-            <Select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              label={t('leadsPage.filters.status.label')}
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Box>
-          <Box md={5} sm={6} className="mb-2">
-            <Input
-              type="search"
-              placeholder={t('leadsPage.filters.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </Box>
-          <Box md={2} sm={3} className="mb-2">
-            <Button
-              colorScheme="blue"
-              className="w-100"
-              onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
-              disabled={loading}
-            >
-              <Icon as={RefreshCw} className="me-2" /> {t('common.refresh')}
-            </Button>
-          </Box>
-        </Flex>
+  const refreshButton = (
+    <Button
+      key="refresh"
+      leftIcon={<Icon as={RefreshCw} boxSize={4} aria-hidden="true" />}
+      variant="outline"
+      onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
+      isDisabled={loading}
+      minH="44px"
+    >
+      {t('common.refresh')}
+    </Button>
+  )
 
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <h5 className="mb-0">{t('leadsPage.title')}</h5>
+  return (
+    <Container maxW="6xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={t('leadsPage.title')}
+          subtitle={t('leadsPage.description', 'Manage incoming customer inquiries and statuses')}
+          icon={FileText}
+          actions={[refreshButton]}
+        />
+
+        <Card variant="outline">
+          <CardBody>
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+              <FormControl>
+                <FormLabel fontSize="sm" color="gray.600">
+                  {t('leadsPage.filters.status.label')}
+                </FormLabel>
+                <Select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize="sm" color="gray.600">
+                  {t('leadsPage.filters.searchLabel', 'Search')}
+                </FormLabel>
+                <Input
+                  placeholder={t('leadsPage.filters.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize="sm" color="gray.600">
+                  {t('leadsPage.filters.help', 'Need help?')}
+                </FormLabel>
+                <Flex align="center" gap={2} color="gray.500">
+                  <Icon as={HelpCircle} boxSize={5} aria-hidden="true" />
+                  <Text fontSize="sm">{t('leadsPage.helpText', 'Use filters to narrow down leads.')}</Text>
+                </Flex>
+              </FormControl>
+            </SimpleGrid>
+          </CardBody>
+        </Card>
+
+        <Card variant="outline">
+          <CardHeader borderBottomWidth="1px">
+            <Text fontWeight="semibold">{t('leadsPage.table.title', 'Leads')}</Text>
           </CardHeader>
           <CardBody>
             {loading ? (
-              <div className="text-center py-5">
-                <Spinner colorScheme="blue" />
-              </div>
+              <Flex justify="center" py={12}>
+                <Spinner size="lg" color="brand.500" />
+              </Flex>
             ) : filteredLeads.length === 0 ? (
-              <p className="text-muted mb-0">{t('leadsPage.table.noResults')}</p>
+              <Text color="gray.500">{t('leadsPage.table.noResults')}</Text>
             ) : (
               <TableContainer>
-                <Table variant="striped" size="sm">
+                <Table variant="simple">
                   <Thead>
                     <Tr>
-                      <Th>
-                        {t('leadsPage.table.columns.name')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.email')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.phone')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.location')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.company')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.submitted')}
-                      </Th>
-                      <Th>
-                        {t('leadsPage.table.columns.status')}
-                      </Th>
-                      <Th className="text-end">
-                        {t('leadsPage.table.columns.actions')}
-                      </Th>
+                      <Th>{t('leadsPage.table.columns.name')}</Th>
+                      <Th>{t('leadsPage.table.columns.email')}</Th>
+                      <Th>{t('leadsPage.table.columns.phone')}</Th>
+                      <Th>{t('leadsPage.table.columns.location')}</Th>
+                      <Th>{t('leadsPage.table.columns.company')}</Th>
+                      <Th>{t('leadsPage.table.columns.submitted')}</Th>
+                      <Th>{t('leadsPage.table.columns.status')}</Th>
+                      <Th textAlign="right">{t('leadsPage.table.columns.actions')}</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                  {filteredLeads.map((lead) => {
-                    const displayName = getLeadFullName(lead) || lead.name || '—'
-                    const phone = getLeadValue(lead, 'phone') || '—'
-                    const location = getLeadLocation(lead) || '—'
-                    const company = lead.company || '—'
-                    const submittedAt = lead.createdAt
-                      ? new Date(lead.createdAt).toLocaleString()
-                      : '—'
-                    return (
-                      <Tr key={lead.id}>
-                        <Td>{displayName}</Td>
-                        <Td>{lead.email}</Td>
-                        <Td>{phone}</Td>
-                        <Td>{location}</Td>
-                        <Td>{company}</Td>
-                        <Td>{submittedAt}</Td>
-                        <Td>
-                          <Select
-                            size="sm"
-                            value={lead.status}
-                            onChange={(e) => handleStatusChange(lead, e.target.value)}
-                            disabled={updatingStatusId === lead.id}
-                          >
-                            {statusUpdateOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </Select>
-                        </Td>
-                        <Td className="text-end">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            colorScheme="gray"
-                            className="me-2"
-                            onClick={() => setSelectedLead(normalizeLead(lead))}
-                          >
-                            <Icon as={FileText} className="me-1" />{' '}
-                            {t('leadsPage.table.actions.details')}
-                          </Button>
-                        </Td>
-                      </Tr>
-                    )
-                  })}
-                </Tbody>
+                    {filteredLeads.map((lead) => {
+                      const displayName = getLeadFullName(lead) || lead.name || '�'
+                      const phone = getLeadValue(lead, 'phone') || '�'
+                      const location = getLeadLocation(lead) || '�'
+                      const company = lead.company || '�'
+                      const submittedAt = lead.createdAt
+                        ? new Date(lead.createdAt).toLocaleString()
+                        : '�'
+                      return (
+                        <Tr key={lead.id}>
+                          <Td>{displayName}</Td>
+                          <Td>{lead.email}</Td>
+                          <Td>{phone}</Td>
+                          <Td>{location}</Td>
+                          <Td>{company}</Td>
+                          <Td>{submittedAt}</Td>
+                          <Td>
+                            <Select
+                              size="sm"
+                              value={lead.status}
+                              onChange={(event) => handleStatusChange(lead, event.target.value)}
+                              isDisabled={updatingStatusId === lead.id}
+                            >
+                              {statusUpdateOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Select>
+                          </Td>
+                          <Td textAlign="right">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
+                              onClick={() => setSelectedLead(normalizeLead(lead))}
+                            >
+                              {t('leadsPage.table.actions.details')}
+                            </Button>
+                          </Td>
+                        </Tr>
+                      )
+                    })}
+                  </Tbody>
                 </Table>
               </TableContainer>
             )}
           </CardBody>
         </Card>
 
-        <Modal
-          isOpen={!!selectedLead}
-          onClose={closeModal}
-          size="lg"
-          alignment="top"
-          className="lead-details-modal"
-        >
-        <ModalOverlay>
+        <Modal isOpen={!!selectedLead} onClose={closeModal} size="5xl" scrollBehavior="inside">
+          <ModalOverlay />
           <ModalContent>
+            <ModalHeader>
+              <Flex justify="space-between" align="center" gap={4} wrap="wrap">
+                <Box>
+                  <Text fontWeight="semibold" fontSize="lg">
+                    {t('leadsPage.modal.title')}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {selectedLeadSubmittedText}
+                  </Text>
+                </Box>
+                <HStack spacing={3}>
+                  {selectedLeadStatusBadge && (
+                    <Badge colorScheme={selectedLeadStatusBadge.colorScheme} variant="subtle" px={3} py={1} borderRadius="full">
+                      {selectedLeadStatusBadge.text}
+                    </Badge>
+                  )}
+                  <IconButton
+                    aria-label={t('common.close', 'Close')}
+                    icon={<Icon as={X} boxSize={4} aria-hidden="true" />}
+                    variant="ghost"
+                    onClick={closeModal}
+                  />
+                </HStack>
+              </Flex>
+            </ModalHeader>
             <ModalCloseButton />
-            <ModalBody className="p-0">
-            {selectedLead && (
-              <>
-                <PageHeader
-                  title={t('leadsPage.modal.title')}
-                  subtitle={
-                    selectedLeadSubmittedAt ? `Submitted ${selectedLeadSubmittedAt}` : undefined
-                  }
-                  badge={selectedLeadStatusBadge}
-                  mobileLayout="compact"
-                  cardClassName="mb-0 rounded-0 rounded-top"
-                  rightContent={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={closeModal}
-                      className="border-0 rounded-circle p-2"
-                      style={{ width: '40px', height: '40px' }}
-                    >
-                      <Icon as={X} size="lg" />
-                    </Button>
-                  }
-                />
+            <ModalBody>
+              {selectedLead && (
+                <Stack spacing={6} pb={4}>
+                  <Card variant="outline">
+                    <CardBody>
+                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        <Box>
+                          <Text fontWeight="semibold" fontSize="md">
+                            {selectedLeadDisplayName || t('leadsPage.modal.status.unknownLead')}
+                          </Text>
+                          <Text fontSize="sm" color="gray.500">
+                            {selectedLead.email || t('common.na')}
+                          </Text>
+                        </Box>
+                        <Stack spacing={1}>
+                          <Text fontSize="sm" color="gray.500">
+                            {t('leadsPage.modal.contact.phone')}
+                          </Text>
+                          <Text fontWeight="medium">{selectedLeadPhone || t('common.na')}</Text>
+                          <Text fontSize="sm" color="gray.500">
+                            {t('leadsPage.modal.contact.location')}
+                          </Text>
+                          <Text fontWeight="medium">
+                            {selectedLeadCity || selectedLeadState || selectedLeadZip
+                              ? [selectedLeadCity, selectedLeadState, selectedLeadZip].filter(Boolean).join(', ')
+                              : t('common.na')}
+                          </Text>
+                        </Stack>
+                      </SimpleGrid>
+                    </CardBody>
+                  </Card>
 
-                <div className="p-4">
-                  {/* Contact Information Card */}
-                  <Card className="border-0 shadow-sm mb-4 bg-light">
-                    <CardBody className="p-3">
-                      <Flex>
-                        <Box md={6}>
-                          <div className="mb-3 mb-md-0">
-                            <h6 className="fw-bold text-primary mb-2 d-flex align-items-center">
-                              <div
-                                className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                                style={{ width: '32px', height: '32px' }}
-                              >
-                                <Icon as={FileText} size="sm" className="text-primary" />
-                              </div>
-                              {t('leadsPage.modal.contact.heading')}
-                            </h6>
-                            <div className="ms-4">
-                              <Flex className="gy-3">
-                                <Box md={12}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.fullName')}
-                                  </small>
-                                  <div className="fw-semibold">
-                                    {selectedLeadDisplayName || '—'}
-                                  </div>
-                                </Box>
-                                <Box md={6}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.firstName')}
-                                  </small>
-                                  <div className="fw-semibold">{selectedLeadFirstName || '—'}</div>
-                                </Box>
-                                <Box md={6}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.lastName')}
-                                  </small>
-                                  <div className="fw-semibold">{selectedLeadLastName || '—'}</div>
-                                </Box>
-                                <Box md={6}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.email')}
-                                  </small>
-                                  <div>
-                                    {selectedLead?.email ? (
-                                      <a
-                                        href={'mailto:' + selectedLead.email}
-                                        className="text-decoration-none"
-                                      >
-                                        {selectedLead.email}
-                                      </a>
-                                    ) : (
-                                      '—'
-                                    )}
-                                  </div>
-                                </Box>
-                                <Box md={6}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.phone')}
-                                  </small>
-                                  <div>
-                                    {selectedLeadPhone ? (
-                                      <a
-                                        href={'tel:' + selectedLeadPhone}
-                                        className="text-decoration-none"
-                                      >
-                                        {selectedLeadPhone}
-                                      </a>
-                                    ) : (
-                                      '—'
-                                    )}
-                                  </div>
-                                </Box>
-                                <Box md={4}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.city')}
-                                  </small>
-                                  <div className="fw-semibold">{selectedLeadCity || '—'}</div>
-                                </Box>
-                                <Box md={4}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.state')}
-                                  </small>
-                                  <div className="fw-semibold">{selectedLeadState || '—'}</div>
-                                </Box>
-                                <Box md={4}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.zip')}
-                                  </small>
-                                  <div className="fw-semibold">{selectedLeadZip || '—'}</div>
-                                </Box>
-                                <Box md={12}>
-                                  <small className="text-muted text-uppercase fw-semibold">
-                                    {t('leadsPage.modal.contact.company')}
-                                  </small>
-                                  <div className="fw-semibold">
-                                    {selectedLead?.company ||
-                                      t('leadsPage.modal.contact.companyMissing')}
-                                  </div>
-                                </Box>
+                  <Card variant="outline">
+                    <CardHeader pb={0}>
+                      <HStack spacing={2} color="blue.500">
+                        <Icon as={Send} boxSize={5} aria-hidden="true" />
+                        <Text fontWeight="semibold">{t('leadsPage.modal.message.heading')}</Text>
+                      </HStack>
+                    </CardHeader>
+                    <CardBody pt={3}>
+                      <Box bg="gray.50" borderRadius="md" borderLeftWidth="4px" borderColor="blue.500" p={4}>
+                        <Text fontSize="sm" lineHeight="1.6">
+                          {selectedLead.message
+                            ? selectedLead.message
+                            : t('leadsPage.modal.message.empty')}
+                        </Text>
+                      </Box>
+                    </CardBody>
+                  </Card>
+
+                  <Card variant="outline">
+                    <CardHeader pb={0}>
+                      <HStack spacing={2} color="blue.500">
+                        <Icon as={FileText} boxSize={5} aria-hidden="true" />
+                        <Text fontWeight="semibold">{t('leadsPage.modal.notes.heading')}</Text>
+                      </HStack>
+                    </CardHeader>
+                    <CardBody pt={3}>
+                      {Array.isArray(selectedLead.metadata?.notes) && selectedLead.metadata.notes.length > 0 ? (
+                        <Stack spacing={4}>
+                          {selectedLead.metadata.notes.map((item, index) => (
+                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor="gray.100" pb={3}>
+                              <Flex justify="space-between" align="flex-start" mb={2}>
+                                <Text fontWeight="semibold">
+                                  {item.byName || t('leadsPage.modal.notes.defaultAuthor')}
+                                </Text>
+                                <Text fontSize="xs" color="gray.500">
+                                  {item.at ? new Date(item.at).toLocaleString() : ''}
+                                </Text>
                               </Flex>
-                            </div>
+                              <Text fontSize="sm" lineHeight="1.6">
+                                {item.note}
+                              </Text>
+                            </Box>
+                          ))}
+                        </Stack>
+                      ) : (
+                        <Box bg="gray.50" borderRadius="md" p={4} textAlign="center">
+                          <Text fontSize="sm" color="gray.500">
+                            {t('leadsPage.modal.notes.empty')}
+                          </Text>
                         </Box>
-                        <Box md={6}>
-                          <h6 className="fw-bold text-primary mb-2 d-flex align-items-center">
-                            <div
-                              className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                              style={{ width: '32px', height: '32px' }}
-                            >
-                              <Badge
-                                color={getStatusBadgeVariant(selectedLead.status)}
-                                className="p-1"
-                              >
-                                <div style={{ width: '8px', height: '8px' }}></div>
-                              </Badge>
-                            </div>
-                            {t('leadsPage.modal.status.heading')}
-                          </h6>
-                          <div className="ms-4">
-                            <div
-                              className="px-3 py-2 mb-2 text-capitalize rounded-pill d-inline-block fw-semibold"
-                              style={{
-                                fontSize: '0.875rem',
-                                backgroundColor:
-                                  selectedLead.status === 'new'
-                                    ? '#198754'
-                                    : selectedLead.status === 'reviewing'
-                                      ? '#0dcaf0'
-                                      : selectedLead.status === 'contacted'
-                                        ? '#198754'
-                                        : selectedLead.status === 'closed'
-                                          ? '#6c757d'
-                                          : '#6c757d',
-                                color: '#ffffff',
-                                border: 'none',
-                                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                              }}
-                            >
-                              {selectedLeadStatusText}
-                            </div>
-                            <p className="text-muted mb-0 small">{selectedLeadSubmittedText}</p>
-                          </div>
-                        </Box>
-                      </Flex>
+                      )}
                     </CardBody>
                   </Card>
 
-                  {/* Message Section */}
-                  <Card className="border-0 shadow-sm mb-4">
-                    <CardBody className="p-3">
-                      <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
-                        <div
-                          className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                          style={{ width: '32px', height: '32px' }}
-                        >
-                          <Icon as={Send} size="sm" className="text-primary" />
-                        </div>
-                        {t('leadsPage.modal.message.heading')}
-                      </h6>
-                      <div className="ms-4">
-                        <div className="bg-light rounded p-3 border-start border-primary border-4">
-                          <p className="mb-0" style={{ lineHeight: '1.6' }}>
-                            {selectedLead.message
-                              ? selectedLead.message
-                              : t('leadsPage.modal.message.empty')}
-                          </p>
-                        </div>
-                    </CardBody>
-                  </Card>
-
-                  {/* Notes Section */}
-                  <Card className="border-0 shadow-sm mb-4">
-                    <CardBody className="p-3">
-                      <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
-                        <div
-                          className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                          style={{ width: '32px', height: '32px' }}
-                        >
-                          <Icon as={FileText} size="sm" className="text-primary" />
-                        </div>
-                        {t('leadsPage.modal.notes.heading')}
-                      </h6>
-                      <div className="ms-4">
-                        {Array.isArray(selectedLead.metadata?.notes) &&
-                        selectedLead.metadata.notes.length > 0 ? (
-                          <div className="bg-light rounded p-3">
-                            {selectedLead.metadata.notes.map((item, index) => (
-                              <div key={index} className="mb-3 pb-3 border-bottom border-light">
-                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                  <strong className="text-dark">
-                                    {item.byName || t('leadsPage.modal.notes.defaultAuthor')}
-                                  </strong>
-                                  <small className="text-muted">
-                                    {item.at ? new Date(item.at).toLocaleString() : ''}
-                                  </small>
-                                </div>
-                                <p className="mb-0" style={{ lineHeight: '1.6' }}>
-                                  {item.note}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="bg-light rounded p-3 text-center">
-                            <p className="text-muted mb-0">{t('leadsPage.modal.notes.empty')}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardBody>
-                  </Card>
-
-                  {/* Add Note Section */}
-                  <Card className="border-0 shadow-sm">
-                    <CardBody className="p-3">
-                      <h6 className="fw-bold text-primary mb-3 d-flex align-items-center">
-                        <div
-                          className="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                          style={{ width: '32px', height: '32px' }}
-                        >
-                          <Icon as={Send} size="sm" className="text-primary" />
-                        </div>
-                        {t('leadsPage.modal.addNote.heading')}
-                      </h6>
-                      <div className="ms-4">
+                  <Card variant="outline">
+                    <CardHeader pb={0}>
+                      <HStack spacing={2} color="blue.500">
+                        <Icon as={Send} boxSize={5} aria-hidden="true" />
+                        <Text fontWeight="semibold">{t('leadsPage.modal.addNote.heading')}</Text>
+                      </HStack>
+                    </CardHeader>
+                    <CardBody pt={3}>
+                      <Stack spacing={3}>
                         <Textarea
                           rows={4}
                           placeholder={t('leadsPage.modal.addNote.placeholder')}
                           value={noteText}
-                          onChange={(e) => setNoteText(e.target.value)}
-                          className="border-2 rounded-3"
-                          style={{ resize: 'vertical' }}
+                          onChange={(event) => setNoteText(event.target.value)}
                         />
-                        <div className="text-end mt-3">
+                        <Flex justify="flex-end">
                           <Button
                             colorScheme="blue"
-                            disabled={savingNote || !noteText.trim()}
+                            leftIcon={savingNote ? undefined : <Icon as={Send} boxSize={4} aria-hidden="true" />}
                             onClick={handleNoteSubmit}
-                            className="px-4 py-2 rounded-3"
+                            isLoading={savingNote}
+                            loadingText={t('leadsPage.modal.addNote.saving', 'Saving...')}
+                            isDisabled={!noteText.trim()}
                           >
-                            {savingNote ? (
-                              <Spinner size="sm" className="me-2" />
-                            ) : (
-                              <Icon as={Send} className="me-2" />
-                            )}
                             {t('leadsPage.modal.addNote.submit')}
                           </Button>
-                        </div>
+                        </Flex>
+                      </Stack>
                     </CardBody>
                   </Card>
-                </div>
-              </>
-            )}
+                </Stack>
+              )}
             </ModalBody>
           </ModalContent>
-        </ModalOverlay>
-      </Modal>
-      </Container>
-    </>
+        </Modal>
+      </Stack>
+    </Container>
   )
 }
 

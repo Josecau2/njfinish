@@ -12,15 +12,37 @@ import {
   Card,
   CardBody,
   Alert,
+  AlertIcon,
   Flex,
   Box,
   Container,
   FormHelperText,
+  FormErrorMessage,
+  InputGroup,
+  InputLeftAddon,
   Spinner,
   Button,
   Icon,
+  VStack,
+  HStack,
+  Text,
+  CloseButton,
 } from '@chakra-ui/react'
-import { Mail, Image, FileText, ArrowLeft, Save, User } from 'lucide-react'
+import {
+  Mail,
+  Image,
+  FileText,
+  ArrowLeft,
+  Save,
+  User,
+  Building,
+  Phone,
+  MapPin,
+  Calculator,
+  CloudUpload,
+  Info,
+  DollarSign,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 
@@ -42,7 +64,7 @@ const FormSection = ({ title, icon, children, className = '', customization }) =
               color: textColor,
             }}
           >
-            <CIcon icon={icon} size="sm" />
+            <Icon as={icon} boxSize={4} />
           </div>
           <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
         </div>
@@ -65,16 +87,16 @@ const CustomFormInput = ({
   feedback,
   ...props
 }) => (
-  <div className="mb-3">
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+  <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2}>
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
-    <CInputGroup>
+    <InputGroup>
       {icon && (
-        <CInputGroupText className="bg-light border-end-0">
-          <CIcon icon={icon} size="sm" className="text-muted" />
-        </CInputGroupText>
+        <InputLeftAddon bg="gray.50">
+          <Icon as={icon} boxSize={4} color="gray.500" />
+        </InputLeftAddon>
       )}
       <Input
         type={type}
@@ -83,13 +105,13 @@ const CustomFormInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        invalid={isInvalid}
+        isInvalid={isInvalid}
         className={icon ? 'border-start-0' : ''}
         {...props}
       />
-      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
-    </CInputGroup>
-  </div>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </InputGroup>
+  </FormControl>
 )
 
 const CustomFormTextarea = ({
@@ -105,16 +127,16 @@ const CustomFormTextarea = ({
   feedback,
   ...props
 }) => (
-  <div className="mb-3">
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+  <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2}>
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
-    <CInputGroup>
+    <InputGroup>
       {icon && (
-        <CInputGroupText className="bg-light border-end-0">
-          <CIcon icon={icon} size="sm" className="text-muted" />
-        </CInputGroupText>
+        <InputLeftAddon bg="gray.50">
+          <Icon as={icon} boxSize={4} color="gray.500" />
+        </InputLeftAddon>
       )}
       <Textarea
         id={name}
@@ -123,13 +145,13 @@ const CustomFormTextarea = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        invalid={isInvalid}
+        isInvalid={isInvalid}
         className={icon ? 'border-start-0' : ''}
         {...props}
       />
-      {feedback && <CFormFeedback>{feedback}</CFormFeedback>}
-    </CInputGroup>
-  </div>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </InputGroup>
+  </FormControl>
 )
 
 const FileUploadCard = ({
@@ -140,12 +162,15 @@ const FileUploadCard = ({
   onChange,
   selectedFiles,
   helpText,
-}) => (
-  <div className="mb-3">
-    <FormLabel className="fw-medium text-dark mb-2">{title}</FormLabel>
-    <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
-      <CIcon icon={icon} size="xl" className="text-muted mb-2" />
-      <p className="text-muted mb-2">{t('common.clickToBrowse')}</p>
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="mb-3">
+      <FormLabel className="fw-medium text-dark mb-2">{title}</FormLabel>
+      <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
+        <Icon as={icon} boxSize={12} color="gray.400" mb={2} />
+        <Text color="gray.500" mb={2}>{t('common.clickToBrowse')}</Text>
       <Input
         type="file"
         accept={accept}
@@ -169,7 +194,7 @@ const FileUploadCard = ({
               <span className="text-danger small">{t('common.noFilesSelected')}</span>
             ) : (
               <div className="text-success small">
-                <CIcon icon={cilCloudUpload} className="me-1" />
+                <Icon as={CloudUpload} mr={1} />
                 {selectedFiles.length} file(s) selected
               </div>
             )
@@ -183,7 +208,8 @@ const FileUploadCard = ({
       )}
     </div>
   </div>
-)
+  )
+}
 
 const ManufacturerForm = () => {
   const { t } = useTranslation()
@@ -364,7 +390,7 @@ const ManufacturerForm = () => {
 
     return (
       <FormHelperText className="text-info mt-2">
-        <CIcon icon={cilInfo} className="me-1" size="sm" />
+        <Icon as={Info} mr={1} boxSize={4} />
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
       </FormHelperText>
@@ -397,7 +423,7 @@ const ManufacturerForm = () => {
       <PageHeader
         title={t('settings.manufacturers.create.title')}
         subtitle={t('settings.manufacturers.create.subtitle')}
-        icon={cilBuilding}
+        icon={Building}
         rightContent={
           <Button
             variant="outline"
@@ -419,36 +445,42 @@ const ManufacturerForm = () => {
       {/* Alert Messages */}
       {message.text && (
         <Alert
-          color={message.type}
-          dismissible
-          onClose={() => setMessage({ text: '', type: '' })}
-          className="border-0 shadow-sm mb-4"
-          style={{ borderRadius: '12px' }}
-          role={message.type === 'danger' ? 'alert' : 'status'}
-          aria-live={message.type === 'danger' ? 'assertive' : 'polite'}
+          status={message.type === 'danger' ? 'error' : message.type === 'success' ? 'success' : 'info'}
+          mb={4}
+          borderRadius="xl"
+          variant="subtle"
         >
-          {message.text}
+          <AlertIcon />
+          <Box flex="1">
+            {message.text}
+          </Box>
+          <CloseButton
+            position="absolute"
+            right="8px"
+            top="8px"
+            onClick={() => setMessage({ text: '', type: '' })}
+          />
         </Alert>
       )}
 
-      <FormControl onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         {/* Information Notice */}
         <Card className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CardBody className="py-3 px-4" style={{ backgroundColor: '#f0f7ff' }}>
-            <div className="d-flex align-items-start">
-              <CIcon icon={cilInfo} className="text-primary me-2 mt-1" />
-              <p className="mb-0 text-primary">
-                <strong>{t('settings.manufacturers.create.infoTitle')}</strong>{' '}
+            <HStack align="flex-start" spacing={2}>
+              <Icon as={Info} color="blue.500" mt={1} boxSize={4} />
+              <Text mb={0} color="blue.600">
+                <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}
-              </p>
-            </div>
+              </Text>
+            </HStack>
           </CardBody>
         </Card>
 
         {/* Basic Information */}
         <FormSection
           title={t('settings.manufacturers.sections.basicInfo')}
-          icon={cilBuilding}
+          icon={Building}
           customization={customization}
         >
           <Flex>
@@ -457,7 +489,7 @@ const ManufacturerForm = () => {
                 label={t('settings.manufacturers.fields.manufacturerName')}
                 name="name"
                 required
-                icon={cilBuilding}
+                icon={Building}
                 placeholder={t('settings.manufacturers.placeholders.manufacturerName')}
                 value={formData.name}
                 onChange={handleChange}
@@ -471,7 +503,7 @@ const ManufacturerForm = () => {
                 name="email"
                 type="email"
                 required
-                icon={cilEnvelopeClosed}
+                icon={Mail}
                 placeholder={t('settings.manufacturers.placeholders.orderEmail')}
                 value={formData.email}
                 onChange={handleChange}
@@ -488,7 +520,7 @@ const ManufacturerForm = () => {
                 name="phone"
                 type="tel"
                 required
-                icon={cilPhone}
+                icon={Phone}
                 placeholder={t('settings.manufacturers.placeholders.phone')}
                 value={formData.phone}
                 onChange={handleChange}
@@ -502,7 +534,7 @@ const ManufacturerForm = () => {
                 name="website"
                 type="url"
                 required
-                icon={cilLocationPin}
+                icon={MapPin}
                 placeholder={t('settings.manufacturers.placeholders.website')}
                 value={formData.website}
                 onChange={handleChange}
@@ -516,7 +548,7 @@ const ManufacturerForm = () => {
             label={t('settings.manufacturers.fields.address')}
             name="address"
             required
-            icon={cilLocationPin}
+            icon={MapPin}
             placeholder={t('settings.manufacturers.placeholders.address')}
             value={formData.address}
             onChange={handleChange}
@@ -531,7 +563,7 @@ const ManufacturerForm = () => {
                 label={t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
                 name="assembledEtaDays"
                 type="text"
-                icon={cilBuilding}
+                icon={Building}
                 placeholder="e.g., 7-14 days"
                 value={formData.assembledEtaDays}
                 onChange={handleChange}
@@ -551,7 +583,7 @@ const ManufacturerForm = () => {
                 )}
                 name="unassembledEtaDays"
                 type="text"
-                icon={cilDescription}
+                icon={FileText}
                 placeholder="e.g., 3-7 days"
                 value={formData.unassembledEtaDays}
                 onChange={handleChange}
@@ -569,12 +601,12 @@ const ManufacturerForm = () => {
         {/* Logo Upload */}
         <FormSection
           title={t('settings.manufacturers.sections.logo')}
-          icon={cilImage}
+          icon={Image}
           customization={customization}
         >
           <FileUploadCard
             title={t('settings.manufacturers.fields.uploadLogo')}
-            icon={cilImage}
+            icon={Image}
             accept="image/*"
             onChange={handleLogoChange}
             selectedFiles={logoImage}
@@ -585,7 +617,7 @@ const ManufacturerForm = () => {
         {/* Pricing Information */}
         <FormSection
           title={t('settings.manufacturers.sections.pricing')}
-          icon={cilDollar}
+          icon={DollarSign}
           customization={customization}
         >
           <div className="mb-4">
@@ -656,7 +688,7 @@ const ManufacturerForm = () => {
                 type="number"
                 step="0.1"
                 required
-                icon={cilCalculator}
+                icon={Calculator}
                 placeholder={t('settings.manufacturers.placeholders.costMultiplier')}
                 value={formData.costMultiplier}
                 onChange={handleChange}
@@ -665,7 +697,7 @@ const ManufacturerForm = () => {
               />
               {formData.costMultiplier && (
                 <FormHelperText className="text-info mt-2">
-                  <CIcon icon={cilInfo} className="me-1" size="sm" />
+                  <Icon as={Info} mr={1} boxSize={4} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
                     cost: (100.0).toFixed(2),
@@ -680,13 +712,13 @@ const ManufacturerForm = () => {
         {/* Instructions */}
         <FormSection
           title={t('settings.manufacturers.sections.instructions')}
-          icon={cilDescription}
+          icon={FileText}
           customization={customization}
         >
           <CustomFormTextarea
             label={t('settings.manufacturers.fields.instructions')}
             name="instructions"
-            icon={cilDescription}
+            icon={FileText}
             placeholder={t('settings.manufacturers.placeholders.instructions')}
             rows={4}
             value={formData.instructions}
@@ -699,12 +731,12 @@ const ManufacturerForm = () => {
         {/* Catalog Files */}
         <FormSection
           title={t('settings.manufacturers.sections.catalog')}
-          icon={cilCloudUpload}
+          icon={CloudUpload}
           customization={customization}
         >
           <FileUploadCard
             title={t('settings.manufacturers.fields.chooseCatalogFiles')}
-            icon={cilCloudUpload}
+            icon={CloudUpload}
             accept=".pdf,.xlsx,.xls,.csv"
             multiple={true}
             onChange={handleFileChange}
@@ -759,7 +791,7 @@ const ManufacturerForm = () => {
             </div>
           </CardBody>
         </Card>
-      </FormControl>
+      </form>
     </Container>
   )
 }

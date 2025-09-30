@@ -1,48 +1,213 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import { Container, Card, CardBody, CardHeader, Flex, Box, Badge, Spinner, Alert, Icon } from '@chakra-ui/react'
-import { ArrowLeft, User, Calendar, CheckCircle, Clock, Download } from 'lucide-react'
+import {
+  Container,
+  Stack,
+  Box,
+  SimpleGrid,
+  HStack,
+  VStack,
+  Text,
+  Button,
+  Icon,
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
+  Divider,
+} from '@chakra-ui/react'
+import {
+  ArrowLeft,
+  User,
+  Calendar,
+  MapPin,
+  ClipboardList,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  History,
+  Printer,
+  Download,
+  FileText,
+  Send,
+} from 'lucide-react'
+import PageHeader from '../../components/PageHeader'
+
+const statusDefinitions = {
+  draft: { color: 'gray', icon: ClipboardList },
+  sent: { color: 'blue', icon: Send },
+  pending: { color: 'yellow', icon: Clock },
+  approved: { color: 'green', icon: CheckCircle2 },
+  accepted: { color: 'green', icon: CheckCircle2 },
+  rejected: { color: 'red', icon: XCircle },
+  expired: { color: 'gray', icon: Clock },
+  in_progress: { color: 'blue', icon: Clock },
+  completed: { color: 'green', icon: CheckCircle2 },
+}
 
 const AdminProposalView = () => {
   const { proposalId: rawProposalId } = useParams()
   const proposalId = decodeParam(rawProposalId)
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [proposal, setProposal] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const { t } = useTranslation()
 
-  // Status definitions
-  const statusDefinitions = {
-    draft: { label: 'Draft', color: 'secondary', icon: cilClipboard },
-    sent: { label: 'Sent', color: 'info', icon: cilPaperPlane },
-    pending: { label: 'Pending', color: 'warning', icon: cilClock },
-    approved: { label: 'Approved', color: 'success', icon: cilCheckCircle },
-    accepted: { label: 'Accepted', color: 'success', icon: cilCheckCircle },
-    rejected: { label: 'Rejected', color: 'danger', icon: cilXCircle },
-    expired: { label: 'Expired', color: 'dark', icon: cilClock },
-    in_progress: { label: 'In Progress', color: 'info', icon: cilClock },
-    completed: { label: 'Completed', color: 'success', icon: cilCheckCircle },
-  }
+  const getStatusLabel = useCallback(
+    (status) => {
+      const translations = {
+        draft: t('proposals.status.draft', 'Draft'),
+        sent: t('proposals.status.sent', 'Sent'),
+        pending: t('adminQuote.status.pending', 'Pending'),
+        approved: t('adminQuote.status.approved', 'Approved'),
+        accepted: t('proposals.status.accepted', 'Accepted'),
+        rejected: t('proposals.status.rejected', 'Rejected'),
+        expired: t('proposals.status.expired', 'Expired'),
+        in_progress: t('adminQuote.status.in_progress', 'In Progress'),
+        completed: t('adminQuote.status.completed', 'Completed'),
+      }
+      return translations[status] || status || t('proposals.status.draft', 'Draft')
+    },
+    [t],
+  )
 
-  const getStatusLabel = (status) => {
-    const map = {
-      draft: t('proposals.status.draft', 'Draft'),
-      sent: t('proposals.status.sent', 'Sent'),
-      pending: t('adminQuote.status.pending', 'Pending'),
-      approved: t('adminQuote.status.approved', 'Approved'),
-      accepted: t('proposals.status.accepted', 'Accepted'),
-      rejected: t('proposals.status.rejected', 'Rejected'),
-      expired: t('proposals.status.expired', 'Expired'),
-      in_progress: t('adminQuote.status.in_progress', 'In Progress'),
-      completed: t('adminQuote.status.completed', 'Completed'),
+  const getStatusColor = useCallback((status) => statusDefinitions[status]?.color || 'gray', [])
+  const getStatusIcon = useCallback((status) => statusDefinitions[status]?.icon || ClipboardList, [])
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0)
+
+  const parseProposalData = useCallback((currentProposal) => {
+    if (!currentProposal || !currentProposal.manufacturersData) {
+      return { items: [], totalAmount: 0, summary: {} }
     }
-    return map[status] || status || t('proposals.status.draft', 'Draft')
-  }
+
+    try {
+      const manufacturersData = JSON.parse(currentProposal.manufacturersData)
+      let allItems = []
+      const combinedSummary = {
+        cabinets: 0,
+        assemblyFee: 0,
+        modificationsCost: 0,
+        styleTotal: 0,
+        discountAmount: 0,
+        taxAmount: 0,
+        grandTotal: 0,
+      }
+
+      manufacturersData.forEach((manufacturer) => {
+        if (Array.isArray(manufacturer.items)) {
+          allItems = allItems.concat(manufacturer.items)
+        }
+        if (manufacturer.summary) {
+          combinedSummary.cabinets += manufacturer.summary.cabinets || 0
+          combinedSummary.assemblyFee += manufacturer.summary.assemblyFee || 0
+          combinedSummary.modificationsCost += manufacturer.summary.modificationsCost || 0
+          combinedSummary.styleTotal += manufacturer.summary.styleTotal || 0
+          combinedSummary.discountAmount += manufacturer.summary.discountAmount || 0
+          combinedSummary.taxAmount += manufacturer.summary.taxAmount || 0
+          combinedSummary.grandTotal += manufacturer.summary.grandTotal || 0
+        }
+      })
+
+      return {
+        items: allItems,
+        totalAmount: combinedSummary.grandTotal,
+        summary: combinedSummary,
+      }
+    } catch (error) {
+      console.error('Error parsing manufacturer data:', error)
+      return { items: [], totalAmount: 0, summary: {} }
+    }
+  }, [])
+
+  const formatDate = useCallback(
+    (dateString) => {
+      if (!dateString) return t('common.na', 'N/A')
+      try {
+        return new Date(dateString).toLocaleString()
+      } catch (error) {
+        console.error('Error formatting date:', error)
+        return t('common.na', 'N/A')
+      }
+    },
+    [t],
+  )
+
+  const getStatusTimeline = useCallback(
+    (currentProposal) => {
+      if (!currentProposal) return []
+      const timeline = []
+
+      timeline.push({
+        status: 'created',
+        label: t('adminQuote.labels.created', 'Created'),
+        date: currentProposal.created_at,
+        icon: ClipboardList,
+        color: 'gray',
+        description: t('adminQuote.timeline.created', 'Quote was created and added to the system'),
+      })
+
+      if (currentProposal.sent_at) {
+        timeline.push({
+          status: 'sent',
+          label: t('adminQuote.labels.sentToCustomer', 'Sent to Customer'),
+          date: currentProposal.sent_at,
+          icon: Send,
+          color: 'blue',
+          description: t('adminQuote.timeline.sent', 'Quote was sent to the customer for review'),
+        })
+      }
+
+      if (currentProposal.accepted_at) {
+        timeline.push({
+          status: 'accepted',
+          label: t('adminQuote.labels.accepted', 'Accepted'),
+          date: currentProposal.accepted_at,
+          icon: CheckCircle2,
+          color: 'green',
+          description: t('adminQuote.timeline.accepted', 'Quote was formally accepted'),
+        })
+      }
+
+      if (currentProposal.status && !['draft', 'sent', 'accepted'].includes(currentProposal.status)) {
+        timeline.push({
+          status: currentProposal.status,
+          label: getStatusLabel(currentProposal.status),
+          date: currentProposal.updated_at,
+          icon: getStatusIcon(currentProposal.status),
+          color: getStatusColor(currentProposal.status),
+          description:
+            currentProposal.status === 'rejected'
+              ? t('adminQuote.timeline.rejected', 'Quote was rejected')
+              : currentProposal.status === 'expired'
+                ? t('adminQuote.timeline.expired', 'Quote has expired')
+                : t('adminQuote.timeline.changed', 'Proposal status changed to {{status}}', {
+                    status: currentProposal.status,
+                  }),
+        })
+      }
+
+      return timeline
+    },
+    [getStatusColor, getStatusIcon, getStatusLabel, t],
+  )
 
   const fetchProposalDetails = useCallback(async () => {
     try {
@@ -67,459 +232,336 @@ const AdminProposalView = () => {
     }
   }, [proposalId, fetchProposalDetails])
 
-  const getStatusColor = (status) => {
-    return statusDefinitions[status]?.color || 'secondary'
-  }
-
-  const getStatusIcon = (status) => {
-    return statusDefinitions[status]?.icon || cilClipboard
-  }
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount || 0)
-  }
-
-  // Parse manufacturer data to extract items and totals
-  const parseProposalData = (proposal) => {
-    if (!proposal || !proposal.manufacturersData) {
-      return { items: [], totalAmount: 0, summary: {} }
-    }
-
-    try {
-      const manufacturersData = JSON.parse(proposal.manufacturersData)
-      let allItems = []
-      let totalAmount = 0
-      let combinedSummary = {
-        cabinets: 0,
-        assemblyFee: 0,
-        modificationsCost: 0,
-        styleTotal: 0,
-        discountAmount: 0,
-        taxAmount: 0,
-        grandTotal: 0,
-      }
-
-      manufacturersData.forEach((manufacturer) => {
-        if (manufacturer.items) {
-          allItems = allItems.concat(manufacturer.items)
-        }
-        if (manufacturer.summary) {
-          combinedSummary.cabinets += manufacturer.summary.cabinets || 0
-          combinedSummary.assemblyFee += manufacturer.summary.assemblyFee || 0
-          combinedSummary.modificationsCost += manufacturer.summary.modificationsCost || 0
-          combinedSummary.styleTotal += manufacturer.summary.styleTotal || 0
-          combinedSummary.discountAmount += manufacturer.summary.discountAmount || 0
-          combinedSummary.taxAmount += manufacturer.summary.taxAmount || 0
-          combinedSummary.grandTotal += manufacturer.summary.grandTotal || 0
-        }
-      })
-
-      return {
-        items: allItems,
-        totalAmount: combinedSummary.grandTotal,
-        summary: combinedSummary,
-      }
-    } catch (error) {
-      console.error('Error parsing manufacturer data:', error)
-      return { items: [], totalAmount: 0, summary: {} }
-    }
-  }
-
-  // Get parsed proposal data
-  const parsedData = proposal
-    ? parseProposalData(proposal)
-    : { items: [], totalAmount: 0, summary: {} }
-
-  const formatDate = (dateString) => {
-    if (!dateString) return t('common.na', 'N/A')
-
-    try {
-      const date = new Date(dateString)
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return t('common.na', 'N/A')
-      }
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    } catch (error) {
-      console.error('Error formatting date:', error)
-      return t('common.na', 'N/A')
-    }
-  }
-
-  const getStatusTimeline = (proposal) => {
-    const timeline = []
-
-    timeline.push({
-      status: 'created',
-      label: t('adminQuote.labels.created', 'Created'),
-      date: proposal.created_at,
-      icon: cilClipboard,
-      color: 'secondary',
-      description: t('adminQuote.timeline.created', 'Quote was created and added to the system'),
-    })
-
-    // Add sent status if it exists
-    if (proposal.sent_at) {
-      timeline.push({
-        status: 'sent',
-        label: t('adminQuote.labels.sentToCustomer', 'Sent to Customer'),
-        date: proposal.sent_at,
-        icon: cilPaperPlane,
-        color: 'info',
-        description: t('adminQuote.timeline.sent', 'Quote was sent to the customer for review'),
-      })
-    }
-
-    // Add accepted status if it exists
-    if (proposal.accepted_at) {
-      timeline.push({
-        status: 'accepted',
-        label: t('adminQuote.labels.accepted', 'Accepted'),
-        date: proposal.accepted_at,
-        icon: cilCheckCircle,
-        color: 'success',
-        description: t('adminQuote.timeline.accepted', 'Quote was formally accepted'),
-      })
-    }
-
-    // Add other status changes if they're different from sent/accepted
-    if (proposal.status && !['draft', 'sent', 'accepted'].includes(proposal.status)) {
-      timeline.push({
-        status: proposal.status,
-        label: getStatusLabel(proposal.status),
-        date: proposal.updated_at,
-        icon: getStatusIcon(proposal.status),
-        color: getStatusColor(proposal.status),
-        description:
-          proposal.status === 'rejected'
-            ? t('adminQuote.timeline.rejected', 'Quote was rejected')
-            : proposal.status === 'expired'
-              ? t('adminQuote.timeline.expired', 'Quote has expired')
-              : t('adminQuote.timeline.changed', 'Proposal status changed to {{status}}', {
-                  status: proposal.status,
-                }),
-      })
-    }
-
-    return timeline
-  }
+  const parsedData = useMemo(() => parseProposalData(proposal), [parseProposalData, proposal])
+  const statusTimeline = useMemo(() => getStatusTimeline(proposal), [getStatusTimeline, proposal])
 
   const handlePrint = () => {
     window.print()
   }
 
   const handleDownload = () => {
-    // TODO: Implement PDF download functionality
+    // TODO: Implement PDF download functionality once endpoint is available
+    console.info('Download PDF requested')
   }
 
   if (loading) {
     return (
-      <Container className="py-4">
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ minHeight: '400px' }}
-        >
-          <Spinner colorScheme="blue" size="lg" />
-          <span className="ms-3">{t('adminQuote.loading', 'Loading proposal details...')}</span>
-        </div>
-      </Container>
+      <Center py={24} flexDirection="column" gap={3}>
+        <Spinner size="lg" color="brand.500" />
+        <Text color="gray.500">{t('common.loading', 'Loading...')}</Text>
+      </Center>
     )
   }
 
   if (error) {
     return (
-      <Container className="py-4">
-        <Alert status="error">
-          <CIcon icon={cilInfo} className="me-2" />
-          {error}
-        </Alert>
-        <CButton colorScheme="gray" onClick={() => navigate(-1)}>
-          <Icon as={ArrowLeft} className="me-1" />
-          {t('common.back', 'Back')}
-        </CButton>
+      <Container maxW="lg" py={10}>
+        <Stack spacing={4}>
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            {error}
+          </Alert>
+          <Button variant="outline" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>
+            {t('common.back', 'Back')}
+          </Button>
+        </Stack>
       </Container>
     )
   }
 
   if (!proposal) {
     return (
-      <Container className="py-4">
-        <Alert status="warning">
-          <CIcon icon={cilInfo} className="me-2" />
-          {t('adminQuote.ui.notFound', 'Proposal not found.')}
-        </Alert>
-        <CButton colorScheme="gray" onClick={() => navigate(-1)}>
-          <Icon as={ArrowLeft} className="me-1" />
-          {t('common.back', 'Back')}
-        </CButton>
+      <Container maxW="lg" py={10}>
+        <Stack spacing={4}>
+          <Alert status="warning" borderRadius="md">
+            <AlertIcon />
+            {t('adminQuote.ui.notFound', 'Proposal not found.')}
+          </Alert>
+          <Button variant="outline" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>
+            {t('common.back', 'Back')}
+          </Button>
+        </Stack>
       </Container>
     )
   }
 
+  const headerSubtitleParts = []
+  if (proposal.customer?.name) {
+    headerSubtitleParts.push(
+      `${t('adminQuote.ui.customer', 'Customer')}: ${proposal.customer.name}`,
+    )
+  }
+  if (proposal.UserGroup?.name) {
+    headerSubtitleParts.push(
+      `${t('adminQuote.ui.contractorGroup', 'Contractor Group')}: ${proposal.UserGroup.name}`,
+    )
+  }
+  const headerSubtitle =
+    headerSubtitleParts.join(' • ') || t('adminQuote.ui.detailSubtitle', 'Proposal overview')
+
+  const headerActions = [
+    <Button
+      key="print"
+      variant="outline"
+      colorScheme="brand"
+      size="sm"
+      leftIcon={<Icon as={Printer} boxSize={4} />}
+      onClick={handlePrint}
+    >
+      {t('adminQuote.ui.print', 'Print')}
+    </Button>,
+    <Button
+      key="download"
+      variant="outline"
+      colorScheme="brand"
+      size="sm"
+      leftIcon={<Icon as={Download} boxSize={4} />}
+      onClick={handleDownload}
+    >
+      {t('proposalCommon.downloadPdf', 'Download PDF')}
+    </Button>,
+    <Button
+      key="back"
+      size="sm"
+      variant="outline"
+      colorScheme="gray"
+      leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+      onClick={() => navigate(-1)}
+    >
+      {t('common.back', 'Back')}
+    </Button>,
+  ]
+
   return (
-    <Container fluid className="py-4">
-      {/* Header */}
-      <Flex className="mb-4">
-        <Box>
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <CButton color="ghost" size="sm" onClick={() => navigate(-1)} className="me-3">
-                <Icon as={ArrowLeft} />
-              </CButton>
-              <div>
-                <h3 className="mb-1">
-                  <CIcon icon={cilBriefcase} className="me-2" />
-                  {proposal.title || t('publicQuote.titleNumber', { id: proposal.id })}
-                </h3>
-                <div className="d-flex align-items-center gap-3 text-muted">
-                  <span>
-                    <Icon as={User} className="me-1" />
-                    {proposal.customer?.name || 'N/A'}
-                  </span>
-                  <span>
-                    <CIcon icon={cilLocationPin} className="me-1" />
-                    {proposal.UserGroup?.name || 'N/A'}
-                  </span>
-                  <Badge color={getStatusColor(proposal.status)} size="lg">
-                    <CIcon icon={getStatusIcon(proposal.status)} className="me-1" />
-                    {getStatusLabel(proposal.status)}
-                  </Badge>
-                </div>
-            </div>
-            <div className="d-flex gap-2">
-              <CButton color="outline-secondary" size="sm" onClick={handlePrint}>
-                <CIcon icon={cilPrint} className="me-1" />
-                {t('adminQuote.ui.print', 'Print')}
-              </CButton>
-              <CButton color="outline-primary" size="sm" onClick={handleDownload}>
-                <Icon as={Download} className="me-1" />
-                {t('proposalCommon.downloadPdf', 'Download PDF')}
-              </CButton>
-            </div>
-        </Box>
-      </Flex>
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={proposal.title || t('publicQuote.titleNumber', { id: proposal.id })}
+          subtitle={headerSubtitle}
+          icon={FileText}
+          actions={headerActions}
+        >
+          <Badge colorScheme={getStatusColor(proposal.status)} borderRadius="full" px={3} py={1}>
+            <HStack spacing={2}>
+              <Icon as={getStatusIcon(proposal.status)} boxSize={4} />
+              <Text fontSize="sm">{getStatusLabel(proposal.status)}</Text>
+            </HStack>
+          </Badge>
+        </PageHeader>
 
-      <Flex>
-        <Box lg={8}>
-          {/* Main Content */}
-          <Card className="mb-4">
-            <CardHeader>
-              <strong>{t('adminQuote.ui.overview', 'Quote Overview')}</strong>
-            </CardHeader>
-            <CardBody>
-              <Flex className="mb-4">
-                <Box md={6}>
-                  <h4 className="text-success mb-3">{formatCurrency(parsedData.totalAmount)}</h4>
-
-                  <CListGroup flush>
-                    <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">
-                        {t('adminQuote.ui.proposalId', 'Quote ID')}
-                      </span>
-                      <strong>#{proposal.id}</strong>
-                    </CListGroupItem>
-                    <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">{t('adminQuote.ui.customer', 'Customer')}</span>
-                      <span>{proposal.customer?.name || t('common.na', 'N/A')}</span>
-                    </CListGroupItem>
-                    <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">
-                        {t('adminQuote.ui.contractorGroup', 'Contractor Group')}
-                      </span>
-                      <span>{proposal.UserGroup?.name || t('common.na', 'N/A')}</span>
-                    </CListGroupItem>
-                  </CListGroup>
-                </Box>
-                <Box md={6}>
-                  <CListGroup flush>
-                    <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">
-                        {t('adminQuote.ui.createdDate', 'Created Date')}
-                      </span>
-                      <span>{formatDate(proposal.created_at)}</span>
-                    </CListGroupItem>
-                    <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                      <span className="text-muted">
-                        {t('adminQuote.ui.updatedDate', 'Last Updated')}
-                      </span>
-                      <span>{formatDate(proposal.updated_at)}</span>
-                    </CListGroupItem>
-                    {proposal.sent_at && (
-                      <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">
-                          {t('adminQuote.ui.sentDate', 'Sent Date')}
-                        </span>
-                        <span className="text-info">{formatDate(proposal.sent_at)}</span>
-                      </CListGroupItem>
-                    )}
-                    {proposal.accepted_at && (
-                      <CListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                        <span className="text-muted">
-                          {t('adminQuote.ui.acceptedDate', 'Accepted Date')}
-                        </span>
-                        <span className="text-success">{formatDate(proposal.accepted_at)}</span>
-                      </CListGroupItem>
-                    )}
-                  </CListGroup>
-                </Box>
-              </Flex>
-
-              {proposal.description && (
-                <div className="mt-4">
-                  <h6 className="text-muted mb-2">{t('common.description', 'Description')}</h6>
-                  <div className="bg-light p-3 rounded">
-                    <p className="mb-0">{proposal.description}</p>
-                  </div>
-              )}
-            </CardBody>
-          </Card>
-
-          {/* Proposal Items */}
-          {parsedData.items && parsedData.items.length > 0 && (
-            <Card className="mb-4">
-              <CardHeader>
-                <strong>
-                  <CIcon icon={cilClipboard} className="me-2" />
-                  {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', {
-                    count: parsedData.items.length,
-                  })}
-                </strong>
+        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} alignItems="start">
+          <Stack spacing={6} gridColumn={{ lg: 'span 2' }}>
+            <Card variant="outline">
+              <CardHeader bg="gray.50" borderBottomWidth="1px">
+                <Text fontWeight="semibold" color="gray.800">
+                  {t('adminQuote.ui.overview', 'Quote Overview')}
+                </Text>
               </CardHeader>
               <CardBody>
-                <div className="table-responsive">
-                  <CTable hover>
-                    <CTableHead>
-                      <CTableRow>
-                        <CTableHeaderCell>{t('proposalColumns.item', 'Item')}</CTableHeaderCell>
-                        <CTableHeaderCell>
-                          {t('common.description', 'Description')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center">
-                          {t('proposalColumns.qty', 'Qty')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">
-                          {t('proposalDoc.catalog.unitPrice', 'Unit Price')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-end">
-                          {t('proposalColumns.total', 'Total')}
-                        </CTableHeaderCell>
-                      </CTableRow>
-                    </CTableHead>
-                    <CTableBody>
-                      {parsedData.items.map((item, index) => (
-                        <CTableRow key={index}>
-                          <CTableDataCell>
-                            <strong>
-                              {item.code ||
-                                t('adminQuote.ui.itemNumber', 'Item {{n}}', { n: index + 1 })}
-                            </strong>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            {item.description || t('common.na', 'N/A')}
-                          </CTableDataCell>
-                          <CTableDataCell className="text-center">{item.qty || 1}</CTableDataCell>
-                          <CTableDataCell className="text-end">
-                            {formatCurrency(parseFloat(item.price) || 0)}
-                          </CTableDataCell>
-                          <CTableDataCell className="text-end">
-                            <strong>{formatCurrency(parseFloat(item.total) || 0)}</strong>
-                          </CTableDataCell>
-                        </CTableRow>
-                      ))}
-                    </CTableBody>
-                  </CTable>
-                </div>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                  <Stack spacing={3}>
+                    <Text fontSize="2xl" fontWeight="bold" color="green.600">
+                      {formatCurrency(parsedData.totalAmount)}
+                    </Text>
+                    <Divider />
+                    <Stack spacing={2} fontSize="sm" color="gray.700">
+                      <HStack justify="space-between">
+                        <Text color="gray.500">
+                          {t('adminQuote.ui.proposalId', 'Quote ID')}
+                        </Text>
+                        <Text fontWeight="semibold">#{proposal.id}</Text>
+                      </HStack>
+                      <HStack justify="space-between">
+                        <Text color="gray.500">{t('adminQuote.ui.customer', 'Customer')}</Text>
+                        <Text>{proposal.customer?.name || t('common.na', 'N/A')}</Text>
+                      </HStack>
+                      <HStack justify="space-between">
+                        <Text color="gray.500">
+                          {t('adminQuote.ui.contractorGroup', 'Contractor Group')}
+                        </Text>
+                        <Text>{proposal.UserGroup?.name || t('common.na', 'N/A')}</Text>
+                      </HStack>
+                    </Stack>
+                  </Stack>
 
-                {/* Totals */}
-                <div className="border-top pt-3 mt-3">
-                  <Flex>
-                    <Box md={6}></Box>
-                    <Box md={6}>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span>{t('proposalDoc.priceSummary.cabinets', 'Cabinets & Parts:')}</span>
-                        <span>{formatCurrency(parsedData.summary.cabinets || 0)}</span>
-                      </div>
-                      {parsedData.summary.assemblyFee > 0 && (
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>{t('proposalDoc.priceSummary.assembly', 'Assembly fee:')}</span>
-                          <span>{formatCurrency(parsedData.summary.assemblyFee)}</span>
-                        </div>
-                      )}
-                      {parsedData.summary.modificationsCost > 0 && (
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>
-                            {t('proposalDoc.priceSummary.modifications', 'Modifications:')}
-                          </span>
-                          <span>{formatCurrency(parsedData.summary.modificationsCost)}</span>
-                        </div>
-                      )}
-                      {parsedData.summary.discountAmount > 0 && (
-                        <div className="d-flex justify-content-between mb-2 text-danger">
-                          <span>{t('orders.details.discount', 'Discount')}</span>
-                          <span>-{formatCurrency(parsedData.summary.discountAmount)}</span>
-                        </div>
-                      )}
-                      {parsedData.summary.taxAmount > 0 && (
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>{t('proposalDoc.priceSummary.tax', 'Tax:')}</span>
-                          <span>{formatCurrency(parsedData.summary.taxAmount)}</span>
-                        </div>
-                      )}
-                      <div className="d-flex justify-content-between border-top pt-2">
-                        <strong>{t('proposalDoc.priceSummary.total', 'Total:')}</strong>
-                        <strong className="text-success fs-5">
-                          {formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}
-                        </strong>
-                      </div>
+                  <Stack spacing={2} fontSize="sm" color="gray.700">
+                    <HStack justify="space-between">
+                      <Text color="gray.500">
+                        {t('adminQuote.ui.createdDate', 'Created Date')}
+                      </Text>
+                      <Text>{formatDate(proposal.created_at)}</Text>
+                    </HStack>
+                    <HStack justify="space-between">
+                      <Text color="gray.500">
+                        {t('adminQuote.ui.updatedDate', 'Last Updated')}
+                      </Text>
+                      <Text>{formatDate(proposal.updated_at)}</Text>
+                    </HStack>
+                    {proposal.sent_at && (
+                      <HStack justify="space-between">
+                        <Text color="gray.500">
+                          {t('adminQuote.ui.sentDate', 'Sent Date')}
+                        </Text>
+                        <Text color="blue.500">{formatDate(proposal.sent_at)}</Text>
+                      </HStack>
+                    )}
+                    {proposal.accepted_at && (
+                      <HStack justify="space-between">
+                        <Text color="gray.500">
+                          {t('adminQuote.ui.acceptedDate', 'Accepted Date')}
+                        </Text>
+                        <Text color="green.500">{formatDate(proposal.accepted_at)}</Text>
+                      </HStack>
+                    )}
+                  </Stack>
+                </SimpleGrid>
+
+                {proposal.description && (
+                  <Stack spacing={2} mt={6}>
+                    <Text fontWeight="semibold" color="gray.700">
+                      {t('common.description', 'Description')}
+                    </Text>
+                    <Box bg="gray.50" borderRadius="md" borderWidth="1px" borderColor="gray.200" p={4}>
+                      <Text color="gray.700">{proposal.description}</Text>
                     </Box>
-                  </Flex>
-                </div>
+                  </Stack>
+                )}
               </CardBody>
             </Card>
-          )}
-        </Box>
 
-        <Box lg={4}>
-          {/* Status Timeline */}
-          <Card>
-            <CardHeader>
-              <strong>
-                <CIcon icon={cilHistory} className="me-2" />
-                {t('adminQuote.ui.statusTimeline', 'Status Timeline')}
-              </strong>
-            </CardHeader>
-            <CardBody>
-              <div className="timeline">
-                {getStatusTimeline(proposal).map((item, index) => (
-                  <div key={index} className="d-flex mb-4">
-                    <div
-                      className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
-                      style={{ width: '40px', height: '40px', minWidth: '40px' }}
-                    >
-                      <CIcon icon={item.icon} size="sm" />
-                    </div>
-                    <div className="flex-grow-1">
-                      <div className="d-flex justify-content-between align-items-start mb-1">
-                        <strong>{item.label}</strong>
-                        <small className="text-muted">{formatDate(item.date)}</small>
-                      </div>
-                      <small className="text-muted">{item.description}</small>
-                    </div>
-                ))}
-              </div>
-            </CardBody>
-          </Card>
-        </Box>
-      </Flex>
+            {parsedData.items && parsedData.items.length > 0 && (
+              <Card variant="outline">
+                <CardHeader bg="gray.50" borderBottomWidth="1px">
+                  <HStack spacing={2}>
+                    <Icon as={ClipboardList} />
+                    <Text fontWeight="semibold" color="gray.800">
+                      {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', {
+                        count: parsedData.items.length,
+                      })}
+                    </Text>
+                  </HStack>
+                </CardHeader>
+                <CardBody>
+                  <TableContainer>
+                    <Table variant="simple" size="sm">
+                      <Thead bg="gray.50">
+                        <Tr>
+                          <Th>{t('proposalColumns.item', 'Item')}</Th>
+                          <Th>{t('common.description', 'Description')}</Th>
+                          <Th textAlign="center">{t('proposalColumns.qty', 'Qty')}</Th>
+                          <Th isNumeric>{t('proposalDoc.catalog.unitPrice', 'Unit Price')}</Th>
+                          <Th isNumeric>{t('proposalColumns.total', 'Total')}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {parsedData.items.map((item, index) => (
+                          <Tr key={index}>
+                            <Td fontWeight="semibold">
+                              {item.code || t('adminQuote.ui.itemNumber', 'Item {{n}}', { n: index + 1 })}
+                            </Td>
+                            <Td>{item.description || t('common.na', 'N/A')}</Td>
+                            <Td textAlign="center">{item.qty || 1}</Td>
+                            <Td isNumeric>{formatCurrency(parseFloat(item.price) || 0)}</Td>
+                            <Td isNumeric fontWeight="semibold">
+                              {formatCurrency(parseFloat(item.total) || 0)}
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+
+                  <Stack spacing={2} mt={6} borderTopWidth="1px" borderColor="gray.200" pt={4}>
+                    <HStack justify="space-between">
+                      <Text>{t('proposalDoc.priceSummary.cabinets', 'Cabinets & Parts:')}</Text>
+                      <Text>{formatCurrency(parsedData.summary.cabinets || 0)}</Text>
+                    </HStack>
+                    {parsedData.summary.assemblyFee > 0 && (
+                      <HStack justify="space-between">
+                        <Text>{t('proposalDoc.priceSummary.assembly', 'Assembly fee:')}</Text>
+                        <Text>{formatCurrency(parsedData.summary.assemblyFee)}</Text>
+                      </HStack>
+                    )}
+                    {parsedData.summary.modificationsCost > 0 && (
+                      <HStack justify="space-between">
+                        <Text>{t('proposalDoc.priceSummary.modifications', 'Modifications:')}</Text>
+                        <Text>{formatCurrency(parsedData.summary.modificationsCost)}</Text>
+                      </HStack>
+                    )}
+                    {parsedData.summary.discountAmount > 0 && (
+                      <HStack justify="space-between" color="red.500">
+                        <Text>{t('orders.details.discount', 'Discount')}</Text>
+                        <Text>-{formatCurrency(parsedData.summary.discountAmount)}</Text>
+                      </HStack>
+                    )}
+                    {parsedData.summary.taxAmount > 0 && (
+                      <HStack justify="space-between">
+                        <Text>{t('proposalDoc.priceSummary.tax', 'Tax:')}</Text>
+                        <Text>{formatCurrency(parsedData.summary.taxAmount)}</Text>
+                      </HStack>
+                    )}
+                    <Divider />
+                    <HStack justify="space-between">
+                      <Text fontWeight="semibold">
+                        {t('proposalDoc.priceSummary.total', 'Total:')}
+                      </Text>
+                      <Text fontWeight="bold" fontSize="lg" color="green.600">
+                        {formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}
+                      </Text>
+                    </HStack>
+                  </Stack>
+                </CardBody>
+              </Card>
+            )}
+          </Stack>
+
+          <Stack spacing={6}>
+            <Card variant="outline">
+              <CardHeader bg="gray.50" borderBottomWidth="1px">
+                <HStack spacing={2}>
+                  <Icon as={History} />
+                  <Text fontWeight="semibold" color="gray.800">
+                    {t('adminQuote.ui.statusTimeline', 'Status Timeline')}
+                  </Text>
+                </HStack>
+              </CardHeader>
+              <CardBody>
+                {statusTimeline.length === 0 ? (
+                  <Text color="gray.500">{t('adminQuote.timeline.empty', 'No status updates recorded yet.')}</Text>
+                ) : (
+                  <Stack spacing={5}>
+                    {statusTimeline.map((item, index) => (
+                      <HStack key={`${item.status}-${index}`} align="flex-start" spacing={4}>
+                        <Center
+                          w={10}
+                          h={10}
+                          borderRadius="full"
+                          bg={`${item.color}.500`}
+                          color="white"
+                          flexShrink={0}
+                        >
+                          <Icon as={item.icon} boxSize={4} />
+                        </Center>
+                        <Stack spacing={1} flex="1">
+                          <HStack justify="space-between" align="flex-start">
+                            <Text fontWeight="semibold">{item.label}</Text>
+                            <Text fontSize="sm" color="gray.500">
+                              {formatDate(item.date)}
+                            </Text>
+                          </HStack>
+                          <Text fontSize="sm" color="gray.600">
+                            {item.description}
+                          </Text>
+                        </Stack>
+                      </HStack>
+                    ))}
+                  </Stack>
+                )}
+              </CardBody>
+            </Card>
+          </Stack>
+        </SimpleGrid>
+      </Stack>
     </Container>
   )
 }

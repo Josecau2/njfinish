@@ -142,7 +142,7 @@ const CustomerTable = ({
             </Box>
             <Box xs="auto">
               <PermissionGate permission="customers:create">
-                <CButton
+                <Button
                   status="light"
                   className="shadow-sm px-4 fw-semibold"
                   onClick={handleNewCustomer}
@@ -154,7 +154,7 @@ const CustomerTable = ({
                 >
                   <Icon as={Plus} className="me-2" />
                   Add Customer
-                </CButton>
+                </Button>
               </PermissionGate>
             </Box>
           </Flex>
@@ -215,17 +215,17 @@ const CustomerTable = ({
 
       {/* Search and Filters */}
       <div className="toolbar">
-        <CInputGroup>
-          <CInputGroupText>
+        <InputGroup>
+          <InputLeftAddon>
             <Icon as={Search} />
-          </CInputGroupText>
+          </InputLeftAddon>
           <Input
             className="search"
             placeholder="Search customers by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
           />
-        </CInputGroup>
+        </InputGroup>
         <Select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
           <option value={5}>5 per page</option>
           <option value={10}>10 per page</option>
@@ -263,13 +263,13 @@ const CustomerTable = ({
         <Card className="border-0 shadow-sm d-none d-md-block">
           <CardBody className="p-0">
             <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0 table-modern">
-                <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
-                  <CTableRow>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 sticky-col">
+              <Table hover responsive className="mb-0 table-modern">
+                <Thead style={{ backgroundColor: '#f8f9fa' }}>
+                  <Tr>
+                    <Th className="border-0 fw-semibold text-muted py-3 sticky-col">
                       Location
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
+                    </Th>
+                    <Th
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('name')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -281,8 +281,8 @@ const CustomerTable = ({
                           {getSortIcon('name')}
                         </span>
                       </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
+                    </Th>
+                    <Th
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('email')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -294,33 +294,33 @@ const CustomerTable = ({
                           {getSortIcon('email')}
                         </span>
                       </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3">
                       Proposals
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3">
                       Orders
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3 text-center">
                       Actions
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {sortedFilteredCustomers?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="6" className="text-center py-5">
+                    <Tr>
+                      <Td colSpan="6" className="text-center py-5">
                         <div className="text-muted">
                           <Icon as={Search} size="xl" className="mb-3 opacity-25" />
                           <p className="mb-0">No customers found</p>
                           <small>Try adjusting your search criteria</small>
                         </div>
-                      </CTableDataCell>
-                    </CTableRow>
+                      </Td>
+                    </Tr>
                   ) : (
                     sortedFilteredCustomers?.map((cust) => (
-                      <CTableRow key={cust.id} style={{ transition: 'all 0.2s ease' }}>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                      <Tr key={cust.id} style={{ transition: 'all 0.2s ease' }}>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge
                             colorScheme="gray"
                             className="px-3 py-2"
@@ -332,14 +332,14 @@ const CustomerTable = ({
                           >
                             Main
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <div className="fw-medium text-dark">{cust.name || 'N/A'}</div>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <span className="text-muted">{cust.email || 'N/A'}</span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge
                             status="info"
                             className="px-3 py-2"
@@ -351,8 +351,8 @@ const CustomerTable = ({
                           >
                             {cust.proposalCount || 0} Proposals
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge
                             status="success"
                             className="px-3 py-2"
@@ -364,8 +364,8 @@ const CustomerTable = ({
                           >
                             0 Orders
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light text-center">
                           <div className="d-flex justify-content-center gap-2">
                             <PermissionGate action="update" resource="customer" item={cust}>
                               <button
@@ -386,12 +386,12 @@ const CustomerTable = ({
                               </button>
                             </PermissionGate>
                           </div>
-                        </CTableDataCell>
-                      </CTableRow>
+                        </Td>
+                      </Tr>
                     ))
                   )}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </div>
           </CardBody>
         </Card>

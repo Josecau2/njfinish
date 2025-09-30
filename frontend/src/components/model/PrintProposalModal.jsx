@@ -359,14 +359,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay>
-          <ModalContent>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.printTitle')}
             </Text>
           </ModalHeader>
           <ModalCloseButton />
-
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
@@ -506,6 +506,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                       {t('common.clear', 'Clear')}
                     </Button>
                   </HStack>
+                </HStack>
                 <Controller
                   control={control}
                   name="selectedColumns"
@@ -532,9 +533,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             _checked={{ bg: 'brand.50', borderColor: 'brand.300' }}
                             _disabled={{ cursor: 'not-allowed', color: 'gray.500' }}
                           >
-                            <Text isTruncated>
-                              {opt.label}
-                            </Text>
+                            <Text isTruncated>{opt.label}</Text>
                           </Checkbox>
                         ))}
                       </SimpleGrid>
@@ -543,7 +542,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 />
               </Box>
             </Stack>
-          </ModalBody><ModalFooter>
+          </ModalBody>
+          <ModalFooter>
             <HStack spacing={3} flexWrap={isMobile ? 'wrap' : 'nowrap'} width="100%" justify={isMobile ? 'stretch' : 'flex-end'}>
               <MotionButton
                 variant="outline"
@@ -570,9 +570,9 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 </HStack>
               </MotionButton>
               <MotionButton
-                type="submit"
                 colorScheme="brand"
                 isDisabled={isLoading}
+                onClick={() => handleDownload(getValues())}
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
               >
@@ -591,25 +591,23 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             </HStack>
           </ModalFooter>
         </ModalContent>
-        
       </Modal>
 
       <Modal
         isOpen={showPreview}
-        onClose={() =>
-        <ModalOverlay>
-          <ModalContent>setShowPreview(false)}
+        onClose={() => setShowPreview(false)}
         size={previewModalSize}
         scrollBehavior="inside"
         isCentered
       >
-          
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.previewTitle', 'Quote Preview')}
             </Text>
           </ModalHeader>
           <ModalCloseButton />
-
           <ModalBody p={0}>
             <Box px={previewPadding} py={4} bg="gray.50">
               <Box
@@ -637,9 +635,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                   }}
                 />
               </Box>
+            </Box>
           </ModalBody>
-
-          <Divider /><ModalFooter>
+          <Divider />
+          <ModalFooter>
             <HStack spacing={3}>
               <MotionButton
                 variant="outline"
@@ -670,16 +669,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             </HStack>
           </ModalFooter>
         </ModalContent>
-        
       </Modal>
     </>
   )
 }
-
-                </HStack>
-</ModalOverlay>
-    </HStack>
-        </ModalOverlay>
-            </ModalBody>
-                </Box>
 export default PrintProposalModal

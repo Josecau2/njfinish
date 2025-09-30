@@ -133,12 +133,12 @@ const EditUserModal = ({ visible, onClose, user }) => {
       </ModalBody>
             </ModalContent>
     <ModalFooter>
-        <CButton colorScheme="gray" onClick={onClose} aria-label="Cancel editing user">
+        <Button colorScheme="gray" onClick={onClose} aria-label="Cancel editing user">
           Cancel
-        </CButton>
-        <CButton colorScheme="blue" onClick={handleSubmit} aria-label="Save user changes">
+        </Button>
+        <Button colorScheme="blue" onClick={handleSubmit} aria-label="Save user changes">
           Save Changes
-        </CButton>
+        </Button>
       </ModalFooter>
     </Modal>
   )

@@ -1,34 +1,58 @@
+
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../../utils/colorUtils'
-import { FormControl, Input, Select, FormLabel, Flex, Box, Container, Card, CardBody, Spinner, Icon } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  Textarea,
+} from '@chakra-ui/react'
 import PageHeader from '../../components/PageHeader'
-import { User, Mail, ArrowLeft, Save, Edit } from 'lucide-react'
+import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import Swal from 'sweetalert2'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 
-// External components to avoid re-creation on each render
-const FormSection = ({ title, icon, children, className = '' }) => (
-  <Card className={`border-0 shadow-sm mb-4 ${className}`}>
-    <CardBody className="p-4">
-      <div className="d-flex align-items-center mb-3">
-        <div
-          className="rounded-circle d-flex align-items-center justify-content-center me-3"
-          style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#e7f3ff',
-            color: '#0d6efd',
-          }}
-        >
-          <CIcon icon={icon} size="sm" />
-        </div>
-        <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-      </div>
-      {children}
+const FormSection = ({ title, icon, children }) => (
+  <Card variant="outline" borderRadius="xl" shadow="sm">
+    <CardBody>
+      <Stack spacing={4}>
+        <Stack direction="row" align="center" spacing={3}>
+          <Box
+            w="40px"
+            h="40px"
+            borderRadius="full"
+            bg="blue.50"
+            color="blue.600"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Icon as={icon} boxSize={5} aria-hidden="true" />
+          </Box>
+          <Text fontWeight="semibold" color="gray.800">
+            {title}
+          </Text>
+        </Stack>
+        {children}
+      </Stack>
     </CardBody>
   </Card>
 )
@@ -47,22 +71,15 @@ const CustomFormInput = ({
   inputRef,
   ...props
 }) => (
-  <div className="mb-3">
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
     </FormLabel>
-    <CInputGroup>
+    <InputGroup>
       {icon && (
-        <CInputGroupText
-          style={{
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            border: '1px solid #e3e6f0',
-            borderRight: 'none',
-          }}
-        >
-          <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-        </CInputGroupText>
+        <InputLeftElement pointerEvents="none">
+          <Icon as={icon} boxSize={4} color="gray.500" />
+        </InputLeftElement>
       )}
       <Input
         id={name}
@@ -70,34 +87,16 @@ const CustomFormInput = ({
         type={type}
         value={value}
         onChange={onChange}
-        invalid={isInvalid}
         ref={inputRef}
         placeholder={placeholder}
-        style={{
-          border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
-          borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: '14px',
-          padding: '12px 16px',
-          transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
-        }}
-        onFocus={(e) => {
-          if (!isInvalid) {
-            e.target.style.borderColor = '#0d6efd'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
-          }
-        }}
-        onBlur={(e) => {
-          if (!isInvalid) {
-            e.target.style.borderColor = '#e3e6f0'
-            e.target.style.boxShadow = 'none'
-          }
-        }}
+        borderRadius="md"
+        fontSize="sm"
+        minH="44px"
         {...props}
       />
-    </CInputGroup>
-    {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
-  </div>
+    </InputGroup>
+    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+  </FormControl>
 )
 
 const CustomFormSelect = ({
@@ -105,65 +104,41 @@ const CustomFormSelect = ({
   name,
   required = false,
   icon = null,
-  children,
   value,
   onChange,
   isInvalid,
   feedback,
   inputRef,
+  children,
   ...props
 }) => (
-  <div className="mb-3">
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
     </FormLabel>
-    <CInputGroup>
+    <InputGroup>
       {icon && (
-        <CInputGroupText
-          style={{
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            border: '1px solid #e3e6f0',
-            borderRight: 'none',
-          }}
-        >
-          <CIcon icon={icon} size="sm" style={{ color: '#6c757d' }} />
-        </CInputGroupText>
+        <InputLeftElement pointerEvents="none">
+          <Icon as={icon} boxSize={4} color="gray.500" />
+        </InputLeftElement>
       )}
       <Select
         id={name}
         name={name}
         value={value}
         onChange={onChange}
-        invalid={isInvalid}
         ref={inputRef}
-        style={{
-          border: `1px solid ${isInvalid ? '#dc3545' : '#e3e6f0'}`,
-          borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: '14px',
-          padding: '12px 16px',
-          transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
-        }}
-        onFocus={(e) => {
-          if (!isInvalid) {
-            e.target.style.borderColor = '#0d6efd'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
-          }
-        }}
-        onBlur={(e) => {
-          if (!isInvalid) {
-            e.target.style.borderColor = '#e3e6f0'
-            e.target.style.boxShadow = 'none'
-          }
-        }}
+        borderRadius="md"
+        fontSize="sm"
+        minH="44px"
+        pl={icon ? 10 : 4}
         {...props}
       >
         {children}
       </Select>
-    </CInputGroup>
-    {feedback && <CFormFeedback invalid>{feedback}</CFormFeedback>}
-  </div>
+    </InputGroup>
+    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+  </FormControl>
 )
 
 const EditCustomerPage = () => {
@@ -197,60 +172,74 @@ const EditCustomerPage = () => {
   const { customerId: rawCustomerId } = useParams()
   const customerId = decodeParam(rawCustomerId)
   const navigate = useNavigate()
-  const api_url = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
         setIsLoading(true)
         const res = await axiosInstance.get(`/api/customers/${customerId}`)
-        setFormData(res.data)
+        setFormData({
+          name: res.data?.name || '',
+          email: res.data?.email || '',
+          address: res.data?.address || '',
+          aptOrSuite: res.data?.aptOrSuite || '',
+          city: res.data?.city || '',
+          state: res.data?.state || '',
+          zipCode: res.data?.zipCode || '',
+          homePhone: res.data?.homePhone || '',
+          mobile: res.data?.mobile || '',
+          leadSource: res.data?.leadSource || '',
+          customerType: res.data?.customerType || 'Home Owner',
+          defaultDiscount: res.data?.defaultDiscount ?? 0,
+          companyName: res.data?.companyName || '',
+          note: res.data?.note || '',
+        })
       } catch (err) {
         console.error(err)
         Swal.fire(t('common.error'), t('customers.form.alerts.notFound'), 'error')
+        navigate('/customers')
       } finally {
         setIsLoading(false)
       }
     }
-    if (customerId) fetchCustomer()
-  }, [customerId, api_url])
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
+    if (customerId) {
+      fetchCustomer()
+    }
+  }, [customerId, navigate, t])
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     setValidationErrors((prev) => ({ ...prev, [name]: '' }))
   }
 
-  const handleNoteChange = (data) => {
-    setFormData((prev) => ({ ...prev, note: data }))
+  const handleNoteChange = (value) => {
+    setFormData((prev) => ({ ...prev, note: value }))
   }
 
   const validateForm = () => {
     const errors = {}
-    const required = [
-      'name',
-      'email',
-      'address',
-      'city',
-      'state',
-      'zipCode',
-      'mobile',
-      'leadSource',
-    ]
-    required.forEach((f) => {
-      if (!formData[f]?.toString().trim()) errors[f] = t('customers.form.validation.required')
+    const requiredFields = ['name', 'email', 'address', 'city', 'state', 'zipCode', 'mobile', 'leadSource']
+    requiredFields.forEach((field) => {
+      if (!formData[field]?.toString().trim()) {
+        errors[field] = t('customers.form.validation.required')
+      }
     })
-    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email))
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = t('customers.form.validation.invalidEmail')
-    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode))
+    }
+    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
       errors.zipCode = t('customers.form.validation.zip5')
-    if (formData.mobile && !/^\d{10}$/.test(formData.mobile))
+    }
+    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
       errors.mobile = t('customers.form.validation.mobile10')
+    }
     return errors
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     const errs = validateForm()
     setValidationErrors(errs)
     if (Object.keys(errs).length) {
@@ -258,6 +247,7 @@ const EditCustomerPage = () => {
       inputRefs.current[first]?.focus()
       return
     }
+
     setIsSubmitting(true)
     try {
       await axiosInstance.put(`/api/customers/update/${customerId}`, formData)
@@ -283,83 +273,48 @@ const EditCustomerPage = () => {
 
   if (isLoading) {
     return (
-      <Container fluid className="p-2 m-2 bg-body" style={{ minHeight: '100vh' }}>
-        <Card className="border-0 shadow-sm">
-          <CardBody className="text-center py-5">
-            <Spinner colorScheme="blue" size="lg" />
-            <p className="text-muted mt-3 mb-0">{t('customers.loading')}</p>
+      <Container maxW="5xl" py={12}>
+        <Card variant="outline" borderRadius="xl" shadow="sm">
+          <CardBody textAlign="center" py={10}>
+            <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
+            <Text mt={4} color="gray.500">
+              {t('customers.loading')}
+            </Text>
           </CardBody>
         </Card>
       </Container>
-  
-  )
+    )
   }
 
   return (
-    <Container fluid className="p-2 m-2 edit-customer-page bg-body" style={{ minHeight: '100vh' }}>
-      {/* UI-TASK: Scoped mobile/touch styles for this page */}
-      <style>{`
-        .edit-customer-page .form-buttons .btn { min-height: 44px; }
-        .edit-customer-page .form-buttons { flex-wrap: wrap; }
-        .edit-customer-page .form-control { min-height: 44px; }
-        .edit-customer-page .ck.ck-editor__editable { min-height: 160px; }
-        @media (max-width: 576px) {
-          .edit-customer-page .form-buttons { flex-direction: column; align-items: stretch; }
-          .edit-customer-page .form-buttons .btn { width: 100%; }
-    </div>
-    </div>
-  
-  )
-        }
-      `}</style>
-      {/* Header Section */}
+    <Container maxW="5xl" py={6} className="edit-customer-page">
       <PageHeader
-        title={
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: '48px',
-                height: '48px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-              }}
-            >
-              <Icon as={Edit} style={{ fontSize: '24px', color: 'white' }} />
-            </div>
-            {t('customers.form.titles.edit')}
-          </div>
-        }
-        subtitle="Update customer profile with detailed information"
-        rightContent={
-          <CButton
-            status="light"
+        title={t('customers.form.titles.edit')}
+        subtitle={t('customers.form.descriptions.edit', 'Update customer profile with detailed information')}
+        icon={Edit}
+        actions={[
+          <Button
+            key="back"
             variant="outline"
-            className="me-2"
-            onClick={() => window.history.back()}
-            aria-label={t('common.back')}
-            style={{
-              borderColor: 'rgba(255, 255, 255, 0.3)',
-              color: 'rgba(255, 255, 255, 0.9)',
-              minHeight: '44px',
-            }}
+            colorScheme="gray"
+            leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+            onClick={() => navigate(-1)}
+            minH="44px"
           >
-            <Icon as={ArrowLeft} className="me-1" size="sm" />
             {t('common.back')}
-          </CButton>
-        }
+          </Button>,
+        ]}
       />
 
-      <FormControl onSubmit={handleSubmit}>
-        {/* Basic Information Section */}
-        <FormSection title={t('customers.form.titles.basicInfo')} icon={cilUser}>
-          <Flex>
-            <Box md={6}>
+      <Box as="form" onSubmit={handleSubmit}>
+        <Stack spacing={6}>
+          <FormSection title={t('customers.form.titles.basicInfo')} icon={User}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <CustomFormInput
                 label={t('customers.form.labels.fullName')}
                 name="name"
                 required
-                icon={cilUser}
+                icon={User}
                 placeholder={t('customers.form.placeholders.fullName')}
                 value={formData.name}
                 onChange={handleChange}
@@ -367,14 +322,12 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.name}
                 inputRef={(el) => (inputRefs.current.name = el)}
               />
-            </Box>
-            <Box md={6}>
               <CustomFormInput
                 label={t('customers.form.labels.email')}
                 name="email"
                 type="email"
                 required
-                icon={cilEnvelopeClosed}
+                icon={Mail}
                 placeholder={t('customers.form.placeholders.email')}
                 value={formData.email}
                 onChange={handleChange}
@@ -382,15 +335,10 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.email}
                 inputRef={(el) => (inputRefs.current.email = el)}
               />
-            </Box>
-          </Flex>
-
-          <Flex>
-            <Box md={6}>
               <CustomFormSelect
                 label={t('customers.form.labels.customerType')}
                 name="customerType"
-                icon={cilUser}
+                icon={User}
                 value={formData.customerType}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.customerType}
@@ -402,12 +350,10 @@ const EditCustomerPage = () => {
                 <option value="Company">{t('customers.form.types.company')}</option>
                 <option value="Sub Contractor">{t('customers.form.types.subContractor')}</option>
               </CustomFormSelect>
-            </Box>
-            <Box md={6}>
               <CustomFormInput
                 label={t('customers.form.labels.companyName')}
                 name="companyName"
-                icon={cilBuilding}
+                icon={Building2}
                 placeholder={t('customers.form.placeholders.companyName')}
                 value={formData.companyName}
                 onChange={handleChange}
@@ -415,42 +361,60 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.companyName}
                 inputRef={(el) => (inputRefs.current.companyName = el)}
               />
-            </Box>
-          </Flex>
-        </FormSection>
+            </SimpleGrid>
+          </FormSection>
 
-        {/* Address Information Section */}
-        <FormSection title={t('customers.form.titles.addressInfo')} icon={cilLocationPin}>
-          <Flex>
-            <Box md={8}>
+          <FormSection title={t('customers.form.titles.contactInfo')} icon={Phone}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              <CustomFormInput
+                label={t('customers.form.labels.mobile')}
+                name="mobile"
+                required
+                icon={Phone}
+                placeholder={t('customers.form.placeholders.mobile')}
+                value={formData.mobile}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.mobile}
+                feedback={validationErrors.mobile}
+                inputRef={(el) => (inputRefs.current.mobile = el)}
+              />
+              <CustomFormInput
+                label={t('customers.form.labels.homePhone')}
+                name="homePhone"
+                icon={Phone}
+                placeholder={t('customers.form.placeholders.homePhone')}
+                value={formData.homePhone}
+                onChange={handleChange}
+                isInvalid={!!validationErrors.homePhone}
+                feedback={validationErrors.homePhone}
+                inputRef={(el) => (inputRefs.current.homePhone = el)}
+              />
+            </SimpleGrid>
+          </FormSection>
+
+          <FormSection title={t('customers.form.titles.addressInfo')} icon={MapPin}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <CustomFormInput
                 label={t('customers.form.labels.address')}
                 name="address"
                 required
-                icon={cilLocationPin}
-                placeholder={t('customers.form.placeholders.street')}
+                placeholder={t('customers.form.placeholders.address')}
                 value={formData.address}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.address}
                 feedback={validationErrors.address}
                 inputRef={(el) => (inputRefs.current.address = el)}
               />
-            </Box>
-            <Box md={4}>
               <CustomFormInput
-                label={t('customers.form.labels.aptSuite')}
+                label={t('customers.form.labels.aptOrSuite')}
                 name="aptOrSuite"
-                placeholder={t('customers.form.placeholders.aptSuite')}
+                placeholder={t('customers.form.placeholders.aptOrSuite')}
                 value={formData.aptOrSuite}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.aptOrSuite}
                 feedback={validationErrors.aptOrSuite}
                 inputRef={(el) => (inputRefs.current.aptOrSuite = el)}
               />
-            </Box>
-          </Flex>
-          <Flex>
-            <Box md={4}>
               <CustomFormInput
                 label={t('customers.form.labels.city')}
                 name="city"
@@ -462,124 +426,33 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.city}
                 inputRef={(el) => (inputRefs.current.city = el)}
               />
-            </Box>
-            <Box md={4}>
-              <CustomFormSelect
+              <CustomFormInput
                 label={t('customers.form.labels.state')}
                 name="state"
                 required
+                placeholder={t('customers.form.placeholders.state')}
                 value={formData.state}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.state}
                 feedback={validationErrors.state}
                 inputRef={(el) => (inputRefs.current.state = el)}
-              >
-                <option value="">{t('customers.form.select.selectState')}</option>
-                <option value="AL">Alabama</option>
-                <option value="AK">Alaska</option>
-                <option value="AZ">Arizona</option>
-                <option value="AR">Arkansas</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="DE">Delaware</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="HI">Hawaii</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="IA">Iowa</option>
-                <option value="KS">Kansas</option>
-                <option value="KY">Kentucky</option>
-                <option value="LA">Louisiana</option>
-                <option value="ME">Maine</option>
-                <option value="MD">Maryland</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MS">Mississippi</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NE">Nebraska</option>
-                <option value="NV">Nevada</option>
-                <option value="NH">New Hampshire</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NY">New York</option>
-                <option value="NC">North Carolina</option>
-                <option value="ND">North Dakota</option>
-                <option value="OH">Ohio</option>
-                <option value="OK">Oklahoma</option>
-                <option value="OR">Oregon</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="RI">Rhode Island</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VT">Vermont</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WV">West Virginia</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
-              </CustomFormSelect>
-            </Box>
-            <Box md={4}>
+              />
               <CustomFormInput
                 label={t('customers.form.labels.zipCode')}
                 name="zipCode"
                 required
-                placeholder={t('customers.form.placeholders.zip')}
+                placeholder={t('customers.form.placeholders.zipCode')}
                 value={formData.zipCode}
                 onChange={handleChange}
                 isInvalid={!!validationErrors.zipCode}
                 feedback={validationErrors.zipCode}
                 inputRef={(el) => (inputRefs.current.zipCode = el)}
               />
-            </Box>
-          </Flex>
-        </FormSection>
+            </SimpleGrid>
+          </FormSection>
 
-        {/* Contact Information Section */}
-        <FormSection title={t('customers.form.titles.contactInfo')} icon={cilPhone}>
-          <Flex>
-            <Box md={6}>
-              <CustomFormInput
-                label={t('customers.form.labels.mobile')}
-                name="mobile"
-                required
-                icon={cilPhone}
-                placeholder={t('customers.form.placeholders.mobile')}
-                value={formData.mobile}
-                onChange={handleChange}
-                isInvalid={!!validationErrors.mobile}
-                feedback={validationErrors.mobile}
-                inputRef={(el) => (inputRefs.current.mobile = el)}
-              />
-            </Box>
-            <Box md={6}>
-              <CustomFormInput
-                label={t('customers.form.labels.homePhone')}
-                name="homePhone"
-                icon={cilPhone}
-                placeholder={t('customers.form.placeholders.homePhone')}
-                value={formData.homePhone}
-                onChange={handleChange}
-                isInvalid={!!validationErrors.homePhone}
-                feedback={validationErrors.homePhone}
-                inputRef={(el) => (inputRefs.current.homePhone = el)}
-              />
-            </Box>
-          </Flex>
-        </FormSection>
-
-        {/* Business Information Section */}
-        <FormSection title={t('customers.form.titles.businessInfo')} icon={cilBuilding}>
-          <Flex>
-            <Box md={6}>
+          <FormSection title={t('customers.form.titles.businessInfo')} icon={Building2}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <CustomFormInput
                 label={t('customers.form.labels.leadSource')}
                 name="leadSource"
@@ -591,8 +464,6 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.leadSource}
                 inputRef={(el) => (inputRefs.current.leadSource = el)}
               />
-            </Box>
-            <Box md={6}>
               <CustomFormInput
                 label={t('customers.form.labels.defaultDiscount')}
                 name="defaultDiscount"
@@ -606,80 +477,57 @@ const EditCustomerPage = () => {
                 feedback={validationErrors.defaultDiscount}
                 inputRef={(el) => (inputRefs.current.defaultDiscount = el)}
               />
-            </Box>
-          </Flex>
-          <div className="mb-3">
-            <FormLabel className="fw-medium text-dark mb-2">
-              {t('customers.form.labels.notes')}
-            </FormLabel>
-            <Textarea
-              id="note"
-              name="note"
-              rows={6}
-              value={formData.note || ''}
-              onChange={(e) => handleNoteChange(e.target.value)}
-              placeholder={t('customers.form.placeholders.notes')}
-            />
-          </div>
-        </FormSection>
+            </SimpleGrid>
+            <FormControl mb={4}>
+              <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
+                {t('customers.form.labels.notes')}
+              </FormLabel>
+              <Textarea
+                id="note"
+                name="note"
+                rows={6}
+                value={formData.note || ''}
+                onChange={(event) => handleNoteChange(event.target.value)}
+                placeholder={t('customers.form.placeholders.notes')}
+                borderRadius="md"
+                fontSize="sm"
+              />
+            </FormControl>
+          </FormSection>
 
-        {/* Action Buttons */}
-        <Card className="border-0 shadow-sm">
-          <CardBody className="p-4">
-            <div className="d-flex gap-3 justify-content-end form-buttons">
-              <CButton
-                status="light"
-                size="lg"
-                onClick={() => navigate('/customers')}
-                className="px-4 fw-semibold"
-                style={{
-                  borderRadius: '5px',
-                  border: '1px solid #e3e6f0',
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <Icon as={ArrowLeft} className="me-2" />
-                {t('customers.form.actions.cancel')}
-              </CButton>
-              <CButton
-                type="submit"
-                size="lg"
-                disabled={isSubmitting}
-                className="px-5 fw-semibold"
-                style={{
-                  borderRadius: '5px',
-                  border: 'none',
-                  background: headerBg,
-                  color: textColor,
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                      style={{ width: '16px', height: '16px' }}
-                    >
-                      <span className="visually-hidden">{t('common.loading')}</span>
-                    </div>
-                    {t('customers.form.actions.updating')}
-                  </>
-                ) : (
-                  <>
-                    <Icon as={Save} className="me-2" />
-                    {t('customers.form.actions.update')}
-                  </>
-                )}
-              </CButton>
-            </div>
-          </CardBody>
-        </Card>
-      </FormControl>
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={3} justify="flex-end">
+                <Button
+                  variant="outline"
+                  colorScheme="gray"
+                  onClick={() => navigate('/customers')}
+                  minH="44px"
+                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                >
+                  {t('customers.form.actions.cancel')}
+                </Button>
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  minH="44px"
+                  isLoading={isSubmitting}
+                  leftIcon={!isSubmitting ? <Icon as={Save} boxSize={4} aria-hidden="true" /> : undefined}
+                  bg={headerBg}
+                  _hover={{ opacity: 0.9 }}
+                  color={textColor}
+                >
+                  {isSubmitting
+                    ? t('customers.form.actions.updating')
+                    : t('customers.form.actions.update')}
+                </Button>
+              </Stack>
+            </CardBody>
+          </Card>
+        </Stack>
+      </Box>
     </Container>
   )
 }
 
-</Container>
-    </style>
 export default EditCustomerPage

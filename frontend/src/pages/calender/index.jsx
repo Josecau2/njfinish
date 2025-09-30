@@ -23,7 +23,6 @@ import axiosInstance from '../../helpers/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
 import PageHeader from '../../components/PageHeader'
-import { FaCalendarAlt } from 'react-icons/fa'
 
 const EVENT_TYPES = [
   'All',
@@ -230,7 +229,7 @@ const CalendarView = () => {
 
                 {filteredEvents.length === 0 && (
                   <Flex direction="column" align="center" py={10} color="gray.500" gap={2}>
-                    <Icon as={FaCalendarAlt} boxSize={12} opacity={0.3} />
+                    <Icon as={Calendar} boxSize={12} opacity={0.3} />
                     <Text fontSize="lg" fontWeight="medium">
                       No events found
                     </Text>

@@ -1,8 +1,37 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-// Helper function to get auth headers
-import { Card, CardBody, Input, Checkbox, Select, FormLabel } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Select,
+  Spinner,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react'
+import { ChevronDown, Search } from 'lucide-react'
 import PaginationControls from '../../../../components/PaginationControls'
 import axiosInstance from '../../../../helpers/axiosInstance'
 
@@ -26,29 +55,26 @@ const SettingsTab = ({ manufacturer }) => {
   const [selectedFields2, setSelectedFields2] = useState([])
   const [multiplier2Error, setMultiplier2Error] = useState('')
 
-  // Create allFields from code and style columns (no description)
   const allFields = useMemo(() => {
     const baseColumns = ['code']
     const dynamicColumns = Array.isArray(styleCollection)
       ? styleCollection
-          .slice(0, 5) // Show up to 5 styles instead of 3
+          .slice(0, 5)
           .map((style) => style?.style)
-          .filter((v) => typeof v === 'string' && v.trim() !== '') // ensure valid strings only
+          .filter((value) => typeof value === 'string' && value.trim() !== '')
       : []
+
     return [...baseColumns, ...dynamicColumns]
   }, [styleCollection])
 
-  // Set default selected fields when allFields is ready (code + up to 4 styles)
   useEffect(() => {
     if (allFields.length > 0) {
-      // Limit default selection to CODE and first 4 styles
-      const defaultFields = allFields.slice(0, 5) // code + 4 styles max
+      const defaultFields = allFields.slice(0, 5)
       setSelectedFields1(defaultFields)
       setSelectedFields2(defaultFields)
     }
   }, [allFields, catalogData])
 
-  // Fetch catalog data for the manufacturer
   useEffect(() => {
     const fetchCatalogData = async () => {
       if (!manufacturer?.id) {
@@ -57,19 +83,18 @@ const SettingsTab = ({ manufacturer }) => {
       }
 
       setLoading(true)
+
       try {
         const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/catalog`, {
-          // Authorization handled by axios interceptors
-
           params: {
             page: 1,
-            limit: 1000, // Get more items to show proper style comparison
+            limit: 1000,
             sortBy: 'code',
             sortOrder: 'ASC',
           },
         })
 
-        if (response.data && Array.isArray(response.data.catalogData)) {
+        if (Array.isArray(response.data?.catalogData)) {
           setCatalogData(response.data.catalogData)
         } else {
           setCatalogData([])
@@ -85,15 +110,13 @@ const SettingsTab = ({ manufacturer }) => {
     fetchCatalogData()
   }, [manufacturer?.id])
 
-  // Fetch styleCollection
   useEffect(() => {
     const fetchStyles = async () => {
       if (!manufacturer?.id) return
+
       try {
-        const res = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`, {
-          // Authorization handled by axios interceptors
-        })
-        setStyleCollection(res.data)
+        const response = await axiosInstance.get(`/api/manufacturers/${manufacturer.id}/styles`)
+        setStyleCollection(response.data)
       } catch (error) {
         console.error('Error fetching styles:', error)
       }
@@ -102,7 +125,6 @@ const SettingsTab = ({ manufacturer }) => {
     fetchStyles()
   }, [manufacturer?.id])
 
-  // Set multipliers initially
   useEffect(() => {
     if (manufacturer?.costMultiplier) {
       setMultiplier1(manufacturer.costMultiplier)
@@ -111,37 +133,33 @@ const SettingsTab = ({ manufacturer }) => {
   }, [manufacturer])
 
   const toggleField = (field, selectedFieldsSetter, selectedFields) => {
-    if (typeof field !== 'string' || field.trim() === '') return // ignore invalid fields
+    if (typeof field !== 'string' || field.trim() === '') return
+
     selectedFieldsSetter((prev) => {
       let updated
 
       if (prev.includes(field)) {
-        // Remove field if already selected
-        updated = prev.filter((f) => f !== field)
+        updated = prev.filter((value) => value !== field)
       } else {
-        // Add new field, but limit to maximum 6 columns total to prevent horizontal overflow
         if (prev.length >= 6) {
-          // Replace the last non-essential column with the new one
           const baseColumns = ['code', 'description']
-          const nonBaseColumns = prev.filter((f) => !baseColumns.includes(f))
+          const nonBaseColumns = prev.filter((value) => !baseColumns.includes(value))
+
           if (nonBaseColumns.length > 0) {
-            // Remove the last style column and add the new one
             updated = [...baseColumns, ...nonBaseColumns.slice(0, -1), field]
           } else {
-            updated = prev // Don't add if already at limit with base columns
+            updated = prev
           }
         } else {
           updated = [...prev, field]
         }
       }
 
-      // Ensure CODE is always first, remove description, keep only style fields
-      const final = ['code', ...updated.filter((f) => f !== 'code' && f !== 'description')]
+      const final = ['code', ...updated.filter((value) => value !== 'code' && value !== 'description')]
       return final
     })
   }
 
-  // Filter and paginate data - group by code to avoid duplicates
   const filterData = (searchCode) => {
     const filtered =
       catalogData?.filter(
@@ -150,10 +168,9 @@ const SettingsTab = ({ manufacturer }) => {
           item.code.toLowerCase().includes(searchCode.toLowerCase()),
       ) || []
 
-    // Group by code to show unique codes only
     const groupedByCode = filtered.reduce((acc, item) => {
       if (!acc[item.code]) {
-        acc[item.code] = item // Keep the first occurrence of each code
+        acc[item.code] = item
       }
       return acc
     }, {})
@@ -162,348 +179,397 @@ const SettingsTab = ({ manufacturer }) => {
   }
 
   const filteredData1 = filterData(searchCode1)
-  const totalPages1 = Math.ceil(filteredData1.length / itemsPerPage1)
+  const totalPages1 = Math.ceil(filteredData1.length / itemsPerPage1) || 1
   const paginatedData1 = filteredData1.slice((page1 - 1) * itemsPerPage1, page1 * itemsPerPage1)
 
   const filteredData2 = filterData(searchCode2)
-  const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage2)
+  const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage2) || 1
   const paginatedData2 = filteredData2.slice((page2 - 1) * itemsPerPage2, page2 * itemsPerPage2)
 
-  // Reset pages on filter/column changes
   useEffect(() => {
     setPage1(1)
   }, [searchCode1, itemsPerPage1, selectedFields1])
+
   useEffect(() => {
     setPage2(1)
   }, [searchCode2, itemsPerPage2, selectedFields2])
 
-  // Shared render functions
-  const renderDropdown = (selectedFields, toggleHandler, prefix) => (
-    <div className="d-flex align-items-center">
-      <CDropdown className="ms-2">
-        <CDropdownToggle
-          colorScheme="gray"
-          variant="outline"
+  const formatFieldLabel = (field) => {
+    if (field === 'code') return 'CODE'
+    return typeof field === 'string' && field ? `${field.toUpperCase()} PRICE` : t('common.na', 'N/A')
+  }
+
+  const renderDropdown = (selectedFields, toggleHandler, prefix) => {
+    const summary = selectedFields.length
+      ? selectedFields
+          .slice(0, 3)
+          .map((field) => (typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A')))
+          .join(', ')
+      : t('common.displayedColumns', 'Displayed Columns')
+
+    return (
+      <Menu closeOnSelect={false} placement="bottom-end">
+        <MenuButton
+          as={Button}
           size="sm"
-          aria-label={t('common.displayedColumns', 'Displayed Columns')}
+          variant="outline"
+          rightIcon={<Icon as={ChevronDown} boxSize={4} />}
+          minW="220px"
         >
-          {selectedFields.length > 0
-            ? selectedFields
-                .slice(0, 3)
-                .map((f) => (typeof f === 'string' && f ? f.toUpperCase() : t('common.na', 'N/A')))
-                .join(', ')
-            : t('common.displayedColumns', 'Displayed Columns')}
-          {selectedFields.length > 3 && '...'}
-        </CDropdownToggle>
-        <CDropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
-          <CDropdownItem component="div" className="small text-muted px-3 py-1">
-            CODE is always shown. Select styles to see multiplied prices. Max 6 columns total.
-          </CDropdownItem>
-          <hr className="dropdown-divider" />
+          <Text noOfLines={1} fontWeight="medium">
+            {summary}
+            {selectedFields.length > 3 ? '...' : ''}
+          </Text>
+        </MenuButton>
+        <MenuList maxH="300px" overflowY="auto">
+          <Box px={3} py={2} fontSize="xs" color="gray.500">
+            {t(
+              'settings.manufacturers.settings.dropdownHelp',
+              'CODE is always shown. Select styles to see multiplied prices. Max 6 columns total.',
+            )}
+          </Box>
+          <MenuDivider />
           {allFields.map((field) => {
-            const isBaseColumn = ['code'].includes(field)
+            const isBaseColumn = field === 'code'
+
             return (
-              <CDropdownItem key={field} component="div" className="form-check">
+              <MenuItem key={field} py={2}>
                 <Checkbox
-                  type="checkbox"
                   id={`checkbox-${prefix}-${field}`}
-                  checked={selectedFields.includes(field)}
+                  isChecked={selectedFields.includes(field)}
                   onChange={() => toggleHandler(field)}
-                  disabled={isBaseColumn} // Disable base columns since they're always shown
-                  label={
-                    <span className={isBaseColumn ? 'text-muted' : ''}>
-                      {typeof field === 'string' && field
-                        ? field.toUpperCase()
-                        : t('common.na', 'N/A')}{' '}
-                      {isBaseColumn ? '(always shown)' : ''}
-                    </span>
-    </div>
-    </div>
-  
-  )
-                  }
-                />
-              </CDropdownItem>
+                  isDisabled={isBaseColumn}
+                  size="sm"
+                >
+                  <Text color={isBaseColumn ? 'gray.500' : 'gray.800'} fontWeight="medium">
+                    {typeof field === 'string' && field ? field.toUpperCase() : t('common.na', 'N/A')}{' '}
+                    {isBaseColumn ? t('settings.manufacturers.settings.alwaysShown', '(always shown)') : ''}
+                  </Text>
+                </Checkbox>
+              </MenuItem>
             )
           })}
-        </CDropdownMenu>
-      </CDropdown>
-    </div>
-  )
+        </MenuList>
+      </Menu>
+    )
+  }
+
+  const resolvePrice = (code, styleKey) => {
+    return catalogData.find(
+      (entry) =>
+        entry.code === code &&
+        typeof entry.style === 'string' &&
+        typeof styleKey === 'string' &&
+        entry.style.toLowerCase() === styleKey.toLowerCase(),
+    )?.price
+  }
 
   const renderTable = (data, selectedFields, multiplierCalc) => (
-    <div>
-      <div className="mb-2 small text-muted">
-        Showing {Math.min(data.length, 5)} sample items with code and multiplied prices for selected
-        styles
-      </div>
-      <CTable striped hover responsive>
-        <CTableHead>
-          <CTableRow>
-            {selectedFields.map((field, fieldIndex) => (
-              <CTableDataCell
-                key={`header-${fieldIndex}`}
-                style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}
-              >
-                {field === 'code'
-                  ? 'CODE'
-                  : typeof field === 'string' && field
-                    ? `${field.toUpperCase()} PRICE`
-                    : t('common.na', 'N/A')}
-              </CTableDataCell>
-            ))}
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {loading ? (
-            <CTableRow>
-              <CTableDataCell colSpan={selectedFields.length} className="text-center">
-                {t('common.loading', 'Loading...')}
-              </CTableDataCell>
-            </CTableRow>
-          ) : data.length > 0 ? (
-            data.map((item) => (
-              <CTableRow key={item.id}>
-                {selectedFields.map((field, fieldIndex) => (
-                  <CTableDataCell key={`${item.id}-${fieldIndex}`}>
-                    {field === 'code'
-                      ? item[field]
-                      : (() => {
-                          // Find the price for this code in the specified style
-                          const styleVariant = data.find(
-                            (d) =>
-                              d.code === item.code &&
-                              d.style?.toLowerCase() === field.toLowerCase(),
-                          )
+    <Stack spacing={3} mt={4}>
+      <Text fontSize="sm" color="gray.600">
+        {t(
+          'settings.manufacturers.settings.sampleItems',
+          'Showing {{count}} sample items with code and multiplied prices for selected styles',
+          { count: Math.min(data.length, 5) },
+        )}
+      </Text>
+      <TableContainer borderWidth="1px" borderRadius="lg" borderColor="gray.100">
+        <Table size="sm" variant="striped">
+          <Thead bg="gray.50">
+            <Tr>
+              {selectedFields.map((field, index) => (
+                <Th key={`header-${index}`} textTransform="none" fontSize="xs" color="gray.600">
+                  {field === 'code'
+                    ? 'CODE'
+                    : typeof field === 'string' && field
+                      ? `${field.toUpperCase()} PRICE`
+                      : t('common.na', 'N/A')}
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <Tr>
+                <Td colSpan={selectedFields.length}>
+                  <Flex align="center" justify="center" py={8} color="gray.500">
+                    <Spinner size="sm" />
+                  </Flex>
+                </Td>
+              </Tr>
+            ) : data.length > 0 ? (
+              data.map((item) => (
+                <Tr key={item.id ?? item.code}>
+                  {selectedFields.map((field, index) => {
+                    if (field === 'code') {
+                      return <Td key={`${item.id ?? item.code}-${index}`}>{item.code ?? '--'}</Td>
+                    }
 
-                          return styleVariant?.price
-                            ? `$${multiplierCalc(styleVariant.price)}`
-                            : '--'
-                        })()}
-                  </CTableDataCell>
-                ))}
-              </CTableRow>
-            ))
-          ) : (
-            <CTableRow>
-              <CTableDataCell colSpan={selectedFields.length} className="text-center">
-                {t('common.noData', 'No data found.')}
-              </CTableDataCell>
-            </CTableRow>
-          )}
-        </CTableBody>
-      </CTable>
-    </div>
+                    const price = resolvePrice(item.code, field)
+
+                    return (
+                      <Td key={`${item.id ?? item.code}-${index}`}>
+                        {price ? `$${multiplierCalc(price)}` : '--'}
+                      </Td>
+                    )
+                  })}
+                </Tr>
+              ))
+            ) : (
+              <Tr>
+                <Td colSpan={selectedFields.length}>
+                  <Text textAlign="center" py={6} color="gray.500">
+                    {t('common.noData', 'No data found.')}
+                  </Text>
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Stack>
   )
 
   return (
-    <>
-      {/* Cost Multiplier Card */}
+    <Stack spacing={8}>
       <Card>
         <CardBody>
-          <p>
-            <strong>
+          <Stack spacing={4}>
+            <Heading size="sm">
               {t('settings.manufacturers.settings.costMultiplierTitle', 'Your cost multiplier')}
-            </strong>
-          </p>
-          <div
-            id="costMultiplierHelp"
-            className="border rounded p-2 mb-3 small"
-            style={{ borderColor: '#0d6efd', backgroundColor: '#f0f8ff' }}
-          >
-            {t(
-              'settings.manufacturers.settings.costMultiplierHelp',
-              'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.',
+            </Heading>
+            <Box
+              id="costMultiplierHelp"
+              borderWidth="1px"
+              borderColor="brand.500"
+              background="blue.50"
+              borderRadius="md"
+              px={3}
+              py={2}
+              fontSize="sm"
+              color="gray.700"
+            >
+              {t(
+                'settings.manufacturers.settings.costMultiplierHelp',
+                'Cost multiplier controls the price you pay to manufacturer. You can see your cost in Quote when you turn off Customer multiplier.',
+              )}
+            </Box>
+            <FormControl maxW="140px">
+              <Input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.001"
+                value={multiplier1}
+                onChange={(event) => {
+                  const value = event.target.value
+                  setMultiplier1(value)
+                  setMultiplier1Error(
+                    value.trim() === '' ? t('settings.users.form.validation.required') : '',
+                  )
+                }}
+                placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
+                aria-describedby="costMultiplierHelp"
+                aria-label={t(
+                  'settings.manufacturers.settings.costMultiplierTitle',
+                  'Your cost multiplier',
+                )}
+              />
+            </FormControl>
+            {multiplier1Error && (
+              <Text color="red.500" fontSize="sm">
+                {multiplier1Error}
+              </Text>
             )}
-          </div>
-          <Input
-            type="number"
-            inputMode="decimal"
-            min="0"
-            step="0.001"
-            value={multiplier1}
-            onChange={(e) => {
-              const value = e.target.value
-              setMultiplier1(value)
-              setMultiplier1Error(
-                value.trim() === '' ? t('settings.users.form.validation.required') : '',
-              )
-            }}
-            placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
-            style={{ width: '100px' }}
-            className="mb-2"
-            aria-describedby="costMultiplierHelp"
-            aria-label={t(
-              'settings.manufacturers.settings.costMultiplierTitle',
-              'Your cost multiplier',
-            )}
-          />
-          {multiplier1Error && <div className="text-danger mt-1 mb-2">{multiplier1Error}</div>}
-
-          <CInputGroup className="mb-3">
-            <Input
-              value={searchCode1}
-              onChange={(e) => setSearchCode1(e.target.value)}
-              placeholder={t('common.search') + '...'}
-              aria-label={t('common.search', 'Search')}
-            />
-            <CInputGroupText>
-              <i className="bi bi-search"></i>
-            </CInputGroupText>
-            {renderDropdown(
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={3} align={{ md: 'center' }}>
+              <InputGroup maxW={{ base: '100%', md: '320px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} boxSize={4} color="gray.400" />
+                </InputLeftElement>
+                <Input
+                  value={searchCode1}
+                  onChange={(event) => setSearchCode1(event.target.value)}
+                  placeholder={`${t('common.search')}...`}
+                  aria-label={t('common.search', 'Search')}
+                />
+              </InputGroup>
+              {renderDropdown(
+                selectedFields1,
+                (field) => toggleField(field, setSelectedFields1, selectedFields1),
+                '1',
+              )}
+            </Stack>
+            {renderTable(
+              paginatedData1,
               selectedFields1,
-              (field) => toggleField(field, setSelectedFields1, selectedFields1),
-              '1',
+              (value) => (parseFloat(value) * parseFloat(multiplier1 || 1)).toFixed(2),
             )}
-          </CInputGroup>
-
-          {renderTable(paginatedData1, selectedFields1, (value) =>
-            (parseFloat(value) * parseFloat(multiplier1 || 1)).toFixed(2),
-          )}
-
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>
-              {t('common.pageOf', {
-                page: page1,
-                total: totalPages1,
-                defaultValue: 'Page {{page}} of {{total}}',
-              })}
-            </div>
-            <div>
-              <FormLabel htmlFor="itemsPerPage1" className="me-2 mb-0">
-                {t('common.itemsPerPage', 'Items per page:')}
-              </FormLabel>
-              <Select
-                size="sm"
-                className="d-inline w-auto ms-2"
-                value={itemsPerPage1}
-                onChange={(e) => setItemsPerPage1(Number(e.target.value))}
-                id="itemsPerPage1"
-                aria-label={t('common.itemsPerPage', 'Items per page:')}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </Select>
-            </div>
-            <PaginationControls
-              page={page1}
-              totalPages={totalPages1}
-              goPrev={() => setPage1((p) => Math.max(1, p - 1))}
-              goNext={() => setPage1((p) => Math.min(totalPages1, p + 1))}
-            />
-          </div>
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              justify="space-between"
+              align={{ base: 'flex-start', md: 'center' }}
+              gap={4}
+            >
+              <Text fontSize="sm" color="gray.600">
+                {t('common.pageOf', {
+                  page: page1,
+                  total: totalPages1,
+                  defaultValue: 'Page {{page}} of {{total}}',
+                })}
+              </Text>
+              <Flex align="center" gap={2}>
+                <FormLabel htmlFor="itemsPerPage1" mb={0} fontSize="sm" color="gray.600">
+                  {t('common.itemsPerPage', 'Items per page:')}
+                </FormLabel>
+                <Select
+                  id="itemsPerPage1"
+                  size="sm"
+                  width="auto"
+                  value={itemsPerPage1}
+                  onChange={(event) => setItemsPerPage1(Number(event.target.value))}
+                  aria-label={t('common.itemsPerPage', 'Items per page:')}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </Select>
+              </Flex>
+              <PaginationControls
+                page={page1}
+                totalPages={totalPages1}
+                goPrev={() => setPage1((current) => Math.max(1, current - 1))}
+                goNext={() => setPage1((current) => Math.min(totalPages1, current + 1))}
+              />
+            </Flex>
+          </Stack>
         </CardBody>
       </Card>
 
-      {/* Customer Multiplier Card */}
-      <Card className="mt-4">
+      <Card>
         <CardBody>
-          <p>
-            <strong>
+          <Stack spacing={4}>
+            <Heading size="sm">
               {t(
                 'settings.manufacturers.settings.customerMultiplierTitle',
                 'Customer price multiplier',
               )}
-            </strong>
-          </p>
-          <div
-            id="customerMultiplierHelp"
-            className="border rounded p-2 mb-3 small"
-            style={{ borderColor: '#198754', backgroundColor: '#e9fbe5' }}
-          >
-            {t(
-              'settings.manufacturers.settings.customerMultiplierHelp',
-              'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.',
+            </Heading>
+            <Box
+              id="customerMultiplierHelp"
+              borderWidth="1px"
+              borderColor="green.500"
+              background="green.50"
+              borderRadius="md"
+              px={3}
+              py={2}
+              fontSize="sm"
+              color="gray.700"
+            >
+              {t(
+                'settings.manufacturers.settings.customerMultiplierHelp',
+                'Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.',
+              )}
+            </Box>
+            <FormControl maxW="140px">
+              <Input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.001"
+                value={multiplier2}
+                onChange={(event) => {
+                  const value = event.target.value
+                  setMultiplier2(value)
+                  setMultiplier2Error(
+                    value.trim() === '' ? t('settings.users.form.validation.required') : '',
+                  )
+                }}
+                placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
+                aria-describedby="customerMultiplierHelp"
+                aria-label={t(
+                  'settings.manufacturers.settings.customerMultiplierTitle',
+                  'Customer price multiplier',
+                )}
+              />
+            </FormControl>
+            {multiplier2Error && (
+              <Text color="red.500" fontSize="sm">
+                {multiplier2Error}
+              </Text>
             )}
-          </div>
-          <Input
-            type="number"
-            inputMode="decimal"
-            min="0"
-            step="0.001"
-            value={multiplier2}
-            onChange={(e) => {
-              const value = e.target.value
-              setMultiplier2(value)
-              setMultiplier2Error(
-                value.trim() === '' ? t('settings.users.form.validation.required') : '',
-              )
-            }}
-            placeholder={t('settings.manufacturers.placeholders.costMultiplier', '1.000')}
-            style={{ width: '100px' }}
-            className="mb-2"
-            aria-describedby="customerMultiplierHelp"
-            aria-label={t(
-              'settings.manufacturers.settings.customerMultiplierTitle',
-              'Customer price multiplier',
-            )}
-          />
-          {multiplier2Error && <div className="text-danger mt-1 mb-2">{multiplier2Error}</div>}
-
-          <CInputGroup className="mb-3">
-            <Input
-              value={searchCode2}
-              onChange={(e) => setSearchCode2(e.target.value)}
-              placeholder={t('common.search') + '...'}
-              aria-label={t('common.search', 'Search')}
-            />
-            <CInputGroupText>
-              <i className="bi bi-search"></i>
-            </CInputGroupText>
-            {renderDropdown(
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={3} align={{ md: 'center' }}>
+              <InputGroup maxW={{ base: '100%', md: '320px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} boxSize={4} color="gray.400" />
+                </InputLeftElement>
+                <Input
+                  value={searchCode2}
+                  onChange={(event) => setSearchCode2(event.target.value)}
+                  placeholder={`${t('common.search')}...`}
+                  aria-label={t('common.search', 'Search')}
+                />
+              </InputGroup>
+              {renderDropdown(
+                selectedFields2,
+                (field) => toggleField(field, setSelectedFields2, selectedFields2),
+                '2',
+              )}
+            </Stack>
+            {renderTable(
+              paginatedData2,
               selectedFields2,
-              (field) => toggleField(field, setSelectedFields2, selectedFields2),
-              '2',
+              (value) =>
+                (
+                  parseFloat(value) *
+                  parseFloat(multiplier1 || 1) *
+                  parseFloat(multiplier2 || 1)
+                ).toFixed(2),
             )}
-          </CInputGroup>
-
-          {renderTable(paginatedData2, selectedFields2, (value) =>
-            (
-              parseFloat(value) *
-              parseFloat(multiplier1 || 1) *
-              parseFloat(multiplier2 || 1)
-            ).toFixed(2),
-          )}
-
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>
-              {t('common.pageOf', {
-                page: page2,
-                total: totalPages2,
-                defaultValue: 'Page {{page}} of {{total}}',
-              })}
-            </div>
-            <div>
-              <FormLabel htmlFor="itemsPerPage2" className="me-2 mb-0">
-                {t('common.itemsPerPage', 'Items per page:')}
-              </FormLabel>
-              <Select
-                size="sm"
-                className="d-inline w-auto ms-2"
-                value={itemsPerPage2}
-                onChange={(e) => setItemsPerPage2(Number(e.target.value))}
-                id="itemsPerPage2"
-                aria-label={t('common.itemsPerPage', 'Items per page:')}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </Select>
-            </div>
-            <PaginationControls
-              page={page2}
-              totalPages={totalPages2}
-              goPrev={() => setPage2((p) => Math.max(1, p - 1))}
-              goNext={() => setPage2((p) => Math.min(totalPages2, p + 1))}
-            />
-          </div>
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              justify="space-between"
+              align={{ base: 'flex-start', md: 'center' }}
+              gap={4}
+            >
+              <Text fontSize="sm" color="gray.600">
+                {t('common.pageOf', {
+                  page: page2,
+                  total: totalPages2,
+                  defaultValue: 'Page {{page}} of {{total}}',
+                })}
+              </Text>
+              <Flex align="center" gap={2}>
+                <FormLabel htmlFor="itemsPerPage2" mb={0} fontSize="sm" color="gray.600">
+                  {t('common.itemsPerPage', 'Items per page:')}
+                </FormLabel>
+                <Select
+                  id="itemsPerPage2"
+                  size="sm"
+                  width="auto"
+                  value={itemsPerPage2}
+                  onChange={(event) => setItemsPerPage2(Number(event.target.value))}
+                  aria-label={t('common.itemsPerPage', 'Items per page:')}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </Select>
+              </Flex>
+              <PaginationControls
+                page={page2}
+                totalPages={totalPages2}
+                goPrev={() => setPage2((current) => Math.max(1, current - 1))}
+                goNext={() => setPage2((current) => Math.min(totalPages2, current + 1))}
+              />
+            </Flex>
+          </Stack>
         </CardBody>
       </Card>
-    </>
-  
+    </Stack>
   )
 }
 
-</CDropdownItem>
 export default SettingsTab
+
+
+

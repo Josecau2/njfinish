@@ -1,16 +1,33 @@
+
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Alert, Card, CardBody, CardHeader, Box, Container, Flex, Spinner, Icon, Button } from '@chakra-ui/react'
-import { ArrowLeft } from 'lucide-react'
-import PageHeader from '../../components/PageHeader'
-import { fetchPaymentById, fetchPublicPaymentConfig } from '../../store/slices/paymentsSlice'
-import { FaCreditCard } from 'react-icons/fa'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { ArrowLeft, CreditCard } from 'lucide-react'
 import Swal from 'sweetalert2'
-import axiosInstance from '../../helpers/axiosInstance'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+
+import PageHeader from '../../components/PageHeader'
+import { fetchPaymentById, fetchPublicPaymentConfig } from '../../store/slices/paymentsSlice'
+import axiosInstance from '../../helpers/axiosInstance'
 
 const formatCurrency = (amountCents = 0, currency = 'USD') => {
   const value = (amountCents || 0) / 100
@@ -20,13 +37,7 @@ const formatCurrency = (amountCents = 0, currency = 'USD') => {
   }).format(value)
 }
 
-const StripeCheckoutForm = ({
-  paymentId,
-  onPaymentComplete,
-  onProcessingChange,
-  onError,
-  submitLabel,
-}) => {
+const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, onError, submitLabel }) => {
   const stripe = useStripe()
   const elements = useElements()
   const [submitting, setSubmitting] = useState(false)
@@ -65,16 +76,15 @@ const StripeCheckoutForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="stack gap-3">
+    <Stack as="form" onSubmit={handleSubmit} spacing={4}>
       <PaymentElement options={{ layout: 'tabs' }} />
-      <div className="d-flex justify-content-end gap-2">
-        <Button type="submit" colorScheme="blue" disabled={!stripe || !elements || submitting}>
-          {submitting ? <Spinner size="sm" aria-hidden /> : null}
-          <span className={submitting ? 'ms-2' : ''}>{submitLabel}</span>
+      <Flex justify="flex-end">
+        <Button type="submit" colorScheme="blue" isDisabled={!stripe || !elements || submitting} minH="44px">
+          {submitting && <Spinner size="sm" mr={2} />}
+          {submitLabel}
         </Button>
-      </div>
-    </form>
-  
+      </Flex>
+    </Stack>
   )
 }
 
@@ -83,6 +93,7 @@ const PaymentPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { id } = useParams()
+
   const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
   const [stripePromise, setStripePromise] = useState(null)
   const [clientSecret, setClientSecret] = useState('')
@@ -124,128 +135,81 @@ const PaymentPage = () => {
         return 'completed'
       }
       if (refreshed?.status === 'failed') {
-        setStatusVariant('danger')
+        setStatusVariant('error')
         setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'))
-        setClientSecret('')
         return 'failed'
       }
       await new Promise((resolve) => setTimeout(resolve, 2000))
     }
-    setStatusVariant('info')
-    setStatusMessage(t('payment.status.pending', 'Awaiting confirmation...'))
     return 'pending'
   }, [refreshPayment, t])
 
-  const initializeIntent = useCallback(async () => {
-    if (!id) return
-    setIntentLoading(true)
-    setIntentError(null)
-    try {
-      const { data } = await axiosInstance.post(`/api/payments/${id}/stripe-intent`)
-      setClientSecret(data.clientSecret)
+  const handlePaymentComplete = useCallback(
+    async (intent) => {
       setStatusVariant('info')
-      setStatusMessage('')
-      await refreshPayment()
-    } catch (error) {
-      setIntentError(
-        error.response?.data?.error || error.message || 'Unable to initialize payment.',
-      )
+      setStatusMessage(t('payment.status.pending', 'Awaiting confirmation...'))
+      const status = await pollForStatus()
+
+      if (status === 'completed') {
+        await Swal.fire({
+          title: t('payment.success.title', 'Payment successful'),
+          text: t('payment.success.message', 'Your payment has been processed successfully.'),
+          icon: 'success',
+        })
+        navigate('/payments')
+        return
+      }
+
+      if (status === 'failed') {
+        await Swal.fire({
+          title: t('payment.failed.title', 'Payment failed'),
+          text: t('payment.failed.message', 'Stripe was unable to complete the payment. Please try again.'),
+          icon: 'error',
+        })
+        return
+      }
+
+      await Swal.fire({
+        title: t('payment.status.pendingTitle', 'Awaiting confirmation'),
+        text: t('payment.status.pending', 'Awaiting confirmation...'),
+        icon: 'info',
+      })
+    },
+    [pollForStatus, t, navigate],
+  )
+
+  const initializeIntent = useCallback(async () => {
+    if (!currentPayment?.id) return
+
+    try {
+      setIntentLoading(true)
+      setIntentError(null)
+      const { data } = await axiosInstance.post(`/api/payments/${currentPayment.id}/intent`)
+      if (data?.clientSecret) {
+        setClientSecret(data.clientSecret)
+      } else {
+        throw new Error('Missing client secret from Stripe')
+      }
+    } catch (err) {
+      console.error('Failed to initialize intent:', err)
+      setIntentError(err?.response?.data?.message || err.message || 'Unable to initialize payment')
     } finally {
       setIntentLoading(false)
     }
-  }, [id, refreshPayment])
-
-  useEffect(() => {
-    if (!publicPaymentConfig?.cardPaymentsEnabled || !publicPaymentConfig?.publishableKey) {
-      return
-    }
-    if (!currentPayment || !['pending', 'failed'].includes(currentPayment.status)) {
-      return
-    }
-    if (!clientSecret && !intentLoading) {
-      initializeIntent()
-    }
-  }, [publicPaymentConfig, currentPayment?.status, clientSecret, intentLoading, initializeIntent])
-
-  useEffect(() => {
-    if (!currentPayment) return
-
-    if (currentPayment.status === 'completed') {
-      setStatusVariant('success')
-      setStatusMessage(t('payment.status.completed', 'Payment completed successfully.'))
-      return
-    }
-
-    if (currentPayment.status === 'failed') {
-      setStatusVariant('danger')
-      setStatusMessage(t('payment.status.failed', 'Payment failed. Please try again.'))
-      if (clientSecret) {
-        setClientSecret('')
-      }
-      return
-    }
-
-    if (currentPayment.status === 'processing') {
-      setStatusVariant('info')
-      setStatusMessage(t('payment.status.processing', 'Payment is processing. Please wait...'))
-      return
-    }
-
-    if (currentPayment.status === 'pending') {
-      setStatusVariant('info')
-      setStatusMessage('')
-    }
-  }, [currentPayment, clientSecret, t])
-
-  const handleGoBack = () => {
-    navigate(-1)
-  }
-
-  const handleViewPayments = useCallback(() => {
-    navigate('/payments')
-  }, [navigate])
-
-  const handlePaymentComplete = useCallback(async () => {
-    const status = await pollForStatus()
-
-    if (status === 'completed') {
-      const result = await Swal.fire({
-        title: t('payment.success.title', 'Payment Successful!'),
-        text: t('payment.success.message', 'Your payment has been processed successfully.'),
-        icon: 'success',
-        showCancelButton: true,
-        confirmButtonText: t('payment.success.viewPayments', 'View payments'),
-        cancelButtonText: t('payment.success.stay', 'Stay here'),
-      })
-      if (result.isConfirmed) {
-        handleViewPayments()
-      }
-      return
-    }
-
-    if (status === 'failed') {
-      await Swal.fire({
-        title: t('payment.failed.title', 'Payment failed'),
-        text: t(
-          'payment.failed.message',
-          'Stripe was unable to complete the payment. Please try again.',
-        ),
-        icon: 'error',
-      })
-      return
-    }
-
-    await Swal.fire({
-      title: t('payment.status.pendingTitle', 'Awaiting confirmation'),
-      text: t('payment.status.pending', 'Awaiting confirmation...'),
-      icon: 'info',
-    })
-  }, [pollForStatus, t, handleViewPayments])
+  }, [currentPayment?.id])
 
   const handleRetryPayment = useCallback(() => {
     setClientSecret('')
     initializeIntent()
   }, [initializeIntent])
+
+  const handleGoBack = useCallback(() => {
+    navigate(-1)
+  }, [navigate])
+
+  const handleViewPayments = useCallback(() => {
+    navigate('/payments')
+  }, [navigate])
 
   const canAttemptPayment = Boolean(
     publicPaymentConfig?.cardPaymentsEnabled &&
@@ -272,140 +236,154 @@ const PaymentPage = () => {
     [clientSecret],
   )
 
+  useEffect(() => {
+    if (canAttemptPayment && !clientSecret) {
+      initializeIntent()
+    }
+  }, [canAttemptPayment, clientSecret, initializeIntent])
+
   if (loading || !currentPayment) {
     return (
-      <Container fluid className="py-5 text-center">
-        <Spinner colorScheme="blue" />
+      <Container maxW="4xl" py={12} textAlign="center">
+        <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
       </Container>
-  
-  )
+    )
   }
 
   if (!publicPaymentConfig?.cardPaymentsEnabled) {
     return (
-      <Container fluid className="payment-page">
+      <Container maxW="4xl" py={6}>
         <PageHeader
           title={t('payment.unavailable.title', 'Payment Unavailable')}
           subtitle={t('payment.unavailable.subtitle', 'Card payments are currently disabled')}
-          icon={FaCreditCard}
+          icon={CreditCard}
         />
-        <Card>
-          <CardBody className="text-center py-5">
-            <Alert status="warning">
-              {t(
-                'payment.unavailable.configuration',
-                'Please contact an administrator to enable Stripe payments.',
-              )}
+        <Card variant="outline" borderRadius="xl" shadow="sm">
+          <CardBody textAlign="center" py={10}>
+            <Alert status="warning" borderRadius="md" mb={6}>
+              <AlertIcon />
+              {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
             </Alert>
-            <Button colorScheme="blue" onClick={handleGoBack}>
-              <Icon as={ArrowLeft} className="me-2" />
+            <Button colorScheme="blue" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}>
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
         </Card>
       </Container>
-  
-  )
+    )
   }
 
-  const showPaymentForm = Boolean(
-    stripePromise && options && clientSecret && canAttemptPayment && !isCompleted,
-  )
+  const showPaymentForm = Boolean(stripePromise && options && clientSecret && canAttemptPayment && !isCompleted)
   const showUnavailableAlert = !canAttemptPayment && !isCompleted && !receiptUrl && !isFailed
+  const alertStatus = statusVariant === 'error' ? 'error' : statusVariant === 'success' ? 'success' : 'info'
 
   return (
-    <Container fluid className="payment-page">
+    <Container maxW="4xl" py={6} className="payment-page">
       <PageHeader
         title={t('payment.title', 'Make Payment')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
-        icon={FaCreditCard}
+        icon={CreditCard}
       />
 
-      <Flex>
-        <Box lg={8} className="mx-auto">
-          <Card>
-            <CardHeader className="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 className="mb-0">{t('payment.details.title', 'Payment Details')}</h5>
-                <small className="text-muted">
+      <Flex justify="center">
+        <Card w="full" maxW="xl" borderRadius="xl" shadow="sm">
+          <CardHeader borderBottomWidth="1px">
+            <Flex justify="space-between" align="center" gap={4} wrap="wrap">
+              <Box>
+                <Heading as="h5" size="sm" mb={1}>
+                  {t('payment.details.title', 'Payment Details')}
+                </Heading>
+                <Text fontSize="sm" color="gray.500">
                   {t('payment.order', 'Order')} #{currentPayment.orderId}
-                </small>
-              </div>
-              <div className="text-end">
-                <h4 className="mb-0 text-primary">
+                </Text>
+              </Box>
+              <Box textAlign="right">
+                <Heading as="h4" size="md" color="blue.500">
                   {formatCurrency(amountCents, currentPayment.currency)}
-                </h4>
-                <small className="text-muted text-uppercase">
+                </Heading>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                   {currentPayment.currency || 'USD'}
-                </small>
-              </div>
-            </CardHeader>
-            <CardBody className="stack gap-4">
-              {processing ? (
-                <Alert status="info" role="status" aria-live="polite">
-                  <Spinner size="sm" className="me-2" aria-hidden />
+                </Text>
+              </Box>
+            </Flex>
+          </CardHeader>
+          <CardBody>
+            <Stack spacing={4}>
+              {processing && (
+                <Alert status="info" borderRadius="md">
+                  <AlertIcon />
                   {t('payment.processing', 'Processing payment...')}
                 </Alert>
-              ) : null}
+              )}
 
-              {statusMessage ? (
-                <Alert color={statusVariant} role="status" aria-live="polite">
-                  <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-                    <span>{statusMessage}</span>
-                    {isFailed ? (
+              {statusMessage && (
+                <Alert status={alertStatus} borderRadius="md">
+                  <AlertIcon />
+                  <Flex justify="space-between" align="center" gap={4} wrap="wrap">
+                    <Text>{statusMessage}</Text>
+                    {isFailed && (
                       <Button
                         size="sm"
                         colorScheme="red"
                         variant="outline"
                         onClick={handleRetryPayment}
-                        disabled={intentLoading}
+                        isLoading={intentLoading}
+                        minH="36px"
                       >
-                        {intentLoading ? <Spinner size="sm" aria-hidden /> : null}
-                        <span className={intentLoading ? 'ms-2' : ''}>
-                          {t('payment.retry', 'Retry Payment')}
-                        </span>
+                        {t('payment.retry', 'Retry Payment')}
                       </Button>
-                    ) : null}
-                  </div>
+                    )}
+                  </Flex>
                 </Alert>
-              ) : null}
+              )}
 
-              {intentError ? (
-                <div className="stack gap-2">
-                  <Alert status="error" role="alert">
+              {intentError && (
+                <Stack spacing={3}>
+                  <Alert status="error" borderRadius="md">
+                    <AlertIcon />
                     {intentError}
                   </Alert>
-                  <div>
+                  <Button
+                    colorScheme="blue"
+                    variant="outline"
+                    onClick={initializeIntent}
+                    isLoading={intentLoading}
+                    minH="44px"
+                  >
+                    {t('payment.retry', 'Retry Payment')}
+                  </Button>
+                </Stack>
+              )}
+
+              {receiptUrl && (
+                <Alert status="success" borderRadius="md">
+                  <AlertIcon />
+                  <HStack spacing={2}>
+                    <Text>
+                      {t('payment.receipt.available', 'Receipt available')}:
+                    </Text>
                     <Button
+                      as="a"
+                      href={receiptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="link"
                       colorScheme="blue"
-                      variant="outline"
-                      onClick={initializeIntent}
-                      disabled={intentLoading}
+                      fontWeight="semibold"
                     >
-                      {intentLoading ? <Spinner size="sm" aria-hidden /> : null}
-                      <span className={intentLoading ? 'ms-2' : ''}>
-                        {t('payment.retry', 'Retry Payment')}
-                      </span>
+                      {t('payment.receipt.view', 'View Receipt')}
                     </Button>
-                  </div>
-              ) : null}
-
-              {receiptUrl ? (
-                <Alert status="success" role="status">
-                  <strong>{t('payment.receipt.available', 'Receipt available')}:</strong>{' '}
-                  <a href={receiptUrl} target="_blank" rel="noopener noreferrer">
-                    {t('payment.receipt.view', 'View Receipt')}
-                  </a>
+                  </HStack>
                 </Alert>
-              ) : null}
+              )}
 
-              {!clientSecret && intentLoading ? (
-                <div className="text-center py-4">
-                  <Spinner colorScheme="blue" />
-                </div>
-              ) : null}
+              {!clientSecret && intentLoading && (
+                <Flex justify="center" py={6}>
+                  <Spinner color="blue.500" />
+                </Flex>
+              )}
 
-              {showPaymentForm ? (
+              {showPaymentForm && (
                 <Elements stripe={stripePromise} options={options}>
                   <StripeCheckoutForm
                     paymentId={currentPayment.id}
@@ -415,32 +393,40 @@ const PaymentPage = () => {
                     submitLabel={t('payment.confirm', 'Confirm Payment')}
                   />
                 </Elements>
-              ) : null}
+              )}
 
-              {showUnavailableAlert ? (
-                <Alert status="warning">
+              {showUnavailableAlert && (
+                <Alert status="warning" borderRadius="md">
+                  <AlertIcon />
                   {t(
                     'payment.unavailable.status',
                     'This payment is not available for processing right now. Current status:',
                   )}{' '}
-                  <strong>{currentPayment.status}</strong>
+                  <Text as="span" fontWeight="semibold">
+                    {currentPayment.status}
+                  </Text>
                 </Alert>
-              ) : null}
+              )}
 
-              <div className="d-flex justify-content-end gap-2">
-                {isCompleted ? (
-                  <Button colorScheme="blue" onClick={handleViewPayments}>
+              <HStack justify="flex-end" spacing={3} wrap="wrap">
+                {isCompleted && (
+                  <Button colorScheme="blue" onClick={handleViewPayments} minH="44px">
                     {t('payment.viewPayments', 'View Payments')}
                   </Button>
-                ) : null}
-                <Button colorScheme="gray" variant="outline" onClick={handleGoBack}>
-                  <Icon as={ArrowLeft} className="me-2" />
+                )}
+                <Button
+                  colorScheme="gray"
+                  variant="outline"
+                  onClick={handleGoBack}
+                  minH="44px"
+                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                >
                   {t('common.goBack', 'Go Back')}
                 </Button>
-              </div>
-            </CardBody>
-          </Card>
-        </Box>
+              </HStack>
+            </Stack>
+          </CardBody>
+        </Card>
       </Flex>
     </Container>
   )

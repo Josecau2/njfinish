@@ -13,13 +13,18 @@ import {
   MessageCircle,
   Bell,
   CalendarDays,
-  Settings2,
+  Settings,
   Building2,
-  Wrench,
+  Factory,
   Paintbrush,
   MapPin,
   CreditCard,
-  CircleDollarSign,
+  Calculator,
+  User,
+  Settings2,
+  FileImage,
+  BookOpen,
+  ScrollText,
   Cog,
 } from 'lucide-react'
 import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
@@ -93,16 +98,16 @@ const useNavItems = () => {
           type: 'link',
           label: t('nav.myOrders', 'My Orders'),
           to: '/my-orders',
-          icon: icon(FileText),
+          icon: icon(ClipboardList),
         })
       } else {
         items.push({
           type: 'group',
           label: t('nav.orders', 'Orders'),
-          icon: icon(FileText),
+          icon: icon(ClipboardList),
           children: [
-            { type: 'link', label: t('nav.orders', 'Orders'), to: '/orders', icon: icon(FileText) },
-            { type: 'link', label: t('nav.myOrders', 'My Orders'), to: '/my-orders', icon: icon(FileText) },
+            { type: 'link', label: t('nav.orders', 'Orders'), to: '/orders', icon: icon(ClipboardList) },
+            { type: 'link', label: t('nav.myOrders', 'My Orders'), to: '/my-orders', icon: icon(ClipboardList) },
           ],
         })
       }
@@ -113,7 +118,7 @@ const useNavItems = () => {
         type: 'link',
         label: t('nav.payments', 'Payments'),
         to: '/payments',
-        icon: icon(CircleDollarSign),
+        icon: icon(CreditCard),
       })
     }
 
@@ -207,30 +212,72 @@ const useNavItems = () => {
         items.push({
           type: 'group',
           label: t('nav.admin'),
-          icon: icon(Settings2),
+          icon: icon(Users),
           children: adminChildren,
         })
       }
     }
 
-    if (hasPermission(user, 'settings:customization') || hasPermission(user, 'settings:users')) {
+    // Settings section - only for admin users
+    if (isAdmin(user)) {
       const settingsChildren = []
 
-      if (hasPermission(user, 'settings:users')) {
+      // User Management Group
+      if (hasPermission(user, 'settings:users') || hasPermission(user, 'settings:groups')) {
+        const userManagementChildren = []
+
+        if (hasPermission(user, 'settings:users')) {
+          userManagementChildren.push({
+            type: 'link',
+            label: t('nav.users'),
+            to: '/settings/users',
+            icon: icon(Users),
+          })
+        }
+
+        if (hasPermission(user, 'settings:groups')) {
+          userManagementChildren.push({
+            type: 'link',
+            label: t('nav.userGroups'),
+            to: '/settings/users/groups',
+            icon: icon(Building2),
+          })
+        }
+
+        if (userManagementChildren.length > 0) {
+          settingsChildren.push({
+            type: 'group',
+            label: t('nav.userManagement'),
+            icon: icon(User),
+            children: userManagementChildren,
+          })
+        }
+      }
+
+      // Manufacturers Group
+      if (hasPermission(user, 'settings:manufacturers')) {
         settingsChildren.push({
-          type: 'link',
-          label: t('nav.users'),
-          to: '/settings/users',
-          icon: icon(Users),
-        })
-        settingsChildren.push({
-          type: 'link',
-          label: t('nav.groups'),
-          to: '/settings/users/group',
-          icon: icon(Building2),
+          type: 'group',
+          label: t('nav.manufacturers'),
+          icon: icon(Factory),
+          children: [
+            {
+              type: 'link',
+              label: t('nav.manufacturers'),
+              to: '/settings/manufacturers',
+              icon: icon(Factory),
+            },
+            {
+              type: 'link',
+              label: t('nav.multipliers'),
+              to: '/settings/usergroup/multipliers',
+              icon: icon(Calculator),
+            },
+          ],
         })
       }
 
+      // Locations
       if (hasPermission(user, 'settings:locations')) {
         settingsChildren.push({
           type: 'link',
@@ -240,30 +287,64 @@ const useNavItems = () => {
         })
       }
 
+      // Taxes
       if (hasPermission(user, 'settings:taxes')) {
         settingsChildren.push({
           type: 'link',
           label: t('nav.taxes'),
           to: '/settings/taxes',
-          icon: icon(CreditCard),
+          icon: icon(Calculator),
         })
       }
 
+      // Customization Group
       if (hasPermission(user, 'settings:customization')) {
         settingsChildren.push({
-          type: 'link',
+          type: 'group',
           label: t('nav.customization'),
-          to: '/settings/customization',
           icon: icon(Paintbrush),
+          children: [
+            {
+              type: 'link',
+              label: t('nav.general'),
+              to: '/settings/customization',
+              icon: icon(Settings),
+            },
+            {
+              type: 'link',
+              label: t('nav.pdfLayout'),
+              to: '/settings/pdflayoutcustomization',
+              icon: icon(FileImage),
+            },
+            {
+              type: 'link',
+              label: t('nav.loginPage'),
+              to: '/settings/loginlayoutcustomization',
+              icon: icon(User),
+            },
+            {
+              type: 'link',
+              label: t('nav.uiCustomization'),
+              to: '/settings/ui-customization',
+              icon: icon(Paintbrush),
+            },
+            {
+              type: 'link',
+              label: t('nav.terms', 'Terms & Conditions'),
+              to: '/settings/terms',
+              icon: icon(ScrollText),
+            },
+          ],
         })
       }
 
-      if (hasPermission(user, 'settings:manufacturers')) {
+      // Payment Configuration
+      if (hasPermission(user, 'admin:settings')) {
         settingsChildren.push({
           type: 'link',
-          label: t('nav.manufacturers'),
-          to: '/settings/manufacturers',
-          icon: icon(Building2),
+          label: t('nav.paymentConfig', 'Payment Configuration'),
+          to: '/settings/payment-config',
+          icon: icon(CreditCard),
         })
       }
 
@@ -271,7 +352,7 @@ const useNavItems = () => {
         items.push({
           type: 'group',
           label: t('nav.settings'),
-          icon: icon(Cog),
+          icon: icon(Settings),
           children: settingsChildren,
         })
       }

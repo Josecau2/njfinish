@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, FormControl, Input, FormLabel, Spinner, Alert } from '@chakra-ui/react'
+import { Card, CardBody, CardHeader, FormControl, Input, FormLabel, Spinner, Alert, Button } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
 import PageHeader from '../../../components/PageHeader'
-import CButton from '../../../components/ui/CButton'
 
 // Mock data — replace this with your API call
 const mockManufacturers = [
@@ -150,12 +149,12 @@ const EditManuMultiplier = () => {
             {error && <Alert status="error">{error}</Alert>}
 
             <div className="d-flex justify-content-end gap-2">
-              <CButton colorScheme="gray" onClick={() => navigate(-1)}>
+              <Button colorScheme="gray" onClick={() => navigate(-1)}>
                 Cancel
-              </CButton>
-              <CButton colorScheme="blue" type="submit">
+              </Button>
+              <Button colorScheme="blue" type="submit">
                 Save Changes
-              </CButton>
+              </Button>
             </div>
           </form>
         </CardBody>

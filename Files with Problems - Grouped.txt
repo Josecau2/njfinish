@@ -162,6 +162,8 @@ frontend\src\pages\settings\users\UserList.jsx
 frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx
 frontend\src\pages\settings\usersGroup\EditUserGroup.jsx
 frontend\src\pages\settings\usersGroup\UserGroupList.jsx
+frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx
+frontend\src\pages\settings\globalMods\GlobalModsPage.jsx
 
 ===========================================
 SUMMARY

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Alert, Card, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Icon, Button } from '@chakra-ui/react'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
-import { FaCreditCard } from 'react-icons/fa'
 import { useState } from 'react'
 
 const PaymentTest = () => {
@@ -29,7 +28,7 @@ const PaymentTest = () => {
       <PageHeader
         title={t('paymentConfig.test.button', 'Test Configuration')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
-        icon={FaCreditCard}
+        icon={CreditCard}
       />
       <Flex>
         <Box md={8} className="mx-auto">

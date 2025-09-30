@@ -16,11 +16,11 @@
 - [x] 10.2 Reduced motion support
 - [x] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
 - [x] 12 Full AUDIT (pages, components, modals, buttons)
-- [ ] 12.2 Audit playground implementation
-- [ ] 12.3 Auto-generate manifest
-- [ ] 13 Automated layout + a11y tests (Playwright + Axe)
-- [ ] 13.3 Test failure protocol
-- [ ] 13.4 Bundle size check
-- [ ] 14 CI pipeline for audit on push/PR
-- [ ] 15 Final QA matrix + closeout
+- [x] 12.2 Audit playground implementation
+- [x] 12.3 Auto-generate manifest
+- [x] 13 Automated layout + a11y tests (Playwright + Axe)
+- [x] 13.3 Test failure protocol
+- [x] 13.4 Bundle size check
+- [x] 14 CI pipeline for audit on push/PR
+- [x] 15 Final QA matrix + closeout
 - [ ] 15.2 Push & create PR

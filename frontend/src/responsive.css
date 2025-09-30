@@ -26,8 +26,9 @@ body {
 -------------------------------------------------- */
 :root {
   /* Base Colors */
-  --cui-primary: #4f46e5; /* Indigo */
-  --cui-primary-rgb: 79, 70, 229;
+  /* Align primary to Tailwind brand.500 (#2563EB) */
+  --cui-primary: #2563eb; /* Brand 500 */
+  --cui-primary-rgb: 37, 99, 235;
   --cui-secondary: #64748b; /* Slate */
   --cui-secondary-rgb: 100, 116, 139;
   --cui-success: #22c55e; /* Green */
@@ -57,7 +58,8 @@ body {
   --cui-body-color: var(--cui-gray-700);
   --cui-heading-color: var(--cui-gray-900);
   --cui-link-color: var(--cui-primary);
-  --cui-link-hover-color: #4338ca; /* Darker Indigo */
+  /* Use brand.600 for hover */
+  --cui-link-hover-color: #1d4ed8; /* Brand 600 */
 
   /* Borders */
   --cui-border-color: var(--cui-gray-200);
@@ -582,9 +584,7 @@ body {
     border-radius: var(--cui-border-radius);
     border: 1px solid var(--cui-gray-300);
     background-color: var(--cui-gray-50);
-    transition:
-      border-color 0.15s ease-in-out,
-      box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
 
   .login-right-panel .form-control-lg:focus {
@@ -611,11 +611,9 @@ body {
     font-size: 1rem;
     font-weight: 600;
     border-radius: var(--cui-border-radius);
-    background: linear-gradient(135deg, var(--cui-primary) 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--cui-primary) 0%, #1d4ed8 100%);
     border: none;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .login-right-panel .btn-primary.btn-lg:hover {
@@ -819,16 +817,16 @@ body {
 /* Mobile responsive adjustments for page headers */
 @media (max-width: 768px) {
   .page-header {
-    padding: 1.5rem 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .page-header-dynamic .page-header-title {
-    font-size: 1.5rem;
-  }
-
-  .page-header-dynamic .page-header-subtitle {
-    font-size: 0.9rem;
+  padding: 0.8rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   }
 
   .page-header-dynamic .btn {
@@ -923,11 +921,12 @@ body {
   border: 1px solid var(--cui-border-color-translucent);
   border-radius: var(--cui-border-radius-lg);
   box-shadow: var(--cui-box-shadow-sm);
-  margin-bottom: 1rem;
-}
-
-.mobile-card-view .card-body {
-  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 0.8rem 1rem;
+  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
 .mobile-card-view .customer-name {

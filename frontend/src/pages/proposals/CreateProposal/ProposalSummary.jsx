@@ -1,7 +1,34 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Box, FormControl, Input, Flex, Link, Badge, FormLabel, Icon, Button } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
 import { sendFormDataToBackend } from '../../../queries/proposalQueries'
@@ -10,7 +37,7 @@ import CreatableSelect from 'react-select/creatable'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import DatePicker from 'react-datepicker'
-import { Copy, Edit, Trash2 } from 'lucide-react'
+import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
 import Swal from 'sweetalert2'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
 import FileUploadSection from './FileUploadSection'
@@ -304,7 +331,7 @@ const ItemSelectionStep = ({
           onSubmit={handleSubmit}
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
-            <>
+            <React.Fragment>
               <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
                 <div className="form-section">
                   <Flex>
@@ -380,16 +407,15 @@ const ItemSelectionStep = ({
                               (!!current && !!date && current.getTime() !== date.getTime())
                             if (changed) {
                               handleChange({ target: { name: 'date', value: date } })
-                              updateFormData({ ...formData, date }
-  )
-}
+                              updateFormData({ ...formData, date })
+                            }
                           }}
                           className="form-control"
                           dateFormat="MM/dd/yyyy"
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.headers.date')}
                         />
-                        <FaCalendarAlt
+                        <Icon as={Calendar}
                           style={{
                             position: 'absolute',
                             top: '70%',
@@ -426,7 +452,7 @@ const ItemSelectionStep = ({
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.create.customerInfo.designDoneDate')}
                         />
-                        <FaCalendarAlt
+                        <Icon as={Calendar}
                           style={{
                             position: 'absolute',
                             top: '70%',
@@ -467,7 +493,7 @@ const ItemSelectionStep = ({
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.create.customerInfo.measurementDoneDate')}
                         />
-                        <FaCalendarAlt
+                        <Icon as={Calendar}
                           style={{
                             position: 'absolute',
                             top: '70%',
@@ -609,8 +635,8 @@ const ItemSelectionStep = ({
                       </div>
 
                       {!isContractor && (
-                        <CDropdown onClick={(e) => e.stopPropagation()}>
-                          <CDropdownToggle
+                        <Menu onClick={(e) => e.stopPropagation()}>
+                          <MenuButton
                             color="transparent"
                             size="sm"
                             style={{
@@ -624,8 +650,8 @@ const ItemSelectionStep = ({
                             }}
                           >
                             <Icon as={MoreHorizontal} />
-                          </CDropdownToggle>
-                          <CDropdownMenu
+                          </MenuButton>
+                          <MenuList
                             style={{
                               minWidth: '120px',
                               border: '1px solid #e0e0e0',
@@ -634,7 +660,7 @@ const ItemSelectionStep = ({
                               padding: '4px 0',
                             }}
                           >
-                            <CDropdownItem
+                            <MenuItem
                               onClick={() => openEditModal(index)}
                               style={{
                                 padding: '6px 12px',
@@ -644,8 +670,8 @@ const ItemSelectionStep = ({
                               }}
                             >
                               <Icon as={Edit} className="me-2" /> {t('common.edit')}
-                            </CDropdownItem>
-                            <CDropdownItem
+                            </MenuItem>
+                            <MenuItem
                               onClick={() => openDeleteModal(index)}
                               style={{
                                 padding: '6px 12px',
@@ -655,8 +681,8 @@ const ItemSelectionStep = ({
                               }}
                             >
                               <Icon as={Trash} className="me-2" /> {t('common.delete')}
-                            </CDropdownItem>
-                            <CDropdownItem
+                            </MenuItem>
+                            <MenuItem
                               onClick={() => duplicateVersion(index)}
                               style={{
                                 padding: '6px 12px',
@@ -667,131 +693,83 @@ const ItemSelectionStep = ({
                             >
                               <Icon as={Copy} className="me-2" />{' '}
                               {t('proposals.create.summary.duplicate')}
-                            </CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
                       )}
                     </Badge>
                   )
                 })}
               </div>
+              <Divider my={6} />
 
-              <hr />
+              <Tabs
+                index={activeTab === 'file' ? 1 : 0}
+                onChange={(index) => handleTabSelect(index === 1 ? 'file' : 'item')}
+                colorScheme='brand'
+                variant='enclosed'
+              >
+                <TabList>
+                  <Tab>
+                    <Flex align='center' gap={2}>
+                      <Icon as={List} boxSize={4} />
+                      <Text>{t('proposalColumns.items')}</Text>
+                    </Flex>
+                  </Tab>
+                  <Tab>
+                    <Flex align='center' gap={2}>
+                      <Icon as={File} boxSize={4} />
+                      <Text>{t('proposals.create.files.title')}</Text>
+                    </Flex>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel px={0}>
+                    <ItemSelectionContent
+                      selectedVersion={selectedVersion}
+                      formData={formData}
+                      setFormData={setFormData}
+                      setSelectedVersion={setSelectedVersion}
+                      selectVersion={selectVersion}
+                    />
+                  </TabPanel>
+                  <TabPanel px={0}>
+                    <Stack spacing={3} mt={2} color='gray.600'>
+                      <Text fontSize='lg' fontWeight='semibold' color='gray.800'>
+                        {t('proposals.create.files.title')}
+                      </Text>
+                      <Text>{t('proposals.create.files.subtitle')}</Text>
+                      <FileUploadSection
+                        proposalId={formData.id}
+                        onFilesChange={(files) => updateFormData({ ...formData, files })}
+                      />
+                    </Stack>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
 
-              <CTabs className="quote-tabs">
-                <Flex variant="tabs" className="border-0">
-                  <Box>
-                    <Link
-                      active={activeTab === 'item'}
-                      onClick={() => handleTabSelect('item')}
-                      style={{
-                        cursor: 'pointer',
-                        border: 'none',
-                        padding: '10px 20px',
-                        fontWeight: 600,
-                        color: activeTab === 'item' ? '#084298' : '#6c757d',
-                        backgroundColor:
-                          activeTab === 'item' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
-                        borderBottom: activeTab === 'item' ? '3px solid #084298' : 'none',
-                        transition: 'all 0.3s ease',
-                        borderRadius: '4px 4px 0 0',
-                        marginRight: '4px',
-                        ':hover': {
-                          color: '#084298',
-                          backgroundColor: 'rgba(8, 66, 152, 0.05)',
-                        },
-                      }}
-                    >
-                      <span className="d-flex align-items-center">
-                        <Icon as={List} className="me-2" />
-                        {t('proposalColumns.items')}
-                      </span>
-                    </Link>
-                  </Box>
-                  <Box>
-                    {/* <Link
-                      active={activeTab === 'file'}
-                      onClick={() => handleTabSelect('file')}
-                      style={{
-                        cursor: 'pointer',
-                        border: 'none',
-                        padding: '10px 20px',
-                        fontWeight: 600,
-                        color: activeTab === 'file' ? '#084298' : '#6c757d',
-                        backgroundColor: activeTab === 'file' ? 'rgba(8, 66, 152, 0.1)' : 'transparent',
-                        borderBottom: activeTab === 'file' ? '3px solid #084298' : 'none',
-                        transition: 'all 0.3s ease',
-                        borderRadius: '4px 4px 0 0',
-                        ':hover': {
-                          color: '#084298',
-                          backgroundColor: 'rgba(8, 66, 152, 0.05)'
-
-  )
-                        }
-                      }}
-                    >
-                      <span className="d-flex align-items-center">
-                        <Icon as={File} className="me-2" />
-                        Files
-                      </span>
-                    </Link> */}
-                  </Box>
-                </Flex>
-              </CTabs>
-
-              {activeTab === 'item' && (
-                <div className="tab-content mt-5">
-                  <ItemSelectionContent
-                    selectedVersion={selectedVersion}
-                    formData={formData}
-                    setFormData={setFormData}
-                    setSelectedVersion={setSelectedVersion}
-                    selectVersion={selectVersion}
-                  />
-                </div>
-              )}
-
-              {activeTab === 'file' && (
-                <div className="tab-content mt-5">
-                  <h5>{t('proposals.create.files.title')}</h5>
-                  <p>{t('proposals.create.files.subtitle')}</p>
-                  <FileUploadSection
-                    proposalId={formData.id}
-                    onFilesChange={(files) => updateFormData({ ...formData, files })}
-                  />
-                </div>
-              )}
-
-              <hr />
-              <div className="proposal-actions">
-                <div className="proposal-actions-grid">
-                  <Button
-                    variant="outline"
-                    colorScheme="gray"
-                    onClick={handleSaveOrder}
-                    className="proposal-action-btn"
-                  >
-                    {t('common.save')}
-                  </Button>
-                  <Button
-                    colorScheme="green"
-                    onClick={handleAcceptOrder}
-                    isDisabled={isSubmitting}
-                    className="proposal-action-btn proposal-primary-action"
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    colorScheme="red"
-                    onClick={handleRejectOrder}
-                    className="proposal-action-btn"
-                  >
-                    {t('proposals.create.summary.rejectAndArchive')}
-                  </Button>
-                </div>
-            </>
+              <Divider my={6} />
+              <Stack
+                direction={{ base: 'column', md: 'row' }}
+                spacing={4}
+                justify='flex-start'
+                align={{ base: 'stretch', md: 'center' }}
+              >
+                <Button variant='outline' colorScheme='gray' onClick={handleSaveOrder}>
+                  {t('common.save')}
+                </Button>
+                <Button
+                  colorScheme='green'
+                  onClick={handleAcceptOrder}
+                  isDisabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
+                </Button>
+                <Button variant='outline' colorScheme='red' onClick={handleRejectOrder}>
+                  {t('proposals.create.summary.rejectAndArchive')}
+                </Button>
+              </Stack>
+              </React.Fragment>
           )}
         </Formik>
       </div>
@@ -838,3 +816,10 @@ const ItemSelectionStep = ({
 }
 
 export default ItemSelectionStep
+
+
+
+
+
+
+

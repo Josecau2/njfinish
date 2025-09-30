@@ -204,16 +204,15 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
     )
   }
 
-  const renderGroupExpanded = (item, depth = 0) => {
+  // Child component to safely use hooks per-group without violating parent hook order
+  const NavGroupExpanded = React.memo(function NavGroupExpanded({ item, depth }) {
     const active = hasActiveChild(item.children, location.pathname)
     const [open, setOpen] = useState(active)
 
-    const handleToggle = () => {
-      setOpen((prev) => !prev)
-    }
+    const handleToggle = () => setOpen((prev) => !prev)
 
     return (
-      <li key={`${item.label}-${depth}`} className={`nav-group ${open ? 'show' : ''}`}>
+      <li className={`nav-group ${open ? 'show' : ''}`}>
         <button
           type="button"
           className={`nav-link nav-group-toggle ${open ? 'active' : ''}`}
@@ -240,13 +239,23 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         <ul className="nav-group-items" style={{ display: open ? 'block' : 'none' }}>
           {item.children?.map((child) => {
             if (child.type === 'group') {
-              return renderGroupExpanded(child, depth + 1)
+              return (
+                <NavGroupExpanded key={`${child.label}-${depth + 1}`} item={child} depth={depth + 1} />
+              )
             }
-            return renderLink(child, depth + 1, { collapsed: false })
+            return (
+              <React.Fragment key={child.to || child.label}>
+                {renderLink(child, depth + 1, { collapsed: false })}
+              </React.Fragment>
+            )
           })}
         </ul>
       </li>
     )
+  })
+
+  const renderGroupExpanded = (item, depth = 0) => {
+    return <NavGroupExpanded key={`${item.label}-${depth}`} item={item} depth={depth} />
   }
 
   const renderItem = (item, depth = 0) => {

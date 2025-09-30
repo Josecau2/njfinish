@@ -136,7 +136,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             </Box>
             <Box xs="auto">
               <PermissionGate permission="customers:create">
-                <CButton 
+                <Button 
                   status="light" 
                   className="shadow-sm px-4 fw-semibold"
                   onClick={handleNewCustomer}
@@ -148,7 +148,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 >
                   <Icon as={Plus} className="me-2" />
                   New Customer
-                </CButton>
+                </Button>
               </PermissionGate>
             </Box>
           </Flex>
@@ -160,10 +160,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
         <CardBody>
           <Flex className="align-items-center">
             <Box md={6} lg={4}>
-              <CInputGroup>
-                <CInputGroupText style={{ background: 'none', border: 'none' }}>
+              <InputGroup>
+                <InputLeftAddon style={{ background: 'none', border: 'none' }}>
                   <Icon as={Search} />
-                </CInputGroupText>
+                </InputLeftAddon>
                 <Input
                   type="text"
                   placeholder="Search by name or email..."
@@ -179,7 +179,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     padding: '12px 16px'
                   }}
                 />
-              </CInputGroup>
+              </InputGroup>
             </Box>
             <Box md={6} lg={8} className="text-md-end mt-3 mt-md-0">
               <div className="d-flex justify-content-md-end align-items-center gap-3">
@@ -229,13 +229,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
         <Card className="border-0 shadow-sm d-none d-md-block">
           <CardBody className="p-0">
             <div style={{ overflowX: 'auto' }}>
-              <CTable hover responsive className="mb-0">
-                <CTableHead style={{ backgroundColor: '#f8f9fa' }}>
-                  <CTableRow>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+              <Table hover responsive className="mb-0">
+                <Thead style={{ backgroundColor: '#f8f9fa' }}>
+                  <Tr>
+                    <Th className="border-0 fw-semibold text-muted py-3">
                       Location
-                    </CTableHeaderCell>
-                    <CTableHeaderCell 
+                    </Th>
+                    <Th 
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('name')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -247,8 +247,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           {getSortIcon('name')}
                         </span>
                       </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell 
+                    </Th>
+                    <Th 
                       className="border-0 fw-semibold text-muted py-3"
                       onClick={() => handleSort('email')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -260,33 +260,33 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           {getSortIcon('email')}
                         </span>
                       </div>
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3">
                       Proposals
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3">
                       Orders
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="border-0 fw-semibold text-muted py-3 text-center">
+                    </Th>
+                    <Th className="border-0 fw-semibold text-muted py-3 text-center">
                       Actions
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {sortedFilteredCustomers?.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="6" className="text-center py-5">
+                    <Tr>
+                      <Td colSpan="6" className="text-center py-5">
                         <div className="text-muted">
                           <Icon as={Search} size="xl" className="mb-3 opacity-25" />
                           <p className="mb-0">No customers found</p>
                           <small>Try adjusting your search criteria</small>
                         </div>
-                      </CTableDataCell>
-                    </CTableRow>
+                      </Td>
+                    </Tr>
                   ) : (
                     sortedFilteredCustomers?.map((cust) => (
-                      <CTableRow key={cust.id} style={{ transition: 'all 0.2s ease' }}>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                      <Tr key={cust.id} style={{ transition: 'all 0.2s ease' }}>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge 
                             colorScheme="gray" 
                             className="px-3 py-2"
@@ -298,18 +298,18 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           >
                             Main
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <div className="fw-medium text-dark">
                             {cust.name || 'N/A'}
                           </div>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <span className="text-muted">
                             {cust.email || 'N/A'}
                           </span>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge 
                             status="info" 
                             className="px-3 py-2"
@@ -321,8 +321,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           >
                             {cust.proposalCount || 0} Proposals
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light">
                           <Badge 
                             status="success" 
                             className="px-3 py-2"
@@ -334,11 +334,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           >
                             0 Orders
                           </Badge>
-                        </CTableDataCell>
-                        <CTableDataCell className="py-3 border-0 border-bottom border-light text-center">
+                        </Td>
+                        <Td className="py-3 border-0 border-bottom border-light text-center">
                           <div className="d-flex justify-content-center gap-2">
                             <PermissionGate action="update" resource="customer" item={cust}>
-                              <CButton
+                              <Button
                                 status="light"
                                 size="sm"
                                 onClick={() => handleEdit(cust)}
@@ -351,10 +351,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                               >
                                 <Icon as={Edit} size="sm" className="me-1" />
                                 Edit
-                              </CButton>
+                              </Button>
                             </PermissionGate>
                             <PermissionGate action="delete" resource="customer" item={cust}>
-                              <CButton
+                              <Button
                                 status="light"
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
@@ -368,15 +368,15 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                               >
                                 <Icon as={Trash} size="sm" className="me-1" />
                                 Delete
-                              </CButton>
+                              </Button>
                             </PermissionGate>
                           </div>
-                        </CTableDataCell>
-                      </CTableRow>
+                        </Td>
+                      </Tr>
                     ))
                   )}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </div>
           </CardBody>
         </Card>
@@ -464,7 +464,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     {/* Actions */}
                     <div className="d-flex justify-content-center gap-2 customer-card-actions">
                       <PermissionGate action="update" resource="customer" item={cust}>
-                        <CButton
+                        <Button
                           status="light"
                           size="sm"
                           onClick={() => handleEdit(cust)}
@@ -477,10 +477,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         >
                           <Icon as={Edit} size="sm" className="me-1" />
                           Edit
-                        </CButton>
+                        </Button>
                       </PermissionGate>
                       <PermissionGate action="delete" resource="customer" item={cust}>
-                        <CButton
+                        <Button
                           status="light"
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
@@ -494,7 +494,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         >
                           <Icon as={Trash} size="sm" className="me-1" />
                           Delete
-                        </CButton>
+                        </Button>
                       </PermissionGate>
                     </div>
                   </CardBody>
@@ -521,10 +521,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                               >
                                 <Icon as={Edit} size="sm" className="me-1" />
                                 Edit
-                              </CButton>
+                              </Button>
                             </PermissionGate>
                             <PermissionGate action="delete" resource="customer" item={cust}>
-                              <CButton
+                              <Button
                                 status="light"
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
@@ -538,15 +538,15 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                               >
                                 <Icon as={Trash} size="sm" className="me-1" />
                                 Delete
-                              </CButton>
+                              </Button>
                             </PermissionGate>
                           </div>
-                        </CTableDataCell>
-                      </CTableRow>
+                        </Td>
+                      </Tr>
                     ))
                   )}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </div>
             
             {/* Pagination */}
@@ -646,7 +646,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     {/* Actions */}
                     <div className="d-flex justify-content-center gap-2 customer-card-actions">
                       <PermissionGate action="update" resource="customer" item={cust}>
-                        <CButton
+                        <Button
                           status="light"
                           size="sm"
                           onClick={() => handleEdit(cust)}
@@ -659,10 +659,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         >
                           <Icon as={Edit} size="sm" className="me-1" />
                           Edit
-                        </CButton>
+                        </Button>
                       </PermissionGate>
                       <PermissionGate action="delete" resource="customer" item={cust}>
-                        <CButton
+                        <Button
                           status="light"
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
@@ -676,7 +676,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         >
                           <Icon as={Trash} size="sm" className="me-1" />
                           Delete
-                        </CButton>
+                        </Button>
                       </PermissionGate>
                     </div>
                   </CardBody>

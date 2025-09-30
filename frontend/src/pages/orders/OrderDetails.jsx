@@ -1,16 +1,55 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
-import { FaShoppingCart } from 'react-icons/fa'
-import { Icon, Badge, Card, CardBody, CardHeader, Box, Container, Flex, Spinner, Alert, Modal, ModalBody, ModalHeader } from '@chakra-ui/react'
-import { ArrowLeft } from 'lucide-react'
+import {
+  Container,
+  Stack,
+  Box,
+  SimpleGrid,
+  HStack,
+  VStack,
+  Text,
+  Button,
+  Icon,
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  Image,
+  useToast,
+  useDisclosure,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+} from '@chakra-ui/react'
+import { ShoppingCart, ArrowLeft, FileText, Download, Mail, Trash } from 'lucide-react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { isAdmin } from '../../helpers/permissions'
-import Swal from 'sweetalert2'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -19,7 +58,7 @@ const formatMixedFraction = (value, precision = 16) => {
   const sign = value < 0 ? '-' : ''
   let v = Math.abs(Number(value))
   let whole = Math.floor(v)
-  let frac = v - whole
+  const frac = v - whole
   let num = Math.round(frac * precision)
   if (num === precision) {
     whole += 1
@@ -29,7 +68,7 @@ const formatMixedFraction = (value, precision = 16) => {
   const g = _gcd(num, precision)
   const n = num / g
   const d = precision / g
-  return `${sign}${whole ? whole + ' ' : ''}${n}/${d}`
+  return `${sign}${whole ? `${whole} ` : ''}${n}/${d}`
 }
 const keyToLabel = (key) =>
   String(key || '')
@@ -42,7 +81,7 @@ const buildSelectedOptionsText = (selectedOptions) => {
   if (!selectedOptions || typeof selectedOptions !== 'object') return ''
   const parts = []
   const numericEntries = Object.entries(selectedOptions).filter(
-    ([k, v]) => typeof v === 'number' && isFinite(v),
+    ([, v]) => typeof v === 'number' && isFinite(v),
   )
   if (numericEntries.length === 1) {
     const [, v] = numericEntries[0]
@@ -69,7 +108,6 @@ const parseFromSnapshot = (order) => {
   if (!snap) return { manufacturers: [], items: [], summary: { grandTotal: 0 } }
   try {
     const root = typeof snap === 'string' ? JSON.parse(snap) : snap
-    // Snapshot may be either { manufacturers: [...], summary, items? } or just an array of manufacturers
     const manufacturers = Array.isArray(root?.manufacturers)
       ? root.manufacturers
       : Array.isArray(root)
@@ -94,10 +132,10 @@ const parseFromSnapshot = (order) => {
       }, {})
     return { manufacturers, items, summary: summary || { grandTotal: 0 } }
   } catch (e) {
+    console.error('Snapshot parse error', e)
     return { manufacturers: [], items: [], summary: { grandTotal: 0 } }
   }
 }
-
 const OrderDetails = () => {
   const { t } = useTranslation()
   const { id } = useParams()
@@ -108,31 +146,26 @@ const OrderDetails = () => {
   const { list: manuList, byId: manuById } = useSelector((state) => state.manufacturers)
   const dispatch = useDispatch()
   const authUser = useSelector((state) => state.auth?.user)
+  const toast = useToast()
+  const deleteDisclosure = useDisclosure()
   const [showPdf, setShowPdf] = useState(false)
   const [pdfUrl, setPdfUrl] = useState(null)
   const [resending, setResending] = useState(false)
-  const [notice, setNotice] = useState({
-    visible: false,
-    title: '',
-    message: '',
-    variant: 'success',
-  })
-  const [previewImg, setPreviewImg] = useState(null)
   const [downloading, setDownloading] = useState(false)
+  const [notice, setNotice] = useState({ visible: false, title: '', message: '', variant: 'success' })
+  const [previewImg, setPreviewImg] = useState(null)
+  const cancelRef = useRef()
 
   const openNotice = (title, message, variant = 'success') =>
     setNotice({ visible: true, title, message, variant })
   const closeNotice = () => setNotice((n) => ({ ...n, visible: false }))
 
-  // Get styling from PageHeader component logic
   const getContrastColor = (backgroundColor) => {
     if (!backgroundColor) return '#ffffff'
-
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
-
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
     return luminance > 0.5 ? '#2d3748' : '#ffffff'
   }
@@ -147,44 +180,35 @@ const OrderDetails = () => {
         if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim()
         if (typeof value.value === 'string' && value.value.trim()) return value.value.trim()
       }
-    } catch (_) {
-      /* ignore and fallback */
-    }
+    } catch (_) {}
     return '#ffffff'
   }
 
   const backgroundColor = resolveBackground(customization?.headerBg)
   const textColor = getContrastColor(backgroundColor)
 
-  // Determine where to go back based on current route
   const backBasePath = useMemo(
     () => (location?.pathname?.startsWith('/my-orders') ? '/my-orders' : '/orders'),
     [location?.pathname],
   )
-  const handleBack = () => {
-    // Always take back to list page for clarity
-    navigate(backBasePath)
-  }
+
+  const handleBack = () => navigate(backBasePath)
 
   useEffect(() => {
     if (id) dispatch(fetchOrderById(id))
-    // Fetch manufacturers for name resolution
     dispatch(fetchManufacturers())
     return () => {
       dispatch(clearCurrentOrder())
     }
   }, [dispatch, id])
 
-  // Parse snapshot from the fetched order
   const parsed = useMemo(() => parseFromSnapshot(order), [order])
 
-  // Prefer model field, then snapshot info, then fallback to ID
   const displayOrderNumber = useMemo(() => {
     const fromModel = order?.order_number
     const fromSnap = (() => {
       try {
-        return (typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot)
-          ?.info?.orderNumber
+        return (typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot)?.info?.orderNumber
       } catch {
         return null
       }
@@ -192,32 +216,23 @@ const OrderDetails = () => {
     return fromModel || fromSnap || `#${order?.id || id}`
   }, [order, id])
 
-  // Helper to compute display fields for an item (used by table and mobile views)
   const computeItemView = (it) => {
-    // Enhanced manufacturer name resolution
     const resolveManuName = () => {
-      // Try direct manufacturer association from API
       if (order?.manufacturer?.name) return order.manufacturer.name
-
-      // Try snapshot manufacturer ID resolution
       if (parsed?.manufacturers?.[0]?.manufacturer) {
         const manuId = parsed.manufacturers[0].manufacturer
         const fromMap = manuById?.[manuId] || manuById?.[String(manuId)]
         if (fromMap?.name) return fromMap.name
-
         const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId))
         if (fromList?.name) return fromList.name
       }
-
-      // Fallback to existing logic
       return (
         it.manufacturerName ||
         order?.manufacturer_name ||
         parsed.manufacturers?.[0]?.manufacturerName ||
         parsed.manufacturers?.[0]?.name ||
         '-'
-      
-  )
+      )
     }
 
     const manuName = resolveManuName()
@@ -235,58 +250,55 @@ const OrderDetails = () => {
       ? it.modifications.reduce((s, m) => s + Number(m.price || 0) * Number(m.qty || 1), 0)
       : Number(it.modificationsTotal || 0)
 
-    // Enhanced style name resolution - avoid showing manufacturer name as style
     const resolveItemStyleName = () => {
       const potentialStyleName =
         it.styleName || parsed.manufacturers?.[0]?.styleName || parsed.manufacturers?.[0]?.style
-
-      // If the styleName matches the manufacturer name, it's wrong data
       if (potentialStyleName && potentialStyleName === manuName) {
-        // Try to get style name from order.style_name instead
         if (order?.style_name && order.style_name !== manuName) {
           return order.style_name
         }
-        // If still wrong, return a generic placeholder
         return '-'
       }
-
-      // Use the styleName if it's different from manufacturer name
       return potentialStyleName || order?.style_name || '-'
     }
 
     const styleName = resolveItemStyleName()
     const thumb = it.image || it.thumb || parsed.manufacturers?.[0]?.styleImage || null
-    const thumbTitle = [styleName, manuName].filter(Boolean).join(' — ')
+    const thumbTitle = [styleName, manuName].filter(Boolean).join(' - ')
     return { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle }
   }
 
-  // Compute display totals applying manufacturer cost multiplier and user group multiplier
-  // Use saved snapshot totals as-is
   const displaySummary = parsed.summary || { grandTotal: 0 }
 
-  // No external meta fetching; snapshot is the source of truth
+  const closePdfModal = () => {
+    setShowPdf(false)
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl)
+      setPdfUrl(null)
+    }
+  }
 
   if (loading) {
     return (
-      <Container className="py-5 text-center">
-        <Spinner />
-      </Container>
-  
-  )
+      <Center py={16} flexDirection="column" gap={3}>
+        <Spinner size="lg" color="brand.500" />
+        <Text color="gray.500">{t('common.loading', 'Loading...')}</Text>
+      </Center>
+    )
   }
 
   if (error) {
     return (
-      <Container className="py-4">
-        <Alert status="error">{error}</Alert>
+      <Container maxW="lg" py={10}>
+        <Alert status="error" borderRadius="md">
+          <AlertIcon />
+          <Text>{error}</Text>
+        </Alert>
       </Container>
-  
-  )
+    )
   }
-
   const handleViewPdf = async () => {
     try {
-      // Open inline PDF using a blob URL to preserve auth
       const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf`, {
         responseType: 'blob',
       })
@@ -296,8 +308,8 @@ const OrderDetails = () => {
       setShowPdf(true)
     } catch (e) {
       openNotice(
-        'Failed to load PDF',
-        e?.response?.data?.message || e.message || 'Please try again.',
+        t('orders.pdf.failedTitle', 'Failed to load PDF'),
+        e?.response?.data?.message || e.message || t('orders.pdf.failedMessage', 'Please try again.'),
         'danger',
       )
     }
@@ -308,27 +320,26 @@ const OrderDetails = () => {
       setResending(true)
       const { data } = await axiosInstance.post(`/api/orders/${id}/resend-manufacturer-email`)
       const ok = !!data?.success || !!data?.result?.sent
-      // Ensure only one modal visible at a time — close PDF viewer if open
       if (showPdf) {
-        setShowPdf(false)
-        if (pdfUrl) {
-          URL.revokeObjectURL(pdfUrl)
-          setPdfUrl(null)
-        }
+        closePdfModal()
       }
       if (ok) {
-        openNotice('Email Sent', 'Manufacturer email resent successfully.', 'success')
+        openNotice(
+          t('orders.email.resendSuccessTitle', 'Email Sent'),
+          t('orders.email.resendSuccessMessage', 'Manufacturer email resent successfully.'),
+          'success',
+        )
       } else {
         openNotice(
-          'Resend Attempted',
-          data?.result?.reason || 'The email was not confirmed as sent.',
+          t('orders.email.resendAttemptedTitle', 'Resend Attempted'),
+          data?.result?.reason || t('orders.email.resendAttemptedMessage', 'The email was not confirmed as sent.'),
           'warning',
         )
       }
     } catch (e) {
       openNotice(
-        'Resend Failed',
-        e?.response?.data?.message || e.message || 'Please try again.',
+        t('orders.email.resendFailedTitle', 'Resend Failed'),
+        e?.response?.data?.message || e.message || t('orders.email.resendFailedMessage', 'Please try again.'),
         'danger',
       )
     } finally {
@@ -339,17 +350,14 @@ const OrderDetails = () => {
   const handleDownloadPdf = async () => {
     try {
       setDownloading(true)
-      // Use dedicated download endpoint to avoid any proxy/query quirks
       const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf/download`, {
         responseType: 'blob',
       })
-      // Determine filename from Content-Disposition header if available
-      const disp =
-        resp.headers?.['content-disposition'] || resp.headers?.get?.('content-disposition')
+      const disp = resp.headers?.['content-disposition'] || resp.headers?.get?.('content-disposition')
       let filename = `Order-${id}-Manufacturer.pdf`
       if (disp && /filename\s*=\s*"?([^";]+)"?/i.test(disp)) {
-        const m = disp.match(/filename\s*=\s*"?([^";]+)"?/i)
-        if (m && m[1]) filename = m[1]
+        const match = disp.match(/filename\s*=\s*"?([^";]+)"?/i)
+        if (match && match[1]) filename = match[1]
       }
       const blob = new Blob([resp.data], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
@@ -362,8 +370,8 @@ const OrderDetails = () => {
       URL.revokeObjectURL(url)
     } catch (e) {
       openNotice(
-        'Download Failed',
-        e?.response?.data?.message || e.message || 'Please try again.',
+        t('orders.pdf.downloadFailedTitle', 'Download Failed'),
+        e?.response?.data?.message || e.message || t('orders.pdf.downloadFailedMessage', 'Please try again.'),
         'danger',
       )
     } finally {
@@ -371,777 +379,766 @@ const OrderDetails = () => {
     }
   }
 
-  const handleDeleteOrder = async () => {
-    try {
-      const result = await Swal.fire({
-        title: t('orders.confirm.deleteTitle', 'Delete Order?'),
-        text: t(
-          'orders.confirm.deleteText',
-          'This will permanently delete this order and its payments.',
-        ),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: t('orders.confirm.deleteConfirm', 'Delete'),
-      })
-      if (!result.isConfirmed) return
+  const handleDeleteOrder = () => {
+    deleteDisclosure.onOpen()
+  }
 
+  const confirmDeleteOrder = async () => {
+    try {
       await axiosInstance.delete(`/api/orders/${id}`)
-      await Swal.fire(
-        t('common.deleted', 'Deleted'),
-        t('orders.toast.deleted', 'Order deleted successfully.'),
-        'success',
-      )
+      toast({
+        title: t('common.deleted', 'Deleted'),
+        description: t('orders.toast.deleted', 'Order deleted successfully.'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
       navigate(backBasePath)
     } catch (e) {
-      const msg = e?.response?.data?.message || e.message || 'Failed to delete order.'
-      await Swal.fire(t('common.error', 'Error'), msg, 'error')
+      const msg = e?.response?.data?.message || e.message || t('orders.toast.deleteFailed', 'Failed to delete order.')
+      toast({
+        title: t('common.error', 'Error'),
+        description: msg,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    } finally {
+      deleteDisclosure.onClose()
     }
   }
 
+  const manufacturerActions = []
+  if (isAdmin(authUser)) {
+    manufacturerActions.push(
+      <Button
+        key="view"
+        size="sm"
+        variant="outline"
+        colorScheme="brand"
+        leftIcon={<Icon as={FileText} boxSize={4} />}
+        onClick={handleViewPdf}
+      >
+        {t('orders.actions.viewPdf', 'View PDF')}
+      </Button>,
+    )
+    manufacturerActions.push(
+      <Button
+        key="download"
+        size="sm"
+        variant="outline"
+        colorScheme="gray"
+        leftIcon={<Icon as={Download} boxSize={4} />}
+        onClick={handleDownloadPdf}
+        isLoading={downloading}
+      >
+        {downloading ? t('orders.actions.downloading', 'Downloading…') : t('orders.actions.downloadPdf', 'Download PDF')}
+      </Button>,
+    )
+    manufacturerActions.push(
+      <Button
+        key="resend"
+        size="sm"
+        colorScheme="brand"
+        variant="solid"
+        leftIcon={<Icon as={Mail} boxSize={4} />}
+        onClick={handleResendEmail}
+        isLoading={resending}
+      >
+        {resending ? t('orders.actions.resending', 'Resending…') : t('orders.actions.resendEmail', 'Resend Email')}
+      </Button>,
+    )
+    manufacturerActions.push(
+      <Button
+        key="delete"
+        size="sm"
+        colorScheme="red"
+        variant="outline"
+        leftIcon={<Icon as={Trash} boxSize={4} />}
+        onClick={handleDeleteOrder}
+      >
+        {t('orders.actions.deleteOrder', 'Delete Order')}
+      </Button>,
+    )
+  }
+
+  manufacturerActions.push(
+    <Button
+      key="back"
+      size="sm"
+      variant="outline"
+      colorScheme="gray"
+      leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+      onClick={handleBack}
+    >
+      {t('common.back', 'Back')}
+    </Button>,
+  )
+
+  const primaryManufacturer = parsed.manufacturers?.[0]
+  const resolvedPrimaryManufacturer = (() => {
+    if (!primaryManufacturer) return null
+    const resolveManuName = () => {
+      if (order?.manufacturer?.name) return order.manufacturer.name
+      if (primaryManufacturer?.manufacturer) {
+        const manuId = primaryManufacturer.manufacturer
+        const fromMap = manuById?.[manuId] || manuById?.[String(manuId)]
+        if (fromMap?.name) return fromMap.name
+        const fromList = manuList?.find?.((m) => Number(m?.id) === Number(manuId))
+        if (fromList?.name) return fromList.name
+      }
+      return (
+        primaryManufacturer.manufacturerName ||
+        primaryManufacturer.name ||
+        order?.manufacturer_name ||
+        t('orders.common.manufacturer', 'Manufacturer')
+      )
+    }
+
+    const manuName = resolveManuName()
+    const potentialStyleName = primaryManufacturer?.styleName || primaryManufacturer?.style
+    const styleName =
+      potentialStyleName && potentialStyleName === manuName
+        ? order?.style_name || t('common.na')
+        : potentialStyleName || order?.style_name || t('common.na')
+    const imgUrl = primaryManufacturer?.styleImage || null
+    return { manuName, styleName, imgUrl }
+  })()
+
+  const mapAlertVariant = (variant) => {
+    if (variant === 'danger') return 'error'
+    if (variant === 'warning') return 'warning'
+    if (variant === 'success') return 'success'
+    return 'info'
+  }
+
+  const mapButtonScheme = (variant) => {
+    if (variant === 'danger') return 'red'
+    if (variant === 'warning') return 'yellow'
+    if (variant === 'success') return 'brand'
+    return 'brand'
+  }
   return (
-    <Container fluid>
-      <style>
-        {`
-          .modal-header-custom {
-            background: ${backgroundColor} !important;
-            background-color: ${backgroundColor} !important;
-            background-image: none !important;
-            color: ${textColor} !important;
-    </div>
-    </div>
-  
-  )
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={`${t('orders.details.title', 'Order Details')} - ${displayOrderNumber}`}
+          subtitle={
+            order?.customer?.name
+              ? `${t('orders.details.customerLabel', 'Customer')}: ${order.customer.name}`
+              : t('orders.details.subtitle', 'Accepted order overview')
           }
-          .modal-header-custom .modal-title {
-            color: ${textColor} !important;
-          }
-          .modal-header-custom .btn-close {
-            filter: ${textColor === '#ffffff' ? 'invert(1)' : 'invert(0)'};
-          }
-        `}
-      </style>
-      <PageHeader
-        title={`${t('orders.details.title', 'Order Details')} — ${displayOrderNumber}`}
-        subtitle={
-          order?.customer?.name
-            ? `${t('orders.details.customerLabel', 'Customer')}: ${order.customer.name}`
-            : t('orders.details.subtitle', 'Accepted order overview')
-        }
-        icon={FaShoppingCart}
-        rightContent={
-          <div className="d-flex align-items-center gap-2">
-            {isAdmin(authUser) && (
-              <>
-                <button
-                  type="button"
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={handleViewPdf}
-                  title="View Manufacturer PDF"
-                >
-                  View PDF
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-sm"
-                  onClick={handleDownloadPdf}
-                  disabled={downloading}
-                  title="Download Manufacturer PDF"
-                >
-                  {downloading ? 'Downloading…' : 'Download PDF'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={handleResendEmail}
-                  disabled={resending}
-                  title="Resend Manufacturer Email"
-                >
-                  {resending ? 'Resending…' : 'Resend Email'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger btn-sm"
-                  onClick={handleDeleteOrder}
-                  title="Delete Order"
-                >
-                  Delete Order
-                </button>
-              </>
-            )}
-            <button type="button" className="btn btn-light btn-sm" onClick={handleBack}>
-              <Icon as={ArrowLeft} className="me-2" />
-              {t('common.back', 'Back')}
-            </button>
-          </div>
-        }
-      />
-      {/* Manufacturer Details (primary) */}
-      {parsed.manufacturers?.length > 0 && (
-        <Flex className="mb-3">
-          <Box md={12}>
-            <Card>
-              <CardHeader>
-                {t('orders.details.manufacturerDetails', 'Manufacturer Details')}
-              </CardHeader>
-              <CardBody
-                className="d-flex align-items-center"
-                style={{ gap: 16, flexWrap: 'wrap' }}
-              >
-                {(() => {
-                  const m = parsed.manufacturers[0]
+          icon={ShoppingCart}
+          actions={manufacturerActions}
+        />
 
-                  // Enhanced manufacturer name resolution
-                  const resolveManuName = () => {
-                    // Try direct manufacturer association from API
-                    if (order?.manufacturer?.name) return order.manufacturer.name
-
-                    // Try snapshot manufacturer ID resolution
-                    if (m?.manufacturer) {
-                      const manuId = m.manufacturer
-                      const fromMap = manuById?.[manuId] || manuById?.[String(manuId)]
-                      if (fromMap?.name) return fromMap.name
-
-                      const fromList = manuList?.find?.((mn) => Number(mn?.id) === Number(manuId))
-                      if (fromList?.name) return fromList.name
-                    }
-
-                    // Fallback to existing logic
-                    return (
-                      m.manufacturerName ||
-                      m.name ||
-                      order?.manufacturer_name ||
-                      t('orders.common.manufacturer', 'Manufacturer'
-  )
-                  }
-
-                  const manuName = resolveManuName()
-
-                  // Enhanced style name resolution - avoid showing manufacturer name as style
-                  const resolveStyleName = () => {
-                    // Check if styleName is actually the manufacturer name (wrong data)
-                    const potentialStyleName = m?.styleName || m?.style
-
-                    // If the styleName matches the manufacturer name, it's wrong data
-                    if (potentialStyleName && potentialStyleName === manuName) {
-                      // Try to get style name from order.style_name instead
-                      if (order?.style_name && order.style_name !== manuName) {
-                        return order.style_name
-                      }
-                      // If still wrong, return a generic placeholder
-                      return t('common.na')
-                    }
-
-                    // Use the styleName if it's different from manufacturer name
-                    return potentialStyleName || order?.style_name || t('common.na')
-                  }
-
-                  const styleName = resolveStyleName()
-                  const imgUrl = m.styleImage
-                  return (
-                    <>
-                      {imgUrl && (
-                        <button
-                          type="button"
-                          aria-label={t('orders.details.previewStyleImage', 'Preview style image')}
-                          onClick={() => setPreviewImg(imgUrl)}
-                          className="p-0 border-0 bg-transparent"
-                          style={{
-                            background: 'none',
-                            lineHeight: 0,
-                            display: 'inline-block',
-                            borderRadius: 8,
-                          }}
-                        >
-                          <img
-                            src={imgUrl}
-                            alt={styleName || t('common.style', 'Style')}
-                            style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8 }}
-                          />
-                        </button>
-                      )}
-                      <div>
-                        <div className="mb-1">
-                          <strong>{t('orders.common.manufacturer', 'Manufacturer')}:</strong>{' '}
-                          {manuName}
-                        </div>
-                        <div className="mb-0">
-                          <strong>{t('orders.details.styleColor', 'Style (Color)')}:</strong>{' '}
-                          {styleName}
-                        </div>
-                    </>
-                  )
-                })()}
-              </CardBody>
-            </Card>
-          </Box>
-        </Flex>
-      )}
-
-      {/* Order Summary */}
-      <Flex className="mb-3">
-        <Box md={4}>
-          <Card>
-            <CardHeader>{t('orders.details.order', 'Order')}</CardHeader>
+        {resolvedPrimaryManufacturer && (
+          <Card variant="outline">
+            <CardHeader fontWeight="semibold">
+              {t('orders.details.manufacturerDetails', 'Manufacturer Details')}
+            </CardHeader>
             <CardBody>
-              <div className="mb-2">
-                <strong>{t('orders.headers.orderNumber', 'Order #')}:</strong> {displayOrderNumber}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.id', 'ID')}:</strong> {order?.id}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.date', 'Date')}:</strong>{' '}
-                {new Date(
-                  order?.accepted_at || order?.date || order?.createdAt,
-                ).toLocaleDateString()}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.status', 'Status')}:</strong>{' '}
-                <Badge status="success">{order?.status || 'accepted'}</Badge>
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.acceptedAt', 'Accepted at')}:</strong>{' '}
+              <HStack spacing={4} align="center" flexWrap="wrap">
+                {resolvedPrimaryManufacturer.imgUrl && (
+                  <Image
+                    src={resolvedPrimaryManufacturer.imgUrl}
+                    alt={resolvedPrimaryManufacturer.styleName || t('common.style', 'Style')}
+                    boxSize={18}
+                    objectFit="cover"
+                    borderRadius="md"
+                    cursor="pointer"
+                    onClick={() => setPreviewImg(resolvedPrimaryManufacturer.imgUrl)}
+                  />
+                )}
+                <Stack spacing={1} minW={0}>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">
+                      {t('orders.common.manufacturer', 'Manufacturer')}:
+                    </Text>{' '}
+                    {resolvedPrimaryManufacturer.manuName}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">
+                      {t('orders.details.styleColor', 'Style (Color)')}:
+                    </Text>{' '}
+                    {resolvedPrimaryManufacturer.styleName}
+                  </Text>
+                </Stack>
+              </HStack>
+            </CardBody>
+          </Card>
+        )}
+
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+          <Card variant="outline">
+            <CardHeader fontWeight="semibold">
+              {t('orders.details.order', 'Order')}
+            </CardHeader>
+            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.headers.orderNumber', 'Order #')}:
+                </Text>{' '}
+                {displayOrderNumber}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.id', 'ID')}:
+                </Text>{' '}
+                {order?.id}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.date', 'Date')}:
+                </Text>{' '}
+                {order?.accepted_at || order?.date || order?.createdAt
+                  ? new Date(order.accepted_at || order.date || order.createdAt).toLocaleDateString()
+                  : t('common.na')}
+              </Text>
+              <Text display="flex" alignItems="center" gap={2}>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.status', 'Status')}:
+                </Text>{' '}
+                <Badge colorScheme="green" borderRadius="full" px={3} py={1} fontSize="0.75rem">
+                  {order?.status || 'accepted'}
+                </Badge>
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.acceptedAt', 'Accepted at')}:
+                </Text>{' '}
                 {order?.accepted_at ? new Date(order.accepted_at).toLocaleString() : t('common.na')}
-              </div>
+              </Text>
             </CardBody>
           </Card>
-        </Box>
-        <Box md={4}>
-          <Card>
-            <CardHeader>{t('orders.details.customer', 'Customer')}</CardHeader>
-            <CardBody>
-              <div className="mb-2">
-                <strong>{t('orders.details.name', 'Name')}:</strong>{' '}
+
+          <Card variant="outline">
+            <CardHeader fontWeight="semibold">
+              {t('orders.details.customer', 'Customer')}
+            </CardHeader>
+            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.name', 'Name')}:
+                </Text>{' '}
                 {order?.customer?.name || order?.customer_name || t('common.na')}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.email', 'Email')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.email', 'Email')}:
+                </Text>{' '}
                 {order?.customer?.email || order?.customer_email || t('common.na')}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.phone', 'Phone')}:</strong>{' '}
-                {order?.customer?.mobile ||
-                  order?.customer?.phone ||
-                  order?.customer_phone ||
-                  t('common.na')}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.address', 'Address')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.phone', 'Phone')}:
+                </Text>{' '}
+                {order?.customer?.mobile || order?.customer?.phone || order?.customer_phone || t('common.na')}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.address', 'Address')}:
+                </Text>{' '}
                 {order?.customer?.address || order?.customer_address || t('common.na')}
-              </div>
+              </Text>
             </CardBody>
           </Card>
-        </Box>
-        <Box md={4}>
-          <Card>
-            <CardHeader>{t('orders.details.totals', 'Totals')}</CardHeader>
-            <CardBody>
-              <div className="mb-2">
-                <strong>{t('orders.details.subtotalStyles', 'Subtotal (Styles)')}:</strong>{' '}
+
+          <Card variant="outline">
+            <CardHeader fontWeight="semibold">
+              {t('orders.details.totals', 'Totals')}
+            </CardHeader>
+            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.subtotalStyles', 'Subtotal (Styles)')}:
+                </Text>{' '}
                 {currency(displaySummary.styleTotal)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.assemblyFee', 'Assembly Fee')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.assemblyFee', 'Assembly Fee')}:
+                </Text>{' '}
                 {currency(displaySummary.assemblyFee)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.modifications', 'Modifications')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.modifications', 'Modifications')}:
+                </Text>{' '}
                 {currency(displaySummary.modificationsCost)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.deliveryFee', 'Delivery Fee')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.deliveryFee', 'Delivery Fee')}:
+                </Text>{' '}
                 {currency(displaySummary.deliveryFee)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.discount', 'Discount')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.discount', 'Discount')}:
+                </Text>{' '}
                 {currency(displaySummary.discountAmount)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.tax', 'Tax')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.tax', 'Tax')}:
+                </Text>{' '}
                 {currency(displaySummary.taxAmount)}
-              </div>
-              <div className="mb-2">
-                <strong>{t('orders.details.grandTotal', 'Grand Total')}:</strong>{' '}
+              </Text>
+              <Text>
+                <Text as="span" fontWeight="semibold">
+                  {t('orders.details.grandTotal', 'Grand Total')}:
+                </Text>{' '}
                 {currency(displaySummary.grandTotal)}
-              </div>
+              </Text>
             </CardBody>
           </Card>
-        </Box>
-      </Flex>
+        </SimpleGrid>
 
-      {/* Items Table */}
-      <Card className="mb-4">
-        <CardHeader>{t('orders.details.items', 'Items')}</CardHeader>
-        <CardBody>
-          {/* Desktop/tablet view */}
-          <div className="d-none d-md-block">
-            <div className="table-wrap">
-              <CTable hover className="table-modern" role="table">
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">
-                      {t('orders.details.item', 'Item')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col">
-                      {t('orders.details.specs', 'Specs')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-center">
-                      {t('orders.details.hingeSide', 'Hinge Side')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-center">
-                      {t('orders.details.exposedSide', 'Exposed Side')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-end">
-                      {t('orders.details.qty', 'Qty')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-end">
-                      {t('orders.details.unitPrice', 'Unit Price')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-end">
-                      {t('orders.details.modifications', 'Modifications')}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell scope="col" className="text-end">
-                      {t('orders.details.total', 'Total')}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {parsed.items.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan={8} className="text-center text-muted py-4">
-                        {t('orders.details.noItems', 'No items')}
-                      </CTableDataCell>
-                    </CTableRow>
-                  ) : (
-                    parsed.items.map((it, idx) => {
-                      const {
-                        manuName,
-                        qty,
-                        unit,
-                        total,
-                        modsTotal,
-                        styleName,
-                        thumb,
-                        thumbTitle,
-                      } = computeItemView(it)
-                      return (
-                        <CTableRow key={idx}>
-                          <CTableDataCell>
-                            <div>{it.name || it.description || it.item || '-'}</div>
-                            {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                              <div className="text-muted small mt-1">
-                                {it.modifications.map((m, i) => {
-                                  const details = buildSelectedOptionsText(m?.selectedOptions)
-                                  const label = m?.name || m?.templateName || 'Modification'
-                                  return (
-                                    <div key={`mod-${idx}-${i}`}>
-                                      • {label}
-                                      {details ? ` — ${details}` : ''}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-
-                            {/* Attachments gallery under the item for printing/manufacturing clarity */}
-                            {(() => {
-                              const imgs = []
-                              try {
-                                if (Array.isArray(it.modifications)) {
-                                  it.modifications.forEach((m) => {
-                                    if (Array.isArray(m.attachments)) {
-                                      m.attachments.forEach((att) => {
-                                        const mt = String(att.mimeType || '')
-                                        if (mt.startsWith('image/')) imgs.push(att.url)
-                                      })
-    </div>
-    </div>
-  )
-}
-                                  })
-                                }
-                              } catch (_) {}
-                              if (!imgs.length) return null
-                              return (
-                                <div className="mt-2 d-flex flex-wrap gap-2">
-                                  {imgs.map((url, ii) => (
-                                    <button
+        <Card variant="outline">
+          <CardHeader fontWeight="semibold">
+            {t('orders.details.items', 'Items')}
+          </CardHeader>
+          <CardBody>
+            <Box display={{ base: 'none', md: 'block' }}>
+              <TableContainer>
+                <Table variant="simple" size="sm">
+                  <Thead bg="gray.50">
+                    <Tr>
+                      <Th>{t('orders.details.item', 'Item')}</Th>
+                      <Th>{t('orders.details.specs', 'Specs')}</Th>
+                      <Th textAlign="center">{t('orders.details.hingeSide', 'Hinge Side')}</Th>
+                      <Th textAlign="center">{t('orders.details.exposedSide', 'Exposed Side')}</Th>
+                      <Th textAlign="right">{t('orders.details.qty', 'Qty')}</Th>
+                      <Th textAlign="right">{t('orders.details.unitPrice', 'Unit Price')}</Th>
+                      <Th textAlign="right">{t('orders.details.modifications', 'Modifications')}</Th>
+                      <Th textAlign="right">{t('orders.details.total', 'Total')}</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {parsed.items.length === 0 ? (
+                      <Tr>
+                        <Td colSpan={8}>
+                          <Center py={8} color="gray.500">
+                            {t('orders.details.noItems', 'No items')}
+                          </Center>
+                        </Td>
+                      </Tr>
+                    ) : (
+                      parsed.items.map((it, idx) => {
+                        const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
+                        const attachments = []
+                        try {
+                          if (Array.isArray(it.modifications)) {
+                            it.modifications.forEach((m) => {
+                              if (Array.isArray(m.attachments)) {
+                                m.attachments.forEach((att) => {
+                                  const mt = String(att.mimeType || '')
+                                  if (mt.startsWith('image/')) attachments.push(att.url)
+                                })
+                              }
+                            })
+                          }
+                        } catch (_) {}
+                        return (
+                          <Tr key={idx} verticalAlign="top">
+                            <Td maxW="320px">
+                              <Text fontWeight="medium">{it.name || it.description || it.item || '-'}</Text>
+                              {Array.isArray(it.modifications) && it.modifications.length > 0 && (
+                                <Stack spacing={1} mt={2} fontSize="xs" color="gray.600">
+                                  {it.modifications.map((m, i) => {
+                                    const details = buildSelectedOptionsText(m?.selectedOptions)
+                                    const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
+                                    return (
+                                      <Text key={`mod-${idx}-${i}`}>• {label}{details ? ` — ${details}` : ''}</Text>
+                                    )
+                                  })}
+                                </Stack>
+                              )}
+                              {attachments.length > 0 && (
+                                <HStack spacing={2} mt={3} wrap="wrap">
+                                  {attachments.map((url, ii) => (
+                                    <Image
                                       key={`att-${idx}-${ii}`}
-                                      type="button"
-                                      aria-label={t(
-                                        'orders.details.previewAttachment',
-                                        'Preview attachment {{num}}',
-                                        { num: ii + 1 },
-                                      )}
-                                      className="p-0 border-0 bg-transparent"
+                                      src={url}
+                                      alt={`Attachment ${ii + 1}`}
+                                      boxSize={24}
+                                      objectFit="cover"
+                                      borderRadius="md"
+                                      borderWidth="1px"
+                                      borderColor="gray.200"
+                                      cursor="pointer"
                                       onClick={(e) => {
                                         e.stopPropagation()
                                         setPreviewImg(url)
                                       }}
-                                      style={{
-                                        background: 'none',
-                                        lineHeight: 0,
-                                        display: 'inline-block',
-                                        borderRadius: 6,
-                                      }}
-                                    >
-                                      <img
-                                        src={url}
-                                        alt={`Attachment ${ii + 1}`}
-                                        style={{
-                                          width: 120,
-                                          height: 120,
-                                          objectFit: 'cover',
-                                          borderRadius: 6,
-                                          border: '1px solid #e9ecef',
-                                        }}
-                                      />
-                                    </button>
+                                    />
                                   ))}
-                                </div>
-                              )
-                            })()}
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            {thumb ? (
-                              <button
-                                type="button"
-                                aria-label={t(
-                                  'orders.details.previewThumbnail',
-                                  'Preview thumbnail',
-                                )}
-                                className="p-0 border-0 bg-transparent"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setPreviewImg(thumb)
-                                }}
-                                style={{
-                                  background: 'none',
-                                  lineHeight: 0,
-                                  display: 'inline-block',
-                                  borderRadius: 6,
-                                }}
-                              >
-                                <img
+                                </HStack>
+                              )}
+                            </Td>
+                            <Td>
+                              {thumb ? (
+                                <Image
                                   src={thumb}
                                   alt={styleName || manuName}
                                   title={thumbTitle}
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    objectFit: 'cover',
-                                    borderRadius: 6,
+                                  boxSize={14}
+                                  objectFit="cover"
+                                  borderRadius="md"
+                                  cursor="pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setPreviewImg(thumb)
                                   }}
                                 />
-                              </button>
+                              ) : (
+                                <Text color="gray.400">-</Text>
+                              )}
+                            </Td>
+                            <Td textAlign="center">
+                              <Badge colorScheme={it.hingeSide ? 'brand' : 'gray'} borderRadius="full" px={3} py={1}>
+                                {it.hingeSide || '-'}
+                              </Badge>
+                            </Td>
+                            <Td textAlign="center">
+                              <Badge colorScheme={it.exposedSide ? 'brand' : 'gray'} borderRadius="full" px={3} py={1}>
+                                {it.exposedSide || '-'}
+                              </Badge>
+                            </Td>
+                            <Td textAlign="right">{qty}</Td>
+                            <Td textAlign="right">{currency(unit)}</Td>
+                            <Td textAlign="right">{currency(modsTotal)}</Td>
+                            <Td textAlign="right">{currency(total)}</Td>
+                          </Tr>
+                        )
+                      })
+                    )}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            <Box display={{ base: 'block', md: 'none' }}>
+              {parsed.items.length === 0 ? (
+                <Center py={8} color="gray.500">
+                  {t('orders.details.noItems', 'No items')}
+                </Center>
+              ) : (
+                <Stack spacing={3}>
+                  {parsed.items.map((it, idx) => {
+                    const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
+                    const title = it.name || it.description || it.item || '-'
+                    const attachments = []
+                    try {
+                      if (Array.isArray(it.modifications)) {
+                        it.modifications.forEach((m) => {
+                          if (Array.isArray(m.attachments)) {
+                            m.attachments.forEach((att) => {
+                              const mt = String(att.mimeType || '')
+                              if (mt.startsWith('image/')) attachments.push(att.url)
+                            })
+                          }
+                        })
+                      }
+                    } catch (_) {}
+                    return (
+                      <Card key={`mobile-item-${idx}`} variant="outline">
+                        <CardBody as={Stack} spacing={3}>
+                          <HStack align="flex-start" spacing={4}>
+                            {thumb ? (
+                              <Image
+                                src={thumb}
+                                alt={styleName || manuName}
+                                title={thumbTitle}
+                                boxSize={16}
+                                objectFit="cover"
+                                borderRadius="md"
+                                cursor="pointer"
+                                onClick={() => setPreviewImg(thumb)}
+                              />
                             ) : (
-                              <span className="text-muted">-</span>
+                              <Box
+                                boxSize={16}
+                                borderRadius="md"
+                                bg="gray.100"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                color="gray.400"
+                                fontWeight="bold"
+                              >
+                                —
+                              </Box>
                             )}
-                          </CTableDataCell>
-                          <CTableDataCell className="text-center">
-                            <span
-                              className={`badge ${it.hingeSide ? 'bg-primary' : 'bg-secondary'}`}
-                            >
-                              {it.hingeSide || '-'}
-                            </span>
-                          </CTableDataCell>
-                          <CTableDataCell className="text-center">
-                            <span
-                              className={`badge ${it.exposedSide ? 'bg-primary' : 'bg-secondary'}`}
-                            >
-                              {it.exposedSide || '-'}
-                            </span>
-                          </CTableDataCell>
-                          <CTableDataCell className="text-end">{qty}</CTableDataCell>
-                          <CTableDataCell className="text-end">{currency(unit)}</CTableDataCell>
-                          <CTableDataCell className="text-end">
-                            {currency(modsTotal)}
-                          </CTableDataCell>
-                          <CTableDataCell className="text-end">{currency(total)}</CTableDataCell>
-                        </CTableRow>
-                      )
-                    })
-                  )}
-                </CTableBody>
-              </CTable>
-            </div>
-          {/* Mobile view */}
-          <div className="d-block d-md-none">
-            {parsed.items.length === 0 ? (
-              <div className="text-center text-muted py-4">
-                {t('orders.details.noItems', 'No items')}
-              </div>
+                            <Stack spacing={2} flex="1">
+                              <Text fontWeight="semibold">{title}</Text>
+                              {Array.isArray(it.modifications) && it.modifications.length > 0 && (
+                                <Stack spacing={1} fontSize="xs" color="gray.600">
+                                  {it.modifications.map((m, i) => {
+                                    const details = buildSelectedOptionsText(m?.selectedOptions)
+                                    const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
+                                    return (
+                                      <Text key={`mod-mobile-${idx}-${i}`}>
+                                        • {label}{details ? ` — ${details}` : ''}
+                                      </Text>
+                                    )
+                                  })}
+                                </Stack>
+                              )}
+                              <Text fontSize="xs" color="gray.600">
+                                {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
+                              </Text>
+                              {(it.hingeSide || it.exposedSide) && (
+                                <HStack spacing={2} fontSize="xs" color="gray.600">
+                                  {it.hingeSide && (
+                                    <Badge colorScheme="brand" borderRadius="full" px={2}>
+                                      {t('orders.details.hingeSide', 'Hinge Side')}: {it.hingeSide}
+                                    </Badge>
+                                  )}
+                                  {it.exposedSide && (
+                                    <Badge colorScheme="brand" borderRadius="full" px={2}>
+                                      {t('orders.details.exposedSide', 'Exposed Side')}: {it.exposedSide}
+                                    </Badge>
+                                  )}
+                                </HStack>
+                              )}
+                              {attachments.length > 0 && (
+                                <HStack spacing={2} wrap="wrap">
+                                  {attachments.map((url, ii) => (
+                                    <Image
+                                      key={`att-mobile-${idx}-${ii}`}
+                                      src={url}
+                                      alt={`Attachment ${ii + 1}`}
+                                      boxSize={20}
+                                      objectFit="cover"
+                                      borderRadius="md"
+                                      cursor="pointer"
+                                      onClick={() => setPreviewImg(url)}
+                                    />
+                                  ))}
+                                </HStack>
+                              )}
+                              <HStack justify="space-between" fontSize="sm" pt={1}>
+                                <Text>
+                                  {t('orders.details.qty', 'Qty')}: <Text as="span" fontWeight="semibold">{qty}</Text>
+                                </Text>
+                                <Text>
+                                  {t('orders.details.unitPrice', 'Unit Price')}: <Text as="span" fontWeight="semibold">{currency(unit)}</Text>
+                                </Text>
+                                <Text>
+                                  {t('orders.details.total', 'Total')}: <Text as="span" fontWeight="semibold">{currency(total)}</Text>
+                                </Text>
+                              </HStack>
+                            </Stack>
+                          </HStack>
+                        </CardBody>
+                      </Card>
+                    )
+                  })}
+                </Stack>
+              )}
+            </Box>
+          </CardBody>
+        </Card>
+
+        <Card variant="outline">
+          <CardHeader fontWeight="semibold">
+            {t('orders.details.manufacturers', 'Manufacturers')}
+          </CardHeader>
+          <CardBody>
+            {parsed.manufacturers.length === 0 ? (
+              <Text color="gray.500">{t('orders.details.noManufacturers', 'No manufacturers found')}</Text>
             ) : (
-              <div className="d-flex flex-column gap-2">
-                {parsed.items.map((it, idx) => {
-                  const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } =
-                    computeItemView(it)
-                  const title = it.name || it.description || it.item || '-'
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                {parsed.manufacturers.map((m, i) => {
+                  const headerLabel =
+                    m.manufacturerName || m.name || `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`
+                  const totals = m?.summary || {}
                   return (
-                    <div
-                      key={idx}
-                      className="d-flex p-2 border rounded align-items-center"
-                      style={{ gap: 12 }}
-                    >
-                      <div>
-                        {thumb ? (
-                          <button
-                            type="button"
-                            aria-label={t('orders.details.previewThumbnail', 'Preview thumbnail')}
-                            className="p-0 border-0 bg-transparent"
-                            onClick={() => setPreviewImg(thumb)}
-                            style={{
-                              background: 'none',
-                              lineHeight: 0,
-                              display: 'inline-block',
-                              borderRadius: 6,
-                            }}
-                          >
-                            <img
-                              src={thumb}
-                              alt={styleName || manuName}
-                              title={thumbTitle}
-                              style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }}
-                            />
-                          </button>
-                        ) : (
-                          <div
-                            className="bg-light d-flex align-items-center justify-content-center"
-                            style={{ width: 48, height: 48, borderRadius: 6 }}
-                          >
-                            –
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-grow-1">
-                        <div style={{ fontWeight: 600 }}>{title}</div>
-                        {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                          <div className="text-muted" style={{ fontSize: 12 }}>
-                            {it.modifications.map((m, i) => {
-                              const details = buildSelectedOptionsText(m?.selectedOptions)
-                              const label = m?.name || m?.templateName || 'Modification'
-                              return (
-                                <div key={`mod-m-${idx}-${i}`}>
-                                  • {label}
-                                  {details ? ` — ${details}` : ''}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-                        <div className="text-muted" style={{ fontSize: 12 }}>
-                          {t('orders.details.modifications', 'Modifications')}:{' '}
-                          {currency(modsTotal)}
-                        </div>
-                        {(it.hingeSide || it.exposedSide) && (
-                          <div className="text-muted" style={{ fontSize: 12 }}>
-                            {it.hingeSide && (
-                              <span className="badge bg-primary me-2">
-                                {t('orders.details.hingeSide', 'Hinge Side')}: {it.hingeSide}
-                              </span>
+                    <Card key={`manufacturer-${i}`} variant="outline">
+                      <CardHeader fontWeight="semibold">{headerLabel}</CardHeader>
+                      <CardBody as={Stack} spacing={3} fontSize="sm" color="gray.700">
+                        {(m?.styleName || m?.style || m?.styleImage) && (
+                          <HStack spacing={3} align="center">
+                            {m.styleImage && (
+                              <Image
+                                src={m.styleImage}
+                                alt={m.styleName || m.style || t('common.style', 'Style')}
+                                boxSize={16}
+                                objectFit="cover"
+                                borderRadius="md"
+                                cursor="pointer"
+                                onClick={() => setPreviewImg(m.styleImage)}
+                              />
                             )}
-                            {it.exposedSide && (
-                              <span className="badge bg-primary">
-                                {t('orders.details.exposedSide', 'Exposed Side')}: {it.exposedSide}
-                              </span>
-                            )}
-                          </div>
+                            <Stack spacing={1}>
+                              <Text fontSize="xs" color="gray.500">
+                                {t('orders.details.selectedStyle', 'Selected Style')}
+                              </Text>
+                              <Text fontWeight="semibold">{m.styleName || m.style || t('common.na')}</Text>
+                            </Stack>
+                          </HStack>
                         )}
-                        <div
-                          className="d-flex justify-content-between mt-1"
-                          style={{ fontSize: 14 }}
-                        >
-                          <div>
-                            {t('orders.details.qty', 'Qty')}: <strong>{qty}</strong>
-                          </div>
-                          <div>
-                            {t('orders.details.unitPrice', 'Unit Price')}:{' '}
-                            <strong>{currency(unit)}</strong>
-                          </div>
-                          <div>
-                            {t('orders.details.total', 'Total')}: <strong>{currency(total)}</strong>
-                          </div>
-                      </div>
+                        <VStack align="stretch" spacing={2}>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.styleTotal', 'Style Total')}:
+                            </Text>{' '}
+                            {currency(Number(totals.styleTotal || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.assemblyFee', 'Assembly Fee')}:
+                            </Text>{' '}
+                            {currency(Number(totals.assemblyFee || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.modifications', 'Modifications')}:
+                            </Text>{' '}
+                            {currency(Number(totals.modificationsCost || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.deliveryFee', 'Delivery Fee')}:
+                            </Text>{' '}
+                            {currency(Number(totals.deliveryFee || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.discount', 'Discount')}:
+                            </Text>{' '}
+                            {currency(Number(totals.discountAmount || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.tax', 'Tax')}:
+                            </Text>{' '}
+                            {currency(Number(totals.taxAmount || 0))}
+                          </Text>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {t('orders.details.grandTotal', 'Grand Total')}:
+                            </Text>{' '}
+                            {currency(Number(totals.grandTotal || 0))}
+                          </Text>
+                        </VStack>
+                      </CardBody>
+                    </Card>
                   )
                 })}
-              </div>
+              </SimpleGrid>
             )}
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Manufacturers Breakdown */}
-      <Card>
-        <CardHeader>{t('orders.details.manufacturers', 'Manufacturers')}</CardHeader>
-        <CardBody>
-          {parsed.manufacturers.length === 0 ? (
-            <div className="text-muted">
-              {t('orders.details.noManufacturers', 'No manufacturers found')}
-            </div>
-          ) : (
-            <Flex className="g-3">
-              {parsed.manufacturers.map((m, i) => (
-                <Box md={6} key={i}>
-                  <Card>
-                    <CardHeader>
-                      {m.manufacturerName ||
-                        m.name ||
-                        `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`}
-                    </CardHeader>
-                    <CardBody>
-                      {/* Style (name + picture) from snapshot */}
-                      {m?.styleName || m?.style || m?.styleImage ? (
-                        <div className="d-flex align-items-center mb-3" style={{ gap: 12 }}>
-                          {m.styleImage && (
-                            <CCardImage
-                              src={m.styleImage}
-                              style={{
-                                width: 64,
-                                height: 64,
-                                objectFit: 'cover',
-                                borderRadius: 6,
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => setPreviewImg(m.styleImage)}
-                            />
-                          )}
-                          <div>
-                            <div className="text-muted" style={{ fontSize: 12 }}>
-                              {t('orders.details.selectedStyle', 'Selected Style')}
-                            </div>
-                            <div>
-                              <strong>{m.styleName || m.style}</strong>
-                            </div>
-                        </div>
-                      ) : null}
-                      {(() => {
-                        // Per-manufacturer totals from snapshot
-                        const s = m?.summary || {}
-                        const itemsSubtotal = Number(s.styleTotal || 0)
-                        const assembly = Number(s.assemblyFee || 0)
-                        const modifications = Number(s.modificationsCost || 0)
-                        const deliveryFee = Number(s.deliveryFee || 0)
-                        const discountAmount = Number(s.discountAmount || 0)
-                        const taxAmount = Number(s.taxAmount || 0)
-                        const grandTotal = Number(s.grandTotal || 0)
-                        return (
-                          <>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.styleTotal', 'Style Total')}:</strong>{' '}
-                              {currency(itemsSubtotal)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.assemblyFee', 'Assembly Fee')}:</strong>{' '}
-                              {currency(assembly)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.modifications', 'Modifications')}:</strong>{' '}
-                              {currency(modifications)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.deliveryFee', 'Delivery Fee')}:</strong>{' '}
-                              {currency(deliveryFee)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.discount', 'Discount')}:</strong>{' '}
-                              {currency(discountAmount)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.tax', 'Tax')}:</strong>{' '}
-                              {currency(taxAmount)}
-                            </div>
-                            <div className="mb-2">
-                              <strong>{t('orders.details.grandTotal', 'Grand Total')}:</strong>{' '}
-                              {currency(grandTotal)}
-                            </div>
-                          </>
-                        )
-                      })()}
-                    </CardBody>
-                  </Card>
-                </Box>
-              ))}
-            </Flex>
-          )}
-        </CardBody>
-      </Card>
-
-      {/* PDF Modal */}
-      <Modal
-        size="xl"
-        isOpen={showPdf}
-        onClose={() =>
-{
-          setShowPdf(false)
-          if (pdfUrl) {
-            URL.revokeObjectURL(pdfUrl)
-            setPdfUrl(null
-  
-  )
-          }
-        }}
-      >
-          <ModalHeader className="modal-header-custom">
-            Manufacturer PDF
+          </CardBody>
+        </Card>
+      </Stack>
+      <Modal size="5xl" isOpen={showPdf} onClose={closePdfModal}>
+        <ModalOverlay />
+        <ModalContent maxH="90vh">
+          <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
+            {t('orders.pdf.title', 'Manufacturer PDF')}
           </ModalHeader>
-          <ModalBody style={{ height: '80vh' }}>
+          <ModalCloseButton color={textColor} />
+          <ModalBody p={0} height="80vh">
             {pdfUrl ? (
-              <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
-                <iframe title="Manufacturer PDF" src={pdfUrl} style={{ width: '100%', height: '100%', border: 'none' }} />
-              </object>
+              <Box as="object" data={pdfUrl} type="application/pdf" width="100%" height="100%">
+                <Box
+                  as="iframe"
+                  title={t('orders.pdf.iframeTitle', 'Manufacturer PDF')}
+                  src={pdfUrl}
+                  width="100%"
+                  height="100%"
+                  border="0"
+                />
+              </Box>
             ) : (
-              <div className="text-center text-muted py-5">Loading...</div>
+              <Center py={10} color="gray.500">
+                {t('orders.pdf.loading', 'Loading...')}
+              </Center>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={closePdfModal}>{t('common.close', 'Close')}</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal size="xl" isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
+            {t('common.preview', 'Preview')}
+          </ModalHeader>
+          <ModalCloseButton color={textColor} />
+          <ModalBody display="flex" justifyContent="center" alignItems="center" maxH="80vh">
+            {previewImg && (
+              <Image src={previewImg} alt={t('common.preview', 'Preview')} maxH="70vh" borderRadius="md" />
             )}
           </ModalBody>
         </ModalContent>
-        
       </Modal>
 
-      {/* Image Preview Modal */}
-      <Modal size="xl" isOpen={!!previewImg} onClose={() =>
-setPreviewImg(null)}>
-        <ModalHeader className="modal-header-custom">
-          <ModalHeader>{t('common.preview', 'Preview')}</ModalHeader>
-          <CCloseButton className="text-reset" onClick={() => setPreviewImg(null)} />
-        </ModalHeader>
-        <ModalBody className="text-center">
-          {previewImg ? (
-            <img src={previewImg} alt="Preview" style={{ maxWidth: '100%', maxHeight: '75vh' }} />
-          ) : null}
-        </ModalBody>
-        </ModalContent>
-      </Modal>
-
-      {/* Notice Modal */}
       <Modal isOpen={notice.visible} onClose={closeNotice}>
-        <ModalOverlay><ModalHeader className="modal-header-custom">
-          <ModalHeader>{notice.title || 'Notice'}</ModalHeader>
-          <CCloseButton className="text-reset" onClick={closeNotice} />
-        </ModalHeader>
-        <ModalBody>
-          <Alert color={notice.variant}>{notice.message}</Alert>
-          <div className="text-end">
-            <button
-              type="button"
-              className={`btn btn-${notice.variant === 'danger' ? 'danger' : notice.variant === 'warning' ? 'warning' : 'primary'}`}
-              onClick={closeNotice}
-            >
-              OK
-            </button>
-          </div>
-        </ModalBody>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
+            {notice.title || t('common.notice', 'Notice')}
+          </ModalHeader>
+          <ModalCloseButton color={textColor} />
+          <ModalBody>
+            <Alert status={mapAlertVariant(notice.variant)} borderRadius="md" alignItems="flex-start">
+              <AlertIcon />
+              <Box>
+                <Text>{notice.message}</Text>
+              </Box>
+            </Alert>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme={mapButtonScheme(notice.variant)} onClick={closeNotice}>
+              {t('common.ok', 'OK')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <AlertDialog
+        isOpen={deleteDisclosure.isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={deleteDisclosure.onClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('orders.deleteConfirmTitle', 'Delete Order?')}
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {t(
+                'orders.deleteConfirmMessage',
+                'This action cannot be undone. Are you sure you want to delete this order?',
+              )}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={deleteDisclosure.onClose}>
+                {t('common.cancel', 'Cancel')}
+              </Button>
+              <Button colorScheme="red" onClick={confirmDeleteOrder} ml={3}>
+                {t('common.delete', 'Delete')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Container>
   )
 }
 
-                        </div>
-                      </div>
-    </Container>
-</Container>
-    </style>
-        </div>
 export default OrderDetails
+
+
+
+
+
+
+

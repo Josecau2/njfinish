@@ -44,20 +44,7 @@ import { sendFormDataToBackend } from '../../queries/proposalQueries'
 // Removed Formik and Yup - using React Hook Form pattern
 // Removed react-select/creatable - using Chakra Select
 import DatePicker from 'react-datepicker'
-import {
-  Copy,
-  File,
-  List,
-  MoreHorizontal,
-  Edit,
-  Trash,
-  Trash2,
-  Calendar,
-  Printer,
-  Mail,
-  FileContract,
-  CheckCircle,
-} from 'lucide-react'
+import { Copy, File, List, MoreHorizontal, Edit, Trash, Trash2, Calendar, Printer, Mail, FileText, CheckCircle } from 'lucide-react'
 // Removed react-icons - using lucide-react only
 // Removed Swal - using Chakra useToast
 import ItemSelectionContentEdit from '../../components/ItemSelectionContentEdit'
@@ -87,7 +74,12 @@ const statusOptions = [
   { label: 'Quote rejected', value: 'Proposal rejected' },
 ]
 
-const EditProposal = () => {
+const EditProposal = ({
+  isContractor: scopedIsContractor,
+  contractorGroupId,
+  contractorModules,
+  contractorGroupName,
+} = {}) => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -119,7 +111,7 @@ const EditProposal = () => {
   const hasSetInitialVersion = useRef(false)
 
   // Check if user is a contractor (should not see manufacturer version names)
-  const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor'
+  const isContractor = scopedIsContractor ?? (loggedInUser?.group && loggedInUser.group.group_type === 'contractor')
 
   const defaultFormData = {
     manufacturersData: [],
@@ -388,9 +380,9 @@ const EditProposal = () => {
         }
       }
 
-      const response = await dispatch(sendFormDataToBackend(payload))
+      const response = await sendFormDataToBackend(payload)
 
-      if (response.payload.success) {
+      if (response.data.success) {
         if (action === 'reject') {
           toast({
             title: t('common.success', 'Success'),
@@ -411,10 +403,10 @@ const EditProposal = () => {
             duration: 5000,
             isClosable: true,
           })
-          setFormData(response.payload.data || finalData)
+          setFormData(response.data.data || finalData)
         }
       } else {
-        const apiMsg = response.payload?.message
+        const apiMsg = response.data?.message
         toast({
           title: t('common.error', 'Error'),
           description: apiMsg || t('proposals.errors.operationFailed', 'Operation failed'),
@@ -520,7 +512,7 @@ const EditProposal = () => {
               </Button>
               <Button
                 colorScheme="yellow"
-                leftIcon={<FileContract />}
+                leftIcon={<FileText />}
                 onClick={() => setShowContractModal(true)}
               >
                 {t('proposals.create.actions.contract', 'Email Contract')}

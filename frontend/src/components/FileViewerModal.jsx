@@ -1,6 +1,19 @@
 import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
-import { Alert, AlertIcon, Spinner, Icon, Button } from '@chakra-ui/react'
-import { Download, File, LinkBroken } from 'lucide-react'
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  Button,
+  Center,
+  Icon,
+  Image,
+  Spinner,
+  Text,
+  VStack,
+  HStack,
+} from '@chakra-ui/react'
+import { Download, File, Link2Off } from '@/icons-lucide'
 import axiosInstance from '../helpers/axiosInstance'
 import NeutralModal from './NeutralModal'
 
@@ -26,6 +39,7 @@ const getExtensionType = (fileName, fallbackType = 'other') => {
 
 export default function FileViewerModal({
   visible,
+  isOpen,
   file,
   onClose,
   resolveFileUrl,
@@ -36,6 +50,7 @@ export default function FileViewerModal({
   const [textContent, setTextContent] = useState('')
   const [xmlContent, setXmlContent] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const modalVisible = (typeof visible === 'boolean' ? visible : undefined) ?? Boolean(isOpen)
 
   useEffect(() => {
     const updateMobileState = () => {
@@ -81,7 +96,7 @@ export default function FileViewerModal({
 
   useEffect(() => {
     const loadFileContent = async () => {
-      if (!visible || !file) return
+      if (!modalVisible || !file) return
       if (!['text', 'xml'].includes(detectedType)) {
         setTextContent('')
         setXmlContent('')
@@ -113,14 +128,14 @@ export default function FileViewerModal({
     }
 
     loadFileContent()
-  }, [visible, file, resolveFileUrl, detectedType])
+  }, [modalVisible, file, resolveFileUrl, detectedType])
 
   useEffect(() => {
-    if (!visible) {
+    if (!modalVisible) {
       setTextContent('')
       setXmlContent('')
     }
-  }, [visible])
+  }, [modalVisible])
 
   const handleDownload = () => {
     if (!file) return
@@ -137,66 +152,79 @@ export default function FileViewerModal({
   const renderBody = () => {
     if (!file) {
       return (
-        <Alert status='info'>
+        <Alert status="info" borderRadius="md">
           <AlertIcon />
-          No file selected.
+          <AlertDescription>No file selected.</AlertDescription>
         </Alert>
       )
     }
 
     if (!inlineUrl && ['image', 'video', 'audio', 'pdf'].includes(detectedType)) {
       return (
-        <Alert status='warning' className='mb-0 d-flex align-items-center gap-2'>
-          <AlertIcon as={LinkBroken} />
-          <span>Preview unavailable. Try downloading the file.</span>
+        <Alert status="warning" borderRadius="md">
+          <HStack spacing={3} align="center">
+            <Icon as={Link2Off} boxSize={5} />
+            <Text>Preview unavailable. Try downloading the file.</Text>
+          </HStack>
         </Alert>
       )
     }
 
     if (detectedType === 'image') {
       return (
-        <div className='text-center'>
-          <img
+        <Box textAlign="center">
+          <Image
             src={inlineUrl || ''}
             alt={file?.name || 'preview'}
-            style={{ maxWidth: '100%', maxHeight: FALLBACK_HEIGHT, objectFit: 'contain' }}
+            maxW="100%"
+            maxH={FALLBACK_HEIGHT}
+            mx="auto"
+            objectFit="contain"
           />
-        </div>
+        </Box>
       )
     }
 
     if (detectedType === 'video') {
       return (
-        <div className='text-center'>
+        <Box textAlign="center">
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <video controls style={{ maxWidth: '100%', maxHeight: FALLBACK_HEIGHT }} src={inlineUrl || ''} />
-        </div>
+          <Box
+            as="video"
+            controls
+            maxW="100%"
+            maxH={FALLBACK_HEIGHT}
+            src={inlineUrl || ''}
+          />
+        </Box>
       )
     }
 
     if (detectedType === 'audio') {
       return (
-        <div>
+        <Box>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio controls style={{ width: '100%' }} src={inlineUrl || ''} />
-        </div>
+          <Box as="audio" controls w="100%" src={inlineUrl || ''} />
+        </Box>
       )
     }
 
     if (detectedType === 'pdf') {
       if (!inlineUrl) {
         return (
-          <Alert status='warning' className='mb-0 d-flex align-items-center gap-2'>
-            <AlertIcon as={LinkBroken} />
-            <span>PDF preview unavailable. Try downloading the file.</span>
+          <Alert status="warning" borderRadius="md">
+            <HStack spacing={3} align="center">
+              <Icon as={Link2Off} boxSize={5} />
+              <Text>PDF preview unavailable. Try downloading the file.</Text>
+            </HStack>
           </Alert>
         )
       }
 
       const fallback = (
-        <div className='d-flex justify-content-center align-items-center' style={{ height: '400px' }}>
+        <Center h="400px">
           <Spinner />
-        </div>
+        </Center>
       )
 
       return (
@@ -213,26 +241,26 @@ export default function FileViewerModal({
     if (detectedType === 'text') {
       if (!textContent) {
         return (
-          <div className='d-flex justify-content-center align-items-center' style={{ height: FALLBACK_HEIGHT }}>
-            <Spinner color='blue.500' />
-          </div>
+          <Center h={FALLBACK_HEIGHT}>
+            <Spinner color="blue.500" />
+          </Center>
         )
       }
 
       const fallback = (
-        <div className='d-flex justify-content-center align-items-center' style={{ height: '100%' }}>
+        <Center h="100%">
           <Spinner />
-        </div>
+        </Center>
       )
 
       return (
-        <div style={{ height: FALLBACK_HEIGHT, overflow: 'auto' }}>
+        <Box h={FALLBACK_HEIGHT} overflow="auto">
           <Suspense fallback={fallback}>
             <Editor
-              height='100%'
-              language='plaintext'
+              height="100%"
+              language="plaintext"
               value={textContent}
-              theme='vs-dark'
+              theme="vs-dark"
               options={{
                 readOnly: true,
                 minimap: { enabled: false },
@@ -241,61 +269,68 @@ export default function FileViewerModal({
               }}
             />
           </Suspense>
-        </div>
+        </Box>
       )
     }
 
     if (detectedType === 'xml') {
       if (!xmlContent) {
         return (
-          <div className='d-flex justify-content-center align-items-center' style={{ height: FALLBACK_HEIGHT }}>
-            <Spinner color='blue.500' />
-          </div>
+          <Center h={FALLBACK_HEIGHT}>
+            <Spinner color="blue.500" />
+          </Center>
         )
       }
 
       const fallback = (
-        <div className='d-flex justify-content-center align-items-center' style={{ height: '100%' }}>
+        <Center h="100%">
           <Spinner />
-        </div>
+        </Center>
       )
 
       return (
-        <div style={{ height: FALLBACK_HEIGHT, overflow: 'auto' }}>
+        <Box h={FALLBACK_HEIGHT} overflow="auto">
           <Suspense fallback={fallback}>
             <ReactXmlViewer xml={xmlContent} />
           </Suspense>
-        </div>
+        </Box>
       )
     }
 
     if (detectedType === 'spreadsheet') {
       return (
-        <div className='text-center p-4'>
-          <Alert status='info' className='mb-3'>
-            Spreadsheet preview is not available. Please download to view this file.
+        <VStack spacing={4} py={4} textAlign="center">
+          <Alert status="info" borderRadius="md">
+            <AlertIcon />
+            <AlertDescription>
+              Spreadsheet preview is not available. Please download to view this file.
+            </AlertDescription>
           </Alert>
-          <Button colorScheme='brand' onClick={handleDownload} leftIcon={<Icon as={Download} />}>Download</Button>
-        </div>
+          <Button colorScheme="brand" onClick={handleDownload} leftIcon={<Icon as={Download} />}>
+            Download
+          </Button>
+        </VStack>
       )
     }
 
     return (
-      <div className='text-center p-4'>
-        <Icon as={File} size='48px' className='mb-3 text-muted' />
-        <p className='mb-3'>Preview is not available for this file type.</p>
-        <Button colorScheme='brand' onClick={handleDownload} leftIcon={<Icon as={Download} />}>Download</Button>
-      </div>
+      <VStack spacing={4} py={4} textAlign="center">
+        <Icon as={File} boxSize={12} color="gray.400" />
+        <Text>Preview is not available for this file type.</Text>
+        <Button colorScheme="brand" onClick={handleDownload} leftIcon={<Icon as={Download} />}>
+          Download
+        </Button>
+      </VStack>
     )
   }
 
-  if (visible && detectedType === 'pdf' && inlineUrl) {
+  if (modalVisible && detectedType === 'pdf' && inlineUrl) {
     return renderBody()
   }
 
   return (
     <NeutralModal
-      visible={visible}
+      visible={modalVisible}
       onClose={onClose}
       size={size}
       className='file-viewer-modal'

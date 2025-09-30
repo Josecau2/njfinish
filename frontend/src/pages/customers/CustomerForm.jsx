@@ -2,17 +2,35 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import { Card, CardBody, CardHeader, Box, Flex, FormControl, Input, FormLabel, Textarea, Select, Spinner, Alert, Container, Icon } from '@chakra-ui/react'
-import { User, Mail, Save, ArrowLeft } from 'lucide-react'
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Box,
+  Flex,
+  FormControl,
+  Input,
+  FormLabel,
+  Textarea,
+  Select,
+  Spinner,
+  Alert,
+  Container,
+  Icon,
+  Button,
+  InputGroup,
+  InputLeftAddon,
+  SimpleGrid,
+  VStack,
+  HStack,
+  Text,
+  FormErrorMessage,
+} from '@chakra-ui/react'
+import { User, Mail, Save, ArrowLeft, Phone, MapPin } from 'lucide-react'
 import { createCustomer, updateCustomer, fetchCustomers } from '../../store/slices/customerSlice'
 import withContractorScope from '../../components/withContractorScope'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
-import CButton from '../../components/ui/CButton'
-import { CIcon } from '@coreui/icons-react'
-import { CInputGroup, CInputGroupText } from '@coreui/react'
-import { cilPhone, cilLocationPin } from '@coreui/icons'
-
 const CustomerForm = ({
   isContractor,
   contractorGroupId,
@@ -155,30 +173,31 @@ const CustomerForm = ({
   }
 
   return (
-    <Container fluid>
-      <style>{`
-        .settings-form-container .btn, .add-new-customer .btn, .customers-form .btn { min-height: 44px; }
-      `}</style>
-      <Flex>
-        <Box xs={12}>
-          <Card>
-            <CardHeader className="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 className="mb-0">
-                  {isEditing ? t('customers.form.titles.edit') : t('customers.form.titles.add')}
-                </h4>
-                {isContractor && <p className="text-muted mb-0">{contractorGroupName}</p>}
-              </div>
-              <CButton
-                status="light"
-                onClick={handleCancel}
-                className="d-flex align-items-center gap-2"
-                aria-label={t('customers.form.actions.backToCustomers')}
-              >
-                <Icon as={ArrowLeft} size="sm" />
-                {t('customers.form.actions.backToCustomers')}
-              </CButton>
-            </CardHeader>
+    <Container maxW="7xl" py={6}>
+      <Card variant="outline" borderRadius="xl" shadow="sm">
+        <CardHeader>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
+            <VStack align="start" spacing={1}>
+              <Text fontSize="xl" fontWeight="bold" color="gray.800">
+                {isEditing ? t('customers.form.titles.edit') : t('customers.form.titles.add')}
+              </Text>
+              {isContractor && (
+                <Text fontSize="sm" color="gray.600">
+                  {contractorGroupName}
+                </Text>
+              )}
+            </VStack>
+            <Button
+              variant="outline"
+              leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+              onClick={handleCancel}
+              colorScheme="gray"
+              minH="44px"
+            >
+              {t('customers.form.actions.backToCustomers')}
+            </Button>
+          </Flex>
+        </CardHeader>
             <CardBody>
               {error && (
                 <Alert status="error" className="mb-3">
@@ -193,21 +212,21 @@ const CustomerForm = ({
                       <FormLabel htmlFor="name">
                         {t('customers.form.labels.fullName')} *
                       </FormLabel>
-                      <CInputGroup>
-                        <CInputGroupText>
+                      <InputGroup>
+                        <InputLeftAddon>
                           <Icon as={User} />
-                        </CInputGroupText>
+                        </InputLeftAddon>
                         <Input
                           type="text"
                           id="name"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          invalid={!!formErrors.name}
+                          isInvalid={!!formErrors.name}
                           required
                           style={{ minHeight: '44px' }}
                         />
-                      </CInputGroup>
+                      </InputGroup>
                       {formErrors.name && (
                         <div className="invalid-feedback d-block">{formErrors.name}</div>
                       )}
@@ -217,19 +236,19 @@ const CustomerForm = ({
                   <Box md={6}>
                     <div style={{ marginBottom: 'var(--sp-3)' }}>
                       <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
-                      <CInputGroup>
-                        <CInputGroupText>
+                      <InputGroup>
+                        <InputLeftAddon>
                           <Icon as={Mail} />
-                        </CInputGroupText>
+                        </InputLeftAddon>
                         <Input
                           type="email"
                           id="email"
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          invalid={!!formErrors.email}
+                          isInvalid={!!formErrors.email}
                         />
-                      </CInputGroup>
+                      </InputGroup>
                       {formErrors.email && (
                         <div className="invalid-feedback d-block">{formErrors.email}</div>
                       )}
@@ -241,19 +260,19 @@ const CustomerForm = ({
                   <Box md={6}>
                     <div className="mb-3">
                       <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
-                      <CInputGroup>
-                        <CInputGroupText>
-                          <CIcon icon={cilPhone} />
-                        </CInputGroupText>
+                      <InputGroup>
+                        <InputLeftAddon>
+                          <Icon as={Phone} />
+                        </InputLeftAddon>
                         <Input
                           type="tel"
                           id="mobile"
                           name="mobile"
                           value={formData.mobile}
                           onChange={handleInputChange}
-                          invalid={!!formErrors.phone}
+                          isInvalid={!!formErrors.phone}
                         />
-                      </CInputGroup>
+                      </InputGroup>
                     </div>
                   </Box>
 
@@ -262,19 +281,19 @@ const CustomerForm = ({
                       <FormLabel htmlFor="homePhone">
                         {t('customers.form.labels.homePhone')}
                       </FormLabel>
-                      <CInputGroup>
-                        <CInputGroupText>
-                          <CIcon icon={cilPhone} />
-                        </CInputGroupText>
+                      <InputGroup>
+                        <InputLeftAddon>
+                          <Icon as={Phone} />
+                        </InputLeftAddon>
                         <Input
                           type="tel"
                           id="homePhone"
                           name="homePhone"
                           value={formData.homePhone}
                           onChange={handleInputChange}
-                          invalid={!!formErrors.phone}
+                          isInvalid={!!formErrors.phone}
                         />
-                      </CInputGroup>
+                      </InputGroup>
                       {formErrors.phone && (
                         <div className="invalid-feedback d-block">{formErrors.phone}</div>
                       )}
@@ -288,10 +307,10 @@ const CustomerForm = ({
                       <FormLabel htmlFor="address">
                         {t('customers.form.labels.address')}
                       </FormLabel>
-                      <CInputGroup>
-                        <CInputGroupText>
-                          <CIcon icon={cilLocationPin} />
-                        </CInputGroupText>
+                      <InputGroup>
+                        <InputLeftAddon>
+                          <Icon as={MapPin} />
+                        </InputLeftAddon>
                         <Input
                           type="text"
                           id="address"
@@ -299,7 +318,7 @@ const CustomerForm = ({
                           value={formData.address}
                           onChange={handleInputChange}
                         />
-                      </CInputGroup>
+                      </InputGroup>
                     </div>
                   </Box>
                 </Flex>
@@ -460,10 +479,10 @@ const CustomerForm = ({
                 </Flex>
 
                 <div className="d-flex justify-content-end gap-2">
-                  <CButton type="button" status="light" onClick={handleCancel} disabled={loading}>
+                  <Button type="button" variant="outline" colorScheme="gray" onClick={handleCancel} disabled={loading}>
                     {t('customers.form.actions.cancel')}
-                  </CButton>
-                  <CButton
+                  </Button>
+                  <Button
                     type="submit"
                     colorScheme="blue"
                     disabled={loading}
@@ -473,13 +492,11 @@ const CustomerForm = ({
                     {isEditing
                       ? t('customers.form.actions.update')
                       : t('customers.form.actions.create')}
-                  </CButton>
+                  </Button>
                 </div>
               </form>
             </CardBody>
           </Card>
-        </Box>
-      </Flex>
     </Container>
   )
 }

@@ -62,6 +62,7 @@ const PaymentsList = ({ isContractor }) => {
 
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure()
   const { isOpen: isGatewayModalOpen, onOpen: onGatewayModalOpen, onClose: onGatewayModalClose } = useDisclosure()
+  const { isOpen: isApplyModalOpen, onOpen: onApplyModalOpen, onClose: onApplyModalClose } = useDisclosure()
   const toast = useToast()
 
   const { publicPaymentConfig } = useSelector((state) => state.payments)
@@ -77,7 +78,12 @@ const PaymentsList = ({ isContractor }) => {
 
   const createPaymentForm = useForm({ mode: 'onBlur', defaultValues: { orderId: '' } })
   const gatewayForm = useForm({ mode: 'onBlur', defaultValues: { gateway: 'stripe' } })
+  const applyPaymentForm = useForm({
+    mode: 'onBlur',
+    defaultValues: { method: 'cash', checkNumber: '' }
+  })
   const [pendingOrderId, setPendingOrderId] = useState(null)
+  const [pendingPaymentId, setPendingPaymentId] = useState(null)
 
   const payments = paymentsData?.pages?.flatMap((p) => p.data) || []
   const pagination = paymentsData?.pages?.[paymentsData.pages.length - 1]?.pagination
@@ -192,6 +198,43 @@ const PaymentsList = ({ isContractor }) => {
         description: err?.message || t('payments.create.error', 'Failed to create payment'),
         status: 'error',
         duration: 5000,
+        isClosable: true,
+      })
+    }
+  }
+
+  const handleApplyPayment = (paymentId) => {
+    setPendingPaymentId(paymentId)
+    applyPaymentForm.reset({ method: 'cash', checkNumber: '' })
+    onApplyModalOpen()
+  }
+
+  const onApplyPaymentSubmit = async (data) => {
+    try {
+      let finalMethod = data.method
+      if (data.method === 'check' && data.checkNumber) {
+        finalMethod = `check #${data.checkNumber}`
+      }
+
+      await applyPaymentMutation.mutateAsync({
+        paymentId: pendingPaymentId,
+        data: { method: finalMethod }
+      })
+
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('payments.apply.success', 'Payment applied'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      onApplyModalClose()
+    } catch (err) {
+      toast({
+        title: t('common.error', 'Error'),
+        description: err?.message || t('payments.apply.error', 'Failed to apply'),
+        status: 'error',
+        duration: 4000,
         isClosable: true,
       })
     }
@@ -333,23 +376,14 @@ const PaymentsList = ({ isContractor }) => {
                           </Button>
                         ) : null}
                         {manualApplyEnabled ? (
-                          <Button colorScheme="green" size="sm" onClick={async (e) => {
-                            e.stopPropagation()
-                            const method = window.prompt(t('payments.apply.methodLabel', 'Payment Method (cash, credit_card, debit_card, check, other):'))
-                            if (!method) return
-                            let finalMethod = method
-                            if (method === 'check') {
-                              const checkNumber = window.prompt(t('payments.apply.checkNumberLabel', 'Check Number:'))
-                              if (!checkNumber) return
-                              finalMethod = `check #${checkNumber}`
-                            }
-                            try {
-                              await applyPaymentMutation.mutateAsync({ paymentId: payment.id, data: { method: finalMethod } })
-                              toast({ title: t('common.success', 'Success'), description: t('payments.apply.success', 'Payment applied'), status: 'success', duration: 3000 })
-                            } catch (applyErr) {
-                              toast({ title: t('common.error', 'Error'), description: applyErr?.message || t('payments.apply.error', 'Failed to apply'), status: 'error', duration: 4000 })
-                            }
-                          }}>
+                          <Button
+                            colorScheme="green"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleApplyPayment(payment.id)
+                            }}
+                          >
                             {t('payments.apply.button', 'Apply')}
                           </Button>
                         ) : null}
@@ -477,6 +511,70 @@ const PaymentsList = ({ isContractor }) => {
             <Button variant="ghost" mr={3} onClick={onGatewayModalClose}>{t('common.cancel', 'Cancel')}</Button>
             <Button type="submit" variant="solid" colorScheme="brand" isLoading={gatewayForm.formState.isSubmitting}>
               {t('common.continue', 'Continue')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Apply Payment Modal */}
+      <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose}>
+        <ModalOverlay />
+        <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)}>
+          <ModalHeader>{t('payments.apply.title', 'Apply Payment')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack spacing={4}>
+              <FormControl isInvalid={!!applyPaymentForm.formState.errors.method}>
+                <FormLabel>{t('payments.apply.methodLabel', 'Payment Method')}</FormLabel>
+                <Controller
+                  name="method"
+                  control={applyPaymentForm.control}
+                  rules={{ required: t('payments.apply.methodRequired', 'Payment method is required') }}
+                  render={({ field }) => (
+                    <RadioGroup {...field}>
+                      <Stack>
+                        <Radio value="cash">{t('payments.apply.methods.cash', 'Cash')}</Radio>
+                        <Radio value="credit_card">{t('payments.apply.methods.creditCard', 'Credit Card')}</Radio>
+                        <Radio value="debit_card">{t('payments.apply.methods.debitCard', 'Debit Card')}</Radio>
+                        <Radio value="check">{t('payments.apply.methods.check', 'Check')}</Radio>
+                        <Radio value="other">{t('payments.apply.methods.other', 'Other')}</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  )}
+                />
+                <FormErrorMessage>{applyPaymentForm.formState.errors.method?.message}</FormErrorMessage>
+              </FormControl>
+
+              {applyPaymentForm.watch('method') === 'check' && (
+                <FormControl isInvalid={!!applyPaymentForm.formState.errors.checkNumber}>
+                  <FormLabel>{t('payments.apply.checkNumberLabel', 'Check Number')}</FormLabel>
+                  <Controller
+                    name="checkNumber"
+                    control={applyPaymentForm.control}
+                    rules={{
+                      required: applyPaymentForm.watch('method') === 'check'
+                        ? t('payments.apply.checkNumberRequired', 'Check number is required')
+                        : false
+                    }}
+                    render={({ field }) => (
+                      <Input {...field} placeholder={t('payments.apply.checkNumberPlaceholder', 'Enter check number')} />
+                    )}
+                  />
+                  <FormErrorMessage>{applyPaymentForm.formState.errors.checkNumber?.message}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onApplyModalClose}>
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              type="submit"
+              colorScheme="green"
+              isLoading={applyPaymentForm.formState.isSubmitting}
+            >
+              {t('payments.apply.button', 'Apply Payment')}
             </Button>
           </ModalFooter>
         </ModalContent>

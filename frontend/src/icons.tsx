@@ -1,6 +1,5 @@
 // Centralized lucide-react exports so we can swap sets later if needed.
-import {
-  export {
+export {
   Search,
   Filter,
   Send,
@@ -18,5 +17,4 @@ import {
   Mail,
   ChevronUp,
   ChevronDown,
-  
-} from
+} from 'lucide-react'

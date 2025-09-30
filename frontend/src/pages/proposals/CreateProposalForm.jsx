@@ -1,32 +1,55 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, useLocation } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import { useTranslation } from 'react-i18next'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { ClipboardList, Settings as SettingsIcon, FileSignature, Printer, Mail, FileText } from 'lucide-react'
+
 import CustomerInfoStep from './CreateProposal/CustomerInfo'
 import ManufacturerStep from './CreateProposal/ManufacturerSelect'
 import DesignImportStep from './CreateProposal/DesignUpload'
 import ItemSelectionStep from './CreateProposal/ProposalSummary'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
-import { FaPrint, FaEnvelope, FaFileContract, FaClipboardList, FaCog } from 'react-icons/fa'
 import PrintProposalModal from '../../components/model/PrintProposalModal'
 import EmailProposalModal from '../../components/model/EmailProposalModal'
 import EmailContractModal from '../../components/model/EmailContractModal'
+import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { sendFormDataToBackend } from '../../queries/proposalQueries'
-import { useNavigate, useLocation } from 'react-router-dom'
-import Swal from 'sweetalert2'
 import withContractorScope from '../../components/withContractorScope'
-import { useTranslation } from 'react-i18next'
 import PageHeader from '../../components/PageHeader'
-import { Container, Card, CardBody, Flex, Box, Badge, Spinner, Button, Icon, HStack, Text } from '@chakra-ui/react'
 
-const ProposalForm = ({
-  isContractor,
-  contractorGroupId,
-  contractorModules,
-  contractorGroupName,
-}) => {
+const TOTAL_STEPS = 4
+
+const stepDefinitions = (t) => [
+  { number: 1, title: t('proposals.create.steps.1'), icon: ClipboardList },
+  { number: 2, title: t('proposals.create.steps.2'), icon: SettingsIcon },
+  { number: 3, title: t('proposals.create.steps.3'), icon: FileSignature },
+  { number: 4, title: t('proposals.create.steps.4'), icon: Printer },
+]
+
+const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const location = useLocation()
   const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const queryParams = new URLSearchParams(location.search)
   const isQuick = queryParams.get('quick') === 'yes'
+
   const [currentStep, setCurrentStep] = useState(isQuick ? 2 : 1)
   const [backStep, setBackStep] = useState(false)
   const [formData, setFormData] = useState({
@@ -48,33 +71,28 @@ const ProposalForm = ({
     assembled: true,
     totalPrice: 0,
     status: '',
-    // followUp1Date: '',
-    // followUp2Date: '',
-    // followUp3Date: '',
     manufacturersData: [],
   })
   const [showPrintModal, setShowPrintModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [showContractModal, setShowContractModal] = useState(false)
-  const dispatch = useDispatch()
-  const manufacturerData = useSelector((state) => state.manufacturers.selected)
-  const [hovered, setHovered] = useState(null)
-  const navigate = useNavigate()
-
   const [isFormDirty, setIsFormDirty] = useState(true)
+
+  const manufacturerData = useSelector((state) => state.manufacturers.selected)
 
   useEffect(() => {
     if (!isFormDirty) return
 
-    const handleBeforeUnload = (e) => {
-      e.preventDefault()
-      e.returnValue = ''
+    const handleBeforeUnload = (event) => {
+      event.preventDefault()
+      event.returnValue = ''
     }
 
-    const handlePopState = (e) => {
+    const handlePopState = () => {
       const confirmLeave = window.confirm(
         t('common.unsavedConfirm', 'You have unsaved changes. Are you sure you want to leave?'),
       )
+
       if (!confirmLeave) {
         window.history.pushState(null, '', window.location.pathname)
       } else {
@@ -90,17 +108,16 @@ const ProposalForm = ({
       window.removeEventListener('beforeunload', handleBeforeUnload)
       window.removeEventListener('popstate', handlePopState)
     }
-  }, [isFormDirty])
+  }, [isFormDirty, t])
 
   useEffect(() => {
     if (formData.manufacturerId) {
-      // Don't load full catalog data for proposal creation - only manufacturer info needed
       dispatch(fetchManufacturerById({ id: formData.manufacturerId, includeCatalog: false }))
     }
-  }, [formData.manufacturerId, dispatch])
+  }, [dispatch, formData.manufacturerId])
 
   const updateFormData = (newData) => {
-    setFormData({ ...formData, ...newData })
+    setFormData((prev) => ({ ...prev, ...newData }))
   }
 
   const handleStyleSelect = (styleId) => {
@@ -111,26 +128,23 @@ const ProposalForm = ({
       lastEntry.selectedStyle = styleId
       updatedData[updatedData.length - 1] = lastEntry
 
-      updateFormData({
-        ...formData,
-        manufacturersData: updatedData,
-      })
+      updateFormData({ manufacturersData: updatedData })
     }
 
     nextStep()
   }
 
   const nextStep = () => {
-    setCurrentStep(currentStep + 1)
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS))
   }
 
   const prevStep = () => {
-    // From step 1, go back to quotes list
     if (currentStep <= 1) {
       navigate('/quotes')
       return
     }
-    let step = backStep ? 4 : currentStep - 1
+
+    let step = backStep ? TOTAL_STEPS : currentStep - 1
     if (step < 1) step = 1
     setCurrentStep(step)
   }
@@ -144,7 +158,7 @@ const ProposalForm = ({
 
       const response = await sendFormDataToBackend(payload)
 
-      if (response.data.success == true) {
+      if (response.data.success === true) {
         Swal.fire(
           t('common.success', 'Success'),
           t('proposals.toast.successSend', 'Quote sent successfully'),
@@ -164,10 +178,7 @@ const ProposalForm = ({
       if (error.response?.status === 403) {
         Swal.fire(
           t('common.error', 'Error'),
-          t(
-            'settings.customization.ui.alerts.saveFailed',
-            'Failed to save customization. Please try again.',
-          ),
+          t('settings.customization.ui.alerts.saveFailed', 'Failed to save customization. Please try again.'),
           'error',
         )
       } else if (error.response?.status === 400) {
@@ -186,25 +197,20 @@ const ProposalForm = ({
   }
 
   const getStepInfo = () => {
-    const steps = [
-      { number: 1, title: t('proposals.create.steps.1'), icon: FaClipboardList },
-      { number: 2, title: t('proposals.create.steps.2'), icon: FaCog },
-      { number: 3, title: t('proposals.create.steps.3'), icon: FaFileContract },
-      { number: 4, title: t('proposals.create.steps.4'), icon: FaPrint },
-    ]
+    const steps = stepDefinitions(t)
     return steps.find((step) => step.number === currentStep) || steps[0]
   }
 
   const currentStepInfo = getStepInfo()
 
   const renderActionButtons = () => {
-    if (currentStep !== 4) return null
+    if (currentStep !== TOTAL_STEPS) return null
 
     return (
       <HStack spacing={2} flexWrap="wrap">
         <Button
           colorScheme="green"
-          leftIcon={<Icon as={FaPrint} />}
+          leftIcon={<Icon as={Printer} boxSize={4} />}
           minH="44px"
           onClick={() => setShowPrintModal(true)}
         >
@@ -214,7 +220,7 @@ const ProposalForm = ({
           <>
             <Button
               colorScheme="blue"
-              leftIcon={<Icon as={FaEnvelope} />}
+              leftIcon={<Icon as={Mail} boxSize={4} />}
               minH="44px"
               onClick={() => setShowEmailModal(true)}
             >
@@ -222,7 +228,7 @@ const ProposalForm = ({
             </Button>
             <Button
               colorScheme="yellow"
-              leftIcon={<Icon as={FaFileContract} />}
+              leftIcon={<Icon as={FileText} boxSize={4} />}
               minH="44px"
               onClick={() => setShowContractModal(true)}
             >
@@ -234,7 +240,7 @@ const ProposalForm = ({
     )
   }
 
-const renderStep = () => {
+  const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
@@ -261,10 +267,12 @@ const renderStep = () => {
       case 3:
         if (!manufacturerData || Object.keys(manufacturerData).length === 0) {
           return (
-            <Card className="border-0 shadow-sm">
-              <CardBody className="text-center py-5">
-                <Spinner colorScheme="blue" size="lg" />
-                <p className="text-muted mt-3 mb-0">{t('proposals.create.loadingManufacturer')}</p>
+            <Card variant="outline">
+              <CardBody textAlign="center" py={10}>
+                <Spinner size="lg" color="brand.500" />
+                <Text mt={4} color="gray.500">
+                  {t('proposals.create.loadingManufacturer')}
+                </Text>
               </CardBody>
             </Card>
           )
@@ -300,156 +308,145 @@ const renderStep = () => {
     }
   }
 
+  const stickyBg = useColorModeValue('rgba(255,255,255,0.96)', 'rgba(26,32,44,0.96)')
+  const stickyBorder = useColorModeValue('gray.200', 'gray.700')
+  const progressLineBg = useColorModeValue('gray.200', 'gray.700')
+  const progressActiveBg = useColorModeValue('gray.900', 'gray.100')
+  const stepInactiveBg = useColorModeValue('white', 'gray.800')
+  const stepInactiveColor = useColorModeValue('gray.600', 'gray.300')
+  const stepBorderInactive = useColorModeValue('gray.300', 'gray.600')
 
+  const headerActions = [
+    <Badge key="mode" variant="subtle" colorScheme={isQuick ? 'purple' : 'gray'} px={3} py={1} borderRadius="md">
+      {isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode')}
+    </Badge>,
+  ]
+
+  const actionButtons = renderActionButtons()
+  if (actionButtons) {
+    headerActions.push(<Box key="actions">{actionButtons}</Box>)
+  }
 
   return (
-    <Container
-      fluid
-      className="dashboard-container proposal-create"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
-    >
-      <style>{`
-        /* Touch targets on this page */
-        .proposal-create .btn { min-height: 44px; }
-        /* Sticky bottom action bar (mobile) */
-        .proposal-create__sticky {
-          position: sticky;
-          bottom: 0;
-          z-index: 1030;
-          background: rgba(255, 255, 255, 0.96);
-          backdrop-filter: saturate(140%) blur(8px);
-          border-top: 1px solid #e5e7eb;
-          padding: 0.5rem 0.75rem env(safe-area-inset-bottom);
-        }
-      `}</style>
-      {/* Header Section */}
-      <PageHeader
-        title={currentStepInfo.title}
-        icon={currentStepInfo.icon}
-        subtitle={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
-        badge={{
-          text: isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode'),
-          variant: 'secondary',
-        }}
-        rightContent={renderActionButtons()}
-      />
+    <Container maxW="7xl" py={6} className="proposal-create">
+      <Stack spacing={6}>
+        <PageHeader
+          title={currentStepInfo.title}
+          subtitle={t('proposals.create.stepOf', { current: currentStep, total: TOTAL_STEPS })}
+          icon={currentStepInfo.icon}
+          actions={headerActions}
+        />
 
-      {/* Progress Bar */}
-      <Card
-        className="proposal-progress-bar"
-        aria-label={t('proposals.create.progress', 'Progress')}
-      >
-        <CardBody className="py-3">
-          <div className="d-flex align-items-center justify-content-between position-relative w-100">
-            {/* Progress line - full width background */}
-            <div
-              className="position-absolute w-100"
-              style={{
-                height: '2px',
-                backgroundColor: '#e9ecef',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 1,
-              }}
-            />
+        <Card variant="outline" aria-label={t('proposals.create.progress', 'Progress')}>
+          <CardBody py={4}>
+            <Box position="relative" px={{ base: 2, md: 6 }}>
+              <Box
+                position="absolute"
+                left={0}
+                right={0}
+                top="50%"
+                transform="translateY(-50%)"
+                height="2px"
+                bg={progressLineBg}
+                zIndex={1}
+              />
+              <Box
+                position="absolute"
+                left={0}
+                top="50%"
+                transform="translateY(-50%)"
+                height="2px"
+                bg={progressActiveBg}
+                width={`${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`}
+                transition="width 0.3s ease"
+                zIndex={2}
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(((currentStep - 1) / (TOTAL_STEPS - 1)) * 100)}
+                aria-label={t('proposals.create.stepOf', { current: currentStep, total: TOTAL_STEPS })}
+              />
+              <Flex justify="space-between" position="relative" zIndex={3}>
+                {Array.from({ length: TOTAL_STEPS }, (_, index) => index + 1).map((step) => {
+                  const isActive = step <= currentStep
+                  return (
+                    <Flex
+                      key={step}
+                      align="center"
+                      justify="center"
+                      w={9}
+                      h={9}
+                      borderRadius="full"
+                      bg={isActive ? progressActiveBg : stepInactiveBg}
+                      color={isActive ? 'white' : stepInactiveColor}
+                      fontSize="sm"
+                      fontWeight={isActive ? 'extrabold' : 'semibold'}
+                      borderWidth="2px"
+                      borderColor={isActive ? progressActiveBg : stepBorderInactive}
+                      boxShadow={isActive ? '0 3px 6px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.05)'}
+                    >
+                      {step}
+                    </Flex>
+                  )
+                })}
+              </Flex>
+            </Box>
+          </CardBody>
+        </Card>
 
-            {/* Active progress line */}
-            <div
-              className="position-absolute"
-              style={{
-                height: '2px',
-                backgroundColor: '#212529',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: `${((currentStep - 1) / 3) * 100}%`,
-                transition: 'all 0.3s ease',
-                zIndex: 2,
-              }}
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(((currentStep - 1) / 3) * 100)}
-              aria-label={t('proposals.create.stepOf', { current: currentStep, total: 4 })}
-            />
+        <Box>{renderStep()}</Box>
 
-            {/* Step numbers - equally distributed */}
-            {[1, 2, 3, 4].map((step, index) => (
-              <div
-                key={step}
-                className="d-flex align-items-center justify-content-center fw-bold proposal-step-number position-relative"
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  backgroundColor: step <= currentStep ? '#212529' : '#ffffff',
-                  color: step <= currentStep ? '#ffffff' : '#495057',
-                  fontSize: '14px',
-                  fontWeight: step <= currentStep ? '800' : '600',
-                  transition: 'all 0.3s ease',
-                  border: step <= currentStep ? '2px solid #343a40' : '2px solid #dee2e6',
-                  boxShadow:
-                    step <= currentStep
-                      ? '0 3px 6px rgba(0,0,0,0.2)'
-                      : '0 1px 2px rgba(0,0,0,0.05)',
-                  zIndex: 3,
-                  flexShrink: 0,
-                  textShadow: step <= currentStep ? '0 2px 4px rgba(0, 0, 0, 0.9)' : 'none',
-                }}
+        {currentStep < TOTAL_STEPS && (
+          <Box
+            position="sticky"
+            bottom={0}
+            zIndex={1030}
+            bg={stickyBg}
+            borderTopWidth="1px"
+            borderColor={stickyBorder}
+            px={3}
+            py={3}
+            display={{ base: 'block', md: 'none' }}
+            style={{ backdropFilter: 'saturate(140%) blur(8px)' }}
+          >
+            <HStack spacing={2}>
+              <Button
+                variant="outline"
+                colorScheme="gray"
+                onClick={prevStep}
+                aria-label={t('common.back', 'Back')}
+                flex={1}
+                minH="44px"
               >
-                {step}
-              </div>
-            ))}
-          </div>
-        </CardBody>
-      </Card>
+                {t('common.back', 'Back')}
+              </Button>
+              <Button
+                colorScheme="brand"
+                onClick={nextStep}
+                aria-label={t('common.next', 'Next')}
+                flex={1}
+                minH="44px"
+              >
+                {t('common.next', 'Next')}
+              </Button>
+            </HStack>
+          </Box>
+        )}
 
-      {/* Main Content */}
-      <div className="mb-4">{renderStep()}</div>
-
-      {/* Sticky mobile actions (steps 1–3) */}
-      {currentStep < 4 && (
-        <div className="proposal-create__sticky d-md-none">
-          <div className="d-flex gap-2">
-            <Button
-              variant="outline"
-              colorScheme="gray"
-              onClick={prevStep}
-              aria-label={t('common.back', 'Back')}
-              className="flex-fill"
-            >
-              {t('common.back', 'Back')}
-            </Button>
-            <Button
-              colorScheme="brand"
-              onClick={nextStep}
-              aria-label={t('common.next', 'Next')}
-              className="flex-fill"
-            >
-              {t('common.next', 'Next')}
-            </Button>
-          </div>
-      )}
-
-      {/* Modals */}
-      <PrintProposalModal
-        show={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        formData={formData}
-      />
-      <EmailProposalModal
-        show={showEmailModal}
-        onClose={() => setShowEmailModal(false)}
-        formData={formData}
-      />
-      <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+        <PrintProposalModal
+          show={showPrintModal}
+          onClose={() => setShowPrintModal(false)}
+          formData={formData}
+        />
+        <EmailProposalModal
+          show={showEmailModal}
+          onClose={() => setShowEmailModal(false)}
+          formData={formData}
+        />
+        <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+      </Stack>
     </Container>
   )
 }
 
-      </EmailContractModal>
-  )
-}
-
-</div>
-</style>
 export default withContractorScope(ProposalForm, 'proposals', ['proposals:create'])

@@ -1,14 +1,70 @@
-import React, { useEffect, useState } from 'react'
-import { Card, CardBody, FormControl, FormLabel, Input, Flex, Box, Alert, Spinner, Container, Badge, Icon, Button } from '@chakra-ui/react'
-import CButton from '../../../components/ui/CButton'
+
+import React, { useEffect, useRef, useState } from 'react'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  Input,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCustomization } from '../../../store/slices/customizationSlice'
-import axiosInstance from '../../../helpers/axiosInstance'
 import { Settings, Image, Palette, Save, Trash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+
 import PageHeader from '../../../components/PageHeader'
-import { FaCog } from 'react-icons/fa'
+import { setCustomization } from '../../../store/slices/customizationSlice'
+import axiosInstance from '../../../helpers/axiosInstance'
 import { resolveBrandAssetUrl } from '../../../utils/brandAssets'
+import { getContrastColor } from '../../../utils/colorUtils'
+
+const ColorField = ({ label, name, value, onChange }) => (
+  <FormControl>
+    <FormLabel fontSize="sm" fontWeight="medium" color="gray.600">
+      {label}
+    </FormLabel>
+    <HStack spacing={3} align="center">
+      <Input
+        type="color"
+        name={name}
+        value={value || '#ffffff'}
+        onChange={onChange}
+        w="48px"
+        h="48px"
+        p={0}
+        borderRadius="md"
+        border="1px solid"
+        borderColor="gray.200"
+        cursor="pointer"
+      />
+      <Box
+        px={3}
+        py={1}
+        borderRadius="md"
+        fontFamily="mono"
+        fontSize="sm"
+        borderWidth="1px"
+        borderColor="gray.200"
+        bg="gray.50"
+        color="gray.600"
+      >
+        {value || '#ffffff'}
+      </Box>
+    </HStack>
+  </FormControl>
+)
 
 const CustomizationPage = () => {
   const { t } = useTranslation()
@@ -19,6 +75,7 @@ const CustomizationPage = () => {
   const [previewLogo, setPreviewLogo] = useState(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     setFormData(customization)
@@ -26,28 +83,28 @@ const CustomizationPage = () => {
     setPreviewLogo(resolved || null)
   }, [customization])
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
+  const handleChange = (event) => {
+    const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleLogoUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.fileTooLarge') })
-        return
-      }
+  const handleLogoUpload = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
 
-      if (!file.type.startsWith('image/')) {
-        setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.invalidImage') })
-        return
-      }
-
-      setFormData((prev) => ({ ...prev, logoImage: file }))
-      setPreviewLogo(URL.createObjectURL(file))
-      setMessage({ type: '', text: '' })
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage({ type: 'error', text: t('settings.customization.ui.alerts.fileTooLarge') })
+      return
     }
+
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: t('settings.customization.ui.alerts.invalidImage') })
+      return
+    }
+
+    setFormData((prev) => ({ ...prev, logoImage: file }))
+    setPreviewLogo(URL.createObjectURL(file))
+    setMessage({ type: '', text: '' })
   }
 
   const handleRemoveLogo = async () => {
@@ -56,14 +113,13 @@ const CustomizationPage = () => {
       if (customization.logoImage) {
         await axiosInstance.delete('/api/settings/customization/logo')
       }
-
       setFormData((prev) => ({ ...prev, logoImage: '' }))
       setPreviewLogo(null)
       dispatch(setCustomization({ ...customization, logoImage: '' }))
       setMessage({ type: 'success', text: t('settings.customization.ui.alerts.removeLogoSuccess') })
     } catch (error) {
       console.error('Failed to remove logo:', error)
-      setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.removeLogoFailed') })
+      setMessage({ type: 'error', text: t('settings.customization.ui.alerts.removeLogoFailed') })
     } finally {
       setLoading(false)
     }
@@ -76,7 +132,7 @@ const CustomizationPage = () => {
 
       const form = new FormData()
       Object.entries(formData).forEach(([key, value]) => {
-        form.append(key, value)
+        form.append(key, value ?? '')
       })
 
       await axiosInstance.post('/api/settings/customization', form, {
@@ -88,441 +144,219 @@ const CustomizationPage = () => {
       setMessage({ type: 'success', text: t('settings.customization.ui.alerts.saveSuccess') })
     } catch (err) {
       console.error('Failed to save customization:', err)
-      setMessage({ type: 'danger', text: t('settings.customization.ui.alerts.saveFailed') })
+      setMessage({ type: 'error', text: t('settings.customization.ui.alerts.saveFailed') })
     } finally {
       setLoading(false)
     }
   }
 
-  const clearMessage = () => {
-    setMessage({ type: '', text: '' })
-  }
+  const alertStatus = message.type === 'success' ? 'success' : message.type === 'error' ? 'error' : 'info'
+
+  const headerBg = formData.headerBg || customization.headerBg || '#667eea'
+  const headerTextColor = getContrastColor(headerBg)
 
   return (
-    <Container
-      fluid
-      className="p-2 m-2"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
-    >
-      {/* Header Section */}
+    <Container maxW="6xl" py={6}>
       <PageHeader
         title={t('settings.customization.ui.headerTitle')}
         subtitle={t('settings.customization.ui.headerSubtitle')}
-        icon={FaCog}
-      >
-        <CButton
-          status="light"
-          className="shadow-sm px-4 fw-semibold d-flex align-items-center"
-          onClick={handleSave}
-          disabled={loading}
-          style={{
-            borderRadius: '8px',
-            border: 'none',
-            transition: 'all 0.3s ease',
-          }}
-        >
-          {loading ? (
-            <>
-              <Spinner size="sm" className="me-2" />
-              {t('settings.customization.ui.buttons.saving')}
-            </>
-          ) : (
-            <>
-              <Icon as={Save} className="me-2" />
-              {t('settings.customization.ui.buttons.saveChanges')}
-            </>
-          )}
-        </CButton>
-      </PageHeader>
+        icon={Settings}
+        actions={[
+          <Button
+            key="save"
+            leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+            colorScheme="blue"
+            onClick={handleSave}
+            isLoading={loading}
+            minH="44px"
+          >
+            {loading
+              ? t('settings.customization.ui.buttons.saving')
+              : t('settings.customization.ui.buttons.saveChanges')}
+          </Button>,
+        ]}
+      />
 
-      {/* Alert Messages */}
-      {message.text && (
-        <Card className="border-0 shadow-sm mb-2">
-          <CardBody className="py-2">
-            <Alert
-              status={message.type === 'danger' ? 'error' : message.type}
-              className="mb-0"
-              role="status"
-              aria-live="polite"
-              style={{
-                border: 'none',
-                borderRadius: '8px',
-              }}
-            >
-              {message.text}
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      <Stack spacing={6}>
+        {message.text && (
+          <Alert status={alertStatus} borderRadius="lg">
+            <AlertIcon />
+            <Text>{message.text}</Text>
+          </Alert>
+        )}
 
-      {/* Main Content */}
-      <Flex className="g-3">
-        {/* Brand Logo Section */}
-        <Box lg={6}>
-          <Card className="border-0 shadow-sm h-100">
-            <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
-              <div className="d-flex align-items-center gap-3">
-                <div className="d-flex align-items-center justify-content-center brand-logo">
-                  <Icon as={Image} style={{ color: 'white', fontSize: '14px' }} />
-                </div>
-                <div>
-                  <h5 className="mb-0 fw-semibold text-dark">
-                    {t('settings.customization.ui.brandLogo.title')}
-                  </h5>
-                  <small className="text-muted">
-                    {t('settings.customization.ui.brandLogo.subtitle')}
-                  </small>
-                </div>
-              </div>
-            </div>
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} alignItems="stretch">
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Stack spacing={5}>
+                <Stack direction="row" align="center" spacing={3}>
+                  <Flex
+                    align="center"
+                    justify="center"
+                    w="48px"
+                    h="48px"
+                    borderRadius="lg"
+                    bg="blue.50"
+                    color="blue.600"
+                  >
+                    <Icon as={Image} boxSize={5} aria-hidden="true" />
+                  </Flex>
+                  <Box>
+                    <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                      {t('settings.customization.ui.brandLogo.title')}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {t('settings.customization.ui.brandLogo.subtitle')}
+                    </Text>
+                  </Box>
+                </Stack>
 
-            <CardBody className="p-4">
-              <div className="mb-3">
-                <FormLabel className="fw-medium text-dark mb-2">
-                  {t('settings.customization.ui.brandLogo.labels.logoText')}
-                </FormLabel>
-                <Input
-                  name="logoText"
-                  value={formData.logoText}
-                  onChange={handleChange}
-                  placeholder={t('settings.customization.ui.brandLogo.placeholders.logoText')}
-                  style={{
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    padding: '12px 16px',
-                  }}
-                />
-              </div>
+                <FormControl>
+                  <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
+                    {t('settings.customization.ui.brandLogo.labels.logoText')}
+                  </FormLabel>
+                  <Input
+                    name="logoText"
+                    value={formData.logoText || ''}
+                    onChange={handleChange}
+                    placeholder={t('settings.customization.ui.brandLogo.placeholders.logoText')}
+                    minH="44px"
+                  />
+                </FormControl>
 
-              <div className="mb-3">
-                <FormLabel className="fw-medium text-dark mb-2">
-                  {t('settings.customization.ui.brandLogo.labels.uploadLogo')}
-                </FormLabel>
-                <div className="position-relative">
+                <Box>
                   <Input
                     type="file"
                     accept="image/*"
+                    ref={fileInputRef}
+                    display="none"
                     onChange={handleLogoUpload}
-                    className="position-absolute opacity-0 w-100 h-100"
-                    aria-label={t('settings.customization.ui.brandLogo.labels.uploadLogo')}
-                    style={{ zIndex: 2, cursor: 'pointer' }}
-                    id="logo-upload"
                   />
-                  <div
-                    className="d-flex align-items-center justify-content-center p-4 text-center"
-                    style={{
-                      border: '2px dashed #e3e6f0',
-                      borderRadius: '8px',
-                      backgroundColor: '#f8f9fa',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                    }}
+                  <Button
+                    variant="outline"
+                    colorScheme="blue"
+                    leftIcon={<Icon as={Image} boxSize={4} aria-hidden="true" />}
+                    onClick={() => fileInputRef.current?.click()}
+                    minH="44px"
                   >
-                    <div>
-                      <Icon as={Image}
-                        className="mb-2"
-                        style={{ fontSize: '24px', color: '#6c757d' }}
-                      />
-                      <p className="mb-0 text-muted">
-                        {t('settings.customization.ui.brandLogo.chooseImageCta')}
-                      </p>
-                      <small className="text-muted">
-                        {t('settings.customization.ui.brandLogo.supportedTypes')}
-                      </small>
-                    </div>
-                  </div>
-                </div>
+                    {t('settings.customization.ui.brandLogo.chooseImageCta')}
+                  </Button>
+                  <Text fontSize="xs" color="gray.500" mt={2}>
+                    {t('settings.customization.ui.brandLogo.supportedTypes')}
+                  </Text>
+                </Box>
 
                 {previewLogo && (
-                  <div className="mb-0">
-                    <FormLabel className="fw-medium text-dark mb-2">
-                      {t('settings.customization.ui.brandLogo.labels.preview')}
-                    </FormLabel>
-                    <div
-                      className="d-flex align-items-center gap-3 p-3"
-                      style={{
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e9ecef',
-                      }}
+                  <Flex
+                    align="center"
+                    gap={4}
+                    p={4}
+                    borderRadius="lg"
+                    borderWidth="1px"
+                    borderColor="gray.200"
+                    bg="gray.50"
+                  >
+                    <Box as="img" src={previewLogo} alt={t('settings.customization.ui.brandLogo.alt.logoPreview')} h="48px" borderRadius="md" shadow="sm" />
+                    <Button
+                      variant="outline"
+                      colorScheme="red"
+                      leftIcon={<Icon as={Trash} boxSize={4} aria-hidden="true" />}
+                      onClick={handleRemoveLogo}
+                      minH="44px"
+                      isLoading={loading}
                     >
-                      <img
-                        src={previewLogo}
-                        alt={t('settings.customization.ui.brandLogo.alt.logoPreview')}
-                        style={{
-                          height: '40px',
-                          width: 'auto',
-                          borderRadius: '4px',
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        }}
-                      />
-                      <CButton
-                        status="light"
-                        size="sm"
-                        onClick={handleRemoveLogo}
-                        disabled={loading}
-                        className="p-2"
-                        aria-label={t('settings.customization.ui.brandLogo.labels.removeLogo')}
-                        style={{
-                          borderRadius: '6px',
-                          border: '1px solid #e3e6f0',
-                          transition: 'all 0.2s ease',
-                          minHeight: 44,
-                          minWidth: 44,
-                        }}
-                      >
-                        {loading ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <Icon as={Trash} style={{ color: '#dc3545' }} />
-                        )}
-                      </CButton>
-                    </div>
-                  </div>
+                      {t('settings.customization.ui.brandLogo.labels.removeLogo')}
+                    </Button>
+                  </Flex>
                 )}
-              </div>
+              </Stack>
             </CardBody>
           </Card>
-        </Box>
 
-        {/* Color Palette Section */}
-        <Box lg={6}>
-          <Card className="border-0 shadow-sm h-100">
-            <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
-              <div className="d-flex align-items-center gap-3">
-                <div
-                  className="d-flex align-items-center justify-content-center brand-logo"
-                  // style={{
-                  //     width: '32px',
-                  //     height: '32px',
-                  //     backgroundColor: '#667eea',
-                  //     borderRadius: '8px'
-                  // }}
-                >
-                  <Icon as={Palette} style={{ color: 'white', fontSize: '14px' }} />
-                </div>
-                <div>
-                  <h5 className="mb-0 fw-semibold text-dark">
-                    {t('settings.customization.ui.colorPalette.title')}
-                  </h5>
-                  <small className="text-muted">
-                    {t('settings.customization.ui.colorPalette.subtitle')}
-                  </small>
-                </div>
-            </div>
-
-            <CardBody className="p-4">
-              {/* Header & Navigation Colors */}
-              <div className="mb-4">
-                <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                  <Badge
-                    colorScheme="blue"
-                    className="px-2 py-1"
-                    style={{ borderRadius: '4px', fontSize: '10px' }}
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Stack spacing={5}>
+                <Stack direction="row" align="center" spacing={3}>
+                  <Flex
+                    align="center"
+                    justify="center"
+                    w="48px"
+                    h="48px"
+                    borderRadius="lg"
+                    bg="purple.50"
+                    color="purple.600"
                   >
-                    {t('settings.customization.ui.colorPalette.headerBadge')}
-                  </Badge>
-                  {t('settings.customization.ui.colorPalette.headerTitle')}
-                </h6>
-
-                <Flex className="g-3 mb-3">
-                  <Box sm={6}>
-                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
-                      {t('settings.customization.ui.colorPalette.labels.logoBg')}
-                    </FormLabel>
-                    <div className="d-flex align-items-center gap-2">
-                      <input
-                        type="color"
-                        name="logoBg"
-                        value={formData.logoBg || '#0dcaf0'}
-                        onChange={handleChange}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          padding: '0',
-                        }}
-                      />
-                      <Badge
-                        colorScheme="gray"
-                        className="px-3 py-2"
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '12px',
-                          backgroundColor: '#f8f9fa',
-                          color: '#6c757d',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        {formData.logoBg || '#0dcaf0'}
-                      </Badge>
-                    </div>
+                    <Icon as={Palette} boxSize={5} aria-hidden="true" />
+                  </Flex>
+                  <Box>
+                    <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                      {t('settings.customization.ui.colorPalette.title')}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {t('settings.customization.ui.colorPalette.subtitle')}
+                    </Text>
                   </Box>
-                  <Box sm={6}>
-                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
-                      {t('settings.customization.ui.colorPalette.labels.headerBg')}
-                    </FormLabel>
-                    <div className="d-flex align-items-center gap-2">
-                      <input
-                        type="color"
+                </Stack>
+
+                <Stack spacing={6}>
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+                      {t('settings.customization.ui.colorPalette.headerTitle')}
+                    </Text>
+                    <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
+                      <ColorField
+                        label={t('settings.customization.ui.colorPalette.labels.logoBg')}
+                        name="logoBg"
+                        value={formData.logoBg}
+                        onChange={handleChange}
+                      />
+                      <ColorField
+                        label={t('settings.customization.ui.colorPalette.labels.headerBg')}
                         name="headerBg"
                         value={formData.headerBg}
                         onChange={handleChange}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          padding: '0',
-                        }}
                       />
-                      <Badge
-                        colorScheme="gray"
-                        className="px-3 py-2"
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '12px',
-                          backgroundColor: '#f8f9fa',
-                          color: '#6c757d',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        {formData.headerBg}
-                      </Badge>
-                    </div>
-                  </Box>
-                </Flex>
-
-                <Flex className="g-3">
-                  <Box sm={6}>
-                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
-                      {t('settings.customization.ui.colorPalette.labels.headerText')}
-                    </FormLabel>
-                    <div className="d-flex align-items-center gap-2">
-                      <input
-                        type="color"
+                      <ColorField
+                        label={t('settings.customization.ui.colorPalette.labels.headerText')}
                         name="headerFontColor"
                         value={formData.headerFontColor}
                         onChange={handleChange}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          padding: '0',
-                        }}
                       />
-                      <Badge
-                        colorScheme="gray"
-                        className="px-3 py-2"
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '12px',
-                          backgroundColor: '#f8f9fa',
-                          color: '#6c757d',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        {formData.headerFontColor}
-                      </Badge>
-                    </div>
+                    </SimpleGrid>
                   </Box>
-                </Flex>
-              </div>
 
-              {/* Sidebar Colors */}
-              <div className="mb-0">
-                <h6 className="fw-semibold text-dark mb-3 d-flex align-items-center gap-2">
-                  <Badge
-                    colorScheme="gray"
-                    className="px-2 py-1"
-                    style={{ borderRadius: '4px', fontSize: '10px' }}
-                  >
-                    {t('settings.customization.ui.colorPalette.sidebarBadge')}
-                  </Badge>
-                  {t('settings.customization.ui.colorPalette.sidebarTitle')}
-                </h6>
-
-                <Flex className="g-3">
-                  <Box sm={6}>
-                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
-                      {t('settings.customization.ui.colorPalette.labels.sidebarBg')}
-                    </FormLabel>
-                    <div className="d-flex align-items-center gap-2">
-                      <input
-                        type="color"
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+                      {t('settings.customization.ui.colorPalette.sidebarTitle')}
+                    </Text>
+                    <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
+                      <ColorField
+                        label={t('settings.customization.ui.colorPalette.labels.sidebarBg')}
                         name="sidebarBg"
                         value={formData.sidebarBg}
                         onChange={handleChange}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          padding: '0',
-                        }}
                       />
-                      <Badge
-                        colorScheme="gray"
-                        className="px-3 py-2"
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '12px',
-                          backgroundColor: '#f8f9fa',
-                          color: '#6c757d',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        {formData.sidebarBg}
-                      </Badge>
-                    </div>
-                  </Box>
-                  <Box sm={6}>
-                    <FormLabel className="fw-medium text-muted mb-2" style={{ fontSize: '13px' }}>
-                      {t('settings.customization.ui.colorPalette.labels.sidebarText')}
-                    </FormLabel>
-                    <div className="d-flex align-items-center gap-2">
-                      <input
-                        type="color"
+                      <ColorField
+                        label={t('settings.customization.ui.colorPalette.labels.sidebarText')}
                         name="sidebarFontColor"
                         value={formData.sidebarFontColor}
                         onChange={handleChange}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          padding: '0',
-                        }}
                       />
-                      <Badge
-                        colorScheme="gray"
-                        className="px-3 py-2"
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '12px',
-                          backgroundColor: '#f8f9fa',
-                          color: '#6c757d',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        {formData.sidebarFontColor}
-                      </Badge>
-                    </div>
+                    </SimpleGrid>
                   </Box>
-                </Flex>
-              </div>
+
+                  <Box borderRadius="md" p={4} bg={headerBg} color={headerTextColor}>
+                    <Text fontWeight="semibold">{t('settings.customization.ui.preview.header')}</Text>
+                    <Text fontSize="sm">
+                      {t('settings.customization.ui.preview.description')}
+                    </Text>
+                  </Box>
+                </Stack>
+              </Stack>
             </CardBody>
           </Card>
-        </Box>
-      </Flex>
+        </SimpleGrid>
+      </Stack>
     </Container>
   )
 }

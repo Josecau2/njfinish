@@ -54,7 +54,7 @@ frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx
 frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx
 frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx
 frontend\src\pages\admin\Contractors.jsx
-frontend\src\pages\admin\LeadsPage.jsx
+frontend\src\pages\admin\LeadsPage.jsx [DONE]
 
 PAGES - AUTH (5 files)
 ======================
@@ -72,15 +72,16 @@ frontend\src\pages\contractor\ContractorDashboard.jsx
 frontend\src\pages\contracts\index.jsx
 frontend\src\pages\customers\AddCustomerForm.jsx
 frontend\src\pages\customers\CustomerForm.jsx
-frontend\src\pages\customers\Customers.jsx
+frontend\src\pages\customers\Customers.jsx [DONE]
+frontend\src\responsive.css [DONE]
 frontend\src\pages\customers\Customers_broken.jsx
 frontend\src\pages\customers\Customers_fixed.jsx
-frontend\src\pages\customers\EditCustomerPage.jsx
+frontend\src\pages\customers\EditCustomerPage.jsx [DONE]
 frontend\src\pages\dashboard\Dashboard.jsx
 frontend\src\pages\orders\OrderDetails.jsx
 frontend\src\pages\orders\OrdersList.jsx [DONE]
 frontend\src\pages\payments\PaymentCancel.jsx
-frontend\src\pages\payments\PaymentConfiguration.jsx
+frontend\src\pages\payments\PaymentConfiguration.jsx [DONE]
 frontend\src\pages\payments\PaymentPage.jsx
 frontend\src\pages\payments\PaymentsList.jsx
 frontend\src\pages\payments\PaymentSuccess.jsx
@@ -93,9 +94,9 @@ frontend\src\pages\proposals\CreateProposal\FileUploadSection.jsx
 frontend\src\pages\proposals\CreateProposal\ManufacturerSelect.jsx
 frontend\src\pages\proposals\CreateProposal\ProposalEditor.jsx
 frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx
-frontend\src\pages\proposals\CreateProposalForm.jsx
+frontend\src\pages\proposals\CreateProposalForm.jsx [DONE]
 frontend\src\pages\proposals\EditProposal.jsx [DONE]
-frontend\src\pages\proposals\EditProposal\EditProposal.jsx
+frontend\src\pages\proposals\EditProposal\EditProposal.jsx [DONE]
 frontend\src\pages\proposals\ProposalEditor.jsx
 frontend\src\pages\proposals\Proposals.jsx
 frontend\src\pages\public\PublicProposalPage.jsx
@@ -106,14 +107,14 @@ frontend\src\pages\Resources\index.jsx
 
 PAGES - SETTINGS (25 files)
 ===========================
-frontend\src\pages\settings\customization\CustomizationPage.jsx
+frontend\src\pages\settings\customization\CustomizationPage.jsx [DONE]
 frontend\src\pages\settings\customization\index.jsx
 frontend\src\pages\settings\customization\LoginCustomizerPage.jsx
 frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx
 frontend\src\pages\settings\globalMods\GlobalModsPage.jsx [DONE]
 frontend\src\pages\settings\locations\CreateLocation.jsx
 frontend\src\pages\settings\locations\EditLocation.jsx
-frontend\src\pages\settings\locations\LocationList.jsx
+frontend\src\pages\settings\locations\LocationList.jsx [DONE]
 frontend\src\pages\settings\manufacturers\EditManufacturer.jsx
 frontend\src\pages\settings\manufacturers\ManufacturersForm.jsx
 frontend\src\pages\settings\manufacturers\ManufacturersList.jsx
@@ -124,8 +125,8 @@ frontend\src\pages\settings\manufacturers\tabs\SettingsTab.jsx
 frontend\src\pages\settings\manufacturers\tabs\StylePicturesTab.jsx
 frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx
 frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx
-frontend\src\pages\settings\multipliers\ManuMultipliers.jsx
-frontend\src\pages\settings\taxes\TaxesPage.jsx
+frontend\src\pages\settings\multipliers\ManuMultipliers.jsx [DONE]
+frontend\src\pages\settings\taxes\TaxesPage.jsx [DONE]
 frontend\src\pages\settings\terms\TermsPage.jsx
 frontend\src\pages\settings\users\CreateUser.jsx [DONE]
 frontend\src\pages\settings\users\EditUser.jsx [DONE]

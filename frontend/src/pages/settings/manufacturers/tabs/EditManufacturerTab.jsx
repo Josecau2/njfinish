@@ -1,11 +1,41 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getContrastColor } from '../../../../utils/colorUtils'
-import { Alert, Card, CardBody, CardHeader, Box, Container, FormControl, Checkbox, Input, FormLabel, FormHelperText, Textarea, Flex } from '@chakra-ui/react'
+import {
+  Container,
+  Stack,
+  Card,
+  CardHeader,
+  CardBody,
+  SimpleGrid,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  Input,
+  Textarea,
+  Checkbox,
+  RadioGroup,
+  Radio,
+  Switch,
+  HStack,
+  VStack,
+  Text,
+  Button,
+  Alert,
+  AlertIcon,
+  Box,
+} from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
+
+const alertStatusMap = {
+  success: 'success',
+  danger: 'error',
+  warning: 'warning',
+  info: 'info',
+}
 
 const EditManufacturerTab = ({ manufacturer, id }) => {
   const { t } = useTranslation()
@@ -65,65 +95,67 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
 
-  const handleFileChange = (e) => setFiles([...e.target.files])
+  const handleFileChange = (e) => setFiles(Array.from(e.target.files ?? []))
 
-  const handlePriceTypeChange = (isPriceMSRP) => setFormData((prev) => ({ ...prev, isPriceMSRP }))
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0] || null
+    setLogoImage(file)
+  }
+
+  const handlePriceTypeChange = useCallback(
+    (value) => {
+      setFormData((prev) => ({ ...prev, isPriceMSRP: value === 'msrp' }))
+    },
+    [],
+  )
 
   const calculateMultiplierExample = () => {
     if (!formData.costMultiplier) return null
     const msrp = 200.0
     const cost = 100.0
     const multiplier = parseFloat(formData.costMultiplier)
+    if (Number.isNaN(multiplier)) return null
     return (
-      <FormHelperText className="text-muted">
+      <FormHelperText color="gray.500">
         {t('settings.manufacturers.example.multiplier', {
           msrp: msrp.toFixed(2),
           cost: cost.toFixed(2),
           multiplier: multiplier.toFixed(1),
         })}
       </FormHelperText>
-  
-  )
+    )
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
-    console.log('Form data before submit:', formData)
-
     try {
       const formDataToSend = new FormData()
-      Object.keys(formData).forEach((key) => {
-        const value = formData[key] || ''
-        console.log(`Appending ${key}:`, value)
-        formDataToSend.append(key, value)
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value ?? '')
       })
 
       if (logoImage) formDataToSend.append('manufacturerImage', logoImage)
       files.forEach((file) => formDataToSend.append('catalogFiles', file))
 
-      console.log('Sending update request...')
-      const res = await axiosInstance.put(`/api/manufacturers/${id}/update`, formDataToSend, {
+      const response = await axiosInstance.put(`/api/manufacturers/${id}/update`, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      console.log('Server response:', res.data)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      if (res.data.status === 200) {
+
+      if (response.data.status === 200) {
         setMessage({ text: t('settings.manufacturers.edit.updated'), type: 'success' })
-        // Refetch manufacturer data to update the form with latest values
         dispatch(fetchManufacturerById({ id, includeCatalog: false }))
         setTimeout(() => navigate('/settings/manufacturers'), 2000)
       } else {
         setMessage({
-          text: res.data.message || t('settings.manufacturers.edit.updateFailed'),
+          text: response.data.message || t('settings.manufacturers.edit.updateFailed'),
           type: 'danger',
         })
       }
     } catch (error) {
-      console.error('Update error:', error)
-      console.error('Error details:', error.response?.data)
       setMessage({
         text: `Error: ${error.response?.data?.message || t('settings.manufacturers.edit.updateFailed')}`,
         type: 'danger',
@@ -134,267 +166,82 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
   }
 
   return (
-    <Container className="mt-4 mb-4">
-      <Card>
-        <CardHeader className="d-flex justify-content-between align-items-center bg-body border-bottom">
-          <h5 className="mb-0">{t('settings.manufacturers.edit.title')}</h5>
-          <CButton
-            status="light"
-            onClick={() => navigate(-1)}
-            className="icon-btn"
-            aria-label={t('settings.manufacturers.edit.back')}
-          >
-            {t('settings.manufacturers.edit.back')}
-          </CButton>
-        </CardHeader>
-        <CardBody>
-          {message.text && (
-            <Alert
-              color={message.type}
-              dismissible
-              onClose={() => setMessage({ text: '', type: '' })}
-            >
-              {message.text}
-            </Alert>
-          )}
+    <Container maxW="6xl" py={6}>
+      <Stack spacing={6}>
+        {message.text && (
+          <Alert status={alertStatusMap[message.type] ?? 'info'} borderRadius="md">
+            <AlertIcon />
+            <Text>{message.text}</Text>
+          </Alert>
+        )}
 
-          <FormControl onSubmit={handleSubmit}>
-            <Card className="mb-4">
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={6}>
+            <Card variant="outline">
+              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+                {t('settings.manufacturers.edit.basicInfo', 'Basic Information')}
+              </CardHeader>
               <CardBody>
-                <Flex>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="name">
-                        {t('settings.manufacturers.fields.manufacturerName')} *
-                      </FormLabel>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </Box>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="email">
-                        {t('settings.manufacturers.fields.orderEmail')} *
-                      </FormLabel>
-                      <Input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </Box>
-                </Flex>
-
-                <Flex>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="phone">
-                        {t('settings.manufacturers.fields.phone')} *
-                      </FormLabel>
-                      <Input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        inputMode="tel"
-                        aria-describedby="phoneHelp"
-                      />
-                      <FormHelperText id="phoneHelp" className="text-muted">
-                        {t(
-                          'settings.manufacturers.help.phoneFormat',
-                          'Include country/area code if needed',
-                        )}
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="website">
-                        {t('settings.manufacturers.fields.website')} *
-                      </FormLabel>
-                      <Input
-                        type="url"
-                        id="website"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleChange}
-                        required
-                        inputMode="url"
-                        aria-describedby="websiteHelp"
-                      />
-                      <FormHelperText id="websiteHelp" className="text-muted">
-                        {t('settings.manufacturers.help.websiteFormat', 'https://example.com')}
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                </Flex>
-
-                <div className="mb-3">
-                  <FormLabel htmlFor="address">
-                    {t('settings.manufacturers.fields.address')} *
-                  </FormLabel>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <Flex>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="assembledEtaDays">
-                        {t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
-                      </FormLabel>
-                      <Input
-                        type="text"
-                        id="assembledEtaDays"
-                        name="assembledEtaDays"
-                        value={formData.assembledEtaDays}
-                        onChange={handleChange}
-                        placeholder="e.g., 7-14 days"
-                        aria-describedby="assembledEtaHelp"
-                      />
-                      <FormHelperText id="assembledEtaHelp" className="text-muted">
-                        {t(
-                          'settings.manufacturers.help.assembledEta',
-                          'Estimated delivery time for assembled cabinets',
-                        )}
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="unassembledEtaDays">
-                        {t(
-                          'settings.manufacturers.fields.unassembledEtaDays',
-                          'Unassembled Items ETA',
-                        )}
-                      </FormLabel>
-                      <Input
-                        type="text"
-                        id="unassembledEtaDays"
-                        name="unassembledEtaDays"
-                        value={formData.unassembledEtaDays}
-                        onChange={handleChange}
-                        placeholder="e.g., 3-7 days"
-                        aria-describedby="unassembledEtaHelp"
-                      />
-                      <FormHelperText id="unassembledEtaHelp" className="text-muted">
-                        {t(
-                          'settings.manufacturers.help.unassembledEta',
-                          'Estimated delivery time for unassembled cabinets',
-                        )}
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                </Flex>
-
-                <div className="mb-3">
-                  <FormLabel htmlFor="manufacturerImage">
-                    {t('settings.manufacturers.edit.updateImage')}
-                  </FormLabel>
-
-                  {/* Display current image if exists */}
-                  {manufacturer?.image && !logoImage && (
-                    <div className="mb-3">
-                      <p className="text-muted">{t('settings.manufacturers.edit.currentImage')}:</p>
-                      <img
-                        src={`${import.meta.env.VITE_API_URL}/uploads/images/${manufacturer.image}`}
-                        alt={manufacturer.name}
-                        style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
-                        className="border rounded"
-                      />
-                    </div>
-                  )}
-
-                  <Input
-                    type="file"
-                    id="manufacturerImage"
-                    accept="image/*"
-                    onChange={(e) => setLogoImage(e.target.files[0])}
-                    aria-describedby="manufacturerImageHelp"
-                  />
-                  <FormHelperText id="manufacturerImageHelp" className="text-muted">
-                    {t(
-                      'settings.manufacturers.edit.imageHelp',
-                      'PNG or JPG recommended. Max ~5MB.',
-                    )}
-                  </FormHelperText>
-                  {logoImage && (
-                    <div className="mt-2">
-                      <div className="text-success">
-                        {t('settings.manufacturers.edit.newImageSelected', {
-                          name: logoImage.name,
-                        })}
-                      </div>
-                      {/* Preview of new image */}
-                      <img
-                        src={URL.createObjectURL(logoImage)}
-                        alt="Preview"
-                        style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'contain' }}
-                        className="border rounded mt-2"
-                      />
-                    </div>
-                  )}
-                </div>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="name">{t('settings.manufacturers.fields.name')}</FormLabel>
+                    <Input id="name" name="name" value={formData.name} onChange={handleChange} />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="email">{t('settings.manufacturers.fields.email')}</FormLabel>
+                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="phone">{t('settings.manufacturers.fields.phone')}</FormLabel>
+                    <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="website">{t('settings.manufacturers.fields.website')}</FormLabel>
+                    <Input id="website" name="website" value={formData.website} onChange={handleChange} />
+                  </FormControl>
+                </SimpleGrid>
+                <FormControl mt={4}>
+                  <FormLabel htmlFor="address">{t('settings.manufacturers.fields.address')}</FormLabel>
+                  <Textarea id="address" name="address" rows={3} value={formData.address} onChange={handleChange} />
+                </FormControl>
               </CardBody>
             </Card>
 
-            <Card className="mb-4">
+            <Card variant="outline">
+              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+                {t('settings.manufacturers.edit.emailSettings', 'Manufacturer Email Settings')}
+              </CardHeader>
               <CardBody>
-                <Flex>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="orderEmailSubject">
-                        Manufacturer Email Subject
-                      </FormLabel>
-                      <Input
-                        id="orderEmailSubject"
-                        name="orderEmailSubject"
-                        value={formData.orderEmailSubject}
-                        onChange={handleChange}
-                      />
-                      <FormHelperText>
-                        You can include the order number by adding {'{orderNumber}'} in the subject.
-                        Example: "New order {'{orderNumber}'} for ABC Cabinets".
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                  <Box md={6}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="orderEmailMode">Send Mode</FormLabel>
-                      <select
-                        id="orderEmailMode"
-                        name="orderEmailMode"
-                        className="form-select"
-                        value={formData.orderEmailMode}
-                        onChange={handleChange}
-                      >
-                        <option value="pdf">PDF only</option>
-                        <option value="plain">Plain text only</option>
-                        <option value="both">Both</option>
-                      </select>
-                      <div className="form-text">
-                        Choose whether to send a PDF, a plain email, or both.
-                      </div>
-                  </Box>
-                </Flex>
-                <div className="mb-3">
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
+                  <FormControl>
+                    <FormLabel htmlFor="orderEmailSubject">
+                      {t('settings.manufacturers.edit.emailSubject', 'Email subject')}
+                    </FormLabel>
+                    <Input
+                      id="orderEmailSubject"
+                      name="orderEmailSubject"
+                      value={formData.orderEmailSubject}
+                      onChange={handleChange}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>{t('settings.manufacturers.edit.sendMode', 'Send mode')}</FormLabel>
+                    <RadioGroup
+                      value={formData.orderEmailMode}
+                      onChange={(value) => setFormData((prev) => ({ ...prev, orderEmailMode: value }))}
+                    >
+                      <HStack spacing={4} align="flex-start">
+                        <Radio value="pdf">{t('settings.manufacturers.edit.mode.pdf', 'PDF only')}</Radio>
+                        <Radio value="plain">{t('settings.manufacturers.edit.mode.plain', 'Plain text')}</Radio>
+                        <Radio value="both">{t('settings.manufacturers.edit.mode.both', 'Both')}</Radio>
+                      </HStack>
+                    </RadioGroup>
+                  </FormControl>
+                </SimpleGrid>
+
+                <FormControl mb={4}>
                   <FormLabel htmlFor="orderEmailTemplate">
-                    Manufacturer Email Template (no prices)
+                    {t('settings.manufacturers.edit.emailTemplate', 'Manufacturer email template (no prices)')}
                   </FormLabel>
                   <Textarea
                     id="orderEmailTemplate"
@@ -402,172 +249,192 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                     rows={6}
                     value={formData.orderEmailTemplate}
                     onChange={handleChange}
-                    placeholder="Dear Manufacturer, Please find the attached order PDF. ..."
+                    placeholder="Dear Manufacturer, Please find the attached order PDF..."
                   />
                   <FormHelperText>
-                    Simple HTML allowed. Keep it minimal; prices are not included.
+                    {t('settings.manufacturers.edit.emailTemplateHelp', 'Simple HTML is allowed. Prices are not included.')}
                   </FormHelperText>
-                </div>
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
+                </FormControl>
+
+                <FormControl display="flex" alignItems="center" gap={3}>
+                  <Switch
                     id="autoEmailOnAccept"
                     name="autoEmailOnAccept"
-                    checked={!!formData.autoEmailOnAccept}
+                    isChecked={!!formData.autoEmailOnAccept}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, autoEmailOnAccept: e.target.checked }
-  )
-}
+                      setFormData((prev) => ({ ...prev, autoEmailOnAccept: e.target.checked }))
+                    }
                   />
-                  <label className="form-check-label" htmlFor="autoEmailOnAccept">
-                    Automatically email manufacturer on acceptance
-                  </label>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="mb-4">
-              <CardBody>
-                <fieldset className="mb-3">
-                  <FormLabel as="legend">{t('settings.manufacturers.edit.priceInfo')}</FormLabel>
-                  <span className="visually-hidden" id="priceTypeDesc">
-                    {t('settings.manufacturers.help.priceInfo', 'Choose how prices are handled')}
-                  </span>
-                  <Checkbox
-                    type="radio"
-                    name="priceType"
-                    id="msrpPrices"
-                    label={t('settings.manufacturers.fields.msrpOption')}
-                    checked={formData.isPriceMSRP}
-                    onChange={() => handlePriceTypeChange(true)}
-                    className="mb-2"
-                    aria-describedby="priceTypeDesc"
-                  />
-                  <Checkbox
-                    type="radio"
-                    name="priceType"
-                    id="costPrices"
-                    label={t('settings.manufacturers.fields.costOption')}
-                    checked={!formData.isPriceMSRP}
-                    onChange={() => handlePriceTypeChange(false)}
-                    aria-describedby="priceTypeDesc"
-                  />
-                </fieldset>
-
-                <Flex>
-                  <Box md={4}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="costMultiplier">
-                        {t('settings.manufacturers.edit.costMultiplier')} *
-                      </FormLabel>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        id="costMultiplier"
-                        name="costMultiplier"
-                        value={formData.costMultiplier}
-                        onChange={handleChange}
-                        required
-                        inputMode="decimal"
-                      />
-                      {calculateMultiplierExample()}
-                    </div>
-                  </Box>
-                  <Box md={4}>
-                    <div className="mb-3">
-                      <FormLabel htmlFor="deliveryFee">
-                        {t('settings.manufacturers.edit.deliveryFee')}
-                      </FormLabel>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        id="deliveryFee"
-                        name="deliveryFee"
-                        value={formData.deliveryFee}
-                        onChange={handleChange}
-                        inputMode="decimal"
-                        aria-describedby="deliveryFeeHelp"
-                      />
-                      <FormHelperText id="deliveryFeeHelp" className="text-muted">
-                        {t('settings.manufacturers.edit.deliveryFeeHelp')}
-                      </FormHelperText>
-                    </div>
-                  </Box>
-                </Flex>
-              </CardBody>
-            </Card>
-
-            <Card className="mb-4">
-              <CardBody>
-                <div className="mb-3">
-                  <FormLabel htmlFor="instructions">
-                    {t('settings.manufacturers.fields.instructions')}
+                  <FormLabel htmlFor="autoEmailOnAccept" mb={0}>
+                    {t('settings.manufacturers.edit.autoEmail', 'Automatically email manufacturer on acceptance')}
                   </FormLabel>
+                </FormControl>
+              </CardBody>
+            </Card>
+
+            <Card variant="outline">
+              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+                {t('settings.manufacturers.edit.pricing', 'Pricing & Delivery')}
+              </CardHeader>
+              <CardBody>
+                <FormControl as="fieldset" mb={4}>
+                  <FormLabel as="legend">
+                    {t('settings.manufacturers.edit.priceInfo', 'Price information')}
+                  </FormLabel>
+                  <RadioGroup
+                    value={formData.isPriceMSRP ? 'msrp' : 'cost'}
+                    onChange={handlePriceTypeChange}
+                  >
+                    <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align="flex-start">
+                      <Radio value="msrp">
+                        {t('settings.manufacturers.fields.msrpOption', 'Use MSRP pricing')}
+                      </Radio>
+                      <Radio value="cost">
+                        {t('settings.manufacturers.fields.costOption', 'Use cost pricing')}
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+                </FormControl>
+
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="costMultiplier">
+                      {t('settings.manufacturers.edit.costMultiplier')}
+                    </FormLabel>
+                    <Input
+                      id="costMultiplier"
+                      name="costMultiplier"
+                      type="number"
+                      step="0.1"
+                      inputMode="decimal"
+                      value={formData.costMultiplier}
+                      onChange={handleChange}
+                    />
+                    {calculateMultiplierExample()}
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="deliveryFee">
+                      {t('settings.manufacturers.edit.deliveryFee')}
+                    </FormLabel>
+                    <Input
+                      id="deliveryFee"
+                      name="deliveryFee"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      inputMode="decimal"
+                      value={formData.deliveryFee}
+                      onChange={handleChange}
+                    />
+                    <FormHelperText>
+                      {t('settings.manufacturers.edit.deliveryFeeHelp', 'Optional delivery fee charged to customers.')}
+                    </FormHelperText>
+                  </FormControl>
+                </SimpleGrid>
+
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={4}>
+                  <FormControl>
+                    <FormLabel htmlFor="assembledEtaDays">
+                      {t('settings.manufacturers.edit.assembledEta', 'Assembled ETA (days)')}
+                    </FormLabel>
+                    <Input
+                      id="assembledEtaDays"
+                      name="assembledEtaDays"
+                      type="number"
+                      value={formData.assembledEtaDays}
+                      onChange={handleChange}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="unassembledEtaDays">
+                      {t('settings.manufacturers.edit.unassembledEta', 'Unassembled ETA (days)')}
+                    </FormLabel>
+                    <Input
+                      id="unassembledEtaDays"
+                      name="unassembledEtaDays"
+                      type="number"
+                      value={formData.unassembledEtaDays}
+                      onChange={handleChange}
+                    />
+                  </FormControl>
+                </SimpleGrid>
+              </CardBody>
+            </Card>
+
+            <Card variant="outline">
+              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+                {t('settings.manufacturers.fields.instructions')}
+              </CardHeader>
+              <CardBody>
+                <FormControl>
                   <Textarea
                     id="instructions"
-                    rows={4}
                     name="instructions"
+                    rows={4}
                     value={formData.instructions}
                     onChange={handleChange}
                   />
-                </div>
+                </FormControl>
               </CardBody>
             </Card>
 
-            <Card className="mb-4">
+            <Card variant="outline">
+              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+                {t('settings.manufacturers.edit.assets', 'Assets & Uploads')}
+              </CardHeader>
               <CardBody>
-                <div className="mb-3">
-                  <FormLabel htmlFor="catalogFiles">
-                    {t('settings.manufacturers.edit.uploadNewCatalog')}
-                  </FormLabel>
-                  <Input
-                    type="file"
-                    id="catalogFiles"
-                    multiple
-                    onChange={handleFileChange}
-                    aria-describedby="catalogFilesHelp"
-                  />
-                  <FormHelperText id="catalogFilesHelp" className="text-muted">
-                    {t('settings.manufacturers.edit.supported')}
-                  </FormHelperText>
-                </div>
+                <Stack spacing={4}>
+                  <FormControl>
+                    <FormLabel htmlFor="manufacturerImage">
+                      {t('settings.manufacturers.edit.updateImage', 'Update manufacturer image')}
+                    </FormLabel>
+                    <Input
+                      id="manufacturerImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                    />
+                    <FormHelperText>
+                      {t('settings.manufacturers.edit.imageHelp', 'PNG or JPG recommended. Max ~5MB.')}
+                    </FormHelperText>
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel htmlFor="catalogFiles">
+                      {t('settings.manufacturers.edit.uploadNewCatalog', 'Upload updated catalog files')}
+                    </FormLabel>
+                    <Input
+                      id="catalogFiles"
+                      type="file"
+                      multiple
+                      onChange={handleFileChange}
+                    />
+                    <FormHelperText>
+                      {t('settings.manufacturers.edit.supported', 'PDF, CSV, XLSX, DOCX files are supported.')}
+                    </FormHelperText>
+                  </FormControl>
+                </Stack>
               </CardBody>
             </Card>
 
-            <div className="text-end">
-              <CButton
+            <Box textAlign="right">
+              <Button
                 type="submit"
-                disabled={loading}
-                style={{
-                  background: headerBg,
-                  color: textColor,
-                  border: 'none',
-                }}
+                isLoading={loading}
+                bg={headerBg}
+                color={textColor}
+                _hover={{ opacity: 0.9 }}
               >
                 {loading
-                  ? t('settings.manufacturers.edit.saving')
-                  : t('settings.manufacturers.edit.saveChanges')}
-              </CButton>
-            </div>
-          </FormControl>
-        </CardBody>
-      </Card>
+                  ? t('settings.manufacturers.edit.saving', 'Saving...')
+                  : t('settings.manufacturers.edit.saveChanges', 'Save changes')}
+              </Button>
+            </Box>
+          </Stack>
+        </form>
+      </Stack>
     </Container>
   )
 }
-  )
-}
 
-</div>
-</Container>
-    </Card>
-        </CardBody>
-            </FormControl>
-                </Card>
-                    </CardBody>
-                        </div>
-                            </div>
 export default EditManufacturerTab

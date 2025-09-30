@@ -115,6 +115,23 @@ const CustomerTable = ({
     onOpen()
   }
 
+  const handleCancelDelete = () => {
+    if (!deleteCustomerId) {
+      onClose()
+      return
+    }
+
+    toast({
+      title: t('customers.cancelled', 'Cancelled'),
+      description: t('customers.notDeleted', 'The customer was not deleted.'),
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    })
+    setDeleteCustomerId(null)
+    onClose()
+  }
+
   const confirmDelete = async () => {
     if (!deleteCustomerId) return
 
@@ -505,7 +522,7 @@ const CustomerTable = ({
           </>
         )}
 
-        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
+        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={handleCancelDelete} isCentered>
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -513,7 +530,7 @@ const CustomerTable = ({
               </AlertDialogHeader>
               <AlertDialogBody>{t('customers.confirmText', 'This action cannot be undone!')}</AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
+                <Button ref={cancelRef} onClick={handleCancelDelete}>
                   {t('customers.confirmNo', 'No, cancel!')}
                 </Button>
                 <Button colorScheme="red" onClick={confirmDelete} ml={3}>

@@ -1,64 +1,68 @@
 import { useEffect, useState, useRef } from 'react'
-import { Edit, Trash, Plus, Search, Mail, MapPin, Globe, ExternalLink } from 'lucide-react'
-import PaginationControls from '../../../components/PaginationControls'
-import { useNavigate } from 'react-router-dom'
-import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
-import { useTranslation } from 'react-i18next'
-import PageHeader from '../../../components/PageHeader'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Input,
-  Select,
-  Spinner,
-  Container,
-  Flex,
-  Box,
-  Card,
-  CardBody,
-  Badge,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Text,
-  VStack,
-  HStack,
-  InputGroup,
-  InputLeftElement,
-  Link,
   Alert,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Link,
+  Select,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useColorModeValue,
   useDisclosure,
   useToast,
-  useColorModeValue
 } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
+import { Edit, Trash, Plus, Search, Mail, MapPin, Globe, ExternalLink } from 'lucide-react'
+
+import PaginationControls from '../../../components/PaginationControls'
+import PageHeader from '../../../components/PageHeader'
+import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
 
 const LocationPage = () => {
   const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+
   const { list: locations, loading, error } = useSelector((state) => state.locations)
 
   useEffect(() => {
     dispatch(fetchLocations())
   }, [dispatch])
 
-  const filteredData = locations.filter((u) => {
-    const email = (u.email || '').toLowerCase()
-    const name = (u.locationName || '').toLowerCase()
+  const filteredData = locations.filter((location) => {
+    const email = (location.email || '').toLowerCase()
+    const name = (location.locationName || '').toLowerCase()
     const search = filterText.toLowerCase()
 
     return email.includes(search) || name.includes(search)
@@ -70,21 +74,33 @@ const LocationPage = () => {
     currentPage * itemsPerPage,
   )
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page)
-  }
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value))
-    setCurrentPage(1)
-  }
-
   const startIdx = filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
   const endIdx = Math.min(currentPage * itemsPerPage, filteredData.length)
 
-  const handleCreateUser = () => {
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return
+    setCurrentPage(page)
+  }
+
+  const handleItemsPerPageChange = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(1)
+  }
+
+  const handleCreateLocation = () => {
     navigate('/settings/locations/create')
   }
+
+  const handleUpdateLocation = (id) => {
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/locations/edit/:id', { id })
+    navigate(noisy)
+  }
+
+  const tableBg = useColorModeValue('white', 'gray.800')
+  const headerBg = useColorModeValue('gray.50', 'gray.700')
+  const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
+  const stickyBorder = useColorModeValue('gray.200', 'gray.700')
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [deleteLocationId, setDeleteLocationId] = useState(null)
@@ -108,7 +124,7 @@ const LocationPage = () => {
         duration: 3000,
         isClosable: true,
       })
-    } catch (error) {
+    } catch (err) {
       toast({
         title: t('settings.locations.confirm.errorTitle'),
         description: t('settings.locations.confirm.errorText'),
@@ -122,38 +138,47 @@ const LocationPage = () => {
     }
   }
 
-  const handleUpdateLocation = (id) => {
-    const noisy =
-      `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/settings/locations/edit/:id', { id })
-    navigate(noisy)
-  }
-
-  const tableBg = useColorModeValue('white', 'gray.800')
-  const headerBg = useColorModeValue('gray.50', 'gray.700')
-
   if (loading) {
     return (
       <Container maxW="container.xl" py={8}>
-        <VStack spacing={4} justify="center" minH="200px">
-          <Spinner size="lg" color="brand.500" />
-          <Text color="gray.500">{t('settings.locations.loading')}</Text>
-        </VStack>
+        <Card variant="outline">
+          <CardBody textAlign="center" py={10}>
+            <Spinner size="lg" color="brand.500" />
+            <Text mt={4} color="gray.500">
+              {t('settings.locations.loading')}
+            </Text>
+          </CardBody>
+        </Card>
       </Container>
-  
-  )
+    )
   }
 
   if (error) {
     return (
       <Container maxW="container.xl" py={8}>
         <Alert status="error" borderRadius="md">
-          <Text fontWeight="semibold">{t('common.error')}:</Text>
-          <Text ml={2}>{t('settings.locations.errorLoad')}: {error}</Text>
+          <Text fontWeight="semibold" mr={2}>
+            {t('common.error')}:
+          </Text>
+          <Text>{t('settings.locations.errorLoad')}: {error}</Text>
         </Alert>
       </Container>
-  
-  )
+    )
   }
+
+  const headerActions = [
+    <Button
+      key="create"
+      leftIcon={<Icon as={Plus} boxSize={4} aria-hidden="true" />}
+      colorScheme="brand"
+      onClick={handleCreateLocation}
+      as={motion.button}
+      whileTap={{ scale: 0.98 }}
+      minH="44px"
+    >
+      {t('settings.locations.add')}
+    </Button>,
+  ]
 
   return (
     <Container maxW="container.xl" py={8}>
@@ -161,49 +186,36 @@ const LocationPage = () => {
         title={t('settings.locations.header')}
         subtitle={t('settings.locations.subtitle')}
         icon={MapPin}
-        actions={
-          <Button
-            leftIcon={<Plus size={16} />}
-            colorScheme="brand"
-            onClick={handleCreateUser}
-            as={motion.button}
-            whileTap={{ scale: 0.98 }}
-          >
-            {t('settings.locations.add')}
-          </Button>
-  
-  )
-        }
+        actions={headerActions}
       />
 
-      {/* Search and Stats */}
       <Card mb={6}>
         <CardBody>
-          <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
+          <Flex
+            justify="space-between"
+            align={{ base: 'stretch', md: 'center' }}
+            direction={{ base: 'column', md: 'row' }}
+            gap={4}
+          >
             <Box flex={1} maxW={{ base: 'full', md: '400px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Search size={16} color="gray.400" />
+                  <Icon as={Search} boxSize={4} color="gray.400" />
                 </InputLeftElement>
                 <Input
                   placeholder={t('settings.locations.searchPlaceholder')}
                   value={filterText}
-                  onChange={(e) => {
-                    setFilterText(e.target.value)
+                  onChange={(event) => {
+                    setFilterText(event.target.value)
                     setCurrentPage(1)
                   }}
                   borderRadius="md"
                 />
               </InputGroup>
             </Box>
+
             <HStack spacing={4} justify="flex-end">
-              <Badge
-                colorScheme="blue"
-                variant="subtle"
-                px={3}
-                py={1}
-                borderRadius="full"
-              >
+              <Badge colorScheme="blue" variant="subtle" px={3} py={1} borderRadius="full">
                 {t('settings.locations.stats.total', { count: locations?.length || 0 })}
               </Badge>
               <Text fontSize="sm" color="gray.500">
@@ -216,57 +228,51 @@ const LocationPage = () => {
         </CardBody>
       </Card>
 
-      {/* Table */}
       <Card>
         <CardBody p={0}>
           <Box overflowX="auto">
             <Table variant="simple" bg={tableBg}>
               <Thead bg={headerBg}>
                 <Tr>
-                  <Th scope="col" textAlign="center">#</Th>
-                  <Th scope="col">
+                  <Th textAlign="center">#</Th>
+                  <Th>
                     <HStack spacing={2}>
-                      <MapPin size={14} />
+                      <Icon as={MapPin} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.locationName')}</Text>
                     </HStack>
                   </Th>
-                  <Th scope="col">{t('settings.locations.table.address')}</Th>
-                  <Th scope="col">
+                  <Th>{t('settings.locations.table.address')}</Th>
+                  <Th>
                     <HStack spacing={2}>
-                      <Mail size={14} />
+                      <Icon as={Mail} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.email')}</Text>
                     </HStack>
                   </Th>
-                  <Th scope="col">
+                  <Th>
                     <HStack spacing={2}>
-                      <Globe size={14} />
+                      <Icon as={Globe} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.website')}</Text>
                     </HStack>
                   </Th>
-                  <Th scope="col" textAlign="center">{t('settings.locations.table.actions')}</Th>
+                  <Th textAlign="center">{t('settings.locations.table.actions')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredData?.length === 0 ? (
+                {filteredData.length === 0 ? (
                   <Tr>
                     <Td colSpan={6} textAlign="center" py={8}>
                       <VStack spacing={3} color="gray.500">
-                        <MapPin size={32} opacity={0.3} />
+                        <Icon as={MapPin} boxSize={8} opacity={0.3} aria-hidden="true" />
                         <Text>{t('settings.locations.empty.title')}</Text>
                         <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
                       </VStack>
                     </Td>
                   </Tr>
                 ) : (
-                  paginatedLocation?.map((location, index) => (
-                    <Tr key={location.id} _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}>
+                  paginatedLocation.map((location, index) => (
+                    <Tr key={location.id} _hover={{ bg: rowHoverBg }}>
                       <Td textAlign="center">
-                        <Badge
-                          variant="subtle"
-                          colorScheme="gray"
-                          borderRadius="full"
-                          fontSize="xs"
-                        >
+                        <Badge variant="subtle" colorScheme="gray" borderRadius="full" fontSize="xs">
                           {startIdx + index}
                         </Badge>
                       </Td>
@@ -291,7 +297,9 @@ const LocationPage = () => {
                             {location.email}
                           </Link>
                         ) : (
-                          <Text color="gray.400" fontSize="sm">{t('common.na')}</Text>
+                          <Text color="gray.400" fontSize="sm">
+                            {t('common.na')}
+                          </Text>
                         )}
                       </Td>
                       <Td>
@@ -309,11 +317,13 @@ const LocationPage = () => {
                           >
                             <HStack spacing={1}>
                               <Text>{location.website}</Text>
-                              <ExternalLink size={12} />
+                              <Icon as={ExternalLink} boxSize={3} aria-hidden="true" />
                             </HStack>
                           </Link>
                         ) : (
-                          <Text color="gray.400" fontSize="sm">{t('common.na')}</Text>
+                          <Text color="gray.400" fontSize="sm">
+                            {t('common.na')}
+                          </Text>
                         )}
                       </Td>
                       <Td textAlign="center">
@@ -328,7 +338,7 @@ const LocationPage = () => {
                             minW="44px"
                             h="44px"
                           >
-                            <Edit size={16} />
+                            <Icon as={Edit} boxSize={4} aria-hidden="true" />
                           </Button>
                           <Button
                             variant="outline"
@@ -341,7 +351,7 @@ const LocationPage = () => {
                             minW="44px"
                             h="44px"
                           >
-                            <Trash size={16} />
+                            <Icon as={Trash} boxSize={4} aria-hidden="true" />
                           </Button>
                         </HStack>
                       </Td>
@@ -352,9 +362,8 @@ const LocationPage = () => {
             </Table>
           </Box>
 
-          {/* Pagination */}
           {totalPages > 1 && (
-            <Box borderTop={1} borderColor="gray.200" p={4}>
+            <Box borderTopWidth="1px" borderColor={stickyBorder} p={4}>
               <Flex justify="space-between" align="center" wrap="wrap" gap={3}>
                 <Text fontSize="sm" color="gray.500">
                   {t('settings.locations.showingRange', {
@@ -373,7 +382,7 @@ const LocationPage = () => {
                   />
                 </Flex>
 
-                <Box minW="120px">
+                <Box minW="150px">
                   <Select
                     size="sm"
                     value={itemsPerPage}
@@ -393,21 +402,13 @@ const LocationPage = () => {
         </CardBody>
       </Card>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-        isCentered
-      >
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('common.confirm')}
             </AlertDialogHeader>
-            <AlertDialogBody>
-              {t('settings.locations.confirm.text')}
-            </AlertDialogBody>
+            <AlertDialogBody>{t('settings.locations.confirm.text')}</AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
                 {t('common.cancel')}
@@ -429,5 +430,4 @@ const LocationPage = () => {
   )
 }
 
-</Container>
 export default LocationPage

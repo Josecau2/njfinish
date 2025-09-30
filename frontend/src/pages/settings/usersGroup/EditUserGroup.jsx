@@ -1,35 +1,57 @@
+
 import { useEffect, useRef, useState } from 'react'
-import { FormControl, Input, FormLabel, Card, CardBody, Container, Flex, Box, Icon, Button, HStack, Text, Select, Switch, FormErrorMessage, InputGroup, InputLeftElement } from '@chakra-ui/react'
-import { User, Settings, ArrowLeft, Save, UserPlus, Users } from '@/icons-lucide'
-import { useDispatch, useSelector } from 'react-redux'
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Switch,
+  Text,
+} from '@chakra-ui/react'
+import { User, Settings, ArrowLeft, Save, Users } from '@/icons-lucide'
+import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
-import { updateUser, fetchSingleUser } from '../../../store/slices/userGroupSlice'
 import Swal from 'sweetalert2'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { getContrastColor } from '../../../utils/colorUtils'
 
-// External components to avoid re-creation on each render
-const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
-  <Card className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
-    <CardBody className="p-3 p-md-4">
-      <div className="d-flex align-items-center mb-3">
-        <div
-          className="rounded-circle d-flex align-items-center justify-content-center me-2 me-md-3"
-          style={{
-            width: '32px',
-            height: '32px',
-            backgroundColor: `${customization.headerBg || '#667eea'}20`,
-            color: customization.headerBg || '#667eea',
-          }}
+const FormSection = ({ title, icon, customization, children }) => (
+  <Card variant="outline" borderRadius="xl" shadow="sm">
+    <CardBody>
+      <HStack spacing={3} align="center" mb={4}>
+        <Flex
+          align="center"
+          justify="center"
+          w="32px"
+          h="32px"
+          borderRadius="full"
+          bg={`${(customization.headerBg || '#667eea')}20`}
+          color={customization.headerBg || '#667eea'}
         >
           <Icon as={icon} boxSize={4} />
-        </div>
-        <h6 className="mb-0 fw-semibold text-dark small">{title}</h6>
-      </div>
-      {children}
+        </Flex>
+        <Text fontWeight="semibold" color="gray.800">
+          {title}
+        </Text>
+      </HStack>
+      <Stack spacing={4}>{children}</Stack>
     </CardBody>
   </Card>
 )
@@ -47,14 +69,13 @@ const CustomFormInput = ({
   feedback,
   ...props
 }) => (
-  <div className="mb-3">
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
+  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
     </FormLabel>
     <InputGroup>
       {icon && (
-        <InputLeftElement>
+        <InputLeftElement pointerEvents="none">
           <Icon as={icon} boxSize={4} color="gray.500" />
         </InputLeftElement>
       )}
@@ -64,17 +85,15 @@ const CustomFormInput = ({
         type={type}
         value={value}
         onChange={onChange}
-        isInvalid={isInvalid}
         placeholder={placeholder}
-        borderColor={isInvalid ? 'red.500' : 'gray.300'}
-        borderRadius="8px"
-        fontSize="14px"
+        borderRadius="md"
+        fontSize="sm"
         minH="44px"
         {...props}
       />
     </InputGroup>
     {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-  </div>
+  </FormControl>
 )
 
 const initialForm = {
@@ -88,9 +107,15 @@ const initialForm = {
   },
 }
 
+const moduleDescriptionKeys = {
+  dashboard: 'settings.userGroups.moduleDescriptions.dashboard',
+  proposals: 'settings.userGroups.moduleDescriptions.proposals',
+  customers: 'settings.userGroups.moduleDescriptions.customers',
+  resources: 'settings.userGroups.moduleDescriptions.resources',
+}
+
 const EditUserGroupForm = () => {
   const { t } = useTranslation()
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const { id: rawId } = useParams()
   const id = decodeParam(rawId)
@@ -126,30 +151,30 @@ const EditUserGroupForm = () => {
     if (id) {
       fetchUserGroup()
     }
-  }, [id, navigate])
+  }, [id, navigate, t])
 
   const validate = () => {
     const newErrors = {}
-    if (!formData.name.trim())
+    if (!formData.name.trim()) {
       newErrors.name = t('settings.userGroups.form.validation.nameRequired')
+    }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+  const handleChange = (event) => {
+    const { name, value } = event.target
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }))
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     if (!validate()) return
 
     setLoading(true)
@@ -157,7 +182,7 @@ const EditUserGroupForm = () => {
       const response = await axiosInstance.put(`/api/usersgroups/${id}`, formData)
       if (response.data.status === 200) {
         Swal.fire(
-          t('common.success') + '!',
+          `${t('common.success')}!`,
           response.data.message || t('settings.userGroups.alerts.updated'),
           'success',
         )
@@ -174,259 +199,190 @@ const EditUserGroupForm = () => {
     }
   }
 
-  const isFormDirty = () => {
-    return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current)
+  const isFormDirty = () => JSON.stringify(formData) !== JSON.stringify(initialFormRef.current)
+
+  const handleCancel = () => {
+    if (isFormDirty()) {
+      Swal.fire({
+        title: t('common.confirm'),
+        text: t('settings.userGroups.alerts.leaveWarning'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
+        cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/settings/users')
+        }
+      })
+    } else {
+      navigate('/settings/users')
+    }
   }
 
   if (loadingData) {
     return (
-      <Container
-        fluid
-        className="p-1 p-md-2 m-0 m-md-2"
-        style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
-      >
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ minHeight: '400px' }}
-        >
-          <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">{t('common.loading')}</span>
-            </div>
-            <p className="mt-3 text-muted">{t('settings.userGroups.edit.loadingOne')}</p>
-          </div>
+      <Container maxW="4xl" py={12}>
+        <Flex direction="column" align="center" justify="center" minH="300px" gap={3}>
+          <Spinner size="lg" color={customization.headerBg ? undefined : 'blue.500'} thickness="4px" speed="0.7s" />
+          <Text color="gray.500">{t('settings.userGroups.edit.loadingOne')}</Text>
+        </Flex>
       </Container>
     )
-    </div>
-  
-  )
   }
 
   return (
-    <Container
-      fluid
-      className="p-1 p-md-2 m-0 m-md-2 user-group-edit"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
-    >
-      {/* UI-TASK: Scoped responsive/touch styles */}
-      <style>{`
-                            .user-group-edit .form-select, .user-group-edit .form-control { min-height: 44px; }
-                            .user-group-edit .btn { min-height: 44px; }
-                            @media (max-width: 576px) {
-                                .user-group-edit .form-check.form-switch { padding: .25rem 0; }
-    </div>
-    </div>
-  
-  )
-                            }
-                        `}</style>
-      {/* Header Section */}
+    <Container maxW="4xl" py={6}>
       <PageHeader
         title={t('settings.userGroups.edit.title')}
         subtitle={t('settings.userGroups.edit.subtitle')}
-        icon={cilUserFollow}
-        rightContent={
+        icon={Users}
+        actions={[
           <Button
-            status="light"
-            className="shadow-sm px-3 px-md-4 fw-semibold w-100 w-md-auto"
-            size="sm"
-            onClick={() => navigate('/settings/users')}
-            style={{
-              borderRadius: '25px',
-              border: 'none',
-              transition: 'all 0.3s ease',
-            }}
+            key="back"
+            variant="outline"
+            colorScheme="gray"
+            leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+            onClick={handleCancel}
+            minH="44px"
           >
-            <Icon as={ArrowLeft} className="me-2" />
             {t('common.back')}
-          </Button>
-        }
+          </Button>,
+        ]}
       />
 
-      <FormControl onSubmit={handleSubmit}>
-        {/* Group Information Section */}
-        <FormSection
-          title={t('settings.userGroups.form.titles.groupInfo')}
-          icon={cilGroup}
-          customization={customization}
-        >
-          <Flex>
-            <Box xs={12} md={8} lg={6}>
+      <Box as="form" onSubmit={handleSubmit} className="user-group-edit">
+        <Stack spacing={6}>
+          <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={Users} customization={customization}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <CustomFormInput
                 label={t('settings.userGroups.form.labels.name')}
                 name="name"
                 required
-                icon={cilGroup}
+                icon={User}
                 placeholder={t('settings.userGroups.form.placeholders.name')}
                 value={formData.name}
                 onChange={handleChange}
                 isInvalid={!!errors.name}
                 feedback={errors.name}
               />
-            </Box>
-            <Box xs={12} md={4} lg={6}>
-              <div className="mb-3">
-                <FormLabel className="fw-medium text-dark mb-2 small">
+
+              <FormControl isRequired mb={4}>
+                <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
                   {t('settings.userGroups.form.labels.type')}
-                  <span className="text-danger ms-1">*</span>
                 </FormLabel>
-                <select
+                <Select
                   name="group_type"
                   value={formData.group_type}
                   onChange={handleChange}
-                  className="form-select"
-                  style={{
-                    border: '1px solid #e3e6f0',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    padding: '12px 16px',
-                  }}
+                  borderRadius="md"
+                  minH="44px"
+                  fontSize="sm"
                 >
                   <option value="standard">{t('settings.userGroups.types.standard')}</option>
                   <option value="contractor">{t('settings.userGroups.types.contractor')}</option>
-                </select>
-              </div>
-            </Box>
-          </Flex>
-        </FormSection>
+                </Select>
+              </FormControl>
+            </SimpleGrid>
+          </FormSection>
 
-        {/* Module Permissions Section - Only for Contractor Groups */}
-        {formData.group_type === 'contractor' && (
-          <FormSection
-            title={t('settings.userGroups.form.titles.modulePermissions')}
-            icon={cilSettings}
-            customization={customization}
-          >
-            <div className="mb-4">
-              <div
-                className="d-flex align-items-start p-3 rounded-3"
-                style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d7ff' }}
-              >
-                <div
-                  className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: customization.headerBg || '#667eea',
-                    color: getContrastColor(customization.headerBg || '#667eea'),
-                  }}
-                >
-                  <Icon as={Settings} size="sm" />
-                </div>
-                <div>
-                  <div className="fw-semibold text-dark small mb-1">
-                    {t('settings.userGroups.moduleAccess.title')}
-                  </div>
-                  <div className="text-muted" style={{ fontSize: '12px', lineHeight: '1.4' }}>
-                    {t('settings.userGroups.moduleAccess.description')}
-                  </div>
-              </div>
+          {formData.group_type === 'contractor' && (
+            <FormSection
+              title={t('settings.userGroups.form.titles.modulePermissions')}
+              icon={Settings}
+              customization={customization}
+            >
+              <Box borderRadius="lg" bg="blue.50" borderWidth="1px" borderColor="blue.100" p={4}>
+                <HStack align="flex-start" spacing={3}>
+                  <Flex
+                    align="center"
+                    justify="center"
+                    w="32px"
+                    h="32px"
+                    borderRadius="full"
+                    bg={customization.headerBg || '#667eea'}
+                    color={getContrastColor(customization.headerBg || '#667eea')}
+                  >
+                    <Icon as={Settings} boxSize={4} />
+                  </Flex>
+                  <Box>
+                    <Text fontWeight="semibold" fontSize="sm" color="gray.800">
+                      {t('settings.userGroups.moduleAccess.title')}
+                    </Text>
+                    <Text fontSize="xs" color="gray.600">
+                      {t('settings.userGroups.moduleAccess.description')}
+                    </Text>
+                  </Box>
+                </HStack>
+              </Box>
 
-            <Flex>
-              {Object.entries(formData.modules).map(([module, enabled]) => (
-                <Box xs={12} sm={6} md={3} key={module} className="mb-3">
-                  <div className="form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} pt={2}>
+                {Object.entries(formData.modules).map(([module, enabled]) => (
+                  <FormControl key={module} display="flex" alignItems="flex-start" gap={3}>
+                    <Switch
                       id={`module-${module}`}
                       name={`modules.${module}`}
-                      checked={enabled}
-                      onChange={(e) => {
+                      isChecked={enabled}
+                      onChange={(event) => {
+                        const { checked } = event.target
                         setFormData((prev) => ({
                           ...prev,
                           modules: {
                             ...prev.modules,
-                            [module]: e.target.checked,
+                            [module]: checked,
                           },
                         }))
                       }}
-                      style={{
-                        width: '3rem',
-                        height: '1.5rem',
-                      }}
+                      colorScheme="blue"
+                      size="lg"
                     />
-                    <label className="form-check-label fw-medium" htmlFor={`module-${module}`}>
-                      {module.charAt(0).toUpperCase() + module.slice(1)}
-                    </label>
-                  </div>
-                  <small className="text-muted d-block mt-1">
-                    {module === 'dashboard' &&
-                      t('settings.userGroups.moduleDescriptions.dashboard')}
-                    {module === 'proposals' &&
-                      t('settings.userGroups.moduleDescriptions.proposals')}
-                    {module === 'customers' &&
-                      t('settings.userGroups.moduleDescriptions.customers')}
-                    {module === 'resources' &&
-                      t('settings.userGroups.moduleDescriptions.resources')}
-                  </small>
-                </Box>
-              ))}
-            </Flex>
-          </FormSection>
-        )}
+                    <Box>
+                      <FormLabel htmlFor={`module-${module}`} mb={1} fontSize="sm" fontWeight="semibold">
+                        {module.charAt(0).toUpperCase() + module.slice(1)}
+                      </FormLabel>
+                      <Text fontSize="xs" color="gray.600">
+                        {t(moduleDescriptionKeys[module])}
+                      </Text>
+                    </Box>
+                  </FormControl>
+                ))}
+              </SimpleGrid>
+            </FormSection>
+          )}
 
-        {/* Action Buttons */}
-        <Card className="border-0 shadow-sm">
-          <CardBody className="p-3 p-md-4">
-            <div className="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-end">
-              <Button
-                type="button"
-                status="light"
-                size="md"
-                className="px-3 px-md-4 fw-semibold order-2 order-md-1"
-                onClick={() => {
-                  if (isFormDirty()) {
-                    Swal.fire({
-                      title: t('common.confirm'),
-                      text: t('settings.userGroups.alerts.leaveWarning'),
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
-                      cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
-                      confirmButtonColor: '#d33',
-                      cancelButtonColor: '#6c757d',
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        navigate('/settings/users')
-                      }
-                    })
-                  } else {
-                    navigate('/settings/users')
-                  }
-                }}
-                style={{
-                  borderRadius: '25px',
-                  border: '1px solid #e3e6f0',
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <Icon as={ArrowLeft} className="me-2" />
-                {t('common.cancel')}
-              </Button>
-              <Button
-                type="submit"
-                colorScheme="blue"
-                size="md"
-                isLoading={loading}
-                className="px-4 px-md-5 fw-semibold order-1 order-md-2"
-                style={{
-                  borderRadius: '25px',
-                  border: 'none',
-                  background: customization.headerBg || '#667eea',
-                  color: getContrastColor(customization.headerBg || '#667eea'),
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <Icon as={Save} className="me-2" />
-                {loading
-                  ? t('settings.userGroups.edit.updating')
-                  : t('settings.userGroups.edit.update')}
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      </FormControl>
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={3} justify="flex-end">
+                <Button
+                  variant="outline"
+                  colorScheme="gray"
+                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                  onClick={handleCancel}
+                  minH="44px"
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  minH="44px"
+                  isLoading={loading}
+                  leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+                  bg={customization.headerBg || undefined}
+                  _hover={customization.headerBg ? { opacity: 0.9 } : undefined}
+                  color={customization.headerBg ? getContrastColor(customization.headerBg) : undefined}
+                >
+                  {loading
+                    ? t('settings.userGroups.edit.updating')
+                    : t('settings.userGroups.edit.update')}
+                </Button>
+              </Stack>
+            </CardBody>
+          </Card>
+        </Stack>
+      </Box>
     </Container>
   )
 }

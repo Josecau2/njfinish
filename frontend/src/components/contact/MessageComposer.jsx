@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, CardBody, FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react'
+import { Card, CardBody, FormControl, FormLabel, Input, Textarea, Button } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -30,16 +30,16 @@ const MessageComposer = ({ onSend }) => {
           subtitle={t('contact.compose.subtitle')}
           mobileLayout="compact"
         />
-        <FormControl onSubmit={submit} className="mt-2">
-          <div className="mb-2">
+        <form onSubmit={submit} className="mt-2">
+          <FormControl mb={2}>
             <FormLabel>{t('contact.compose.subject')}</FormLabel>
             <Input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder={t('contact.compose.subjectPh')}
             />
-          </div>
-          <div className="mb-2">
+          </FormControl>
+          <FormControl mb={2}>
             <FormLabel>{t('contact.compose.message')}</FormLabel>
             <Textarea
               rows={5}
@@ -47,11 +47,11 @@ const MessageComposer = ({ onSend }) => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t('contact.compose.messagePh')}
             />
-          </div>
-          <CButton type="submit" colorScheme="blue">
+          </FormControl>
+          <Button type="submit" colorScheme="blue" isLoading={sending}>
             {sending ? t('contact.compose.sending') : t('contact.compose.send')}
-          </CButton>
-        </FormControl>
+          </Button>
+        </form>
       </CardBody>
     </Card>
   

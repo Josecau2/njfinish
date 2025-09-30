@@ -1,6 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FormControl, Input, FormLabel, Card, CardBody, CardHeader, Container, Flex, Box, Select, Spinner, Button, FormErrorMessage } from '@chakra-ui/react'
+import {
+  FormControl,
+  Input,
+  FormLabel,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Box,
+  Select,
+  Spinner,
+  Button,
+  FormErrorMessage,
+  SimpleGrid,
+} from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserById, updateUser } from '../../store/slices/userSlice'
 import Swal from 'sweetalert2'
@@ -125,25 +139,27 @@ const ProfilePage = () => {
     }
   }
 
+  const accentColor = customization?.headerBg || '#321fdb'
+  const accentTextColor = getContrastColor(accentColor)
+
   // Show loader while initial data is loading
   if (isLoading) {
     return (
-      <div className="profile-container" role="status" aria-live="polite">
+      <Box className="profile-container" role="status" aria-live="polite">
         <Card className="profile-card">
           <CardBody
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '400px' }}
           >
-            <Spinner colorScheme="blue" size="lg" />
+            <Spinner color={accentColor} size="lg" />
           </CardBody>
         </Card>
-      </div>
-  
-  )
+      </Box>
+    )
   }
 
   return (
-    <div className="profile-container">
+    <Box className="profile-container">
       <style>{`
         .profile-form input, .profile-form select, .profile-form button { min-height:44px; }
         @media (max-width: 576px) {
@@ -155,9 +171,9 @@ const ProfilePage = () => {
           <h4 className="mb-0">{t('profile.header')}</h4>
         </CardHeader>
         <CardBody>
-          <FormControl onSubmit={handleSubmit} className="profile-form">
-            <Flex className="gy-4">
-              <Box xs={12} md={6}>
+          <Box as="form" onSubmit={handleSubmit} className="profile-form">
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+              <FormControl isRequired isInvalid={!!errors.name}>
                 <FormLabel htmlFor="name">
                   {t('profile.fullName')}
                   <span style={{ color: 'red', marginLeft: '4px' }}>*</span>
@@ -167,27 +183,27 @@ const ProfilePage = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  invalid={!!errors.name}
                   aria-required="true"
                   aria-invalid={!!errors.name}
                   placeholder={t('profile.enterName')}
                 />
-                {errors.name && <FormErrorMessage>{errors.name}</FormErrorMessage>}
-              </Box>
+                <FormErrorMessage>{errors.name}</FormErrorMessage>
+              </FormControl>
 
-              <Box xs={12} md={6}>
+              <FormControl>
                 <FormLabel htmlFor="email">{t('auth.email')}</FormLabel>
                 <Input
                   id="email"
                   name="email"
                   value={formData.email}
-                  disabled
-                  style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }}
+                  isReadOnly
+                  bg="#e9ecef"
+                  cursor="not-allowed"
                   aria-readonly="true"
                 />
-              </Box>
+              </FormControl>
 
-              <Box xs={12} md={6}>
+              <FormControl>
                 <FormLabel htmlFor="password">{t('profile.newPassword')}</FormLabel>
                 <Input
                   id="password"
@@ -197,9 +213,9 @@ const ProfilePage = () => {
                   onChange={handleChange}
                   placeholder={t('profile.leaveBlank')}
                 />
-              </Box>
+              </FormControl>
 
-              <Box xs={12} md={6}>
+              <FormControl isInvalid={!!errors.confirmPassword}>
                 <FormLabel htmlFor="confirmPassword">{t('profile.confirmPassword')}</FormLabel>
                 <Input
                   id="confirmPassword"
@@ -207,15 +223,14 @@ const ProfilePage = () => {
                   type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  invalid={!!errors.confirmPassword}
                   aria-invalid={!!errors.confirmPassword}
                   placeholder={t('profile.reenterPassword')}
                 />
-                {errors.confirmPassword && <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>}
-              </Box>
+                <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
+              </FormControl>
 
               {!isContractor && (
-                <Box xs={12} md={6}>
+                <FormControl isRequired isInvalid={!!errors.location}>
                   <FormLabel htmlFor="location">
                     {t('profile.location')}
                     <span style={{ color: 'red', marginLeft: '4px' }}>*</span>
@@ -225,46 +240,43 @@ const ProfilePage = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
-                    invalid={!!errors.location}
                     aria-required="true"
+                    placeholder={`-- ${t('profile.selectLocation')} --`}
                   >
-                    <option value="">-- {t('profile.selectLocation')} --</option>
-                    {locations.map((loc) => (
+                    {(locations || []).map((loc) => (
                       <option key={loc.id} value={loc.id}>
                         {loc.locationName}
                       </option>
                     ))}
                   </Select>
-                  {errors.location && <FormErrorMessage>{errors.location}</FormErrorMessage>}
-                </Box>
+                  <FormErrorMessage>{errors.location}</FormErrorMessage>
+                </FormControl>
               )}
-            </Flex>
+            </SimpleGrid>
 
-            <div className="d-flex justify-content-center justify-content-md-end mt-4">
+            <Flex justify={{ base: 'center', md: 'flex-end' }} mt={6}>
               <Button
                 type="submit"
-                className="px-4"
-                disabled={submitting}
-                style={{
-                  backgroundColor: customization?.headerBg || '#321fdb',
-                  borderColor: customization?.headerBg || '#321fdb',
-                  color: getContrastColor(customization?.headerBg || '#321fdb'),
-                  border: 'none',
-                }}
+                px={4}
+                isDisabled={submitting}
+                bg={accentColor}
+                color={accentTextColor}
+                border="none"
+                _hover={{ bg: accentColor }}
               >
                 {submitting ? (
                   <>
-                    <Spinner size="sm" className="me-2" /> {t('profile.saving')}
+                    <Spinner size="sm" mr={2} color={accentTextColor} /> {t('profile.saving')}
                   </>
                 ) : (
                   t('profile.updateProfile')
                 )}
               </Button>
-            </div>
-          </FormControl>
+            </Flex>
+          </Box>
         </CardBody>
       </Card>
-    </div>
+    </Box>
   )
 }
 

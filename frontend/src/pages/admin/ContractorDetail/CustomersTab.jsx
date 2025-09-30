@@ -1,7 +1,31 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Flex, Box, Card, CardBody, CardHeader, Badge, Input, Spinner, Alert, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
+import {
+  Alert,
+  Badge,
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react'
 import {
   Search,
   Users,
@@ -166,344 +190,360 @@ const CustomersTab = ({ contractor, groupId }) => {
     return filteredAndSortedCustomers.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredAndSortedCustomers, currentPage, itemsPerPage])
 
-  const totalPages = Math.ceil(filteredAndSortedCustomers.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredAndSortedCustomers.length / itemsPerPage) || 1
+
+  const stats = useMemo(() => {
+    const list = Array.isArray(customers) ? customers : []
+    const active = list.filter((customer) => !customer.deleted_at).length
+    const withEmail = list.filter((customer) => !!customer.email).length
+    const withPhone = list.filter((customer) => !!customer.phone).length
+
+    return {
+      total: list.length,
+      active,
+      withEmail,
+      withPhone,
+    }
+  }, [customers])
+
+  const effectiveTotalPages = pagination?.totalPages || totalPages
 
   if (loading) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: '200px' }}
-      >
-        <Spinner colorScheme="blue" />
-      </div>
-  
-  )
+      <Flex align="center" justify="center" minH="200px">
+        <Spinner size="lg" color="brand.500" />
+      </Flex>
+    )
   }
 
+  const statCards = [
+    {
+      label: t('contractorsAdmin.detail.customers.stats.total'),
+      value: stats.total,
+      accent: 'brand.500',
+    },
+    {
+      label: t('contractorsAdmin.detail.customers.stats.active'),
+      value: stats.active,
+      accent: 'green.500',
+    },
+    {
+      label: t('contractorsAdmin.detail.customers.stats.withEmail'),
+      value: stats.withEmail,
+      accent: 'orange.500',
+    },
+    {
+      label: t('contractorsAdmin.detail.customers.stats.withPhone'),
+      value: stats.withPhone,
+      accent: 'purple.500',
+    },
+  ]
+
   return (
-    <Flex>
-      <Box xs={12}>
-        <Card>
-          <CardHeader>
-            <strong>
-              <Users size={16} className="me-2" aria-hidden="true" />
+    <Flex direction="column" gap={6}>
+      <Card>
+        <CardHeader borderBottomWidth="1px">
+          <Flex align="center" gap={2}>
+            <Icon as={Users} boxSize={5} color="gray.500" aria-hidden="true" />
+            <Heading size="sm">
               {t('contractorsAdmin.detail.customers.header', {
                 count: filteredAndSortedCustomers.length,
               })}
-            </strong>
-          </CardHeader>
-          <CardBody>
+            </Heading>
+          </Flex>
+        </CardHeader>
+        <CardBody>
+          <Stack spacing={6}>
             {error && (
-              <Alert status="error" className="mb-3">
-                {typeof error === 'string' ? error : 'Something went wrong'}
+              <Alert status="error" variant="left-accent">
+                {typeof error === 'string' ? error : t('common.genericError', 'Something went wrong')}
               </Alert>
             )}
 
-            {/* Search */}
-            <Flex className="mb-4">
-              <Box md={6}>
-                <CInputGroup>
-                  <CInputGroupText aria-hidden="true">
-                    <Search size={16} />
-                  </CInputGroupText>
-                  <Input
-                    type="text"
-                    placeholder={t('contractorsAdmin.detail.customers.searchPlaceholder')}
-                    aria-label={t(
-                      'contractorsAdmin.detail.customers.searchAria',
-                      'Search contractor customers',
-                    )}
-                    value={searchTerm}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                  />
-                </CInputGroup>
-              </Box>
-              <Box md={6} className="d-flex justify-content-end align-items-center">
-                <div className="text-muted">
-                  <small>
-                    {t('contractorsAdmin.detail.customers.showing', {
-                      count: paginatedCustomers.length,
-                      total: filteredAndSortedCustomers.length,
-                    })}
-                  </small>
-                </div>
-              </Box>
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              justify="space-between"
+              align={{ base: 'stretch', md: 'center' }}
+              gap={4}
+            >
+              <InputGroup maxW={{ base: '100%', md: '320px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} boxSize={4} color="gray.400" aria-hidden="true" />
+                </InputLeftElement>
+                <Input
+                  type="text"
+                  placeholder={t('contractorsAdmin.detail.customers.searchPlaceholder')}
+                  aria-label={t(
+                    'contractorsAdmin.detail.customers.searchAria',
+                    'Search contractor customers',
+                  )}
+                  value={searchTerm}
+                  onChange={(event) => handleSearchChange(event.target.value)}
+                />
+              </InputGroup>
+
+              <Text fontSize="sm" color="gray.600">
+                {t('contractorsAdmin.detail.customers.showing', {
+                  count: paginatedCustomers.length,
+                  total: filteredAndSortedCustomers.length,
+                })}
+              </Text>
             </Flex>
 
-            {/* Stats Row */}
-            <Flex className="mb-4">
-              <Box sm={6} lg={3}>
-                <div className="border-start border-start-4 border-start-info py-1 px-3">
-                  <div className="text-muted small">
-                    {t('contractorsAdmin.detail.customers.stats.total')}
-                  </div>
-                  <div className="fs-5 fw-semibold">{customers.length}</div>
-              </Box>
-              <Box sm={6} lg={3}>
-                <div className="border-start border-start-4 border-start-success py-1 px-3">
-                  <div className="text-muted small">
-                    {t('contractorsAdmin.detail.customers.stats.active')}
-                  </div>
-                  <div className="fs-5 fw-semibold">
-                    {customers.filter((c) => !c.deleted_at).length}
-                  </div>
-              </Box>
-              <Box sm={6} lg={3}>
-                <div className="border-start border-start-4 border-start-warning py-1 px-3">
-                  <div className="text-muted small">
-                    {t('contractorsAdmin.detail.customers.stats.withEmail')}
-                  </div>
-                  <div className="fs-5 fw-semibold">{customers.filter((c) => c.email).length}</div>
-              </Box>
-              <Box sm={6} lg={3}>
-                <div className="border-start border-start-4 border-start-primary py-1 px-3">
-                  <div className="text-muted small">
-                    {t('contractorsAdmin.detail.customers.stats.withPhone')}
-                  </div>
-                  <div className="fs-5 fw-semibold">{customers.filter((c) => c.phone).length}</div>
-              </Box>
-            </Flex>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gap={4}>
+              {statCards.map((card) => (
+                <Box
+                  key={card.label}
+                  borderLeftWidth="4px"
+                  borderLeftColor={card.accent}
+                  bg="gray.50"
+                  borderRadius="md"
+                  px={4}
+                  py={3}
+                >
+                  <Text fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="wide">
+                    {card.label}
+                  </Text>
+                  <Text fontSize="lg" fontWeight="semibold">
+                    {card.value}
+                  </Text>
+                </Box>
+              ))}
+            </SimpleGrid>
 
-            {/* Desktop Table */}
-            <div className="table-wrap d-none d-md-block">
-              <TableContainer>
-                <Table variant="striped" className="table-modern">
+            <Box display={{ base: 'none', md: 'block' }}>
+              <TableContainer borderWidth="1px" borderColor="gray.100" borderRadius="lg">
+                <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
-                    <Th
-                      scope="col"
-                      className="cursor-pointer"
-                      onClick={() => handleSort('name')}
-                    >
-                      {t('customers.name')}
-                      {sortConfig.key === 'name' &&
-                        (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
-                        ))}
-                    </Th>
-                    <Th
-                      scope="col"
-                      className="cursor-pointer"
-                      onClick={() => handleSort('email')}
-                    >
-                      {t('customers.email')}
-                      {sortConfig.key === 'email' &&
-                        (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
-                        ))}
-                    </Th>
-                    <Th scope="col">
-                      {t('contractorsAdmin.detail.customers.table.phone')}
-                    </Th>
-                    <Th scope="col">
-                      {t('contractorsAdmin.detail.customers.table.address')}
-                    </Th>
-                    <Th
-                      scope="col"
-                      className="cursor-pointer"
-                      onClick={() => handleSort('created_at')}
-                    >
-                      {t('contractorsAdmin.detail.customers.table.created')}
-                      {sortConfig.key === 'created_at' &&
-                        (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
-                        ))}
-                    </Th>
-                    <Th scope="col">
-                      {t('contractorsAdmin.detail.customers.table.status')}
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {paginatedCustomers.length === 0 ? (
-                    <Tr>
-                      <Td colSpan="6">
-                        <EmptyState
-                          title={t('contractorsAdmin.detail.customers.empty.title')}
-                          subtitle={t('contractorsAdmin.detail.customers.empty.subtitle')}
-                        />
-                      </Td>
+                      <Th cursor="pointer" onClick={() => handleSort('name')}>
+                        <Flex align="center" gap={2}>
+                          <Text>{t('customers.name')}</Text>
+                          {sortConfig.key === 'name' && (
+                            <Icon
+                              as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
+                              boxSize={4}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </Flex>
+                      </Th>
+                      <Th cursor="pointer" onClick={() => handleSort('email')}>
+                        <Flex align="center" gap={2}>
+                          <Text>{t('customers.email')}</Text>
+                          {sortConfig.key === 'email' && (
+                            <Icon
+                              as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
+                              boxSize={4}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </Flex>
+                      </Th>
+                      <Th>{t('contractorsAdmin.detail.customers.table.phone')}</Th>
+                      <Th>{t('contractorsAdmin.detail.customers.table.address')}</Th>
+                      <Th cursor="pointer" onClick={() => handleSort('created_at')}>
+                        <Flex align="center" gap={2}>
+                          <Text>{t('contractorsAdmin.detail.customers.table.created')}</Text>
+                          {sortConfig.key === 'created_at' && (
+                            <Icon
+                              as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
+                              boxSize={4}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </Flex>
+                      </Th>
+                      <Th>{t('contractorsAdmin.detail.customers.table.status')}</Th>
                     </Tr>
-                  ) : (
-                    paginatedCustomers.map((customer) => (
-                      <Tr key={customer.id} className="align-middle">
-                        <Td>
-                          <div className="d-flex align-items-center">
-                            <User size={16} className="me-2 text-muted" aria-hidden="true" />
-                            <div>
-                              <div className="fw-semibold">{customer.name}</div>
-                              <small className="text-muted">ID: {customer.id}</small>
-                            </div>
-                        </Td>
-                        <Td>
-                          {customer.email ? (
-                            <div className="d-flex align-items-center">
-                              <Mail size={14} className="me-1 text-muted" aria-hidden="true" />
-                              <span>{customer.email}</span>
-                            </div>
-                          ) : (
-                            <small className="text-muted">
-                              {t('contractorsAdmin.detail.customers.noEmail')}
-                            </small>
-                          )}
-                        </Td>
-                        <Td>
-                          {customer.phone ? (
-                            <div className="d-flex align-items-center">
-                              <Phone size={14} className="me-1 text-muted" aria-hidden="true" />
-                              <span>{formatPhone(customer.phone)}</span>
-                            </div>
-                          ) : (
-                            <small className="text-muted">
-                              {t('contractorsAdmin.detail.customers.noPhone')}
-                            </small>
-                          )}
-                        </Td>
-                        <Td>
-                          {formatAddress(customer) ? (
-                            <div className="d-flex align-items-center">
-                              <MapPin size={14} className="me-1 text-muted" aria-hidden="true" />
-                              <small>{formatAddress(customer)}</small>
-                            </div>
-                          ) : (
-                            <small className="text-muted">
-                              {t('contractorsAdmin.detail.customers.noAddress')}
-                            </small>
-                          )}
-                        </Td>
-                        <Td>
-                          <small className="text-muted">
-                            <Calendar size={14} className="me-1" aria-hidden="true" />
-                            {formatDate(customer.created_at)}
-                          </small>
-                        </Td>
-                        <Td>
-                          <Badge color={customer.deleted_at ? 'danger' : 'success'}>
-                            {customer.deleted_at
-                              ? t('contractorsAdmin.detail.customers.inactive')
-                              : t('contractorsAdmin.detail.customers.active')}
-                          </Badge>
+                  </Thead>
+                  <Tbody>
+                    {paginatedCustomers.length === 0 ? (
+                      <Tr>
+                        <Td colSpan={6}>
+                          <EmptyState
+                            title={t('contractorsAdmin.detail.customers.empty.title')}
+                            subtitle={t('contractorsAdmin.detail.customers.empty.subtitle')}
+                          />
                         </Td>
                       </Tr>
-                    ))
-                  )}
-                </Tbody>
-              </Table>
+                    ) : (
+                      paginatedCustomers.map((customer) => (
+                        <Tr key={customer.id}>
+                          <Td>
+                            <Flex align="center" gap={3}>
+                              <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
+                              <Box>
+                                <Text fontWeight="semibold">{customer.name}</Text>
+                                <Text fontSize="xs" color="gray.500">
+                                  ID: {customer.id}
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </Td>
+                          <Td>
+                            {customer.email ? (
+                              <Flex align="center" gap={2}>
+                                <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
+                                <Text>{customer.email}</Text>
+                              </Flex>
+                            ) : (
+                              <Text fontSize="sm" color="gray.500">
+                                {t('contractorsAdmin.detail.customers.noEmail')}
+                              </Text>
+                            )}
+                          </Td>
+                          <Td>
+                            {customer.phone ? (
+                              <Flex align="center" gap={2}>
+                                <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
+                                <Text>{formatPhone(customer.phone)}</Text>
+                              </Flex>
+                            ) : (
+                              <Text fontSize="sm" color="gray.500">
+                                {t('contractorsAdmin.detail.customers.noPhone', 'No phone')}
+                              </Text>
+                            )}
+                          </Td>
+                          <Td>
+                            {formatAddress(customer) ? (
+                              <Flex align="center" gap={2} alignItems="flex-start">
+                                <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
+                                <Text>{formatAddress(customer)}</Text>
+                              </Flex>
+                            ) : (
+                              <Text fontSize="sm" color="gray.500">
+                                {t('contractorsAdmin.detail.customers.noAddress', 'No address on file')}
+                              </Text>
+                            )}
+                          </Td>
+                          <Td>
+                            <Flex align="center" gap={2}>
+                              <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
+                              <Text>{formatDate(customer.created_at)}</Text>
+                            </Flex>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={customer.deleted_at ? 'red' : 'green'}>
+                              {customer.deleted_at
+                                ? t('contractorsAdmin.detail.customers.inactive')
+                                : t('contractorsAdmin.detail.customers.active')}
+                            </Badge>
+                          </Td>
+                        </Tr>
+                      ))
+                    )}
+                  </Tbody>
+                </Table>
               </TableContainer>
-            </div>
+            </Box>
 
-            {/* Mobile Card Layout */}
-            <div className="d-md-none">
+            <Box display={{ base: 'block', md: 'none' }}>
               {paginatedCustomers.length === 0 ? (
                 <EmptyState
                   title={t('contractorsAdmin.detail.customers.empty.title')}
                   subtitle={t('contractorsAdmin.detail.customers.empty.subtitle')}
                 />
               ) : (
-                <div className="mobile-customer-cards">
+                <Stack spacing={4}>
                   {paginatedCustomers.map((customer) => (
-                    <Card key={customer.id} className="mb-3 customer-mobile-card">
-                      <CardBody className="p-3">
-                        {/* Header */}
-                        <div className="d-flex justify-content-between align-items-start mb-3">
-                          <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                            <User size={20} className="me-2 text-muted" aria-hidden="true" />
-                            <div className="flex-grow-1 min-width-0">
-                              <div className="fw-semibold text-truncate" title={customer.name}>
-                                {customer.name}
-                              </div>
-                              <small className="text-muted">ID: {customer.id}</small>
-                            </div>
-                          <Badge color={customer.deleted_at ? 'danger' : 'success'}>
-                            {customer.deleted_at
-                              ? t('contractorsAdmin.detail.customers.inactive')
-                              : t('contractorsAdmin.detail.customers.active')}
-                          </Badge>
-                        </div>
+                    <Card key={customer.id} variant="outline">
+                      <CardBody>
+                        <Stack spacing={4}>
+                          <Flex justify="space-between" align="flex-start" gap={3}>
+                            <Flex align="center" gap={2} minW={0}>
+                              <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
+                              <Box minW={0}>
+                                <Text fontWeight="semibold" noOfLines={1}>
+                                  {customer.name}
+                                </Text>
+                                <Text fontSize="xs" color="gray.500">
+                                  ID: {customer.id}
+                                </Text>
+                              </Box>
+                            </Flex>
+                            <Badge colorScheme={customer.deleted_at ? 'red' : 'green'}>
+                              {customer.deleted_at
+                                ? t('contractorsAdmin.detail.customers.inactive')
+                                : t('contractorsAdmin.detail.customers.active')}
+                            </Badge>
+                          </Flex>
 
-                        {/* Contact Info */}
-                        <div className="row g-2 mb-3">
-                          <div className="col-12">
-                            <div className="small text-muted">{t('customers.email')}</div>
-                            {customer.email ? (
-                              <div className="d-flex align-items-center">
-                                <Mail size={14} className="me-1 text-muted" aria-hidden="true" />
-                                <span className="text-truncate-mobile" title={customer.email}>
-                                  {customer.email}
-                                </span>
-                              </div>
-                            ) : (
-                              <small className="text-muted">
-                                {t('contractorsAdmin.detail.customers.noEmail')}
-                              </small>
-                            )}
-                          </div>
-                          <div className="col-6">
-                            <div className="small text-muted">
-                              {t('contractorsAdmin.detail.customers.table.phone')}
-                            </div>
-                            {customer.phone ? (
-                              <div className="d-flex align-items-center">
-                                <Phone size={14} className="me-1 text-muted" aria-hidden="true" />
-                                <span>{formatPhone(customer.phone)}</span>
-                              </div>
-                            ) : (
-                              <small className="text-muted">No phone</small>
-                            )}
-                          </div>
-                          <div className="col-6">
-                            <div className="small text-muted">
-                              {t('contractorsAdmin.detail.customers.table.created')}
-                            </div>
-                            <small>
-                              <Calendar size={14} className="me-1" aria-hidden="true" />
-                              {formatDate(customer.created_at)}
-                            </small>
-                          </div>
+                          <Stack spacing={2} fontSize="sm">
+                            <Box>
+                              <Text color="gray.500">{t('customers.email')}</Text>
+                              {customer.email ? (
+                                <Flex align="center" gap={2}>
+                                  <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
+                                  <Text noOfLines={1}>{customer.email}</Text>
+                                </Flex>
+                              ) : (
+                                <Text color="gray.500">
+                                  {t('contractorsAdmin.detail.customers.noEmail')}
+                                </Text>
+                              )}
+                            </Box>
 
-                        {/* Address */}
-                        {formatAddress(customer) && (
-                          <div className="mb-2">
-                            <div className="small text-muted">
-                              {t('contractorsAdmin.detail.customers.table.address')}
-                            </div>
-                            <div className="d-flex align-items-start">
-                              <MapPin
-                                size={14}
-                                className="me-1 text-muted mt-1"
-                                aria-hidden="true"
-                              />
-                              <small className="flex-grow-1">{formatAddress(customer)}</small>
-                            </div>
-                          </div>
-                        )}
+                            <Flex gap={4}>
+                              <Box flex={1}>
+                                <Text color="gray.500">
+                                  {t('contractorsAdmin.detail.customers.table.phone')}
+                                </Text>
+                                {customer.phone ? (
+                                  <Flex align="center" gap={2}>
+                                    <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
+                                    <Text>{formatPhone(customer.phone)}</Text>
+                                  </Flex>
+                                ) : (
+                                  <Text color="gray.500">
+                                    {t('contractorsAdmin.detail.customers.noPhone', 'No phone')}
+                                  </Text>
+                                )}
+                              </Box>
+                              <Box flex={1}>
+                                <Text color="gray.500">
+                                  {t('contractorsAdmin.detail.customers.table.created')}
+                                </Text>
+                                <Flex align="center" gap={2}>
+                                  <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
+                                  <Text>{formatDate(customer.created_at)}</Text>
+                                </Flex>
+                              </Box>
+                            </Flex>
+
+                            {formatAddress(customer) && (
+                              <Box>
+                                <Text color="gray.500">
+                                  {t('contractorsAdmin.detail.customers.table.address')}
+                                </Text>
+                                <Flex align="flex-start" gap={2}>
+                                  <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
+                                  <Text>{formatAddress(customer)}</Text>
+                                </Flex>
+                              </Box>
+                            )}
+                          </Stack>
+                        </Stack>
                       </CardBody>
                     </Card>
                   ))}
-                </div>
+                </Stack>
               )}
-            </div>
+            </Box>
 
-            {/* Pagination */}
-            {pagination?.totalPages > 1 && (
-              <div className="pt-3 border-top border-light">
+            {effectiveTotalPages > 1 && (
+              <Box pt={4} borderTopWidth="1px" borderColor="gray.100">
                 <PaginationComponent
                   currentPage={currentPage}
-                  totalPages={pagination?.totalPages || 1}
+                  totalPages={effectiveTotalPages}
                   onPageChange={handlePageChange}
                   itemsPerPage={itemsPerPage}
                 />
-              </div>
+              </Box>
             )}
-          </CardBody>
-        </Card>
-      </Box>
+          </Stack>
+        </CardBody>
+      </Card>
     </Flex>
   )
 }

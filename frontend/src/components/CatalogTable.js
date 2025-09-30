@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
 import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
-import { Checkbox, Input, Modal, ModalBody, Icon } from '@chakra-ui/react'
-import { Copy, Settings, Trash } from 'lucide-react'
-import { BsTools } from 'react-icons/bs'
+import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
 
 const hingeOptions = ['L', 'R', '-']
-const exposedOptions = ['L', 'R', 'B', '-']
 
 // Helpers to render selected modification options (e.g., measurements) neatly
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -277,7 +275,7 @@ const CatalogTable = ({
           style={{ minWidth: '200px', maxWidth: '600px' }}
           ref={searchContainerRef}
         >
-          <CInputGroup>
+          <InputGroup>
             <Input
               placeholder={t('proposalUI.enterPartCode')}
               value={partQuery}
@@ -293,7 +291,7 @@ const CatalogTable = ({
                 }
               }}
             />
-          </CInputGroup>
+          </InputGroup>
           {showSuggestions && filteredOptions.length > 0 && (
             <div
               className="dropdown-menu show w-100"
@@ -359,31 +357,35 @@ const CatalogTable = ({
           className="flex-shrink-0"
           style={{ minWidth: '200px', maxWidth: '240px', width: '100%' }}
         >
-          <CInputGroup>
+          <InputGroup>
             <Input
               placeholder={t('proposalUI.findInCart')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </CInputGroup>
+          </InputGroup>
         </div>
+
+        {/* Close controls wrapper */}
+      </div>
 
       {/* Detailed type info modal */}
       <Modal
         isOpen={showTypeModal}
         onClose={() => setShowTypeModal(false)}
         size="xl"
-        className="specs-modal"
-        alignment="center"
-        style={{ '--bs-modal-width': '960px', '--cui-modal-width': '960px' }}
-        backdrop={true}
-        keyboard={true}
+        isCentered
       >
-        <PageHeader
-          title={selectedTypeInfo?.type || 'Type Specifications'}
-          onClose={() => setShowTypeModal(false)}
-        />
-        <ModalBody className="p-3 p-md-4">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p={0}>
+            <PageHeader
+              title={selectedTypeInfo?.type || 'Type Specifications'}
+              onClose={() => setShowTypeModal(false)}
+            />
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody className="p-3 p-md-4">
           {selectedTypeInfo ? (
             <div className="d-flex flex-column flex-md-row gap-4">
               <div
@@ -449,64 +451,67 @@ const CatalogTable = ({
                     selectedTypeInfo.description ||
                     t('No description available for this type.')}
                 </div>
+              </div>
+              {/* close outer flex wrapper */}
             </div>
           ) : (
             <div className="text-muted text-center p-4 border rounded bg-light">
               {t('No type information available.')}
             </div>
           )}
-
-          {/* Mobile Close Button */}
-          <div className="d-block d-md-none mt-4 text-center">
-            <button
-              type="button"
-              className="btn btn-dark btn-lg shadow-sm"
-              onClick={() => setShowTypeModal(false)}
-              style={{
-                minWidth: '140px',
-                borderRadius: '8px',
-                fontWeight: '500',
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </ModalBody>
+          </ModalBody>
+          <ModalFooter>
+            <div className="d-block d-md-none mt-2 text-center w-100">
+              <button
+                type="button"
+                className="btn btn-dark btn-lg shadow-sm w-100"
+                onClick={() => setShowTypeModal(false)}
+                style={{
+                  minWidth: '140px',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
 
       {/* Desktop Table View */}
       <div className="table-responsive table-responsive-md desktop-only">
-        <CTable>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell>{t('proposalColumns.no')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.qty')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.item')}</CTableHeaderCell>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th>{t('proposalColumns.no')}</Th>
+              <Th>{t('proposalColumns.qty')}</Th>
+              <Th>{t('proposalColumns.item')}</Th>
               {subTypeRequirements.requiresHinge && (
-                <CTableHeaderCell
+                <Th
                   style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
                 >
                   {t('proposalColumns.hingeSide')}
-                </CTableHeaderCell>
+                </Th>
               )}
               {subTypeRequirements.requiresExposed && (
-                <CTableHeaderCell
+                <Th
                   style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
                 >
                   {t('proposalColumns.exposedSide')}
-                </CTableHeaderCell>
+                </Th>
               )}
-              <CTableHeaderCell>{t('proposalColumns.price')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.assemblyCost')}</CTableHeaderCell>
-              <CTableHeaderCell>
+              <Th>{t('proposalColumns.price')}</Th>
+              <Th>{t('proposalColumns.assemblyCost')}</Th>
+              <Th>
                 {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
-              </CTableHeaderCell>
-              <CTableHeaderCell>{t('proposalColumns.total')}</CTableHeaderCell>
-              <CTableHeaderCell>{t('proposals.headers.actions')}</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
+              </Th>
+              <Th>{t('proposalColumns.total')}</Th>
+              <Th>{t('proposals.headers.actions')}</Th>
+            </Tr>
+          </Thead>
 
-          <CTableBody>
+          <Tbody>
             {displayItems.map((item, idx) => {
               // Use global assembled toggle only; assembly fee applies automatically when on
               const assembled = !!isAssembled
@@ -525,14 +530,14 @@ const CatalogTable = ({
 
               return (
                 <React.Fragment key={idx}>
-                  <CTableRow
+                  <Tr
                     style={{
                       backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
                       borderBottom: '2px solid #e6ebf1',
                       ...(idx === 0 ? { borderTop: '2px solid #e6ebf1' } : {}),
                     }}
                   >
-                    <CTableDataCell style={{ width: '56px' }}>
+                    <Td style={{ width: '56px' }}>
                       <span
                         className="shadow-sm"
                         style={{
@@ -553,8 +558,8 @@ const CatalogTable = ({
                       >
                         {idx + 1}
                       </span>
-                    </CTableDataCell>
-                    <CTableDataCell>
+                    </Td>
+                    <Td>
                       <Input
                         type="number"
                         min="1"
@@ -562,9 +567,9 @@ const CatalogTable = ({
                         onChange={(e) => updateQty(idx, parseInt(e.target.value))}
                         style={{ width: '70px', textAlign: 'center' }}
                       />
-                    </CTableDataCell>
+                    </Td>
 
-                    <CTableDataCell
+                    <Td
                       className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
                     >
                       <div
@@ -617,10 +622,10 @@ const CatalogTable = ({
                           </button>
                         )}
                       </div>
-                    </CTableDataCell>
+                    </Td>
 
                     {subTypeRequirements.requiresHinge && (
-                      <CTableDataCell
+                      <Td
                         style={{
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
@@ -663,14 +668,16 @@ const CatalogTable = ({
                                 </button>
                               ))}
                             </div>
+                          {/* close assembled wrapper */}
+                          </div>
                         ) : (
                           t('common.na')
                         )}
-                      </CTableDataCell>
+                      </Td>
                     )}
 
                     {subTypeRequirements.requiresExposed && (
-                      <CTableDataCell
+                      <Td
                         style={{
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
@@ -713,35 +720,37 @@ const CatalogTable = ({
                                 </button>
                               ))}
                             </div>
+                          {/* close assembled wrapper */}
+                          </div>
                         ) : (
                           t('common.na')
                         )}
-                      </CTableDataCell>
+                      </Td>
                     )}
 
-                    <CTableDataCell
+                    <Td
                       className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
                     >
                       {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
-                    </CTableDataCell>
+                    </Td>
 
-                    <CTableDataCell>
+                    <Td>
                       {assembled ? (
                         <span>{formatPrice(assemblyFee)}</span>
                       ) : (
                         <span className="text-muted">{formatPrice(0)}</span>
                       )}
-                    </CTableDataCell>
+                    </Td>
 
-                    <CTableDataCell>{formatPrice(modsTotal)}</CTableDataCell>
+                    <Td>{formatPrice(modsTotal)}</Td>
 
-                    <CTableDataCell
+                    <Td
                       className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
                     >
                       {formatPrice(total)}
-                    </CTableDataCell>
+                    </Td>
 
-                    <CTableDataCell>
+                    <Td>
                       <div className="d-flex align-items-center">
                         <Icon as={Settings}
                           style={{ cursor: 'pointer', color: 'black', marginRight: '16px' }}
@@ -752,8 +761,8 @@ const CatalogTable = ({
                           onClick={() => handleDelete(idx)}
                         />
                       </div>
-                    </CTableDataCell>
-                  </CTableRow>
+                    </Td>
+                  </Tr>
                   {Array.isArray(item.modifications) &&
                     item.modifications.length > 0 &&
                     (() => {
@@ -766,8 +775,8 @@ const CatalogTable = ({
                       const groupKeys = Object.keys(groups)
                       return (
                         <>
-                          <CTableRow className="modification-header">
-                            <CTableDataCell
+                          <Tr className="modification-header">
+                            <Td
                               colSpan={10}
                               style={{
                                 backgroundColor: headerBg,
@@ -782,20 +791,21 @@ const CatalogTable = ({
                                 boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
                               }}
                             >
-                              <BsTools
+                              <Icon
+                                as={Wrench}
                                 className="me-2"
                                 style={{ fontSize: '14px', color: textColor }}
                               />
                               <span className="fw-bold">{t('proposalDoc.modifications')}</span>
-                            </CTableDataCell>
-                          </CTableRow>
+                            </Td>
+                          </Tr>
                           {groupKeys.map((gkey, gi) => (
                             <React.Fragment key={`modgrp-${idx}-${gkey}`}>
-                              <CTableRow
+                              <Tr
                                 className="modification-category"
                                 style={{ backgroundColor: '#f1f3f5' }}
                               >
-                                <CTableDataCell
+                                <Td
                                   colSpan={10}
                                   className="fw-semibold text-secondary"
                                   style={{
@@ -806,14 +816,14 @@ const CatalogTable = ({
                                   }}
                                 >
                                   📂 {gkey}
-                                </CTableDataCell>
-                              </CTableRow>
+                                </Td>
+                              </Tr>
                               {groups[gkey].map((mod, modIdx) => {
                                 const isLastRow =
                                   gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1
                                 return (
                                   <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
-                                    <CTableRow
+                                    <Tr
                                       className="modification-item"
                                       style={{
                                         backgroundColor: '#fcfcfd',
@@ -824,15 +834,15 @@ const CatalogTable = ({
                                           : '1px solid #e9ecef',
                                       }}
                                     >
-                                      <CTableDataCell
+                                      <Td
                                         style={{ paddingLeft: '88px', color: '#6c757d' }}
                                       >
                                         ↳
-                                      </CTableDataCell>
-                                      <CTableDataCell style={{ fontWeight: '500' }}>
+                                      </Td>
+                                      <Td style={{ fontWeight: '500' }}>
                                         {mod.qty}
-                                      </CTableDataCell>
-                                      <CTableDataCell colSpan={3} style={{ paddingLeft: '8px' }}>
+                                      </Td>
+                                      <Td colSpan={3} style={{ paddingLeft: '8px' }}>
                                         <div className="d-flex align-items-center flex-wrap gap-2">
                                           <span
                                             className="shadow-sm"
@@ -920,20 +930,20 @@ const CatalogTable = ({
                                               )}
                                             </div>
                                           )}
-                                      </CTableDataCell>
-                                      <CTableDataCell className="fw-medium text-success">
+                                      </Td>
+                                      <Td className="fw-medium text-success">
                                         {formatPrice(mod.price || 0)}
-                                      </CTableDataCell>
-                                      <CTableDataCell style={{ color: '#6c757d' }}>
+                                      </Td>
+                                      <Td style={{ color: '#6c757d' }}>
                                         -
-                                      </CTableDataCell>
-                                      <CTableDataCell>
+                                      </Td>
+                                      <Td>
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
-                                      </CTableDataCell>
-                                      <CTableDataCell className="fw-semibold text-success">
+                                      </Td>
+                                      <Td className="fw-semibold text-success">
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                                      </CTableDataCell>
-                                      <CTableDataCell style={{ textAlign: 'center' }}>
+                                      </Td>
+                                      <Td style={{ textAlign: 'center' }}>
                                         <Icon as={Trash}
                                           style={{
                                             cursor: 'pointer',
@@ -943,19 +953,19 @@ const CatalogTable = ({
                                           onClick={() => handleDeleteModification(idx, modIdx)}
                                           title="Remove modification"
                                         />
-                                      </CTableDataCell>
-                                    </CTableRow>
+                                      </Td>
+                                    </Tr>
                                     {isLastRow && (
-                                      <CTableRow>
-                                        <CTableDataCell colSpan={10} style={{ padding: 0 }}>
+                                      <Tr>
+                                        <Td colSpan={10} style={{ padding: 0 }}>
                                           <div
                                             style={{
                                               height: '10px',
                                               borderBottom: '1px dashed #cfd4da',
                                             }}
                                           />
-                                        </CTableDataCell>
-                                      </CTableRow>
+                                        </Td>
+                                      </Tr>
                                     )}
                                   </React.Fragment>
                                 )
@@ -968,8 +978,8 @@ const CatalogTable = ({
                 </React.Fragment>
               )
             })}
-          </CTableBody>
-        </CTable>
+          </Tbody>
+        </Table>
       </div>
 
       {/* Mobile Card View */}
@@ -1010,6 +1020,9 @@ const CatalogTable = ({
                     />
                   </div>
 
+                {/* close item-header */}
+                </div>
+
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
                   <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
@@ -1034,6 +1047,7 @@ const CatalogTable = ({
                       </button>
                     )}
                   </div>
+                </div>
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.qty')}</span>
@@ -1103,6 +1117,7 @@ const CatalogTable = ({
                             </button>
                           ))}
                         </div>
+                      </div>
                     )}
 
                     {subTypeRequirements.requiresExposed && (
@@ -1151,6 +1166,7 @@ const CatalogTable = ({
                             </button>
                           ))}
                         </div>
+                      </div>
                     )}
 
                     <div className="item-detail-row">
@@ -1179,6 +1195,8 @@ const CatalogTable = ({
                     {t('proposalColumns.total')}: {formatPrice(total)}
                   </strong>
                 </div>
+
+              </div>
 
               {/* Mobile Modification Cards */}
               {Array.isArray(item.modifications) &&
@@ -1279,11 +1297,13 @@ const CatalogTable = ({
                         </strong>
                       </span>
                     </div>
+                  </div>
                 ))}
             </React.Fragment>
           )
         })}
       </div>
+    </div>
   )
 }
 

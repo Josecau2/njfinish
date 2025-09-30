@@ -57,6 +57,10 @@ const OrdersList = ({
   const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)
   const [selectedPaymentForReceipt, setSelectedPaymentForReceipt] = useState(null)
 
+  // Color mode values for consistent theming
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+  const stickyBg = useColorModeValue('white', 'gray.800')
+
   // Resolve manufacturer name from order snapshot first; fall back to legacy manufacturersData if present
   const resolveManuName = (item) => {
     try {
@@ -454,7 +458,7 @@ const OrdersList = ({
         <Table size="sm" variant="simple">
           <Thead>
             <Tr>
-              <Th position="sticky" left={0} bg={useColorModeValue('white', 'gray.800')} zIndex={1}>
+              <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>
                 {t('orders.headers.date', 'Date')}
               </Th>
               <Th>{t('orders.headers.orderNumber', 'Order #')}</Th>
@@ -486,10 +490,10 @@ const OrdersList = ({
                     <Tr
                       key={item.id}
                       cursor="pointer"
-                      _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
+                      _hover={{ bg: hoverBg }}
                       onClick={() => openDetails(item.id)}
                     >
-                    <Td position="sticky" left={0} bg={useColorModeValue('white', 'gray.800')} zIndex={1}>
+                    <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>
                       {new Date(
                         item.accepted_at || item.date || item.createdAt,
                       ).toLocaleDateString()}

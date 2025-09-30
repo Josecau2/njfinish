@@ -3,6 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Badge,
   Box,
   Button,
@@ -49,6 +55,39 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const customization = useSelector((state) => state.customization)
   const headerBg = customization?.headerBg || '#321fdb'
   const textColor = customization?.headerTextColor || '#ffffff'
+
+  // AlertDialog confirmation system (replaces SweetAlert)
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    confirmText: t('common.confirm', 'Confirm'),
+    cancelText: t('common.cancel', 'Cancel'),
+    onConfirm: () => {},
+    onCancel: () => {},
+  })
+  const cancelRef = React.useRef()
+
+  // Helper function for confirmations (replaces Swal.fire with confirm)
+  const askConfirm = (title, description, confirmText = t('common.confirm', 'Confirm'), cancelText = t('common.cancel', 'Cancel')) => {
+    return new Promise((resolve) => {
+      setConfirmDialog({
+        isOpen: true,
+        title,
+        description,
+        confirmText,
+        cancelText,
+        onConfirm: () => {
+          setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+          resolve(true)
+        },
+        onCancel: () => {
+          setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+          resolve(false)
+        },
+      })
+    })
+  }
 
   // Server-side paginated catalog data (avoid loading all items at once)
   const [catalogData, setCatalogData] = useState([])
@@ -329,7 +368,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setCurrentPage(page)
       setItemsPerPage(limit)
     } catch (e) {
-      console.error('Error fetching catalog data:', e)
       setLoadError(e.message)
       setCatalogData([])
     } finally {
@@ -344,7 +382,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       const { data } = await axiosInstance.get(`/api/manufacturers/${id}/sub-types`)
       setSubTypes(data.data || [])
     } catch (error) {
-      console.error('Error loading sub-types:', error)
       setSubTypes([])
     }
   }
@@ -388,7 +425,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setEditingSubType(null)
       await loadSubTypes()
     } catch (error) {
-      console.error('Error saving sub-type:', error)
       toast({
         title: t('common.error', 'Error'),
         description:
@@ -403,35 +439,33 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   // Delete sub-type
   const handleSubTypeDelete = async (subType) => {
-    const result = await Swal.fire({
+    const confirmed = await askConfirm({
       title: t('settings.manufacturers.catalogMapping.subTypes.deleteTitle'),
-      text: t('settings.manufacturers.catalogMapping.subTypes.deleteConfirm', {
-        name: subType.name,
-      }),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: t('common.delete'),
-      cancelButtonText: t('common.cancel'),
+      description: t('settings.manufacturers.catalogMapping.subTypes.deleteConfirm', { name: subType.name }),
+      confirmText: t('common.delete', 'Delete'),
+      cancelText: t('common.cancel', 'Cancel'),
     })
 
-    if (result.isConfirmed) {
-      try {
-        await axiosInstance.delete(`/api/sub-types/${subType.id}`)
-        Swal.fire(
-          t('common.deleted'),
-          t('settings.manufacturers.catalogMapping.subTypes.deleteSuccess'),
-          'success',
-        )
-        await loadSubTypes()
-      } catch (error) {
-        console.error('Error deleting sub-type:', error)
-        Swal.fire(
-          t('common.error'),
-          t('settings.manufacturers.catalogMapping.subTypes.deleteFailed'),
-          'error',
-        )
-      }
+    if (!confirmed) return
+
+    try {
+      await axiosInstance.delete(`/api/sub-types/${subType.id}`)
+      toast({
+        title: t('common.deleted'),
+        description: t('settings.manufacturers.catalogMapping.subTypes.deleteSuccess'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
+      await loadSubTypes()
+    } catch (error) {
+      toast({
+        title: t('common.error'),
+        description: t('settings.manufacturers.catalogMapping.subTypes.deleteFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 
@@ -443,25 +477,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await axiosInstance.post(`/api/sub-types/${selectedSubType}/assign-items`, {
         catalogItemIds: selectedCatalogItem,
       })
-
-      Swal.fire(
-        t('common.success'),
-        t('settings.manufacturers.catalogMapping.subTypes.assignSuccess', {
+      toast({
+        title: t('common.success'),
+        description: t('settings.manufacturers.catalogMapping.subTypes.assignSuccess', {
           count: selectedCatalogItem.length,
         }),
-        'success',
-      )
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
       setShowAssignSubTypeModal(false)
       setSelectedCatalogItem([])
       setSelectedSubType(null)
       await fetchCatalogData() // Refresh to show assignments
     } catch (error) {
-      console.error('Error assigning items:', error)
-      Swal.fire(
-        t('common.error'),
-        t('settings.manufacturers.catalogMapping.subTypes.assignFailed'),
-        'error',
-      )
+      toast({
+        title: t('common.error'),
+        description: t('settings.manufacturers.catalogMapping.subTypes.assignFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 
@@ -535,7 +571,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       const assignedCodes = [...new Set(assignedItems.map((item) => item.code))]
       setSelectedCatalogCodes(assignedCodes)
     } catch (error) {
-      console.error('Error loading existing assignments:', error)
       // Don't show error to user as this is just for display purposes
     }
   }
@@ -601,7 +636,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await loadManufacturerCategories() // Reload manufacturer categories to show new category
       return data.category
     } catch (error) {
-      console.error('Error creating category:', error)
       throw error
     }
   }
@@ -654,7 +688,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await loadManufacturerCategories() // Reload manufacturer categories in case category was created
       return data.template
     } catch (error) {
-      console.error('Error creating template:', error)
       throw error
     }
   }
@@ -683,7 +716,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       await loadGlobalGallery()
     } catch (error) {
-      console.error('Error updating template:', error)
       throw error
     }
   }
@@ -756,20 +788,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         isClosable: true,
       })
     } catch (error) {
-      console.error('Error deleting template:', error)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to delete modification',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.deleteFailed', 'Failed to delete modification'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     }
   }
@@ -784,35 +808,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await loadGlobalGallery()
       await loadManufacturerCategories()
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Category deleted successfully',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.categoryDeleted', 'Category deleted successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
     } catch (error) {
-      console.error('Error deleting category:', error)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: error.response?.data?.message || 'Failed to delete category',
-        showConfirmButton: false,
-        timer: 3000,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.deleteCategoryFailed', 'Failed to delete category'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     }
   }
@@ -828,35 +837,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await loadGlobalGallery()
       await loadManufacturerCategories()
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Modification moved successfully',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.modificationMoved', 'Modification moved successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
     } catch (error) {
-      console.error('Error moving modification:', error)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: error.response?.data?.message || 'Failed to move modification',
-        showConfirmButton: false,
-        timer: 3000,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.moveFailed', 'Failed to move modification'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     }
   }
@@ -1035,22 +1029,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       }
       await loadGlobalAssignments()
       setShowAssignGlobalModsModal(false)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Assigned',
-        showConfirmButton: false,
-        timer: 1200,
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.assigned', 'Assigned'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
     } catch (e) {
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: e.message || 'Assignment failed',
-        showConfirmButton: false,
-        timer: 1500,
+      toast({
+        title: t('common.error', 'Error'),
+        description: e.message || t('settings.manufacturers.catalogMapping.assignmentFailed', 'Assignment failed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     }
   }
@@ -1218,19 +1210,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
     try {
       await axiosInstance.post(`/api/manufacturers/catalog/${manufacturer.id}`, manualForm)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Catalog added successfully',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '360px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.catalogAdded', 'Catalog added successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
       // Reset and close modal
       setManualForm({ style: '', color: '', code: '', type: '', description: '', price: '' })
@@ -1240,23 +1225,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       setErrors({})
       resetManualForm()
       setManualModalVisible(false)
-
-      // TODO: Trigger a reload of catalogData
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to save catalog',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.saveFailed', 'Failed to save catalog'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsSaving(false)
@@ -1281,27 +1256,23 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       await axiosInstance.put(`/api/manufacturers/catalog/edit/${editForm.id}`, editForm)
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Catalog updated successfully',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '360px',
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.catalogUpdated', 'Catalog updated successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       setEditModalVisible(false)
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to update catalog',
-        showConfirmButton: false,
-        timer: 1500,
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.updateFailed', 'Failed to update catalog'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsUpdating(false) // End loading
@@ -1355,19 +1326,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     try {
       await axiosInstance.delete(`/api/manufacturers/catalog/edit/${itemToDelete.id}`)
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: 'Item deleted successfully',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.itemDeleted', 'Item deleted successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset modal state
@@ -1377,20 +1341,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to delete item',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.deleteFailed', 'Failed to delete item'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsDeletingItem(false)
@@ -1415,19 +1371,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       )
       await Promise.all(deletePromises)
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: `Successfully deleted ${selectedItems.length} items`,
-        showConfirmButton: false,
-        timer: 2000,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('settings.manufacturers.catalogMapping.bulkDeleteSuccess', `Successfully deleted ${selectedItems.length} items`),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset states
@@ -1438,20 +1387,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to delete some items',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.bulkDeleteFailed', 'Failed to delete some items'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsBulkDeleting(false)
@@ -1470,19 +1411,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         null,
       )
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: result.duplicatesRemoved > 0 ? 'success' : 'info',
-        title: result.message,
-        showConfirmButton: false,
-        timer: 3000,
-        width: '450px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: result.duplicatesRemoved > 0 ? t('common.success', 'Success') : t('common.info', 'Info'),
+        description: result.message,
+        status: result.duplicatesRemoved > 0 ? 'success' : 'info',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Refresh data if duplicates were removed
@@ -1491,20 +1425,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         setCurrentPage(1)
       }
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to cleanup duplicates',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.cleanupFailed', 'Failed to cleanup duplicates'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsCleaningDuplicates(false)
@@ -1520,20 +1446,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       const { data: result } = await axiosInstance.get(`/api/manufacturers/${id}/catalog/backups`)
       setAvailableBackups(result.backups || [])
     } catch (err) {
-      console.error('Error fetching backups:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to load backup history',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.backupLoadFailed', 'Failed to load backup history'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsLoadingBackups(false)
@@ -1551,19 +1469,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         { uploadSessionId: selectedBackup },
       )
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: result.message || t('settings.manufacturers.catalogMapping.rollback.success'),
-        showConfirmButton: false,
-        timer: 2500,
-        width: '450px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: result.message || t('settings.manufacturers.catalogMapping.rollback.success'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset modal state
@@ -1575,20 +1486,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
       setCurrentPage(1)
     } catch (err) {
-      console.error('Error during rollback:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: t('settings.manufacturers.catalogMapping.rollback.failed'),
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.rollback.failed'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsRollingBack(false)
@@ -1616,19 +1519,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         },
       )
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: result.message || 'Style operation completed successfully',
-        showConfirmButton: false,
-        timer: 2500,
-        width: '450px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: result.message || t('settings.manufacturers.catalogMapping.styleOperationSuccess', 'Style operation completed successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset modal state
@@ -1642,20 +1538,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Reset current page if we're beyond the new total pages
       setCurrentPage(1)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to delete/merge style',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.styleDeleteFailed', 'Failed to delete/merge style'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsDeleting(false)
@@ -1680,14 +1568,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     // Check if at least one field is filled
     const hasUpdates = Object.values(bulkEditForm).some((value) => value && value.trim() !== '')
     if (!hasUpdates) {
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'warning',
-        title: 'Please fill at least one field to update',
-        showConfirmButton: false,
-        timer: 2000,
-        width: '350px',
+      toast({
+        title: t('common.warning', 'Warning'),
+        description: t('settings.manufacturers.catalogMapping.fillAtLeastOneField', 'Please fill at least one field to update'),
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
       })
       return
     }
@@ -1708,19 +1594,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         updates,
       })
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: result.message || `Successfully updated ${selectedItems.length} items`,
-        showConfirmButton: false,
-        timer: 2000,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: result.message || t('settings.manufacturers.catalogMapping.bulkEditSuccess', `Successfully updated ${selectedItems.length} items`),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset states
@@ -1737,20 +1616,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: 'Failed to bulk edit items',
-        showConfirmButton: false,
-        timer: 1500,
-        width: '330px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('settings.manufacturers.catalogMapping.bulkEditFailed', 'Failed to bulk edit items'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsBulkEditing(false)
@@ -1771,14 +1642,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       return
 
     if (styleNameEditForm.oldStyleName.trim() === styleNameEditForm.newStyleName.trim()) {
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'warning',
-        title: 'New style name must be different from the old one',
-        showConfirmButton: false,
-        timer: 2000,
-        width: '350px',
+      toast({
+        title: t('common.warning', 'Warning'),
+        description: t('settings.manufacturers.catalogMapping.styleNameMustBeDifferent', 'New style name must be different from the old one'),
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
       })
       return
     }
@@ -1791,19 +1660,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         newStyleName: styleNameEditForm.newStyleName.trim(),
       })
 
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'success',
-        title: result.message || 'Style name updated successfully',
-        showConfirmButton: false,
-        timer: 2500,
-        width: '450px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.success', 'Success'),
+        description: result.message || t('settings.manufacturers.catalogMapping.styleNameUpdated', 'Style name updated successfully'),
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
       })
 
       // Reset modal state
@@ -1816,20 +1678,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Refresh data
       fetchCatalogData(currentPage, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder)
     } catch (err) {
-      console.error('Error:', err)
-      Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: 'error',
-        title: err.message || 'Failed to edit style name',
-        showConfirmButton: false,
-        timer: 2000,
-        width: '350px',
-        didOpen: (toast) => {
-          toast.style.padding = '8px 12px'
-          toast.style.fontSize = '14px'
-          toast.style.minHeight = 'auto'
-        },
+      toast({
+        title: t('common.error', 'Error'),
+        description: err.message || t('settings.manufacturers.catalogMapping.styleNameEditFailed', 'Failed to edit style name'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
       })
     } finally {
       setIsEditingStyleName(false)
@@ -1871,50 +1725,39 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
     const isLargeFile = fileSizeInMB > 10
 
     if (fileSizeInMB > 50) {
-      Swal.fire({
-        title: t('common.error'),
-        text: `File too large (${fileSizeInMB.toFixed(2)}MB). Maximum size is 50MB. Please split your file into smaller chunks.`,
-        icon: 'error',
+      toast({
+        title: t('common.error', 'Error'),
+        description: `File too large (${fileSizeInMB.toFixed(2)}MB). Maximum size is 50MB. Please split your file into smaller chunks.`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
       return
     }
 
     if (isLargeFile) {
-      const result = await Swal.fire({
-        title: 'Large File Detected',
-        text: `This file is ${fileSizeInMB.toFixed(2)}MB. Large files may take several minutes to process. Continue?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, upload',
-        cancelButtonText: 'Cancel',
+      const proceed = await askConfirm({
+        title: t('settings.manufacturers.catalogMapping.largeFileTitle', 'Large File Warning'),
+        description: t('settings.manufacturers.catalogMapping.largeFileMessage', `This file is ${fileSizeInMB.toFixed(2)}MB. Large files may take several minutes to process. Continue?`),
+        confirmText: t('common.continue', 'Continue'),
+        cancelText: t('common.cancel', 'Cancel'),
       })
-
-      if (!result.isConfirmed) return
+      if (!proceed) return
     }
 
     const formData = new FormData()
     formData.append('catalogFiles', file)
 
     // Show loading with progress for large files
-    let progressSwal
-    if (isLargeFile) {
-      progressSwal = Swal.fire({
+    const uploadToastId = 'upload-progress'
+    if (isLargeFile && !toast.isActive(uploadToastId)) {
+      toast({
+        id: uploadToastId,
         title: 'Processing Large File',
-        html: `
-          <div class="mb-3">
-            <div class="progress">
-              <div class="progress-bar progress-bar-striped progress-bar-animated"
-                   role="progressbar" style="width: 0%" id="upload-progress"></div>
-            </div>
-          </div>
-          <p class="text-muted">Processing ${fileSizeInMB.toFixed(2)}MB file in chunks...</p>
-          <p class="text-sm">This may take a few minutes. Please don't close this window.</p>
-        `,
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading()
-        },
+        description: `Processing ${fileSizeInMB.toFixed(2)}MB file... This may take a few minutes.`,
+        status: 'info',
+        duration: null,
+        isClosable: false,
       })
     }
 
@@ -1927,10 +1770,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       )
       const processingTime = ((Date.now() - startTime) / 1000).toFixed(1)
 
-      // Close progress modal if it was shown
-      if (progressSwal) {
-        Swal.close()
-      }
+      // Close progress toast if it was shown
+      if (isLargeFile) toast.close(uploadToastId)
 
       // Enhanced success message with detailed stats
       let successMessage = t('settings.manufacturers.catalogMapping.file.uploadSuccess')
@@ -1946,33 +1787,31 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         }
       }
 
-      Swal.fire({
-        title: t('common.success'),
-        text: successMessage,
-        icon: 'success',
-        confirmButtonText: 'OK',
+      toast({
+        title: t('common.success', 'Success'),
+        description: successMessage,
+        status: 'success',
+        duration: 6000,
+        isClosable: true,
       })
 
       setFileModalVisible(false)
       setFile(null)
       fetchCatalogData(1, itemsPerPage, typeFilter, styleFilter, sortBy, sortOrder) // Reload updated data
     } catch (err) {
-      console.error('Upload error:', err)
-
-      // Close progress modal if it was shown
-      if (progressSwal) {
-        Swal.close()
-      }
+      // Close progress toast if it was shown
+      if (isLargeFile) toast.close(uploadToastId)
 
       let errorMessage = err.message || t('settings.manufacturers.catalogMapping.file.uploadFailed')
-
-      Swal.fire({
-        title: t('common.error'),
-        text: errorMessage,
-        icon: 'error',
-        footer: isLargeFile
-          ? 'Tip: For very large files (>10,000 rows), consider splitting them into smaller files.'
-          : undefined,
+      toast({
+        title: t('common.error', 'Error'),
+        description:
+          isLargeFile
+            ? `${errorMessage}\nTip: For very large files (>10,000 rows), consider splitting them into smaller files.`
+            : errorMessage,
+        status: 'error',
+        duration: 6000,
+        isClosable: true,
       })
     }
   }
@@ -2026,8 +1865,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       setShowStyleModal(true)
     } catch (error) {
-      console.error('Error fetching style data:', error)
-
       // Fallback to minimal data
       setSelectedStyle(style || '')
       setStyleForm({
@@ -2075,19 +1912,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           image: '',
         })
 
-        Swal.fire({
-          toast: true,
-          position: 'top',
-          icon: 'success',
-          title: 'Catalog Style Updated successfully',
-          showConfirmButton: false,
-          timer: 1500,
-          width: '360px',
-          didOpen: (toast) => {
-            toast.style.padding = '8px 12px'
-            toast.style.fontSize = '14px'
-            toast.style.minHeight = 'auto'
-          },
+        toast({
+          title: t('common.success', 'Success'),
+          description: t('settings.manufacturers.catalogMapping.styleUpdated', 'Catalog Style Updated successfully'),
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
         })
       }
     } catch (error) {
@@ -2128,7 +1958,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         setAvailableTypes(response.data.data || [])
       }
     } catch (error) {
-      console.error('Failed to fetch types:', error)
       setAvailableTypes([])
     }
   }
@@ -2142,7 +1971,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         setAssemblyCostsByType(response.data.data || {})
       }
     } catch (error) {
-      console.error('Failed to fetch assembly costs by types:', error)
       setAssemblyCostsByType({})
     }
   }
@@ -2168,7 +1996,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         selectedTypes: [],
       })
     } catch (error) {
-      console.error('Error fetching assembly cost:', error)
       // Fetch available types even if assembly cost fetch fails
       await fetchAvailableTypes()
       await fetchAssemblyCostsByTypes()
@@ -2219,20 +2046,24 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       // Validation
       if (assemblyData.applyTo === 'type' && !assemblyData.selectedItemType) {
-        Swal.fire(
-          'Validation Error',
-          'Please select an item type when applying by type.',
-          'warning',
-        )
+        toast({
+          title: t('common.validationError', 'Validation Error'),
+          description: t('settings.manufacturers.catalogMapping.selectItemType', 'Please select an item type when applying by type.'),
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        })
         return
       }
 
       if (assemblyData.applyTo === 'types' && assemblyData.selectedTypes.length === 0) {
-        Swal.fire(
-          'Validation Error',
-          'Please select at least one item type when applying by types.',
-          'warning',
-        )
+        toast({
+          title: t('common.validationError', 'Validation Error'),
+          description: t('settings.manufacturers.catalogMapping.selectTypes', 'Please select at least one item type when applying by types.'),
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        })
         return
       }
 
@@ -2313,7 +2144,6 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       // Refresh the catalog data to show updated assembly costs
       fetchCatalogData()
     } catch (error) {
-      console.error('Failed to save assembly cost:', error)
       toast({
         title: t('common.error', 'Error'),
         description: t(
@@ -2351,7 +2181,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await axiosInstance.post('/api/manufacturers/items/hinges', payload)
       setShowHingesModal(false)
     } catch (error) {
-      console.error('Failed to save hinges details:', error)
+      // Error saving hinges details
     }
   }
 
@@ -2368,7 +2198,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       await axiosInstance.post('/api/manufacturers/items/modifications', payload)
       setShowModificationModal(false)
     } catch (error) {
-      console.error('Failed to save modification details:', error)
+      // Error saving modification details
     }
   }
 
@@ -5271,15 +5101,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
                                     )}
-                                    onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          t(
-                                            'settings.manufacturers.catalogMapping.gallery.confirmDelete',
-                                            { name: template.name },
-                                          ),
-                                        )
-                                      ) {
+                                    onClick={async () => {
+                                      const confirmed = await askConfirm({
+                                        title: t('settings.manufacturers.catalogMapping.gallery.deleteTitle', 'Delete Template'),
+                                        description: t('settings.manufacturers.catalogMapping.gallery.confirmDelete', { name: template.name }),
+                                        confirmText: t('common.delete', 'Delete'),
+                                        cancelText: t('common.cancel', 'Cancel'),
+                                      })
+                                      if (confirmed) {
                                         deleteModificationTemplate(template.id)
                                       }
                                     }}
@@ -6143,29 +5972,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                               await updateModificationTemplate(editingTemplateId, categoryIdToUse)
                               resetModificationForm()
-                              Swal.fire({
-                                toast: true,
-                                position: 'top',
-                                icon: 'success',
-                                title: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.updateSuccess',
-                                ),
-                                showConfirmButton: false,
-                                timer: 1500,
+                              toast({
+                                title: t('common.success', 'Success'),
+                                description: t('settings.manufacturers.catalogMapping.builder.toast.updateSuccess'),
+                                status: 'success',
+                                duration: 4000,
+                                isClosable: true,
                               })
                             } catch (error) {
-                              console.error('Error updating template:', error)
-                              Swal.fire({
-                                toast: true,
-                                position: 'top',
-                                icon: 'error',
-                                title:
-                                  error.response?.data?.message ||
-                                  t(
-                                    'settings.manufacturers.catalogMapping.builder.toast.updateFailed',
-                                  ),
-                                showConfirmButton: false,
-                                timer: 1800,
+                              toast({
+                                title: t('common.error', 'Error'),
+                                description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.updateFailed'),
+                                status: 'error',
+                                duration: 4000,
+                                isClosable: true,
                               })
                             } finally {
                               setCreatingModification(false)
@@ -6192,14 +6012,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           onClick={async () => {
                             // Task 5: Block creation if manufacturerId is missing
                             if (!id) {
-                              Swal.fire({
-                                title: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle',
-                                ),
-                                text: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText',
-                                ),
-                                icon: 'error',
+                              toast({
+                                title: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle'),
+                                description: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText'),
+                                status: 'error',
+                                duration: 5000,
+                                isClosable: true,
                               })
                               return
                             }
@@ -6221,28 +6039,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               resetModificationForm()
 
                               // Show success message
-                              Swal.fire({
-                                title: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle',
-                                ),
-                                text: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.createSuccessText',
-                                ),
-                                icon: 'success',
-                                timer: 2000,
+                              toast({
+                                title: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle'),
+                                description: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessText'),
+                                status: 'success',
+                                duration: 4000,
+                                isClosable: true,
                               })
                             } catch (error) {
-                              console.error('Error creating template:', error)
-                              Swal.fire({
-                                title: t(
-                                  'settings.manufacturers.catalogMapping.builder.toast.createFailedTitle',
-                                ),
-                                text:
-                                  error.response?.data?.message ||
-                                  t(
-                                    'settings.manufacturers.catalogMapping.builder.toast.createFailedText',
-                                  ),
-                                icon: 'error',
+                              toast({
+                                title: t('settings.manufacturers.catalogMapping.builder.toast.createFailedTitle'),
+                                description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.createFailedText'),
+                                status: 'error',
+                                duration: 5000,
+                                isClosable: true,
                               })
                             } finally {
                               setCreatingModification(false)
@@ -6403,12 +6213,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
                                     )}
-                                    onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          `Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`,
-                                        )
-                                      ) {
+                                    onClick={async () => {
+                                      const confirmed = await askConfirm({
+                                        title: t('settings.manufacturers.catalogMapping.gallery.deleteTitle', 'Delete Template'),
+                                        description: t('settings.manufacturers.catalogMapping.gallery.confirmDeleteWithAssignments', `Are you sure you want to delete "${template.name}"? This will also remove all assignments of this modification.`),
+                                        confirmText: t('common.delete', 'Delete'),
+                                        cancelText: t('common.cancel', 'Cancel'),
+                                      })
+                                      if (confirmed) {
                                         deleteModificationTemplate(template.id)
                                       }
                                     }}

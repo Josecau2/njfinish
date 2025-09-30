@@ -47,11 +47,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const { t } = useTranslation();
 
 
-    // console.log('selectVersion edit: ', selectVersion);
-    // console.log('selectVersion edit: ', selectVersion);
-    // console.log('formData edit: ', formData);
-
-
     const api_url = import.meta.env.VITE_API_URL;
     const dispatch = useDispatch();
     const [selectedStyleData, setSelectedStyleData] = useState(null);
@@ -506,8 +501,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     // readiness handled by centralized effect
     }, [userMultiplierFetched, manuMultiplierFetched, userGroupMultiplier, manufacturerCostMultiplier, tableItems, dispatch, selectVersion?.versionName, setSelectedVersion, setFormData]);
 
-    // console.log('tableItems', tableItems);
-
     // Computed values needed for updateManufacturerData
     const defaultTax = taxes.find(tax => tax.isDefault);
     const defaultTaxValue = parseFloat(defaultTax?.value || '0');
@@ -689,7 +682,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     authFailedRef.current = true;
                     return; // let axios interceptor handle redirect/logout
                 }
-                if (!cancelled) console.warn(`Failed to preload catalog for style ${selectedStyleId}:`, error?.message || error);
+                if (!cancelled) {
+                    // Failed to preload catalog - silent error
+                }
             } finally {
                 if (!cancelled) setPreloadingComplete(true);
             }
@@ -771,8 +766,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     const handleCatalogSelect = (e) => {
         const code = e.target.value;
-        // console.log('code: ' , code);
-        // console.log('fetchedCollections: ' , fetchedCollections);
 
         const item = fetchedCollections.find(cd => `${cd.code} -- ${cd.description}` === code);
     if (item) {
@@ -1481,7 +1474,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     fontSize="lg"
                                                     ml={1}
                                                 >
-                                                    {isStylesCollapsed ? 'List' : 'Images'}
+                                                    {isStylesCollapsed ? '📋' : '🖼️'}
                                                 </Text>
                                             </Button>
 
@@ -1684,7 +1677,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     updateQty={readOnly ? () => {} : updateQty}
                     handleOpenModificationModal={readOnly ? () => {} : handleOpenModificationModal}
                     handleDelete={readOnly ? () => {} : handleDelete}
-                    updateModification={updateModification}
                     setModificationsMap={setModificationsMap}
                     modificationsMap={modificationsMap}
                     handleDeleteModification={readOnly ? () => {} : handleDeleteModification}
@@ -1695,9 +1687,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     toggleRowAssembly={readOnly ? () => {} : toggleRowAssembly}
                     updateHingeSide={readOnly ? () => {} : updateHingeSide}
                     updateExposedSide={readOnly ? () => {} : updateExposedSide}
-                    items={filteredItems}
-                    headerBg={headerBg}
-                    textColor={textColor}
                     readOnly={readOnly}
                 />
             )}

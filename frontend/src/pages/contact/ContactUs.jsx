@@ -1,8 +1,31 @@
+
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Card, CardBody, Box, Flex, Link, Badge } from '@chakra-ui/react'
-import PageHeader from '../../components/PageHeader'
+import {
+  Alert,
+  AlertIcon,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Spinner,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+
+import PageHeader from '../../components/PageHeader'
 import {
   getContactInfo,
   saveContactInfo,
@@ -15,23 +38,21 @@ import {
   getConfigurationInfo,
 } from '../../helpers/contactApi'
 import { isAdmin as isAdminCheck } from '../../helpers/permissions'
-
 import ContactInfoCard from '../../components/contact/ContactInfoCard'
 import ContactInfoEditor from '../../components/contact/ContactInfoEditor'
 import MessageComposer from '../../components/contact/MessageComposer'
 import MessageHistory from '../../components/contact/MessageHistory'
 import ThreadView from '../../components/contact/ThreadView'
+import { Inbox, Info, Mail, MessageSquare } from 'lucide-react'
 
 const ContactUs = () => {
   const { t } = useTranslation()
-  const user = useSelector((s) => s.auth.user)
+  const user = useSelector((state) => state.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
-  // Default value will be corrected below once user loads
-  const [activeTab, setActiveTab] = useState('contact')
 
+  const [activeTab, setActiveTab] = useState('contact')
   const [info, setInfo] = useState(null)
   const [infoLoading, setInfoLoading] = useState(true)
-
   const [threads, setThreads] = useState([])
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 })
   const [inboxLoading, setInboxLoading] = useState(false)
@@ -43,25 +64,14 @@ const ContactUs = () => {
     let mounted = true
     setInfoLoading(true)
 
-    // Load both contact info and configuration data in parallel
     Promise.all([
-      getContactInfo().catch((err) => {
-        return { data: { data: null } }
-      }),
-      getConfigurationInfo().catch((err) => {
-        return { data: null }
-      }),
+      getContactInfo().catch(() => ({ data: { data: null } })),
+      getConfigurationInfo().catch(() => ({ data: null })),
     ])
       .then(([contactRes, configRes]) => {
         if (!mounted) return
-
-        // Contact API returns { success: true, data: info }
         const contactData = contactRes?.data?.data || {}
-        // PDF Customization API returns data directly
         const configData = configRes?.data || {}
-
-        // Merge configuration data with contact-specific data
-        // Contact-specific data takes precedence over configuration defaults
         const mergedInfo = {
           companyName: contactData.companyName || configData.companyName || '',
           email: contactData.email || configData.companyEmail || '',
@@ -70,8 +80,6 @@ const ContactUs = () => {
           address: contactData.address || configData.companyAddress || '',
           hours: contactData.hours || '',
           notes: contactData.notes || '',
-
-          // Visibility settings - default to true if not set
           showCompanyName: contactData.showCompanyName !== false,
           showEmail: contactData.showEmail !== false,
           showPhone: contactData.showPhone !== false,
@@ -93,12 +101,11 @@ const ContactUs = () => {
     }
   }, [])
 
-  // If user becomes admin after initial render, ensure the correct default tab
   useEffect(() => {
     if (isAdmin && activeTab !== 'inbox' && activeTab !== 'info') {
       setActiveTab('inbox')
     }
-  }, [isAdmin])
+  }, [isAdmin, activeTab])
 
   const loadThreads = (page = 1, userId = null) => {
     setInboxLoading(true)
@@ -126,35 +133,7 @@ const ContactUs = () => {
     getThread(id)
       .then((res) => {
         setSelectedThread(res?.data?.data)
-        // Optimistically clear unread on the list right away
-        setThreads((prev) =>
-          Array.isArray(prev)
-            ? prev.map((t) => (t.id === id ? { ...t, unreadCount: 0 } : t))
-            : prev,
-        )
-        // Admins auto-mark as read on open; contractors should not update read state
-        if (isAdmin) {
-          markRead(id)
-            .then(() => {
-              setSelectedThread((prev) => {
-                if (!prev || prev.id !== id) return prev
-                const otherSide = (m) => !m.is_admin // from admin perspective, other side is user
-                return {
-                  ...prev,
-                  messages: (prev.messages || []).map((m) =>
-                    otherSide(m)
-                      ? {
-                          ...m,
-                          read_by_recipient: true,
-                          read_at: m.read_at || new Date().toISOString(),
-                        }
-                      : m,
-                  ),
-                }
-              })
-            })
-            .catch(() => {}) // Silent fail for mark read
-        }
+        markRead(id).catch((err) => console.warn('Failed to mark read:', err))
       })
       .catch((err) => {
         console.warn('Failed to load thread:', err)
@@ -166,7 +145,6 @@ const ContactUs = () => {
   const onSendNew = async ({ subject, message }) => {
     try {
       const res = await createThread({ subject, message })
-      // Refresh personal list even if not admin
       loadThreads(1)
       if (res?.data?.data?.threadId) {
         openThread(res.data.data.threadId)
@@ -188,52 +166,58 @@ const ContactUs = () => {
   const onCloseThread = async (id) => {
     try {
       await closeThread(id)
-      loadThreads(pagination.page)
+      loadThreads(pagination.page, selectedUserId)
       setSelectedThread((prev) => (prev && prev.id === id ? { ...prev, status: 'closed' } : prev))
     } catch (err) {
       console.warn('Failed to close thread:', err)
     }
   }
 
+  const adminTabs = ['inbox', 'info']
+  const tabIndex = Math.max(adminTabs.indexOf(activeTab), 0)
+
   return (
-    <>
+    <Container maxW="6xl" py={6}>
       <PageHeader
         title={t('contact.header')}
         subtitle={t('contact.subtitle')}
-        mobileLayout="stack"
-        badge={{
-          text: isAdmin ? t('contact.adminView') : t('contact.userView'),
-          variant: 'secondary',
-        }}
+        icon={MessageSquare}
+        actions={[
+          <Badge key="role" colorScheme={isAdmin ? 'purple' : 'blue'}>{
+            isAdmin ? t('contact.adminView') : t('contact.userView')
+          }</Badge>,
+        ]}
       />
 
-      <Flex>
-        <Box xs={12}>
-          {isAdmin ? (
-            <Card className="border-0 shadow-sm">
-              <CardBody>
-                <Flex variant="tabs" role="tablist" className="mb-3 flex-nowrap overflow-auto">
-                  <Box>
-                    <Link active={activeTab === 'inbox'} onClick={() => setActiveTab('inbox')}>
-                      {t('contact.inbox')}
-                    </Link>
-                  </Box>
-                  <Box>
-                    <Link active={activeTab === 'info'} onClick={() => setActiveTab('info')}>
-                      {t('contact.infoTab')}
-                    </Link>
-                  </Box>
-                </Flex>
-                <Box>
-                  <Box visible={activeTab === 'inbox'}>
-                    <Flex className="g-3">
-                      <Box md={4}>
+      <Stack spacing={6}>
+        {isAdmin ? (
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Tabs
+                index={tabIndex}
+                onChange={(idx) => setActiveTab(adminTabs[idx])}
+                colorScheme="blue"
+              >
+                <TabList overflowX="auto">
+                  <Tab>
+                    <Icon as={Inbox} boxSize={4} mr={2} />
+                    {t('contact.inbox')}
+                  </Tab>
+                  <Tab>
+                    <Icon as={Info} boxSize={4} mr={2} />
+                    {t('contact.infoTab')}
+                  </Tab>
+                </TabList>
+                <TabPanels mt={6}>
+                  <TabPanel px={0}>
+                    <Flex direction={{ base: 'column', lg: 'row' }} gap={6} align="stretch">
+                      <Box flex={{ base: '1', lg: '0 0 320px' }}>
                         <MessageHistory
                           loading={inboxLoading}
                           threads={threads}
                           page={pagination.page}
                           totalPages={pagination.totalPages}
-                          onPageChange={(p) => loadThreads(p, selectedUserId)}
+                          onPageChange={(page) => loadThreads(page, selectedUserId)}
                           onSelect={openThread}
                           isAdmin
                           groupByUser={!selectedUserId}
@@ -244,7 +228,7 @@ const ContactUs = () => {
                           }}
                         />
                       </Box>
-                      <Box md={8}>
+                      <Box flex="1">
                         <ThreadView
                           loading={threadLoading}
                           thread={selectedThread}
@@ -254,45 +238,32 @@ const ContactUs = () => {
                         />
                       </Box>
                     </Flex>
-                  </Box>
-                  <Box visible={activeTab === 'info'}>
-                    <Flex className="g-3">
-                      <Box lg={6}>
+                  </TabPanel>
+                  <TabPanel px={0}>
+                    <Flex direction={{ base: 'column', lg: 'row' }} gap={6} align="stretch">
+                      <Box flex={{ base: 1, lg: 1 }}>
                         <ContactInfoCard loading={infoLoading} info={info} />
                       </Box>
-                      <Box lg={6}>
+                      <Box flex={{ base: 1, lg: 1 }}>
                         <ContactInfoEditor
                           info={info}
                           onSave={async (data) => {
                             try {
-                              const res = await saveContactInfo(data)
-                              // Reload both contact and configuration data after save
+                              await saveContactInfo(data)
                               const [contactRes, configRes] = await Promise.all([
-                                getContactInfo().catch((err) => {
-                                  return { data: { data: null } }
-                                }),
-                                getConfigurationInfo().catch((err) => {
-                                  return { data: null }
-                                }),
+                                getContactInfo().catch(() => ({ data: { data: null } })),
+                                getConfigurationInfo().catch(() => ({ data: null })),
                               ])
-
-                              // Contact API returns { success: true, data: info }
                               const contactData = contactRes?.data?.data || {}
-                              // PDF Customization API returns data directly
                               const configData = configRes?.data || {}
-
-                              // Merge updated data
                               const mergedInfo = {
-                                companyName:
-                                  contactData.companyName || configData.companyName || '',
+                                companyName: contactData.companyName || configData.companyName || '',
                                 email: contactData.email || configData.companyEmail || '',
                                 phone: contactData.phone || configData.companyPhone || '',
                                 website: contactData.website || configData.companyWebsite || '',
                                 address: contactData.address || configData.companyAddress || '',
                                 hours: contactData.hours || '',
                                 notes: contactData.notes || '',
-
-                                // Visibility settings - default to true if not set
                                 showCompanyName: contactData.showCompanyName !== false,
                                 showEmail: contactData.showEmail !== false,
                                 showPhone: contactData.showPhone !== false,
@@ -301,7 +272,6 @@ const ContactUs = () => {
                                 showHours: contactData.showHours !== false,
                                 showNotes: contactData.showNotes !== false,
                               }
-
                               setInfo(mergedInfo)
                             } catch (err) {
                               console.warn('Failed to save contact info:', err)
@@ -310,36 +280,33 @@ const ContactUs = () => {
                         />
                       </Box>
                     </Flex>
-                  </Box>
-              </CardBody>
-            </Card>
-          ) : (
-            <Flex className="g-3">
-              <Box lg={5}>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </CardBody>
+          </Card>
+        ) : (
+          <Card variant="outline" borderRadius="xl" shadow="sm">
+            <CardBody>
+              <Stack spacing={6}>
                 <ContactInfoCard loading={infoLoading} info={info} />
-              </Box>
-              <Box lg={7}>
                 <MessageComposer onSend={onSendNew} />
-                <div className="mt-3">
-                  <MessageHistory
-                    loading={inboxLoading}
-                    threads={threads}
-                    page={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={(p) => loadThreads(p)}
-                    onSelect={openThread}
-                    isAdmin={false}
-                  />
-                </div>
-                <div className="mt-3">
-                  <ThreadView loading={threadLoading} thread={selectedThread} onReply={onReply} />
-                </div>
-              </Box>
-            </Flex>
-          )}
-        </Box>
-      </Flex>
-    </>
+                <MessageHistory
+                  loading={inboxLoading}
+                  threads={threads}
+                  page={pagination.page}
+                  totalPages={pagination.totalPages}
+                  onPageChange={(page) => loadThreads(page)}
+                  onSelect={openThread}
+                  isAdmin={false}
+                />
+                <ThreadView loading={threadLoading} thread={selectedThread} onReply={onReply} />
+              </Stack>
+            </CardBody>
+          </Card>
+        )}
+      </Stack>
+    </Container>
   )
 }
 

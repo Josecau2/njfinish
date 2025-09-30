@@ -1,3 +1,4 @@
+import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Card, CardBody, Flex, Box, FormControl, Textarea, Badge } from '@chakra-ui/react'
@@ -6,8 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
 import Swal from 'sweetalert2'
-import CButton from '../../../components/ui/CButton'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
+
 
 const TermsPage = () => {
   const { t } = useTranslation()
@@ -102,17 +102,17 @@ const TermsPage = () => {
                   placeholder={t('settings.terms.placeholder', 'Enter terms and conditions...')}
                 />
                 <div className="mt-3 d-flex gap-2">
-                  <CButton colorScheme="blue" disabled={saving} onClick={() => onSave(false)}>
+                  <Button colorScheme="blue" disabled={saving} onClick={() => onSave(false)}>
                     {saving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
-                  </CButton>
-                  <CButton
+                  </Button>
+                  <Button
                     status="warning"
                     variant="outline"
                     disabled={saving}
                     onClick={() => onSave(true)}
                   >
                     {t('settings.terms.publishNew', 'Publish as new version')}
-                  </CButton>
+                  </Button>
                 </div>
                 {version && (
                   <div className="text-muted mt-2 small">
@@ -130,22 +130,22 @@ const TermsPage = () => {
               <div className="text-muted small mb-2">
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </div>
-              <CTable hover responsive>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell>{t('common.user', 'User')}</CTableHeaderCell>
-                    <CTableHeaderCell>{t('common.email', 'Email')}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-end">
+              <Table hover responsive>
+                <Thead>
+                  <Tr>
+                    <Th>{t('common.user', 'User')}</Th>
+                    <Th>{t('common.email', 'Email')}</Th>
+                    <Th className="text-end">
                       {t('settings.terms.status', 'Status')}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {(acceptance.users || []).map((u) => (
-                    <CTableRow key={u.id}>
-                      <CTableDataCell>{u.name || '-'}</CTableDataCell>
-                      <CTableDataCell>{u.email || '-'}</CTableDataCell>
-                      <CTableDataCell className="text-end">
+                    <Tr key={u.id}>
+                      <Td>{u.name || '-'}</Td>
+                      <Td>{u.email || '-'}</Td>
+                      <Td className="text-end">
                         {u.accepted ? (
                           <Badge status="success">
                             {t('settings.terms.accepted', 'Accepted')}
@@ -155,11 +155,11 @@ const TermsPage = () => {
                             {t('settings.terms.pending', 'Pending')}
                           </Badge>
                         )}
-                      </CTableDataCell>
-                    </CTableRow>
+                      </Td>
+                    </Tr>
                   ))}
-                </CTableBody>
-              </CTable>
+                </Tbody>
+              </Table>
             </CardBody>
           </Card>
         </Box>
