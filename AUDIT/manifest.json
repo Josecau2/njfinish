@@ -14,8 +14,20 @@
     "CreateQuoteModal", "CreateOrderModal", "CustomerEditModal", "ProductDetailModal"
   ],
   "components": [
-    "AppShell","AppHeader","AppSidebar","SecondaryToolbar","PageContainer","TileCard",
-    "DataTable","AnimatedButton","StatusBadge","Toast","Alert"
+    "AppShell",
+    "AppHeader",
+    "AppSidebar",
+    "SecondaryToolbar",
+    "PageContainer",
+    "TileCard",
+    "DataTable",
+    "ResponsiveTable",
+    "AnimatedButton",
+    "StatusBadge",
+    "Toast",
+    "Alert",
+    "LoadingSkeleton",
+    "ErrorBoundary"
   ],
   "buttons": [
     "Primary","Secondary","Tertiary","Destructive","IconOnly"

@@ -1,16 +1,26 @@
 # PROGRESS
-- [x] 1 Baseline & guardrails
-- [x] 2 Global no-overflow & viewport
-- [x] 3 App shell (header/sidebar) responsive
-- [x] 4 Sticky header & secondary toolbar & 44px taps
-- [x] 5 Sidebar (expanded/collapsed + mobile drawer)
-- [x] 6 Page containers & spacing tokens
-- [x] 7 Modals & submodals sizing/behavior
-- [x] 8 Grids/tiles for products & quotes
+- [ ] 0 Pre-flight & memory setup
+- [ ] 1 Baseline & guardrails
+- [ ] 2 Global no-overflow & viewport
+- [ ] 3 App shell (header/sidebar) responsive
+- [ ] 3.5 Error boundary
+- [ ] 4 Sticky header & secondary toolbar & 44px taps
+- [ ] 5 Sidebar (expanded/collapsed + mobile drawer)
+- [ ] 6 Page containers & spacing tokens
+- [ ] 6.5 Loading states & skeletons
+- [ ] 7 Modals & submodals sizing/behavior
+- [ ] 8 Grids/tiles for products & quotes
+- [ ] 8.2 Mobile table strategy
 - [ ] 9 Icon sizes & 44px hit-area enforced
 - [ ] 10 Dark mode contrast pass
+- [ ] 10.2 Reduced motion support
 - [ ] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
 - [ ] 12 Full AUDIT (pages, components, modals, buttons)
+- [ ] 12.2 Audit playground implementation
+- [ ] 12.3 Auto-generate manifest
 - [ ] 13 Automated layout + a11y tests (Playwright + Axe)
+- [ ] 13.3 Test failure protocol
+- [ ] 13.4 Bundle size check
 - [ ] 14 CI pipeline for audit on push/PR
 - [ ] 15 Final QA matrix + closeout
+- [ ] 15.2 Push & create PR
