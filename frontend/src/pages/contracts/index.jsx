@@ -62,7 +62,6 @@ const Contracts = () => {
         const response = await getContracts()
         setContracts(response.data || [])
       } catch (err) {
-        console.error('Error fetching contracts:', err)
         setError(err.message || 'Failed to fetch contracts')
       } finally {
         setLoading(false)

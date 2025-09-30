@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addManufacturer } from '../../../store/slices/manufacturersSlice'
 import { getContrastColor } from '../../../utils/colorUtils'
-import { Info } from 'lucide-react'
 import {
   FormControl,
   Input,
