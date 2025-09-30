@@ -5,13 +5,13 @@
 - [x] 3 App shell (header/sidebar) responsive
 - [x] 3.5 Error boundary
 - [x] 4 Sticky header & secondary toolbar & 44px taps
-- [ ] 5 Sidebar (expanded/collapsed + mobile drawer)
-- [ ] 6 Page containers & spacing tokens
-- [ ] 6.5 Loading states & skeletons
-- [ ] 7 Modals & submodals sizing/behavior
-- [ ] 8 Grids/tiles for products & quotes
-- [ ] 8.2 Mobile table strategy
-- [ ] 9 Icon sizes & 44px hit-area enforced
+- [x] 5 Sidebar (expanded/collapsed + mobile drawer)
+- [x] 6 Page containers & spacing tokens
+- [x] 6.5 Loading states & skeletons
+- [x] 7 Modals & submodals sizing/behavior
+- [x] 8 Grids/tiles for products & quotes
+- [x] 8.2 Mobile table strategy
+- [x] 9 Icon sizes & 44px hit-area enforced
 - [ ] 10 Dark mode contrast pass
 - [ ] 10.2 Reduced motion support
 - [ ] 11 Customization compatibility (COLORS/LOGOS/PDF/AUTH ONLY)
