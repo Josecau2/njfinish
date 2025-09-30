@@ -488,7 +488,7 @@ const CustomerForm = ({
                     disabled={loading}
                     className="d-flex align-items-center gap-2"
                   >
-                    {loading ? <Spinner size="sm" /> : <Icon as={Save} size="sm" />}
+                    {loading ? <Spinner size="sm" /> : <Icon as={Save} boxSize={4} />}
                     {isEditing
                       ? t('customers.form.actions.update')
                       : t('customers.form.actions.create')}

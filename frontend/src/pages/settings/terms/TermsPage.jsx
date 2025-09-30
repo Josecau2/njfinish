@@ -130,7 +130,7 @@ const TermsPage = () => {
               <div className="text-muted small mb-2">
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </div>
-              <Table hover responsive>
+              <Table variant="simple">
                 <Thead>
                   <Tr>
                     <Th>{t('common.user', 'User')}</Th>
