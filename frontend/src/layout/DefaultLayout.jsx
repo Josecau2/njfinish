@@ -12,6 +12,7 @@ import AppBreadcrumb from '../components/AppBreadcrumb'
 
 const DefaultLayout = () => {
   const user = useSelector((s) => s.auth.user)
+  const { sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
   const [forceTerms, setForceTerms] = useState(false)
   const [latestVersion, setLatestVersion] = useState(null)
@@ -20,6 +21,12 @@ const DefaultLayout = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Calculate sidebar width based on state
+  const sidebarWidth = useMemo(() => {
+    const collapsed = !sidebarPinned && sidebarUnfoldable
+    return collapsed ? "72px" : "260px"
+  }, [sidebarPinned, sidebarUnfoldable])
 
   useEffect(() => {
     const updateDensity = () => {
@@ -135,17 +142,24 @@ const DefaultLayout = () => {
   }
 
   return (
-    <Flex minH="100vh" background="background">
+    <Box minH="100vh" background="background">
       <AppSidebar />
-      <Flex direction="column" flex="1" minH="100vh">
-        <AppHeader />
-        <AppBreadcrumb />
-        <Box as="main" flex="1" pb={6} className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AppContent />
-        </Box>
-        <AppFooter />
-      </Flex>
-    </Flex>
+      <Box
+        ml={{ base: 0, lg: sidebarWidth }}
+        transition="margin-left 0.15s ease-in-out"
+        minH="100vh"
+        className="main-content-area"
+      >
+        <Flex direction="column" minH="100vh">
+          <AppHeader />
+          <AppBreadcrumb />
+          <Box as="main" flex="1" pb={6} className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <AppContent />
+          </Box>
+          <AppFooter />
+        </Flex>
+      </Box>
+    </Box>
   )
 }
 

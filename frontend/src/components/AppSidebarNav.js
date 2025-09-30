@@ -1,25 +1,12 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
-  Flex,
-  HStack,
-  Stack,
-  Icon,
-  Text,
-  Tooltip,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { useDispatch, useSelector } from 'react-redux'
+import SimpleBar from 'simplebar-react'
+import 'simplebar-react/dist/simplebar.min.css'
+import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
+import { ChevronDown } from 'lucide-react'
+import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 
 const isActivePath = (pathname, target) => {
   if (!target) return false
@@ -27,203 +14,392 @@ const isActivePath = (pathname, target) => {
   return pathname.startsWith(`${target}/`)
 }
 
-const SidebarLink = ({ item, collapsed, onNavigate, active }) => {
-  // Always call hooks unconditionally to maintain consistent hook order
-  const inactiveIconColor = useColorModeValue('slate.500', 'slate.300')
-  const inactiveTextColor = useColorModeValue('slate.700', 'slate.200')
-  const hoverBg = useColorModeValue('brand.50', 'slate.700')
+const buildColors = (fontColor) => {
+  const base = fontColor && fontColor.trim() ? fontColor : '#e2e8f0'
+  const icon = base.toLowerCase() === '#ffffff' ? '#e2e8f0' : '#cbd5f5'
+  return {
+    fontColor: base,
+    iconColor: icon,
+    accentColor: '#ffffff',
+    hoverBg: 'rgba(255, 255, 255, 0.08)',
+    activeBg: 'rgba(255, 255, 255, 0.16)',
+    borderColor: 'rgba(148, 163, 184, 0.2)',
+  }
+}
 
-  // Use the hook results conditionally
-  const iconColor = active ? 'brand.600' : inactiveIconColor
-  const textColor = active ? 'brand.600' : inactiveTextColor
+const hasActiveChild = (children, pathname) => {
+  return children?.some((child) => {
+    if (!child) return false
+    if (child.type === 'group') {
+      return hasActiveChild(child.children, pathname)
+    }
+    return isActivePath(pathname, child.to)
+  })
+}
 
-  if (collapsed) {
+const getIconElement = (IconComponent, colors) => {
+  if (!IconComponent) {
     return (
-      <Tooltip label={item.label} placement="right" hasArrow>
-        <Box
-          as="button"
-          onClick={() => onNavigate?.(item.to)}
-          w="full"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          py={2}
-          borderRadius="md"
-          bg={active ? hoverBg : 'transparent'}
-          _hover={{ bg: hoverBg }}
-        >
-          <Icon as={item.icon} boxSize={5} color={iconColor} />
-        </Box>
-      </Tooltip>
+      <span className="nav-icon nav-icon-bullet" aria-hidden>
+        <span />
+      </span>
     )
   }
-
   return (
-    <Flex
-      role="button"
-      tabIndex={0}
-      onClick={() => onNavigate?.(item.to)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onNavigate?.(item.to)
-        }
-      }}
-      align="center"
-      gap={3}
-      px={3}
-      py={2.5}
-      borderRadius="md"
-      bg={active ? hoverBg : 'transparent'}
-      color={textColor}
-      _hover={{ bg: hoverBg, color: 'brand.600' }}
-      cursor="pointer"
-    >
-      <Icon as={item.icon} boxSize={5} color={iconColor} />
-      <Text fontWeight={active ? 'semibold' : 'medium'} fontSize="sm" noOfLines={1}>
-        {item.label}
-      </Text>
-    </Flex>
+    <span className="nav-icon" aria-hidden>
+      <IconComponent size={20} color={colors.iconColor} strokeWidth={1.75} />
+    </span>
   )
 }
 
-const CollapsedGroup = ({ item, onNavigate, active }) => {
-  const hoverBg = useColorModeValue('brand.50', 'slate.700')
-  const inactiveIconColor = useColorModeValue('slate.500', 'slate.300')
-  const iconColor = active ? 'brand.600' : inactiveIconColor
-
-  return (
-    <Menu placement="right-start">
-      <Tooltip label={item.label} placement="right" hasArrow>
-        <MenuButton
-          as={Box}
-          w="full"
-          py={2}
-          borderRadius="md"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          cursor="pointer"
-          bg={active ? hoverBg : 'transparent'}
-          _hover={{ bg: hoverBg }}
-        >
-          <Icon as={item.icon} boxSize={5} color={iconColor} />
-        </MenuButton>
-      </Tooltip>
-      <MenuList ml={2} minW="220px">
-        {item.children?.map((child) => (
-          <MenuItem key={child.to || child.label} onClick={() => onNavigate(child.to)}>
-            <HStack spacing={3}>
-              <Icon as={child.icon} boxSize={4} />
-              <Text fontSize="sm">{child.label}</Text>
-            </HStack>
-          </MenuItem>
-        ))}
-      </MenuList>
-    </Menu>
-  )
-}
-
-const ExpandedGroup = ({ item, onNavigate, pathname }) => {
-  const activeChildIndex = useMemo(() => {
-    const index = item.children?.findIndex((child) => isActivePath(pathname, child.to))
-    return index !== undefined && index >= 0 ? index : -1
-  }, [item.children, pathname])
-
-  const defaultIndex = activeChildIndex >= 0 ? [0] : []
-  const hoverBg = useColorModeValue('brand.50', 'slate.700')
-  const iconColor = useColorModeValue('slate.500', 'slate.300')
-  const inactiveTextColor = useColorModeValue('slate.700', 'slate.200')
-
-  return (
-    <Accordion allowMultiple defaultIndex={defaultIndex} reduceMotion>
-      <AccordionItem border="none">
-        {({ isExpanded }) => (
-          <>
-            <AccordionButton
-              px={3}
-              py={2.5}
-              borderRadius="md"
-              _expanded={{ bg: hoverBg, color: 'brand.600' }}
-              _hover={{ bg: hoverBg }}
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <HStack
-                spacing={3}
-                flex="1"
-                minW={0}
-                color={isExpanded || activeChildIndex >= 0 ? 'brand.600' : inactiveTextColor}
-              >
-                <Icon
-                  as={item.icon}
-                  boxSize={5}
-                  color={isExpanded || activeChildIndex >= 0 ? 'brand.600' : iconColor}
-                />
-                <Text fontWeight={isExpanded || activeChildIndex >= 0 ? 'semibold' : 'medium'} fontSize="sm" noOfLines={1}>
-                  {item.label}
-                </Text>
-              </HStack>
-              <AccordionIcon />
-            </AccordionButton>
-            <AccordionPanel pl={3} pr={2} pb={2} pt={1}>
-              <Stack spacing={1}>
-                {item.children?.map((child) => (
-                  <SidebarLink
-                    key={child.to || child.label}
-                    item={child}
-                    collapsed={false}
-                    onNavigate={onNavigate}
-                    active={isActivePath(pathname, child.to)}
-                  />
-                ))}
-              </Stack>
-            </AccordionPanel>
-          </>
-        )}
-      </AccordionItem>
-    </Accordion>
-  )
-}
-
-const AppSidebarNav = ({ items, collapsed = false, onNavigate }) => {
+const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const location = useLocation()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
+  const colors = useMemo(() => buildColors(fontColor), [fontColor])
 
-  const handleNavigate = (target) => {
+  const handleNavigate = (target, isExternal = false) => {
     if (!target) return
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    if (isExternal) {
+      window.open(target, '_blank', 'noopener,noreferrer')
+      return
+    }
+    if (isMobile) {
+      dispatch(setSidebarShow(false))
+    } else if (!sidebarPinned) {
+      dispatch(setSidebarUnfoldable(true))
+    }
     onNavigate?.(target)
     navigate(target)
   }
 
-  return (
-    <Stack spacing={1} py={2} px={collapsed ? 1 : 2}>
-      {items?.map((item) => {
-        if (item.type === 'group') {
-          const active = item.children?.some((child) => isActivePath(location.pathname, child.to))
-          return collapsed ? (
-            <CollapsedGroup key={item.label} item={item} onNavigate={handleNavigate} active={active} />
-          ) : (
-            <ExpandedGroup
-              key={item.label}
-              item={item}
-              onNavigate={handleNavigate}
-              pathname={location.pathname}
-            />
-          )
-        }
+  const renderLink = (item, depth = 0, opts = {}) => {
+    const collapsedOverride = opts.collapsed ?? collapsed
+    const active = isActivePath(location.pathname, item.to)
+    const paddingLeft = collapsedOverride ? undefined : `calc(0.9rem + ${depth} * 0.85rem)`
+    const classNames = ['nav-link']
+    if (active) classNames.push('active')
+    const sharedStyle = {
+      color: active ? colors.accentColor : colors.fontColor,
+      backgroundColor: active ? colors.activeBg : 'transparent',
+      paddingLeft,
+    }
+
+    const content = (
+      <>
+        {getIconElement(item.icon, colors)}
+        {!collapsedOverride && (
+          <span className="nav-label">
+            {item.label}
+          </span>
+        )}
+        {!collapsedOverride && item.badge && (
+          <span className="nav-link-badge">{item.badge.text}</span>
+        )}
+      </>
+    )
+
+    const key = item.to || item.href || `${item.label}-${depth}`
+
+    if (item.to) {
+      return (
+        <li key={key} className="nav-item">
+          <button
+            type="button"
+            className={classNames.join(' ')}
+            style={sharedStyle}
+            title={collapsedOverride ? item.label : undefined}
+            onClick={() => handleNavigate(item.to)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                handleNavigate(item.to)
+              }
+            }}
+            aria-current={active ? 'page' : undefined}
+          >
+            {content}
+          </button>
+        </li>
+      )
+    }
+
+    if (item.href) {
+      return (
+        <li key={key} className="nav-item">
+          <a
+            className={classNames.join(' ')}
+            style={sharedStyle}
+            title={collapsedOverride ? item.label : undefined}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {content}
+          </a>
+        </li>
+      )
+    }
+
+    return null
+  }
+
+  const renderCollapsedGroupMenuItems = (children, depth = 0) => {
+    return children?.map((child) => {
+      if (child.type === 'group') {
+        const nested = renderCollapsedGroupMenuItems(child.children, depth + 1)
+        if (!nested || nested.length === 0) return null
         return (
-          <SidebarLink
-            key={item.to || item.label}
-            item={item}
-            collapsed={collapsed}
-            onNavigate={handleNavigate}
-            active={isActivePath(location.pathname, item.to)}
-          />
+          <MenuItem key={`${child.label}-${depth}`} className="nav-group-menu-heading" isDisabled>
+            {child.label}
+          </MenuItem>
         )
-      })}
-    </Stack>
+      }
+
+      const active = isActivePath(location.pathname, child.to)
+      return (
+        <MenuItem
+          key={`${child.to || child.label}-${depth}`}
+          className={`nav-group-menu-item ${active ? 'active' : ''}`}
+          onClick={() => handleNavigate(child.to)}
+        >
+          <span className="nav-link nav-link--menu">
+            {getIconElement(child.icon, colors)}
+            <span className="nav-label">{child.label}</span>
+          </span>
+        </MenuItem>
+      )
+    })
+  }
+
+  const renderGroupCollapsed = (item, depth = 0) => {
+    const active = hasActiveChild(item.children, location.pathname)
+    const classNames = ['nav-link', 'nav-group-toggle']
+    if (active) classNames.push('active')
+    const key = `${item.label}-${depth}`
+
+    return (
+      <li key={key} className={`nav-group nav-group--compact ${active ? 'show' : ''}`}>
+        <Menu placement="right-start" offset={[8, 12]} isLazy>
+          <MenuButton
+            as="button"
+            type="button"
+            className={classNames.join(' ')}
+            title={item.label}
+            style={{
+              color: active ? colors.accentColor : colors.fontColor,
+              backgroundColor: active ? colors.activeBg : 'transparent',
+            }}
+          >
+            {getIconElement(item.icon, colors)}
+          </MenuButton>
+          <MenuList className="nav-group-popover">
+            <div className="nav-group-menu-label">{item.label}</div>
+            {renderCollapsedGroupMenuItems(item.children, depth + 1)}
+          </MenuList>
+        </Menu>
+      </li>
+    )
+  }
+
+  const renderGroupExpanded = (item, depth = 0) => {
+    const active = hasActiveChild(item.children, location.pathname)
+    const [open, setOpen] = useState(active)
+
+    const handleToggle = () => {
+      setOpen((prev) => !prev)
+    }
+
+    return (
+      <li key={`${item.label}-${depth}`} className={`nav-group ${open ? 'show' : ''}`}>
+        <button
+          type="button"
+          className={`nav-link nav-group-toggle ${open ? 'active' : ''}`}
+          onClick={handleToggle}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              handleToggle()
+            }
+          }}
+          aria-expanded={open}
+          style={{
+            color: open || active ? colors.accentColor : colors.fontColor,
+            backgroundColor: open || active ? colors.activeBg : 'transparent',
+            paddingLeft: `calc(0.9rem + ${depth} * 0.85rem)`,
+          }}
+        >
+          {getIconElement(item.icon, colors)}
+          <span className="nav-label">{item.label}</span>
+          <span className="nav-caret" aria-hidden>
+            <ChevronDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+          </span>
+        </button>
+        <ul className="nav-group-items" style={{ display: open ? 'block' : 'none' }}>
+          {item.children?.map((child) => {
+            if (child.type === 'group') {
+              return renderGroupExpanded(child, depth + 1)
+            }
+            return renderLink(child, depth + 1, { collapsed: false })
+          })}
+        </ul>
+      </li>
+    )
+  }
+
+  const renderItem = (item, depth = 0) => {
+    if (item.type === 'group') {
+      return collapsed ? renderGroupCollapsed(item, depth) : renderGroupExpanded(item, depth)
+    }
+    return renderLink(item, depth)
+  }
+
+  return (
+    <>
+      <style>{`
+        .c-sidebar-nav {
+          height: 100%;
+          width: 100%;
+        }
+        .c-sidebar-nav .simplebar-scrollbar:before {
+          background: rgba(148, 163, 184, 0.4);
+        }
+        .c-sidebar-nav[data-collapsed="true"] .simplebar-scrollbar:before {
+          opacity: 0;
+        }
+        .c-sidebar-nav .simplebar-content {
+          display: block;
+          padding: 0 !important;
+        }
+        .c-sidebar-nav .nav {
+          list-style: none;
+          margin: 0;
+          padding: 0.75rem 0;
+        }
+        .c-sidebar-nav .nav-item {
+          position: relative;
+          padding: 0;
+        }
+        .c-sidebar-nav .nav-link {
+          width: 100%;
+          border: none;
+          background: transparent;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          padding: 0.55rem 0.9rem;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: background 0.15s ease, color 0.15s ease;
+          text-decoration: none;
+        }
+        .c-sidebar-nav .nav-link:hover {
+          background: rgba(255, 255, 255, 0.08);
+        }
+        .c-sidebar-nav[data-collapsed="true"] .nav-link {
+          justify-content: center;
+          padding: 0.65rem 0;
+        }
+        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-label,
+        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-link-badge,
+        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-caret {
+          display: none;
+        }
+        .c-sidebar-nav .nav-link.active {
+          font-weight: 600;
+        }
+        .c-sidebar-nav .nav-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .c-sidebar-nav .nav-icon-bullet span {
+          width: 6px;
+          height: 6px;
+          border-radius: 999px;
+          background: currentColor;
+        }
+        .c-sidebar-nav .nav-label {
+          flex: 1;
+          min-width: 0;
+          white-space: nowrap;
+        }
+        .c-sidebar-nav .nav-link-badge {
+          font-size: 0.65rem;
+          font-weight: 600;
+          padding: 0.1rem 0.45rem;
+          border-radius: 999px;
+          background: rgba(148, 163, 184, 0.24);
+        }
+        .c-sidebar-nav .nav-group {
+          position: relative;
+        }
+        .c-sidebar-nav .nav-group-toggle {
+          width: 100%;
+        }
+        .c-sidebar-nav .nav-group-items {
+          list-style: none;
+          margin: 0;
+          padding: 0.15rem 0 0.25rem 0;
+        }
+        .c-sidebar-nav .nav-group.show > .nav-group-items {
+          display: block;
+        }
+        .c-sidebar-nav .nav-group-items .nav-item {
+          padding-left: 0.35rem;
+        }
+        .c-sidebar-nav .nav-caret {
+          margin-left: auto;
+          display: inline-flex;
+          align-items: center;
+        }
+        .nav-group-popover {
+          min-width: 220px;
+          background: rgba(15, 23, 42, 0.95);
+          color: #f8fafc;
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 12px;
+          padding: 0.35rem 0;
+        }
+        .nav-group-menu-label {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          opacity: 0.8;
+          padding: 0.35rem 0.9rem 0.15rem;
+        }
+        .nav-group-menu-item {
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+        }
+        .nav-group-menu-item .nav-link--menu {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          width: 100%;
+        }
+        .nav-group-menu-item.active,
+        .nav-group-menu-item:hover {
+          background: rgba(96, 165, 250, 0.16);
+        }
+      `}</style>
+      <nav className="c-sidebar-nav" data-collapsed={collapsed ? 'true' : 'false'}>
+        <SimpleBar style={{ height: '100%' }}>
+          <ul className="nav">
+            {items?.map((item) => renderItem(item))}
+          </ul>
+        </SimpleBar>
+      </nav>
+    </>
   )
 }
 
@@ -233,31 +409,18 @@ AppSidebarNav.propTypes = {
       type: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
       to: PropTypes.string,
+      href: PropTypes.string,
       icon: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
       children: PropTypes.array,
+      badge: PropTypes.shape({
+        text: PropTypes.string,
+        color: PropTypes.string,
+      }),
     }),
   ).isRequired,
   collapsed: PropTypes.bool,
   onNavigate: PropTypes.func,
-}
-
-SidebarLink.propTypes = {
-  item: PropTypes.object.isRequired,
-  collapsed: PropTypes.bool,
-  onNavigate: PropTypes.func,
-  active: PropTypes.bool,
-}
-
-CollapsedGroup.propTypes = {
-  item: PropTypes.object.isRequired,
-  onNavigate: PropTypes.func,
-  active: PropTypes.bool,
-}
-
-ExpandedGroup.propTypes = {
-  item: PropTypes.object.isRequired,
-  onNavigate: PropTypes.func,
-  pathname: PropTypes.string.isRequired,
+  fontColor: PropTypes.string,
 }
 
 export default AppSidebarNav

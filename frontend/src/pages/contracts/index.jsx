@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container, Flex, Box, Input, Select, Card, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from '@chakra-ui/react'
-import { Search, Filter, Plus, Calendar, User, FileText, Briefcase, MoreHorizontal, Edit, Trash, Trash2 } from 'lucide-react'
+import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, Card, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react'
+import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
 import { getContracts } from '../../queries/proposalQueries'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
 
 const Contracts = () => {
   const { t } = useTranslation()
-  const dispatch = useDispatch()
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [viewMode, setViewMode] = useState('card')
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [showModal, setShowModal] = useState(false)
-  const [selectedContract, setSelectedContract] = useState(null)
-  const contractsState = useSelector((state) => state.contracts)
-  const { data: contracts = [], loading, error } = contractsState
+  const [contracts, setContracts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
   const customization = useSelector((state) => state.customization)
 
   // Function to get optimal text color for contrast
@@ -29,14 +29,11 @@ const Contracts = () => {
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
-
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
     // Return dark color for light backgrounds, light color for dark backgrounds
     return luminance > 0.5 ? '#2d3748' : '#ffffff'
   }
-
   const contractsdata = Array.isArray(contracts) ? contracts : []
 
   const defaultFormData = {
@@ -53,50 +50,56 @@ const Contracts = () => {
     files: [],
     customerName: '',
   }
-
   const [loadings, setLoadings] = useState(true)
+
   const [formData, setFormData] = useState(defaultFormData)
 
   useEffect(() => {
-    dispatch(getContracts())
-  }, [dispatch])
+    const fetchContracts = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await getContracts()
+        setContracts(response.data || [])
+      } catch (err) {
+        console.error('Error fetching contracts:', err)
+        setError(err.message || 'Failed to fetch contracts')
+      } finally {
+        setLoading(false)
+      }
+    }
 
+    fetchContracts()
+  }, [])
   const handleItemsPerPageChange = (newItemsPerPage) => {
     setItemsPerPage(newItemsPerPage)
     setCurrentPage(1)
     localStorage.setItem('contractsItemsPerPage', newItemsPerPage.toString())
   }
-
   const getStatusColor = (status) => {
     const colors = {
-      Draft: 'secondary',
-      'Measurement Scheduled': 'info',
-      'Measurement done': 'primary',
-      'Design done': 'success',
-      'Follow up 1': 'warning',
-      'Follow up 2': 'warning',
-      'Follow up 3': 'danger',
-      'Proposal accepted': 'success',
+      draft: 'gray',
+      'measurement scheduled': 'purple',
+      'measurement done': 'blue',
+      'design done': 'green',
+      'follow up 1': 'orange',
+      'follow up 2': 'orange',
+      'follow up 3': 'red',
+      'proposal accepted': 'green',
     }
-    return colors[status] || 'secondary'
+    return colors[(status || 'Draft').toLowerCase()] || 'gray'
   }
-
   const filteredProposals = contractsdata?.filter((item) => {
     const matchSearch = item.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchSearch
   })
-
-  const paginatedItems = filteredProposals?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  )
-
+  const paginatedItems =
+    filteredProposals?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) || []
   const totalPages = Math.ceil((filteredProposals?.length || 0) / itemsPerPage)
 
   const handlePageChange = (number) => {
     setCurrentPage(number)
   }
-
   const handleNavigate = (id) => {
     axiosInstance
       .get(`/api/quotes/proposalByID/${id}`)
@@ -110,20 +113,16 @@ const Contracts = () => {
       })
     setShowModal(true)
   }
-
   const handleEdit = (id) => {
     // TODO: Implement edit functionality
   }
-
   const handleDelete = (id) => {
     // TODO: Implement delete functionality
   }
-
   const generateHTMLTemplate = (formData) => {
     const headerColor = '#FFFFFF'
     const headerTxtColor = '#000000'
     const items = formData?.manufacturersData?.[0]?.items || []
-
     // Localized labels for the PDF/HTML template
     const pdf = {
       title: t('nav.contracts'),
@@ -155,7 +154,6 @@ const Contracts = () => {
       no: t('common.no'),
       na: t('common.na'),
     }
-
     const proposalItems = items.map((item) => ({
       qty: item.qty || 0,
       code: item.code || '',
@@ -167,7 +165,6 @@ const Contracts = () => {
       total: item.includeAssemblyFee ? parseFloat(item.total) || 0 : parseFloat(item.price) || 0,
       modifications: item.modifications || {},
     }))
-
     const summary = formData?.manufacturersData?.[0]?.summary || {}
     const priceSummary = formData?.manufacturersData?.[0]?.items?.length
       ? {
@@ -188,7 +185,6 @@ const Contracts = () => {
           tax: 0,
           grandTotal: 0,
         }
-
     return `
       <!DOCTYPE html>
       <html>
@@ -301,463 +297,371 @@ const Contracts = () => {
       </html>
     `
   }
-
   const htmlContent = generateHTMLTemplate(formData)
 
-  return (
-    <Container fluid className="contracts-container">
-      {/* Header Section */}
-      <PageHeader
-        title={
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: '48px',
-                height: '48px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-              }}
-            >
-              <Icon as={Briefcase} style={{ fontSize: '24px', color: 'white' }} />
-            </div>
-            {t('nav.contracts')}
-          </div>
-        }
-        subtitle={t('contracts.subtitle')}
-      />
+  const statusTranslationMap = {
 
-      {/* Search and Controls */}
-      <Card className="contracts-controls-card">
-        <CardBody>
-          <Flex className="align-items-center">
-            <Box md={6} lg={4}>
-              <InputGroup>
-                <InputLeftElement style={{ background: 'none', border: 'none' }}>
-                  <Icon as={Search} />
+    draft: 'draft',
+    'measurement scheduled': 'measurementScheduled',
+    'measurement done': 'measurementDone',
+    'design done': 'designDone',
+    'follow up 1': 'followUp1',
+    'follow up 2': 'followUp2',
+    'follow up 3': 'followUp3',
+    'proposal accepted': 'proposalAccepted',
+  }
+  const getStatusLabel = (status) => {
+    const key = statusTranslationMap[(status || 'Draft').toLowerCase()] || null
+    return key ? t(`contracts.status.${key}`) : status || t('contracts.status.draft')
+  }
+  const filteredCount = filteredProposals?.length || 0
+  const headerBg = customization?.headerBg || '#667eea'
+  const headerTextColor = getContrastColor(headerBg)
+  return (
+    <Container maxW="7xl" py={6}>
+      <Stack spacing={6}>
+        <PageHeader
+          title={t('nav.contracts')}
+          subtitle={t('contracts.subtitle')}
+          icon={Briefcase}
+        />
+        <Card variant="outline">
+          <CardBody>
+            <Stack
+              direction={{ base: 'column', lg: 'row' }}
+              spacing={4}
+              align={{ base: 'stretch', lg: 'center' }}
+              justify="space-between"
+            >
+              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} color="gray.400" boxSize={4} />
                 </InputLeftElement>
                 <Input
-                  type="text"
-                  placeholder={t('contracts.searchPlaceholder')}
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="contracts-search-input"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder={t('contracts.searchPlaceholder')}
+                  aria-label={t('contracts.searchPlaceholder')}
                 />
               </InputGroup>
-            </Box>
-
-            <Box xs="auto" className="ms-auto">
-              <div className="d-flex align-items-center gap-3">
-                <div className="d-flex align-items-center gap-2">
-                  <small className="text-muted">{t('common.itemsPerPage')}</small>
+              <Stack
+                direction={{ base: 'column', md: 'row' }}
+                spacing={4}
+                align={{ base: 'stretch', md: 'center' }}
+                justify="flex-end"
+                flex="1"
+              >
+                <HStack spacing={2} justify="flex-end">
+                  <Text fontSize="sm" color="gray.500">
+                    {t('common.itemsPerPage')}
+                  </Text>
                   <Select
                     size="sm"
+                    maxW="90px"
                     value={itemsPerPage}
-                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                    style={{ width: '80px', borderRadius: '8px' }}
+                    onChange={(event) => handleItemsPerPageChange(Number(event.target.value))}
                   >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={30}>30</option>
+                    {[10, 20, 30].map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
                   </Select>
-                </div>
-
-                <ButtonGroup size="sm" isAttached>
+                </HStack>
+                <ButtonGroup size="sm" isAttached alignSelf={{ base: 'flex-start', md: 'auto' }}>
                   <Button
-                    colorScheme={viewMode === 'card' ? 'brand' : 'gray'}
+                    colorScheme="brand"
                     variant={viewMode === 'card' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('card')}
-                    borderRadius="8px 0 0 8px"
                   >
                     {t('contracts.view.cards')}
                   </Button>
                   <Button
-                    colorScheme={viewMode === 'table' ? 'brand' : 'gray'}
+                    colorScheme="brand"
                     variant={viewMode === 'table' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('table')}
-                    borderRadius="0 8px 8px 0"
                   >
                     {t('contracts.view.table')}
                   </Button>
                 </ButtonGroup>
-              </div>
-            </Box>
-
-            {/* <Box xs={12} className="mt-3">
-              <span className="text-muted small">
-                Showing {filteredProposals?.length || 0} of {contractsdata?.length || 0} contracts
-              </span>
-            </Box> */}
-          </Flex>
-        </CardBody>
-      </Card>
-
-      {/* Content */}
-      {viewMode === 'card' ? (
-        /* Card View */
-        <Flex className="g-3 mb-1">
-          {paginatedItems?.length === 0 ? (
-            <Box xs={12}>
-              <Card className="contracts-empty-state">
+              </Stack>
+            </Stack>
+          </CardBody>
+        </Card>
+        {error && (
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            <Text fontSize="sm">
+              {t('common.error', 'Error')}: {error}
+            </Text>
+          </Alert>
+        )}
+        {loading ? (
+          <Card variant="outline">
+            <CardBody>
+              <Center py={12} flexDirection="column" gap={3}>
+                <Spinner size="lg" color="brand.500" />
+                <Text fontSize="sm" color="gray.500">
+                  {t('common.loading', 'Loading...')}
+                </Text>
+              </Center>
+            </CardBody>
+          </Card>
+        ) : viewMode === 'card' ? (
+          <Stack spacing={4}>
+            {filteredCount === 0 ? (
+              <Card variant="outline">
                 <CardBody>
-                  <h5 className="text-muted mb-2">{t('contracts.empty.title')}</h5>
-                  <p className="text-muted mb-0">{t('contracts.empty.subtitle')}</p>
+                  <Center flexDirection="column" gap={3}>
+                    <Icon as={Search} boxSize={10} color="gray.300" />
+                    <Text fontWeight="medium">{t('contracts.empty.title')}</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {t('contracts.empty.subtitle')}
+                    </Text>
+                  </Center>
                 </CardBody>
               </Card>
-            </Box>
-          ) : (
-            paginatedItems?.map((item) => (
-              <Box key={item.id} xs={12} sm={6} lg={4} xl={3}>
-                <Card className="contracts-card">
-                  <CardHeader className="contracts-card-header">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="d-flex align-items-center gap-2">
-                        <Icon as={Calendar} size="sm" className="contracts-card-date-icon" />
-                        <small className="text-muted fw-medium">
-                          {new Date(item.date || item.createdAt).toLocaleDateString()}
-                        </small>
-                      </div>
-                      {/* <CDropdown>
-                        <CDropdownToggle
-                          color="ghost"
-                          size="sm"
-                          className="p-2 border-0"
-                          caret={false}
-                          style={{ borderRadius: '8px' }}
-                        >
-                          <Icon as={MoreHorizontal} />
-                        </CDropdownToggle>
-                        <CDropdownMenu>
-                          <CDropdownItem onClick={() => handleNavigate(item.id)}>
-                            <Icon as={FileText} className="me-2" />
-                            View Details
-                          </CDropdownItem>
-                          <CDropdownItem onClick={() => handleEdit(item.id)}>
-                            <Icon as={Edit} className="me-2" />
-                            Edit
-                          </CDropdownItem>
-                          <CDropdownItem
-                            onClick={() => handleDelete(item.id)}
-                            className="text-danger"
-                          >
-                            <Icon as={Trash} className="me-2" />
-                            Delete
-                          </CDropdownItem>
-                        </CDropdownMenu>
-                      </CDropdown> */}
-                    </div>
-                  </CardHeader>
-
-                  <CardBody className="pt-0">
-                    <div className="contracts-card-title d-flex align-items-center gap-2">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          backgroundColor: customization.headerBg || '#667eea',
-                          borderRadius: '8px',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          color: getContrastColor(customization.headerBg || '#667eea'),
-                        }}
-                      >
-                        {(item.customer?.name || 'N').charAt(0).toUpperCase()}
-                      </div>
-                      <span className="text-primary fw-semibold" style={{ cursor: 'pointer' }}>
-                        {item.customer?.name || t('common.na')}
-                      </span>
-                    </div>
-
-                    <div className="contracts-card-customer">
-                      {item.description || t('contracts.noDescription')}
-                    </div>
-
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                      <Icon
-                        as={Briefcase}
-                        size="sm"
-                        className="text-success"
-                        style={{ backgroundColor: '#e6f7e6', padding: '4px', borderRadius: '4px' }}
-                      />
-                      <small className="text-muted fw-medium">
-                        {item.designerData?.name || t('contracts.noDesigner')}
-                      </small>
-                    </div>
-
-                    <div className="d-flex justify-content-between align-items-center">
-                      <Badge
-                        colorScheme={getStatusColor(item.status || 'Draft')}
-                        className="contracts-card-status"
-                      >
-                        {(() => {
-                          const map = {
-                            draft: 'draft',
-                            'measurement scheduled': 'measurementScheduled',
-                            'measurement done': 'measurementDone',
-                            'design done': 'designDone',
-                            'follow up 1': 'followUp1',
-                            'follow up 2': 'followUp2',
-                            'follow up 3': 'followUp3',
-                            'proposal accepted': 'proposalAccepted',
-                          }
-                          const key = map[(item.status || 'Draft').toLowerCase()] || null
-                          return key
-                            ? t(`contracts.status.${key}`)
-                            : item.status || t('contracts.status.draft')
-                        })()}
-                      </Badge>
-
-                      <Button
-                        colorScheme="brand"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleNavigate(item.id)}
-                        px={3}
-                        borderRadius="20px"
-                        fontSize="12px"
-                        fontWeight="500"
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        {t('contracts.viewDetails')}
-                      </Button>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Box>
-            ))
-          )}
-        </Flex>
-      ) : (
-        /* Table View */
-        <Card className="contracts-table-card">
-          <CardBody className="p-0">
-            <div
-              className="table-wrap"
-              style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
-            >
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} spacing={4}>
+                {paginatedItems.map((item) => {
+                  const customerName = item.customer?.name || t('common.na')
+                  const initial = customerName.charAt(0).toUpperCase()
+                  return (
+                    <Card key={item.id} variant="outline" height="100%">
+                      <CardHeader pb={2}>
+                        <HStack justify="space-between" align="center">
+                          <HStack spacing={2} align="center">
+                            <Icon as={Calendar} boxSize={4} color="gray.400" />
+                            <Text fontSize="sm" color="gray.500">
+                              {new Date(item.date || item.createdAt).toLocaleDateString()}
+                            </Text>
+                          </HStack>
+                        </HStack>
+                      </CardHeader>
+                      <CardBody pt={0}>
+                        <Stack spacing={4}>
+                          <HStack spacing={3} align="center">
+                            <Box
+                              w={10}
+                              h={10}
+                              borderRadius="md"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              fontWeight="semibold"
+                              bg={headerBg}
+                              color={headerTextColor}
+                            >
+                              {initial}
+                            </Box>
+                            <Text
+                              fontWeight="semibold"
+                              color="brand.600"
+                              cursor="pointer"
+                              onClick={() => handleNavigate(item.id)}
+                            >
+                              {customerName}
+                            </Text>
+                          </HStack>
+                          <Text fontSize="sm" color="gray.600" noOfLines={2}>
+                            {item.description || t('contracts.noDescription')}
+                          </Text>
+                          <HStack spacing={2} align="center">
+                            <Box
+                              display="inline-flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              rounded="sm"
+                              bg="green.50"
+                              color="green.600"
+                              p={1}
+                            >
+                              <Icon as={Briefcase} boxSize={4} />
+                            </Box>
+                            <Text fontSize="sm" color="gray.600">
+                              {item.designerData?.name || t('contracts.noDesigner')}
+                            </Text>
+                          </HStack>
+                          <HStack justify="space-between" align="center">
+                            <Badge colorScheme={getStatusColor(item.status)} borderRadius="full" px={3} py={1}>
+                              {getStatusLabel(item.status)}
+                            </Badge>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="brand"
+                              onClick={() => handleNavigate(item.id)}
+                              leftIcon={<Icon as={FileText} boxSize={4} />}
+                            >
+                              {t('contracts.viewDetails')}
+                            </Button>
+                          </HStack>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  )
+                })}
+              </SimpleGrid>
+            )}
+          </Stack>
+        ) : (
+          <Card variant="outline">
+            <CardBody p={0}>
               <TableContainer>
-                <Table variant="striped" className="contracts-table table-modern">
-                  <Thead>
+                <Table variant="simple">
+                  <Thead bg="gray.50">
                     <Tr>
                       <Th>{t('contracts.table.date')}</Th>
                       <Th>{t('contracts.table.customer')}</Th>
-                      <Th>
-                        {t('contracts.table.description')}
-                      </Th>
+                      <Th>{t('contracts.table.description')}</Th>
                       <Th>{t('contracts.table.designer')}</Th>
                       <Th>{t('contracts.table.status')}</Th>
-                      <Th className="text-center">
-                        {t('contracts.table.actions')}
-                      </Th>
+                      <Th textAlign="center">{t('contracts.table.actions')}</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                  {paginatedItems?.length === 0 ? (
-                    <Tr>
-                      <Td colSpan="6" className="text-center py-5">
-                        <div className="text-muted">
-                          <p className="mb-0">{t('contracts.empty.title')}</p>
-                          <small>{t('contracts.empty.subtitle')}</small>
-                        </div>
-                      </Td>
-                    </Tr>
-                  ) : (
-                    paginatedItems?.map((item, index) => (
-                      <Tr key={index} style={{ transition: 'all 0.2s ease' }}>
-                        <Td className="py-3 border-0 border-bottom border-light">
-                          <span className="fw-medium">
-                            {new Date(item.date || item.createdAt).toLocaleDateString()}
-                          </span>
-                        </Td>
-                        <Td
-                          className="py-3 border-0 border-bottom border-light"
-                          style={{
-                            color: customization.headerBg || '#667eea',
-                            cursor: 'pointer',
-                            fontWeight: '500',
-                          }}
-                        >
-                          {item.customer?.name || t('common.na')}
-                        </Td>
-                        <Td
-                          className="py-3 border-0 border-bottom border-light"
-                          style={{
-                            whiteSpace: 'normal',
-                            wordBreak: 'break-word',
-                            maxWidth: '200px',
-                          }}
-                        >
-                          <span className="text-muted">{item.description || t('common.na')}</span>
-                        </Td>
-                        <Td className="py-3 border-0 border-bottom border-light">
-                          <span className="fw-medium">
-                            {item.designerData?.name || t('common.na')}
-                          </span>
-                        </Td>
-                        <Td className="py-3 border-0 border-bottom border-light">
-                          <Badge
-                            colorScheme={getStatusColor(item.status || 'Draft')}
-                            className="px-3 py-2"
-                            style={{
-                              borderRadius: '20px',
-                              fontSize: '12px',
-                              fontWeight: '500',
-                            }}
-                          >
-                            {(() => {
-                              const map = {
-                                draft: 'draft',
-                                'measurement scheduled': 'measurementScheduled',
-                                'measurement done': 'measurementDone',
-                                'design done': 'designDone',
-                                'follow up 1': 'followUp1',
-                                'follow up 2': 'followUp2',
-                                'follow up 3': 'followUp3',
-                                'proposal accepted': 'proposalAccepted',
-                              }
-                              const key = map[(item.status || 'Draft').toLowerCase()] || null
-                              return key
-                                ? t(`contracts.status.${key}`)
-                                : item.status || t('contracts.status.draft')
-                            })()}
-                          </Badge>
-                        </Td>
-                        <Td className="py-3 border-0 border-bottom border-light text-center">
-                          <div className="d-flex justify-content-center gap-2">
-                            <Button
-                              variant="outline"
-                              colorScheme="gray"
-                              size="sm"
-                              p={2}
-                              onClick={() => handleNavigate(item.id)}
-                              borderRadius="8px"
-                              aria-label={t('contracts.viewDetails')}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              <Icon as={Edit} boxSize={4} color="green.500" />
-                            </Button>
-
-                            <Button
-                              variant="outline"
-                              colorScheme="red"
-                              size="sm"
-                              p={2}
-                              onClick={() => handleDelete(item.id)}
-                              aria-label={t('common.delete')}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              <Icon as={Trash2} boxSize={4} />
-                            </Button>
-                          </div>
+                    {filteredCount === 0 ? (
+                      <Tr>
+                        <Td colSpan={6}>
+                          <Center py={12} flexDirection="column" gap={3}>
+                            <Icon as={Search} boxSize={10} color="gray.300" />
+                            <Text>{t('contracts.empty.title')}</Text>
+                            <Text fontSize="sm" color="gray.500">
+                              {t('contracts.empty.subtitle')}
+                            </Text>
+                          </Center>
                         </Td>
                       </Tr>
-                    ))
-                  )}
-                </Tbody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            <div className="contracts-pagination">
+                    ) : (
+                      paginatedItems.map((item) => (
+                        <Tr key={item.id}>
+                          <Td>
+                            <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                              {new Date(item.date || item.createdAt).toLocaleDateString()}
+                            </Text>
+                          </Td>
+                          <Td>
+                            <Text
+                              fontSize="sm"
+                              fontWeight="semibold"
+                              color="brand.600"
+                              cursor="pointer"
+                              onClick={() => handleNavigate(item.id)}
+                            >
+                              {item.customer?.name || t('common.na')}
+                            </Text>
+                          </Td>
+                          <Td>
+                            <Text fontSize="sm" color="gray.600">
+                              {item.description || t('common.na')}
+                            </Text>
+                          </Td>
+                          <Td>
+                            <Text fontSize="sm" color="gray.700">
+                              {item.designerData?.name || t('common.na')}
+                            </Text>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={getStatusColor(item.status)} borderRadius="full" px={3} py={1}>
+                              {getStatusLabel(item.status)}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <HStack justify="center" spacing={3}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                colorScheme="brand"
+                                onClick={() => handleNavigate(item.id)}
+                                leftIcon={<Icon as={FileText} boxSize={4} />}
+                              >
+                                {t('contracts.viewDetails')}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                colorScheme="red"
+                                onClick={() => handleDelete(item.id)}
+                                leftIcon={<Icon as={Trash2} boxSize={4} />}
+                              >
+                                {t('common.delete')}
+                              </Button>
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      ))
+                    )}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </CardBody>
+          </Card>
+        )}
+        {totalPages > 1 && (
+          <Card variant="outline">
+            <CardBody>
               <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
                 itemsPerPage={itemsPerPage}
               />
-            </div>
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Contract Details Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        size="xl"
-        className="contract-modal"
-      >
+            </CardBody>
+          </Card>
+        )}
+      </Stack>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="5xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader
-            className="border-0 fw-bold"
-            style={{
-              background: customization.headerBg || '#667eea',
-              color: getContrastColor(customization.headerBg || '#667eea'),
-            }}
-          >
+          <ModalHeader bg={headerBg} color={headerTextColor} borderTopRadius="md">
             {t('contracts.modal.title')}
-            <ModalCloseButton />
+            <ModalCloseButton color={headerTextColor} />
           </ModalHeader>
-          <ModalBody className="p-4">
-          {loadings ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">{t('common.loading')}</span>
-              </div>
-              <p className="mt-3 text-muted">{t('contracts.loadingDetails')}</p>
-            </div>
-          ) : htmlContent ? (
-            <div
-              className="contract-content"
-              style={{
-                maxHeight: '70vh',
-                overflowY: 'auto',
-                border: '1px solid #e3e6f0',
-                borderRadius: '8px',
-                padding: '20px',
-                backgroundColor: 'var(--cui-body-bg)',
-              }}
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
-          ) : (
-            <div className="text-center py-5">
-              <p className="text-muted mb-0">{t('contracts.noData')}</p>
-            </div>
-          )}
+          <ModalBody p={6}>
+            {loadings ? (
+              <Center py={10} flexDirection="column" gap={3}>
+                <Spinner size="lg" color="brand.500" />
+                <Text fontSize="sm" color="gray.500">
+                  {t('contracts.loadingDetails')}
+                </Text>
+              </Center>
+            ) : htmlContent ? (
+              <Box
+                maxH="70vh"
+                overflowY="auto"
+                borderWidth="1px"
+                borderRadius="md"
+                p={5}
+                bg="white"
+                sx={{
+                  '&::-webkit-scrollbar': { width: '8px' },
+                  '&::-webkit-scrollbar-track': { bg: 'gray.100', borderRadius: 'full' },
+                  '&::-webkit-scrollbar-thumb': { bg: 'gray.300', borderRadius: 'full' },
+                  '&::-webkit-scrollbar-thumb:hover': { bg: 'gray.400' },
+                }}
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+            ) : (
+              <Center py={10}>
+                <Text fontSize="sm" color="gray.500">
+                  {t('contracts.noData')}
+                </Text>
+              </Center>
+            )}
           </ModalBody>
-          <ModalFooter className="border-0 bg-body-secondary">
-            <div className="d-flex gap-2 w-100 justify-content-end">
-              <Button
-                variant="outline"
-                colorScheme="gray"
-                onClick={() => setShowModal(false)}
-                px={4}
-                borderRadius="8px"
-              >
-                {t('common.close')}
-              </Button>
-            </div>
+          <ModalFooter bg="gray.50" borderBottomRadius="md">
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              {t('common.close')}
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      <style>{`
-        .contract-modal .modal-dialog {
-          max-width: 95%;
-        }
-
-        .contract-content::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .contract-content::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 4px;
-        }
-
-        .contract-content::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 4px;
-        }
-
-        .contract-content::-webkit-scrollbar-thumb:hover {
-          background: #a1a1a1;
-        }
-      `}</style>
     </Container>
   )
 }
-
 export default Contracts
+
+
+
+
+

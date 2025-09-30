@@ -23,6 +23,7 @@ import {
   Text,
   Switch,
   Stack,
+  VStack,
 } from '@chakra-ui/react'
 import { Settings, Eye } from 'lucide-react'
 import { isAdmin } from '../../helpers/permissions'
@@ -120,29 +121,111 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
     setShowModal(false)
   }
 
+  // Shared modal (rendered for both compact and full modes)
+  const ModalUI = (
+    <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size="sm">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>{t('showroom.modal.titleExact', 'Showroom Mode Configuration')}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Alert status="info" borderRadius="md" mb={4}>
+            <AlertIcon />
+            <Text fontSize="sm">
+              {t(
+                'showroom.modal.noticeExact',
+                'Showroom Mode applies a pricing multiplier to all proposal calculations, PDF generation, and order snapshots. This is useful for displaying adjusted pricing to customers.',
+              )}
+            </Text>
+          </Alert>
+
+          <FormControl isInvalid={!!validationError} mb={4}>
+            <FormLabel>{t('showroom.modal.multiplierLabelExact', 'Pricing Multiplier')}</FormLabel>
+            <Input
+              value={tempMultiplier}
+              onChange={handleMultiplierChange}
+              type="number"
+              step="0.01"
+              min="0.01"
+              max="10.0"
+              placeholder="1.00"
+            />
+            <FormHelperText>
+              {t(
+                'showroom.modal.helperExact',
+                'Enter a multiplier (e.g., 1.25 for 25% markup, 0.8 for 20% discount)',
+              )}
+            </FormHelperText>
+            {validationError && (
+              <Text fontSize="xs" color="red.500" mt={1}>
+                {validationError}
+              </Text>
+            )}
+          </FormControl>
+
+          <VStack align="start" spacing={1}>
+            <HStack>
+              <Text fontWeight="semibold">{t('showroom.modal.status', 'Status')}:</Text>
+              <Button
+                size="sm"
+                colorScheme="green"
+                variant={showroomMode ? 'solid' : 'outline'}
+                onClick={toggleMode}
+                px={3}
+              >
+                {showroomMode ? t('common.on', 'ON') : t('common.off', 'OFF')}
+              </Button>
+            </HStack>
+            <Text fontSize="sm" color="gray.600">
+              {showroomMode
+                ? t(
+                    'showroom.modal.activeText',
+                    `Showroom mode is active with ${showroomMultiplier.toFixed(2)}x multiplier`,
+                  )
+                : t('showroom.modal.inactiveText', 'Showroom mode is inactive')}
+            </Text>
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="outline" mr={3} onClick={() => setShowModal(false)}>
+            {t('common.cancel', 'Cancel')}
+          </Button>
+          <Button colorScheme="brand" onClick={saveMultiplier} isDisabled={!!validationError || !tempMultiplier}>
+            {t('common.saveChanges', 'Save Changes')}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
+
   if (compact) {
     if (collapsed) {
       return null
     }
 
+    const tooltipLabel = showroomMode
+      ? t(
+          'showroom.tooltip.active',
+          `Showroom Mode Active (${showroomMultiplier.toFixed(2)}x multiplier) - Click to configure`,
+        )
+      : t('showroom.tooltip.inactive', 'Showroom Mode Inactive - Click to configure')
+
     return (
-      <Tooltip
-        label={t('showroom.tooltip', 'Toggle showroom pricing mode and multiplier')}
-        placement="top"
-      >
-        <HStack spacing={3} align="center">
-          <Icon as={Eye} color={showroomMode ? 'green.500' : 'gray.400'} />
-          <Switch
-            isChecked={showroomMode}
-            onChange={toggleMode}
-            colorScheme="green"
-            size="md"
-          />
-          <Button variant="ghost" size="sm" onClick={openModal} leftIcon={<Icon as={Settings} />}>
-            {showroomMultiplier.toFixed(2)}x
+      <>
+        <Tooltip label={tooltipLabel} placement="right">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={openModal}
+            leftIcon={<Icon as={Eye} color={showroomMode ? 'green.500' : 'gray.400'} />}
+          >
+            <Text as="span" fontWeight="medium">
+              {showroomMode ? `${showroomMultiplier.toFixed(2)}x` : t('showroom.compact.label', 'Show')}
+            </Text>
           </Button>
-        </HStack>
-      </Tooltip>
+        </Tooltip>
+        {ModalUI}
+      </>
     )
   }
 
@@ -174,55 +257,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
         </Button>
       </Stack>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size="md">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{t('showroom.modal.title', 'Showroom configuration')}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Alert status="info" borderRadius="md" mb={4}>
-              <AlertIcon />
-              <Text fontSize="sm">
-                {t(
-                  'showroom.modal.notice',
-                  'Showroom mode applies a pricing multiplier to proposals, PDFs, and orders for customer-facing presentations.',
-                )}
-              </Text>
-            </Alert>
-            <FormControl isInvalid={!!validationError}>
-              <FormLabel>{t('showroom.modal.multiplierLabel', 'Pricing multiplier')}</FormLabel>
-              <Input
-                value={tempMultiplier}
-                onChange={handleMultiplierChange}
-                type="number"
-                step="0.01"
-                min="0.01"
-                max="10"
-                placeholder="1.00"
-              />
-              <FormHelperText>
-                {t(
-                  'showroom.modal.helper',
-                  'Enter a multiplier (e.g., 1.20 for 20% markup or 0.85 for a 15% discount).',
-                )}
-              </FormHelperText>
-              {validationError && (
-                <Text fontSize="xs" color="red.500" mt={1}>
-                  {validationError}
-                </Text>
-              )}
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="outline" mr={3} onClick={() => setShowModal(false)}>
-              {t('common.cancel', 'Cancel')}
-            </Button>
-            <Button colorScheme="brand" onClick={saveMultiplier} isDisabled={!!validationError || !tempMultiplier}>
-              {t('common.save', 'Save')}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {ModalUI}
     </Box>
   )
 }
