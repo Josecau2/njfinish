@@ -22,6 +22,7 @@ import {
   InputLeftAddon,
   Spinner,
   Button,
+  Icon,
   VStack,
   HStack,
   Text,
@@ -193,13 +194,13 @@ const FileUploadCard = ({
               <span className="text-danger small">{t('common.noFilesSelected')}</span>
             ) : (
               <div className="text-success small">
-                <Icon as={CloudUpload} mr={1} />
+                <CloudUpload size={18} style={{ marginRight: '0.25rem' }} />
                 {selectedFiles.length} file(s) selected
               </div>
             )
           ) : (
             <div className="text-success small">
-              <Icon as={Image} className="me-1" />
+              <Image size={18} className="me-1" />
               Image selected: {selectedFiles.name}
             </div>
           )}
@@ -428,7 +429,7 @@ const ManufacturerForm = () => {
             colorScheme="gray"
             size="md"
             onClick={() => window.history.back()}
-            leftIcon={<Icon as={ArrowLeft} />}
+            leftIcon={<ArrowLeft size={18} />}
             borderRadius="md"
             px={4}
             fontWeight="semibold"
@@ -466,7 +467,7 @@ const ManufacturerForm = () => {
         <Card className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CardBody className="py-3 px-4" style={{ backgroundColor: '#f0f7ff' }}>
             <HStack align="flex-start" spacing={2}>
-              <Icon as={Info} color="blue.500" mt={1} boxSize={4} />
+              <Info size={16} style={{ color: '#3182ce', marginTop: '0.25rem' }} />
               <Text mb={0} color="blue.600">
                 <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}
@@ -695,7 +696,7 @@ const ManufacturerForm = () => {
               />
               {formData.costMultiplier && (
                 <FormHelperText className="text-info mt-2">
-                  <Icon as={Info} mr={1} boxSize={4} />
+                  <Info size={16} style={{ marginRight: '0.25rem' }} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
                     cost: (100.0).toFixed(2),
@@ -752,7 +753,7 @@ const ManufacturerForm = () => {
                 colorScheme="gray"
                 size="lg"
                 onClick={() => window.history.back()}
-                leftIcon={<Icon as={ArrowLeft} />}
+                leftIcon={<ArrowLeft size={18} />}
                 borderRadius="12px"
                 px={4}
                 fontWeight="semibold"
@@ -766,7 +767,7 @@ const ManufacturerForm = () => {
                 colorScheme="green"
                 size="lg"
                 isDisabled={loading}
-                leftIcon={<Icon as={Save} />}
+                leftIcon={<Save size={18} />}
                 borderRadius="12px"
                 px={5}
                 fontWeight="semibold"
