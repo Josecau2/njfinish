@@ -52,11 +52,12 @@ const AppHeader = () => {
         borderBottom="1px solid"
         borderColor="rgba(15,23,42,0.15)"
         _dark={{ borderColor: 'rgba(226,232,240,0.12)' }}
-        minH="60px"
-        px={{ base: 3, md: 4, lg: 6 }}
+        h="60px"
+        px={{ base: 4, md: 6 }}
         align="center"
         justify="space-between"
         backdropFilter="blur(8px)"
+        data-app-header
       >
         <HStack spacing={2} align="center">
           <IconButton
@@ -71,6 +72,8 @@ const AppHeader = () => {
             onClick={() => dispatch(setSidebarShow(!sidebarShow))}
             _hover={{ bg: hoverBg }}
             color={headerTextColor}
+            minW="44px"
+            minH="44px"
           />
           {customization.headerTitle ? (
             <Text fontWeight="semibold" noOfLines={1} display={{ base: 'none', md: 'block' }}>
@@ -87,6 +90,8 @@ const AppHeader = () => {
             onClick={toggleColorMode}
             _hover={{ bg: hoverBg }}
             color={headerTextColor}
+            minW="44px"
+            minH="44px"
           />
           {/* Separator */}
           <Box as="span" h="20px" w="1px" bg={`${headerTextColor}33`} mx={{ base: 0.5, md: 2 }} />
