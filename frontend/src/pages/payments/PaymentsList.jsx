@@ -362,17 +362,17 @@ const PaymentsList = ({ isContractor }) => {
                     </Td>
                     <Td>
                       <VStack align="start" spacing={1}>
-                        <Badge colorScheme={getStatusColorScheme(payment.status)} borderRadius="full">{getStatusLabel(payment.status)}</Badge>
-                        {payment.status === 'completed' && payment.paidAt ? (
-                          <Text fontSize="xs" color="gray.500">{t('payments.appliedOn', 'Applied on')} {new Date(payment.paidAt).toLocaleDateString()}</Text>
+                        <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
+                        {payment?.status === 'completed' && payment?.paidAt ? (
+                          <Text fontSize="xs" color="gray.500">{t('payments.appliedOn', 'Applied on')} {new Date(payment?.paidAt).toLocaleDateString()}</Text>
                         ) : null}
                       </VStack>
                     </Td>
-                    <Td color="gray.500">{payment.transactionId || t('common.na')}</Td>
+                    <Td color="gray.500">{payment?.transactionId || t('common.na')}</Td>
                     <Td>
                       <HStack spacing={2}>
                         {canPayOnline ? (
-                          <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment.id}/pay`) }}>
+                          <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                             {t('payments.actions.makePayment', 'Make Payment')}
                           </Button>
                         ) : null}
@@ -382,7 +382,7 @@ const PaymentsList = ({ isContractor }) => {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleApplyPayment(payment.id)
+                              handleApplyPayment(payment?.id)
                             }}
                           >
                             {t('payments.apply.button', 'Apply')}
@@ -411,12 +411,12 @@ const PaymentsList = ({ isContractor }) => {
           filtered.map((payment) => {
             const canPayOnline = payment?.gateway === 'stripe' && payment?.status === 'pending'
             return (
-              <Card key={payment.id} size="sm" as="article">
+              <Card key={payment?.id || Math.random()} size="sm" as="article">
                 <CardBody>
                   <VStack align="stretch" spacing={3}>
                     <Flex justify="space-between" align="center">
                       <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
-                      <Badge colorScheme={getStatusColorScheme(payment.status)} borderRadius="full">{getStatusLabel(payment.status)}</Badge>
+                      <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                     </Flex>
                     <VStack align="stretch" spacing={1}>
                       <Text fontSize="sm" color="gray.600">{new Date(payment.createdAt).toLocaleDateString()}</Text>
@@ -424,12 +424,12 @@ const PaymentsList = ({ isContractor }) => {
                         <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment?.gateway)}</Text>
                         <Text fontSize="sm" color="gray.600">{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
                       </Flex>
-                      {payment.transactionId ? (
-                        <Text fontSize="sm" color="gray.500">{t('payments.headers.transaction', 'Transaction ID')}: {payment.transactionId}</Text>
+                      {payment?.transactionId ? (
+                        <Text fontSize="sm" color="gray.500">{t('payments.headers.transaction', 'Transaction ID')}: {payment?.transactionId}</Text>
                       ) : null}
                     </VStack>
                     {canPayOnline ? (
-                      <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment.id}/pay`) }}>
+                      <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                         {t('payments.actions.makePayment', 'Make Payment')}
                       </Button>
                     ) : null}
