@@ -272,7 +272,7 @@ const AppSidebar = () => {
       ref={sidebarRef}
       direction="column"
       h="100vh"
-      w={collapsed ? "56px" : "260px"}
+      w={collapsed ? "56px" : "256px"}
       bg={sidebarBg}
       color={sidebarColor}
       borderRight="1px solid rgba(255, 255, 255, 0.1)"
@@ -432,7 +432,7 @@ const AppSidebar = () => {
     return (
       <Drawer isOpen={sidebarShow} placement="left" onClose={handleClose} size="xs">
         <DrawerOverlay bg={overlayColor} />
-        <DrawerContent maxW="260px" className={sidebarClassNames} bg="transparent">
+        <DrawerContent maxW="256px" className={sidebarClassNames} bg="transparent">
           {SidebarBody}
         </DrawerContent>
       </Drawer>
@@ -446,7 +446,7 @@ const AppSidebar = () => {
       top="0"
       left="0"
       h="100vh"
-      w={collapsed ? "56px" : "260px"}
+      w={collapsed ? "56px" : "256px"}
       transition="width 0.15s ease-in-out"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

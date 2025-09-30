@@ -25,7 +25,7 @@ const DefaultLayout = () => {
   // Calculate sidebar width based on state
   const sidebarWidth = useMemo(() => {
     const collapsed = !sidebarPinned && sidebarUnfoldable
-    return collapsed ? "72px" : "260px"
+    return collapsed ? "56px" : "256px"
   }, [sidebarPinned, sidebarUnfoldable])
 
   useEffect(() => {
