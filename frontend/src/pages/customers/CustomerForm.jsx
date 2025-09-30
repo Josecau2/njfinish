@@ -188,7 +188,7 @@ const CustomerForm = ({
             </VStack>
             <Button
               variant="outline"
-              leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+              leftIcon={<ArrowLeft size={18} />}
               onClick={handleCancel}
               colorScheme="gray"
               minH="44px"
@@ -213,7 +213,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Icon as={User} />
+                          <User size={18} />
                         </InputLeftAddon>
                         <Input
                           type="text"
@@ -237,7 +237,7 @@ const CustomerForm = ({
                       <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Icon as={Mail} />
+                          <Mail size={18} />
                         </InputLeftAddon>
                         <Input
                           type="email"
@@ -261,7 +261,7 @@ const CustomerForm = ({
                       <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Icon as={Phone} />
+                          <Phone size={18} />
                         </InputLeftAddon>
                         <Input
                           type="tel"
@@ -282,7 +282,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Icon as={Phone} />
+                          <Phone size={18} />
                         </InputLeftAddon>
                         <Input
                           type="tel"
@@ -308,7 +308,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Icon as={MapPin} />
+                          <MapPin size={18} />
                         </InputLeftAddon>
                         <Input
                           type="text"
