@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import routes from '../routes'
 import RouteGuard from './RouteGuard'
 import { filterRoutesByPermission } from '../helpers/permissions'
+import { AuditRoutes } from '../routes/__audit__/index.jsx'
 
 const AppContent = () => {
   const location = useLocation()
@@ -78,6 +79,10 @@ const AppContent = () => {
                 )
               )
             })}
+            {/* Dev-only audit routes */}
+            {import.meta.env.DEV && (
+              <Route path="__audit__/*" element={<AuditRoutes />} />
+            )}
             {/* Fallback route for unauthorized access */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
