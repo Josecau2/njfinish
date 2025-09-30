@@ -246,6 +246,7 @@ const PaymentsList = ({ isContractor }) => {
   }
 
   const renderCustomerCell = (payment) => {
+    if (!payment) return t('common.na')
     const customerName = payment.order?.customer?.name || payment.order?.proposal?.customerName || t('common.na')
     if (!isContractor) {
       const contractorName = payment.order?.group?.name || payment.order?.creator?.name || t('common.na')
