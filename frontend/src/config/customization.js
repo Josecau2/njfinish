@@ -8,13 +8,13 @@ export const CUSTOMIZATION_CONFIG = {
   "headerBg": "#000000",
   "headerFontColor": "#ffffff",
   "sidebarBg": "#000000",
-  "sidebarFontColor": "#f2e3e3",
+  "sidebarFontColor": "#ffffff",
   "logoBg": "#000000",
   "companyName": "",
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
-  "updatedAt": "2025-09-28T23:24:17.000Z",
-  "_generated": "2025-09-29T07:17:00.479Z",
+  "updatedAt": "2025-09-29T20:44:19.000Z",
+  "_generated": "2025-09-30T00:02:21.102Z",
   "_version": "1.0.0"
 }
 
