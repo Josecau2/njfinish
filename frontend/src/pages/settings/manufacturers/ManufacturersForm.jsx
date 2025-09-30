@@ -186,7 +186,7 @@ const FileUploadCard = ({
           cursor: 'pointer',
         }}
       />
-      {helpText && <FormHelperText className="text-muted d-block">{helpText}</FormHelperText>}
+      {helpText && <Text fontSize="sm" className="text-muted d-block">{helpText}</Text>}
       {selectedFiles && (
         <div className="mt-3">
           {Array.isArray(selectedFiles) ? (
