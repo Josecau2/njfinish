@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { FormControl, Input, FormLabel, Select, Card, CardBody, CardHeader, Container, Flex, Box, Icon, Button, InputGroup, InputLeftElement, FormErrorMessage } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, Card, CardBody, CardHeader, Container, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import ct from 'countries-and-timezones'
@@ -170,7 +170,7 @@ const LocationForm = () => {
                 borderRadius: '12px',
               }}
             >
-              <Icon as={MapPin} style={{ fontSize: '24px', color: 'white' }} />
+              <MapPin size={24} style={{ color: 'white' }} />
             </div>
             {t('settings.locations.create.title')}
           </div>
@@ -188,7 +188,7 @@ const LocationForm = () => {
               color: 'white',
             }}
           >
-            <Icon as={ArrowLeft} />
+            <ArrowLeft size={18} />
           </Button>
         }
       />
@@ -210,7 +210,7 @@ const LocationForm = () => {
                     color: '#0d6efd',
                   }}
                 >
-                  <Icon as={Home} size="sm" />
+                  <Home size={18} />
                 </div>
                 {t('settings.locations.form.titles.basicInfo')}
               </h5>
@@ -226,7 +226,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Icon as={MapPin} className="text-primary" />
+                      <MapPin size={18} className="text-primary" />
                     </InputLeftElement>
                     <Input
                       name="locationName"
@@ -257,7 +257,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Icon as={Home} className="text-success" />
+                      <Home size={18} className="text-success" />
                     </InputLeftElement>
                     <Input
                       name="address"
@@ -294,7 +294,7 @@ const LocationForm = () => {
                     color: '#28a745',
                   }}
                 >
-                  <Icon as={Mail} size="sm" />
+                  <Mail size={18} />
                 </div>
                 {t('settings.locations.form.titles.contactInfo')}
               </h5>
@@ -310,7 +310,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Icon as={Mail} className="text-info" />
+                      <Mail size={18} className="text-info" />
                     </InputLeftElement>
                     <Input
                       name="website"
@@ -341,7 +341,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Icon as={Mail} className="text-warning" />
+                      <Mail size={18} className="text-warning" />
                     </InputLeftElement>
                     <Input
                       name="email"
@@ -376,7 +376,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Icon as={Phone} className="text-success" />
+                      <Phone size={18} className="text-success" />
                     </InputLeftElement>
                     <Input
                       name="phone"
@@ -414,7 +414,7 @@ const LocationForm = () => {
                     color: '#856404',
                   }}
                 >
-                  <Icon as={Clock} size="sm" />
+                  <Clock size={18} />
                 </div>
                 {t('settings.locations.form.titles.locationTime')}
               </h5>
@@ -495,7 +495,7 @@ const LocationForm = () => {
                         pointerEvents="none"
                         style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}
                       >
-                        <Icon as={Clock} className="text-primary" />
+                        <Clock size={18} className="text-primary" />
                       </InputLeftElement>
                       <Input
                         value={currentTime}
@@ -537,7 +537,7 @@ const LocationForm = () => {
                 }}
                 aria-label={t('common.cancel')}
               >
-                <Icon as={ArrowLeft} className="me-2" />
+                <ArrowLeft size={18} className="me-2" />
                 {t('common.cancel')}
               </Button>
               <Button
@@ -562,7 +562,7 @@ const LocationForm = () => {
                   </>
                 ) : (
                   <>
-                    <Icon as={CheckCircle} className="me-2" />
+                    <CheckCircle size={18} className="me-2" />
                     {t('settings.locations.create.submit')}
                   </>
                 )}
