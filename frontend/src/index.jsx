@@ -8,6 +8,7 @@ import './styles/fixes.css'
 import './i18n'
 
 import App from './App.jsx'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { getBrand } from './brand/useBrand'
 // Prefer pre-injected globals (set in index.html) to prevent flicker
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
@@ -105,11 +106,13 @@ const queryClient = new QueryClient({
 performanceMonitor.init()
 
 createRoot(document.getElementById('root')).render(
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
-    </QueryClientProvider>
-  </Provider>,
+  <ErrorBoundary>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider theme={theme}>
+          <App />
+        </ChakraProvider>
+      </QueryClientProvider>
+    </Provider>
+  </ErrorBoundary>,
 )
