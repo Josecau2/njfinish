@@ -22,6 +22,8 @@ import {
   InputGroup,
   InputLeftElement,
   SimpleGrid,
+  Skeleton,
+  SkeletonText,
   Spinner,
   Stack,
   Stat,
@@ -39,6 +41,7 @@ import {
   useDisclosure,
   useToast,
   Center,
+  VStack,
 } from '@chakra-ui/react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -289,10 +292,62 @@ const CustomerTable = ({
         </Card>
 
         {loading && (
-          <Center py={16} flexDirection="column" gap={4}>
-            <Spinner size="lg" color="brand.500" />
-            <Text color="gray.500">{t('customers.loading', 'Loading customers...')}</Text>
-          </Center>
+          <>
+            {/* Desktop Skeleton */}
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <Card variant="outline">
+                <CardBody>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>{t('customers.location', 'Location')}</Th>
+                        <Th>{t('customers.name', 'Name')}</Th>
+                        <Th>{t('customers.email', 'Email')}</Th>
+                        <Th>{t('customers.phone', 'Phone')}</Th>
+                        <Th>{t('customers.address', 'Address')}</Th>
+                        <Th>{t('customers.proposalsHeader', 'Proposals')}</Th>
+                        <Th>{t('customers.ordersHeader', 'Orders')}</Th>
+                        <Th textAlign="center">{t('customers.actions', 'Actions')}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Tr key={i}>
+                          <Td><Skeleton height="20px" width="60px" /></Td>
+                          <Td><Skeleton height="20px" /></Td>
+                          <Td><Skeleton height="20px" /></Td>
+                          <Td><Skeleton height="20px" width="80%" /></Td>
+                          <Td><Skeleton height="20px" width="90%" /></Td>
+                          <Td><Skeleton height="20px" width="40px" /></Td>
+                          <Td><Skeleton height="20px" width="40px" /></Td>
+                          <Td><Skeleton height="32px" width="80px" mx="auto" /></Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </CardBody>
+              </Card>
+            </Box>
+
+            {/* Mobile Skeleton */}
+            <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>
+              {[1, 2, 3].map((i) => (
+                <Card key={i} variant="outline">
+                  <CardBody>
+                    <VStack align="stretch" spacing={3}>
+                      <Skeleton height="24px" width="60%" />
+                      <SkeletonText noOfLines={2} spacing={2} />
+                      <Skeleton height="20px" width="80%" />
+                      <HStack justify="flex-end" pt={2}>
+                        <Skeleton height="36px" width="80px" />
+                        <Skeleton height="36px" width="80px" />
+                      </HStack>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </Stack>
+          </>
         )}
 
         {error && !loading && (
