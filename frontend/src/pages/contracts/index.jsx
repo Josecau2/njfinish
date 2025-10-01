@@ -120,8 +120,8 @@ const Contracts = () => {
     // TODO: Implement delete functionality
   }
   const generateHTMLTemplate = (formData) => {
-    const headerColor = '#FFFFFF'
-    const headerTxtColor = '#000000'
+    const headerColor = 'var(--chakra-colors-white)'
+    const headerTxtColor = 'var(--chakra-colors-black)'
     const items = formData?.manufacturersData?.[0]?.items || []
     // Localized labels for the PDF/HTML template
     const pdf = {
@@ -194,26 +194,26 @@ const Contracts = () => {
           <style>
               @page { margin: 20mm; size: A4; }
               * { margin: 0; padding: 0; box-sizing: border-box; }
-              body { font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.4; color: #333; }
+              body { font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.4; color: var(--chakra-colors-gray-700); }
               .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding: 20px; border-bottom: 2px solid ${headerColor}; background-color: ${headerColor}; }
               .logo { max-width: 120px; max-height: 80px; }
               .company-name { font-size: 24px; font-weight: bold; color: white; }
               .company-info { text-align: right; line-height: 1.6; color: ${headerTxtColor}; }
               .section-header { font-size: 16px; font-weight: bold; margin: 25px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; }
               .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-              .items-table th { background-color: #f8f9fa; padding: 10px 8px; border: 1px solid #dee2e6; font-weight: bold; text-align: left; font-size: 11px; }
-              .items-table td { padding: 8px; border: 1px solid #dee2e6; font-size: 10px; }
-              .items-table tr:nth-child(even) { background-color: #f9f9f9; }
-              .category-row { background-color: #e6e6e6 !important; font-weight: bold; }
+              .items-table th { background-color: var(--chakra-colors-gray-50); padding: 10px 8px; border: 1px solid var(--chakra-colors-gray-200); font-weight: bold; text-align: left; font-size: 11px; }
+              .items-table td { padding: 8px; border: 1px solid var(--chakra-colors-gray-200); font-size: 10px; }
+              .items-table tr:nth-child(even) { background-color: var(--chakra-colors-gray-50); }
+              .category-row { background-color: var(--chakra-colors-gray-200) !important; font-weight: bold; }
               .text-right { text-align: right; }
               .text-left { text-align: left; }
-              .price-summary { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; font-family: 'Arial', sans-serif; font-size: 0.95rem; }
+              .price-summary { background-color: var(--chakra-colors-gray-50); border: 1px solid var(--chakra-colors-gray-200); border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; font-family: 'Arial', sans-serif; font-size: 0.95rem; }
               .price-summary table { width: 100%; border-collapse: collapse; }
               .price-summary td { padding: 0.25rem 0; }
-              .price-summary .text-left { text-align: left; color: #212529; font-weight: 500; }
-              .price-summary .text-right { text-align: right; color: #212529; font-weight: 500; }
-              .price-summary .total-row { font-weight: bold; border-bottom: 1px solid #ced4da; padding-top: 0.25rem; }
-              .price-summary .grand-total { font-weight: bold; font-size: 1.05rem; color: #1a1a1a; padding-top: 0.75rem; }
+              .price-summary .text-left { text-align: left; color: var(--chakra-colors-gray-800); font-weight: 500; }
+              .price-summary .text-right { text-align: right; color: var(--chakra-colors-gray-800); font-weight: 500; }
+              .price-summary .total-row { font-weight: bold; border-bottom: 1px solid var(--chakra-colors-gray-300); padding-top: 0.25rem; }
+              .price-summary .grand-total { font-weight: bold; font-size: 1.05rem; color: var(--chakra-colors-gray-900); padding-top: 0.75rem; }
           </style>
       </head>
       <body>
