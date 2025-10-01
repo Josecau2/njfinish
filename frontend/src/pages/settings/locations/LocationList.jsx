@@ -25,6 +25,7 @@ import {
   Link,
   Select,
   Spinner,
+  Stack,
   Table,
   Tbody,
   Td,
@@ -42,6 +43,7 @@ import { Edit, Trash, Plus, Search, Mail, MapPin, Globe, ExternalLink } from 'lu
 
 import PaginationControls from '../../../components/PaginationControls'
 import PageHeader from '../../../components/PageHeader'
+import { MobileListCard } from '../../../components/StandardCard'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
 
@@ -228,10 +230,12 @@ const LocationPage = () => {
         </CardBody>
       </Card>
 
-      <Card>
-        <CardBody p={0}>
-          <Box overflowX="auto">
-            <Table variant="simple" bg={tableBg}>
+      {/* Desktop Table View */}
+      <Box display={{ base: 'none', lg: 'block' }}>
+        <Card>
+          <CardBody p={0}>
+            <Box overflowX="auto">
+              <Table variant="simple" bg={tableBg}>
               <Thead bg={headerBg}>
                 <Tr>
                   <Th textAlign="center">#</Th>
@@ -401,6 +405,140 @@ const LocationPage = () => {
           )}
         </CardBody>
       </Card>
+      </Box>
+
+      {/* Mobile Card View */}
+      <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>
+        {filteredData.length === 0 ? (
+          <Card variant="outline">
+            <CardBody>
+              <VStack spacing={4} color="gray.500" py={8}>
+                <Icon as={MapPin} boxSize={8} opacity={0.3} aria-hidden="true" />
+                <Text>{t('settings.locations.empty.title')}</Text>
+                <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
+              </VStack>
+            </CardBody>
+          </Card>
+        ) : (
+          paginatedLocation.map((location, index) => (
+            <MobileListCard key={location.id} minH="200px">
+              <VStack align="stretch" spacing={4} h="full" justify="space-between">
+                <VStack align="stretch" spacing={3}>
+                  <Flex justify="space-between" align="center">
+                    <HStack spacing={2}>
+                      <Badge variant="subtle" colorScheme="gray" borderRadius="full" fontSize="xs">
+                        #{startIdx + index}
+                      </Badge>
+                      <Text fontWeight="semibold" fontSize="md">{location.locationName || t('common.na')}</Text>
+                    </HStack>
+                  </Flex>
+
+                  {location.address && (
+                    <HStack spacing={2} align="flex-start">
+                      <Icon as={MapPin} boxSize={4} color="gray.500" mt={0.5} flexShrink={0} />
+                      <Text fontSize="sm" color="gray.600">{location.address}</Text>
+                    </HStack>
+                  )}
+
+                  {location.email && (
+                    <HStack spacing={2}>
+                      <Icon as={Mail} boxSize={4} color="gray.500" flexShrink={0} />
+                      <Link
+                        href={`mailto:${location.email}`}
+                        color="brand.500"
+                        _hover={{ textDecoration: 'underline' }}
+                        fontSize="sm"
+                      >
+                        {location.email}
+                      </Link>
+                    </HStack>
+                  )}
+
+                  {location.website && (
+                    <HStack spacing={2}>
+                      <Icon as={Globe} boxSize={4} color="gray.500" flexShrink={0} />
+                      <Link
+                        href={location.website?.startsWith('http') ? location.website : `https://${location.website}`}
+                        isExternal
+                        color="brand.500"
+                        _hover={{ textDecoration: 'underline' }}
+                        fontSize="sm"
+                      >
+                        <HStack spacing={1}>
+                          <Text>{location.website}</Text>
+                          <Icon as={ExternalLink} boxSize={3} />
+                        </HStack>
+                      </Link>
+                    </HStack>
+                  )}
+                </VStack>
+
+                <HStack spacing={3} justify="flex-end" pt={2} borderTopWidth="1px" borderColor="gray.100">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUpdateLocation(location.id)}
+                    aria-label={t('settings.locations.actions.edit')}
+                    leftIcon={<Icon as={Edit} boxSize={4} />}
+                    minH="44px"
+                  >
+                    {t('common.edit')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    colorScheme="red"
+                    size="sm"
+                    onClick={() => handleDelete(location.id)}
+                    aria-label={t('settings.locations.actions.delete')}
+                    leftIcon={<Icon as={Trash} boxSize={4} />}
+                    minH="44px"
+                  >
+                    {t('common.delete')}
+                  </Button>
+                </HStack>
+              </VStack>
+            </MobileListCard>
+          ))
+        )}
+
+        {/* Mobile Pagination */}
+        {totalPages > 1 && (
+          <Card>
+            <CardBody>
+              <VStack spacing={4}>
+                <Text fontSize="sm" color="gray.500">
+                  {t('settings.locations.showingRange', {
+                    start: filteredData.length === 0 ? 0 : startIdx,
+                    end: endIdx,
+                    total: filteredData.length,
+                  })}
+                </Text>
+                <PaginationControls
+                  page={currentPage}
+                  totalPages={totalPages}
+                  goPrev={() => handlePageChange(currentPage - 1)}
+                  goNext={() => handlePageChange(currentPage + 1)}
+                />
+                <Select
+                  value={itemsPerPage}
+                  onChange={(event) => {
+                    setItemsPerPage(Number(event.target.value))
+                    setCurrentPage(1)
+                  }}
+                  size="sm"
+                  maxW="150px"
+                >
+                  {[5, 10, 15, 20, 25].map((val) => (
+                    <option key={val} value={val}>
+                      {t('settings.locations.showItems', { count: val })}
+                    </option>
+                  ))}
+                </Select>
+              </VStack>
+            </CardBody>
+          </Card>
+        )}
+      </Stack>
 
       <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
         <AlertDialogOverlay>
