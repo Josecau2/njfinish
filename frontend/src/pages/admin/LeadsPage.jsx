@@ -524,7 +524,7 @@ const LeadsPage = () => {
           </CardBody>
         </Card>
 
-        <Modal isOpen={!!selectedLead} onClose={closeModal} size="5xl" scrollBehavior="inside">
+        <Modal isOpen={!!selectedLead} onClose={closeModal} size={{ base: "full", lg: "5xl" }} scrollBehavior="inside">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
@@ -543,8 +543,7 @@ const LeadsPage = () => {
                       {selectedLeadStatusBadge.text}
                     </Badge>
                   )}
-                  <IconButton
-                    aria-label={t('common.close', 'Close')}
+                  <IconButton size="lg" aria-label={t('common.close', 'Close')}
                     icon={<Icon as={X} boxSize={4} aria-hidden="true" />}
                     variant="ghost"
                     onClick={closeModal}

@@ -404,7 +404,7 @@ const ManufacturerForm = () => {
       style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
     >
       <style>{`
-          @media (max-width: 768px) {
+          @media (max-width: 1023px) {
             .manufacturer-form .p-4 { padding: 1.5rem !important; }
             .manufacturer-form .mb-4 { margin-bottom: 1.5rem !important; }
           }

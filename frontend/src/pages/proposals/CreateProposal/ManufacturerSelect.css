@@ -35,7 +35,7 @@
 }
 
 /* Mobile Optimizations */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .manufacturer-grid-item {
     margin-bottom: 12px;
   }

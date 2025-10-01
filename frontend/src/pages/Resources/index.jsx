@@ -1188,7 +1188,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </VStack>
 
       {/* Category Modal */}
-      <Modal isOpen={categoryModal.visible} onClose={closeCategoryModal} size="lg">
+      <Modal isOpen={categoryModal.visible} onClose={closeCategoryModal} size={{ base: "full", lg: "lg" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1251,7 +1251,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Link Modal */}
-      <Modal isOpen={linkModal.visible} onClose={closeLinkModal} size="lg">
+      <Modal isOpen={linkModal.visible} onClose={closeLinkModal} size={{ base: "full", lg: "lg" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1361,7 +1361,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* File Modal */}
-      <Modal isOpen={fileModal.visible} onClose={closeFileModal} size="lg">
+      <Modal isOpen={fileModal.visible} onClose={closeFileModal} size={{ base: "full", lg: "lg" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1479,7 +1479,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Announcement Modal */}
-      <Modal isOpen={announcementModal.visible} onClose={closeAnnouncementModal} size="lg">
+      <Modal isOpen={announcementModal.visible} onClose={closeAnnouncementModal} size={{ base: "full", lg: "lg" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>

@@ -395,22 +395,18 @@ const CustomerTable = ({
                               <Td>
                                 <HStack spacing={4} justify="center">
                                   <PermissionGate action="update" resource="customer" item={cust}>
-                                    <IconButton
-                                      aria-label={t('customers.editTooltip', 'Edit customer')}
+                                    <IconButton size="lg" aria-label={t('customers.editTooltip', 'Edit customer')}
                                       icon={<Icon as={Pencil} boxSize={4} />}
                                       variant="outline"
                                       colorScheme="blue"
-                                      size="sm"
                                       onClick={() => handleEdit(cust)}
                                     />
                                   </PermissionGate>
                                   <PermissionGate action="delete" resource="customer" item={cust}>
-                                    <IconButton
-                                      aria-label={t('customers.deleteTooltip', 'Delete customer')}
+                                    <IconButton size="lg" aria-label={t('customers.deleteTooltip', 'Delete customer')}
                                       icon={<Icon as={Trash} boxSize={4} />}
                                       variant="outline"
                                       colorScheme="red"
-                                      size="sm"
                                       onClick={() => handleDelete(cust.id)}
                                     />
                                   </PermissionGate>

@@ -680,7 +680,7 @@ const ModificationBrowserModal = ({
   const showBackButton = currentView !== 'categories'
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size="6xl" scrollBehavior="inside">
+    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent borderRadius="xl" overflow="hidden">
         <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor="gray.100">

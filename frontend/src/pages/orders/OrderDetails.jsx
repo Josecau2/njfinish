@@ -1033,7 +1033,7 @@ const OrderDetails = () => {
           </CardBody>
         </Card>
       </Stack>
-      <Modal size="5xl" isOpen={showPdf} onClose={closePdfModal}>
+      <Modal size={{ base: "full", lg: "5xl" }} isOpen={showPdf} onClose={closePdfModal}>
         <ModalOverlay />
         <ModalContent maxH="90vh">
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1064,7 +1064,7 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal size="xl" isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
+      <Modal size={{ base: "full", lg: "xl" }} isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">

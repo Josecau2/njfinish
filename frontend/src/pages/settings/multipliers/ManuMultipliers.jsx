@@ -404,11 +404,9 @@ const ManuMultipliers = () => {
                           </HStack>
                         </Td>
                         <Td py={4} textAlign="center">
-                          <IconButton
-                            aria-label={t('settings.userGroups.multipliers.actions.edit')}
+                          <IconButton size="lg" aria-label={t('settings.userGroups.multipliers.actions.edit')}
                             icon={<Icon as={Pencil} boxSize={4} />}
                             variant="outline"
-                            size="sm"
                             color={accentColor}
                             borderColor="gray.200"
                             _hover={{

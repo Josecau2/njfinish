@@ -1,47 +1,12 @@
 {
   "summary": {
-    "filesScanned": 253,
-    "totalModals": 60,
-    "needsMobileSize": 60,
+    "filesScanned": 256,
+    "totalModals": 51,
+    "needsMobileSize": 51,
     "hasResponsiveSize": 0,
     "hasFullSize": 0
   },
   "modals": [
-    {
-      "file": "frontend/src/components/AppModal.jsx",
-      "line": 26,
-      "type": "Modal",
-      "hasSize": true,
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": true,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
-      "file": "frontend/src/components/CatalogTable.js",
-      "line": 373,
-      "type": "Modal",
-      "hasSize": true,
-      "size": "xl",
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": false,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
-      "file": "frontend/src/components/CatalogTableEdit.js",
-      "line": 267,
-      "type": "Modal",
-      "hasSize": true,
-      "size": "xl",
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": false,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
     {
       "file": "frontend/src/components/EditManufacturerModal.jsx",
       "line": 72,
@@ -162,39 +127,6 @@
       "code": "<Modal isOpen={show} onClose={onClose} size=\"lg\" isCentered>"
     },
     {
-      "file": "frontend/src/components/model/PrintProposalModal.jsx",
-      "line": 355,
-      "type": "Modal",
-      "hasSize": true,
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": true,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
-      "file": "frontend/src/components/model/PrintProposalModal.jsx",
-      "line": 596,
-      "type": "Modal",
-      "hasSize": true,
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": true,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
-      "file": "frontend/src/components/NeutralModal.jsx",
-      "line": 51,
-      "type": "Modal",
-      "hasSize": true,
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": true,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
       "file": "frontend/src/components/ProposalAcceptanceModal.jsx",
       "line": 150,
       "type": "Modal",
@@ -219,20 +151,8 @@
       "code": "<Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size=\"s"
     },
     {
-      "file": "frontend/src/components/TermsModal.jsx",
-      "line": 152,
-      "type": "Modal",
-      "hasSize": true,
-      "size": "lg",
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": false,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
       "file": "frontend/src/pages/admin/LeadsPage.jsx",
-      "line": 513,
+      "line": 527,
       "type": "Modal",
       "hasSize": true,
       "size": "5xl",
@@ -244,7 +164,7 @@
     },
     {
       "file": "frontend/src/pages/contracts/index.jsx",
-      "line": 725,
+      "line": 612,
       "type": "Modal",
       "hasSize": true,
       "size": "5xl",
@@ -256,7 +176,7 @@
     },
     {
       "file": "frontend/src/pages/customers/Customers.jsx",
-      "line": 538,
+      "line": 523,
       "type": "AlertDialog",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -301,19 +221,8 @@
       "code": "<Modal isOpen={notice.visible} onClose={closeNotice}>"
     },
     {
-      "file": "frontend/src/pages/orders/OrderDetails.jsx",
-      "line": 1105,
-      "type": "AlertDialog",
-      "hasSize": false,
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": false,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<AlertDialog"
-    },
-    {
       "file": "frontend/src/pages/payments/PaymentsList.jsx",
-      "line": 457,
+      "line": 455,
       "type": "Modal",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -324,7 +233,7 @@
     },
     {
       "file": "frontend/src/pages/payments/PaymentsList.jsx",
-      "line": 489,
+      "line": 487,
       "type": "Modal",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -335,7 +244,7 @@
     },
     {
       "file": "frontend/src/pages/payments/PaymentsList.jsx",
-      "line": 522,
+      "line": 520,
       "type": "Modal",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -358,7 +267,7 @@
     },
     {
       "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
-      "line": 779,
+      "line": 773,
       "type": "Modal",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -369,7 +278,7 @@
     },
     {
       "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
-      "line": 801,
+      "line": 795,
       "type": "Modal",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -391,20 +300,8 @@
       "code": "<Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size=\"lg\" "
     },
     {
-      "file": "frontend/src/pages/proposals/EditProposal.jsx",
-      "line": 978,
-      "type": "Modal",
-      "hasSize": true,
-      "size": "sm",
-      "hasResponsiveSize": false,
-      "hasScrollBehavior": false,
-      "hasIsCentered": true,
-      "hasMotion": false,
-      "code": "<Modal"
-    },
-    {
       "file": "frontend/src/pages/Resources/index.jsx",
-      "line": 1188,
+      "line": 1191,
       "type": "Modal",
       "hasSize": true,
       "size": "lg",
@@ -416,7 +313,7 @@
     },
     {
       "file": "frontend/src/pages/Resources/index.jsx",
-      "line": 1251,
+      "line": 1254,
       "type": "Modal",
       "hasSize": true,
       "size": "lg",
@@ -428,7 +325,7 @@
     },
     {
       "file": "frontend/src/pages/Resources/index.jsx",
-      "line": 1361,
+      "line": 1364,
       "type": "Modal",
       "hasSize": true,
       "size": "lg",
@@ -440,7 +337,7 @@
     },
     {
       "file": "frontend/src/pages/Resources/index.jsx",
-      "line": 1479,
+      "line": 1482,
       "type": "Modal",
       "hasSize": true,
       "size": "lg",
@@ -500,7 +397,7 @@
     },
     {
       "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-      "line": 516,
+      "line": 405,
       "type": "AlertDialog",
       "hasSize": false,
       "hasResponsiveSize": false,
@@ -700,47 +597,6 @@
     }
   ],
   "byFile": {
-    "frontend/src/components/AppModal.jsx": [
-      {
-        "file": "frontend/src/components/AppModal.jsx",
-        "line": 26,
-        "type": "Modal",
-        "hasSize": true,
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": true,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
-    "frontend/src/components/CatalogTable.js": [
-      {
-        "file": "frontend/src/components/CatalogTable.js",
-        "line": 373,
-        "type": "Modal",
-        "hasSize": true,
-        "size": "xl",
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": false,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
-    "frontend/src/components/CatalogTableEdit.js": [
-      {
-        "file": "frontend/src/components/CatalogTableEdit.js",
-        "line": 267,
-        "type": "Modal",
-        "hasSize": true,
-        "size": "xl",
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": false,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
     "frontend/src/components/EditManufacturerModal.jsx": [
       {
         "file": "frontend/src/components/EditManufacturerModal.jsx",
@@ -880,43 +736,6 @@
         "code": "<Modal isOpen={show} onClose={onClose} size=\"lg\" isCentered>"
       }
     ],
-    "frontend/src/components/model/PrintProposalModal.jsx": [
-      {
-        "file": "frontend/src/components/model/PrintProposalModal.jsx",
-        "line": 355,
-        "type": "Modal",
-        "hasSize": true,
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": true,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      },
-      {
-        "file": "frontend/src/components/model/PrintProposalModal.jsx",
-        "line": 596,
-        "type": "Modal",
-        "hasSize": true,
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": true,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
-    "frontend/src/components/NeutralModal.jsx": [
-      {
-        "file": "frontend/src/components/NeutralModal.jsx",
-        "line": 51,
-        "type": "Modal",
-        "hasSize": true,
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": true,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
     "frontend/src/components/ProposalAcceptanceModal.jsx": [
       {
         "file": "frontend/src/components/ProposalAcceptanceModal.jsx",
@@ -945,24 +764,10 @@
         "code": "<Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size=\"s"
       }
     ],
-    "frontend/src/components/TermsModal.jsx": [
-      {
-        "file": "frontend/src/components/TermsModal.jsx",
-        "line": 152,
-        "type": "Modal",
-        "hasSize": true,
-        "size": "lg",
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": false,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
-      }
-    ],
     "frontend/src/pages/admin/LeadsPage.jsx": [
       {
         "file": "frontend/src/pages/admin/LeadsPage.jsx",
-        "line": 513,
+        "line": 527,
         "type": "Modal",
         "hasSize": true,
         "size": "5xl",
@@ -976,7 +781,7 @@
     "frontend/src/pages/contracts/index.jsx": [
       {
         "file": "frontend/src/pages/contracts/index.jsx",
-        "line": 725,
+        "line": 612,
         "type": "Modal",
         "hasSize": true,
         "size": "5xl",
@@ -990,7 +795,7 @@
     "frontend/src/pages/customers/Customers.jsx": [
       {
         "file": "frontend/src/pages/customers/Customers.jsx",
-        "line": 538,
+        "line": 523,
         "type": "AlertDialog",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1035,23 +840,12 @@
         "hasIsCentered": false,
         "hasMotion": false,
         "code": "<Modal isOpen={notice.visible} onClose={closeNotice}>"
-      },
-      {
-        "file": "frontend/src/pages/orders/OrderDetails.jsx",
-        "line": 1105,
-        "type": "AlertDialog",
-        "hasSize": false,
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": false,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<AlertDialog"
       }
     ],
     "frontend/src/pages/payments/PaymentsList.jsx": [
       {
         "file": "frontend/src/pages/payments/PaymentsList.jsx",
-        "line": 457,
+        "line": 455,
         "type": "Modal",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1062,7 +856,7 @@
       },
       {
         "file": "frontend/src/pages/payments/PaymentsList.jsx",
-        "line": 489,
+        "line": 487,
         "type": "Modal",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1073,7 +867,7 @@
       },
       {
         "file": "frontend/src/pages/payments/PaymentsList.jsx",
-        "line": 522,
+        "line": 520,
         "type": "Modal",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1100,7 +894,7 @@
     "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx": [
       {
         "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
-        "line": 779,
+        "line": 773,
         "type": "Modal",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1111,7 +905,7 @@
       },
       {
         "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
-        "line": 801,
+        "line": 795,
         "type": "Modal",
         "hasSize": false,
         "hasResponsiveSize": false,
@@ -1133,24 +927,12 @@
         "hasIsCentered": true,
         "hasMotion": false,
         "code": "<Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size=\"lg\" "
-      },
-      {
-        "file": "frontend/src/pages/proposals/EditProposal.jsx",
-        "line": 978,
-        "type": "Modal",
-        "hasSize": true,
-        "size": "sm",
-        "hasResponsiveSize": false,
-        "hasScrollBehavior": false,
-        "hasIsCentered": true,
-        "hasMotion": false,
-        "code": "<Modal"
       }
     ],
     "frontend/src/pages/Resources/index.jsx": [
       {
         "file": "frontend/src/pages/Resources/index.jsx",
-        "line": 1188,
+        "line": 1191,
         "type": "Modal",
         "hasSize": true,
         "size": "lg",
@@ -1162,7 +944,7 @@
       },
       {
         "file": "frontend/src/pages/Resources/index.jsx",
-        "line": 1251,
+        "line": 1254,
         "type": "Modal",
         "hasSize": true,
         "size": "lg",
@@ -1174,7 +956,7 @@
       },
       {
         "file": "frontend/src/pages/Resources/index.jsx",
-        "line": 1361,
+        "line": 1364,
         "type": "Modal",
         "hasSize": true,
         "size": "lg",
@@ -1186,7 +968,7 @@
       },
       {
         "file": "frontend/src/pages/Resources/index.jsx",
-        "line": 1479,
+        "line": 1482,
         "type": "Modal",
         "hasSize": true,
         "size": "lg",
@@ -1252,7 +1034,7 @@
     "frontend/src/pages/settings/locations/LocationList.jsx": [
       {
         "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 516,
+        "line": 405,
         "type": "AlertDialog",
         "hasSize": false,
         "hasResponsiveSize": false,

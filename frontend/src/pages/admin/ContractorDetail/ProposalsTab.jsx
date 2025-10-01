@@ -567,7 +567,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       <Modal
         isOpen={showModal}
         onClose={handleCloseModal}
-        size="xl"
+        size={{ base: "full", lg: "xl" }}
         scrollable
         className="proposal-detail-modal"
       >

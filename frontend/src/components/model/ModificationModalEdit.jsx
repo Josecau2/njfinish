@@ -74,7 +74,7 @@ const ModificationModalEdit = ({
   }
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size="lg" isCentered>
+    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "lg" }} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('modificationModal.title', 'Modification')}</ModalHeader>

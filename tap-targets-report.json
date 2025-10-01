@@ -1,10 +1,10 @@
 {
   "summary": {
-    "filesScanned": 253,
-    "totalIconButtons": 28,
-    "totalIssues": 35,
+    "filesScanned": 256,
+    "totalIconButtons": 29,
+    "totalIssues": 41,
     "highSeverity": 12,
-    "mediumSeverity": 23
+    "mediumSeverity": 29
   },
   "issues": [
     {
@@ -28,8 +28,28 @@
       "code": "<IconButton"
     },
     {
+      "file": "frontend/src/components/AppSidebar.js",
+      "line": 330,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/AppSidebar.js",
+      "line": 386,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
       "file": "frontend/src/components/CatalogTable.js",
-      "line": 344,
+      "line": 345,
       "type": "Icon with onClick",
       "size": "unknown",
       "renderedSize": 24,
@@ -218,6 +238,26 @@
       "code": "<IconButton"
     },
     {
+      "file": "frontend/src/pages/admin/LeadsPage.jsx",
+      "line": 546,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/auth/LoginPage.jsx",
+      "line": 227,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
       "file": "frontend/src/pages/customers/Customers.jsx",
       "line": 207,
       "type": "Icon with onClick",
@@ -229,7 +269,7 @@
     },
     {
       "file": "frontend/src/pages/customers/Customers.jsx",
-      "line": 399,
+      "line": 398,
       "type": "IconButton",
       "size": "md",
       "renderedSize": 40,
@@ -239,7 +279,7 @@
     },
     {
       "file": "frontend/src/pages/customers/Customers.jsx",
-      "line": 409,
+      "line": 408,
       "type": "IconButton",
       "size": "md",
       "renderedSize": 40,
@@ -338,6 +378,26 @@
       "code": "<IconButton"
     },
     {
+      "file": "frontend/src/pages/settings/multipliers/ManuMultipliers.jsx",
+      "line": 407,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/settings/taxes/TaxesPage.jsx",
+      "line": 232,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
       "file": "frontend/src/views/proposals/AdminProposalView.js",
       "line": 264,
       "type": "Icon with onClick",
@@ -381,10 +441,32 @@
         "code": "<IconButton"
       }
     ],
+    "frontend/src/components/AppSidebar.js": [
+      {
+        "file": "frontend/src/components/AppSidebar.js",
+        "line": 330,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/AppSidebar.js",
+        "line": 386,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
     "frontend/src/components/CatalogTable.js": [
       {
         "file": "frontend/src/components/CatalogTable.js",
-        "line": 344,
+        "line": 345,
         "type": "Icon with onClick",
         "size": "unknown",
         "renderedSize": 24,
@@ -593,6 +675,30 @@
         "code": "<IconButton"
       }
     ],
+    "frontend/src/pages/admin/LeadsPage.jsx": [
+      {
+        "file": "frontend/src/pages/admin/LeadsPage.jsx",
+        "line": 546,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/pages/auth/LoginPage.jsx": [
+      {
+        "file": "frontend/src/pages/auth/LoginPage.jsx",
+        "line": 227,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
     "frontend/src/pages/customers/Customers.jsx": [
       {
         "file": "frontend/src/pages/customers/Customers.jsx",
@@ -606,7 +712,7 @@
       },
       {
         "file": "frontend/src/pages/customers/Customers.jsx",
-        "line": 399,
+        "line": 398,
         "type": "IconButton",
         "size": "md",
         "renderedSize": 40,
@@ -616,7 +722,7 @@
       },
       {
         "file": "frontend/src/pages/customers/Customers.jsx",
-        "line": 409,
+        "line": 408,
         "type": "IconButton",
         "size": "md",
         "renderedSize": 40,
@@ -713,6 +819,30 @@
       {
         "file": "frontend/src/pages/proposals/Proposals.jsx",
         "line": 735,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/pages/settings/multipliers/ManuMultipliers.jsx": [
+      {
+        "file": "frontend/src/pages/settings/multipliers/ManuMultipliers.jsx",
+        "line": 407,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/pages/settings/taxes/TaxesPage.jsx": [
+      {
+        "file": "frontend/src/pages/settings/taxes/TaxesPage.jsx",
+        "line": 232,
         "type": "IconButton",
         "size": "md",
         "renderedSize": 40,

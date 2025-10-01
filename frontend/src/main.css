@@ -888,7 +888,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .pdf-customization .header {
     padding: 1.5rem;
     margin: -1rem -1rem 1rem -1rem;
@@ -1062,7 +1062,7 @@
 }
 
 /* Responsive modal styles for contractor detail page */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .proposal-detail-modal .modal-dialog {
     margin: 0;
     width: 100%;
@@ -1088,7 +1088,7 @@
 }
 
 /* Mobile Responsiveness - Step 21 */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   /* Contractor Mobile Cards */
   .contractor-mobile-card {
     transition:
@@ -1194,7 +1194,7 @@
     }
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .notification-mobile-dropdown {
       max-width: 350px;
     }
@@ -2257,7 +2257,7 @@
 }
 
 /* Tablet responsiveness - optimized proportions and spacing */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1024px) and (max-width: 991.98px) {
   .login-right-panel {
     flex: 0 0 55%;
     padding: 2.5rem 2rem;

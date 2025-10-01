@@ -229,8 +229,7 @@ const TaxesPage = () => {
                         </Box>
 
                         <Flex justify={{ base: 'flex-start', md: 'flex-end' }} flex={{ base: 1, md: 1 }}>
-                          <IconButton
-                            aria-label={t('settings.taxes.fields.actions')}
+                          <IconButton size="lg" aria-label={t('settings.taxes.fields.actions')}
                             icon={<Icon as={Trash} boxSize={4} aria-hidden="true" />}
                             variant="outline"
                             colorScheme="red"

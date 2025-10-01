@@ -69,7 +69,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
   }
 
   return (
-    <Modal isOpen={show} onClose={onClose} size="lg" isCentered>
+    <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} isCentered>
       <ModalOverlay />
       <ModalContent as="form" onSubmit={handleSubmit} className="edit-manufacturer-modal">
         <ModalHeader>{t('editManufacturerModal.title')}</ModalHeader>

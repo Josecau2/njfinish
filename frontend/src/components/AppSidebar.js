@@ -327,8 +327,7 @@ const AppSidebar = () => {
           )}
         </HStack>
         {!isDesktop && (
-          <IconButton
-            aria-label="Close sidebar"
+          <IconButton size="lg" aria-label="Close sidebar"
             icon={<Icon as={X} boxSize={5} />}
             variant="ghost"
             color="rgba(255, 255, 255, 0.8)"
@@ -383,11 +382,9 @@ const AppSidebar = () => {
         {/* Pin button container - matches legacy structure */}
         <Flex align="center" justify={collapsed ? "center" : "flex-end"} w="100%" px={2}>
           {collapsed ? (
-            <IconButton
-              aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
+            <IconButton size="lg" aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
               icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={4} />}
               variant="outline"
-              size="sm"
               color="rgba(255, 255, 255, 0.8)"
               borderColor="rgba(255, 255, 255, 0.3)"
               _hover={{

@@ -320,7 +320,7 @@ body {
 }
 
 /* Mobile landscape specific optimizations for Quote Preview */
-@media (max-width: 768px) and (orientation: landscape) {
+@media (max-width: 1023px) and (orientation: landscape) {
   .modal-content:has([data-testid='quote-preview']) .modal-body > div,
   .modal-content:has(.quote-preview-content) .modal-body > div {
     max-height: calc(100vh - 100px) !important; /* Reduce header/footer space in landscape */
@@ -815,7 +815,7 @@ body {
 }
 
 /* Mobile responsive adjustments for page headers */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .page-header {
   padding: 0.8rem 2rem;
   border-radius: 10px;
@@ -1385,7 +1385,7 @@ body {
 }
 
 /* Desktop-specific improvements */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .settings-container {
     padding: 2rem;
   }
@@ -1422,7 +1422,7 @@ body {
 }
 
 /* Mobile Card View for Settings Tables */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .settings-table-responsive {
     display: none;
   }
@@ -1615,7 +1615,7 @@ body {
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .settings-form-container {
     padding: var(--cui-spacer-1);
     margin: var(--cui-spacer-1);
@@ -1805,7 +1805,7 @@ body {
 }
 
 /* Mobile Responsive for Contracts */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .contracts-container {
     padding: var(--cui-spacer-1);
     margin: var(--cui-spacer-1);
@@ -2205,7 +2205,7 @@ body {
 }
 
 /* Desktop styles - default carousel behavior */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .other-styles-carousel-container {
     /* Remove restrictive max-height and overflow */
     max-height: none !important;
@@ -2438,7 +2438,7 @@ body {
 }
 
 /* Tablet styles */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1024px) and (max-width: 991.98px) {
   .style-carousel-item {
     min-width: 160px !important;
     max-width: 160px !important;
@@ -2546,7 +2546,7 @@ body {
 }
 
 /* Tablet responsive styles */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1024px) and (max-width: 991.98px) {
   .style-carousel-item img {
     height: 200px !important;
   }
@@ -3035,7 +3035,7 @@ body {
 }
 
 /* Tablet PDF viewer adjustments */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1024px) and (max-width: 991.98px) {
   .pdf-viewer-modal .modal-dialog {
     max-width: 95vw !important;
     width: 95vw !important;
@@ -3130,7 +3130,7 @@ body {
 }
 
 /* Tablet-specific overflow protection */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1024px) and (max-width: 991.98px) {
   /* Ensure flex layouts don't break on tablets */
   .d-flex {
     flex-wrap: wrap !important;
@@ -3186,7 +3186,7 @@ body {
   display: block !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .mobile-only {
     display: block !important;
   }
@@ -3332,7 +3332,7 @@ body {
 }
 
 /* Hide desktop pagination on mobile */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .data-table-card {
     display: none;
   }
