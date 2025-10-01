@@ -57,6 +57,7 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "@tailwindcss/postcss": "^4.1.13",
     "@vitejs/plugin-react": "^5.0.2",
     "autoprefixer": "^10.4.21",
