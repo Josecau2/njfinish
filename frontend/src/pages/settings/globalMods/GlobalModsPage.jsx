@@ -2556,7 +2556,7 @@ const GlobalModsPage = () => {
             ) : (
               <p>{t('globalMods.modal.deleteCategory.emptySafe')}</p>
             )}
-          </div>
+          </Container>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>

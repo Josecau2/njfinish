@@ -483,7 +483,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   }
 
   return (
-    <Box maxW="1200px" mx="auto" p={4} className="dashboard-container">
+    <Container maxW="7xl" py={6} className="dashboard-container">
       {/* Scoped mobile layout improvements for Quotes */}
       <style>{`
         /* Visibility helpers hook into our global _responsive.scss classes */
@@ -798,7 +798,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         onAcceptanceComplete={handleAcceptanceComplete}
         isContractor={isContractor}
       />
-    </Box>
+    </Container>
   )
 }
 

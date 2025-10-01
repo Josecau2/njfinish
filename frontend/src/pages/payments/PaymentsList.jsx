@@ -12,6 +12,7 @@ import {
   Badge,
   Button,
   Box,
+  Container,
   Flex,
   Text,
   VStack,
@@ -271,7 +272,7 @@ const PaymentsList = ({ isContractor }) => {
   const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
 
   return (
-    <Box maxW="1200px" mx="auto" p={4}>
+    <Container maxW="7xl" py={6}>
       <PageHeader title={title} subtitle={subtitle} icon={CreditCardIcon} />
 
       {error ? (
@@ -580,7 +581,7 @@ const PaymentsList = ({ isContractor }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Box>
+    </Container>
   )
 }
 

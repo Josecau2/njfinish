@@ -317,7 +317,7 @@ const UsersPage = () => {
                     <Tr>
                       <Td colSpan={5} className="settings-empty-state">
                         <div className="settings-mobile-actions">
-                          <Search size={20} className="settings-empty-icon" aria-hidden="true" />
+                          <Users size={48} className="settings-empty-icon" aria-hidden="true" />
                           <p className="mb-0">{t('settings.users.empty.title')}</p>
                           <small>{t('settings.users.empty.subtitle')}</small>
                         </div>
@@ -404,7 +404,7 @@ const UsersPage = () => {
               {paginatedUsers?.length === 0 ? (
                 <div className="settings-empty-state">
                   <div className="text-muted">
-                    <Search size={20} className="settings-empty-icon" aria-hidden="true" />
+                    <Users size={48} className="settings-empty-icon" aria-hidden="true" />
                     <p className="mb-0">{t('settings.users.empty.title')}</p>
                     <small>{t('settings.users.empty.subtitle')}</small>
                   </div>

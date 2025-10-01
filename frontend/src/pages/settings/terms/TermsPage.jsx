@@ -81,6 +81,7 @@ const TermsPage = () => {
   if (!isAdmin) return null
 
   return (
+    <Container maxW="container.xl" py={8}>
     <>
       <style>{`
         .settings-terms .btn, .btn { min-height: 44px; }
@@ -165,6 +166,7 @@ const TermsPage = () => {
         </Box>
       </Flex>
     </>
+    </Container>
   )
 }
 

@@ -11,6 +11,7 @@ import {
   Badge,
   Button,
   Box,
+  Container,
   Flex,
   Text,
   VStack,
@@ -48,9 +49,13 @@ const OrdersList = ({
   const { payments } = useSelector((s) => s.payments)
   const authUser = useSelector((s) => s.auth?.user)
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('All')
   const [page, setPage] = useState(1)
   const perPage = 10
   const navigate = useNavigate()
+
+  // Status filter options
+  const STATUS_OPTIONS = ['All', 'New', 'Processing', 'Paid', 'Cancelled']
 
   // Receipt modal state
   const [receiptModalVisible, setReceiptModalVisible] = useState(false)
@@ -192,11 +197,22 @@ const OrdersList = ({
 
   const filtered = useMemo(() => {
     const list = Array.isArray(orders) ? orders : []
+
+    // Apply status filter first
+    let statusFiltered = list
+    if (statusFilter !== 'All') {
+      statusFiltered = list.filter((p) => {
+        const paymentStatus = p.payment_status || p.paymentStatus || ''
+        return paymentStatus.toLowerCase() === statusFilter.toLowerCase()
+      })
+    }
+
+    // Then apply search filter
     const term = (search || '').toLowerCase()
-    const base = list.filter((p) => {
+    const base = statusFiltered.filter((p) => {
       if (!term) return true
 
-      // Enhanced customer name search with multiple fallbacks
+      // Enhanced search: customer name, order number, description
       const customerName = (
         p.customer?.name ||
         p.proposal?.customerName ||
@@ -204,6 +220,14 @@ const OrdersList = ({
         ''
       ).toLowerCase()
       if (customerName.includes(term)) return true
+
+      // Search by order number
+      const orderNumber = (p.orderNumber || p.order_number || '').toString().toLowerCase()
+      if (orderNumber.includes(term)) return true
+
+      // Search by description
+      const description = (p.description || '').toLowerCase()
+      if (description.includes(term)) return true
 
       if (!isContractor) {
         const contractor = (
@@ -217,7 +241,7 @@ const OrdersList = ({
       return false
     })
     return base
-  }, [orders, search])
+  }, [orders, search, statusFilter, isContractor])
 
   const paged = useMemo(() => {
     const start = (page - 1) * perPage
@@ -428,23 +452,43 @@ const OrdersList = ({
   }
 
   return (
-    <Box maxW="1200px" mx="auto" p={4}>
+    <Container maxW="7xl" py={6}>
       <PageHeader title={title} subtitle={subtitle} icon={ShoppingCart} />
+
+      {/* Status Filter Buttons */}
+      <HStack spacing={2} wrap="wrap" mb={4}>
+        {STATUS_OPTIONS.map((status) => (
+          <Button
+            key={status}
+            variant={statusFilter === status ? 'solid' : 'outline'}
+            colorScheme={statusFilter === status ? 'blue' : 'gray'}
+            size="sm"
+            onClick={() => {
+              setStatusFilter(status)
+              setPage(1)
+            }}
+          >
+            {status}
+          </Button>
+        ))}
+      </HStack>
 
       {/* Toolbar: search + count */}
       <Flex justify="space-between" align="center" mb={4} role="search">
-        <InputGroup maxW="520px">
-          <InputLeftElement>
-            <Search size={16} />
-          </InputLeftElement>
-          <Input
+        <Box flex={1} maxW="520px">
+          <InputGroup>
+            <InputLeftElement>
+              <Search size={16} />
+            </InputLeftElement>
+            <Input
             type="search"
-            placeholder={t('orders.searchPlaceholder', 'Search by customer')}
+            placeholder="Search by customer, order number, or description"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label={t('orders.searchAria', 'Search orders by customer name')}
           />
         </InputGroup>
+        </Box>
         <Text fontSize="sm" color="gray.500">
           {t('orders.showingCount', {
             count: filtered.length,
@@ -475,7 +519,7 @@ const OrdersList = ({
               <Tr>
                 <Td colSpan={8} textAlign="center" py={5}>
                   <VStack spacing={3}>
-                    <Search size={48} color="gray" />
+                    <ShoppingCart size={48} color="gray" />
                     <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
                     <Text fontSize="sm" color="gray.500">
                       {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
@@ -567,7 +611,7 @@ const OrdersList = ({
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={2}>
         {paged.length === 0 ? (
           <VStack spacing={3} textAlign="center" py={5}>
-            <Search size={48} color="gray" />
+            <ShoppingCart size={48} color="gray" />
             <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
             <Text fontSize="sm" color="gray.500">
               {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
@@ -688,7 +732,7 @@ const OrdersList = ({
         payment={selectedPaymentForReceipt}
         order={selectedOrderForReceipt}
       />
-    </Box>
+    </Container>
   )
 }
 
