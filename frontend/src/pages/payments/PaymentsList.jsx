@@ -17,8 +17,6 @@ import {
   Text,
   VStack,
   HStack,
-  Card,
-  CardBody,
   Alert,
   Input,
   InputGroup,
@@ -42,6 +40,7 @@ import {
 } from '@chakra-ui/react'
 import { Search, CreditCard as CreditCardIcon, Plus } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
+import { MobileListCard } from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import withContractorScope from '../../components/withContractorScope'
@@ -413,8 +412,7 @@ const PaymentsList = ({ isContractor }) => {
           filtered.map((payment) => {
             const canPayOnline = payment?.gateway === 'stripe' && payment?.status === 'pending'
             return (
-              <Card key={payment?.id || Math.random()} size="sm" as="article" minH="280px">
-                <CardBody>
+              <MobileListCard key={payment?.id || Math.random()} minH="280px">
                   <VStack align="stretch" spacing={4} h="full" justify="space-between">
                     <Flex justify="space-between" align="center">
                       <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
@@ -436,8 +434,7 @@ const PaymentsList = ({ isContractor }) => {
                       </Button>
                     ) : null}
                   </VStack>
-                </CardBody>
-              </Card>
+              </MobileListCard>
             )
           })
         )}

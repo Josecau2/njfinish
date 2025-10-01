@@ -16,14 +16,13 @@ import {
   Text,
   VStack,
   HStack,
-  Card,
-  CardBody,
   Alert,
   Input,
   InputGroup,
   InputLeftElement,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { MobileListCard } from '../../components/StandardCard'
 import { Search, CreditCard, Download, ShoppingCart } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import PaginationComponent from '../../components/common/PaginationComponent'
@@ -621,9 +620,8 @@ const OrdersList = ({
           paged.map((item) => {
             const paymentInfo = getPaymentStatus(item.id)
             return (
-              <Card key={item.id} size="sm" as="article">
-                <CardBody>
-                  <VStack align="stretch" spacing={4}>
+              <MobileListCard key={item.id} minH="280px">
+                  <VStack align="stretch" spacing={4} h="full" justify="space-between">
                     <Flex justify="space-between" align="center">
                       <VStack align="start" spacing={4}>
                         {isContractor ? (
@@ -709,8 +707,7 @@ const OrdersList = ({
                       </HStack>
                     )}
                   </VStack>
-                </CardBody>
-              </Card>
+              </MobileListCard>
             )
           })
         )}
