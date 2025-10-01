@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import routes from '../routes'
 import RouteGuard from './RouteGuard'
+import PageErrorBoundary from './PageErrorBoundary'
 import { filterRoutesByPermission } from '../helpers/permissions'
 import { AuditRoutes } from '../routes/__audit__/index.jsx'
 
@@ -59,21 +60,23 @@ const AppContent = () => {
                     exact={route.exact}
                     name={route.name}
                     element={
-                      <RouteGuard
-                        permission={route.permission}
-                        module={route.module}
-                        adminOnly={route.adminOnly}
-                      >
-                        <motion.div
-                          style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}
-                          initial={initial}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={exit}
-                          transition={transition}
+                      <PageErrorBoundary pageName={route.name}>
+                        <RouteGuard
+                          permission={route.permission}
+                          module={route.module}
+                          adminOnly={route.adminOnly}
                         >
-                          <route.element />
-                        </motion.div>
-                      </RouteGuard>
+                          <motion.div
+                            style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}
+                            initial={initial}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={exit}
+                            transition={transition}
+                          >
+                            <route.element />
+                          </motion.div>
+                        </RouteGuard>
+                      </PageErrorBoundary>
                     }
                   />
                 )

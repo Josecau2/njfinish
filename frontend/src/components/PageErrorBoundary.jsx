@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, Button, CardBody, Container, Heading, Stack, Text } from '@chakra-ui/react'
+import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, Button, Card, CardBody, Container, Heading, Stack, Text, Icon } from '@chakra-ui/react'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,18 +28,18 @@ class PageErrorBoundaryClass extends Component {
 
       return (
         <Container maxW="4xl" py={12}>
-          <StandardCard borderColor="red.200">
+          <Card borderColor="red.200" borderWidth="1px">
             <CardBody>
               <Stack spacing={6} align="center" textAlign="center">
-                <Box style={{ color="red.500" }}>
-                  <AlertTriangle size={48} />
+                <Box color="red.500">
+                  <Icon as={AlertTriangle} boxSize={12} />
                 </Box>
 
                 <Stack spacing={4}>
-                  <Heading size="lg" style={{ color="red.600" }}>
+                  <Heading size="lg" color="red.600">
                     {pageName} Error
                   </Heading>
-                  <Text style={{ color="gray.600" }} fontSize="lg">
+                  <Text color="gray.600" fontSize="lg">
                     Something went wrong while loading this page.
                   </Text>
                 </Stack>
@@ -58,7 +58,7 @@ class PageErrorBoundaryClass extends Component {
 
                 <Stack direction={{ base: 'column', md: 'row' }} spacing={4} w="full" justify="center">
                   <Button
-                    leftIcon={<RefreshCw size={16} />}
+                    leftIcon={<Icon as={RefreshCw} boxSize={4} />}
                     colorScheme="blue"
                     onClick={() => window.location.reload()}
                     minH="44px"
@@ -66,25 +66,26 @@ class PageErrorBoundaryClass extends Component {
                     Reload Page
                   </Button>
                   <Button
-                    leftIcon={<Home size={16} />}
+                    leftIcon={<Icon as={Home} boxSize={4} />}
                     variant="outline"
                     colorScheme="gray"
                     onClick={() => {
                       this.setState({ hasError: false, error: undefined, errorInfo: undefined })
                       if (navigate) navigate('/')
                       else window.location.href = '/'
+                    }}
                     minH="44px"
                   >
                     Go to Dashboard
                   </Button>
                 </Stack>
 
-                <Text fontSize="sm" style={{ color="gray.500" }}>
+                <Text fontSize="sm" color="gray.500">
                   If this problem persists, please contact support.
                 </Text>
               </Stack>
             </CardBody>
-          </StandardCard>
+          </Card>
         </Container>
       )
     }
