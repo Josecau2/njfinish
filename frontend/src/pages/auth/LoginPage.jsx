@@ -174,7 +174,7 @@ const LoginPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.title}
             </Heading>
-            <Text textAlign="center" color="gray.600">
+            <Text textAlign="center" color="gray.700">
               {loginBrand.subtitle}
             </Text>
 

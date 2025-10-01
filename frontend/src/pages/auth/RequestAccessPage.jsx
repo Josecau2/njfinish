@@ -188,11 +188,11 @@ const RequestAccessPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {pageTitle}
             </Heading>
-            <Text textAlign="center" color="gray.600">
+            <Text textAlign="center" color="gray.700">
               {pageSubtitle}
             </Text>
             {pageDescription && (
-              <Text textAlign="center" color="gray.600" fontSize="sm">
+              <Text textAlign="center" color="gray.700" fontSize="sm">
                 {pageDescription}
               </Text>
             )}
@@ -385,7 +385,7 @@ const RequestAccessPage = () => {
                     maxLength={2000}
                     minH="44px"
                   />
-                  <Text fontSize="xs" textAlign="right" color="gray.500" mt={1}>
+                  <Text fontSize="xs" textAlign="right" color="gray.700" mt={1}>
                     {form.message.length}/2000
                   </Text>
                 </FormControl>

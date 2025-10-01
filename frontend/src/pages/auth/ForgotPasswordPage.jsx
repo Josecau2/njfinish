@@ -120,7 +120,7 @@ const ForgotPasswordPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.resetTitle || t('auth.forgotPassword.title')}
             </Heading>
-            <Text textAlign="center" color="gray.600">
+            <Text textAlign="center" color="gray.700">
               {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
             </Text>
 
