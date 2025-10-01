@@ -415,7 +415,7 @@ const LoginCustomizerPage = () => {
                           pl="70px"
                           value={settings.backgroundColor}
                           onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                          placeholder="#000000"
+                          placeholder="black"
                           borderRadius="8px"
                           borderColor="gray.200"
                           fontSize="sm"

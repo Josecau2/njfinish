@@ -1608,7 +1608,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         h="220px"
                                                                         objectFit="contain"
                                                                         borderRadius="10px"
-                                                                        bg="#f8f9fa"
+                                                                        bg="gray.50"
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
                                                                         borderStyle="solid"
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef'}

@@ -36,10 +36,10 @@ class PageErrorBoundaryClass extends Component {
                 </Box>
 
                 <Stack spacing={2}>
-                  <Heading size="lg" style={{ color="#bb2d3b" }}>
+                  <Heading size="lg" style={{ color="red.600" }}>
                     {pageName} Error
                   </Heading>
-                  <Text style={{ color="#495057" }} fontSize="lg">
+                  <Text style={{ color="gray.600" }} fontSize="lg">
                     Something went wrong while loading this page.
                   </Text>
                 </Stack>

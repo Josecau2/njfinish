@@ -197,7 +197,7 @@ const ProfilePage = () => {
                   name="email"
                   value={formData.email}
                   isReadOnly
-                  bg="#e9ecef"
+                  bg="gray.100"
                   cursor="not-allowed"
                   aria-readonly="true"
                 />

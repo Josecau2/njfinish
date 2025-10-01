@@ -219,16 +219,16 @@ const AddUserGroupForm = () => {
                 </Text>
               </HStack>
               <Flex gap={2} wrap="wrap">
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
                 </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.setPermissions')}</Text>
                 </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.manageAccess')}</Text>
                 </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="#f8f9fa">
+                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.bulkManagement')}</Text>
                 </Box>
               </Flex>
