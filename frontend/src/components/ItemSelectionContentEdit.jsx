@@ -1421,7 +1421,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 <Box
                                     className="style-separator"
                                     w="1px"
-                                    bg="#ccc"
+                                    bg="gray.300"
                                     mx={4}
                                     display={{ base: 'none', lg: 'block' }}
                                 />

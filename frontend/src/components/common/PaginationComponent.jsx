@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const ACTIVE_BUTTON_STYLE = {
-  backgroundColor: '#4f46e5',
-  borderColor: '#4f46e5',
+  backgroundColor: "indigo.600",
+  borderColor: "indigo.600",
   color: "white",
 }
 
@@ -13,9 +13,9 @@ const DISABLED_BUTTON_STYLE = {
 }
 
 const HOVER_BUTTON_STYLE = {
-  backgroundColor: '#ede9fe',
-  borderColor: '#c4b5fd',
-  color: '#3730a3',
+  backgroundColor: "purple.50",
+  borderColor: "purple.300",
+  color: "purple.700",
 }
 
 const PaginationComponent = ({

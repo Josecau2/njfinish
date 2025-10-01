@@ -1583,7 +1583,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         <Box
                             className="style-separator"
                             w="1px"
-                            bg="#ccc"
+                            bg="gray.300"
                             mx={4}
                             display={{ base: 'none', lg: 'block' }}
                         />
