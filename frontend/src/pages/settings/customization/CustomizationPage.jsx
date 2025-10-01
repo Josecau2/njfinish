@@ -345,7 +345,7 @@ const CustomizationPage = () => {
                     </SimpleGrid>
                   </Box>
 
-                  <Box borderRadius="md" p={4} bg={headerBg} color={headerTextColor}>
+                  <Box borderRadius="md" p={4} bg={headerBg} color={headerTextColor} data-preview-header>
                     <Text fontWeight="semibold">{t('settings.customization.ui.preview.header')}</Text>
                     <Text fontSize="sm">
                       {t('settings.customization.ui.preview.description')}
