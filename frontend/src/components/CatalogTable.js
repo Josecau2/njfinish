@@ -9,6 +9,7 @@ import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
 
 const hingeOptions = ['L', 'R', '-']
+const exposedOptions = ['L', 'R', 'B', '-']
 
 // Helpers to render selected modification options (e.g., measurements) neatly
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)

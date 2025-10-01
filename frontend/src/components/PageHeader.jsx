@@ -21,6 +21,7 @@ const PageHeader = ({
   icon: Icon,
   breadcrumbs = [],
   actions = [],
+  rightContent,
   children,
 }) => {
   const { t } = useTranslation()
@@ -108,7 +109,7 @@ const PageHeader = ({
           </Box>
 
           {/* Actions Section */}
-          {(actions.length > 0 || children) && (
+          {(actions.length > 0 || rightContent || children) && (
             <Box flexShrink={0}>
               <HStack
                 spacing={3}
@@ -118,6 +119,7 @@ const PageHeader = ({
                 {actions.map((action, index) => (
                   <Box key={index}>{action}</Box>
                 ))}
+                {rightContent}
                 {children}
               </HStack>
             </Box>

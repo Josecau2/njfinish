@@ -1,7 +1,13 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box, SimpleGrid, Heading, Stack, Link, Text } from '@chakra-ui/react';
-import manifest from '../../../AUDIT/manifest.json';
+
+// Default fallback manifest for when file doesn't exist in production build
+const manifest = {
+  modals: [],
+  components: [],
+  buttons: []
+};
 
 export function AuditRoutes() {
   // Block in production

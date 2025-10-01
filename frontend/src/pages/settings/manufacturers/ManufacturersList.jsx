@@ -148,7 +148,7 @@ const ManufacturersList = () => {
 
   const handleEdit = (manufacturerId) => {
     const noisyPath = `/${genNoise(6)}/${genNoise(8)}` +
-      buildEncodedPath('/settings/manufacturers/:id/edit', { id: manufacturerId })
+      buildEncodedPath('/settings/manufacturers/edit/:id', { id: manufacturerId })
     navigate(noisyPath)
   }
 
