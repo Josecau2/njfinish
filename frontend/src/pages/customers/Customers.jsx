@@ -211,7 +211,7 @@ const CustomerTable = ({
           ]}
         />
 
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={4}>
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
           <Card variant="outline" borderColor="brand.500">
             <CardBody>
               <Stat>
@@ -248,8 +248,8 @@ const CustomerTable = ({
 
         <Card variant="outline">
           <CardBody>
-            <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ base: 'stretch', md: 'center' }}>
-              <InputGroup maxW={{ base: 'full', md: '360px' }}>
+            <Stack direction={{ base: 'column', lg: 'row' }} spacing={4} align={{ base: 'stretch', lg: 'center' }}>
+              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={Search} color="gray.400" boxSize={4} />
                 </InputLeftElement>
@@ -262,7 +262,7 @@ const CustomerTable = ({
               </InputGroup>
 
               <Select
-                maxW={{ base: 'full', md: '200px' }}
+                maxW={{ base: 'full', lg: '200px' }}
                 value={itemsPerPage}
                 onChange={(event) => setItemsPerPage(Number(event.target.value))}
               >
@@ -273,7 +273,7 @@ const CustomerTable = ({
                 ))}
               </Select>
 
-              <Box flex="1" textAlign={{ base: 'left', md: 'right' }}>
+              <Box flex="1" textAlign={{ base: 'left', lg: 'right' }}>
                 <Text fontSize="sm" color="gray.500">
                   {t('customers.showing', 'Showing')} {filteredCount} {t('customers.of', 'of')} {total}{' '}
                   {t('customers.customersLower', 'customers')}
@@ -306,7 +306,7 @@ const CustomerTable = ({
 
         {!loading && !error && (
           <>
-            <Box display={{ base: 'none', md: 'block' }}>
+            <Box display={{ base: 'none', lg: 'block' }}>
               <Card variant="outline">
                 <CardBody>
                   <TableContainer>
@@ -426,7 +426,7 @@ const CustomerTable = ({
               </Card>
             </Box>
 
-            <Stack spacing={4} display={{ base: 'flex', md: 'none' }}>
+            <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>
               {filteredCount === 0 ? (
                 <Card variant="outline">
                   <CardBody>

@@ -599,7 +599,7 @@ const OrderDetails = () => {
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.status', 'Status')}:
                 </Text>{' '}
-                <Badge colorScheme="green" borderRadius="full" px={3} py={1} fontSize="0.75rem">
+                <Badge colorScheme="green" borderRadius="full" px={3} py={1} fontSize="xs">
                   {order?.status || 'accepted'}
                 </Badge>
               </Text>

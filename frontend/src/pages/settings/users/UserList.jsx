@@ -191,7 +191,7 @@ const UsersPage = () => {
         <Box md={4}>
           <Card className="settings-stats-card">
             <CardBody>
-              <div className="d-flex align-items-center justify-content-center mb-2">
+              <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon primary">
                   <Users size={20} aria-hidden="true" />
                 </div>
@@ -199,14 +199,14 @@ const UsersPage = () => {
                   <h4 className="mb-0 fw-bold text-primary">{filteredUsers.length}</h4>
                   <small>{t('settings.users.stats.totalUsers')}</small>
                 </div>
-              </div>
+              </Flex>
             </CardBody>
           </Card>
         </Box>
         <Box md={4}>
           <Card className="settings-stats-card">
             <CardBody>
-              <div className="d-flex align-items-center justify-content-center mb-2">
+              <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon success">
                   <Gear size={20} aria-hidden="true" />
                 </div>
@@ -214,14 +214,14 @@ const UsersPage = () => {
                   <h4 className="mb-0 fw-bold text-success">{adminCount}</h4>
                   <small>{t('settings.users.stats.administrators')}</small>
                 </div>
-              </div>
+              </Flex>
             </CardBody>
           </Card>
         </Box>
         <Box md={4}>
           <Card className="settings-stats-card">
             <CardBody>
-              <div className="d-flex align-items-center justify-content-center mb-2">
+              <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon warning">
                   <UserIcon size={20} aria-hidden="true" />
                 </div>
@@ -229,7 +229,7 @@ const UsersPage = () => {
                   <h4 className="mb-0 fw-bold text-warning">{regularCount}</h4>
                   <small>{t('settings.users.stats.regularUsers')}</small>
                 </div>
-              </div>
+              </Flex>
             </CardBody>
           </Card>
         </Box>
@@ -296,7 +296,7 @@ const UsersPage = () => {
         <Card className="settings-table-card">
           <CardBody>
             {/* Desktop Table View */}
-            <div className="d-none d-md-block table-wrap">
+            <Box display={{ base: 'none', lg: 'block' }} className="table-wrap">
               <Table variant="simple" className="mb-0 table-modern">
                 <Thead className="settings-table-header">
                   <Tr>
@@ -332,9 +332,9 @@ const UsersPage = () => {
                             className="px-2 py-1"
                             style={{
                               borderRadius: '15px',
-                              fontSize: '11px',
+                              fontSize: "xs",
                               fontWeight: '500',
-                              color: '#6c757d',
+                              color: "gray.500",
                             }}
                           >
                             {startIdx + index}
@@ -397,10 +397,10 @@ const UsersPage = () => {
                   )}
                 </Tbody>
               </Table>
-            </div>
+            </Box>
 
             {/* Mobile Card View */}
-            <div className="settings-mobile-cards d-md-none">
+            <Box display={{ base: 'block', lg: 'none' }} className="settings-mobile-cards">
               {paginatedUsers?.length === 0 ? (
                 <div className="settings-empty-state">
                   <div>
@@ -469,17 +469,17 @@ const UsersPage = () => {
                   </div>
                 ))
               )}
-            </div>
+            </Box>
 
             {/* Pagination */}
-            <div className="settings-pagination">
+            <Box className="settings-pagination">
               <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
                 itemsPerPage={itemsPerPage}
               />
-            </div>
+            </Box>
           </CardBody>
         </Card>
       )}

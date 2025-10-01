@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+  Box,
+  Flex,
+  Container,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Link,
+  Alert,
+  AlertIcon,
+  VStack
+} from '@chakra-ui/react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
@@ -65,82 +80,105 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <div className="login-page-wrapper">
-      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
-        <div className="login-left-content">
-          <h1 style={{ color: rightPanelColors.text }}>
+    <Flex minH="100vh" className="login-page-wrapper">
+      {/* Left Panel - Illustration and Branding */}
+      <Box
+        display={{ base: 'none', lg: 'flex' }}
+        flex="1"
+        bg={loginBackground}
+        alignItems="center"
+        justifyContent="center"
+        px={8}
+        className="login-left-panel"
+      >
+        <VStack spacing={4} maxW="500px" textAlign="center">
+          <Heading as="h1" size="2xl" color={rightPanelColors.text}>
             {loginBrand.rightTitle || brand.logoAlt || t('auth.forgotPassword.title')}
-          </h1>
-          <p style={{ color: rightPanelColors.subtitle }}>
+          </Heading>
+          <Text fontSize="xl" color={rightPanelColors.subtitle}>
             {loginBrand.rightSubtitle || t('auth.forgotPassword.subtitle')}
-          </p>
-          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription || ''}</p>
-        </div>
-      </div>
+          </Text>
+          <Text fontSize="md" color={rightPanelColors.subtitle}>
+            {loginBrand.rightDescription || ''}
+          </Text>
+        </VStack>
+      </Box>
 
-      <div className="login-right-panel">
-        <div className="login-form-container">
-          <div>
-            <BrandLogo size={logoHeight} />
-          </div>
-          <h2>
-            {loginBrand.resetTitle || t('auth.forgotPassword.title')}
-          </h2>
-          <p>
-            {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
-          </p>
+      {/* Right Panel - Form */}
+      <Flex
+        flex="1"
+        alignItems="center"
+        justifyContent="center"
+        bg="white"
+        className="login-right-panel"
+      >
+        <Container maxW="md" py={8}>
+          <VStack spacing={6} align="stretch">
+            <Box textAlign="center">
+              <BrandLogo size={logoHeight} />
+            </Box>
+            <Heading as="h2" size="lg" textAlign="center">
+              {loginBrand.resetTitle || t('auth.forgotPassword.title')}
+            </Heading>
+            <Text textAlign="center" color="gray.600">
+              {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
+            </Text>
 
-          {message && (
-            <div className="alert alert-success" role="status" aria-live="polite">
-              {message}
-            </div>
-          )}
+            {message && (
+              <Alert status="success" borderRadius="md">
+                <AlertIcon />
+                {message}
+              </Alert>
+            )}
 
-          {error && (
-            <div className="alert alert-danger" role="alert" aria-live="assertive">
-              {error}
-            </div>
-          )}
+            {error && (
+              <Alert status="error" borderRadius="md">
+                <AlertIcon />
+                {error}
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit} noValidate>
-            <div>
-              <label htmlFor="email" className="form-label fw-medium">
-                {t('auth.email')} <span>*</span>
-              </label>
-              <input
-                type="email"
-                className="form-control form-control-lg"
-                id="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder={t('auth.emailPlaceholder')}
-                required
-              />
-            </div>
+            <Box as="form" onSubmit={handleSubmit}>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="email" fontWeight="500">
+                    {t('auth.email')}
+                  </FormLabel>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    size="lg"
+                    placeholder={t('auth.emailPlaceholder')}
+                    value={form.email}
+                    onChange={handleChange}
+                    minH="44px"
+                  />
+                </FormControl>
 
-            <div className="d-grid">
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                style={{ minHeight: 44 }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting
-                  ? t('auth.forgotPassword.submitting')
-                  : t('auth.forgotPassword.submit')}
-              </button>
-            </div>
-          </form>
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  size="lg"
+                  width="100%"
+                  minH="44px"
+                  isLoading={isSubmitting}
+                  loadingText={t('auth.forgotPassword.submitting')}
+                >
+                  {t('auth.forgotPassword.submit')}
+                </Button>
+              </VStack>
+            </Box>
 
-          <div>
-            <Link to="/login">
-              {t('auth.backToLogin')}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+            <Text textAlign="center">
+              <Link as={RouterLink} to="/login" color="blue.600">
+                {t('auth.backToLogin')}
+              </Link>
+            </Text>
+          </VStack>
+        </Container>
+      </Flex>
+    </Flex>
   )
 }
 

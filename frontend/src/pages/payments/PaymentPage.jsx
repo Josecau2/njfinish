@@ -328,7 +328,7 @@ const PaymentPage = () => {
                         variant="outline"
                         onClick={handleRetryPayment}
                         isLoading={intentLoading}
-                        minH="36px"
+                        minH="44px"
                       >
                         {t('payment.retry', 'Retry Payment')}
                       </Button>
@@ -370,6 +370,7 @@ const PaymentPage = () => {
                       variant="link"
                       colorScheme="blue"
                       fontWeight="semibold"
+                      minH="44px"
                     >
                       {t('payment.receipt.view', 'View Receipt')}
                     </Button>

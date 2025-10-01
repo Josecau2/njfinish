@@ -37,6 +37,7 @@ import {
   Thead,
   Tr,
   useToast,
+  VStack,
 } from '@chakra-ui/react'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -365,67 +366,160 @@ const LeadsPage = () => {
             ) : filteredLeads.length === 0 ? (
               <Text color="gray.500">{t('leadsPage.table.noResults')}</Text>
             ) : (
-              <TableContainer>
-                <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      <Th>{t('leadsPage.table.columns.name')}</Th>
-                      <Th>{t('leadsPage.table.columns.email')}</Th>
-                      <Th>{t('leadsPage.table.columns.phone')}</Th>
-                      <Th>{t('leadsPage.table.columns.location')}</Th>
-                      <Th>{t('leadsPage.table.columns.company')}</Th>
-                      <Th>{t('leadsPage.table.columns.submitted')}</Th>
-                      <Th>{t('leadsPage.table.columns.status')}</Th>
-                      <Th textAlign="right">{t('leadsPage.table.columns.actions')}</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {filteredLeads.map((lead) => {
-                      const displayName = getLeadFullName(lead) || lead.name || '—'
-                      const phone = getLeadValue(lead, 'phone') || '—'
-                      const location = getLeadLocation(lead) || '—'
-                      const company = lead.company || '—'
-                      const submittedAt = lead.createdAt
-                        ? new Date(lead.createdAt).toLocaleString()
-                        : '—'
-                      return (
-                        <Tr key={lead.id}>
-                          <Td>{displayName}</Td>
-                          <Td>{lead.email}</Td>
-                          <Td>{phone}</Td>
-                          <Td>{location}</Td>
-                          <Td>{company}</Td>
-                          <Td>{submittedAt}</Td>
-                          <Td>
-                            <Select
-                              size="sm"
-                              value={lead.status}
-                              onChange={(event) => handleStatusChange(lead, event.target.value)}
-                              isDisabled={updatingStatusId === lead.id}
-                            >
-                              {statusUpdateOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </Select>
-                          </Td>
-                          <Td textAlign="right">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
-                              onClick={() => setSelectedLead(normalizeLead(lead))}
-                            >
-                              {t('leadsPage.table.actions.details')}
-                            </Button>
-                          </Td>
-                        </Tr>
-                      )
-                    })}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+              <>
+                {/* Desktop table view */}
+                <TableContainer display={{ base: 'none', lg: 'block' }}>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>{t('leadsPage.table.columns.name')}</Th>
+                        <Th>{t('leadsPage.table.columns.email')}</Th>
+                        <Th>{t('leadsPage.table.columns.phone')}</Th>
+                        <Th>{t('leadsPage.table.columns.location')}</Th>
+                        <Th>{t('leadsPage.table.columns.company')}</Th>
+                        <Th>{t('leadsPage.table.columns.submitted')}</Th>
+                        <Th>{t('leadsPage.table.columns.status')}</Th>
+                        <Th textAlign="right">{t('leadsPage.table.columns.actions')}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {filteredLeads.map((lead) => {
+                        const displayName = getLeadFullName(lead) || lead.name || 'ï¿½'
+                        const phone = getLeadValue(lead, 'phone') || 'ï¿½'
+                        const location = getLeadLocation(lead) || 'ï¿½'
+                        const company = lead.company || 'ï¿½'
+                        const submittedAt = lead.createdAt
+                          ? new Date(lead.createdAt).toLocaleString()
+                          : 'ï¿½'
+                        return (
+                          <Tr key={lead.id}>
+                            <Td>{displayName}</Td>
+                            <Td>{lead.email}</Td>
+                            <Td>{phone}</Td>
+                            <Td>{location}</Td>
+                            <Td>{company}</Td>
+                            <Td>{submittedAt}</Td>
+                            <Td>
+                              <Select
+                                size="sm"
+                                value={lead.status}
+                                onChange={(event) => handleStatusChange(lead, event.target.value)}
+                                isDisabled={updatingStatusId === lead.id}
+                              >
+                                {statusUpdateOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </Select>
+                            </Td>
+                            <Td textAlign="right">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
+                                onClick={() => setSelectedLead(normalizeLead(lead))}
+                              >
+                                {t('leadsPage.table.actions.details')}
+                              </Button>
+                            </Td>
+                          </Tr>
+                        )
+                      })}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+
+                {/* Mobile card view */}
+                <VStack spacing={4} display={{ base: 'flex', lg: 'none' }}>
+                  {filteredLeads.map((lead) => {
+                    const displayName = getLeadFullName(lead) || lead.name || 'ï¿½'
+                    const phone = getLeadValue(lead, 'phone') || 'ï¿½'
+                    const location = getLeadLocation(lead) || 'ï¿½'
+                    const company = lead.company || 'ï¿½'
+                    const submittedAt = lead.createdAt
+                      ? new Date(lead.createdAt).toLocaleString()
+                      : 'ï¿½'
+                    return (
+                      <Card key={lead.id} w="100%" variant="outline">
+                        <CardBody>
+                          <VStack align="stretch" spacing={3}>
+                            <Flex justify="space-between" align="start">
+                              <Box>
+                                <Text fontWeight="600" fontSize="md">
+                                  {displayName}
+                                </Text>
+                                <Text fontSize="sm" color="gray.600">
+                                  {lead.email}
+                                </Text>
+                              </Box>
+                              <Badge colorScheme={statusBadgeColor[lead.status] || 'gray'}>
+                                {lead.status}
+                              </Badge>
+                            </Flex>
+
+                            <Box fontSize="sm">
+                              {phone !== 'ï¿½' && (
+                                <Text>
+                                  <Text as="span" fontWeight="500">
+                                    {t('leadsPage.table.columns.phone')}:
+                                  </Text>{' '}
+                                  {phone}
+                                </Text>
+                              )}
+                              {location !== 'ï¿½' && (
+                                <Text>
+                                  <Text as="span" fontWeight="500">
+                                    {t('leadsPage.table.columns.location')}:
+                                  </Text>{' '}
+                                  {location}
+                                </Text>
+                              )}
+                              {company !== 'ï¿½' && (
+                                <Text>
+                                  <Text as="span" fontWeight="500">
+                                    {t('leadsPage.table.columns.company')}:
+                                  </Text>{' '}
+                                  {company}
+                                </Text>
+                              )}
+                              <Text color="gray.500" fontSize="xs" mt={1}>
+                                {t('leadsPage.table.columns.submitted')}: {submittedAt}
+                              </Text>
+                            </Box>
+
+                            <Flex gap={2} wrap="wrap">
+                              <Select
+                                size="sm"
+                                flex="1"
+                                minW="150px"
+                                value={lead.status}
+                                onChange={(event) => handleStatusChange(lead, event.target.value)}
+                                isDisabled={updatingStatusId === lead.id}
+                              >
+                                {statusUpdateOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </Select>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
+                                onClick={() => setSelectedLead(normalizeLead(lead))}
+                                minH="44px"
+                              >
+                                {t('leadsPage.table.actions.details')}
+                              </Button>
+                            </Flex>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+                    )
+                  })}
+                </VStack>
+              </>
             )}
           </CardBody>
         </Card>

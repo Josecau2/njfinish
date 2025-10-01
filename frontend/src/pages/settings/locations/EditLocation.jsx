@@ -189,7 +189,7 @@ const EditLocation = () => {
       confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
       cancelButtonText: t('settings.locations.alerts.stayOnPage'),
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
+      cancelButtoncolor: "gray.500",
     }).then((result) => {
       if (result.isConfirmed) {
         navigate('/settings/locations')

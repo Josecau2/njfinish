@@ -37,7 +37,7 @@ const buildSelectStyles = (hasError) => ({
     borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
     boxShadow: 'none',
     '&:hover': {
-      borderColor: '#3182ce',
+      bordercolor: "blue.500",
     },
   }),
   menu: (provided) => ({
@@ -46,7 +46,7 @@ const buildSelectStyles = (hasError) => ({
   }),
   option: (provided, state) => ({
     ...provided,
-    fontSize: '0.95rem',
+    fontSize: "md",
     backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
     color: state.isFocused ? '#1a202c' : provided.color,
   }),
@@ -371,7 +371,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                   <Heading as="h4" size="sm" mb={3} letterSpacing="0.05em" color={useColorModeValue('blue.700', 'blue.200')}>
                     {t('proposals.create.manufacturer.cta.needAnother')}
                   </Heading>
-                  <Button variant="outline" colorScheme="brand" size="sm">
+                  <Button variant="outline" colorScheme="brand" size="sm" minH="44px">
                     {t('proposals.create.manufacturer.cta.addManufacturer')}
                   </Button>
                 </Box>

@@ -24,10 +24,10 @@ export function ResponsiveTable({ columns, data, onRowClick, renderCell }) {
           >
             {columns.map((col) => (
               <Box key={col.key} mb={2}>
-                <Text fontSize="12px" style={{ color: "#6c757d" }} fontWeight="600" mb={1}>
+                <Text fontSize="xs" style={{ color="gray.500" }} fontWeight="600" mb={1}>
                   {col.label}
                 </Text>
-                <Text fontSize="14px">
+                <Text fontSize="sm">
                   {renderCell ? renderCell(row, col) : row[col.key]}
                 </Text>
               </Box>

@@ -80,7 +80,7 @@ const EditManufacturer = () => {
             '& button[role="tab"]': {
               minHeight: '44px',
               borderRadius: '8px',
-              fontSize: '0.95rem',
+              fontSize: "md",
               fontWeight: 500,
               paddingInline: '20px',
               paddingBlock: '12px',

@@ -619,7 +619,7 @@ const EditProposal = ({
                         top: '70%',
                         right: '12px',
                         transform: 'translateY(-50%)',
-                        color: '#6c757d',
+                        color: "gray.500",
                         pointerEvents: 'none',
                       }}
                     />
@@ -646,7 +646,7 @@ const EditProposal = ({
                         top: '70%',
                         right: '12px',
                         transform: 'translateY(-50%)',
-                        color: '#6c757d',
+                        color: "gray.500",
                         pointerEvents: 'none',
                       }}
                     />
@@ -675,7 +675,7 @@ const EditProposal = ({
                         top: '70%',
                         right: '12px',
                         transform: 'translateY(-50%)',
-                        color: '#6c757d',
+                        color: "gray.500",
                         pointerEvents: 'none',
                       }}
                     />
@@ -704,7 +704,7 @@ const EditProposal = ({
                                 top: '70%',
                                 right: '12px',
                                 transform: 'translateY(-50%)',
-                                color: '#6c757d',
+                                color: "gray.500",
                                 pointerEvents: 'none',
                               }}
                             />
@@ -729,7 +729,7 @@ const EditProposal = ({
                                 top: '70%',
                                 right: '12px',
                                 transform: 'translateY(-50%)',
-                                color: '#6c757d',
+                                color: "gray.500",
                                 pointerEvents: 'none',
                               }}
                             />
@@ -754,7 +754,7 @@ const EditProposal = ({
                                 top: '70%',
                                 right: '12px',
                                 transform: 'translateY(-50%)',
-                                color: '#6c757d',
+                                color: "gray.500",
                                 pointerEvents: 'none',
                               }}
                             />

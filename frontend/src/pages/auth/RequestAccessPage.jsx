@@ -1,6 +1,27 @@
 import React, { useEffect, useState } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+  Box,
+  Flex,
+  Container,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  Button,
+  Link,
+  Alert,
+  AlertIcon,
+  VStack,
+  SimpleGrid,
+  List,
+  ListItem,
+  ListIcon
+} from '@chakra-ui/react'
+import { Circle } from 'lucide-react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
@@ -126,240 +147,273 @@ const RequestAccessPage = () => {
   }
 
   return (
-    <div className="login-page-wrapper">
-      <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
-        <div className="login-left-content">
-          <h1 style={{ color: rightPanelColors.text }}>
+    <Flex minH="100vh" className="login-page-wrapper">
+      {/* Left Panel - Illustration and Branding */}
+      <Box
+        display={{ base: 'none', lg: 'flex' }}
+        flex="1"
+        bg={loginBackground}
+        alignItems="center"
+        justifyContent="center"
+        px={8}
+        className="login-left-panel"
+      >
+        <VStack spacing={4} maxW="500px" textAlign="center">
+          <Heading as="h1" size="2xl" color={rightPanelColors.text}>
             {loginBrand.rightTitle}
-          </h1>
-          <p style={{ color: rightPanelColors.subtitle }}>
+          </Heading>
+          <Text fontSize="xl" color={rightPanelColors.subtitle}>
             {loginBrand.rightSubtitle}
-          </p>
-          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
-        </div>
-      </div>
+          </Text>
+          <Text fontSize="md" color={rightPanelColors.subtitle}>
+            {loginBrand.rightDescription}
+          </Text>
+        </VStack>
+      </Box>
 
-      <div className="login-right-panel">
-        <div className="login-form-container">
-          <div>
-            <BrandLogo size={logoHeight} />
-          </div>
-          <h2>{pageTitle}</h2>
-          <p>{pageSubtitle}</p>
-          {pageDescription && <p>{pageDescription}</p>}
-          {benefits.length > 0 && (
-            <div>
-              <p>{copy.benefitsHeading}</p>
-              <ul
-               
-                style={{ fontSize: '0.85rem', lineHeight: '1.3' }}
-              >
-                {benefits.map((item, idx) => (
-                  <li key={idx}>&bull; {item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {/* Right Panel - Form */}
+      <Flex
+        flex="1"
+        alignItems="center"
+        justifyContent="center"
+        bg="white"
+        overflowY="auto"
+        className="login-right-panel"
+      >
+        <Container maxW="lg" py={8}>
+          <VStack spacing={4} align="stretch">
+            <Box textAlign="center">
+              <BrandLogo size={logoHeight} />
+            </Box>
+            <Heading as="h2" size="lg" textAlign="center">
+              {pageTitle}
+            </Heading>
+            <Text textAlign="center" color="gray.600">
+              {pageSubtitle}
+            </Text>
+            {pageDescription && (
+              <Text textAlign="center" color="gray.600" fontSize="sm">
+                {pageDescription}
+              </Text>
+            )}
 
-          {successMessage && (
-            <div className="alert alert-success" role="status" aria-live="polite">
-              {successMessage}
-            </div>
-          )}
+            {benefits.length > 0 && (
+              <Box>
+                <Text fontWeight="500" mb={2}>
+                  {copy.benefitsHeading}
+                </Text>
+                <List spacing={1} fontSize="sm">
+                  {benefits.map((item, idx) => (
+                    <ListItem key={idx} display="flex" alignItems="flex-start">
+                      <ListIcon as={Circle} boxSize={2} mt={1.5} mr={2} fill="currentColor" />
+                      <Text>{item}</Text>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            )}
 
-          {errorMessage && (
-            <div className="alert alert-danger" role="alert" aria-live="assertive">
-              {errorMessage}
-            </div>
-          )}
+            {successMessage && (
+              <Alert status="success" borderRadius="md">
+                <AlertIcon />
+                {successMessage}
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Name fields in one row */}
-            <div className="row g-2 mb-3">
-              <div>
-                <label htmlFor="firstName" className="form-label fw-medium">
-                  {copy.fields.firstNameLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                 
-                  placeholder={copy.fields.firstNamePlaceholder}
-                  value={form.firstName}
-                  onChange={handleChange}
-                  required
-                  maxLength={191}
-                  autoComplete="given-name"
-                />
-              </div>
-              <div>
-                <label htmlFor="lastName" className="form-label fw-medium">
-                  {copy.fields.lastNameLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                 
-                  placeholder={copy.fields.lastNamePlaceholder}
-                  value={form.lastName}
-                  onChange={handleChange}
-                  required
-                  maxLength={191}
-                  autoComplete="family-name"
-                />
-              </div>
-            </div>
+            {errorMessage && (
+              <Alert status="error" borderRadius="md">
+                <AlertIcon />
+                {errorMessage}
+              </Alert>
+            )}
 
-            {/* Email and Phone in one row */}
-            <div className="row g-2 mb-3">
-              <div className="col-md-7">
-                <label htmlFor="email" className="form-label fw-medium">
-                  {copy.fields.emailLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                 
-                  placeholder={copy.fields.emailPlaceholder}
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="col-md-5">
-                <label htmlFor="phone" className="form-label fw-medium">
-                  {copy.fields.phoneLabel} {requiredAsterisk}
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                 
-                  placeholder={copy.fields.phonePlaceholder}
-                  value={form.phone}
-                  onChange={handleChange}
-                  required
-                  maxLength={32}
-                  autoComplete="tel"
-                />
-              </div>
-            </div>
+            <Box as="form" onSubmit={handleSubmit}>
+              <VStack spacing={3}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} w="100%">
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="firstName" fontWeight="500">
+                      {copy.fields.firstNameLabel}
+                    </FormLabel>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      placeholder={copy.fields.firstNamePlaceholder}
+                      value={form.firstName}
+                      onChange={handleChange}
+                      maxLength={191}
+                      autoComplete="given-name"
+                      minH="44px"
+                    />
+                  </FormControl>
 
-            {/* Location fields in one row */}
-            <div className="row g-2 mb-3">
-              <div className="col-md-5">
-                <label htmlFor="city" className="form-label fw-medium">
-                  {copy.fields.cityLabel}
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                 
-                  placeholder={copy.fields.cityPlaceholder}
-                  value={form.city}
-                  onChange={handleChange}
-                  maxLength={191}
-                  autoComplete="address-level2"
-                />
-              </div>
-              <div>
-                <label htmlFor="state" className="form-label fw-medium">
-                  {copy.fields.stateLabel}
-                </label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                 
-                  placeholder={copy.fields.statePlaceholder}
-                  value={form.state}
-                  onChange={handleChange}
-                  maxLength={64}
-                  autoComplete="address-level1"
-                />
-              </div>
-              <div>
-                <label htmlFor="zip" className="form-label fw-medium">
-                  {copy.fields.zipLabel}
-                </label>
-                <input
-                  type="text"
-                  id="zip"
-                  name="zip"
-                 
-                  placeholder={copy.fields.zipPlaceholder}
-                  value={form.zip}
-                  onChange={handleChange}
-                  maxLength={32}
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                />
-              </div>
-            </div>
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="lastName" fontWeight="500">
+                      {copy.fields.lastNameLabel}
+                    </FormLabel>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      placeholder={copy.fields.lastNamePlaceholder}
+                      value={form.lastName}
+                      onChange={handleChange}
+                      maxLength={191}
+                      autoComplete="family-name"
+                      minH="44px"
+                    />
+                  </FormControl>
+                </SimpleGrid>
 
-            {/* Company field */}
-            <div>
-              <label htmlFor="company" className="form-label fw-medium">
-                {copy.fields.companyLabel}
-              </label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-               
-                placeholder={copy.fields.companyPlaceholder}
-                value={form.company}
-                onChange={handleChange}
-                maxLength={191}
-                autoComplete="organization"
-              />
-            </div>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} w="100%">
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="email" fontWeight="500">
+                      {copy.fields.emailLabel}
+                    </FormLabel>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder={copy.fields.emailPlaceholder}
+                      value={form.email}
+                      onChange={handleChange}
+                      autoComplete="email"
+                      minH="44px"
+                    />
+                  </FormControl>
 
-            {/* Message field - smaller */}
-            <div>
-              <label htmlFor="message" className="form-label fw-medium">
-                {copy.fields.messageLabel}
-              </label>
-              <textarea
-                id="message"
-                name="message"
-               
-                placeholder={copy.fields.messagePlaceholder}
-                rows={3}
-                value={form.message}
-                onChange={handleChange}
-                maxLength={2000}
-              />
-              <div className="form-text text-end small">{form.message.length}/2000</div>
-            </div>
+                  <FormControl isRequired>
+                    <FormLabel htmlFor="phone" fontWeight="500">
+                      {copy.fields.phoneLabel}
+                    </FormLabel>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder={copy.fields.phonePlaceholder}
+                      value={form.phone}
+                      onChange={handleChange}
+                      maxLength={32}
+                      autoComplete="tel"
+                      minH="44px"
+                    />
+                  </FormControl>
+                </SimpleGrid>
 
-            <div className="d-grid">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ minHeight: 40 }}
-                disabled={isSubmitting}
-                aria-busy={isSubmitting}
-              >
-                {isSubmitting ? copy.submitting : copy.submit}
-              </button>
-            </div>
-          </form>
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} w="100%">
+                  <FormControl>
+                    <FormLabel htmlFor="city" fontWeight="500">
+                      {copy.fields.cityLabel}
+                    </FormLabel>
+                    <Input
+                      id="city"
+                      name="city"
+                      type="text"
+                      placeholder={copy.fields.cityPlaceholder}
+                      value={form.city}
+                      onChange={handleChange}
+                      maxLength={191}
+                      autoComplete="address-level2"
+                      minH="44px"
+                    />
+                  </FormControl>
 
-          <div className="text-center mt-3">
-            <span>{copy.alreadyHaveAccess}</span>
-            <Link to="/login" className="fw-semibold text-decoration-none small">
-              {copy.signIn}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+                  <FormControl>
+                    <FormLabel htmlFor="state" fontWeight="500">
+                      {copy.fields.stateLabel}
+                    </FormLabel>
+                    <Input
+                      id="state"
+                      name="state"
+                      type="text"
+                      placeholder={copy.fields.statePlaceholder}
+                      value={form.state}
+                      onChange={handleChange}
+                      maxLength={64}
+                      autoComplete="address-level1"
+                      minH="44px"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel htmlFor="zip" fontWeight="500">
+                      {copy.fields.zipLabel}
+                    </FormLabel>
+                    <Input
+                      id="zip"
+                      name="zip"
+                      type="text"
+                      placeholder={copy.fields.zipPlaceholder}
+                      value={form.zip}
+                      onChange={handleChange}
+                      maxLength={32}
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      minH="44px"
+                    />
+                  </FormControl>
+                </SimpleGrid>
+
+                <FormControl>
+                  <FormLabel htmlFor="company" fontWeight="500">
+                    {copy.fields.companyLabel}
+                  </FormLabel>
+                  <Input
+                    id="company"
+                    name="company"
+                    type="text"
+                    placeholder={copy.fields.companyPlaceholder}
+                    value={form.company}
+                    onChange={handleChange}
+                    maxLength={191}
+                    autoComplete="organization"
+                    minH="44px"
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel htmlFor="message" fontWeight="500">
+                    {copy.fields.messageLabel}
+                  </FormLabel>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    placeholder={copy.fields.messagePlaceholder}
+                    rows={3}
+                    value={form.message}
+                    onChange={handleChange}
+                    maxLength={2000}
+                    minH="44px"
+                  />
+                  <Text fontSize="xs" textAlign="right" color="gray.500" mt={1}>
+                    {form.message.length}/2000
+                  </Text>
+                </FormControl>
+
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  size="lg"
+                  width="100%"
+                  minH="44px"
+                  isLoading={isSubmitting}
+                  loadingText={copy.submitting}
+                >
+                  {copy.submit}
+                </Button>
+              </VStack>
+            </Box>
+
+            <Text textAlign="center" fontSize="sm">
+              {copy.alreadyHaveAccess}{' '}
+              <Link as={RouterLink} to="/login" color="blue.600" fontWeight="600">
+                {copy.signIn}
+              </Link>
+            </Text>
+          </VStack>
+        </Container>
+      </Flex>
+    </Flex>
   )
 }
 

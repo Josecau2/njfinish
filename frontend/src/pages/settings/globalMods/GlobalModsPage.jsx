@@ -1391,7 +1391,7 @@ const GlobalModsPage = () => {
                               : '—'}
                         </Td>
                         <Td>
-                          <Button colorScheme="red" size="sm" onClick={() => deleteAssignment(a.id)}>
+                          <Button colorScheme="red" size="sm" minH="44px" onClick={() => deleteAssignment(a.id)}>
                             {t('globalMods.assign.table.remove')}
                           </Button>
                         </Td>

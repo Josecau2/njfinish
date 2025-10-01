@@ -2695,7 +2695,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 aria-label={t('common.clearSearch', 'Clear search')}
                 className="btn btn-sm btn-link position-absolute top-0 end-0 p-1"
                 onClick={() => setSearchFilter('')}
-                style={{ color: '#6c757d', textDecoration: 'none', zIndex: 5 }}
+                style={{ color: "gray.500", textDecoration: 'none', zIndex: 5 }}
               >
                 ×
               </button>
@@ -2861,7 +2861,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       onChange={(event) => handleSelectAll(event.currentTarget.checked)}
                      
                       style={{
-                        borderColor: '#6c757d',
+                        bordercolor: "gray.500",
                         borderWidth: '2px',
                         transform: 'scale(1.1)',
                       }}
@@ -2929,7 +2929,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                        
                         aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
                         style={{
-                          borderColor: '#6c757d',
+                          bordercolor: "gray.500",
                           borderWidth: '2px',
                           transform: 'scale(1.1)',
                         }}
@@ -2952,10 +2952,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         onClick={() => handleShowStyleOnClick(item)}
                        
                         style={{
-                          backgroundColor: '#6c757d',
-                          borderColor: '#6c757d',
+                          backgroundcolor: "gray.500",
+                          bordercolor: "gray.500",
                           color: 'white',
-                          fontSize: '12px',
+                          fontSize: "xs",
                           padding: '4px 8px',
                         }}
                       >
@@ -2971,7 +2971,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           colorScheme="gray"
                           onClick={() => handleEditClick(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             minWidth: 'auto',
                           }}
@@ -2983,7 +2983,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           onClick={() => handleManageStyleClick(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             backgroundColor: headerBg,
                             borderColor: headerBg,
@@ -2999,7 +2999,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           onClick={() => handleAssemblyCostClick(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             backgroundColor: headerBg,
                             borderColor: headerBg,
@@ -3015,7 +3015,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           onClick={() => handleModificationDetailsClick(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             backgroundColor: headerBg,
                             borderColor: headerBg,
@@ -3031,7 +3031,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           onClick={() => openItemGlobalMods(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             backgroundColor: '#20c997',
                             borderColor: '#20c997',
@@ -3048,7 +3048,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           colorScheme="red"
                           onClick={() => handleDeleteItemClick(item)}
                           style={{
-                            fontSize: '11px',
+                            fontSize: "xs",
                             padding: '2px 6px',
                             minWidth: 'auto',
                           }}
@@ -3104,10 +3104,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       <Button
                         size="sm"
                         style={{
-                          backgroundColor: '#6c757d',
-                          borderColor: '#6c757d',
+                          backgroundcolor: "gray.500",
+                          bordercolor: "gray.500",
                           color: 'white',
-                          fontSize: '11px',
+                          fontSize: "xs",
                           padding: '2px 8px',
                         }}
                       >
@@ -3173,7 +3173,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         colorScheme="red"
                         onClick={() => handleDeleteClick(item.id)}
                         style={{
-                          fontSize: '11px',
+                          fontSize: "xs",
                           padding: '4px 8px',
                         }}
                       >
@@ -3889,7 +3889,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     />
                   </div>
                 ) : (
-                  <p style={{ textAlign: 'center', color: '#888' }}>
+                  <p style={{ textAlign: 'center', color: "gray.500" }}>
                     {t('settings.manufacturers.catalogMapping.style.noImage')}
                   </p>
                 )}

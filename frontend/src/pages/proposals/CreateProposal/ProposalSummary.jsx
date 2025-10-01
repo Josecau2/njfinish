@@ -421,7 +421,7 @@ const ItemSelectionStep = ({
                             top: '70%',
                             right: '12px',
                             transform: 'translateY(-50%)',
-                            color: '#6c757d',
+                            color: "gray.500",
                             pointerEvents: 'none',
                           }}
                         />
@@ -458,7 +458,7 @@ const ItemSelectionStep = ({
                             top: '70%',
                             right: '12px',
                             transform: 'translateY(-50%)',
-                            color: '#6c757d',
+                            color: "gray.500",
                             pointerEvents: 'none',
                           }}
                         />
@@ -499,7 +499,7 @@ const ItemSelectionStep = ({
                             top: '70%',
                             right: '12px',
                             transform: 'translateY(-50%)',
-                            color: '#6c757d',
+                            color: "gray.500",
                             pointerEvents: 'none',
                           }}
                         />
@@ -532,7 +532,7 @@ const ItemSelectionStep = ({
                           top: '70%',
                           right: '12px',
                           transform: 'translateY(-50%)',
-                          color: '#6c757d',
+                          color: "gray.500",
                           pointerEvents: 'none',
                         }}
                       />
@@ -564,7 +564,7 @@ const ItemSelectionStep = ({
                           top: '70%',
                           right: '12px',
                           transform: 'translateY(-50%)',
-                          color: '#6c757d',
+                          color: "gray.500",
                           pointerEvents: 'none',
                         }}
                       />
@@ -596,7 +596,7 @@ const ItemSelectionStep = ({
                           top: '70%',
                           right: '12px',
                           transform: 'translateY(-50%)',
-                          color: '#6c757d',
+                          color: "gray.500",
                           pointerEvents: 'none',
                         }}
                       />
@@ -614,8 +614,7 @@ const ItemSelectionStep = ({
                     <Badge
                       key={index}
                       className={`proposal-version-badge p-2 d-flex ${isSelected ? 'selected' : ''}`}
-                      style={{
-                        fontSize: '0.8rem',
+                      style={{ fontSize: "sm",
                         backgroundColor: isSelected ? '#084298' : '#d0e7ff',
                         color: isSelected ? '#d0e7ff' : '#084298',
                         borderRadius: '5px',
@@ -628,7 +627,7 @@ const ItemSelectionStep = ({
                           <strong style={{ display: 'block' }}>{version.versionName}</strong>
                         )}
                         <small
-                          style={{ fontSize: '0.7rem', color: isSelected ? '#a9c7ff' : '#4a6fa5' }}
+                          style={{ fontSize: "xs", color: isSelected ? '#a9c7ff' : '#4a6fa5' }}
                         >
                           $ {version.manufacturerData?.costMultiplier || 'N/A'}
                         </small>
@@ -662,9 +661,8 @@ const ItemSelectionStep = ({
                           >
                             <MenuItem
                               onClick={() => openEditModal(index)}
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
+                              style={{ padding: '6px 12px',
+                                fontSize: "sm",
                                 color: '#333',
                                 transition: 'all 0.2s ease',
                               }}
@@ -673,10 +671,9 @@ const ItemSelectionStep = ({
                             </MenuItem>
                             <MenuItem
                               onClick={() => openDeleteModal(index)}
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
-                                color: '#dc3545',
+                              style={{ padding: '6px 12px',
+                                fontSize: "sm",
+                                color: "red.500",
                                 transition: 'all 0.2s ease',
                               }}
                             >
@@ -684,9 +681,8 @@ const ItemSelectionStep = ({
                             </MenuItem>
                             <MenuItem
                               onClick={() => duplicateVersion(index)}
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '0.875rem',
+                              style={{ padding: '6px 12px',
+                                fontSize: "sm",
                                 color: '#333',
                                 transition: 'all 0.2s ease',
                               }}

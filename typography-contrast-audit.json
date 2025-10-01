@@ -1,13 +1,865 @@
 {
-  "timestamp": "2025-09-30T20:31:31.467Z",
+  "timestamp": "2025-10-01T06:16:40.245Z",
   "summary": {
-    "hardcodedFontSizes": 0,
-    "hardcodedColors": 0,
-    "total": 0
+    "hardcodedFontSizes": 137,
+    "hardcodedColors": 33,
+    "total": 170
   },
   "issues": {
-    "hardcodedFontSizes": [],
-    "hardcodedColors": [],
+    "hardcodedFontSizes": [
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 320,
+        "code": "style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 338,
+        "code": "label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.addOnTop')}</span>}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 346,
+        "code": "<span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t('proposalUI.copy')}</s"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 350,
+        "code": "label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.group')}</span>}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 426,
+        "code": "<strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 448,
+        "code": "style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 555,
+        "code": "fontSize: '0.95rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 618,
+        "code": "style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 644,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 696,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 787,
+        "code": "fontSize: '0.9rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 798,
+        "code": "style={{ fontSize: '14px', color: textColor }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 814,
+        "code": "fontSize: '0.85rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 832,
+        "code": "fontSize: '0.9rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 872,
+        "code": "fontSize: '0.8rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 952,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1015,
+        "code": "style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: '1.2rem' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1019,
+        "code": "style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: '1.2rem' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1043,
+        "code": "style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1093,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1142,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1237,
+        "code": "fontSize: '0.75rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1254,
+        "code": "fontSize: '0.75rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1272,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 1287,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 319,
+        "code": "<strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 341,
+        "code": "style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 427,
+        "code": "style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 448,
+        "code": "label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.addOnTop')}</span>}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 455,
+        "code": "<span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t('proposalUI.copy')}</s"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 458,
+        "code": "label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.group')}</span>}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 561,
+        "code": "fontSize: '0.95rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 607,
+        "code": "style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 633,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 686,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 780,
+        "code": "fontSize: '0.9rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 791,
+        "code": "style={{ fontSize: '14px', color: textColor }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 807,
+        "code": "fontSize: '0.85rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 825,
+        "code": "fontSize: '0.9rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 865,
+        "code": "fontSize: '0.8rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 896,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 970,
+        "code": "fontSize: '1.2rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 978,
+        "code": "fontSize: '1.2rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1013,
+        "code": "style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1062,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1112,
+        "code": "style={{ fontSize: '0.75rem', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1204,
+        "code": "fontSize: '0.75rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1221,
+        "code": "fontSize: '0.75rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1241,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 1256,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "components\\common\\PaginationComponent.jsx",
+        "line": 141,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "components\\common\\PaginationComponent.jsx",
+        "line": 152,
+        "code": "fontSize: '18px',"
+      },
+      {
+        "file": "components\\common\\PaginationComponent.jsx",
+        "line": 155,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "components\\DataTable\\DataTable.jsx",
+        "line": 37,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "components\\DataTable\\DataTable.jsx",
+        "line": 58,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "components\\DataTable\\ResponsiveTable.jsx",
+        "line": 27,
+        "code": "<Text fontSize=\"12px\" style={{ color: \"#6c757d\" }} fontWeight=\"600\" mb={1}>"
+      },
+      {
+        "file": "components\\DataTable\\ResponsiveTable.jsx",
+        "line": 30,
+        "code": "<Text fontSize=\"14px\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1689,
+        "code": "<Text py={4} textAlign=\"center\" color=\"gray.500\" fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1791,
+        "code": "<Text fontSize=\"0.875rem\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1795,
+        "code": "<Text fontSize=\"0.75rem\" color=\"#1a73e8\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1971,
+        "code": "fontSize=\"0.85rem\""
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1994,
+        "code": "<Text flex=\"0 0 40%\" fontSize=\"0.9rem\">{item.name}</Text>"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1995,
+        "code": "<Text flex=\"0 0 25%\" fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1998,
+        "code": "<Text flex=\"0 0 15%\" fontSize=\"0.9rem\" textAlign=\"center\">"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 2014,
+        "code": "<Text color=\"gray.500\" textAlign=\"center\" py={3} fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1527,
+        "code": "<Text py={4} textAlign=\"center\" color=\"gray.500\" fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1634,
+        "code": "<Text fontSize=\"0.875rem\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1638,
+        "code": "<Text fontSize=\"0.75rem\" color=\"#1a73e8\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1808,
+        "code": "fontSize=\"0.85rem\""
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1829,
+        "code": "<Text flex=\"0 0 40%\" fontSize=\"0.9rem\">{item.name}</Text>"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1830,
+        "code": "<Text flex=\"0 0 25%\" fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1833,
+        "code": "<Text flex=\"0 0 15%\" fontSize=\"0.9rem\" textAlign=\"center\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1848,
+        "code": "<Text color=\"gray.500\" textAlign=\"center\" py={3} fontSize=\"0.9rem\">"
+      },
+      {
+        "file": "components\\NotificationBell.js",
+        "line": 261,
+        "code": "fontSize=\"0.65rem\""
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 42,
+        "code": "<Text style={{ color: \"#495057\" }} fontSize=\"18px\">"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 52,
+        "code": "<AlertDescription display=\"block\" fontFamily=\"mono\" fontSize=\"14px\">"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 82,
+        "code": "<Text fontSize=\"14px\" style={{ color: \"#6c757d\" }}>"
+      },
+      {
+        "file": "components\\PageLayout\\PageLayout.jsx",
+        "line": 48,
+        "code": "fontSize=\"16px\""
+      },
+      {
+        "file": "components\\PaginationControls.js",
+        "line": 14,
+        "code": "fontSize: '24px',"
+      },
+      {
+        "file": "pages\\auth\\RequestAccessPage.jsx",
+        "line": 155,
+        "code": "style={{ fontSize: '0.85rem', lineHeight: '1.3' }}"
+      },
+      {
+        "file": "pages\\customers\\AddCustomerForm.jsx",
+        "line": 101,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\customers\\AddCustomerForm.jsx",
+        "line": 166,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 178,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 191,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 246,
+        "code": "<span style={{ fontSize: '12px', opacity: 0.7 }}>"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 259,
+        "code": "<span style={{ fontSize: '12px', opacity: 0.7 }}>"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 295,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 318,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 331,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 416,
+        "code": "fontSize: '10px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 443,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 456,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 598,
+        "code": "fontSize: '10px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 625,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_broken.jsx",
+        "line": 638,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_fixed.jsx",
+        "line": 280,
+        "code": "<span style={{ fontSize: '12px', opacity: 0.7 }}>"
+      },
+      {
+        "file": "pages\\customers\\Customers_fixed.jsx",
+        "line": 293,
+        "code": "<span style={{ fontSize: '12px', opacity: 0.7 }}>"
+      },
+      {
+        "file": "pages\\customers\\Customers_fixed.jsx",
+        "line": 329,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_fixed.jsx",
+        "line": 348,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\customers\\Customers_fixed.jsx",
+        "line": 361,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\orders\\OrderDetails.jsx",
+        "line": 602,
+        "code": "<Badge colorScheme=\"green\" borderRadius=\"full\" px={3} py={1} fontSize=\"0.75rem\">"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\CustomerInfo.jsx",
+        "line": 54,
+        "code": "fontSize: '0.95rem',"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ManufacturerSelect.jsx",
+        "line": 49,
+        "code": "fontSize: '0.95rem',"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+        "line": 618,
+        "code": "fontSize: '0.8rem',"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+        "line": 631,
+        "code": "style={{ fontSize: '0.7rem', color: isSelected ? '#a9c7ff' : '#4a6fa5' }}"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+        "line": 667,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+        "line": 678,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+        "line": 689,
+        "code": "fontSize: '0.875rem',"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 371,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 388,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 421,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 518,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 535,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 552,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 570,
+        "code": "fontSize=\"14px\""
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 239,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 270,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 323,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 355,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 390,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 436,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 467,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 508,
+        "code": "fontSize: '14px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\EditManufacturer.jsx",
+        "line": 83,
+        "code": "fontSize: '0.95rem',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 2958,
+        "code": "fontSize: '12px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 2974,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 2986,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3002,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3018,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3034,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3051,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3110,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3176,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\StylePicturesTab.jsx",
+        "line": 381,
+        "code": "<Badge colorScheme=\"gray\" fontSize=\"0.6rem\">"
+      },
+      {
+        "file": "pages\\settings\\users\\UserList.jsx",
+        "line": 335,
+        "code": "fontSize: '11px',"
+      },
+      {
+        "file": "pages\\settings\\usersGroup\\CreateUserGroup.jsx",
+        "line": 160,
+        "code": "<Icon as={UserPlus} fontSize=\"16px\" color=\"white\" />"
+      },
+      {
+        "file": "pages\\settings\\usersGroup\\CreateUserGroup.jsx",
+        "line": 202,
+        "code": "fontSize=\"14px\""
+      }
+    ],
+    "hardcodedColors": [
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 493,
+        "code": "style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 500,
+        "code": "style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 839,
+        "code": "style={{ paddingLeft: '88px', color: '#6c757d' }}"
+      },
+      {
+        "file": "components\\CatalogTable.js",
+        "line": 938,
+        "code": "<Td style={{ color: '#6c757d' }}>"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 493,
+        "code": "style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 500,
+        "code": "style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 832,
+        "code": "style={{ paddingLeft: '88px', color: '#6c757d' }}"
+      },
+      {
+        "file": "components\\CatalogTableEdit.js",
+        "line": 881,
+        "code": "<Td style={{ color: '#6c757d' }}>"
+      },
+      {
+        "file": "components\\DataTable\\ResponsiveTable.jsx",
+        "line": 27,
+        "code": "<Text fontSize=\"12px\" style={{ color: \"#6c757d\" }} fontWeight=\"600\" mb={1}>"
+      },
+      {
+        "file": "components\\ItemSelectionContent.jsx",
+        "line": 1795,
+        "code": "<Text fontSize=\"0.75rem\" color=\"#1a73e8\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\ItemSelectionContentEdit.jsx",
+        "line": 1638,
+        "code": "<Text fontSize=\"0.75rem\" color=\"#1a73e8\" mb=\"0.25rem\">"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 34,
+        "code": "<Box style={{ color: \"#dc3545\" }}>"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 39,
+        "code": "<Heading size=\"lg\" style={{ color: \"#bb2d3b\" }}>"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 42,
+        "code": "<Text style={{ color: \"#495057\" }} fontSize=\"18px\">"
+      },
+      {
+        "file": "components\\PageErrorBoundary.jsx",
+        "line": 82,
+        "code": "<Text fontSize=\"14px\" style={{ color: \"#6c757d\" }}>"
+      },
+      {
+        "file": "components\\PageLayout\\PageLayout.jsx",
+        "line": 41,
+        "code": "style={{ color: \"#0f172a\" }}"
+      },
+      {
+        "file": "components\\PageLayout\\PageLayout.jsx",
+        "line": 49,
+        "code": "style={{ color: \"#495057\" }}"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 354,
+        "code": "<Type size={16} color=\"#0d6efd\" />"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 501,
+        "code": "<Palette size={16} color=\"#198754\" />"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 592,
+        "code": "<Settings size={16} color=\"#2b6cb0\" />"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 758,
+        "code": "<PaintBucket size={16} color=\"#f59f00\" />"
+      },
+      {
+        "file": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+        "line": 845,
+        "code": "<Mail size={16} color=\"#1d4ed8\" />"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 222,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 253,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 306,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 337,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 372,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 426,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\locations\\CreateLocation.jsx",
+        "line": 456,
+        "code": "<span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\ManufacturersForm.jsx",
+        "line": 470,
+        "code": "<Info size={16} style={{ color: '#3182ce', marginTop: '0.25rem' }} />"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 2698,
+        "code": "style={{ color: '#6c757d', textDecoration: 'none', zIndex: 5 }}"
+      },
+      {
+        "file": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+        "line": 3892,
+        "code": "<p style={{ textAlign: 'center', color: '#888' }}>"
+      },
+      {
+        "file": "pages\\settings\\usersGroup\\CreateUserGroup.jsx",
+        "line": 214,
+        "code": "<Box w=\"24px\" h=\"24px\" bg=\"#e6ffed\" color=\"#28a745\" borderRadius=\"full\" display="
+      }
+    ],
     "inconsistentHeadings": [],
     "poorContrast": []
   }

@@ -42,7 +42,7 @@ const buildSelectStyles = (hasError) => ({
     borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
     boxShadow: 'none',
     '&:hover': {
-      borderColor: '#3182ce',
+      bordercolor: "blue.500",
     },
   }),
   menu: (provided) => ({
@@ -51,7 +51,7 @@ const buildSelectStyles = (hasError) => ({
   }),
   option: (provided, state) => ({
     ...provided,
-    fontSize: '0.95rem',
+    fontSize: "md",
     backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
     color: state.isFocused ? '#1a202c' : provided.color,
   }),

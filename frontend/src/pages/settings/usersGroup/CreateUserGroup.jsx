@@ -157,7 +157,7 @@ const AddUserGroupForm = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <Icon as={UserPlus} fontSize="16px" color="white" />
+              <Icon as={UserPlus} fontSize="md" color="white" />
             </Box>
             {t('settings.userGroups.create.title')}
           </HStack>
@@ -199,7 +199,7 @@ const AddUserGroupForm = () => {
                     onChange={handleChange}
                     borderColor="#e3e6f0"
                     borderRadius="8px"
-                    fontSize="14px"
+                    fontSize="sm"
                     minH="44px"
                   >
                     <option value="standard">{t('settings.userGroups.types.standard')}</option>
@@ -211,7 +211,7 @@ const AddUserGroupForm = () => {
 
             <Box mt={4}>
               <HStack mb={2} align="center" spacing={3}>
-                <Box w="24px" h="24px" bg="#e6ffed" color="#28a745" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+                <Box w="24px" h="24px" bg="green.50" color="green.500" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                   ✓
                 </Box>
                 <Text fontWeight="semibold" fontSize="sm">

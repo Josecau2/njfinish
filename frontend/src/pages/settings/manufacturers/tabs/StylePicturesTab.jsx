@@ -378,7 +378,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                   </Text>
                   {style.styleVariants?.length > 0 && (
                     <Box textAlign="center" mt={1}>
-                      <Badge colorScheme="gray" fontSize="0.6rem">
+                      <Badge colorScheme="gray" fontSize="xs">
                         {style.styleVariants.length} {t('styles.variants', 'variants')}
                       </Badge>
                     </Box>

@@ -317,7 +317,7 @@ const CatalogTable = ({
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-info ms-2"
-                      style={{ fontSize: '0.65rem', padding: '0.1rem 0.3rem', flexShrink: 0 }}
+                      style={{ fontSize: "xs", padding: '0.1rem 0.3rem', flexShrink: 0 }}
                       onClick={(e) => {
                         e.stopPropagation()
                         openTypeModal(item.type)
@@ -335,7 +335,7 @@ const CatalogTable = ({
 
         <div className="d-flex flex-wrap align-items-center gap-3 flex-shrink-0">
           <Checkbox
-            label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.addOnTop')}</span>}
+            label={<span style={{ fontSize: "md" }}>{t('proposalUI.addOnTop')}</span>}
             checked={addOnTop}
             onChange={(e) => setAddOnTop(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -343,11 +343,11 @@ const CatalogTable = ({
 
           <div className="d-flex align-items-center gap-2">
             <Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
-            <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t('proposalUI.copy')}</span>
+            <span style={{ fontWeight: 'bold', fontSize: "md" }}>{t('proposalUI.copy')}</span>
           </div>
 
           <Checkbox
-            label={<span style={{ fontSize: '1rem' }}>{t('proposalUI.group')}</span>}
+            label={<span style={{ fontSize: "md" }}>{t('proposalUI.group')}</span>}
             checked={groupEnabled}
             onChange={(e) => setGroupEnabled(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -423,7 +423,7 @@ const CatalogTable = ({
               <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
                 <div className="mb-3">
                   <span className="badge text-bg-secondary me-2">{t('Type')}</span>
-                  <strong style={{ fontSize: '1.1rem' }}>{selectedTypeInfo.type}</strong>
+                  <strong style={{ fontSize: "lg" }}>{selectedTypeInfo.type}</strong>
                 </div>
                 {selectedTypeInfo.code && (
                   <div className="mb-2 border-bottom pb-2">
@@ -445,7 +445,7 @@ const CatalogTable = ({
                 )}
                 <div
                   className="mt-3"
-                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '0.95rem' }}
+                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: "md" }}
                 >
                   <strong className="text-muted d-block mb-2">Description:</strong>
                   {selectedTypeInfo.longDescription ||
@@ -490,14 +490,14 @@ const CatalogTable = ({
               <Th>{t('proposalColumns.item')}</Th>
               {subTypeRequirements.requiresHinge && (
                 <Th
-                  style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
+                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
                 >
                   {t('proposalColumns.hingeSide')}
                 </Th>
               )}
               {subTypeRequirements.requiresExposed && (
                 <Th
-                  style={{ backgroundColor: '#ffebee', color: '#c62828', fontWeight: 'bold' }}
+                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
                 >
                   {t('proposalColumns.exposedSide')}
                 </Th>
@@ -552,7 +552,7 @@ const CatalogTable = ({
                           backgroundColor: headerBg,
                           color: textColor,
                           fontWeight: 700,
-                          fontSize: '0.95rem',
+                          fontSize: "md",
                           letterSpacing: '0.2px',
                         }}
                         title={`Row ${idx + 1}`}
@@ -615,7 +615,7 @@ const CatalogTable = ({
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-info"
-                            style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+                            style={{ fontSize: "xs", padding: '0.15rem 0.4rem' }}
                             onClick={() => openTypeModal(item.type)}
                             title={`View ${item.type} specifications`}
                           >
@@ -641,7 +641,7 @@ const CatalogTable = ({
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <div
                                   className="text-danger mb-1"
-                                  style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                                  style={{ fontSize: "xs", fontWeight: 'bold' }}
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
@@ -693,7 +693,7 @@ const CatalogTable = ({
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <div
                                   className="text-danger mb-1"
-                                  style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                                  style={{ fontSize: "xs", fontWeight: 'bold' }}
                                 >
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
@@ -784,7 +784,7 @@ const CatalogTable = ({
                                 color: textColor,
                                 padding: '8px 16px',
                                 paddingLeft: '56px',
-                                fontSize: '0.9rem',
+                                fontSize: "sm",
                                 borderTop: `2px solid ${headerBg}`,
                                 borderLeft: `6px solid ${headerBg}`,
                                 borderTopLeftRadius: '6px',
@@ -795,7 +795,7 @@ const CatalogTable = ({
                               <Icon
                                 as={Wrench}
                                 className="me-2"
-                                style={{ fontSize: '14px', color: textColor }}
+                                style={{ fontSize: "sm", color: textColor }}
                               />
                               <span className="fw-bold">{t('proposalDoc.modifications')}</span>
                             </Td>
@@ -811,7 +811,7 @@ const CatalogTable = ({
                                   className="fw-semibold text-secondary"
                                   style={{
                                     paddingLeft: '72px',
-                                    fontSize: '0.85rem',
+                                    fontSize: "sm",
                                     borderLeft: `6px solid ${headerBg}`,
                                     borderBottom: '1px solid #dee2e6',
                                   }}
@@ -829,14 +829,14 @@ const CatalogTable = ({
                                       style={{
                                         backgroundColor: '#fcfcfd',
                                         borderLeft: `6px solid ${headerBg}`,
-                                        fontSize: '0.9rem',
+                                        fontSize: "sm",
                                         borderBottom: isLastRow
                                           ? `2px solid ${headerBg}`
                                           : '1px solid #e9ecef',
                                       }}
                                     >
                                       <Td
-                                        style={{ paddingLeft: '88px', color: '#6c757d' }}
+                                        style={{ paddingLeft: '88px', color: "gray.500" }}
                                       >
                                         ↳
                                       </Td>
@@ -869,7 +869,7 @@ const CatalogTable = ({
                                               <span
                                                 className="text-muted"
                                                 style={{
-                                                  fontSize: '0.8rem',
+                                                  fontSize: "sm",
                                                   padding: '2px 8px',
                                                   borderRadius: '6px',
                                                   background: '#f8f9fa',
@@ -935,7 +935,7 @@ const CatalogTable = ({
                                       <Td className="fw-medium text-success">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
-                                      <Td style={{ color: '#6c757d' }}>
+                                      <Td style={{ color: "gray.500" }}>
                                         -
                                       </Td>
                                       <Td>
@@ -948,8 +948,8 @@ const CatalogTable = ({
                                         <Icon as={Trash}
                                           style={{
                                             cursor: 'pointer',
-                                            color: '#dc3545',
-                                            fontSize: '14px',
+                                            color: "red.500",
+                                            fontSize: "sm",
                                           }}
                                           onClick={() => handleDeleteModification(idx, modIdx)}
                                           title="Remove modification"
@@ -1012,11 +1012,11 @@ const CatalogTable = ({
                   <div className="item-number">{idx + 1}</div>
                   <div className="item-actions">
                     <Icon as={Settings}
-                      style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: '1.2rem' }}
+                      style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: "lg" }}
                       onClick={() => handleOpenModificationModal(idx, item.id)}
                     />
                     <Icon as={Trash}
-                      style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: '1.2rem' }}
+                      style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: "lg" }}
                       onClick={() => handleDelete(idx)}
                     />
                   </div>
@@ -1040,7 +1040,7 @@ const CatalogTable = ({
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-info"
-                        style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+                        style={{ fontSize: "xs", padding: '0.15rem 0.4rem' }}
                         onClick={() => openTypeModal(item.type)}
                         title={`View ${item.type} specifications`}
                       >
@@ -1090,7 +1090,7 @@ const CatalogTable = ({
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <div
                               className="text-danger mb-2"
-                              style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                              style={{ fontSize: "xs", fontWeight: 'bold' }}
                             >
                               {t('validation.selectHingeSide', {
                                 defaultValue: 'Select hinge side',
@@ -1139,7 +1139,7 @@ const CatalogTable = ({
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <div
                               className="text-danger mb-2"
-                              style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                              style={{ fontSize: "xs", fontWeight: 'bold' }}
                             >
                               {t('validation.selectExposedSide', {
                                 defaultValue: 'Select exposed finished side',
@@ -1234,7 +1234,7 @@ const CatalogTable = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '0.75rem',
+                        fontSize: "xs",
                         fontWeight: 'bold',
                         border: `2px solid ${headerBg}`,
                       }}
@@ -1251,7 +1251,7 @@ const CatalogTable = ({
                     >
                       <span
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: "xs",
                           fontWeight: '600',
                           color: textColor,
                           textTransform: 'uppercase',
@@ -1269,7 +1269,7 @@ const CatalogTable = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: '0.875rem',
+                        fontSize: "sm",
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -1284,7 +1284,7 @@ const CatalogTable = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: '0.875rem',
+                        fontSize: "sm",
                         marginBottom: '0',
                       }}
                     >

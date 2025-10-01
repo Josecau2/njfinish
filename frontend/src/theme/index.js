@@ -201,11 +201,20 @@ const Textarea = inputLikeComponent
 const Modal = {
   baseStyle: {
     dialog: {
-      borderRadius: 'lg',
+      borderRadius: { base: '0', md: 'lg' },  // Full-screen on mobile
       boxShadow: 'lg',
       border: '1px solid',
       borderColor: 'border',
       bg: 'surface',
+      maxH: { base: '100vh', md: '90vh' },
+      my: { base: 0, md: '3.75rem' },
+    },
+    dialogContainer: {
+      alignItems: { base: 'stretch', md: 'center' },
+    },
+    closeButton: {
+      minW: '44px',  // WCAG AA tap target
+      minH: '44px',
     },
   },
 }

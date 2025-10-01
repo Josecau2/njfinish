@@ -98,7 +98,7 @@ const LocationForm = () => {
           title: t('settings.locations.alerts.savedTitle'),
           text: t('settings.locations.alerts.savedText'),
           icon: 'success',
-          confirmButtonColor: '#28a745',
+          confirmButtoncolor: "green.500",
           showClass: {
             popup: 'animate__animated animate__fadeInDown',
           },
@@ -113,7 +113,7 @@ const LocationForm = () => {
         title: t('common.error'),
         text: error.message || t('settings.locations.alerts.genericError'),
         icon: 'error',
-        confirmButtonColor: '#dc3545',
+        confirmButtoncolor: "red.500",
       })
     } finally {
       setLoading(false)
@@ -133,8 +133,8 @@ const LocationForm = () => {
         showCancelButton: true,
         confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
         cancelButtonText: t('settings.locations.alerts.stayOnPage'),
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
+        confirmButtoncolor: "red.500",
+        cancelButtoncolor: "gray.500",
         showClass: {
           popup: 'animate__animated animate__fadeInDown',
         },
@@ -207,7 +207,7 @@ const LocationForm = () => {
                     height: '32px',
                     backgroundColor: '#e7f3ff',
                     borderRadius: '8px',
-                    color: '#0d6efd',
+                    color: "blue.500",
                   }}
                 >
                   <Home size={18} />
@@ -219,7 +219,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.locationName')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -236,7 +236,7 @@ const LocationForm = () => {
                       placeholder={t('settings.locations.form.placeholders.locationName')}
                       style={{
                         border: '1px solid #e3e6f0',
-                        fontSize: '14px',
+                        fontSize: "sm",
                         padding: '12px 16px',
                       }}
                     />
@@ -250,7 +250,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.address')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -267,7 +267,7 @@ const LocationForm = () => {
                       placeholder={t('settings.locations.form.placeholders.address')}
                       style={{
                         border: '1px solid #e3e6f0',
-                        fontSize: '14px',
+                        fontSize: "sm",
                         padding: '12px 16px',
                       }}
                     />
@@ -291,7 +291,7 @@ const LocationForm = () => {
                     height: '32px',
                     backgroundColor: '#e6f7e6',
                     borderRadius: '8px',
-                    color: '#28a745',
+                    color: "green.500",
                   }}
                 >
                   <Mail size={18} />
@@ -303,7 +303,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.website')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -320,7 +320,7 @@ const LocationForm = () => {
                       placeholder={t('settings.locations.form.placeholders.website')}
                       style={{
                         border: '1px solid #e3e6f0',
-                        fontSize: '14px',
+                        fontSize: "sm",
                         padding: '12px 16px',
                       }}
                     />
@@ -334,7 +334,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.email')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -352,7 +352,7 @@ const LocationForm = () => {
                       placeholder={t('settings.locations.form.placeholders.email')}
                       style={{
                         border: '1px solid #e3e6f0',
-                        fontSize: '14px',
+                        fontSize: "sm",
                         padding: '12px 16px',
                       }}
                     />
@@ -369,7 +369,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.phone')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -387,7 +387,7 @@ const LocationForm = () => {
                       placeholder={t('settings.locations.form.placeholders.phone')}
                       style={{
                         border: '1px solid #e3e6f0',
-                        fontSize: '14px',
+                        fontSize: "sm",
                         padding: '12px 16px',
                       }}
                     />
@@ -423,7 +423,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.country')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <Select
                     name="country"
@@ -433,7 +433,7 @@ const LocationForm = () => {
                     style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
-                      fontSize: '14px',
+                      fontSize: "sm",
                       padding: '12px 16px',
                     }}
                   >
@@ -453,7 +453,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.timezone')}
-                    <span style={{ color: '#dc3545', marginLeft: '4px' }}>*</span>
+                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
                   </FormLabel>
                   <Select
                     name="timezone"
@@ -464,7 +464,7 @@ const LocationForm = () => {
                     style={{
                       border: '1px solid #e3e6f0',
                       borderRadius: '8px',
-                      fontSize: '14px',
+                      fontSize: "sm",
                       padding: '12px 16px',
                       backgroundColor: !formData.country ? '#f8f9fa' : 'white',
                     }}
@@ -505,7 +505,7 @@ const LocationForm = () => {
                           backgroundColor: '#f8f9fa',
                           border: '1px solid #e3e6f0',
                           cursor: 'not-allowed',
-                          fontSize: '14px',
+                          fontSize: "sm",
                           fontWeight: '500',
                           color: '#495057',
                         }}
@@ -532,7 +532,7 @@ const LocationForm = () => {
                 style={{
                   border: '1px solid #e3e6f0',
                   borderRadius: '8px',
-                  color: '#6c757d',
+                  color: "gray.500",
                   minHeight: '44px',
                 }}
                 aria-label={t('common.cancel')}

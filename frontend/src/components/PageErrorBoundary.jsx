@@ -31,15 +31,15 @@ class PageErrorBoundaryClass extends Component {
           <StandardCard borderColor="red.200">
             <CardBody>
               <Stack spacing={6} align="center" textAlign="center">
-                <Box style={{ color: "#dc3545" }}>
+                <Box style={{ color="red.500" }}>
                   <AlertTriangle size={48} />
                 </Box>
 
                 <Stack spacing={2}>
-                  <Heading size="lg" style={{ color: "#bb2d3b" }}>
+                  <Heading size="lg" style={{ color="#bb2d3b" }}>
                     {pageName} Error
                   </Heading>
-                  <Text style={{ color: "#495057" }} fontSize="18px">
+                  <Text style={{ color="#495057" }} fontSize="lg">
                     Something went wrong while loading this page.
                   </Text>
                 </Stack>
@@ -49,7 +49,7 @@ class PageErrorBoundaryClass extends Component {
                     <AlertIcon />
                     <Box flex="1">
                       <AlertTitle>Error Details</AlertTitle>
-                      <AlertDescription display="block" fontFamily="mono" fontSize="14px">
+                      <AlertDescription display="block" fontFamily="mono" fontSize="sm">
                         {this.state.error.message}
                       </AlertDescription>
                     </Box>
@@ -79,7 +79,7 @@ class PageErrorBoundaryClass extends Component {
                   </Button>
                 </Stack>
 
-                <Text fontSize="14px" style={{ color: "#6c757d" }}>
+                <Text fontSize="sm" style={{ color="gray.500" }}>
                   If this problem persists, please contact support.
                 </Text>
               </Stack>

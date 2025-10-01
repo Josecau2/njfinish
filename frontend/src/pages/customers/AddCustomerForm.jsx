@@ -44,7 +44,7 @@ const FormSection = ({ title, icon, children, className = '' }) => (
             width: '40px',
             height: '40px',
             backgroundColor: '#e7f3ff',
-            color: '#0d6efd',
+            color: "blue.500",
           }}
         >
           <Icon as={icon} boxSize={4} />
@@ -98,7 +98,7 @@ const CustomFormInput = ({
         style={{
           border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: '14px',
+          fontSize="sm",
           padding: '12px 16px',
           transition: 'all 0.3s ease',
           borderLeft: icon ? 'none' : '1px solid #e3e6f0',
@@ -163,7 +163,7 @@ const CustomFormSelect = ({
         style={{
           border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: '14px',
+          fontSize="sm",
           padding: '12px 16px',
           transition: 'all 0.3s ease',
           borderLeft: icon ? 'none' : '1px solid #e3e6f0',

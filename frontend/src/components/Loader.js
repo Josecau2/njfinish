@@ -25,7 +25,7 @@ const styles = {
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   },
-  text: { marginTop: 8, fontSize: 14, color: '#6c757d' },
+  text: { marginTop: 8, fontSize: 14, color: "gray.500" },
 }
 
 export default Loader

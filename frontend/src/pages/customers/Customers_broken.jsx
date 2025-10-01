@@ -172,10 +172,9 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     setSearchTerm(e.target.value.toLowerCase());
                     setCurrentPage(1);
                   }}
-                  style={{ 
-                    border: '1px solid #e3e6f0',
+                  style={{ border: '1px solid #e3e6f0',
                     borderRadius: '10px',
-                    fontSize: '14px',
+                    fontSize="sm",
                     padding: '12px 16px'
                   }}
                 />
@@ -186,9 +185,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 <Badge 
                   status="info" 
                   className="px-3 py-2"
-                  style={{ 
-                    borderRadius: '20px',
-                    fontSize: '12px',
+                  style={{ borderRadius: '20px',
+                    fontSize="xs",
                     fontWeight: '500'
                   }}
                 >
@@ -243,7 +241,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       <div>
                         <Icon as={User} size="sm" />
                         Name
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('name')}
                         </span>
                       </div>
@@ -256,7 +254,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       <div>
                         <Icon as={Mail} size="sm" />
                         Email
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('email')}
                         </span>
                       </div>
@@ -290,9 +288,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           <Badge 
                             colorScheme="gray" 
                             className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '15px',
-                              fontSize: '11px',
+                            style={{ borderRadius: '15px',
+                              fontSize="xs",
                               fontWeight: '500'
                             }}
                           >
@@ -313,9 +310,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           <Badge 
                             status="info" 
                             className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '20px',
-                              fontSize: '12px',
+                            style={{ borderRadius: '20px',
+                              fontSize="xs",
                               fontWeight: '500',
                             }}
                           >
@@ -326,9 +322,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           <Badge 
                             status="success" 
                             className="px-3 py-2"
-                            style={{ 
-                              borderRadius: '20px',
-                              fontSize: '12px',
+                            style={{ borderRadius: '20px',
+                              fontSize="xs",
                               fontWeight: '500',
                             }}
                           >
@@ -362,7 +357,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                
                                 style={{
                                   border: '1px solid #e0e0e0',
-                                  color: '#dc3545',
+                                  color: "red.500",
                                   transition: 'all 0.2s ease'
                                 }}
                               >
@@ -411,9 +406,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           <Badge 
                             colorScheme="gray" 
                             className="px-2 py-1 mt-1"
-                            style={{ 
-                              borderRadius: '10px',
-                              fontSize: '10px',
+                            style={{ borderRadius: '10px',
+                              fontSize="xs",
                               fontWeight: '500'
                             }}
                           >
@@ -438,9 +432,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         <Badge 
                           status="info" 
                          
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
+                          style={{ borderRadius: '15px',
+                            fontSize="xs",
                             fontWeight: '500',
                           }}
                         >
@@ -451,9 +444,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         <Badge 
                           status="success" 
                          
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
+                          style={{ borderRadius: '15px',
+                            fontSize="xs",
                             fontWeight: '500',
                           }}
                         >
@@ -488,7 +480,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                          
                           style={{
                             border: '1px solid #e0e0e0',
-                            color: '#dc3545',
+                            color: "red.500",
                             transition: 'all 0.2s ease'
                           }}
                         >
@@ -532,7 +524,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                
                                 style={{
                                   border: '1px solid #e0e0e0',
-                                  color: '#dc3545',
+                                  color: "red.500",
                                   transition: 'all 0.2s ease'
                                 }}
                               >
@@ -593,9 +585,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           <Badge 
                             colorScheme="gray" 
                             className="px-2 py-1 mt-1"
-                            style={{ 
-                              borderRadius: '10px',
-                              fontSize: '10px',
+                            style={{ borderRadius: '10px',
+                              fontSize="xs",
                               fontWeight: '500'
                             }}
                           >
@@ -620,9 +611,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         <Badge 
                           status="info" 
                          
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
+                          style={{ borderRadius: '15px',
+                            fontSize="xs",
                             fontWeight: '500',
                           }}
                         >
@@ -633,9 +623,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                         <Badge 
                           status="success" 
                          
-                          style={{ 
-                            borderRadius: '15px',
-                            fontSize: '11px',
+                          style={{ borderRadius: '15px',
+                            fontSize="xs",
                             fontWeight: '500',
                           }}
                         >
@@ -670,7 +659,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                          
                           style={{
                             border: '1px solid #e0e0e0',
-                            color: '#dc3545',
+                            color: "red.500",
                             transition: 'all 0.2s ease'
                           }}
                         >

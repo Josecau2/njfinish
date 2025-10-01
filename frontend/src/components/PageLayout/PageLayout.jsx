@@ -45,7 +45,7 @@ export function PageLayout({
             </Heading>
             {subtitle && (
               <Text
-                fontSize="16px"
+                fontSize="md"
                 style={{ color: "#495057" }}
                 _dark={{ color: "#adb5bd" }}
               >

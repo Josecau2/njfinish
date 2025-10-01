@@ -632,7 +632,7 @@ const AddUserForm = () => {
                       confirmButtonText: t('settings.users.form.alerts.leaveAnyway'),
                       cancelButtonText: t('settings.users.form.alerts.stayOnPage'),
                       confirmButtonColor: '#d33',
-                      cancelButtonColor: '#6c757d',
+                      cancelButtoncolor: "gray.500",
                     }).then((result) => {
                       if (result.isConfirmed) {
                         navigate('/settings/users')

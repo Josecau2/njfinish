@@ -11,7 +11,7 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
+    fontSize: "2xl",
     transition: 'background-color 0.2s ease, color 0.2s ease',
     color: '#333',
     minWidth: '44px',

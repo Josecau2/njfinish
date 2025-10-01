@@ -34,7 +34,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
                 key={col.key}
                 width={col.width}
                 textTransform="none"
-                fontSize="14px"
+                fontSize="sm"
                 fontWeight="600"
                 style={{ color: headerTextColor }}
               >
@@ -55,7 +55,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
               {columns.map((col) => (
                 <Td
                   key={col.key}
-                  fontSize="14px"
+                  fontSize="sm"
                   style={{ color: cellTextColor }}
                 >
                   {renderCell ? renderCell(row, col) : row[col.key]}

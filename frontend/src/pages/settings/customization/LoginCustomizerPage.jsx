@@ -351,7 +351,7 @@ const LoginCustomizerPage = () => {
                         bg="blue.50"
                         borderRadius="8px"
                       >
-                        <Type size={16} color="#0d6efd" />
+                        <Type size={16} color="blue.500" />
                       </Flex>
                       <Text fontSize="lg" fontWeight="bold" color="gray.800">
                         {t('settings.customization.login.form.title')}
@@ -368,7 +368,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.form.placeholders.title')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
@@ -385,7 +385,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.form.placeholders.subtitle')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
@@ -418,7 +418,7 @@ const LoginCustomizerPage = () => {
                           placeholder="#000000"
                           borderRadius="8px"
                           borderColor="gray.200"
-                          fontSize="14px"
+                          fontSize="sm"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -498,7 +498,7 @@ const LoginCustomizerPage = () => {
                         bg="green.50"
                         borderRadius="8px"
                       >
-                        <Palette size={16} color="#198754" />
+                        <Palette size={16} color="green.600" />
                       </Flex>
                       <Text fontSize="lg" fontWeight="bold" color="gray.800">
                         {t('settings.customization.login.rightPanel.title')}
@@ -515,7 +515,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.rightPanel.placeholders.title')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
@@ -532,7 +532,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.rightPanel.placeholders.subtitle')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
@@ -549,7 +549,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.rightPanel.placeholders.tagline')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                       />
@@ -567,7 +567,7 @@ const LoginCustomizerPage = () => {
                         placeholder={t('settings.customization.login.rightPanel.placeholders.description')}
                         borderRadius="8px"
                         borderColor="gray.200"
-                        fontSize="14px"
+                        fontSize="sm"
                         resize="vertical"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -589,7 +589,7 @@ const LoginCustomizerPage = () => {
                       bg="blue.50"
                       borderRadius="8px"
                     >
-                      <Settings size={16} color="#2b6cb0" />
+                      <Settings size={16} color="blue.600" />
                     </Flex>
                     <Text fontSize="lg" fontWeight="bold" color="gray.800">
                       {t('settings.customization.login.smtp.title')}
@@ -755,7 +755,7 @@ const LoginCustomizerPage = () => {
                           bg="orange.50"
                           borderRadius="8px"
                         >
-                          <PaintBucket size={16} color="#f59f00" />
+                          <PaintBucket size={16} color="orange.400" />
                         </Flex>
                         <Text fontSize="lg" fontWeight="bold" color="gray.800">
                           {t('settings.customization.login.requestAccess.title')}
@@ -842,7 +842,7 @@ const LoginCustomizerPage = () => {
                           bg="blue.50"
                           borderRadius="8px"
                         >
-                          <Mail size={16} color="#1d4ed8" />
+                          <Mail size={16} color="blue.700" />
                         </Flex>
                         <Text fontSize="lg" fontWeight="bold" color="gray.800">
                           {t('settings.customization.login.requestAccess.requestEmails')}

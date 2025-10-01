@@ -839,7 +839,7 @@ const TypesTab = ({ manufacturer }) => {
                     >
                       Bulk Edit
                     </Button>
-                    <Button colorScheme="gray" onClick={() => setSelectedItems([])} size="sm">
+                    <Button colorScheme="gray" onClick={() => setSelectedItems([])} size="sm" minH="44px">
                       Clear Selection
                     </Button>
                   </HStack>

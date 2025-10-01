@@ -211,7 +211,7 @@ const EditUserGroupForm = () => {
         confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
         cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
+        cancelButtoncolor: "gray.500",
       }).then((result) => {
         if (result.isConfirmed) {
           navigate('/settings/users')

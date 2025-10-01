@@ -1,10 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
+import {
+  Box,
+  Flex,
+  Container,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+  Button,
+  Checkbox,
+  Link,
+  Alert,
+  AlertIcon,
+  VStack,
+  HStack
+} from '@chakra-ui/react';
+import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
 import BrandLogo from '../../components/BrandLogo';
@@ -115,123 +134,152 @@ const LoginPage = () => {
   const rightPanelColors = getOptimalColors(loginBackground);
 
   return (
-    <div className="login-page-wrapper">
+    <Flex minH="100vh" className="login-page-wrapper">
       {/* Left Panel - Illustration and Branding */}
-      <div
+      <Box
+        display={{ base: 'none', lg: 'flex' }}
+        flex="1"
+        bg={loginBackground}
+        alignItems="center"
+        justifyContent="center"
+        px={8}
         className="login-left-panel"
-        style={{ backgroundColor: loginBackground }}
       >
-        <div className="login-left-content">
-          <h1 style={{ color: rightPanelColors.text }}>{loginBrand.rightTitle}</h1>
-          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightSubtitle}</p>
-          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
-        </div>
-      </div>
+        <VStack spacing={4} maxW="500px" textAlign="center">
+          <Heading as="h1" size="2xl" color={rightPanelColors.text}>
+            {loginBrand.rightTitle}
+          </Heading>
+          <Text fontSize="xl" color={rightPanelColors.subtitle}>
+            {loginBrand.rightSubtitle}
+          </Text>
+          <Text fontSize="md" color={rightPanelColors.subtitle}>
+            {loginBrand.rightDescription}
+          </Text>
+        </VStack>
+      </Box>
 
       {/* Right Panel - Form */}
-      <div className="login-right-panel">
-        <div className="login-form-container">
-          <div>
-            <BrandLogo size={logoHeight} />
-          </div>
-          <h2>{loginBrand.title}</h2>
-          <p>{loginBrand.subtitle}</p>
+      <Flex
+        flex="1"
+        alignItems="center"
+        justifyContent="center"
+        bg="white"
+        className="login-right-panel"
+      >
+        <Container maxW="md" py={8}>
+          <VStack spacing={6} align="stretch">
+            <Box textAlign="center">
+              <BrandLogo size={logoHeight} />
+            </Box>
+            <Heading as="h2" size="lg" textAlign="center">
+              {loginBrand.title}
+            </Heading>
+            <Text textAlign="center" color="gray.600">
+              {loginBrand.subtitle}
+            </Text>
 
-          {noticeMessage && (
-            <div className="alert alert-info" role="status" aria-live="polite">
-              {noticeMessage}
-            </div>
-          )}
+            {noticeMessage && (
+              <Alert status="info" borderRadius="md">
+                <AlertIcon />
+                {noticeMessage}
+              </Alert>
+            )}
 
-          {errorMessage && (
-            <div className="alert alert-danger" role="alert" aria-live="assertive">
-              {errorMessage}
-            </div>
-          )}
+            {errorMessage && (
+              <Alert status="error" borderRadius="md">
+                <AlertIcon />
+                {errorMessage}
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="form-label fw-medium">
-                {t('auth.email')} <span>*</span>
-              </label>
-              <input
-                type="email"
-                className="form-control form-control-lg"
-                placeholder={t('auth.emailPlaceholder')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                id="email"
-                aria-required="true"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="form-label fw-medium">
-                {t('auth.password')} <span>*</span>
-              </label>
-              <div className="input-group">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="form-control form-control-lg"
-                  placeholder={t('auth.passwordPlaceholder')}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  id="password"
-                  aria-required="true"
-                  autoComplete="current-password"
-                  required
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
-                  tabIndex={-1}
-                  style={{ minHeight: 44, minWidth: 44 }}
-                >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-            </div>
-
-            <div>
-              {loginBrand.showKeepLoggedIn && (
-                <div>
-                  <input
-                   
-                    type="checkbox"
-                    id="keepLoggedIn"
-                    checked={keepLoggedIn}
-                    onChange={(e) => setKeepLoggedIn(e.target.checked)}
+            <Box as="form" onSubmit={handleSubmit}>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="email" fontWeight="500">
+                    {t('auth.email')}
+                  </FormLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    size="lg"
+                    placeholder={t('auth.emailPlaceholder')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    minH="44px"
                   />
-                  <label htmlFor="keepLoggedIn">
-                    {t('auth.keepLoggedIn')}
-                  </label>
-                </div>
-              )}
-              {loginBrand.showForgotPassword && (
-                <Link to="/forgot-password">
-                  {t('auth.forgotPasswordLink')}
-                </Link>
-              )}
-            </div>
+                </FormControl>
 
-            <div className="d-grid">
-              <button type="submit" className="btn btn-primary btn-lg" style={{ minHeight: 44 }}>
-                {t('auth.signIn')}
-              </button>
-            </div>
-          </form>
-          <div>
-            <span>{t('auth.noAccountPrompt')}</span>{' '}
-            <Link to="/request-access">
-              {t('auth.requestAccess.submit')}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="password" fontWeight="500">
+                    {t('auth.password')}
+                  </FormLabel>
+                  <InputGroup size="lg">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder={t('auth.passwordPlaceholder')}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      minH="44px"
+                    />
+                    <InputRightElement width="44px" height="44px">
+                      <IconButton
+                        aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                        icon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        onClick={() => setShowPassword(!showPassword)}
+                        variant="ghost"
+                        size="sm"
+                        tabIndex={-1}
+                        minW="44px"
+                        minH="44px"
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+
+                <Flex justify="space-between" align="center" w="100%">
+                  {loginBrand.showKeepLoggedIn && (
+                    <Checkbox
+                      id="keepLoggedIn"
+                      isChecked={keepLoggedIn}
+                      onChange={(e) => setKeepLoggedIn(e.target.checked)}
+                      minH="44px"
+                      display="flex"
+                      alignItems="center"
+                    >
+                      {t('auth.keepLoggedIn')}
+                    </Checkbox>
+                  )}
+                  {loginBrand.showForgotPassword && (
+                    <Link as={RouterLink} to="/forgot-password" color="blue.600" minH="44px" display="flex" alignItems="center">
+                      {t('auth.forgotPasswordLink')}
+                    </Link>
+                  )}
+                </Flex>
+
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  size="lg"
+                  width="100%"
+                  minH="44px"
+                >
+                  {t('auth.signIn')}
+                </Button>
+              </VStack>
+            </Box>
+
+            <Text textAlign="center">
+              {t('auth.noAccountPrompt')}{' '}
+              <Link as={RouterLink} to="/request-access" color="blue.600">
+                {t('auth.requestAccess.submit')}
+              </Link>
+            </Text>
+          </VStack>
+        </Container>
+      </Flex>
+    </Flex>
   );
 };
 

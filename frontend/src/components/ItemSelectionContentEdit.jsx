@@ -1524,7 +1524,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                         ) : (
                                             <Box className="styles-carousel-container">
                                                 {filteredItems.length === 0 ? (
-                                                    <Text py={4} textAlign="center" color="gray.500" fontSize="0.9rem">
+                                                    <Text py={4} textAlign="center" color="gray.500" fontSize="sm">
                                                         {t('proposalUI.styleComparison.selectItemsMessage')}
                                                     </Text>
                                                 ) : isStylesCollapsed ? (
@@ -1631,11 +1631,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da'}
                                                                         fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
                                                                     >
-                                                                        <Text fontSize="0.875rem" mb="0.25rem">
+                                                                        <Text fontSize="sm" mb="0.25rem">
                                                                             {styleItem.style}
                                                                         </Text>
                                                                         {styleItem.id === selectedStyleData?.id && (
-                                                                            <Text fontSize="0.75rem" color="#1a73e8" mb="0.25rem">
+                                                                            <Text fontSize="xs" color="blue.500" mb="0.25rem">
                                                                                 {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                             </Text>
                                                                         )}
@@ -1805,7 +1805,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 color="gray.600"
                                 mb={2}
                                 px={2}
-                                fontSize="0.85rem"
+                                fontSize="sm"
                             >
                                 <Text flex="0 0 10%" textAlign="center">#</Text>
                                 <Text flex="0 0 40%">{t('proposalUI.custom.table.itemName')}</Text>
@@ -1826,11 +1826,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 align="center"
                             >
                                 <Text flex="0 0 10%" textAlign="center">{idx + 1}</Text>
-                                <Text flex="0 0 40%" fontSize="0.9rem">{item.name}</Text>
-                                <Text flex="0 0 25%" fontSize="0.9rem">
+                                <Text flex="0 0 40%" fontSize="sm">{item.name}</Text>
+                                <Text flex="0 0 25%" fontSize="sm">
                                     ${(Number(item.price) || 0).toFixed(2)}
                                 </Text>
-                                <Text flex="0 0 15%" fontSize="0.9rem" textAlign="center">
+                                <Text flex="0 0 15%" fontSize="sm" textAlign="center">
                                     {item.taxable ? t('common.yes') : t('common.no')}
                                 </Text>
                                 <Button
@@ -1845,7 +1845,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         ))}
 
                         {(!customItems || customItems.length === 0) && (
-                            <Text color="gray.500" textAlign="center" py={3} fontSize="0.9rem">
+                            <Text color="gray.500" textAlign="center" py={3} fontSize="sm">
                                 No custom items added yet
                             </Text>
                         )}

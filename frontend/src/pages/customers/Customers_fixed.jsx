@@ -277,7 +277,7 @@ const CustomerTable = ({
                       <div>
                         <Icon as={User} size="sm" />
                         Name
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('name')}
                         </span>
                       </div>
@@ -290,7 +290,7 @@ const CustomerTable = ({
                       <div>
                         <Icon as={Mail} size="sm" />
                         Email
-                        <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('email')}
                         </span>
                       </div>
@@ -324,9 +324,8 @@ const CustomerTable = ({
                           <Badge
                             colorScheme="gray"
                             className="px-3 py-2"
-                            style={{
-                              borderRadius: '15px',
-                              fontSize: '11px',
+                            style={{ borderRadius: '15px',
+                              fontSize="xs",
                               fontWeight: '500',
                             }}
                           >
@@ -343,9 +342,8 @@ const CustomerTable = ({
                           <Badge
                             status="info"
                             className="px-3 py-2"
-                            style={{
-                              borderRadius: '20px',
-                              fontSize: '12px',
+                            style={{ borderRadius: '20px',
+                              fontSize="xs",
                               fontWeight: '500',
                             }}
                           >
@@ -356,9 +354,8 @@ const CustomerTable = ({
                           <Badge
                             status="success"
                             className="px-3 py-2"
-                            style={{
-                              borderRadius: '20px',
-                              fontSize: '12px',
+                            style={{ borderRadius: '20px',
+                              fontSize="xs",
                               fontWeight: '500',
                             }}
                           >

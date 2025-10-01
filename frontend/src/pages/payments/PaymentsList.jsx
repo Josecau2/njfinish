@@ -286,6 +286,7 @@ const PaymentsList = ({ isContractor }) => {
             variant={statusFilter === status ? 'solid' : 'outline'}
             colorScheme={statusFilter === status ? 'blue' : 'gray'}
             size="sm"
+            minH="44px"
             onClick={() => setStatusFilter(status)}
           >
             {getStatusLabel(status)}
@@ -310,7 +311,7 @@ const PaymentsList = ({ isContractor }) => {
         </Box>
         <HStack spacing={3}>
           {!isContractor && (
-            <Button colorScheme="blue" onClick={handleCreatePayment} leftIcon={<Plus size={16} />} aria-label={t('payments.create.button', 'Create payment')}>
+            <Button colorScheme="blue" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={16} />} aria-label={t('payments.create.button', 'Create payment')}>
               <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
             </Button>
           )}
@@ -373,7 +374,7 @@ const PaymentsList = ({ isContractor }) => {
                     <Td>
                       <HStack spacing={2}>
                         {canPayOnline ? (
-                          <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
+                          <Button colorScheme="blue" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                             {t('payments.actions.makePayment', 'Make Payment')}
                           </Button>
                         ) : null}
@@ -430,7 +431,7 @@ const PaymentsList = ({ isContractor }) => {
                       ) : null}
                     </VStack>
                     {canPayOnline ? (
-                      <Button colorScheme="blue" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
+                      <Button colorScheme="blue" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                         {t('payments.actions.makePayment', 'Make Payment')}
                       </Button>
                     ) : null}
@@ -477,8 +478,8 @@ const PaymentsList = ({ isContractor }) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onCreateModalClose}>{t('common.cancel', 'Cancel')}</Button>
-            <Button type="submit" variant="solid" colorScheme="brand" isLoading={createPaymentForm.formState.isSubmitting}>
+            <Button variant="ghost" minH="44px" mr={3} onClick={onCreateModalClose}>{t('common.cancel', 'Cancel')}</Button>
+            <Button type="submit" variant="solid" minH="44px" colorScheme="brand" isLoading={createPaymentForm.formState.isSubmitting}>
               {t('common.create', 'Create')}
             </Button>
           </ModalFooter>
@@ -510,8 +511,8 @@ const PaymentsList = ({ isContractor }) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onGatewayModalClose}>{t('common.cancel', 'Cancel')}</Button>
-            <Button type="submit" variant="solid" colorScheme="brand" isLoading={gatewayForm.formState.isSubmitting}>
+            <Button variant="ghost" minH="44px" mr={3} onClick={onGatewayModalClose}>{t('common.cancel', 'Cancel')}</Button>
+            <Button type="submit" variant="solid" minH="44px" colorScheme="brand" isLoading={gatewayForm.formState.isSubmitting}>
               {t('common.continue', 'Continue')}
             </Button>
           </ModalFooter>
@@ -568,12 +569,13 @@ const PaymentsList = ({ isContractor }) => {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onApplyModalClose}>
+            <Button variant="ghost" minH="44px" mr={3} onClick={onApplyModalClose}>
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
               type="submit"
               colorScheme="green"
+              minH="44px"
               isLoading={applyPaymentForm.formState.isSubmitting}
             >
               {t('payments.apply.button', 'Apply Payment')}

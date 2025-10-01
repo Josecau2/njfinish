@@ -864,6 +864,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       {isAdmin && (
                         <HStack opacity={0.7} _groupHover={{ opacity: 1 }}>
                           <Button
+            minH="44px"
                             size="sm"
                             variant="ghost"
                             p={1}
@@ -872,6 +873,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             <Edit size={14} />
                           </Button>
                           <Button
+            minH="44px"
                             size="sm"
                             variant="ghost"
                             p={1}
@@ -881,6 +883,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             <Plus size={14} />
                           </Button>
                           <Button
+            minH="44px"
                             size="sm"
                             variant="ghost"
                             p={1}
@@ -968,7 +971,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                             {isAdmin && (
                               <HStack>
-                                <Button size="sm" variant="ghost" onClick={() => openAnnouncementModal(announcement)}>
+                                <Button size="sm" variant="ghost" minH="44px" onClick={() => openAnnouncementModal(announcement)}>
                                   <Edit size={16} />
                                 </Button>
                                 <Button
@@ -1039,7 +1042,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                             {isAdmin && (
                               <HStack>
-                                <Button size="sm" variant="ghost" onClick={() => openLinkModal(link)}>
+                                <Button size="sm" variant="ghost" minH="44px" onClick={() => openLinkModal(link)}>
                                   <Edit size={16} />
                                 </Button>
                                 <Button
@@ -1138,7 +1141,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 )}
                                 {isAdmin && (
                                   <>
-                                    <Button size="sm" variant="ghost" onClick={() => openFileModal(file)}>
+                                    <Button size="sm" variant="ghost" minH="44px" onClick={() => openFileModal(file)}>
                                       <Edit size={16} />
                                     </Button>
                                     <Button

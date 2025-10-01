@@ -154,7 +154,7 @@ const Contractors = () => {
         <Card variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
             <Stack spacing={5}>
-              <InputGroup maxW={{ base: 'full', md: '360px' }}>
+              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={Search} boxSize={4} color="gray.400" />
                 </InputLeftElement>
@@ -166,7 +166,7 @@ const Contractors = () => {
                 />
               </InputGroup>
 
-              <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+              <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={4}>
                 <Box bg="blue.50" borderRadius="lg" p={4}>
                   <HStack spacing={3} align="center">
                     <Icon as={Users} boxSize={5} color="blue.600" />
@@ -291,7 +291,7 @@ const Contractors = () => {
               </Table>
             </TableContainer>
 
-            <Box display={{ base: 'block', md: 'none' }} mt={6}>
+            <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={3}>
                 {sortedFilteredContractors.map((contractor) => (
                   <Card key={contractor.id} borderRadius="lg" variant="outline">

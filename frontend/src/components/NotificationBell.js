@@ -258,7 +258,7 @@ const NotificationBell = () => {
                 position="absolute"
                 top="-1"
                 right="-2"
-                fontSize="0.65rem"
+                fontSize="xs"
                 borderRadius="full"
                 minW="1.1rem"
                 h="1.1rem"

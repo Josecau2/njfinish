@@ -467,7 +467,7 @@ const ManufacturerForm = () => {
         <Card className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CardBody className="py-3 px-4" style={{ backgroundColor: '#f0f7ff' }}>
             <HStack align="flex-start" spacing={2}>
-              <Info size={16} style={{ color: '#3182ce', marginTop: '0.25rem' }} />
+              <Info size={16} style={{ color: "blue.500", marginTop: '0.25rem' }} />
               <Text mb={0} color="blue.600">
                 <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}
