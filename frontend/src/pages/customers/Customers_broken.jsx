@@ -125,7 +125,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   };
 
   return (
-    <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}>
       {/* Header Section */}
       <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || "blue.600", color: customization.headerTextColor || "white" }}>
         <CardBody>
@@ -172,7 +172,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     setSearchTerm(e.target.value.toLowerCase());
                     setCurrentPage(1);
                   }}
-                  style={{ border: '1px solid #e3e6f0',
+                  style={{ border: '1px solid var(--chakra-colors-gray-200)',
                     borderRadius: '10px',
                     fontSize="sm",
                     padding: '12px 16px'
@@ -340,7 +340,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 title="Edit customer"
                                
                                 style={{
-                                  border: '1px solid #e0e0e0',
+                                  border: '1px solid var(--chakra-colors-gray-200)',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
@@ -356,7 +356,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 title="Delete customer"
                                
                                 style={{
-                                  border: '1px solid #e0e0e0',
+                                  border: '1px solid var(--chakra-colors-gray-200)',
                                   color: "red.500",
                                   transition: 'all 0.2s ease'
                                 }}
@@ -463,7 +463,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           title="Edit customer"
                          
                           style={{
-                            border: '1px solid #e0e0e0',
+                            border: '1px solid var(--chakra-colors-gray-200)',
                             transition: 'all 0.2s ease'
                           }}
                         >
@@ -479,7 +479,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           title="Delete customer"
                          
                           style={{
-                            border: '1px solid #e0e0e0',
+                            border: '1px solid var(--chakra-colors-gray-200)',
                             color: "red.500",
                             transition: 'all 0.2s ease'
                           }}
@@ -500,14 +500,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 onClick={() => handleEdit(cust)}
                                 style={{
                                   borderRadius: '8px',
-                                  border: '1px solid #e3e6f0',
+                                  border: '1px solid var(--chakra-colors-gray-200)',
                                   transition: 'all 0.2s ease'
                                 }}
                                 onClick={() => handleEdit(cust)}
                                 title="Edit customer"
                                
                                 style={{
-                                  border: '1px solid #e0e0e0',
+                                  border: '1px solid var(--chakra-colors-gray-200)',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
@@ -523,7 +523,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 title="Delete customer"
                                
                                 style={{
-                                  border: '1px solid #e0e0e0',
+                                  border: '1px solid var(--chakra-colors-gray-200)',
                                   color: "red.500",
                                   transition: 'all 0.2s ease'
                                 }}
@@ -642,7 +642,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           title="Edit customer"
                          
                           style={{
-                            border: '1px solid #e0e0e0',
+                            border: '1px solid var(--chakra-colors-gray-200)',
                             transition: 'all 0.2s ease'
                           }}
                         >
@@ -658,7 +658,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           title="Delete customer"
                          
                           style={{
-                            border: '1px solid #e0e0e0',
+                            border: '1px solid var(--chakra-colors-gray-200)',
                             color: "red.500",
                             transition: 'all 0.2s ease'
                           }}

@@ -36,9 +36,9 @@ const EVENT_TYPES = [
 const EVENT_COLORS = {
   'Measurement Scheduled': "blue.500",
   'Design Scheduled': "green.500",
-  'Follow Up 1': '#fd7e14',
+  'Follow Up 1': "orange.500",
   'Follow Up 2': "red.500",
-  'Follow Up 3': '#6f42c1',
+  'Follow Up 3': "purple.500",
 }
 
 const BADGE_SCHEMES = {
@@ -251,47 +251,47 @@ const CalendarView = () => {
           }
 
           .fc-toolbar {
-            background: #f8f9fa;
+            background: var(--chakra-colors-gray-50);
             padding: 1rem;
             border-radius: 8px 8px 0 0;
-            border-bottom: 1px solid #e3e6f0;
+            border-bottom: 1px solid var(--chakra-colors-gray-200);
           }
 
           .fc-toolbar-title {
-            color: #495057;
+            color: var(--chakra-colors-gray-600);
             font-weight: 600;
           }
 
           .fc-button {
             border-radius: 6px !important;
-            border: 1px solid #e3e6f0 !important;
+            border: 1px solid var(--chakra-colors-gray-200) !important;
             background: white !important;
-            color: #495057 !important;
+            color: var(--chakra-colors-gray-600) !important;
             font-weight: 500;
             transition: all 0.2s ease;
           }
 
           .fc-button:hover {
-            background: #e7f3ff !important;
-            border-color: #0d6efd !important;
-            color: #0d6efd !important;
+            background: var(--chakra-colors-blue-50) !important;
+            border-color: var(--chakra-colors-blue-500) !important;
+            color: var(--chakra-colors-blue-500) !important;
           }
 
           .fc-button-active {
-            background: #0d6efd !important;
-            border-color: #0d6efd !important;
+            background: var(--chakra-colors-blue-500) !important;
+            border-color: var(--chakra-colors-blue-500) !important;
             color: white !important;
           }
 
           .fc-daygrid-day {
-            border-color: #e3e6f0;
+            border-color: var(--chakra-colors-gray-200);
           }
 
           .fc-col-header-cell {
-            background: #f8f9fa;
-            border-color: #e3e6f0;
+            background: var(--chakra-colors-gray-50);
+            border-color: var(--chakra-colors-gray-200);
             font-weight: 600;
-            color: #495057;
+            color: var(--chakra-colors-gray-600);
           }
 
           .fc-event {

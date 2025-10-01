@@ -43,7 +43,7 @@ const FormSection = ({ title, icon, children, className = '' }) => (
           style={{
             width: '40px',
             height: '40px',
-            backgroundColor: '#e7f3ff',
+            backgroundColor: 'var(--chakra-colors-blue-50)',
             color: "blue.500",
           }}
         >
@@ -78,8 +78,8 @@ const CustomFormInput = ({
       {icon && (
         <InputLeftAddon
           style={{
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            border: '1px solid #e3e6f0',
+            background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
+            border: '1px solid var(--chakra-colors-gray-200)',
             borderRight: 'none',
           }}
         >
@@ -96,22 +96,22 @@ const CustomFormInput = ({
         ref={(el) => (inputRefs.current[name] = el)}
         placeholder={placeholder}
         style={{
-          border: `1px solid ${validationErrors[name] ? "red.500" : '#e3e6f0'}`,
+          border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
           fontSize="sm",
           padding: '12px 16px',
           transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
+          borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
         }}
         onFocus={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#0d6efd'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
+            e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(66, 153, 225, 0.25)'
           }
         }}
         onBlur={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#e3e6f0'
+            e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
             e.target.style.boxShadow = 'none'
           }
         }}
@@ -145,8 +145,8 @@ const CustomFormSelect = ({
       {icon && (
         <InputLeftAddon
           style={{
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            border: '1px solid #e3e6f0',
+            background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
+            border: '1px solid var(--chakra-colors-gray-200)',
             borderRight: 'none',
           }}
         >
@@ -161,22 +161,22 @@ const CustomFormSelect = ({
         isInvalid={!!validationErrors[name]}
         ref={(el) => (inputRefs.current[name] = el)}
         style={{
-          border: `1px solid ${validationErrors[name] ? "red.500" : '#e3e6f0'}`,
+          border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
           fontSize="sm",
           padding: '12px 16px',
           transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid #e3e6f0',
+          borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
         }}
         onFocus={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#0d6efd'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)'
+            e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
+            e.target.style.boxShadow = '0 0 0 0.2rem rgba(66, 153, 225, 0.25)'
           }
         }}
         onBlur={(e) => {
           if (!validationErrors[name]) {
-            e.target.style.borderColor = '#e3e6f0'
+            e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
             e.target.style.boxShadow = 'none'
           }
         }}
@@ -630,7 +630,7 @@ const AddCustomerForm = () => {
                 className="px-4 fw-semibold"
                 style={{
                   borderRadius: '5px',
-                  border: '1px solid #e3e6f0',
+                  border: '1px solid var(--chakra-colors-gray-200)',
                   transition: 'all 0.3s ease',
                 }}
               >

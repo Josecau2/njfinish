@@ -124,7 +124,7 @@ const CustomerTable = ({
     <Container
       fluid
       className="p-2 m-2 customer-listing"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+      style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
     >
       {/* Header Section */}
       <Card
@@ -166,7 +166,7 @@ const CustomerTable = ({
         <Box sm={6} md={3}>
           <Card
             className="border-0 shadow-sm text-center h-100"
-            style={{ borderLeft: '4px solid #667eea' }}
+            style={{ borderLeft: '4px solid var(--chakra-colors-purple-500)' }}
           >
             <CardBody>
               <div className="fs-4 fw-bold text-primary">{total || 0}</div>
@@ -177,7 +177,7 @@ const CustomerTable = ({
         <Box sm={6} md={3}>
           <Card
             className="border-0 shadow-sm text-center h-100"
-            style={{ borderLeft: '4px solid #28a745' }}
+            style={{ borderLeft: '4px solid var(--chakra-colors-green-500)' }}
           >
             <CardBody>
               <div className="fs-4 fw-bold text-success">
@@ -190,7 +190,7 @@ const CustomerTable = ({
         <Box sm={6} md={3}>
           <Card
             className="border-0 shadow-sm text-center h-100"
-            style={{ borderLeft: '4px solid #ffc107' }}
+            style={{ borderLeft: '4px solid var(--chakra-colors-yellow-400)' }}
           >
             <CardBody>
               <div className="fs-4 fw-bold text-warning">
@@ -203,7 +203,7 @@ const CustomerTable = ({
         <Box sm={6} md={3}>
           <Card
             className="border-0 shadow-sm text-center h-100"
-            style={{ borderLeft: '4px solid #dc3545' }}
+            style={{ borderLeft: '4px solid var(--chakra-colors-red-500)' }}
           >
             <CardBody>
               <div className="fs-4 fw-bold text-danger">{sortedFilteredCustomers.length}</div>

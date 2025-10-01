@@ -378,8 +378,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       text: t('proposals.confirm.deleteText'),
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: 'var(--chakra-colors-red-500)',
+      cancelButtonColor: 'var(--chakra-colors-blue-500)',
       confirmButtonText: t('proposals.confirm.deleteConfirm'),
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -487,16 +487,16 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       {/* Scoped mobile layout improvements for Quotes */}
       <style>{`
         /* Visibility helpers hook into our global _responsive.scss classes */
-        .q-toolbar { position: sticky; top: 0; z-index: 1030; background: var(--surface, #fff); padding: .5rem; border-bottom: 1px solid var(--border, #e5e7eb); }
+        .q-toolbar { position: sticky; top: 0; z-index: 1030; background: var(--surface, var(--chakra-colors-white)); padding: .5rem; border-bottom: 1px solid var(--border, var(--chakra-colors-gray-200)); }
         .q-chips { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: .5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: .25rem .125rem; }
         .q-search .form-control { min-height: 44px; }
         .q-list { display: grid; gap: .5rem; content-visibility: auto; contain-intrinsic-size: 300px; }
-        .q-list .card--compact { border-radius: 12px; border: 1px solid var(--border, #e5e7eb); }
+        .q-list .card--compact { border-radius: 12px; border: 1px solid var(--border, var(--chakra-colors-gray-200)); }
         .q-list .card__head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .5rem; }
         .q-list .status-pill { justify-self: end; }
         .q-actions { display: flex; gap: .375rem; align-items: center; margin-top: .5rem; }
         .q-actions .icon-btn, .q-actions .btn-icon { min-width: 44px; min-height: 44px; }
-        .bottom-bar { position: sticky; bottom: 0; z-index: 1030; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .5rem; background: color-mix(in oklch, var(--surface, #fff) 90%, #fff); border-top: 1px solid var(--border, #e5e7eb); }
+        .bottom-bar { position: sticky; bottom: 0; z-index: 1030; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .5rem; background: color-mix(in oklch, var(--surface, var(--chakra-colors-white)) 90%, var(--chakra-colors-white)); border-top: 1px solid var(--border, var(--chakra-colors-gray-200)); }
         .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         /* Desktop table wrapper */
         .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
