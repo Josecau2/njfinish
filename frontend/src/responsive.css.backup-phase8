@@ -3,13 +3,13 @@
 /* Global overflow guards to prevent horizontal scroll */
 html,
 body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Prevent any container from exceeding viewport width */
 * {
-  box-sizing: border-box !important;
+  box-sizing: border-box;
 }
 
 .container,
@@ -18,8 +18,8 @@ body {
 .container-lg,
 .container-md,
 .container-sm {
-  max-width: 100% !important;
-  overflow-x: hidden !important;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* 1. Global Reset & Root Variables
@@ -108,8 +108,8 @@ body {
 
 /* Header Toggler Improvements */
 .header .header-toggler {
-  border: none !important;
-  background: transparent !important;
+  border: none;
+  background: transparent;
   padding: 8px 12px;
   border-radius: 6px;
   transition: background-color 0.15s ease-in-out;
@@ -117,7 +117,7 @@ body {
 }
 
 .header .header-toggler:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .header .header-toggler:focus {
@@ -129,10 +129,10 @@ body {
 .header .navbar-nav {
   flex-shrink: 0;
   align-items: center !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
   height: 100%; /* Fill header height for proper centering */
   flex-wrap: nowrap; /* prevent items from dropping below header */
 }
@@ -142,15 +142,15 @@ body {
   align-items: center !important;
   justify-content: center !important;
   height: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 .header .navbar-nav .nav-link {
-  padding: 8px 12px !important;
+  padding: 8px 12px;
   border-radius: 6px;
   transition: background-color 0.15s ease-in-out;
-  margin: 0 !important;
+  margin: 0;
   vertical-align: middle !important;
   line-height: 1 !important;
   display: flex;
@@ -183,7 +183,7 @@ body {
   flex-shrink: 0;
   height: 24px; /* compact divider height so it doesn't bleed */
   align-self: center;
-  margin: 0 12px !important;
+  margin: 0 12px;
 }
 
 /* Username display */
@@ -223,8 +223,8 @@ body {
 
   /* Adjust header toggler for mobile */
   .header .header-toggler {
-    padding: 6px 8px !important;
-    margin-left: -8px !important;
+    padding: 6px 8px;
+    margin-left: -8px;
   }
 
   /* Make username responsive on mobile - show but constrain width */
@@ -233,7 +233,7 @@ body {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
-    font-size: 0.95rem !important;
+    font-size: 0.95rem;
   }
 
   /* Reduce spacing on mobile */
@@ -286,7 +286,7 @@ body {
   .modal-content:has(.quote-preview-content) .modal-body {
     flex: 1 !important;
     overflow: hidden !important;
-    padding: 0 !important;
+    padding: 0;
   }
 
   /* Quote Preview container mobile optimization */
@@ -301,20 +301,20 @@ body {
   /* Quote Preview content scaling for mobile */
   .modal-content:has([data-testid='quote-preview']) .modal-body [style*='transform: scale'],
   .modal-content:has(.quote-preview-content) .modal-body [style*='transform: scale'] {
-    margin: 0 auto !important; /* Center the scaled content */
+    margin: 0 auto; /* Center the scaled content */
   }
 
   /* Improve touch targets for mobile */
   .modal-content:has([data-testid='quote-preview']) .modal-footer .btn,
   .modal-content:has(.quote-preview-content) .modal-footer .btn {
     min-height: 44px !important; /* Improve touch target size */
-    margin-bottom: 8px !important;
+    margin-bottom: 8px;
   }
 
   /* Mobile header improvements for quote preview */
   .modal-content:has([data-testid='quote-preview']) .page-header,
   .modal-content:has(.quote-preview-content) .page-header {
-    padding: 12px 16px !important; /* Better mobile spacing */
+    padding: 12px 16px; /* Better mobile spacing */
     min-height: 56px !important; /* Consistent header height */
   }
 }
@@ -328,7 +328,7 @@ body {
 
   .modal-content:has([data-testid='quote-preview']) .page-header,
   .modal-content:has(.quote-preview-content) .page-header {
-    padding: 8px 16px !important; /* Reduce header padding in landscape */
+    padding: 8px 16px; /* Reduce header padding in landscape */
     min-height: 48px !important;
   }
 }
@@ -840,7 +840,7 @@ body {
   }
 
   .page-header-dynamic .header-icon-container > * {
-    font-size: 20px !important;
+    font-size: 20px;
   }
 }
 
@@ -1417,7 +1417,7 @@ body {
 
   /* Action buttons group */
   .table .d-flex.justify-content-center.gap-2 {
-    gap: 0.75rem !important;
+    gap: 0.75rem;
   }
 }
 
@@ -1936,7 +1936,7 @@ body {
 
   .proposal-form-header .d-flex.gap-2 {
     flex-direction: column;
-    gap: 0.5rem !important;
+    gap: 0.5rem;
   }
 
   .proposal-version-badges {
@@ -1958,7 +1958,7 @@ body {
   }
 
   .tab-content {
-    padding: 0 !important;
+    padding: 0;
   }
 
   /* Make date pickers more mobile friendly */
@@ -1969,8 +1969,8 @@ body {
 
   .react-datepicker__input-container input {
     width: 100% !important;
-    padding: 0.75rem !important;
-    font-size: 1rem !important;
+    padding: 0.75rem;
+    font-size: 1rem;
   }
 }
 
@@ -1997,7 +1997,7 @@ body {
   /* Style selector controls mobile layout */
   .catalog-controls-mobile {
     flex-direction: column !important;
-    gap: 1rem !important;
+    gap: 1rem;
   }
 
   .catalog-controls-mobile .position-relative {
@@ -2022,12 +2022,12 @@ body {
   /* Style section controls mobile layout */
   .style-selection-mobile {
     flex-direction: column !important;
-    gap: 1.5rem !important;
-    margin-bottom: 1.5rem !important;
-    padding: 0 1rem !important;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
     width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+    max-width: 100%;
+    overflow-x: hidden;
     /* Center children (cards) on mobile */
     align-items: center !important;
   }
@@ -2040,21 +2040,21 @@ body {
   /* Current style section */
   .style-selection-mobile .current-style-section {
     min-width: 0 !important;
-    padding: 1.5rem !important;
+    padding: 1.5rem;
     background: white !important;
-    border-radius: 16px !important;
+    border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 1.5rem;
     width: 100% !important;
     /* Constrain and center the main style card for nicer mobile look */
     max-width: 480px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .style-selection-mobile .current-style-content {
     flex-direction: row !important;
-    gap: 1.25rem !important;
+    gap: 1.25rem;
     align-items: flex-start !important;
   }
 
@@ -2067,48 +2067,48 @@ body {
     width: 100% !important;
     height: 150px !important;
     object-fit: contain !important;
-    background-color: #f8f9fa !important;
-    border-radius: 10px !important;
+    background-color: #f8f9fa;
+    border-radius: 10px;
   }
 
   .style-selection-mobile .current-style-info {
-    gap: 0.75rem !important;
+    gap: 0.75rem;
     flex: 1 !important;
     min-width: 0 !important;
-    padding-top: 0.25rem !important;
+    padding-top: 0.25rem;
   }
 
   .style-selection-mobile h5 {
     font-size: 1.1rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.5rem;
     font-weight: 600 !important;
   }
 
   .style-selection-mobile .d-flex.align-items-center {
-    font-size: 0.9rem !important;
-    gap: 0.6rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 0.9rem;
+    gap: 0.6rem;
+    margin-bottom: 0.25rem;
   }
 
   /* Assembly toggle mobile layout - prevent overflow */
   .style-selection-mobile .current-style-info .d-flex.align-items-center {
-    max-width: 100% !important;
+    max-width: 100%;
     overflow: hidden !important;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
   }
 
   /* Specific styling for assembly toggle container */
   .style-selection-mobile .current-style-info .d-flex.align-items-center:last-child {
-    gap: 0.5rem !important;
+    gap: 0.5rem;
     justify-content: space-between !important;
     flex-wrap: nowrap !important;
-    padding-right: 0.5rem !important;
+    padding-right: 0.5rem;
   }
 
   /* Make assembly switch smaller and prevent overflow */
   .style-selection-mobile .form-switch {
     flex-shrink: 0 !important;
-    margin-left: 0.5rem !important;
+    margin-left: 0.5rem;
   }
 
   /* Constrain the assembly text to prevent overflow */
@@ -2118,43 +2118,43 @@ body {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
-    margin-right: 0.5rem !important;
+    margin-right: 0.5rem;
   }
 
   /* Other styles mobile layout */
   .style-selection-mobile .other-styles-section {
-    padding: 1.5rem !important;
+    padding: 1.5rem;
     background: white !important;
-    border-radius: 16px !important;
+    border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     width: 100% !important;
     min-height: 300px !important;
     /* Center the other styles section consistently with main style card */
     max-width: 480px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .style-selection-mobile .other-styles-section h5 {
-    font-size: 1rem !important;
-    margin-bottom: 1rem !important;
+    font-size: 1rem;
+    margin-bottom: 1rem;
   }
 
   .style-selection-mobile .other-styles-header {
     flex-direction: column !important;
-    gap: 0.75rem !important;
+    gap: 0.75rem;
     align-items: center !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1rem;
   }
 
   .style-selection-mobile .carousel-controls {
-    gap: 0.75rem !important;
+    gap: 0.75rem;
   }
 
   .style-selection-mobile .carousel-controls .btn-sm {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.875rem !important;
-    border-radius: 8px !important;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 8px;
     min-width: 44px !important;
     height: 44px !important;
     display: flex !important;
@@ -2166,7 +2166,7 @@ body {
   .style-selection-mobile .other-styles-carousel-container {
     max-height: none !important;
     overflow: visible !important;
-    padding-right: 0 !important;
+    padding-right: 0;
   }
 
   /* When collapsed on mobile, ensure proper spacing */
@@ -2225,27 +2225,27 @@ body {
     flex-wrap: wrap !important;
     width: 100% !important;
     transform: none !important;
-    gap: 1rem !important;
+    gap: 1rem;
   }
 
   .style-carousel-item {
     min-width: 180px !important;
     max-width: 180px !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1rem;
   }
 
   .style-carousel-item img {
     height: 160px !important;
     width: 100% !important;
     object-fit: contain !important;
-    border-radius: 10px !important;
-    background-color: #f8f9fa !important;
+    border-radius: 10px;
+    background-color: #f8f9fa;
   }
 
   .style-carousel-item .mt-2.p-2.rounded {
-    padding: 0.75rem !important;
-    margin-top: 0.75rem !important;
-    font-size: 0.875rem !important;
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
     min-height: 80px !important;
     display: flex !important;
     flex-direction: column !important;
@@ -2253,12 +2253,12 @@ body {
   }
 
   .style-carousel-item .mt-2.p-2.rounded div {
-    font-size: 0.875rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
   }
 
   .style-carousel-item .mt-2.p-2.rounded strong {
-    font-size: 1rem !important;
+    font-size: 1rem;
   }
 
   /* Hide carousel controls on desktop since we're showing all items */
@@ -2270,36 +2270,36 @@ body {
   .styles-compact-list {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.5rem !important;
+    gap: 0.5rem;
     max-height: 300px !important;
     overflow-y: auto !important;
-    padding: 0.5rem !important;
-    background-color: #f8f9fa !important;
-    border-radius: 8px !important;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
   }
 
   .compact-style-item {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 0.75rem 1rem !important;
-    background-color: #ffffff !important;
-    border-width: 1px !important;
-    border-style: solid !important;
-    border-color: #e9ecef !important;
-    border-radius: 6px !important;
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e9ecef;
+    border-radius: 6px;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.2s ease;
   }
 
   .compact-style-item:hover {
-    border-color: #1a73e8 !important;
+    border-color: #1a73e8;
     box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1) !important;
   }
 
   .compact-style-item.current-style {
-    background-color: #d0e6ff !important;
-    border-color: #1a73e8 !important;
+    background-color: #d0e6ff;
+    border-color: #1a73e8;
     font-weight: 600 !important;
   }
 
@@ -2310,37 +2310,37 @@ body {
   }
 
   .compact-style-item .style-name {
-    font-size: 0.95rem !important;
+    font-size: 0.95rem;
     font-weight: 500 !important;
-    color: #333 !important;
-    margin-bottom: 0.25rem !important;
+    color: #333;
+    margin-bottom: 0.25rem;
   }
 
   .compact-style-item.current-style .style-name {
-    color: #1a73e8 !important;
+    color: #1a73e8;
     font-weight: 600 !important;
   }
 
   .compact-style-item .price-label {
-    font-size: 0.8rem !important;
-    color: #666 !important;
+    font-size: 0.8rem;
+    color: #666;
   }
 
   .compact-style-item .style-price {
     font-size: 1.1rem !important;
     font-weight: 600 !important;
-    padding: 0.5rem 0.75rem !important;
-    border-radius: 4px !important;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
   }
 
   .compact-style-item .style-price.current {
-    background-color: #1a73e8 !important;
-    color: white !important;
+    background-color: #1a73e8;
+    color: white;
   }
 
   .compact-style-item .style-price.alternate {
-    background-color: #28a745 !important;
-    color: white !important;
+    background-color: #28a745;
+    color: white;
   }
 }
 
@@ -2355,37 +2355,37 @@ body {
   .styles-compact-list {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.5rem !important;
+    gap: 0.5rem;
     max-height: 300px !important;
     overflow-y: auto !important;
-    padding: 0.5rem !important;
-    background-color: #f8f9fa !important;
-    border-radius: 8px !important;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
   }
 
   .compact-style-item {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 0.75rem !important;
-    background-color: #ffffff !important;
-    border-width: 1px !important;
-    border-style: solid !important;
-    border-color: #e9ecef !important;
-    border-radius: 6px !important;
+    padding: 0.75rem;
+    background-color: #ffffff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e9ecef;
+    border-radius: 6px;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.2s ease;
   }
 
   .compact-style-item:hover,
   .compact-style-item:active {
-    border-color: #1a73e8 !important;
-    background-color: #f0f7ff !important;
+    border-color: #1a73e8;
+    background-color: #f0f7ff;
   }
 
   .compact-style-item.current-style {
-    background-color: #d0e6ff !important;
-    border-color: #1a73e8 !important;
+    background-color: #d0e6ff;
+    border-color: #1a73e8;
     font-weight: 600 !important;
   }
 
@@ -2398,42 +2398,42 @@ body {
   }
 
   .compact-style-item .style-name {
-    font-size: 0.9rem !important;
+    font-size: 0.9rem;
     font-weight: 500 !important;
-    color: #333 !important;
-    margin-bottom: 0.25rem !important;
+    color: #333;
+    margin-bottom: 0.25rem;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
   }
 
   .compact-style-item.current-style .style-name {
-    color: #1a73e8 !important;
+    color: #1a73e8;
     font-weight: 600 !important;
   }
 
   .compact-style-item .price-label {
-    font-size: 0.75rem !important;
-    color: #666 !important;
+    font-size: 0.75rem;
+    color: #666;
     line-height: 1.2 !important;
   }
 
   .compact-style-item .style-price {
-    font-size: 1rem !important;
+    font-size: 1rem;
     font-weight: 600 !important;
-    padding: 0.4rem 0.6rem !important;
-    border-radius: 4px !important;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
     flex-shrink: 0 !important;
-    margin-left: 0.5rem !important;
+    margin-left: 0.5rem;
   }
 
   .compact-style-item .style-price.current {
-    background-color: #1a73e8 !important;
-    color: white !important;
+    background-color: #1a73e8;
+    color: white;
   }
 
   .compact-style-item .style-price.alternate {
-    background-color: #28a745 !important;
-    color: white !important;
+    background-color: #28a745;
+    color: white;
   }
 }
 
@@ -2452,7 +2452,7 @@ body {
 /* Responsive carousel adjustments */
 @media (max-width: 767.98px) {
   .styles-carousel-track {
-    gap: 0.5rem !important;
+    gap: 0.5rem;
     width: auto !important; /* Override the calculated width */
     flex-wrap: nowrap !important;
   }
@@ -2469,17 +2469,17 @@ body {
 
   .style-carousel-item img {
     height: 100px !important;
-    border-radius: 8px !important;
+    border-radius: 8px;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 100%;
     object-fit: contain !important;
-    background-color: #f8f9fa !important;
-    border: 1px solid #e9ecef !important;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
   }
 
   /* Make carousel container properly sized for mobile */
   .styles-carousel-container {
-    padding: 0.5rem 0 !important;
+    padding: 0.5rem 0;
     min-height: 180px !important;
     overflow: hidden !important;
     width: 100% !important;
@@ -2488,24 +2488,24 @@ body {
 
   /* Improve mobile style item cards */
   .style-carousel-item .mt-2.p-2.rounded {
-    padding: 0.4rem !important;
-    margin-top: 0.4rem !important;
-    font-size: 0.7rem !important;
-    border-radius: 6px !important;
+    padding: 0.4rem;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    border-radius: 6px;
     text-align: center !important;
     line-height: 1.2 !important;
     min-height: 60px !important;
   }
 
   .style-carousel-item .mt-2.p-2.rounded strong {
-    font-size: 0.8rem !important;
+    font-size: 0.8rem;
     display: block !important;
     font-weight: 600 !important;
   }
 
   .style-carousel-item .mt-2.p-2.rounded div {
-    font-size: 0.7rem !important;
-    margin-bottom: 0.2rem !important;
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
   }
@@ -2513,7 +2513,7 @@ body {
   /* Custom items mobile layout */
   .custom-items-mobile .d-flex.justify-content-between {
     flex-direction: column !important;
-    gap: 1rem !important;
+    gap: 1rem;
   }
 
   .custom-items-mobile input[style*='flex: 1'] {
@@ -2532,7 +2532,7 @@ body {
 
   /* Totals summary mobile layout */
   .totals-summary-mobile {
-    padding: 0 !important;
+    padding: 0;
   }
 
   .totals-summary-mobile table {
@@ -2690,30 +2690,30 @@ body {
   .mobile-action-btn {
     width: 100% !important;
     justify-content: center !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 8px;
   }
 
   .mobile-form-btn {
     width: 100% !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 8px;
   }
 }
 
 /* ============ Proposal Actions Unified Layout ============ */
 .proposal-actions {
-  padding-top: 1rem !important;
-  border-top: 1px solid #e9ecef !important;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
 }
 
 .proposal-actions-grid {
   display: grid !important;
-  gap: 0.75rem !important;
+  gap: 0.75rem;
   align-items: stretch !important;
   justify-items: stretch !important;
   width: 100% !important;
   max-width: 880px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Mobile: single column, full width buttons */
@@ -2742,7 +2742,7 @@ body {
 
 .proposal-action-btn {
   min-height: 48px !important;
-  border-radius: 12px !important;
+  border-radius: 12px;
   font-weight: 700 !important;
 }
 
@@ -2834,7 +2834,7 @@ body {
 .pdf-controls {
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #343a40 !important;
+  background: #343a40;
   backdrop-filter: blur(10px);
   z-index: 10;
 }
@@ -2862,7 +2862,7 @@ body {
 .pdf-embed {
   width: 100% !important;
   height: 100% !important;
-  border: none !important;
+  border: none;
   background: var(--pdf-viewer-surface);
   min-height: inherit;
 }
@@ -2885,7 +2885,7 @@ body {
 @media (max-width: 767.98px) {
   /* PDF Modal Mobile Layout */
   .pdf-viewer-modal .modal-dialog {
-    margin: 0 !important;
+    margin: 0;
     max-width: none !important;
     width: 100vw !important;
     height: 100vh !important;
@@ -2895,8 +2895,8 @@ body {
   .pdf-viewer-modal .modal-content {
     height: 100vh !important;
     max-height: none !important;
-    border-radius: 0 !important;
-    border: none !important;
+    border-radius: 0;
+    border: none;
     display: flex !important;
     flex-direction: column !important;
   }
@@ -2904,17 +2904,17 @@ body {
   /* PDF Modal Header - Mobile */
   .pdf-viewer-modal .modal-header {
     flex-shrink: 0 !important;
-    padding: 12px 16px !important;
-    background: #343a40 !important;
-    color: white !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 16px;
+    background: #343a40;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     min-height: var(--pdf-mobile-header-height) !important;
   }
 
   .pdf-viewer-modal .modal-header .modal-title {
-    font-size: 1rem !important;
+    font-size: 1rem;
     font-weight: 600 !important;
-    color: white !important;
+    color: white;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
@@ -2922,14 +2922,14 @@ body {
   }
 
   .pdf-viewer-modal .modal-header .btn-close {
-    background: none !important;
-    border: none !important;
-    color: white !important;
+    background: none;
+    border: none;
+    color: white;
     opacity: 0.8 !important;
     font-size: 1.2rem !important;
-    padding: 8px !important;
-    margin: -8px !important;
-    border-radius: 6px !important;
+    padding: 8px;
+    margin: -8px;
+    border-radius: 6px;
     width: 44px !important;
     height: 44px !important;
     display: flex !important;
@@ -2939,15 +2939,15 @@ body {
 
   .pdf-viewer-modal .modal-header .btn-close:hover {
     opacity: 1 !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.1);
   }
 
   /* PDF Modal Body - Mobile */
   .pdf-viewer-modal .modal-body {
     flex: 1 !important;
-    padding: 0 !important;
+    padding: 0;
     overflow: hidden !important;
-    background: var(--pdf-viewer-bg) !important;
+    background: var(--pdf-viewer-bg);
   }
 
   .pdf-viewer-modal .pdf-viewer-container {
@@ -2955,8 +2955,8 @@ body {
       100vh - var(--pdf-mobile-header-height) - var(--pdf-mobile-footer-height)
     ) !important;
     min-height: auto !important;
-    border-radius: 0 !important;
-    background: #1a1a1a !important;
+    border-radius: 0;
+    background: #1a1a1a;
   }
 
   .pdf-viewer-modal .pdf-viewer-inner {
@@ -2966,36 +2966,36 @@ body {
   .pdf-viewer-modal .pdf-object,
   .pdf-viewer-modal .pdf-embed {
     height: 100% !important;
-    background: #2d2d2d !important;
+    background: #2d2d2d;
   }
 
   /* PDF Fallback - Mobile */
   .pdf-viewer-modal .pdf-fallback {
-    background: #f8f9fa !important;
-    padding: 20px !important;
+    background: #f8f9fa;
+    padding: 20px;
   }
 
   .pdf-viewer-modal .pdf-fallback .text-center {
     max-width: 280px !important;
-    margin: 0 auto !important;
+    margin: 0 auto;
   }
 
   .pdf-viewer-modal .pdf-fallback .btn {
     min-height: 48px !important;
-    border-radius: 8px !important;
+    border-radius: 8px;
     font-weight: 600 !important;
-    padding: 12px 24px !important;
+    padding: 12px 24px;
   }
 
   /* PDF Modal Footer - Mobile */
   .pdf-viewer-modal .modal-footer {
     flex-shrink: 0 !important;
-    padding: 12px 16px !important;
-    background: #343a40 !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 16px;
+    background: #343a40;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     min-height: var(--pdf-mobile-footer-height) !important;
     display: flex !important;
-    gap: 12px !important;
+    gap: 12px;
     justify-content: center !important;
     align-items: center !important;
   }
@@ -3004,15 +3004,15 @@ body {
     flex: 1 !important;
     max-width: 140px !important;
     min-height: 48px !important;
-    border-radius: 8px !important;
+    border-radius: 8px;
     font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    border: none !important;
-    transition: all 0.2s ease !important;
+    font-size: 0.95rem;
+    border: none;
+    transition: all 0.2s ease;
   }
 
   .pdf-viewer-modal .modal-footer .btn-primary {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
   }
 
@@ -3023,13 +3023,13 @@ body {
   }
 
   .pdf-viewer-modal .modal-footer .btn-secondary {
-    background: #6c757d !important;
-    color: white !important;
+    background: #6c757d;
+    color: white;
   }
 
   .pdf-viewer-modal .modal-footer .btn-secondary:hover,
   .pdf-viewer-modal .modal-footer .btn-secondary:active {
-    background: #5a6268 !important;
+    background: #5a6268;
     transform: translateY(-1px) !important;
   }
 }
@@ -3039,7 +3039,7 @@ body {
   .pdf-viewer-modal .modal-dialog {
     max-width: 95vw !important;
     width: 95vw !important;
-    margin: 20px auto !important;
+    margin: 20px auto;
   }
 
   .pdf-viewer-modal .modal-content {
@@ -3057,44 +3057,44 @@ body {
   .pdf-viewer-modal .modal-dialog {
     max-width: 90vw !important;
     width: 90vw !important;
-    margin: 30px auto !important;
+    margin: 30px auto;
   }
 
   .pdf-viewer-modal .modal-content {
     max-height: calc(100vh - 60px) !important;
-    border-radius: 12px !important;
+    border-radius: 12px;
     overflow: hidden !important;
   }
 
   .pdf-viewer-modal .modal-header {
-    background: #343a40 !important;
-    color: white !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: #343a40;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .pdf-viewer-modal .modal-footer {
-    background: #f8f9fa !important;
-    border-top: 1px solid #dee2e6 !important;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
   }
 
   .pdf-viewer-modal .pdf-viewer-container {
     height: calc(100vh - 180px) !important;
     min-height: 600px !important;
-    border-radius: 8px !important;
-    margin: 8px !important;
+    border-radius: 8px;
+    margin: 8px;
   }
 }
 
 /* ============ Global Mobile Overflow Guards ============ */
 /* Additional protection against layout breaks */
 .u-no-overflow {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .u-full-width {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 100%;
 }
 
 /* Responsive utility classes */
@@ -3118,8 +3118,8 @@ body {
   /* Force all flex containers to behave on mobile */
   .d-flex,
   .d-inline-flex {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* Prevent tables from breaking layout */
@@ -3138,7 +3138,7 @@ body {
 
   /* Force sidebar and content to work together */
   .modern-layout {
-    overflow-x: hidden !important;
+    overflow-x: hidden;
   }
 }
 /* ======================
@@ -3174,7 +3174,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
-    transition: none !important;
+    transition: none;
   }
 }
 
@@ -3339,7 +3339,7 @@ body {
 
   .d-flex.gap-2.flex-wrap.justify-content-center.justify-content-sm-end {
     flex-direction: column !important;
-    gap: 0 !important;
+    gap: 0;
   }
 
   .proposal-form-header .row {
@@ -3353,28 +3353,28 @@ body {
   /* Form button container */
   .proposal-summary-form .d-flex {
     flex-direction: column !important;
-    gap: 0 !important;
+    gap: 0;
   }
 
   /* Edit Quote header action buttons */
   .mobile-action-buttons {
     flex-direction: column !important;
     width: 100%;
-    gap: 8px !important;
+    gap: 8px;
   }
 
   .mobile-action-buttons > div {
     width: 100% !important;
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
     text-align: center;
   }
 
   /* Edit quote header responsiveness */
   .header {
-    padding: 1rem !important;
+    padding: 1rem;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 1rem !important;
+    gap: 1rem;
   }
 
   .header .d-flex:first-child {
@@ -3388,12 +3388,12 @@ body {
 
   /* Make form cards stack better on mobile */
   .dashboard-container .card {
-    margin-bottom: 1rem !important;
+    margin-bottom: 1rem;
   }
 
   .dashboard-container .card-body h5 {
     font-size: 1.1rem !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1rem;
   }
 }
 
@@ -3412,10 +3412,10 @@ body {
 
 .mobile-tab-button {
   min-height: 60px !important;
-  border-radius: 8px !important;
+  border-radius: 8px;
   font-weight: 500 !important;
-  border: 1px solid #dee2e6 !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
 }
 
 .mobile-tab-button:hover {
@@ -3443,24 +3443,24 @@ body {
 
 /* Proposal Progress Bar - Equal Distribution */
 .proposal-progress-bar .card-body {
-  padding: 1rem 1.5rem !important;
+  padding: 1rem 1.5rem;
 }
 
 .proposal-progress-bar .d-flex.justify-content-between {
-  gap: 0 !important;
+  gap: 0;
   position: relative !important;
-  padding: 0 !important;
+  padding: 0;
 }
 
 /* Mobile adjustments for progress bar */
 @media (max-width: 767.98px) {
   .proposal-progress-bar .card-body {
-    padding: 0.75rem 1rem !important;
+    padding: 0.75rem 1rem;
   }
 
   .proposal-step-number {
     width: 32px !important;
     height: 32px !important;
-    font-size: 13px !important;
+    font-size: 13px;
   }
 }

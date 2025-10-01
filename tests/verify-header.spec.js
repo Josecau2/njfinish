@@ -1,7 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test('AppHeader meets specifications', async ({ page }) => {
-  await page.goto('/');
+  // Login first to access authenticated pages with header
+  await page.goto('/login');
+  await page.fill('#email', 'joseca@symmetricalwolf.com');
+  await page.fill('#password', 'admin123');
+  await page.click('button[type="submit"]');
+  await page.waitForURL('/', { timeout: 10000 });
 
   const header = page.locator('[data-app-header]');
   await expect(header).toBeVisible();

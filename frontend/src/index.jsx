@@ -4,6 +4,8 @@ import { Provider } from 'react-redux'
 import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import 'core-js'
+import './styles/reset.css'
+import './styles/utilities.css'
 import './styles/fixes.css'
 import './i18n'
 

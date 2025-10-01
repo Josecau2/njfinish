@@ -3,13 +3,13 @@
 /* Global overflow guards to prevent horizontal scroll */
 html,
 body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Prevent any container from exceeding viewport width */
 * {
-  box-sizing: border-box !important;
+  box-sizing: border-box;
 }
 
 .container,
@@ -18,8 +18,8 @@ body {
 .container-lg,
 .container-md,
 .container-sm {
-  max-width: 100% !important;
-  overflow-x: hidden !important;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* 1. Global Reset & Root Variables
@@ -142,15 +142,15 @@ body {
   align-items: center !important;
   justify-content: center !important;
   height: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 .header .navbar-nav .nav-link {
   padding: 8px 12px !important;
   border-radius: 6px;
   transition: background-color 0.15s ease-in-out;
-  margin: 0 !important;
+  margin: 0;
   vertical-align: middle !important;
   line-height: 1 !important;
   display: flex;
@@ -286,7 +286,7 @@ body {
   .modal-content:has(.quote-preview-content) .modal-body {
     flex: 1 !important;
     overflow: hidden !important;
-    padding: 0 !important;
+    padding: 0;
   }
 
   /* Quote Preview container mobile optimization */
@@ -1958,7 +1958,7 @@ body {
   }
 
   .tab-content {
-    padding: 0 !important;
+    padding: 0;
   }
 
   /* Make date pickers more mobile friendly */
@@ -2026,8 +2026,8 @@ body {
     margin-bottom: 1.5rem !important;
     padding: 0 1rem !important;
     width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+    max-width: 100%;
+    overflow-x: hidden;
     /* Center children (cards) on mobile */
     align-items: center !important;
   }
@@ -2092,9 +2092,9 @@ body {
 
   /* Assembly toggle mobile layout - prevent overflow */
   .style-selection-mobile .current-style-info .d-flex.align-items-center {
-    max-width: 100% !important;
+    max-width: 100%;
     overflow: hidden !important;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
   }
 
   /* Specific styling for assembly toggle container */
@@ -2471,7 +2471,7 @@ body {
     height: 100px !important;
     border-radius: 8px !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 100%;
     object-fit: contain !important;
     background-color: #f8f9fa !important;
     border: 1px solid #e9ecef !important;
@@ -2532,7 +2532,7 @@ body {
 
   /* Totals summary mobile layout */
   .totals-summary-mobile {
-    padding: 0 !important;
+    padding: 0;
   }
 
   .totals-summary-mobile table {
@@ -2885,7 +2885,7 @@ body {
 @media (max-width: 767.98px) {
   /* PDF Modal Mobile Layout */
   .pdf-viewer-modal .modal-dialog {
-    margin: 0 !important;
+    margin: 0;
     max-width: none !important;
     width: 100vw !important;
     height: 100vh !important;
@@ -2945,7 +2945,7 @@ body {
   /* PDF Modal Body - Mobile */
   .pdf-viewer-modal .modal-body {
     flex: 1 !important;
-    padding: 0 !important;
+    padding: 0;
     overflow: hidden !important;
     background: var(--pdf-viewer-bg) !important;
   }
@@ -3088,13 +3088,13 @@ body {
 /* ============ Global Mobile Overflow Guards ============ */
 /* Additional protection against layout breaks */
 .u-no-overflow {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .u-full-width {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 100%;
 }
 
 /* Responsive utility classes */
@@ -3118,8 +3118,8 @@ body {
   /* Force all flex containers to behave on mobile */
   .d-flex,
   .d-inline-flex {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* Prevent tables from breaking layout */
@@ -3138,7 +3138,7 @@ body {
 
   /* Force sidebar and content to work together */
   .modern-layout {
-    overflow-x: hidden !important;
+    overflow-x: hidden;
   }
 }
 /* ======================
@@ -3449,7 +3449,7 @@ body {
 .proposal-progress-bar .d-flex.justify-content-between {
   gap: 0 !important;
   position: relative !important;
-  padding: 0 !important;
+  padding: 0;
 }
 
 /* Mobile adjustments for progress bar */

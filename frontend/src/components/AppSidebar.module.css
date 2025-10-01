@@ -122,32 +122,32 @@
 
 /* Collapsed state styling - removed Bootstrap .sidebar-narrow class */
 .sidebarCollapsed :global(.sidebar-nav) :global(.nav-item) {
-  padding: 0 !important;
-  padding-left: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  padding-left: 0;
+  margin: 0;
 }
 
 .sidebarCollapsed :global(.sidebar-nav) :global(.nav-group-items) :global(.nav-item) {
-  padding: 0 !important;
-  padding-left: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  padding-left: 0;
+  margin: 0;
 }
 
 .sidebarCollapsed :global(.sidebar-nav) button {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  padding: 0.75rem 0 !important;
-  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 0;
+  margin: 0;
 }
 
 .sidebarCollapsed :global(.sidebar-nav) :global(.nav-link) {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 0.75rem 0 !important;
-  gap: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 0;
+  gap: 0;
 }
 
 .sidebarCollapsed :global(.sidebar-nav) :global(.chakra-stack) {
@@ -165,11 +165,11 @@
 
 /* Collapsed: Center all nav icons */
 .sidebarCollapsed :global(.sidebar-nav) :global(.nav-icon) {
-  margin: 0 !important;
+  margin: 0;
 }
 
 .sidebarCollapsed :global(.sidebar-nav) :global(.chakra-icon) {
-  margin: 0 !important;
+  margin: 0;
 }
 
 /* Collapsed: Hide chevron/expand icons */

@@ -2,7 +2,7 @@
 // DO NOT EDIT MANUALLY
 
 export const LOGIN_CUSTOMIZATION = {
-  "logo": "/assets/customization/logo.png",
+  "logo": "/assets/customization/login-logo.png",
   "title": "Sign In",
   "subtitle": "Enter your email and password to sign in!",
   "backgroundColor": "#000000",
@@ -29,7 +29,7 @@ export const LOGIN_CUSTOMIZATION = {
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
   "updatedAt": "2025-09-26T02:16:35.000Z",
-  "_generated": "2025-09-30T00:02:21.105Z",
+  "_generated": "2025-10-01T20:24:06.696Z",
   "_version": "1.0.0"
 }
 
