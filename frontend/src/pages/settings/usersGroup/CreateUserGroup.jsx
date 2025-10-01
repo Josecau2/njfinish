@@ -19,8 +19,8 @@ const FormSection = ({ title, icon, children, className = '', customization = {}
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bg={`${customization.headerBg || '#667eea'}20`}
-          color={customization.headerBg || '#667eea'}
+          bg={`${customization.headerBg || "purple.500"}20`}
+          color={customization.headerBg || "purple.500"}
         >
           <Icon as={icon || Settings} size={14} />
         </Box>
@@ -239,7 +239,7 @@ const AddUserGroupForm = () => {
             <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} customization={customization}>
               <Box mb={4} p={3} borderRadius="md" bg="#e7f3ff" border="1px solid #b3d7ff">
                 <HStack spacing={3} align="start">
-                  <Box w="32px" h="32px" bg={customization.headerBg || '#667eea'} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+                  <Box w="32px" h="32px" bg={customization.headerBg || "purple.500"} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                     <Icon as={Settings} size={14} />
                   </Box>
                   <Box>

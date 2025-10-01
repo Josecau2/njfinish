@@ -42,8 +42,8 @@ const FormSection = ({ title, icon, customization, children }) => (
           w="32px"
           h="32px"
           borderRadius="full"
-          bg={`${(customization.headerBg || '#667eea')}20`}
-          color={customization.headerBg || '#667eea'}
+          bg={`${(customization.headerBg || "purple.500")}20`}
+          color={customization.headerBg || "purple.500"}
         >
           <Icon as={icon} boxSize={4} />
         </Flex>
@@ -302,8 +302,8 @@ const EditUserGroupForm = () => {
                     w="32px"
                     h="32px"
                     borderRadius="full"
-                    bg={customization.headerBg || '#667eea'}
-                    color={getContrastColor(customization.headerBg || '#667eea')}
+                    bg={customization.headerBg || "purple.500"}
+                    color={getContrastColor(customization.headerBg || "purple.500")}
                   >
                     <Icon as={Settings} boxSize={4} />
                   </Flex>

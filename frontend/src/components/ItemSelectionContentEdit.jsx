@@ -1611,7 +1611,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         bg="gray.50"
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
                                                                         borderStyle="solid"
-                                                                        borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef'}
+                                                                        borderColor={styleItem.id === selectedStyleData?.id ? "blue.500" : "gray.100"}
                                                                         onError={(e) => {
                                                                             if (variant?.image && !e.target.dataset.fallbackTried) {
                                                                                 e.target.dataset.fallbackTried = '1';
@@ -1625,10 +1625,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         mt={2}
                                                                         p={2}
                                                                         borderRadius="md"
-                                                                        bg={styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff'}
+                                                                        bg={styleItem.id === selectedStyleData?.id ? "blue.100" : "white"}
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                         borderStyle="solid"
-                                                                        borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da'}
+                                                                        borderColor={styleItem.id === selectedStyleData?.id ? "blue.500" : "gray.300"}
                                                                         fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
                                                                     >
                                                                         <Text fontSize="sm" mb="0.25rem">

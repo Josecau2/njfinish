@@ -50,22 +50,22 @@ const PdfLayoutCustomization = () => {
   const fileInputRef = useRef(null)
 
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff'
+    if (!backgroundColor) return "white"
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
     const brightness = (r * 299 + g * 587 + b * 114) / 1000
-    return brightness > 128 ? '#000000' : '#ffffff'
+    return brightness > 128 ? "black" : "white"
   }
 
-  const headerBgColor = customization?.headerBg || '#667eea'
+  const headerBgColor = customization?.headerBg || "purple.500"
   const textColor = getContrastColor(headerBgColor)
 
   const [formData, setFormData] = useState({
     pdfHeader: '',
     pdfFooter: '',
-    headerBgColor: '#000000',
+    headerBgColor: "black",
     logo: null,
     logoPreview: null,
     previousBlobUrl: null,
@@ -74,7 +74,7 @@ const PdfLayoutCustomization = () => {
     companyEmail: '',
     companyWebsite: '',
     companyAddress: '',
-    headerTxtColor: '#FFFFFF',
+    headerTxtColor: "white",
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
@@ -113,14 +113,14 @@ const PdfLayoutCustomization = () => {
         ...prev,
         pdfHeader: pdfHeader || '',
         pdfFooter: pdfFooter || '',
-        headerBgColor: headerBgColor || '#000000',
+        headerBgColor: headerBgColor || "black",
         logoPreview: headerLogo || null,
         companyName: companyName || '',
         companyPhone: companyPhone || '',
         companyEmail: companyEmail || '',
         companyWebsite: companyWebsite || '',
         companyAddress: companyAddress || '',
-        headerTxtColor: headerTxtColor || '#FFFFFF',
+        headerTxtColor: headerTxtColor || "white",
         logo: null,
       }))
     } catch (err) {

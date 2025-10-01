@@ -22,7 +22,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
   // Function to get optimal text color for contrast
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff';
+    if (!backgroundColor) return "white";
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
@@ -33,7 +33,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     
     // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? '#2d3748' : '#ffffff';
+    return luminance > 0.5 ? "gray.700" : "white";
   };
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -127,7 +127,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   return (
     <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
-      <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || '#321fdb', color: customization.headerTextColor || '#ffffff' }}>
+      <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || "blue.600", color: customization.headerTextColor || "white" }}>
         <CardBody>
           <Flex>
             <Box>
@@ -228,7 +228,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
           <CardBody>
             <div style={{ overflowX: 'auto' }}>
               <Table hover responsive>
-                <Thead style={{ backgroundColor: '#f8f9fa' }}>
+                <Thead style={{ backgroundColor: "gray.50" }}>
                   <Tr>
                     <Th className="border-0 fw-semibold text-muted py-3">
                       Location

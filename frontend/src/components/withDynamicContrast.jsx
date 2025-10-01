@@ -189,7 +189,7 @@ const withDynamicContrast = (WrappedComponent, options = {}) => {
 
   const DynamicContrastComponent = (props) => {
     const customization = useSelector((state) => state.customization)
-    const backgroundColor = customization[colorSource] || '#ffffff'
+    const backgroundColor = customization[colorSource] || "white"
     const optimalColors = getOptimalColors(backgroundColor)
 
     const containerProps = {
@@ -227,7 +227,7 @@ export const DynamicContrastWrapper = ({
   ...props
 }) => {
   const customization = useSelector((state) => state.customization)
-  const backgroundColor = customization[colorSource] || '#ffffff'
+  const backgroundColor = customization[colorSource] || "white"
   const optimalColors = getOptimalColors(backgroundColor)
 
   return (

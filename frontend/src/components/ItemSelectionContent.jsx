@@ -77,15 +77,15 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const taxesReady = useMemo(() => !loading && Array.isArray(taxes) && taxes.length > 0, [loading, taxes]);
     const authUser = useSelector((state) => state.auth?.user);
     const customization = useSelector((state) => state.customization);
-    const headerBg = customization.headerBg || '#000000';
+    const headerBg = customization.headerBg || "black";
 
     const getContrastColor = (hexColor) => {
-        if (!hexColor || hexColor.length < 7) return '#FFFFFF';
+        if (!hexColor || hexColor.length < 7) return "white";
         const r = parseInt(hexColor.substr(1, 2), 16);
         const g = parseInt(hexColor.substr(3, 2), 16);
         const b = parseInt(hexColor.substr(5, 2), 16);
         const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-        return (yiq >= 128) ? '#000000' : '#FFFFFF';
+        return (yiq >= 128) ? "black" : "white";
     };
 
     const textColor = getContrastColor(headerBg);

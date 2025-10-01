@@ -1016,7 +1016,7 @@ const TypesTab = ({ manufacturer }) => {
                           width: '40px',
                           height: '40px',
                           objectFit: 'contain',
-                          backgroundColor: '#f8f9fa',
+                          backgroundColor: "gray.50",
                           borderRadius: '4px',
                         }}
                         onError={handleImageError}
@@ -1082,7 +1082,7 @@ const TypesTab = ({ manufacturer }) => {
                   <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
                   <div
                     className="d-flex justify-content-center p-3 border rounded"
-                    style={{ backgroundColor: '#f8f9fa' }}
+                    style={{ backgroundColor: "gray.50" }}
                   >
                     <img
                       src={getImageSrc(selectedType)}

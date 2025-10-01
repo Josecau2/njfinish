@@ -53,8 +53,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const toast = useToast()
   const api_url = import.meta.env.VITE_API_URL
   const customization = useSelector((state) => state.customization)
-  const headerBg = customization?.headerBg || '#321fdb'
-  const textColor = customization?.headerTextColor || '#ffffff'
+  const headerBg = customization?.headerBg || "blue.600"
+  const textColor = customization?.headerTextColor || "white"
 
   // AlertDialog confirmation system (replaces SweetAlert)
   const [confirmDialog, setConfirmDialog] = useState({
@@ -3033,9 +3033,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           style={{
                             fontSize: "xs",
                             padding: '2px 6px',
-                            backgroundColor: '#20c997',
-                            borderColor: '#20c997',
-                            color: '#fff',
+                            backgroundColor: "teal.400",
+                            borderColor: "teal.400",
+                            color: "white",
                             minWidth: 'auto',
                           }}
                           title="Global Mods for item"

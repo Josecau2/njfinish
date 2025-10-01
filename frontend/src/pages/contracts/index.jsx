@@ -23,7 +23,7 @@ const Contracts = () => {
 
   // Function to get optimal text color for contrast
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff'
+    if (!backgroundColor) return "white"
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
@@ -32,7 +32,7 @@ const Contracts = () => {
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
     // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? '#2d3748' : '#ffffff'
+    return luminance > 0.5 ? "gray.700" : "white"
   }
   const contractsdata = Array.isArray(contracts) ? contracts : []
 
@@ -314,7 +314,7 @@ const Contracts = () => {
     return key ? t(`contracts.status.${key}`) : status || t('contracts.status.draft')
   }
   const filteredCount = filteredProposals?.length || 0
-  const headerBg = customization?.headerBg || '#667eea'
+  const headerBg = customization?.headerBg || "purple.500"
   const headerTextColor = getContrastColor(headerBg)
   return (
     <Container maxW="7xl" py={6}>

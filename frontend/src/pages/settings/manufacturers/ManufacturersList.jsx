@@ -44,14 +44,14 @@ import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 
 const getContrastColor = (hexColor) => {
-  if (!hexColor) return '#ffffff'
+  if (!hexColor) return "white"
   const hex = hexColor.replace('#', '')
-  if (hex.length !== 6) return '#ffffff'
+  if (hex.length !== 6) return "white"
   const r = parseInt(hex.substr(0, 2), 16)
   const g = parseInt(hex.substr(2, 2), 16)
   const b = parseInt(hex.substr(4, 2), 16)
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  return luminance > 0.5 ? '#2d3748' : '#ffffff'
+  return luminance > 0.5 ? "gray.700" : "white"
 }
 
 const sortOptions = [

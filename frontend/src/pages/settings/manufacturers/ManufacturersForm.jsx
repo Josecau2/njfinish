@@ -48,7 +48,7 @@ import PageHeader from '../../../components/PageHeader'
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, className = '', customization }) => {
-  const headerBg = customization?.headerBg || '#667eea'
+  const headerBg = customization?.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
 
   return (
@@ -217,7 +217,7 @@ const ManufacturerForm = () => {
   const dispatch = useDispatch()
   const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || '#667eea'
+  const headerBg = customization.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
 
   const [formData, setFormData] = useState({

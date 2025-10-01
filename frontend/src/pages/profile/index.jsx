@@ -139,7 +139,7 @@ const ProfilePage = () => {
     }
   }
 
-  const accentColor = customization?.headerBg || '#321fdb'
+  const accentColor = customization?.headerBg || "blue.600"
   const accentTextColor = getContrastColor(accentColor)
 
   // Show loader while initial data is loading

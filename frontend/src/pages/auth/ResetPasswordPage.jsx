@@ -29,7 +29,7 @@ const ResetPasswordPage = () => {
   const loginBrand = getLoginBrand()
   const brandColors = getBrandColors()
   const logoHeight = Number(loginBrand.logoHeight) || 60
-  const loginBackground = loginBrand.backgroundColor || brandColors.surface || '#0e1446'
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
   const rightPanelColors = getOptimalColors(loginBackground)
 
   const [password, setPassword] = useState('')

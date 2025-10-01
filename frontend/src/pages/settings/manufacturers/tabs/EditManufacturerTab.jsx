@@ -43,7 +43,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
   const navigate = useNavigate()
   const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || '#667eea'
+  const headerBg = customization.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
 
   const [formData, setFormData] = useState({

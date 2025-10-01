@@ -67,26 +67,44 @@ for (const filePath of filesToFix) {
   // Only fix hex colors in JSX prop values
   // Match patterns like: bg="#f8f9fa" or borderColor="#1a73e8"
   for (const [hex, token] of Object.entries(colorMap)) {
-    // Match prop="#hexcolor"
-    const propRegex = new RegExp(`(\\s+[a-zA-Z]+)="${hex}"`, 'gi');
+    const hexEscaped = hex.replace('#', '\\#');
+
+    // Match prop="#hexcolor" or prop='#hexcolor'
+    const propRegex = new RegExp(`(\\s+[a-zA-Z]+)(=)(["'])${hex}\\3`, 'gi');
     if (propRegex.test(content)) {
-      content = content.replace(propRegex, `$1="${token}"`);
+      content = content.replace(propRegex, `$1$2$3${token}$3`);
       modified = true;
       fixCount++;
     }
 
-    // Match prop='#hexcolor'
-    const propRegex2 = new RegExp(`(\\s+[a-zA-Z]+)='${hex}'`, 'gi');
-    if (propRegex2.test(content)) {
-      content = content.replace(propRegex2, `$1='${token}'`);
+    // Match ? "#hexcolor" : in ternary expressions
+    const ternaryRegex = new RegExp(`\\?\\s*["']${hex}["']\\s*:`, 'gi');
+    if (ternaryRegex.test(content)) {
+      content = content.replace(ternaryRegex, `? "${token}" :`);
       modified = true;
       fixCount++;
     }
 
-    // Match in template literals within props: bg={`#hexcolor`}
-    const templateRegex = new RegExp(`\\\{\`${hex.replace('#', '\\#')}\`\\\}`, 'gi');
-    if (templateRegex.test(content)) {
-      content = content.replace(templateRegex, `{\`${token}\`}`);
+    // Match : "#hexcolor" in ternary expressions
+    const ternaryRegex2 = new RegExp(`:\\s*["']${hex}["']`, 'gi');
+    if (ternaryRegex2.test(content)) {
+      content = content.replace(ternaryRegex2, `: "${token}"`);
+      modified = true;
+      fixCount++;
+    }
+
+    // Match || "#hexcolor" (fallback values)
+    const fallbackRegex = new RegExp(`\\|\\|\\s*["']${hex}["']`, 'gi');
+    if (fallbackRegex.test(content)) {
+      content = content.replace(fallbackRegex, `|| "${token}"`);
+      modified = true;
+      fixCount++;
+    }
+
+    // Match return "#hexcolor" in functions
+    const returnRegex = new RegExp(`return\\s+["']${hex}["']`, 'gi');
+    if (returnRegex.test(content)) {
+      content = content.replace(returnRegex, `return "${token}"`);
       modified = true;
       fixCount++;
     }

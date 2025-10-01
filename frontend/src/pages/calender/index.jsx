@@ -34,10 +34,10 @@ const EVENT_TYPES = [
 ]
 
 const EVENT_COLORS = {
-  'Measurement Scheduled': '#0d6efd',
-  'Design Scheduled': '#198754',
+  'Measurement Scheduled': "blue.500",
+  'Design Scheduled': "green.500",
   'Follow Up 1': '#fd7e14',
-  'Follow Up 2': '#dc3545',
+  'Follow Up 2': "red.500",
   'Follow Up 3': '#6f42c1',
 }
 
@@ -68,9 +68,9 @@ const CalendarView = () => {
         baseTitle: event.title,
         date: event.date,
         allDay: true,
-        backgroundColor: EVENT_COLORS[event.title] || '#6c757d',
-        borderColor: EVENT_COLORS[event.title] || '#6c757d',
-        textColor: '#ffffff',
+        backgroundColor: EVENT_COLORS[event.title] || "gray.500",
+        borderColor: EVENT_COLORS[event.title] || "gray.500",
+        textColor: "white",
         extendedProps: {
           description: event.description || '',
           salesRep: event.salesRep || '',

@@ -548,7 +548,7 @@ const GlobalModsPage = () => {
                       ) : (
                         <div
                          
-                          style={{ backgroundColor: '#f8f9fa', width: 60, height: 60 }}
+                          style={{ backgroundColor: "gray.50", width: 60, height: 60 }}
                         >
                           <small>📁</small>
                         </div>
@@ -1231,7 +1231,7 @@ const GlobalModsPage = () => {
                       ) : (
                         <div
                          
-                          style={{ backgroundColor: '#f8f9fa' }}
+                          style={{ backgroundColor: "gray.50" }}
                         >
                           <div>📷</div>
                           <small>{t('globalMods.builder.sampleUpload.none')}</small>
@@ -2014,7 +2014,7 @@ const GlobalModsPage = () => {
                       ) : (
                         <div
                          
-                          style={{ backgroundColor: '#f8f9fa' }}
+                          style={{ backgroundColor: "gray.50" }}
                         >
                           <div>📷</div>
                           <small>{t('globalMods.builder.sampleUpload.none')}</small>

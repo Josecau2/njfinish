@@ -40,10 +40,10 @@ const LoginPreview = ({ config }) => {
     }
   }, [activeView, config.showForgotPassword])
 
-  const headerBg = config.headerBg || '#667eea'
+  const headerBg = config.headerBg || "purple.500"
   const buttonTextColor = getContrastColor(headerBg)
   const marketingColors = useMemo(
-    () => getOptimalColors(config.backgroundColor || '#0e1446'),
+    () => getOptimalColors(config.backgroundColor || "gray.900"),
     [config.backgroundColor],
   )
   const rawLogo = config.logo || resolvedAppCustomization.logoImage || ''
@@ -108,7 +108,7 @@ const LoginPreview = ({ config }) => {
       w={{ base: '100%', lg: '50%' }}
       px={{ base: 6, lg: 12 }}
       py={{ base: 10, lg: 12 }}
-      bg={config.backgroundColor || '#0e1446'}
+      bg={config.backgroundColor || "gray.900"}
     >
       <Stack spacing={3} textAlign="center" maxW="md">
         <Heading size="lg" color={marketingColors.text} fontWeight="bold">

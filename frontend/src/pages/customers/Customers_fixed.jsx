@@ -27,7 +27,7 @@ const CustomerTable = ({
 
   // Function to get optimal text color for contrast
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff'
+    if (!backgroundColor) return "white"
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
@@ -38,7 +38,7 @@ const CustomerTable = ({
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
 
     // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? '#2d3748' : '#ffffff'
+    return luminance > 0.5 ? "gray.700" : "white"
   }
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
@@ -130,8 +130,8 @@ const CustomerTable = ({
       <Card
         className="border-0 shadow-sm  mb-2"
         style={{
-          background: customization.headerBg || '#667eea',
-          color: getContrastColor(customization.headerBg || '#667eea'),
+          background: customization.headerBg || "purple.500",
+          color: getContrastColor(customization.headerBg || "purple.500"),
         }}
       >
         <CardBody>
@@ -264,7 +264,7 @@ const CustomerTable = ({
           <CardBody>
             <div style={{ overflowX: 'auto' }}>
               <Table hover responsive className="mb-0 table-modern">
-                <Thead style={{ backgroundColor: '#f8f9fa' }}>
+                <Thead style={{ backgroundColor: "gray.50" }}>
                   <Tr>
                     <Th className="border-0 fw-semibold text-muted py-3 sticky-col">
                       Location

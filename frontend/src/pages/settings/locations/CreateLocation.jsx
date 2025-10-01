@@ -224,7 +224,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
                     >
                       <MapPin size={18} />
                     </InputLeftElement>
@@ -255,7 +255,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
                     >
                       <Home size={18} />
                     </InputLeftElement>
@@ -308,7 +308,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
                     >
                       <Mail size={18} />
                     </InputLeftElement>
@@ -339,7 +339,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
                     >
                       <Mail size={18} />
                     </InputLeftElement>
@@ -374,7 +374,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
                     >
                       <Phone size={18} />
                     </InputLeftElement>
@@ -466,7 +466,7 @@ const LocationForm = () => {
                       borderRadius: '8px',
                       fontSize: "sm",
                       padding: '12px 16px',
-                      backgroundColor: !formData.country ? '#f8f9fa' : 'white',
+                      backgroundColor: !formData.country ? "gray.50" : 'white',
                     }}
                   >
                     <option value="">{t('settings.locations.form.select.timezone')}</option>
@@ -502,12 +502,12 @@ const LocationForm = () => {
                         readOnly
                         tabIndex={-1}
                         style={{
-                          backgroundColor: '#f8f9fa',
+                          backgroundColor: "gray.50",
                           border: '1px solid #e3e6f0',
                           cursor: 'not-allowed',
                           fontSize: "sm",
                           fontWeight: '500',
-                          color: '#495057',
+                          color: "gray.600",
                         }}
                       />
                     </InputGroup>
@@ -548,7 +548,7 @@ const LocationForm = () => {
                 style={{
                   border: 'none',
                   borderRadius: '8px',
-                  background: loading ? '#6c757d' : 'linear-gradient(45deg, #28a745, #20c997)',
+                  background: loading ? "gray.500" : 'linear-gradient(45deg, #28a745, #20c997)',
                   boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
                   minHeight: '44px',
                 }}

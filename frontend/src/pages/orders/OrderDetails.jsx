@@ -161,27 +161,27 @@ const OrderDetails = () => {
   const closeNotice = () => setNotice((n) => ({ ...n, visible: false }))
 
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff'
+    if (!backgroundColor) return "white"
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    return luminance > 0.5 ? '#2d3748' : '#ffffff'
+    return luminance > 0.5 ? "gray.700" : "white"
   }
 
   const resolveBackground = (value) => {
     try {
       if (typeof value === 'string') {
         const trimmed = value.trim()
-        return trimmed || '#ffffff'
+        return trimmed || "white"
       }
       if (value && typeof value === 'object') {
         if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim()
         if (typeof value.value === 'string' && value.value.trim()) return value.value.trim()
       }
     } catch (_) {}
-    return '#ffffff'
+    return "white"
   }
 
   const backgroundColor = resolveBackground(customization?.headerBg)

@@ -39,7 +39,7 @@ const ColorField = ({ label, name, value, onChange }) => (
       <Input
         type="color"
         name={name}
-        value={value || '#ffffff'}
+        value={value || "white"}
         onChange={onChange}
         w="48px"
         h="48px"
@@ -60,7 +60,7 @@ const ColorField = ({ label, name, value, onChange }) => (
         bg="gray.50"
         color="gray.600"
       >
-        {value || '#ffffff'}
+        {value || "white"}
       </Box>
     </HStack>
   </FormControl>
@@ -152,7 +152,7 @@ const CustomizationPage = () => {
 
   const alertStatus = message.type === 'success' ? 'success' : message.type === 'error' ? 'error' : 'info'
 
-  const headerBg = formData.headerBg || customization.headerBg || '#667eea'
+  const headerBg = formData.headerBg || customization.headerBg || "purple.500"
   const headerTextColor = getContrastColor(headerBg)
 
   return (

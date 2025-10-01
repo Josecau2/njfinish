@@ -24,8 +24,8 @@ export function PageLayout({
 }) {
   return (
     <Box
-      minH="100vh" style={{ backgroundColor: "#f8f9fa" }}
-      _dark={{ bg: "#0f172a" }}
+      minH="100vh" style={{ backgroundColor: "gray.50" }}
+      _dark={{ bg: "gray.900" }}
       pt={6}
       pb={12}
       px={{ base: 4, md: 8 }}
@@ -38,16 +38,16 @@ export function PageLayout({
               as="h1"
               size="xl"
               mb={subtitle ? 2 : 0}
-              style={{ color: "#0f172a" }}
-              _dark={{ color: "#ffffff" }}
+              style={{ color: "gray.900" }}
+              _dark={{ color: "white" }}
             >
               {title}
             </Heading>
             {subtitle && (
               <Text
                 fontSize="md"
-                style={{ color: "#495057" }}
-                _dark={{ color: "#adb5bd" }}
+                style={{ color: "gray.600" }}
+                _dark={{ color: "gray.400" }}
               >
                 {subtitle}
               </Text>
@@ -59,8 +59,8 @@ export function PageLayout({
         {noCard ? (
           children
         ) : (
-          <Box style={{ backgroundColor: "#ffffff" }}
-            _dark={{ bg: "#212529" }}
+          <Box style={{ backgroundColor: "white" }}
+            _dark={{ bg: "gray.800" }}
             borderRadius="lg"
             boxShadow="sm"
             p={{ base: 4, md: 6 }}

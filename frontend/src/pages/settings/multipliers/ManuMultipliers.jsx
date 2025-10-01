@@ -217,7 +217,7 @@ const ManuMultipliers = () => {
 
   const enabledCount = mergedGroups.filter((group) => group.enabled === 1).length
   const disabledCount = mergedGroups.length - enabledCount
-  const accentColor = customization?.headerBg || '#667eea'
+  const accentColor = customization?.headerBg || "purple.500"
   const tableHeaderBg = useColorModeValue('gray.50', 'gray.900')
 
   return (

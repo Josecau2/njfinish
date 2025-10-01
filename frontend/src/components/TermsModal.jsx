@@ -26,14 +26,14 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
   const { t } = useTranslation()
 
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return '#ffffff'
+    if (!backgroundColor) return "white"
     const hex = backgroundColor.replace('#', '')
-    if (hex.length !== 6) return '#ffffff'
+    if (hex.length !== 6) return "white"
     const r = parseInt(hex.slice(0, 2), 16)
     const g = parseInt(hex.slice(2, 4), 16)
     const b = parseInt(hex.slice(4, 6), 16)
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    return luminance > 0.5 ? '#2d3748' : '#ffffff'
+    return luminance > 0.5 ? "gray.700" : "white"
   }
 
   const getOptimalColors = (backgroundColor) => {
@@ -45,21 +45,21 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
       subtitle: isLight ? 'rgba(45, 55, 72, 0.6)' : 'rgba(255, 255, 255, 0.6)',
       button: {
         primary: {
-          bg: isLight ? '#0d6efd' : '#ffffff',
-          color: isLight ? '#ffffff' : backgroundColor,
-          border: isLight ? '#0d6efd' : '#ffffff',
+          bg: isLight ? "blue.500" : "white",
+          color: isLight ? "white" : backgroundColor,
+          border: isLight ? "blue.500" : "white",
           hover: {
-            bg: isLight ? '#0b5ed7' : 'rgba(255, 255, 255, 0.9)',
-            color: isLight ? '#ffffff' : backgroundColor,
+            bg: isLight ? "blue.600" : 'rgba(255, 255, 255, 0.9)',
+            color: isLight ? "white" : backgroundColor,
           },
         },
         danger: {
-          bg: isLight ? '#dc3545' : '#ef4444',
-          color: '#ffffff',
-          border: isLight ? '#dc3545' : '#ef4444',
+          bg: isLight ? "red.500" : "red.500",
+          color: "white",
+          border: isLight ? "red.500" : "red.500",
           hover: {
-            bg: isLight ? '#bb2d3b' : '#dc2626',
-            color: '#ffffff',
+            bg: isLight ? "red.600" : "red.600",
+            color: "white",
           },
         },
       },
@@ -70,7 +70,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
     try {
       if (typeof value === 'string') {
         const trimmed = value.trim()
-        return trimmed || '#ffffff'
+        return trimmed || "white"
       }
       if (value && typeof value === 'object') {
         if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim()
@@ -79,7 +79,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
     } catch (_) {
       /* ignore */
     }
-    return '#ffffff'
+    return "white"
   }
 
   const backgroundColor = resolveBackground(customization?.headerBg)

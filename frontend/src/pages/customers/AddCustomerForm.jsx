@@ -96,7 +96,7 @@ const CustomFormInput = ({
         ref={(el) => (inputRefs.current[name] = el)}
         placeholder={placeholder}
         style={{
-          border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
+          border: `1px solid ${validationErrors[name] ? "red.500" : '#e3e6f0'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
           fontSize="sm",
           padding: '12px 16px',
@@ -161,7 +161,7 @@ const CustomFormSelect = ({
         isInvalid={!!validationErrors[name]}
         ref={(el) => (inputRefs.current[name] = el)}
         style={{
-          border: `1px solid ${validationErrors[name] ? '#dc3545' : '#e3e6f0'}`,
+          border: `1px solid ${validationErrors[name] ? "red.500" : '#e3e6f0'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
           fontSize="sm",
           padding: '12px 16px',
@@ -194,8 +194,8 @@ const CustomFormSelect = ({
 const AddCustomerForm = () => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
-  const headerBg = customization?.headerBg || '#321fdb'
-  const textColor = customization?.headerTextColor || '#ffffff'
+  const headerBg = customization?.headerBg || "blue.600"
+  const textColor = customization?.headerTextColor || "white"
 
   const [formData, setFormData] = useState({
     name: '',

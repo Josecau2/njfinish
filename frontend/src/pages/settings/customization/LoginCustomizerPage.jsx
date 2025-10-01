@@ -56,7 +56,7 @@ const DEFAULT_SETTINGS = {
   logoHeight: 60,
   title: 'Sign In',
   subtitle: 'Enter your email and password to sign in!',
-  backgroundColor: '#0e1446',
+  backgroundColor: "gray.900",
   showForgotPassword: true,
   showKeepLoggedIn: true,
   rightTitle: 'See Your Cabinet Price in Seconds!',
