@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-import { FormControl, Input, FormLabel, Select, Card, CardBody, CardHeader, Container, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, CardBody, CardHeader, Container, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import ct from 'countries-and-timezones'
@@ -194,7 +195,7 @@ const LocationForm = () => {
       />
 
       {/* Form Section */}
-      <Card>
+      <StandardCard>
         <CardBody>
           <form onSubmit={handleSubmit}>
             {/* Basic Information Section */}
@@ -570,7 +571,7 @@ const LocationForm = () => {
             </div>
           </form>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Container>
   )
 }

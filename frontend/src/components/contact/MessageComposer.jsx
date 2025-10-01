@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Card, CardBody, FormControl, FormLabel, Input, Textarea, Button } from '@chakra-ui/react'
+import { CardBody, FormControl, FormLabel, Input, Textarea, Button } from '@chakra-ui/react'
+import StandardCard from '../StandardCard'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -23,7 +24,7 @@ const MessageComposer = ({ onSend }) => {
   }
 
   return (
-    <Card>
+    <StandardCard>
       <CardBody>
         <PageHeader
           title={t('contact.compose.title')}
@@ -53,7 +54,7 @@ const MessageComposer = ({ onSend }) => {
           </Button>
         </form>
       </CardBody>
-    </Card>
+    </StandardCard>
   
   )
 }

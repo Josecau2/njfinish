@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Card, CardBody, Flex, Box, Link } from '@chakra-ui/react'
+import { CardBody, Flex, Box, Link } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import CustomizationPage from './CustomizationPage'
 import PdfLayoutCustomization from './PdfLayoutCustomization'
 import LoginCustomizerPage from './LoginCustomizerPage'
@@ -8,7 +9,7 @@ const CustomizationIndex = () => {
   const [activeKey, setActiveKey] = useState(1)
 
   return (
-    <Card className="main-div-cutomization">
+    <StandardCard className="main-div-cutomization">
       <CardBody>
         <Flex role="tablist" gap={4}>
           <Box>
@@ -40,7 +41,7 @@ const CustomizationIndex = () => {
           </Box>
         </Box>
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }
 

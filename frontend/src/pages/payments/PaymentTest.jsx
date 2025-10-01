@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Alert, Card, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Button } from '@chakra-ui/react'
+import { Alert, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Button } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import { useState } from 'react'
@@ -32,7 +33,7 @@ const PaymentTest = () => {
       />
       <Flex>
         <Box md={8} className="mx-auto">
-          <Card>
+          <StandardCard>
             <CardBody>
               <Alert status="info" aria-live="polite" role="status">
                 {t(
@@ -76,7 +77,7 @@ const PaymentTest = () => {
                 </div>
               </FormControl>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
     </Container>

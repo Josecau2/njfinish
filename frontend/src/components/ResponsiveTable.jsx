@@ -1,4 +1,5 @@
-import { Box, Table, Stack, Card, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Table, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
+import StandardCard from './StandardCard';
 
 const ResponsiveTable = ({ data = [], columns = [] }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -7,7 +8,7 @@ const ResponsiveTable = ({ data = [], columns = [] }) => {
     return (
       <Stack spacing={4}>
         {data.map((row, i) => (
-          <Card key={i} p={4} borderWidth="1px">
+          <StandardCard key={i} p={4} borderWidth="1px">
             <Stack spacing={4}>
               {columns.map(col => (
                 <Box key={col.key}>
@@ -20,7 +21,7 @@ const ResponsiveTable = ({ data = [], columns = [] }) => {
                 </Box>
               ))}
             </Stack>
-          </Card>
+          </StandardCard>
         ))}
       </Stack>
     );

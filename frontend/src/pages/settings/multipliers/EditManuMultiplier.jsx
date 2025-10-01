@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, FormControl, Input, FormLabel, Spinner, Alert, Button } from '@chakra-ui/react'
+import { CardBody, CardHeader, FormControl, Input, FormLabel, Spinner, Alert, Button } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
@@ -89,7 +90,7 @@ const EditManuMultiplier = () => {
         onBackClick={() => navigate('/settings/multipliers')}
       />
 
-      <Card style={{ maxWidth: '600px', margin: '20px auto' }}>
+      <StandardCard style={{ maxWidth: '600px', margin: '20px auto' }}>
         <CardHeader>{t('settings.multipliers.editManufacturer')}</CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
@@ -158,7 +159,7 @@ const EditManuMultiplier = () => {
             </div>
           </form>
         </CardBody>
-      </Card>
+      </StandardCard>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { FormControl, Input, FormLabel, Card, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
 import { Settings, ArrowLeft, UserPlus } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,7 +10,7 @@ import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 
 const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
-  <Card className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
+  <StandardCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
     <CardBody className="p-3 p-md-4">
       <HStack mb={3} align="center" spacing={4}>
         <Box
@@ -28,7 +29,7 @@ const FormSection = ({ title, icon, children, className = '', customization = {}
       </HStack>
       {children}
     </CardBody>
-  </Card>
+  </StandardCard>
 )
 
 const CustomFormInput = ({
@@ -278,7 +279,7 @@ const AddUserGroupForm = () => {
             </FormSection>
           )}
 
-          <Card>
+          <StandardCard>
             <CardBody>
               <HStack justify="flex-end" spacing={4}>
                 <Button
@@ -308,7 +309,7 @@ const AddUserGroupForm = () => {
                 </Button>
               </HStack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </FormControl>
       </form>
     </Container>

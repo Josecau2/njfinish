@@ -1,7 +1,8 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '../../../helpers/dateUtils'
-import { Flex, Box, Card, CardBody, CardHeader, Badge, List, ListItem, Progress } from '@chakra-ui/react'
+import { Flex, Box, CardBody, CardHeader, Badge, List, ListItem, Progress } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import {
   User,
   Users,
@@ -54,37 +55,37 @@ const OverviewTab = ({ contractor }) => {
     <Flex>
       {/* Stats Cards */}
       <Box sm={6} lg={3}>
-        <Card>
+        <StandardCard>
           <CardBody>
             <User size={32} className="text-primary mb-3" aria-hidden="true" />
             <h3>{contractor.stats?.user_count || 0}</h3>
             <p>{t('contractorsAdmin.table.users')}</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       <Box sm={6} lg={3}>
-        <Card>
+        <StandardCard>
           <CardBody>
             <Users size={32} className="text-warning mb-3" aria-hidden="true" />
             <h3>{contractor.stats?.customer_count || 0}</h3>
             <p>{t('contractorsAdmin.table.customers')}</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       <Box sm={6} lg={3}>
-        <Card>
+        <StandardCard>
           <CardBody>
             <BriefcaseBusiness size={32} className="text-success mb-3" aria-hidden="true" />
             <h3>{contractor.stats?.proposal_count || 0}</h3>
             <p>{t('contractorsAdmin.table.proposals')}</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       <Box sm={6} lg={3}>
-        <Card>
+        <StandardCard>
           <CardBody>
             <LayoutGrid size={32} className="text-info mb-3" aria-hidden="true" />
             <h3>
@@ -92,12 +93,12 @@ const OverviewTab = ({ contractor }) => {
             </h3>
             <p>{t('contractorsAdmin.table.modules')}</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Basic Information */}
       <Box md={6}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>{t('contractorsAdmin.detail.basicInfo.title')}</strong>
           </CardHeader>
@@ -129,12 +130,12 @@ const OverviewTab = ({ contractor }) => {
               )}
             </List>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Module Access */}
       <Box md={6}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>{t('contractorsAdmin.detail.moduleAccess.title')}</strong>
             <div>
@@ -185,12 +186,12 @@ const OverviewTab = ({ contractor }) => {
               ))}
             </List>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Activity Summary */}
       <Box xs={12}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>{t('contractorsAdmin.detail.activity.title')}</strong>
           </CardHeader>
@@ -231,7 +232,7 @@ const OverviewTab = ({ contractor }) => {
               </Box>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
     </Flex>
   )

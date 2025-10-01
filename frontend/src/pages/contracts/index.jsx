@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, Card, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react'
+import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
 import { getContracts } from '../../queries/proposalQueries'
 import { useSelector } from 'react-redux'
@@ -324,7 +325,7 @@ const Contracts = () => {
           subtitle={t('contracts.subtitle')}
           icon={Briefcase}
         />
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardBody>
             <Stack
               direction={{ base: 'column', lg: 'row' }}
@@ -386,7 +387,7 @@ const Contracts = () => {
               </Stack>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
         {error && (
           <Alert status="error" borderRadius="md">
             <AlertIcon />
@@ -396,7 +397,7 @@ const Contracts = () => {
           </Alert>
         )}
         {loading ? (
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardBody>
               <Center py={12} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
@@ -405,11 +406,11 @@ const Contracts = () => {
                 </Text>
               </Center>
             </CardBody>
-          </Card>
+          </StandardCard>
         ) : viewMode === 'card' ? (
           <Stack spacing={4}>
             {filteredCount === 0 ? (
-              <Card variant="outline">
+              <StandardCard variant="outline">
                 <CardBody>
                   <Center flexDirection="column" gap={4}>
                     <Icon as={Search} boxSize={10} color="gray.300" />
@@ -419,14 +420,14 @@ const Contracts = () => {
                     </Text>
                   </Center>
                 </CardBody>
-              </Card>
+              </StandardCard>
             ) : (
               <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} spacing={4}>
                 {paginatedItems.map((item) => {
                   const customerName = item.customer?.name || t('common.na')
                   const initial = customerName.charAt(0).toUpperCase()
                   return (
-                    <Card key={item.id} variant="outline" height="100%">
+                    <StandardCard key={item.id} variant="outline" height="100%">
                       <CardHeader pb={2}>
                         <HStack justify="space-between" align="center">
                           <HStack spacing={4} align="center">
@@ -497,14 +498,14 @@ const Contracts = () => {
                           </HStack>
                         </Stack>
                       </CardBody>
-                    </Card>
+                    </StandardCard>
                   )
                 })}
               </SimpleGrid>
             )}
           </Stack>
         ) : (
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardBody p={0}>
               <TableContainer>
                 <Table variant="simple">
@@ -594,10 +595,10 @@ const Contracts = () => {
                 </Table>
               </TableContainer>
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
         {totalPages > 1 && (
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardBody>
               <PaginationComponent
                 currentPage={currentPage}
@@ -606,7 +607,7 @@ const Contracts = () => {
                 itemsPerPage={itemsPerPage}
               />
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
       </Stack>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="5xl">

@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux'
 import { Trans, useTranslation } from 'react-i18next'
 import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
-import { Card, CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 
 const GlobalModsPage = () => {
   const { t } = useTranslation()
@@ -463,13 +464,13 @@ const GlobalModsPage = () => {
 
       <Flex>
         <Box md={6}>
-          <Card>
+          <StandardCard>
             <CardHeader>{t('globalMods.ui.galleryHeader')}</CardHeader>
             <CardBody>
               {loading && <div>{t('common.loading')}</div>}
               {error && <div>{error}</div>}
               {/* Category Creation Section */}
-              <Card className="mb-3 border-success">
+              <StandardCard className="mb-3 border-success">
                 <CardHeader className="bg-success text-white">
                   <h6>{t('globalMods.category.createTitle')}</h6>
                 </CardHeader>
@@ -556,7 +557,7 @@ const GlobalModsPage = () => {
                     </Box>
                   </Flex>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {gallery.map((cat) => (
                 <div key={cat.id}>
@@ -658,15 +659,15 @@ const GlobalModsPage = () => {
                 </div>
               ))}
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
 
         <Box md={6}>
-          <Card>
+          <StandardCard>
             <CardHeader>{t('globalMods.template.createHeader')}</CardHeader>
             <CardBody>
               {/* Required Fields Section */}
-              <Card className="mb-4 border-primary">
+              <StandardCard className="mb-4 border-primary">
                 <CardHeader className="bg-primary text-white">
                   <h6>{t('globalMods.template.requiredFields')}</h6>
                 </CardHeader>
@@ -714,7 +715,7 @@ const GlobalModsPage = () => {
                     </Box>
                   </Flex>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Optional Settings */}
               <Flex>
@@ -1177,7 +1178,7 @@ const GlobalModsPage = () => {
               </div>
 
               {/* Sample Image Upload Section */}
-              <Card className="mb-3 border-info">
+              <StandardCard className="mb-3 border-info">
                 <CardHeader className="bg-info text-white">
                   <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
@@ -1240,7 +1241,7 @@ const GlobalModsPage = () => {
                     </Box>
                   </Flex>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               <Textarea
                 rows={6}
@@ -1264,9 +1265,9 @@ const GlobalModsPage = () => {
                 </Button>
               </div>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card>
+          <StandardCard>
             <CardHeader>{t('globalMods.assign.header')}</CardHeader>
             <CardBody>
               <Flex>
@@ -1408,7 +1409,7 @@ const GlobalModsPage = () => {
                 </Table>
               </div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
 
@@ -1483,7 +1484,7 @@ const GlobalModsPage = () => {
               <h6>{t('globalMods.modal.add.step2Title')}</h6>
 
               {/* Required Fields Section */}
-              <Card className="mb-4 border-primary">
+              <StandardCard className="mb-4 border-primary">
                 <CardHeader className="bg-primary text-white">
                   <h6>Required Fields</h6>
                 </CardHeader>
@@ -1529,7 +1530,7 @@ const GlobalModsPage = () => {
                     </Box>
                   </Flex>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Guided builder - same as main form */}
               <div className="border rounded p-3 mb-3">
@@ -1960,7 +1961,7 @@ const GlobalModsPage = () => {
               </div>
 
               {/* Sample Image Upload Section */}
-              <Card className="mb-3 border-info">
+              <StandardCard className="mb-3 border-info">
                 <CardHeader className="bg-info text-white">
                   <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
@@ -2023,7 +2024,7 @@ const GlobalModsPage = () => {
                     </Box>
                   </Flex>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               <div className="mt-4 d-flex justify-content-between gap-2">
                 <Button colorScheme="gray" variant="outline" onClick={() => setCreateStep(1)}>

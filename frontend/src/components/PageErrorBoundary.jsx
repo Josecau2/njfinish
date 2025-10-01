@@ -1,5 +1,6 @@
 import { Component } from 'react'
-import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, Button, Card, CardBody, Container, Heading, Stack, Text, Icon } from '@chakra-ui/react'
+import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, Button, CardBody, Container, Heading, Stack, Text, Icon } from '@chakra-ui/react'
+import StandardCard from './StandardCard'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,7 +29,7 @@ class PageErrorBoundaryClass extends Component {
 
       return (
         <Container maxW="4xl" py={12}>
-          <Card borderColor="red.200" borderWidth="1px">
+          <StandardCard borderColor="red.200" borderWidth="1px">
             <CardBody>
               <Stack spacing={6} align="center" textAlign="center">
                 <Box color="red.500">
@@ -85,7 +86,7 @@ class PageErrorBoundaryClass extends Component {
                 </Text>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Container>
       )
     }

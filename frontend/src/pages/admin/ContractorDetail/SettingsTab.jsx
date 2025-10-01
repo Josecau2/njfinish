@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Flex, Box, Card, CardBody, CardHeader, Badge, Alert, List, ListItem } from '@chakra-ui/react'
+import { Flex, Box, CardBody, CardHeader, Badge, Alert, List, ListItem } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { Settings, Shield, Users, CheckCircle, XCircle, Info } from 'lucide-react'
 
 const SettingsTab = ({ contractor }) => {
@@ -66,7 +67,7 @@ const SettingsTab = ({ contractor }) => {
     <Flex>
       {/* Module Settings */}
       <Box md={6}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>
               <Shield size={16} aria-hidden="true" />
@@ -106,12 +107,12 @@ const SettingsTab = ({ contractor }) => {
               </List>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Contractor Settings */}
       <Box md={6}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>
               <Settings size={16} aria-hidden="true" />
@@ -165,12 +166,12 @@ const SettingsTab = ({ contractor }) => {
               </List>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Raw JSON Display */}
       <Box xs={12}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>
               <Info size={16} aria-hidden="true" />
@@ -193,12 +194,12 @@ const SettingsTab = ({ contractor }) => {
               </Box>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Summary Information */}
       <Box xs={12}>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <strong>{t('contractorsAdmin.detail.settings.summary.title')}</strong>
           </CardHeader>
@@ -238,7 +239,7 @@ const SettingsTab = ({ contractor }) => {
               </Box>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
     </Flex>
   )

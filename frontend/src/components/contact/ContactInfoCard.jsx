@@ -1,5 +1,6 @@
 import React from 'react'
-import { Card, CardBody, Flex, Stack, Text, Box } from '@chakra-ui/react'
+import { CardBody, Flex, Stack, Text, Box } from '@chakra-ui/react'
+import StandardCard from '../StandardCard'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -22,7 +23,7 @@ const ContactInfoCard = ({ loading, info }) => {
   const { t } = useTranslation()
 
   return (
-    <Card borderRadius="lg" boxShadow="sm">
+    <StandardCard borderRadius="lg" boxShadow="sm">
       <CardBody>
         <PageHeader
           title={t('contact.info.title')}
@@ -59,7 +60,7 @@ const ContactInfoCard = ({ loading, info }) => {
           </Stack>
         )}
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }
 

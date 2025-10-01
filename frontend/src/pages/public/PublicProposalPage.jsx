@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
+import { CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
 
@@ -99,7 +100,7 @@ export default function PublicProposalPage() {
   return (
     <div className="container py-4">
       <style>{`.container .btn{ min-height:44px; }`}</style>
-      <Card>
+      <StandardCard>
         <CardHeader>
           <div>
             <div>
@@ -166,7 +167,7 @@ export default function PublicProposalPage() {
             </Button>
           </div>
         </CardBody>
-      </Card>
+      </StandardCard>
     </div>
   
   )

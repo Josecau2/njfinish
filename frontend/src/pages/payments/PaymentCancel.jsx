@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Container, Card, CardBody, Box, Button } from '@chakra-ui/react'
+import { Container, CardBody, Box, Button } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 
@@ -22,7 +23,7 @@ const PaymentCancel = () => {
         icon={CreditCard}
       />
       <Box maxW="800px" mx="auto">
-        <Card>
+        <StandardCard>
           <CardBody className="text-center py-5">
               <h4>{t('payments.toast.paymentCancelled', 'Payment Cancelled')}</h4>
               <p>
@@ -52,7 +53,7 @@ const PaymentCancel = () => {
                 </Button>
               </div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Container>
   )

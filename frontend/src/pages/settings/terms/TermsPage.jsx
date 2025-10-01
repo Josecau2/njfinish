@@ -1,7 +1,8 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Card, CardBody, Flex, Box, FormControl, Textarea, Badge, Button } from '@chakra-ui/react'
+import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
@@ -92,7 +93,7 @@ const TermsPage = () => {
       />
       <Flex>
         <Box lg={6}>
-          <Card>
+          <StandardCard>
             <CardBody>
               <h6>{t('settings.terms.editor', 'Editor')}</h6>
               <FormControl>
@@ -122,10 +123,10 @@ const TermsPage = () => {
                 )}
               </FormControl>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box lg={6}>
-          <Card>
+          <StandardCard>
             <CardBody>
               <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
               <div className="text-muted small mb-2">
@@ -162,7 +163,7 @@ const TermsPage = () => {
                 </Tbody>
               </Table>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
     </>
