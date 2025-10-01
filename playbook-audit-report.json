@@ -1,55 +1,13 @@
 {
-  "timestamp": "2025-10-01T07:37:28.178Z",
-  "totalViolations": 2000,
+  "timestamp": "2025-10-01T07:39:30.561Z",
+  "totalViolations": 1993,
   "violations": {
     "hardcodedColors": [
-      {
-        "file": "frontend/src/components/ItemSelectionContent.jsx",
-        "line": 1586,
-        "code": "bg=\"#ccc\"",
-        "hex": "#ccc"
-      },
-      {
-        "file": "frontend/src/components/ItemSelectionContentEdit.jsx",
-        "line": 1424,
-        "code": "bg=\"#ccc\"",
-        "hex": "#ccc"
-      },
       {
         "file": "frontend/src/components/TermsModal.jsx",
         "line": 41,
         "code": "const isLight = textColor === '#2d3748'",
         "hex": "#2d3748"
-      },
-      {
-        "file": "frontend/src/components/common/PaginationComponent.jsx",
-        "line": 5,
-        "code": "backgroundColor: '#4f46e5',",
-        "hex": "#4f46e5"
-      },
-      {
-        "file": "frontend/src/components/common/PaginationComponent.jsx",
-        "line": 6,
-        "code": "borderColor: '#4f46e5',",
-        "hex": "#4f46e5"
-      },
-      {
-        "file": "frontend/src/components/common/PaginationComponent.jsx",
-        "line": 16,
-        "code": "backgroundColor: '#ede9fe',",
-        "hex": "#ede9fe"
-      },
-      {
-        "file": "frontend/src/components/common/PaginationComponent.jsx",
-        "line": 17,
-        "code": "borderColor: '#c4b5fd',",
-        "hex": "#c4b5fd"
-      },
-      {
-        "file": "frontend/src/components/common/PaginationComponent.jsx",
-        "line": 18,
-        "code": "color: '#3730a3',",
-        "hex": "#3730a3"
       },
       {
         "file": "frontend/src/components/common/PaginationComponent.jsx",
@@ -802,54 +760,6 @@
         "hex": "#333"
       },
       {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 536,
-        "code": "border: '1px solid #dee2e6',",
-        "hex": "#dee2e6"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 570,
-        "code": "style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}",
-        "hex": "#e9ecef"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 626,
-        "code": "border: '1px solid #e9ecef',",
-        "hex": "#e9ecef"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 1217,
-        "code": "border: '1px solid #dee2e6',",
-        "hex": "#dee2e6"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2000,
-        "code": "border: '1px solid #dee2e6',",
-        "hex": "#dee2e6"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2106,
-        "code": "border: '1px solid #e9ecef',",
-        "hex": "#e9ecef"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2192,
-        "code": "border: '1px solid #e9ecef',",
-        "hex": "#e9ecef"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2257,
-        "code": "border: '1px solid #e9ecef',",
-        "hex": "#e9ecef"
-      },
-      {
         "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
         "line": 158,
         "code": "style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}",
@@ -998,6 +908,54 @@
         "line": 191,
         "code": "confirmButtonColor: '#d33',",
         "hex": "#d33"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 536,
+        "code": "border: '1px solid #dee2e6',",
+        "hex": "#dee2e6"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 570,
+        "code": "style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}",
+        "hex": "#e9ecef"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 626,
+        "code": "border: '1px solid #e9ecef',",
+        "hex": "#e9ecef"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 1217,
+        "code": "border: '1px solid #dee2e6',",
+        "hex": "#dee2e6"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2000,
+        "code": "border: '1px solid #dee2e6',",
+        "hex": "#dee2e6"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2106,
+        "code": "border: '1px solid #e9ecef',",
+        "hex": "#e9ecef"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2192,
+        "code": "border: '1px solid #e9ecef',",
+        "hex": "#e9ecef"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2257,
+        "code": "border: '1px solid #e9ecef',",
+        "hex": "#e9ecef"
       },
       {
         "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
@@ -1765,6 +1723,13 @@
         "code": ".multiplier-edit .form-control, .multiplier-edit .btn { min-height: 44px; }"
       },
       {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 87,
+        "property": "height",
+        "value": "44px",
+        "code": ".settings-terms .btn, .btn { min-height: 44px; }"
+      },
+      {
         "file": "frontend/src/pages/settings/users/UserList.jsx",
         "line": 168,
         "property": "height",
@@ -1777,13 +1742,6 @@
         "property": "height",
         "value": "44px",
         "code": "height=\"44px\""
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 87,
-        "property": "height",
-        "value": "44px",
-        "code": ".settings-terms .btn, .btn { min-height: 44px; }"
       },
       {
         "file": "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx",
@@ -2629,66 +2587,6 @@
         "code": "style={{ display: 'none' }}"
       },
       {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 531,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 551,
-        "code": "style={{ backgroundColor: \"gray.50\", width: 60, height: 60 }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 570,
-        "code": "style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 611,
-        "code": "style={{ gap: 10 }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 621,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 1212,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 1234,
-        "code": "style={{ backgroundColor: \"gray.50\" }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 1995,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2017,
-        "code": "style={{ backgroundColor: \"gray.50\" }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2101,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2187,
-        "code": "style={{"
-      },
-      {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2254,
-        "code": "style={{"
-      },
-      {
         "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
         "line": 158,
         "code": "style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}"
@@ -2841,6 +2739,66 @@
       {
         "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
         "line": 548,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 531,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 551,
+        "code": "style={{ backgroundColor: \"gray.50\", width: 60, height: 60 }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 570,
+        "code": "style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 611,
+        "code": "style={{ gap: 10 }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 621,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 1212,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 1234,
+        "code": "style={{ backgroundColor: \"gray.50\" }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 1995,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2017,
+        "code": "style={{ backgroundColor: \"gray.50\" }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2101,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2187,
+        "code": "style={{"
+      },
+      {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2254,
         "code": "style={{"
       },
       {
@@ -3594,12 +3552,6 @@
         "code": "const alertStatus = message.type === 'success' ? 'success' : message.type === 'error' ? 'error' : 'i"
       },
       {
-        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
-        "line": 2290,
-        "text": "'success'",
-        "code": "color={template.isReady ? 'success' : 'warning'}"
-      },
-      {
         "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
         "line": 292,
         "text": "\"submit\"",
@@ -3612,6 +3564,12 @@
         "code": "<Alert status=\"error\" borderRadius=\"md\">"
       },
       {
+        "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+        "line": 2290,
+        "text": "'success'",
+        "code": "color={template.isReady ? 'success' : 'warning'}"
+      },
+      {
         "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
         "line": 447,
         "text": "'error'",
@@ -3622,12 +3580,6 @@
         "line": 283,
         "text": "\"error\"",
         "code": "<Alert status=\"error\" mb={6} borderRadius=\"lg\">"
-      },
-      {
-        "file": "frontend/src/views/pages/page404/Page404.jsx",
-        "line": 31,
-        "text": "\"search\"",
-        "code": "<InputGroup role=\"search\" size=\"lg\">"
       },
       {
         "file": "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx",
@@ -3646,6 +3598,12 @@
         "line": 186,
         "text": "\"error\"",
         "code": "<Alert status=\"error\" mb={6} borderRadius=\"md\">"
+      },
+      {
+        "file": "frontend/src/views/pages/page404/Page404.jsx",
+        "line": 31,
+        "text": "\"search\"",
+        "code": "<InputGroup role=\"search\" size=\"lg\">"
       },
       {
         "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
@@ -4321,13 +4279,6 @@
         "code": "<Button"
       },
       {
-        "file": "frontend/src/pages/calender/index.jsx",
-        "line": 162,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
         "file": "frontend/src/pages/contractor/ContractorDashboard.jsx",
         "line": 217,
         "type": "Button",
@@ -4344,6 +4295,13 @@
       {
         "file": "frontend/src/pages/contractor/ContractorDashboard.jsx",
         "line": 238,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/calender/index.jsx",
+        "line": 162,
         "type": "Button",
         "issue": "Missing minH=\"44px\"",
         "code": "<Button"
@@ -4587,34 +4545,6 @@
         "code": "<Button"
       },
       {
-        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
-        "line": 295,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
-        "line": 302,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
-        "line": 403,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
-        "line": 501,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button variant=\"outline\" colorScheme=\"gray\" onClick={handleViewAllProposals}>"
-      },
-      {
         "file": "frontend/src/pages/orders/OrderDetails.jsx",
         "line": 414,
         "type": "Button",
@@ -4711,6 +4641,34 @@
         "type": "Button",
         "issue": "Missing minH=\"44px\"",
         "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 295,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 302,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 403,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 501,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button variant=\"outline\" colorScheme=\"gray\" onClick={handleViewAllProposals}>"
       },
       {
         "file": "frontend/src/pages/payments/PaymentCancel.jsx",
@@ -5343,6 +5301,76 @@
         "code": "<Button onClick={() => setPreviewOpen(false)}>{t('common.close', 'Close')}</Button>"
       },
       {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 180,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 527,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 543,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
+        "line": 289,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button variant=\"outline\" colorScheme=\"gray\" onClick={handleCancel}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
+        "line": 292,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button type=\"submit\" colorScheme=\"blue\" isLoading={loading} loadingText={t('settings.locations.edit"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 170,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 331,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 343,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 413,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button ref={cancelRef} onClick={onClose}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 416,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
         "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
         "line": 439,
         "type": "Button",
@@ -5497,76 +5525,6 @@
         "code": "<Button"
       },
       {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 180,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 527,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 543,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
-        "line": 289,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button variant=\"outline\" colorScheme=\"gray\" onClick={handleCancel}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
-        "line": 292,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button type=\"submit\" colorScheme=\"blue\" isLoading={loading} loadingText={t('settings.locations.edit"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 170,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 331,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 343,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 413,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button ref={cancelRef} onClick={onClose}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 416,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
         "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
         "line": 427,
         "type": "Button",
@@ -5646,6 +5604,20 @@
       {
         "file": "frontend/src/pages/settings/taxes/TaxesPage.jsx",
         "line": 322,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 106,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button colorScheme=\"blue\" disabled={saving} onClick={() => onSave(false)}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 109,
         "type": "Button",
         "issue": "Missing minH=\"44px\"",
         "code": "<Button"
@@ -5742,27 +5714,6 @@
         "code": "<Button"
       },
       {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 106,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button colorScheme=\"blue\" disabled={saving} onClick={() => onSave(false)}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 109,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
-        "file": "frontend/src/views/pages/page404/Page404.jsx",
-        "line": 41,
-        "type": "Button",
-        "issue": "Missing minH=\"44px\"",
-        "code": "<Button"
-      },
-      {
         "file": "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx",
         "line": 167,
         "type": "Button",
@@ -5821,6 +5772,13 @@
       {
         "file": "frontend/src/pages/settings/usersGroup/UserGroupList.jsx",
         "line": 324,
+        "type": "Button",
+        "issue": "Missing minH=\"44px\"",
+        "code": "<Button"
+      },
+      {
+        "file": "frontend/src/views/pages/page404/Page404.jsx",
+        "line": 41,
         "type": "Button",
         "issue": "Missing minH=\"44px\"",
         "code": "<Button"
@@ -9776,30 +9734,6 @@
         "code": "<p className=\"text-light\">Dealer Portal</p>"
       },
       {
-        "file": "frontend/src/pages/contact/ContactUs.jsx",
-        "line": 213,
-        "class": "row",
-        "code": "<Flex direction={{ base: 'column', lg: 'row' }} gap={6} align=\"stretch\">"
-      },
-      {
-        "file": "frontend/src/pages/contact/ContactUs.jsx",
-        "line": 243,
-        "class": "row",
-        "code": "<Flex direction={{ base: 'column', lg: 'row' }} gap={6} align=\"stretch\">"
-      },
-      {
-        "file": "frontend/src/pages/calender/index.jsx",
-        "line": 150,
-        "class": "row",
-        "code": "<Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>"
-      },
-      {
-        "file": "frontend/src/pages/calender/index.jsx",
-        "line": 167,
-        "class": "flex-",
-        "code": "alignSelf={{ base: 'flex-start', md: 'initial' }}"
-      },
-      {
         "file": "frontend/src/pages/contractor/ContractorDashboard.jsx",
         "line": 157,
         "class": "container",
@@ -9816,6 +9750,18 @@
         "line": 195,
         "class": "flex-",
         "code": "<CardBody display=\"flex\" alignItems=\"flex-start\" justifyContent=\"space-between\" gap={4}>"
+      },
+      {
+        "file": "frontend/src/pages/calender/index.jsx",
+        "line": 150,
+        "class": "row",
+        "code": "<Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>"
+      },
+      {
+        "file": "frontend/src/pages/calender/index.jsx",
+        "line": 167,
+        "class": "flex-",
+        "code": "alignSelf={{ base: 'flex-start', md: 'initial' }}"
       },
       {
         "file": "frontend/src/pages/contracts/index.jsx",
@@ -9930,6 +9876,18 @@
         "line": 370,
         "class": "flex-",
         "code": "<ButtonGroup size=\"sm\" isAttached alignSelf={{ base: 'flex-start', md: 'auto' }}>"
+      },
+      {
+        "file": "frontend/src/pages/contact/ContactUs.jsx",
+        "line": 213,
+        "class": "row",
+        "code": "<Flex direction={{ base: 'column', lg: 'row' }} gap={6} align=\"stretch\">"
+      },
+      {
+        "file": "frontend/src/pages/contact/ContactUs.jsx",
+        "line": 243,
+        "class": "row",
+        "code": "<Flex direction={{ base: 'column', lg: 'row' }} gap={6} align=\"stretch\">"
       },
       {
         "file": "frontend/src/pages/customers/AddCustomerForm.jsx",
@@ -10376,6 +10334,18 @@
         "code": "<Stack direction={{ base: 'column', md: 'row' }} spacing={4} justify=\"flex-end\">"
       },
       {
+        "file": "frontend/src/pages/orders/OrderDetails.jsx",
+        "line": 848,
+        "class": "flex-",
+        "code": "<HStack align=\"flex-start\" spacing={4}>"
+      },
+      {
+        "file": "frontend/src/pages/orders/OrderDetails.jsx",
+        "line": 1090,
+        "class": "flex-",
+        "code": "<Alert status={mapAlertVariant(notice.variant)} borderRadius=\"md\" alignItems=\"flex-start\">"
+      },
+      {
         "file": "frontend/src/pages/dashboard/Dashboard.jsx",
         "line": 399,
         "class": "flex-",
@@ -10392,18 +10362,6 @@
         "line": 478,
         "class": "flex-",
         "code": "<Flex justify=\"space-between\" align=\"flex-start\" gap={4}>"
-      },
-      {
-        "file": "frontend/src/pages/orders/OrderDetails.jsx",
-        "line": 848,
-        "class": "flex-",
-        "code": "<HStack align=\"flex-start\" spacing={4}>"
-      },
-      {
-        "file": "frontend/src/pages/orders/OrderDetails.jsx",
-        "line": 1090,
-        "class": "flex-",
-        "code": "<Alert status={mapAlertVariant(notice.variant)} borderRadius=\"md\" alignItems=\"flex-start\">"
       },
       {
         "file": "frontend/src/pages/payments/PaymentCancel.jsx",
@@ -10808,6 +10766,126 @@
         "code": "<VStack align=\"flex-start\" spacing={0}>"
       },
       {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 157,
+        "class": "p-",
+        "code": "className=\"p-2 m-2\""
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 163,
+        "class": "d-flex",
+        "code": "<div className=\"d-flex align-items-center gap-3\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 165,
+        "class": "d-flex",
+        "code": "className=\"d-flex align-items-center justify-content-center\""
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 202,
+        "class": "d-flex",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 202,
+        "class": "mb-",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 204,
+        "class": "d-flex",
+        "code": "className=\"d-flex align-items-center justify-content-center\""
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 286,
+        "class": "d-flex",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 286,
+        "class": "mb-",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 288,
+        "class": "d-flex",
+        "code": "className=\"d-flex align-items-center justify-content-center\""
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 406,
+        "class": "d-flex",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 406,
+        "class": "mb-",
+        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 408,
+        "class": "d-flex",
+        "code": "className=\"d-flex align-items-center justify-content-center\""
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
+        "line": 526,
+        "class": "d-flex",
+        "code": "<div className=\"d-flex gap-3 justify-content-end\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
+        "line": 288,
+        "class": "flex-",
+        "code": "<Stack direction={{ base: 'column', sm: 'row' }} spacing={4} mt={8} justify=\"flex-end\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
+        "line": 288,
+        "class": "row",
+        "code": "<Stack direction={{ base: 'column', sm: 'row' }} spacing={4} mt={8} justify=\"flex-end\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 143,
+        "class": "container",
+        "code": "<Container maxW=\"container.xl\" py={8}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 158,
+        "class": "container",
+        "code": "<Container maxW=\"container.xl\" py={8}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 184,
+        "class": "container",
+        "code": "<Container maxW=\"container.xl\" py={8}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 197,
+        "class": "row",
+        "code": "direction={{ base: 'column', md: 'row' }}"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 217,
+        "class": "flex-",
+        "code": "<HStack spacing={4} justify=\"flex-end\">"
+      },
+      {
         "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
         "line": 472,
         "class": "mb-",
@@ -11060,126 +11138,6 @@
         "code": "<small className=\"text-muted d-block mt-1\">"
       },
       {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 157,
-        "class": "p-",
-        "code": "className=\"p-2 m-2\""
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 163,
-        "class": "d-flex",
-        "code": "<div className=\"d-flex align-items-center gap-3\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 165,
-        "class": "d-flex",
-        "code": "className=\"d-flex align-items-center justify-content-center\""
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 202,
-        "class": "d-flex",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 202,
-        "class": "mb-",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 204,
-        "class": "d-flex",
-        "code": "className=\"d-flex align-items-center justify-content-center\""
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 286,
-        "class": "d-flex",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 286,
-        "class": "mb-",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 288,
-        "class": "d-flex",
-        "code": "className=\"d-flex align-items-center justify-content-center\""
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 406,
-        "class": "d-flex",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 406,
-        "class": "mb-",
-        "code": "<h5 className=\"mb-3 text-dark fw-semibold d-flex align-items-center gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 408,
-        "class": "d-flex",
-        "code": "className=\"d-flex align-items-center justify-content-center\""
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/CreateLocation.jsx",
-        "line": 526,
-        "class": "d-flex",
-        "code": "<div className=\"d-flex gap-3 justify-content-end\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
-        "line": 288,
-        "class": "flex-",
-        "code": "<Stack direction={{ base: 'column', sm: 'row' }} spacing={4} mt={8} justify=\"flex-end\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/EditLocation.jsx",
-        "line": 288,
-        "class": "row",
-        "code": "<Stack direction={{ base: 'column', sm: 'row' }} spacing={4} mt={8} justify=\"flex-end\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 143,
-        "class": "container",
-        "code": "<Container maxW=\"container.xl\" py={8}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 158,
-        "class": "container",
-        "code": "<Container maxW=\"container.xl\" py={8}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 184,
-        "class": "container",
-        "code": "<Container maxW=\"container.xl\" py={8}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 197,
-        "class": "row",
-        "code": "direction={{ base: 'column', md: 'row' }}"
-      },
-      {
-        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
-        "line": 217,
-        "class": "flex-",
-        "code": "<HStack spacing={4} justify=\"flex-end\">"
-      },
-      {
         "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
         "line": 57,
         "class": "d-flex",
@@ -11396,6 +11354,36 @@
         "code": "<Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'flex-end' }}>"
       },
       {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 84,
+        "class": "container",
+        "code": "<Container maxW=\"container.xl\" py={8}>"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 105,
+        "class": "d-flex",
+        "code": "<div className=\"mt-3 d-flex gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 105,
+        "class": "mt-",
+        "code": "<div className=\"mt-3 d-flex gap-2\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 119,
+        "class": "text-",
+        "code": "<div className=\"text-muted mt-2 small\">"
+      },
+      {
+        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
+        "line": 131,
+        "class": "text-",
+        "code": "<div className=\"text-muted small mb-2\">"
+      },
+      {
         "file": "frontend/src/pages/settings/users/CreateUser.jsx",
         "line": 615,
         "class": "row",
@@ -11448,42 +11436,6 @@
         "line": 300,
         "class": "mb-",
         "code": "<Table variant=\"simple\" className=\"mb-0 table-modern\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 84,
-        "class": "container",
-        "code": "<Container maxW=\"container.xl\" py={8}>"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 105,
-        "class": "d-flex",
-        "code": "<div className=\"mt-3 d-flex gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 105,
-        "class": "mt-",
-        "code": "<div className=\"mt-3 d-flex gap-2\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 119,
-        "class": "text-",
-        "code": "<div className=\"text-muted mt-2 small\">"
-      },
-      {
-        "file": "frontend/src/pages/settings/terms/TermsPage.jsx",
-        "line": 131,
-        "class": "text-",
-        "code": "<div className=\"text-muted small mb-2\">"
-      },
-      {
-        "file": "frontend/src/views/pages/page404/Page404.jsx",
-        "line": 8,
-        "class": "container",
-        "code": "<Container maxW=\"container.md\">"
       },
       {
         "file": "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx",
@@ -11574,6 +11526,12 @@
         "line": 165,
         "class": "container",
         "code": "<Container maxW=\"container.xl\" py={8}>"
+      },
+      {
+        "file": "frontend/src/views/pages/page404/Page404.jsx",
+        "line": 8,
+        "class": "container",
+        "code": "<Container maxW=\"container.md\">"
       },
       {
         "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
