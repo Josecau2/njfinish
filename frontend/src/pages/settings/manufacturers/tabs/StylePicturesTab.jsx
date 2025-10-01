@@ -517,7 +517,8 @@ const StylePicturesTab = ({ manufacturer }) => {
                         maxWidth: '200px',
                         maxHeight: '200px',
                         objectFit: 'contain',
-                        border: '1px solid #dee2e6',
+                        border: '1px solid',
+                        borderColor: 'gray.200',
                         borderRadius: '4px',
                       }}
                       placeholderSrc="/default-image.png"
@@ -559,7 +560,8 @@ const StylePicturesTab = ({ manufacturer }) => {
                           maxWidth: '200px',
                           maxHeight: '200px',
                           objectFit: 'contain',
-                          border: '1px solid #dee2e6',
+                          border: '1px solid',
+                        borderColor: 'gray.200',
                           borderRadius: '4px',
                         }}
                         placeholderSrc="/default-image.png"

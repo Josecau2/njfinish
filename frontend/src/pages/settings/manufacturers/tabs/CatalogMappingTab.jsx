@@ -2208,17 +2208,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         {`
           .form-check-input:not(:checked) {
             background-color: white !important;
-            border-color: #6c757d !important;
+            border-color: var(--chakra-colors-gray-500) !important;
             border-width: 2px !important;
             opacity: 1 !important;
           }
           .form-check-input:checked {
-            background-color: #198754 !important;
-            border-color: #198754 !important;
+            background-color: var(--chakra-colors-green-500) !important;
+            border-color: var(--chakra-colors-green-500) !important;
           }
           .form-check-input:focus {
-            border-color: #198754 !important;
-            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+            border-color: var(--chakra-colors-green-500) !important;
+            box-shadow: 0 0 0 0.25rem rgba(72, 187, 120, 0.25) !important;
           }
 
           /* Mobile responsive styles */
@@ -2390,7 +2390,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         /* Mobile card styles */
         .mobile-catalog-card {
-          border: 1px solid #dee2e6;
+          border: 1px solid var(--chakra-colors-gray-200);
           box-shadow: 0 1px 3px rgba(0,0,0,0.1);
           transition: box-shadow 0.2s ease;
         }
@@ -4951,7 +4951,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   style={{
                                     objectFit: 'cover',
                                     borderRadius: 4,
-                                    border: '1px solid #e9ecef',
+                                    border: '1px solid',
+                                    borderColor: 'gray.100',
                                   }}
                                   onError={(event) => {
                                     event.currentTarget.src = '/images/nologo.png'
@@ -5024,7 +5025,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       style={{
                                         objectFit: 'cover',
                                         borderRadius: 4,
-                                        border: '1px solid #e9ecef',
+                                        border: '1px solid',
+                                        borderColor: 'gray.100',
                                       }}
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'
@@ -6131,7 +6133,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       style={{
                                         objectFit: 'cover',
                                         borderRadius: 4,
-                                        border: '1px solid #e9ecef',
+                                        border: '1px solid',
+                                        borderColor: 'gray.100',
                                       }}
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'

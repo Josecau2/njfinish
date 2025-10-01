@@ -401,7 +401,8 @@ const ManufacturerForm = () => {
     <Container
       maxW="full"
       className="p-2 m-2 manufacturer-form"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+      bg="gray.50"
+      minH="100vh"
     >
       <style>{`
           @media (max-width: 1023px) {
@@ -465,7 +466,7 @@ const ManufacturerForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Information Notice */}
         <Card className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
-          <CardBody className="py-3 px-4" style={{ backgroundColor: '#f0f7ff' }}>
+          <CardBody className="py-3 px-4" bg="blue.50">
             <HStack align="flex-start" spacing={4}>
               <Info size={16} style={{ color: "blue.500", marginTop: '0.25rem' }} />
               <Text mb={0} color="blue.600">
@@ -772,8 +773,8 @@ const ManufacturerForm = () => {
                 px={5}
                 fontWeight="semibold"
                 minH="44px"
-                bgGradient="linear(135deg, #10b981 0%, #059669 100%)"
-                _hover={{ bgGradient: "linear(135deg, #059669 0%, #047857 100%)" }}
+                bgGradient="linear(135deg, green.500 0%, green.600 100%)"
+                _hover={{ bgGradient: "linear(135deg, green.600 0%, green.700 100%)" }}
                 whileTap={{ scale: 0.98 }}
               >
                 {loading ? (

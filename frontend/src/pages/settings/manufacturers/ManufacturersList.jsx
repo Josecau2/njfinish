@@ -163,7 +163,7 @@ const ManufacturersList = () => {
     </Button>,
   ]
 
-  const brandBg = customization?.headerBg || '#2563eb'
+  const brandBg = customization?.headerBg || 'blue.600'
   const brandText = getContrastColor(brandBg)
 
   return (

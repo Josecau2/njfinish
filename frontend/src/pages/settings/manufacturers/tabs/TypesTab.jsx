@@ -1047,12 +1047,12 @@ const TypesTab = ({ manufacturer }) => {
       {/* Image Edit Modal */}
       <style>{`
         .no-gradient-modal .modal-header {
-          background: #fff !important;
-          border-bottom: 1px solid #dee2e6 !important;
-          color: #212529 !important;
+          background: var(--chakra-colors-white) !important;
+          border-bottom: 1px solid var(--chakra-colors-gray-200) !important;
+          color: var(--chakra-colors-gray-800) !important;
         }
         .no-gradient-modal .modal-title {
-          color: #212529 !important;
+          color: var(--chakra-colors-gray-800) !important;
         }
       `}</style>
       <Modal
@@ -1091,7 +1091,8 @@ const TypesTab = ({ manufacturer }) => {
                         maxWidth: '200px',
                         maxHeight: '200px',
                         objectFit: 'contain',
-                        border: '1px solid #dee2e6',
+                        border: '1px solid',
+                        borderColor: 'gray.200',
                         borderRadius: '4px',
                       }}
                       onError={handleImageError}
@@ -1141,7 +1142,8 @@ const TypesTab = ({ manufacturer }) => {
                           maxWidth: '200px',
                           maxHeight: '200px',
                           objectFit: 'contain',
-                          border: '1px solid #dee2e6',
+                          border: '1px solid',
+                        borderColor: 'gray.200',
                           borderRadius: '4px',
                         }}
                       />
