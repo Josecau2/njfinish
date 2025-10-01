@@ -43,7 +43,7 @@ const SignupPage = () => {
     <div className="container-fluid vh-100 d-flex p-0">
       {/* Left Panel */}
       <div className="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
-        <div style={{ maxWidth: '400px' }}>
+        <div maxW="400px">
           {/* <a href="/" className="text-decoration-none mb-4 d-inline-block">
             &larr; Back to login
           </a> */}

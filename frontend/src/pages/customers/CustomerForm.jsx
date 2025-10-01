@@ -222,8 +222,7 @@ const CustomerForm = ({
                           value={formData.name}
                           onChange={handleInputChange}
                           isInvalid={!!formErrors.name}
-                          required
-                          style={{ minHeight: '44px' }}
+                          required minH="44px"
                         />
                       </InputGroup>
                       {formErrors.name && (

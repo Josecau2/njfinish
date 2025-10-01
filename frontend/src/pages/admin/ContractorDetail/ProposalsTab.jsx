@@ -318,7 +318,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '200px' }}>
+      <div minH="200px">
         <Spinner colorScheme="blue" />
       </div>
     )
@@ -463,7 +463,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
-                      <Th style={{ width: '150px' }}>
+                      <Th w="150px">
                         {t('proposals.headers.actions')}
                       </Th>
                     </Tr>
@@ -495,9 +495,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           </Td>
                           <Td>
                             <Badge
-                              color={getStatusColor(proposal.status)}
-                             
-                              style={{ width: 'fit-content' }}
+                              color={getStatusColor(proposal.status)} w="fit-content"
                             >
                               {(() => { const Icon = getStatusIcon(proposal.status); return <Icon size={14} aria-hidden="true" />; })()}
                               {statusDefinitions[proposal.status]?.label || proposal.status || t('proposals.status.draft')}
@@ -587,7 +585,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
             <ModalCloseButton />
             <ModalBody>
               {proposalDetails.loading ? (
-                <div style={{ minHeight: '300px' }}>
+                <div minH="300px">
                   <Spinner colorScheme="blue" size="lg" />
                   <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>
                 </div>

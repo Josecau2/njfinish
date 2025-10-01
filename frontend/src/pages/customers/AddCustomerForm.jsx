@@ -312,7 +312,7 @@ const AddCustomerForm = () => {
   }
 
   return (
-    <Container fluid className="p-2 m-2 add-new-customer bg-body" style={{ minHeight: '100vh' }}>
+    <Container fluid className="p-2 m-2 add-new-customer bg-body" minH="100vh">
       <style>{`
         .add-new-customer .btn { min-height: 44px; }
       `}</style>

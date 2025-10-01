@@ -2904,16 +2904,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Th style={{ minWidth: '120px', maxWidth: '180px' }}>
                     {t('settings.manufacturers.catalogMapping.table.description')}
                   </Th>
-                  <Th style={{ minWidth: '80px' }}>
+                  <Th minW="80px">
                     {t('settings.manufacturers.catalogMapping.table.style')}
                   </Th>
-                  <Th style={{ minWidth: '70px' }}>
+                  <Th minW="70px">
                     {t('settings.manufacturers.catalogMapping.table.price')}
                   </Th>
-                  <Th style={{ minWidth: '70px' }}>
+                  <Th minW="70px">
                     {t('settings.manufacturers.catalogMapping.table.type')}
                   </Th>
-                  <Th style={{ minWidth: '120px' }} className="actions-column">
+                  <Th minW="120px" className="actions-column">
                     {t('settings.manufacturers.catalogMapping.table.actions')}
                   </Th>
                 </Tr>

@@ -147,9 +147,7 @@ const ProfilePage = () => {
     return (
       <Box className="profile-container" role="status" aria-live="polite">
         <Card className="profile-card">
-          <CardBody
-           
-            style={{ minHeight: '400px' }}
+          <CardBody minH="400px"
           >
             <Spinner color={accentColor} size="lg" />
           </CardBody>
