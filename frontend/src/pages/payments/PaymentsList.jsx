@@ -413,9 +413,9 @@ const PaymentsList = ({ isContractor }) => {
           filtered.map((payment) => {
             const canPayOnline = payment?.gateway === 'stripe' && payment?.status === 'pending'
             return (
-              <Card key={payment?.id || Math.random()} size="sm" as="article">
+              <Card key={payment?.id || Math.random()} size="sm" as="article" minH="280px">
                 <CardBody>
-                  <VStack align="stretch" spacing={4}>
+                  <VStack align="stretch" spacing={4} h="full" justify="space-between">
                     <Flex justify="space-between" align="center">
                       <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
                       <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
