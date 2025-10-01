@@ -1,28 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  FormControl,
-  Input,
-  FormLabel,
-  Select,
-  Switch,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  Box,
-  Icon,
-  Button,
-  FormErrorMessage,
-  InputGroup,
-  InputLeftElement,
-  Text,
-  VStack,
-  HStack,
-  Alert,
-  AlertIcon,
-  Divider,
-  useToast,
-} from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast, StandardCard } from '@chakra-ui/react'
 import { User, Mail, ArrowLeft, Save, Eye, Settings, Home, Building, UserPlus, Lock } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -35,7 +12,7 @@ import PageHeader from '../../../components/PageHeader'
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children }) => (
-  <Card mb={6} shadow="sm" borderRadius="lg">
+  <StandardCard mb={6} shadow="sm" borderRadius="lg">
     <CardBody p={6}>
       <HStack spacing={4} mb={4}>
         <Box p={2} borderRadius="md" bg="brand.50">
@@ -48,7 +25,7 @@ const FormSection = ({ title, icon, children }) => (
       <Divider mb={4} />
       {children}
     </CardBody>
-  </Card>
+  </StandardCard>
 )
 
 const CustomFormInput = ({
@@ -609,7 +586,7 @@ const AddUserForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <Card shadow="sm" borderRadius="lg">
+        <StandardCard shadow="sm" borderRadius="lg">
           <CardBody p={6}>
             <Flex
               direction={{ base: 'column-reverse', md: 'row' }}
@@ -631,7 +608,7 @@ const AddUserForm = () => {
                       showCancelButton: true,
                       confirmButtonText: t('settings.users.form.alerts.leaveAnyway'),
                       cancelButtonText: t('settings.users.form.alerts.stayOnPage'),
-                      confirmButtonColor: '#d33',
+                      confirmButtonColor: 'var(--chakra-colors-red-500)',
                       cancelButtoncolor: "gray.500",
                     }).then((result) => {
                       if (result.isConfirmed) {
@@ -657,7 +634,7 @@ const AddUserForm = () => {
               </Button>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
       </form>
     </Container>
   )

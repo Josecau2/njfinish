@@ -1,42 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  FormControl,
-  Input,
-  Flex,
-  Link,
-  Badge,
-  FormLabel,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Alert,
-  Container,
-  Card,
-  CardBody,
-  Icon,
-  Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  SimpleGrid,
-  VStack,
-  HStack,
-  Text,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Select,
-  useToast,
-} from '@chakra-ui/react'
+import { Box, FormControl, Input, Flex, Link, Badge, FormLabel, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Alert, Container, Icon, Button, Menu, MenuButton, MenuList, MenuItem, SimpleGrid, VStack, HStack, Text, Tabs, TabList, Tab, TabPanels, TabPanel, Select, useToast, StandardCard } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
@@ -525,7 +490,7 @@ const EditProposal = ({
       <Container
         fluid
         className="dashboard-container"
-        style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+        style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
       >
         <Box
           as="form"
@@ -535,7 +500,7 @@ const EditProposal = ({
           }}
         >
           {/* Basic Information Card */}
-          <Card mb={4}>
+          <StandardCard mb={4}>
             <CardBody>
               <Text fontSize="lg" fontWeight="medium" mb={4}>
                 Basic Information
@@ -591,10 +556,10 @@ const EditProposal = ({
                 </FormControl>
               </SimpleGrid>
             </CardBody>
-          </Card>
+          </StandardCard>
 
           {/* Dates Card */}
-          <Card mb={4}>
+          <StandardCard mb={4}>
             <CardBody>
               <Text fontSize="lg" fontWeight="medium" mb={4}>
                 Important Dates
@@ -764,7 +729,7 @@ const EditProposal = ({
                     )}
                     */}
             </CardBody>
-          </Card>
+          </StandardCard>
 
           {/* Tabs section for manufacturers */}
 

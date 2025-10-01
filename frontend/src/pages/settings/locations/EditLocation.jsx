@@ -1,21 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Select,
-  SimpleGrid,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, SimpleGrid, Stack, Text, StandardCard } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
 import Swal from 'sweetalert2'
@@ -188,7 +172,7 @@ const EditLocation = () => {
       showCancelButton: true,
       confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
       cancelButtonText: t('settings.locations.alerts.stayOnPage'),
-      confirmButtonColor: '#d33',
+      confirmButtonColor: 'var(--chakra-colors-red-500)',
       cancelButtoncolor: "gray.500",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -200,7 +184,7 @@ const EditLocation = () => {
   return (
     <Container maxW="4xl" py={8}>
       <form onSubmit={handleSubmit} noValidate>
-        <Card>
+        <StandardCard>
           <CardHeader>
             <Heading size="md">{t('settings.locations.edit.title', 'Edit Location')}</Heading>
             <Text mt={2} color="gray.600">
@@ -294,7 +278,7 @@ const EditLocation = () => {
               </Button>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
       </form>
     </Container>
   )

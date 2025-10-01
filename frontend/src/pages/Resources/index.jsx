@@ -4,56 +4,7 @@ import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import { getFreshestToken } from '../../utils/authToken'
 import { getContrastColor } from '../../utils/colorUtils'
-import {
-  Alert,
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Box,
-  Container,
-  FormControl,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  Select,
-  Switch,
-  Textarea,
-  FormLabel,
-  Flex,
-  Link,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalCloseButton,
-  Spinner,
-  Button,
-  Icon,
-  Text,
-  Heading,
-  VStack,
-  HStack,
-  Divider,
-  List,
-  ListItem,
-  Grid,
-  GridItem,
-  SimpleGrid,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Stack,
-  Image,
-  AspectRatio,
-  Center,
-  useColorModeValue,
-  useToast
-} from '@chakra-ui/react'
+import { Alert, Badge, Box, Container, FormControl, InputGroup, InputLeftElement, Input, Select, Switch, Textarea, FormLabel, Flex, Link, Modal, ModalOverlay, ModalContent, ModalBody, ModalFooter, ModalHeader, ModalCloseButton, Spinner, Button, Icon, Text, Heading, VStack, HStack, Divider, List, ListItem, Grid, GridItem, SimpleGrid, Tabs, TabList, TabPanels, Tab, TabPanel, Stack, Image, AspectRatio, Center, useColorModeValue, useToast, StandardCard } from '@chakra-ui/react'
 import {
   ArrowLeft,
   Download,
@@ -309,7 +260,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   const bgColor = useColorModeValue('gray.50', 'gray.900')
   const cardBg = useColorModeValue('white', 'gray.800')
-  const accentColor = customization?.primaryColor || '#0066CC'
+  const accentColor = customization?.primaryColor || 'blue.600'
 
   const canDownloadFile = useCallback((fileId) => {
     return isAdmin || fileDownloadPermissions[fileId] === true
@@ -731,7 +682,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
       <VStack spacing={6} align="stretch">
         {/* Search and filters */}
-        <Card bg={cardBg}>
+        <StandardCard bg={cardBg}>
           <CardBody>
             <HStack spacing={4}>
               <InputGroup flex={1}>
@@ -773,7 +724,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               </Select>
             </HStack>
           </CardBody>
-        </Card>
+        </StandardCard>
 
         {/* Admin controls */}
         {isAdmin && (
@@ -817,7 +768,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               }
 
               return (
-                <Card
+                <StandardCard
                   key={category.id}
                   bg="white"
                   shadow="sm"
@@ -916,7 +867,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       </Badge>
                     </HStack>
                   </CardBody>
-                </Card>
+                </StandardCard>
               )
             })}
           </SimpleGrid>
@@ -953,7 +904,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     )}
 
                     {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).map((announcement) => (
-                      <Card key={announcement.id} bg="white">
+                      <StandardCard key={announcement.id} bg="white">
                         <CardBody>
                           <HStack justify="space-between">
                             <VStack align="start" flex={1}>
@@ -999,7 +950,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             )}
                           </HStack>
                         </CardBody>
-                      </Card>
+                      </StandardCard>
                     ))}
 
                     {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).length === 0 && (
@@ -1019,7 +970,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     )}
 
                     {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).map((link) => (
-                      <Card key={link.id} bg="white">
+                      <StandardCard key={link.id} bg="white">
                         <CardBody>
                           <HStack justify="space-between">
                             <VStack align="start" flex={1}>
@@ -1070,7 +1021,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             )}
                           </HStack>
                         </CardBody>
-                      </Card>
+                      </StandardCard>
                     ))}
 
                     {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).length === 0 && (
@@ -1095,7 +1046,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       const canDownload = canDownloadFile(file.id)
 
                       return (
-                        <Card key={file.id} bg="white">
+                        <StandardCard key={file.id} bg="white">
                           <CardBody>
                             <HStack justify="space-between">
                               <HStack flex={1}>
@@ -1170,7 +1121,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                               </HStack>
                             </HStack>
                           </CardBody>
-                        </Card>
+                        </StandardCard>
                       )
                     })}
 

@@ -156,7 +156,7 @@ const LocationForm = () => {
     <Container
       maxW="full"
       className="p-2 m-2"
-      style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}
+      style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
     >
       {/* Header Section */}
       <PageHeader
@@ -206,7 +206,7 @@ const LocationForm = () => {
                   style={{
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#e7f3ff',
+                    backgroundColor: 'var(--chakra-colors-blue-50)',
                     borderRadius: '8px',
                     color: "blue.500",
                   }}
@@ -225,7 +225,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
                       <MapPin size={18} />
                     </InputLeftElement>
@@ -236,7 +236,7 @@ const LocationForm = () => {
                       isInvalid={!!errors.locationName}
                       placeholder={t('settings.locations.form.placeholders.locationName')}
                       style={{
-                        border: '1px solid #e3e6f0',
+                        border: '1px solid var(--chakra-colors-gray-200)',
                         fontSize: "sm",
                         padding: '12px 16px',
                       }}
@@ -256,7 +256,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
                       <Home size={18} />
                     </InputLeftElement>
@@ -267,7 +267,7 @@ const LocationForm = () => {
                       isInvalid={!!errors.address}
                       placeholder={t('settings.locations.form.placeholders.address')}
                       style={{
-                        border: '1px solid #e3e6f0',
+                        border: '1px solid var(--chakra-colors-gray-200)',
                         fontSize: "sm",
                         padding: '12px 16px',
                       }}
@@ -290,7 +290,7 @@ const LocationForm = () => {
                   style={{
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#e6f7e6',
+                    backgroundColor: 'var(--chakra-colors-green-50)',
                     borderRadius: '8px',
                     color: "green.500",
                   }}
@@ -309,7 +309,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
                       <Mail size={18} />
                     </InputLeftElement>
@@ -320,7 +320,7 @@ const LocationForm = () => {
                       isInvalid={!!errors.website}
                       placeholder={t('settings.locations.form.placeholders.website')}
                       style={{
-                        border: '1px solid #e3e6f0',
+                        border: '1px solid var(--chakra-colors-gray-200)',
                         fontSize: "sm",
                         padding: '12px 16px',
                       }}
@@ -340,7 +340,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
                       <Mail size={18} />
                     </InputLeftElement>
@@ -352,7 +352,7 @@ const LocationForm = () => {
                       isInvalid={!!errors.email}
                       placeholder={t('settings.locations.form.placeholders.email')}
                       style={{
-                        border: '1px solid #e3e6f0',
+                        border: '1px solid var(--chakra-colors-gray-200)',
                         fontSize: "sm",
                         padding: '12px 16px',
                       }}
@@ -375,7 +375,7 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid #e3e6f0' }}
+                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
                       <Phone size={18} />
                     </InputLeftElement>
@@ -387,7 +387,7 @@ const LocationForm = () => {
                       isInvalid={!!errors.phone}
                       placeholder={t('settings.locations.form.placeholders.phone')}
                       style={{
-                        border: '1px solid #e3e6f0',
+                        border: '1px solid var(--chakra-colors-gray-200)',
                         fontSize: "sm",
                         padding: '12px 16px',
                       }}
@@ -432,7 +432,7 @@ const LocationForm = () => {
                     onChange={handleChange}
                     isInvalid={!!errors.country}
                     style={{
-                      border: '1px solid #e3e6f0',
+                      border: '1px solid var(--chakra-colors-gray-200)',
                       borderRadius: '8px',
                       fontSize: "sm",
                       padding: '12px 16px',
@@ -463,7 +463,7 @@ const LocationForm = () => {
                     isInvalid={!!errors.timezone}
                     disabled={!formData.country}
                     style={{
-                      border: '1px solid #e3e6f0',
+                      border: '1px solid var(--chakra-colors-gray-200)',
                       borderRadius: '8px',
                       fontSize: "sm",
                       padding: '12px 16px',
@@ -504,7 +504,7 @@ const LocationForm = () => {
                         tabIndex={-1}
                         style={{
                           backgroundColor: "gray.50",
-                          border: '1px solid #e3e6f0',
+                          border: '1px solid var(--chakra-colors-gray-200)',
                           cursor: 'not-allowed',
                           fontSize: "sm",
                           fontWeight: '500',
@@ -521,7 +521,7 @@ const LocationForm = () => {
             </div>
 
             {/* Divider */}
-            <hr className="my-4" style={{ border: '1px solid #e3e6f0' }} />
+            <hr className="my-4" style={{ border: '1px solid var(--chakra-colors-gray-200)' }} />
 
             {/* Action Buttons */}
             <div className="d-flex gap-3 justify-content-end">
@@ -531,7 +531,7 @@ const LocationForm = () => {
                 onClick={handleCancel}
                 className="px-4 py-2 fw-semibold"
                 style={{
-                  border: '1px solid #e3e6f0',
+                  border: '1px solid var(--chakra-colors-gray-200)',
                   borderRadius: '8px',
                   color: "gray.500",
                   minHeight: '44px',

@@ -198,7 +198,7 @@ const AddUserGroupForm = () => {
                     name="group_type"
                     value={formData.group_type}
                     onChange={handleChange}
-                    borderColor="#e3e6f0"
+                    borderColor="gray.200"
                     borderRadius="8px"
                     fontSize="sm"
                     minH="44px"
@@ -238,7 +238,7 @@ const AddUserGroupForm = () => {
 
           {formData.group_type === 'contractor' && (
             <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} customization={customization}>
-              <Box mb={4} p={3} borderRadius="md" bg="#e7f3ff" border="1px solid #b3d7ff">
+              <Box mb={4} p={3} borderRadius="md" bg="blue.50" border="1px solid" borderColor="blue.200">
                 <HStack spacing={4} align="start">
                   <Box w="32px" h="32px" bg={customization.headerBg || "purple.500"} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                     <Icon as={Settings} size={14} />

@@ -1,28 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Card,
-  CardBody,
-  Badge,
-  Switch,
-  Spinner,
-  Alert,
-  Container,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Text,
-  VStack,
-  HStack,
-  Grid,
-  GridItem,
-  Box,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Badge, Switch, Spinner, Alert, Container, Button, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Grid, GridItem, Box, useColorModeValue, StandardCard } from '@chakra-ui/react'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
 import { useNavigate } from 'react-router-dom'
@@ -180,7 +158,7 @@ const UserGroupList = () => {
         ]}
       />
 
-      <Card>
+      <StandardCard>
         <CardBody>
           {error && (
             <Alert status="error" mb={6} borderRadius="md">
@@ -265,7 +243,7 @@ const UserGroupList = () => {
               </Text>
             ) : (
               userGroups.map((group) => (
-                <Card key={group.id} variant="outline" size="sm">
+                <StandardCard key={group.id} variant="outline" size="sm">
                   <CardBody>
                     <HStack justify="space-between" align="start" mb={3}>
                       <VStack align="start" spacing={0}>
@@ -334,12 +312,12 @@ const UserGroupList = () => {
                       </Button>
                     </Box>
                   </CardBody>
-                </Card>
+                </StandardCard>
               ))
             )}
           </VStack>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Container>
   )
 }

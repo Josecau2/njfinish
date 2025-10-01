@@ -1,27 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Select,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Switch,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Button, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Switch, Text, StandardCard } from '@chakra-ui/react'
 import { User, Settings, ArrowLeft, Save, Users } from '@/icons-lucide'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -33,7 +12,7 @@ import PageHeader from '../../../components/PageHeader'
 import { getContrastColor } from '../../../utils/colorUtils'
 
 const FormSection = ({ title, icon, customization, children }) => (
-  <Card variant="outline" borderRadius="xl" shadow="sm">
+  <StandardCard variant="outline" borderRadius="xl" shadow="sm">
     <CardBody>
       <HStack spacing={4} align="center" mb={4}>
         <Flex
@@ -53,7 +32,7 @@ const FormSection = ({ title, icon, customization, children }) => (
       </HStack>
       <Stack spacing={4}>{children}</Stack>
     </CardBody>
-  </Card>
+  </StandardCard>
 )
 
 const CustomFormInput = ({
@@ -210,7 +189,7 @@ const EditUserGroupForm = () => {
         showCancelButton: true,
         confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
         cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
-        confirmButtonColor: '#d33',
+        confirmButtonColor: 'var(--chakra-colors-red-500)',
         cancelButtoncolor: "gray.500",
       }).then((result) => {
         if (result.isConfirmed) {
@@ -352,7 +331,7 @@ const EditUserGroupForm = () => {
             </FormSection>
           )}
 
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack direction={{ base: 'column', md: 'row' }} spacing={4} justify="flex-end">
                 <Button
@@ -380,7 +359,7 @@ const EditUserGroupForm = () => {
                 </Button>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Stack>
       </Box>
     </Container>
