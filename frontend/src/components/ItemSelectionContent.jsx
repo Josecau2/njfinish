@@ -1536,7 +1536,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                         h="240px"
                                         objectFit="contain"
                                         borderRadius="10px"
-                                        bg="#f8f9fa"
+                                        bg="gray.50"
                                         onError={(e) => {
                                             const fname = selectedStyleData.styleVariants?.[0]?.image;
                                             if (fname && !e.target.dataset.fallbackTried) {
@@ -1765,10 +1765,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 h="220px"
                                                                 objectFit="contain"
                                                                 borderRadius="10px"
-                                                                bg="#f8f9fa"
+                                                                bg="gray.50"
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
                                                                 borderStyle="solid"
-                                                                borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#e9ecef'}
+                                                                borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
                                                                 onError={(e) => {
                                                                     if (variant?.image && !e.target.dataset.fallbackTried) {
                                                                         e.target.dataset.fallbackTried = '1';
@@ -1782,10 +1782,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 mt={2}
                                                                 p={2}
                                                                 borderRadius="md"
-                                                                bg={styleItem.id === selectedStyleData?.id ? '#d0e6ff' : '#ffffff'}
+                                                                bg={styleItem.id === selectedStyleData?.id ? 'blue.50' : 'white'}
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                 borderStyle="solid"
-                                                                borderColor={styleItem.id === selectedStyleData?.id ? '#1a73e8' : '#ced4da'}
+                                                                borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.300'}
                                                                 fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
                                                             >
                                                                 <Text fontSize="sm" mb="0.25rem">

@@ -1369,7 +1369,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                         h="240px"
                                         objectFit="contain"
                                         borderRadius="10px"
-                                        bg="#f8f9fa"
+                                        bg="gray.50"
                                         onError={(e) => {
                                             const fname = selectedStyleData.styleVariants?.[0]?.image;
                                             if (fname && !e.target.dataset.fallbackTried) {
