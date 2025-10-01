@@ -1,0 +1,32 @@
+[
+  {
+    "id": "error-1",
+    "type": "console-error",
+    "message": "%o\n\n%s\n\n%s\n TypeError: Cannot read properties of undefined (reading 'status')\n    at http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:485:87\n    at Array.map (<anonymous>)\n    at PaymentsList (http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:449:27)\n    at Object.react_stack_bottom_frame (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:17424:20)\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:4206:24)\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:6619:21)\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:7654:20)\n    at runWithFiberInDEV (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:1485:72)\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10868:98)\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10728:43) The above error occurred in the <PaymentsList> component. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.",
+    "timestamp": "2025-09-30T07:17:12.264Z",
+    "url": "http://localhost:3000/payments",
+    "route": "/payments"
+  },
+  {
+    "id": "error-2",
+    "type": "console-error",
+    "message": "App error: TypeError: Cannot read properties of undefined (reading 'status')\n    at http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:485:87\n    at Array.map (<anonymous>)\n    at PaymentsList (http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:449:27)\n    at Object.react_stack_bottom_frame (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:17424:20)\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:4206:24)\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:6619:21)\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:7654:20)\n    at runWithFiberInDEV (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:1485:72)\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10868:98)\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10728:43) {componentStack: \n    at PaymentsList (http://localhost:3000/src/pa…alhost:3000/src/components/ErrorBoundary.jsx:8:5)}",
+    "timestamp": "2025-09-30T07:17:12.265Z",
+    "url": "http://localhost:3000/payments",
+    "route": "/payments"
+  },
+  {
+    "id": "error-3",
+    "type": "console-error",
+    "message": "%o\n\n%s\n\n%s\n TypeError: Cannot read properties of undefined (reading 'status')\n    at http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:485:87\n    at Array.map (<anonymous>)\n    at PaymentsList (http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:449:27)\n    at Object.react_stack_bottom_frame (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:17424:20)\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:4206:24)\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:6619:21)\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:7654:20)\n    at runWithFiberInDEV (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:1485:72)\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10868:98)\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10728:43) The above error occurred in the <PaymentsList> component. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.",
+    "timestamp": "2025-09-30T07:17:44.131Z",
+    "url": "http://localhost:3000/payments"
+  },
+  {
+    "id": "error-4",
+    "type": "console-error",
+    "message": "App error: TypeError: Cannot read properties of undefined (reading 'status')\n    at http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:485:87\n    at Array.map (<anonymous>)\n    at PaymentsList (http://localhost:3000/src/pages/payments/PaymentsList.jsx?t=1759216273242:449:27)\n    at Object.react_stack_bottom_frame (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:17424:20)\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:4206:24)\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:6619:21)\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:7654:20)\n    at runWithFiberInDEV (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:1485:72)\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10868:98)\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/react-dom_client.js?v=971622ec:10728:43) {componentStack: \n    at PaymentsList (http://localhost:3000/src/pa…alhost:3000/src/components/ErrorBoundary.jsx:8:5)}",
+    "timestamp": "2025-09-30T07:17:44.131Z",
+    "url": "http://localhost:3000/payments"
+  }
+]

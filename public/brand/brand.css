@@ -1,10 +1,10 @@
 :root{
---brand-header-bg: #000000;
+--brand-header-bg: #050505;
 --brand-header-text: #ffffff;
---brand-sidebar-bg: #000000;
---brand-sidebar-text: #ffffff;
+--brand-sidebar-bg: #1a1919;
+--brand-sidebar-text: #100f0f;
 --brand-text: #0f172a;
 --brand-accent: #2563eb;
 --brand-surface: #f8fafc;
---brand-logo-bg: #000000;
+--brand-logo-bg: #0d0d0d;
 }

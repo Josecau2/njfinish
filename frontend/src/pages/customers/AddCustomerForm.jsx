@@ -36,8 +36,8 @@ import { useTranslation } from 'react-i18next'
 // External component definitions to prevent re-rendering
 const FormSection = ({ title, icon, children, className = '' }) => (
   <Card className={`border-0 shadow-sm mb-4 ${className}`}>
-    <CardBody className="p-4">
-      <div className="d-flex align-items-center mb-3">
+    <CardBody>
+      <div>
         <div
           className="rounded-circle d-flex align-items-center justify-content-center me-3"
           style={{
@@ -69,7 +69,7 @@ const CustomFormInput = ({
   inputRefs,
   ...props
 }) => (
-  <div className="mb-3">
+  <div>
     <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
@@ -136,7 +136,7 @@ const CustomFormSelect = ({
   inputRefs,
   ...props
 }) => (
-  <div className="mb-3">
+  <div>
     <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
       {label}
       {required && <span className="text-danger ms-1">*</span>}
@@ -347,7 +347,7 @@ const AddCustomerForm = () => {
               transition: 'all 0.3s ease',
             }}
           >
-            <Icon as={ArrowLeft} className="me-2" />
+            <Icon as={ArrowLeft} />
             {t('form.actions.backToCustomers')}
           </Button>
         }
@@ -606,7 +606,7 @@ const AddCustomerForm = () => {
             </Box>
           </Flex>
 
-          <div className="mb-3">
+          <div>
             <FormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</FormLabel>
             <Textarea
               id="note"
@@ -620,8 +620,8 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <Card className="border-0 shadow-sm">
-          <CardBody className="p-4">
+        <Card>
+          <CardBody>
             <div className="d-flex gap-3 justify-content-end form-buttons">
               <Button
                 variant="outline" colorScheme="gray"
@@ -634,7 +634,7 @@ const AddCustomerForm = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                <Icon as={ArrowLeft} className="me-2" />
+                <Icon as={ArrowLeft} />
                 {t('form.actions.cancel')}
               </Button>
               <Button
@@ -653,7 +653,7 @@ const AddCustomerForm = () => {
                 {isSubmitting ? (
                   <>
                     <div
-                      className="spinner-border spinner-border-sm me-2"
+                     
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >
@@ -663,7 +663,7 @@ const AddCustomerForm = () => {
                   </>
                 ) : (
                   <>
-                    <Icon as={Save} className="me-2" />
+                    <Icon as={Save} />
                     {t('form.actions.saveCustomer')}
                   </>
                 )}

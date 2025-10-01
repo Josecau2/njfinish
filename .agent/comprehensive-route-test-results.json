@@ -1,0 +1,209 @@
+{
+  "timestamp": "2025-09-30T16:30:51.530Z",
+  "totalRoutes": 40,
+  "totalErrors": 0,
+  "uniqueErrors": 0,
+  "routeResults": {
+    "/": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/profile": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/customers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/customers/add": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/quotes": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/quotes/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/contracts": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/orders": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/my-orders": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/payments": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/payments/success": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/payments/cancel": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/payments/test": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/resources": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/contact": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/calendar": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/manufacturers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/manufacturers/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/multipliers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/users": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/users/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/users/groups": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/users/group/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/locations": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/locations/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/taxes": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/customization": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/pdflayoutcustomization": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/loginlayoutcustomization": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/ui-customization": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/terms": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/payment-config": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/admin/contractors": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/admin/notifications": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/admin/leads": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/notifications": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/audit": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/audit/modals": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/audit/components": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/audit/buttons": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    }
+  },
+  "errors": []
+}

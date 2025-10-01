@@ -99,13 +99,13 @@ export default function PublicProposalPage() {
   return (
     <div className="container py-4">
       <style>{`.container .btn{ min-height:44px; }`}</style>
-      <Card className="shadow-sm">
+      <Card>
         <CardHeader>
-          <div className="d-flex justify-content-between align-items-center">
+          <div>
             <div>
-              <h5 className="mb-0">{t('publicQuote.titleNumber', { id: proposal.id })}</h5>
+              <h5>{t('publicQuote.titleNumber', { id: proposal.id })}</h5>
               {proposal?.customer?.name && (
-                <small className="text-muted">
+                <small>
                   {t('publicQuote.forCustomer', { name: proposal.customer.name })}
                 </small>
               )}
@@ -115,14 +115,14 @@ export default function PublicProposalPage() {
         </CardHeader>
         <CardBody>
           {proposal.description && (
-            <div className="mb-3">
+            <div>
               <h6>{t('publicQuote.description')}</h6>
-              <p className="mb-0">{proposal.description}</p>
+              <p>{proposal.description}</p>
             </div>
           )}
 
           {typeof total === 'number' && (
-            <div className="mb-3">
+            <div>
               <h6>{t('publicQuote.total')}</h6>
               <p className="fs-4 fw-bold">
                 $
@@ -136,9 +136,9 @@ export default function PublicProposalPage() {
 
           {/* Minimal summary of items if present */}
           {proposal.manufacturersData?.items?.length > 0 && (
-            <div className="mb-3">
+            <div>
               <h6>{t('publicQuote.summary')}</h6>
-              <ul className="mb-0">
+              <ul>
                 {proposal.manufacturersData.items.slice(0, 10).map((it, idx) => (
                   <li key={idx}>
                     {it.description || it.code || 'Item'}

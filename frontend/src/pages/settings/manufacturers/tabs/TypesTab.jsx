@@ -1073,12 +1073,12 @@ const TypesTab = ({ manufacturer }) => {
             <Flex>
               {/* Left Column - Image Management */}
               <Box md={6}>
-                <div className="mb-3">
+                <div>
                   <strong>{t('types.meta.type', 'Type')}:</strong> {selectedType.type}
                 </div>
 
                 {/* Current Image Preview */}
-                <div className="mb-4">
+                <div>
                   <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
                   <div
                     className="d-flex justify-content-center p-3 border rounded"

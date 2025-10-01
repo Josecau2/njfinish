@@ -6,7 +6,7 @@ const PaymentModal = () => {
 
   return (
     <div className='container py-4' role='status' aria-live='polite'>
-      <div className='text-muted'>{t('paymentModal.placeholder')}</div>
+      <div>{t('paymentModal.placeholder')}</div>
     </div>
   )
 }

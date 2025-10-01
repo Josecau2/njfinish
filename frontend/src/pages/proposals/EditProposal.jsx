@@ -607,7 +607,7 @@ const EditProposal = ({
                       id="date"
                       selected={formData.date ? new Date(formData.date) : new Date()}
                       onChange={(date) => updateFormData({ date })}
-                      className="form-control"
+                     
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
                       disabled={isFormDisabled}
@@ -634,7 +634,7 @@ const EditProposal = ({
                       id="designDate"
                       selected={formData.designDate ? new Date(formData.designDate) : null}
                       onChange={(date) => updateFormData({ designDate: date })}
-                      className="form-control"
+                     
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
                       disabled={isFormDisabled}
@@ -663,7 +663,7 @@ const EditProposal = ({
                         formData.measurementDate ? new Date(formData.measurementDate) : null
                       }
                       onChange={(date) => updateFormData({ measurementDate: date })}
-                      className="form-control"
+                     
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
                       disabled={isFormDisabled}
@@ -685,14 +685,14 @@ const EditProposal = ({
               {/* Follow up dates commented out
                     {!isContractor && (
                       <Flex>
-                        <Box xs={12} md={6} lg={4} className="mb-3">
+                        <Box xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
                             <FormLabel htmlFor="followUp1Date">Follow up 1 Date</FormLabel>
                             <DatePicker
                               id="followUp1Date"
                               selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
                               onChange={(date) => updateFormData({ followUp1Date: date })}
-                              className="form-control"
+                             
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
                               disabled={isFormDisabled}
@@ -710,14 +710,14 @@ const EditProposal = ({
                             />
                           </div>
                         </Box>
-                        <Box xs={12} md={6} lg={4} className="mb-3">
+                        <Box xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
                             <FormLabel htmlFor="followUp2Date">Follow up 2 Date</FormLabel>
                             <DatePicker
                               id="followUp2Date"
                               selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
                               onChange={(date) => updateFormData({ followUp2Date: date })}
-                              className="form-control"
+                             
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
                               disabled={isFormDisabled}
@@ -735,14 +735,14 @@ const EditProposal = ({
                             />
                           </div>
                         </Box>
-                        <Box xs={12} md={6} lg={4} className="mb-3">
+                        <Box xs={12} md={6} lg={4}>
                           <div style={{ position: 'relative' }}>
                             <FormLabel htmlFor="followUp3Date">Follow up 3 Date</FormLabel>
                             <DatePicker
                               id="followUp3Date"
                               selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
                               onChange={(date) => updateFormData({ followUp3Date: date })}
-                              className="form-control"
+                             
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
                               disabled={isFormDisabled}

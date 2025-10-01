@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-09-30T20:31:31.467Z",
+  "summary": {
+    "hardcodedFontSizes": 0,
+    "hardcodedColors": 0,
+    "total": 0
+  },
+  "issues": {
+    "hardcodedFontSizes": [],
+    "hardcodedColors": [],
+    "inconsistentHeadings": [],
+    "poorContrast": []
+  }
+}

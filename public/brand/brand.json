@@ -1,14 +1,14 @@
 {
-  "version": 1759201748891,
+  "version": 1759288183950,
   "colors": {
-    "headerBg": "#000000",
+    "headerBg": "#050505",
     "headerText": "#ffffff",
-    "sidebarBg": "#000000",
-    "sidebarText": "#ffffff",
+    "sidebarBg": "#1a1919",
+    "sidebarText": "#100f0f",
     "text": "#0f172a",
     "accent": "#2563eb",
     "surface": "#f8fafc",
-    "logoBg": "#000000"
+    "logoBg": "#0d0d0d"
   },
   "logoAlt": "NJ Contractors",
   "login": {
@@ -36,7 +36,7 @@
   "app": {
     "logoText": "NJ Contractors",
     "logoImage": "/uploads/images/logoImage-1759201737349-219985435.png",
-    "logoBg": "#000000",
+    "logoBg": "#0d0d0d",
     "companyName": ""
   },
   "logo": {

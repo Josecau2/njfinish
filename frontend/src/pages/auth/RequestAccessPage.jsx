@@ -67,7 +67,7 @@ const RequestAccessPage = () => {
       messagePlaceholder: t('auth.requestAccess.fields.messagePlaceholder'),
     },
   }
-  const requiredAsterisk = <span className="text-danger">*</span>
+  const requiredAsterisk = <span>*</span>
 
   useEffect(() => {
     try {
@@ -129,10 +129,10 @@ const RequestAccessPage = () => {
     <div className="login-page-wrapper">
       <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
+          <h1 style={{ color: rightPanelColors.text }}>
             {loginBrand.rightTitle}
           </h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
+          <p style={{ color: rightPanelColors.subtitle }}>
             {loginBrand.rightSubtitle}
           </p>
           <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
@@ -141,17 +141,17 @@ const RequestAccessPage = () => {
 
       <div className="login-right-panel">
         <div className="login-form-container">
-          <div className="text-center mb-4">
+          <div>
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{pageTitle}</h2>
-          <p className="text-muted mb-2 small">{pageSubtitle}</p>
-          {pageDescription && <p className="text-muted small">{pageDescription}</p>}
+          <h2>{pageTitle}</h2>
+          <p>{pageSubtitle}</p>
+          {pageDescription && <p>{pageDescription}</p>}
           {benefits.length > 0 && (
-            <div className="mb-3">
-              <p className="mb-1 fw-medium text-muted small">{copy.benefitsHeading}</p>
+            <div>
+              <p>{copy.benefitsHeading}</p>
               <ul
-                className="list-unstyled text-muted small mb-0"
+               
                 style={{ fontSize: '0.85rem', lineHeight: '1.3' }}
               >
                 {benefits.map((item, idx) => (
@@ -176,7 +176,7 @@ const RequestAccessPage = () => {
           <form onSubmit={handleSubmit} noValidate>
             {/* Name fields in one row */}
             <div className="row g-2 mb-3">
-              <div className="col-md-6">
+              <div>
                 <label htmlFor="firstName" className="form-label fw-medium">
                   {copy.fields.firstNameLabel} {requiredAsterisk}
                 </label>
@@ -184,7 +184,7 @@ const RequestAccessPage = () => {
                   type="text"
                   id="firstName"
                   name="firstName"
-                  className="form-control"
+                 
                   placeholder={copy.fields.firstNamePlaceholder}
                   value={form.firstName}
                   onChange={handleChange}
@@ -193,7 +193,7 @@ const RequestAccessPage = () => {
                   autoComplete="given-name"
                 />
               </div>
-              <div className="col-md-6">
+              <div>
                 <label htmlFor="lastName" className="form-label fw-medium">
                   {copy.fields.lastNameLabel} {requiredAsterisk}
                 </label>
@@ -201,7 +201,7 @@ const RequestAccessPage = () => {
                   type="text"
                   id="lastName"
                   name="lastName"
-                  className="form-control"
+                 
                   placeholder={copy.fields.lastNamePlaceholder}
                   value={form.lastName}
                   onChange={handleChange}
@@ -222,7 +222,7 @@ const RequestAccessPage = () => {
                   type="email"
                   id="email"
                   name="email"
-                  className="form-control"
+                 
                   placeholder={copy.fields.emailPlaceholder}
                   value={form.email}
                   onChange={handleChange}
@@ -238,7 +238,7 @@ const RequestAccessPage = () => {
                   type="tel"
                   id="phone"
                   name="phone"
-                  className="form-control"
+                 
                   placeholder={copy.fields.phonePlaceholder}
                   value={form.phone}
                   onChange={handleChange}
@@ -259,7 +259,7 @@ const RequestAccessPage = () => {
                   type="text"
                   id="city"
                   name="city"
-                  className="form-control"
+                 
                   placeholder={copy.fields.cityPlaceholder}
                   value={form.city}
                   onChange={handleChange}
@@ -267,7 +267,7 @@ const RequestAccessPage = () => {
                   autoComplete="address-level2"
                 />
               </div>
-              <div className="col-md-3">
+              <div>
                 <label htmlFor="state" className="form-label fw-medium">
                   {copy.fields.stateLabel}
                 </label>
@@ -275,7 +275,7 @@ const RequestAccessPage = () => {
                   type="text"
                   id="state"
                   name="state"
-                  className="form-control"
+                 
                   placeholder={copy.fields.statePlaceholder}
                   value={form.state}
                   onChange={handleChange}
@@ -283,7 +283,7 @@ const RequestAccessPage = () => {
                   autoComplete="address-level1"
                 />
               </div>
-              <div className="col-md-4">
+              <div>
                 <label htmlFor="zip" className="form-label fw-medium">
                   {copy.fields.zipLabel}
                 </label>
@@ -291,7 +291,7 @@ const RequestAccessPage = () => {
                   type="text"
                   id="zip"
                   name="zip"
-                  className="form-control"
+                 
                   placeholder={copy.fields.zipPlaceholder}
                   value={form.zip}
                   onChange={handleChange}
@@ -303,7 +303,7 @@ const RequestAccessPage = () => {
             </div>
 
             {/* Company field */}
-            <div className="mb-3">
+            <div>
               <label htmlFor="company" className="form-label fw-medium">
                 {copy.fields.companyLabel}
               </label>
@@ -311,7 +311,7 @@ const RequestAccessPage = () => {
                 type="text"
                 id="company"
                 name="company"
-                className="form-control"
+               
                 placeholder={copy.fields.companyPlaceholder}
                 value={form.company}
                 onChange={handleChange}
@@ -321,14 +321,14 @@ const RequestAccessPage = () => {
             </div>
 
             {/* Message field - smaller */}
-            <div className="mb-3">
+            <div>
               <label htmlFor="message" className="form-label fw-medium">
                 {copy.fields.messageLabel}
               </label>
               <textarea
                 id="message"
                 name="message"
-                className="form-control"
+               
                 placeholder={copy.fields.messagePlaceholder}
                 rows={3}
                 value={form.message}
@@ -352,7 +352,7 @@ const RequestAccessPage = () => {
           </form>
 
           <div className="text-center mt-3">
-            <span className="text-muted small">{copy.alreadyHaveAccess}</span>
+            <span>{copy.alreadyHaveAccess}</span>
             <Link to="/login" className="fw-semibold text-decoration-none small">
               {copy.signIn}
             </Link>

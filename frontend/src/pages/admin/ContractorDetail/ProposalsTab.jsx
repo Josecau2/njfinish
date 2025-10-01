@@ -318,7 +318,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+      <div style={{ minHeight: '200px' }}>
         <Spinner colorScheme="blue" />
       </div>
     )
@@ -331,7 +331,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
           <Card>
             <CardHeader>
               <strong>
-                <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />
+                <BriefcaseBusiness size={16} aria-hidden="true" />
                 {t('contractorsAdmin.detail.proposals.header', { count: pagination?.total || 0 })}
               </strong>
             </CardHeader>
@@ -339,7 +339,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               {error && notifyError(t('contractorsAdmin.detail.proposals.loadFailed'), typeof error === 'string' ? error : '')}
 
               {/* Search and Status Filter Chips */}
-              <Flex className="mb-4">
+              <Flex>
                 <Box md={6}>
                   <InputGroup>
                     <InputLeftElement aria-hidden="true">
@@ -354,14 +354,14 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     />
                   </InputGroup>
                 </Box>
-                <Box md={6} className="d-flex align-items-center justify-content-end">
-                  <Text fontSize="sm" color="gray.500" className="me-2">{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
+                <Box md={6}>
+                  <Text fontSize="sm" color="gray.500">{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
                 </Box>
               </Flex>
 
               {/* Status Filter Chips */}
-              <div className="mb-4">
-                <ButtonGroup className="flex-wrap">
+              <div>
+                <ButtonGroup>
                   {Object.entries(statusDefinitions).map(([status, definition]) => {
                     const count = statusCounts[status] || 0
                     const isActive = statusFilter === status
@@ -372,16 +372,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         variant={isActive ? 'solid' : 'outline'}
                         color={definition.color}
                         size="sm"
-                        className="me-2 mb-2"
+                       
                         onClick={() => handleStatusFilterChange(status)}
                         disabled={count === 0 && status !== 'all'}
                       >
-                        {(() => { const Icon = definition.Icon; return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
+                        {(() => { const Icon = definition.Icon; return <Icon size={14} aria-hidden="true" />; })()}
                         {definition.label}
                         {count > 0 && (
                           <Badge
                             color={isActive ? 'light' : definition.color}
-                            className="ms-1"
+                           
                           >
                             {count}
                           </Badge>
@@ -403,9 +403,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('contractorsAdmin.detail.proposals.table.title')}
                         {sortConfig.key === 'title' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
                       <Th
@@ -414,9 +414,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('proposals.headers.customer')}
                         {sortConfig.key === 'customer_name' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
                       <Th
@@ -425,9 +425,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('proposals.headers.status')}
                         {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
                       <Th
@@ -436,9 +436,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('contractorsAdmin.detail.proposals.table.amount')}
                         {sortConfig.key === 'total_amount' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
                       <Th
@@ -447,9 +447,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('proposals.headers.date')}
                         {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
                       <Th
@@ -458,12 +458,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       >
                         {t('contractorsAdmin.detail.proposals.table.updated')}
                         {sortConfig.key === 'updatedAt' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronUp size={14} aria-hidden="true" />
                         ) : (
-                          <ChevronDown size={14} className="ms-1" aria-hidden="true" />
+                          <ChevronDown size={14} aria-hidden="true" />
                         ))}
                       </Th>
-                      <Th className="text-center" style={{ width: '150px' }}>
+                      <Th style={{ width: '150px' }}>
                         {t('proposals.headers.actions')}
                       </Th>
                     </Tr>
@@ -483,40 +483,40 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         <Tr key={proposal.id} className="align-middle">
                           <Td>
                             <div>
-                              <div className="fw-semibold">{proposal.title || `Proposal #${proposal.id}`}</div>
-                              <small className="text-muted">ID: {proposal.id}</small>
+                              <div>{proposal.title || `Proposal #${proposal.id}`}</div>
+                              <small>ID: {proposal.id}</small>
                             </div>
                           </Td>
                           <Td>
-                            <div className="d-flex align-items-center">
-                              <User size={14} className="me-1 text-muted" aria-hidden="true" />
+                            <div>
+                              <User size={14} aria-hidden="true" />
                               {proposal.customer?.name || proposal.customer_name || 'N/A'}
                             </div>
                           </Td>
                           <Td>
                             <Badge
                               color={getStatusColor(proposal.status)}
-                              className="d-flex align-items-center"
+                             
                               style={{ width: 'fit-content' }}
                             >
-                              {(() => { const Icon = getStatusIcon(proposal.status); return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
+                              {(() => { const Icon = getStatusIcon(proposal.status); return <Icon size={14} aria-hidden="true" />; })()}
                               {statusDefinitions[proposal.status]?.label || proposal.status || t('proposals.status.draft')}
                             </Badge>
                           </Td>
                           <Td>
-                            <div className="fw-bold text-success">{formatCurrency(calculateTotalAmount(proposal))}</div>
+                            <div>{formatCurrency(calculateTotalAmount(proposal))}</div>
                           </Td>
                           <Td>
                             <div>
-                              <small className="text-muted">{formatDateShort(proposal.createdAt)}</small>
+                              <small>{formatDateShort(proposal.createdAt)}</small>
                             </div>
                           </Td>
                           <Td>
                             <div>
-                              <small className="text-muted">{formatDateShort(proposal.updatedAt)}</small>
+                              <small>{formatDateShort(proposal.updatedAt)}</small>
                             </div>
                           </Td>
-                          <Td className="text-center">
+                          <Td>
                             <ButtonGroup size="sm">
                               <Tooltip content="View Details">
                                 <Button
@@ -551,7 +551,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
-                <div className="pt-3 border-top border-light">
+                <div>
                   <PaginationComponent
                     currentPage={currentPage}
                     totalPages={pagination?.totalPages || 1}
@@ -576,10 +576,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>
-              <BriefcaseBusiness size={16} className="me-2" aria-hidden="true" />
+              <BriefcaseBusiness size={16} aria-hidden="true" />
               {t('contractorsAdmin.detail.proposals.modal.title')}
               {selectedProposal && (
-                <Badge color={getStatusColor(selectedProposal.status)} className="ms-2">
+                <Badge color={getStatusColor(selectedProposal.status)}>
                   {statusDefinitions[selectedProposal.status]?.label || selectedProposal.status || 'Draft'}
                 </Badge>
               )}
@@ -587,35 +587,35 @@ const ProposalsTab = ({ contractor, groupId }) => {
             <ModalCloseButton />
             <ModalBody>
               {proposalDetails.loading ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+                <div style={{ minHeight: '300px' }}>
                   <Spinner colorScheme="blue" size="lg" />
-                  <span className="ms-3">{t('contractorsAdmin.detail.proposals.modal.loading')}</span>
+                  <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>
                 </div>
               ) : proposalDetails.data ? (
                 <div>
                   {/* Header Summary */}
-                  <Flex className="mb-4">
+                  <Flex>
                     <Box md={8}>
-                      <h4 className="mb-2">{proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}</h4>
-                      <div className="d-flex flex-wrap gap-3 text-muted">
+                      <h4>{proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}</h4>
+                      <div>
                         <div>
-                          <User size={14} className="me-1" aria-hidden="true" />
+                          <User size={14} aria-hidden="true" />
                           <strong>{t('proposalAcceptance.labels.customer')}:</strong> {proposalDetails.data.customer?.name || t('common.na')}
                         </div>
                         <div>
-                          <Calendar size={14} className="me-1" aria-hidden="true" />
+                          <Calendar size={14} aria-hidden="true" />
                           <strong>{t('proposals.headers.date')}:</strong> {formatDate(proposalDetails.data.createdAt)}
                         </div>
                         <div>
-                          <MapPin size={14} className="me-1" aria-hidden="true" />
+                          <MapPin size={14} aria-hidden="true" />
                           <strong>{t('contractorsAdmin.detail.proposals.modal.group')}:</strong> {contractor?.name || t('common.na')}
                         </div>
                       </div>
                     </Box>
-                    <Box md={4} className="text-end">
-                      <div className="mb-2">
-                        <h3 className="text-success mb-0">{formatCurrency(calculateTotalAmount(proposalDetails.data))}</h3>
-                        <small className="text-muted">{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</small>
+                    <Box md={4}>
+                      <div>
+                        <h3>{formatCurrency(calculateTotalAmount(proposalDetails.data))}</h3>
+                        <small>{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</small>
                       </div>
                       <Button
                         colorScheme="blue"
@@ -624,7 +624,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                         onClick={() => handleGoToProposal(proposalDetails.data.id)}
                       >
-                        <ExternalLink size={16} className="me-1" aria-hidden="true" />
+                        <ExternalLink size={16} aria-hidden="true" />
                         {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                       </Button>
                     </Box>
@@ -635,7 +635,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     <AccordionItem>
                       <AccordionButton>
                         <Box flex="1" textAlign="left">
-                          <Info size={16} className="me-2" aria-hidden="true" />
+                          <Info size={16} aria-hidden="true" />
                           {t('contractorsAdmin.detail.proposals.modal.basicInfo')}
                         </Box>
                         <AccordionIcon />
@@ -644,51 +644,51 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         <Flex>
                           <Box md={6}>
                             <List>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.proposalId')}</span>
+                              <ListItem>
+                                <span>{t('contractorsAdmin.detail.proposals.modal.proposalId')}</span>
                                 <strong>#{proposalDetails.data.id}</strong>
                               </ListItem>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('proposals.headers.status')}</span>
+                              <ListItem>
+                                <span>{t('proposals.headers.status')}</span>
                                 <Badge color={getStatusColor(proposalDetails.data.status)}>
-                                  {(() => { const Icon = getStatusIcon(proposalDetails.data.status); return <Icon size={14} className="me-1" aria-hidden="true" />; })()}
+                                  {(() => { const Icon = getStatusIcon(proposalDetails.data.status); return <Icon size={14} aria-hidden="true" />; })()}
                                   {statusDefinitions[proposalDetails.data.status]?.label || proposalDetails.data.status || t('proposals.status.draft')}
                                 </Badge>
                               </ListItem>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('proposalAcceptance.labels.customer')}</span>
+                              <ListItem>
+                                <span>{t('proposalAcceptance.labels.customer')}</span>
                                 <span>{proposalDetails.data.customer?.name || 'N/A'}</span>
                               </ListItem>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</span>
-                                <strong className="text-success">{formatCurrency(calculateTotalAmount(proposalDetails.data))}</strong>
+                              <ListItem>
+                                <span>{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</span>
+                                <strong>{formatCurrency(calculateTotalAmount(proposalDetails.data))}</strong>
                               </ListItem>
                             </List>
                           </Box>
                           <Box md={6}>
                             <List>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.created')}</span>
+                              <ListItem>
+                                <span>{t('contractorsAdmin.detail.proposals.modal.created')}</span>
                                 <span>{formatDate(proposalDetails.data.createdAt)}</span>
                               </ListItem>
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.updated')}</span>
+                              <ListItem>
+                                <span>{t('contractorsAdmin.detail.proposals.modal.updated')}</span>
                                 <span>{formatDate(proposalDetails.data.updatedAt)}</span>
                               </ListItem>
                               {proposalDetails.data.sent_at && (
-                                <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                  <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.sent')}</span>
-                                  <span className="text-info">{formatDate(proposalDetails.data.sent_at)}</span>
+                                <ListItem>
+                                  <span>{t('contractorsAdmin.detail.proposals.modal.sent')}</span>
+                                  <span>{formatDate(proposalDetails.data.sent_at)}</span>
                                 </ListItem>
                               )}
-                              <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.contractorGroup')}</span>
+                              <ListItem>
+                                <span>{t('contractorsAdmin.detail.proposals.modal.contractorGroup')}</span>
                                 <span>{contractor?.name || 'N/A'}</span>
                               </ListItem>
                               {proposalDetails.data.accepted_at && (
-                                <ListItem className="d-flex justify-content-between align-items-center border-0 px-0">
-                                  <span className="text-muted">{t('contractorsAdmin.detail.proposals.modal.accepted')}</span>
-                                  <span className="text-success">{formatDate(proposalDetails.data.accepted_at)}</span>
+                                <ListItem>
+                                  <span>{t('contractorsAdmin.detail.proposals.modal.accepted')}</span>
+                                  <span>{formatDate(proposalDetails.data.accepted_at)}</span>
                                 </ListItem>
                               )}
                             </List>
@@ -696,10 +696,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         </Flex>
 
                         {proposalDetails.data.description && (
-                          <div className="mt-3">
-                            <h6 className="text-muted mb-2">{t('proposals.labels.description')}</h6>
+                          <div>
+                            <h6>{t('proposals.labels.description')}</h6>
                             <div className="bg-light p-3 rounded">
-                              <p className="mb-0">{proposalDetails.data.description}</p>
+                              <p>{proposalDetails.data.description}</p>
                             </div>
                           </div>
                         )}
@@ -710,7 +710,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     <AccordionItem>
                       <AccordionButton>
                         <Box flex="1" textAlign="left">
-                          <History size={16} className="me-2" aria-hidden="true" />
+                          <History size={16} aria-hidden="true" />
                           {t('contractorsAdmin.detail.proposals.timeline.title')}
                         </Box>
                         <AccordionIcon />
@@ -718,29 +718,29 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       <AccordionPanel>
                         <div className="timeline">
                           {getStatusTimeline(proposalDetails.data).map((item, index) => (
-                            <div key={index} className="d-flex align-items-center mb-3">
+                            <div key={index}>
                               <div
                                 className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
                                 style={{ width: '40px', height: '40px', minWidth: '40px' }}
                               >
                                 {(() => { const Icon = item.Icon || Clipboard; return <Icon size={18} aria-hidden="true" />; })()}
                               </div>
-                              <div className="flex-grow-1">
-                                <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div>
                                   <strong>{item.label}</strong>
-                                  <small className="text-muted">{formatDate(item.date)}</small>
+                                  <small>{formatDate(item.date)}</small>
                                 </div>
                                 {item.status === 'created' && (
-                                  <small className="text-muted">{t('contractorsAdmin.detail.proposals.timeline.created')}</small>
+                                  <small>{t('contractorsAdmin.detail.proposals.timeline.created')}</small>
                                 )}
                                 {item.status === 'sent' && (
-                                  <small className="text-info">{t('contractorsAdmin.detail.proposals.timeline.sent')}</small>
+                                  <small>{t('contractorsAdmin.detail.proposals.timeline.sent')}</small>
                                 )}
                                 {item.status === 'accepted' && (
-                                  <small className="text-success">{t('contractorsAdmin.detail.proposals.timeline.accepted')}</small>
+                                  <small>{t('contractorsAdmin.detail.proposals.timeline.accepted')}</small>
                                 )}
                                 {item.status === 'approved' && (
-                                  <small className="text-success">{t('contractorsAdmin.detail.proposals.timeline.approved')}</small>
+                                  <small>{t('contractorsAdmin.detail.proposals.timeline.approved')}</small>
                                 )}
                               </div>
                             </div>
@@ -754,21 +754,21 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       <AccordionItem>
                         <AccordionButton>
                           <Box flex="1" textAlign="left">
-                            <Clipboard size={16} className="me-2" aria-hidden="true" />
+                            <Clipboard size={16} aria-hidden="true" />
                             {t('contractorsAdmin.detail.proposals.itemsTitle', { count: proposalDetails.data.items.length })}
                           </Box>
                           <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                          <TableContainer className="table-responsive">
+                          <TableContainer>
                             <Table variant="striped">
                               <Thead>
                                 <Tr>
                                   <Th>{t('proposalColumns.item')}</Th>
                                   <Th>{t('proposals.labels.description')}</Th>
-                                  <Th className="text-end">{t('proposalColumns.qty')}</Th>
-                                  <Th className="text-end">{t('proposalDoc.catalog.unitPrice')}</Th>
-                                  <Th className="text-end">{t('proposalColumns.total')}</Th>
+                                  <Th>{t('proposalColumns.qty')}</Th>
+                                  <Th>{t('proposalDoc.catalog.unitPrice')}</Th>
+                                  <Th>{t('proposalColumns.total')}</Th>
                                 </Tr>
                               </Thead>
                               <Tbody>
@@ -778,9 +778,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                       <strong>{item.name || `Item ${index + 1}`}</strong>
                                     </Td>
                                     <Td>{item.description || 'N/A'}</Td>
-                                    <Td className="text-end">{item.quantity || 1}</Td>
-                                    <Td className="text-end">{formatCurrency(item.unit_price)}</Td>
-                                    <Td className="text-end">
+                                    <Td>{item.quantity || 1}</Td>
+                                    <Td>{formatCurrency(item.unit_price)}</Td>
+                                    <Td>
                                       <strong>{formatCurrency((item.quantity || 1) * (item.unit_price || 0))}</strong>
                                     </Td>
                                   </Tr>
@@ -789,23 +789,23 @@ const ProposalsTab = ({ contractor, groupId }) => {
                             </Table>
                           </TableContainer>
 
-                          <div className="border-top pt-3 mt-3">
+                          <div>
                             <Flex>
                               <Box md={6}></Box>
                               <Box md={6}>
-                                <div className="d-flex justify-content-between mb-2">
+                                <div>
                                   <span>{t('contractorsAdmin.detail.proposals.totals.subtotal')}:</span>
                                   <span>{formatCurrency(proposalDetails.data.subtotal_amount || proposalDetails.data.total_amount)}</span>
                                 </div>
                                 {proposalDetails.data.tax_amount > 0 && (
-                                  <div className="d-flex justify-content-between mb-2">
+                                  <div>
                                     <span>{t('contractorsAdmin.detail.proposals.totals.tax')}:</span>
                                     <span>{formatCurrency(proposalDetails.data.tax_amount)}</span>
                                   </div>
                                 )}
-                                <div className="d-flex justify-content-between border-top pt-2">
+                                <div>
                                   <strong>{t('contractorsAdmin.detail.proposals.totals.total')}:</strong>
-                                  <strong className="text-success">{formatCurrency(proposalDetails.data.total_amount)}</strong>
+                                  <strong>{formatCurrency(proposalDetails.data.total_amount)}</strong>
                                 </div>
                               </Box>
                             </Flex>
@@ -816,13 +816,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   </Accordion>
                 </div>
               ) : (
-                <Alert status="warning" className="mb-0">
-                  <Info size={16} className="me-2" aria-hidden="true" />
+                <Alert status="warning">
+                  <Info size={16} aria-hidden="true" />
                   {t('contractorsAdmin.detail.proposals.modal.failed')}
                 </Alert>
               )}
             </ModalBody>
-            <ModalFooter className="d-flex justify-content-between">
+            <ModalFooter>
               <div>
                 {selectedProposal && (
                   <Button
@@ -832,7 +832,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                     onClick={() => handleGoToProposal(selectedProposal.id)}
                   >
-                    <ExternalLink size={16} className="me-1" aria-hidden="true" />
+                    <ExternalLink size={16} aria-hidden="true" />
                     {t('contractorsAdmin.detail.proposals.modal.openFull')}
                   </Button>
                 )}

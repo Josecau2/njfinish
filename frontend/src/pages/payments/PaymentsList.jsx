@@ -253,8 +253,8 @@ const PaymentsList = ({ isContractor }) => {
       const contractorName = payment.order?.group?.name || payment.order?.creator?.name || t('common.na')
       return (
         <div>
-          <div className="fw-semibold">{contractorName}</div>
-          <div className="text-muted" style={{ fontSize: 12 }}>{customerName}</div>
+          <div>{contractorName}</div>
+          <div style={{ fontSize: 12 }}>{customerName}</div>
         </div>
       )
     }
@@ -443,7 +443,7 @@ const PaymentsList = ({ isContractor }) => {
       </VStack>
 
       {!loading && filtered.length > 0 ? (
-        <div className="mt-4">
+        <div>
           <PaginationComponent
             currentPage={pagination?.currentPage || page}
             totalPages={pagination?.totalPages || 1}

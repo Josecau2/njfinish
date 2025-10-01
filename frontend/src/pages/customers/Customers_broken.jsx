@@ -128,8 +128,8 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
     <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header Section */}
       <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || '#321fdb', color: customization.headerTextColor || '#ffffff' }}>
-        <CardBody className="py-4">
-          <Flex className="align-items-center">
+        <CardBody>
+          <Flex>
             <Box>
               <h3 className="text-white mb-1 fw-bold">Customers</h3>
               <p className="text-white-50 mb-0">Manage your customer database</p>
@@ -146,7 +146,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  <Icon as={Plus} className="me-2" />
+                  <Icon as={Plus} />
                   New Customer
                 </Button>
               </PermissionGate>
@@ -158,7 +158,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
       {/* Search and Stats */}
       <Card className="border-0 shadow-sm  mb-1 ">
         <CardBody>
-          <Flex className="align-items-center">
+          <Flex>
             <Box md={6} lg={4}>
               <InputGroup>
                 <InputLeftAddon style={{ background: 'none', border: 'none' }}>
@@ -194,7 +194,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                 >
                   Total: {total || 0} customers
                 </Badge>
-                <span className="text-muted small">
+                <span>
                   Showing {sortedFilteredCustomers?.length || 0} results
                 </span>
               </div>
@@ -205,7 +205,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Loading State */}
       {loading && (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardBody className="text-center py-5">
             <Spinner colorScheme="blue" size="lg" />
             <p className="text-muted mt-3 mb-0">Loading customers...</p>
@@ -215,7 +215,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Error State */}
       {error && (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>Error:</strong> {error}
@@ -227,9 +227,9 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
       {/* Desktop Table */}
       {!loading && !error && (
         <Card className="border-0 shadow-sm d-none d-md-block">
-          <CardBody className="p-0">
+          <CardBody>
             <div style={{ overflowX: 'auto' }}>
-              <Table hover responsive className="mb-0">
+              <Table hover responsive>
                 <Thead style={{ backgroundColor: '#f8f9fa' }}>
                   <Tr>
                     <Th className="border-0 fw-semibold text-muted py-3">
@@ -240,7 +240,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       onClick={() => handleSort('name')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
-                      <div className="d-flex align-items-center gap-2">
+                      <div>
                         <Icon as={User} size="sm" />
                         Name
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
@@ -253,7 +253,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       onClick={() => handleSort('email')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
-                      <div className="d-flex align-items-center gap-2">
+                      <div>
                         <Icon as={Mail} size="sm" />
                         Email
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
@@ -276,9 +276,9 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   {sortedFilteredCustomers?.length === 0 ? (
                     <Tr>
                       <Td colSpan="6" className="text-center py-5">
-                        <div className="text-muted">
-                          <Icon as={Search} size="xl" className="mb-3 opacity-25" />
-                          <p className="mb-0">No customers found</p>
+                        <div>
+                          <Icon as={Search} size="xl" />
+                          <p>No customers found</p>
                           <small>Try adjusting your search criteria</small>
                         </div>
                       </Td>
@@ -300,12 +300,12 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           </Badge>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light">
-                          <div className="fw-medium text-dark">
+                          <div>
                             {cust.name || 'N/A'}
                           </div>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light">
-                          <span className="text-muted">
+                          <span>
                             {cust.email || 'N/A'}
                           </span>
                         </Td>
@@ -336,20 +336,20 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           </Badge>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light text-center">
-                          <div className="d-flex justify-content-center gap-2">
+                          <div>
                             <PermissionGate action="update" resource="customer" item={cust}>
                               <Button
                                 status="light"
                                 size="sm"
                                 onClick={() => handleEdit(cust)}
                                 title="Edit customer"
-                                className="rounded-pill d-flex align-items-center px-3"
+                               
                                 style={{
                                   border: '1px solid #e0e0e0',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <Icon as={Edit} size="sm" className="me-1" />
+                                <Icon as={Edit} size="sm" />
                                 Edit
                               </Button>
                             </PermissionGate>
@@ -359,14 +359,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
                                 title="Delete customer"
-                                className="rounded-pill d-flex align-items-center px-3"
+                               
                                 style={{
                                   border: '1px solid #e0e0e0',
                                   color: '#dc3545',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <Icon as={Trash} size="sm" className="me-1" />
+                                <Icon as={Trash} size="sm" />
                                 Delete
                               </Button>
                             </PermissionGate>
@@ -384,13 +384,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
-        <div className="d-md-none">
+        <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card>
               <CardBody className="text-center py-5">
-                <div className="text-muted">
-                  <Icon as={Search} size="xl" className="mb-3 opacity-25" />
-                  <p className="mb-0">No customers found</p>
+                <div>
+                  <Icon as={Search} size="xl" />
+                  <p>No customers found</p>
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
@@ -399,13 +399,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
                 <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
-                  <CardBody className="p-3">
+                  <CardBody>
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                        <Icon as={User} className="me-2 text-muted" size="lg" />
-                        <div className="flex-grow-1 min-width-0">
-                          <div className="fw-medium text-dark text-truncate" title={cust.name || 'N/A'}>
+                        <Icon as={User} size="lg" />
+                        <div>
+                          <div title={cust.name || 'N/A'}>
                             {cust.name || 'N/A'}
                           </div>
                           <Badge 
@@ -423,10 +423,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     </div>
 
                     {/* Contact Info */}
-                    <div className="mb-3">
-                      <div className="small text-muted">Email</div>
-                      <div className="d-flex align-items-center">
-                        <Icon as={Mail} className="me-1 text-muted" size="sm" />
+                    <div>
+                      <div>Email</div>
+                      <div>
+                        <Icon as={Mail} size="sm" />
                         <span className="text-truncate-mobile text-muted" title={cust.email || 'N/A'}>
                           {cust.email || 'N/A'}
                         </span>
@@ -434,10 +434,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
                     {/* Stats */}
                     <div className="row g-2 mb-3">
-                      <div className="col-6">
+                      <div>
                         <Badge 
                           status="info" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
+                         
                           style={{ 
                             borderRadius: '15px',
                             fontSize: '11px',
@@ -447,10 +447,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           {cust.proposalCount || 0} Proposals
                         </Badge>
                       </div>
-                      <div className="col-6">
+                      <div>
                         <Badge 
                           status="success" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
+                         
                           style={{ 
                             borderRadius: '15px',
                             fontSize: '11px',
@@ -469,13 +469,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           size="sm"
                           onClick={() => handleEdit(cust)}
                           title="Edit customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
+                         
                           style={{
                             border: '1px solid #e0e0e0',
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <Icon as={Edit} size="sm" className="me-1" />
+                          <Icon as={Edit} size="sm" />
                           Edit
                         </Button>
                       </PermissionGate>
@@ -485,14 +485,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
                           title="Delete customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
+                         
                           style={{
                             border: '1px solid #e0e0e0',
                             color: '#dc3545',
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <Icon as={Trash} size="sm" className="me-1" />
+                          <Icon as={Trash} size="sm" />
                           Delete
                         </Button>
                       </PermissionGate>
@@ -504,7 +504,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
           )}
         </div>
       )}
-                                className="p-2"
+                               
                                 onClick={() => handleEdit(cust)}
                                 style={{
                                   borderRadius: '8px',
@@ -513,13 +513,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 }}
                                 onClick={() => handleEdit(cust)}
                                 title="Edit customer"
-                                className="rounded-pill d-flex align-items-center px-3"
+                               
                                 style={{
                                   border: '1px solid #e0e0e0',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <Icon as={Edit} size="sm" className="me-1" />
+                                <Icon as={Edit} size="sm" />
                                 Edit
                               </Button>
                             </PermissionGate>
@@ -529,14 +529,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                                 size="sm"
                                 onClick={() => handleDelete(cust.id)}
                                 title="Delete customer"
-                                className="rounded-pill d-flex align-items-center px-3"
+                               
                                 style={{
                                   border: '1px solid #e0e0e0',
                                   color: '#dc3545',
                                   transition: 'all 0.2s ease'
                                 }}
                               >
-                                <Icon as={Trash} size="sm" className="me-1" />
+                                <Icon as={Trash} size="sm" />
                                 Delete
                               </Button>
                             </PermissionGate>
@@ -566,13 +566,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
-        <div className="d-md-none">
+        <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card>
               <CardBody className="text-center py-5">
-                <div className="text-muted">
-                  <Icon as={Search} size="xl" className="mb-3 opacity-25" />
-                  <p className="mb-0">No customers found</p>
+                <div>
+                  <Icon as={Search} size="xl" />
+                  <p>No customers found</p>
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
@@ -581,13 +581,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
                 <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
-                  <CardBody className="p-3">
+                  <CardBody>
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center flex-grow-1 min-width-0">
-                        <Icon as={User} className="me-2 text-muted" size="lg" />
-                        <div className="flex-grow-1 min-width-0">
-                          <div className="fw-medium text-dark text-truncate" title={cust.name || 'N/A'}>
+                        <Icon as={User} size="lg" />
+                        <div>
+                          <div title={cust.name || 'N/A'}>
                             {cust.name || 'N/A'}
                           </div>
                           <Badge 
@@ -605,10 +605,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                     </div>
 
                     {/* Contact Info */}
-                    <div className="mb-3">
-                      <div className="small text-muted">Email</div>
-                      <div className="d-flex align-items-center">
-                        <Icon as={Mail} className="me-1 text-muted" size="sm" />
+                    <div>
+                      <div>Email</div>
+                      <div>
+                        <Icon as={Mail} size="sm" />
                         <span className="text-truncate-mobile text-muted" title={cust.email || 'N/A'}>
                           {cust.email || 'N/A'}
                         </span>
@@ -616,10 +616,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
 
                     {/* Stats */}
                     <div className="row g-2 mb-3">
-                      <div className="col-6">
+                      <div>
                         <Badge 
                           status="info" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
+                         
                           style={{ 
                             borderRadius: '15px',
                             fontSize: '11px',
@@ -629,10 +629,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           {cust.proposalCount || 0} Proposals
                         </Badge>
                       </div>
-                      <div className="col-6">
+                      <div>
                         <Badge 
                           status="success" 
-                          className="w-100 px-2 py-2 d-flex align-items-center justify-content-center"
+                         
                           style={{ 
                             borderRadius: '15px',
                             fontSize: '11px',
@@ -651,13 +651,13 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           size="sm"
                           onClick={() => handleEdit(cust)}
                           title="Edit customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
+                         
                           style={{
                             border: '1px solid #e0e0e0',
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <Icon as={Edit} size="sm" className="me-1" />
+                          <Icon as={Edit} size="sm" />
                           Edit
                         </Button>
                       </PermissionGate>
@@ -667,14 +667,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                           size="sm"
                           onClick={() => handleDelete(cust.id)}
                           title="Delete customer"
-                          className="flex-grow-1 d-flex align-items-center justify-content-center"
+                         
                           style={{
                             border: '1px solid #e0e0e0',
                             color: '#dc3545',
                             transition: 'all 0.2s ease'
                           }}
                         >
-                          <Icon as={Trash} size="sm" className="me-1" />
+                          <Icon as={Trash} size="sm" />
                           Delete
                         </Button>
                       </PermissionGate>

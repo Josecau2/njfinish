@@ -23,4 +23,4 @@
 - [x] 13.4 Bundle size check
 - [x] 14 CI pipeline for audit on push/PR
 - [x] 15 Final QA matrix + closeout
-- [ ] 15.2 Push & create PR
+- [x] 15.2 Push & create PR

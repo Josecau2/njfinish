@@ -20,10 +20,10 @@ const FilesHistoryTab = ({ manufacturer }) => {
 
   return (
     <div>
-      <h5 className="mb-3">{t('settings.manufacturers.filesHistory.title')}</h5>
+      <h5>{t('settings.manufacturers.filesHistory.title')}</h5>
 
       {files.length === 0 ? (
-        <p className="text-muted">{t('settings.manufacturers.filesHistory.empty')}</p>
+        <p>{t('settings.manufacturers.filesHistory.empty')}</p>
       ) : (
         <div className="table-wrap">
           <Table variant="simple" size="md">

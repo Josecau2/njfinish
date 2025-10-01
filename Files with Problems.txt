@@ -1,7 +1,7 @@
 FILES WITH JSX SYNTAX ERRORS
 ==============================
 Total: 115 files with JSX syntax errors
-
+...........
 COMPONENTS (37 files)
 ====================
 frontend\src\App.jsx
@@ -134,12 +134,12 @@ frontend\src\pages\settings\users\UserList.jsx [DONE]
 frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx [DONE]
 frontend\src\pages\settings\usersGroup\EditUserGroup.jsx [DONE]
 frontend\src\pages\settings\usersGroup\UserGroupList.jsx [DONE]
-
-VIEWS (1 file)
+.
+VIEWS (1 file).....
 ==============
 frontend\src\views\pages\page404\Page404.jsx
 
-SUMMARY BY CATEGORY
+SUMMARY BY CATEGORY..
 ===================
 Components: 37 files
 Layout: 1 file
@@ -148,7 +148,8 @@ Pages - Auth: 5 files
 Pages - General: 39 files
 Pages - Settings: 25 files
 Views: 1 file
--------------------
+-------------------how ar oyu
 TOTAL: 115 files
 
-Generated: 2025-09-29
+Generated: 2025-09-29.....
+..............//is this correct id poonnasdasd.......

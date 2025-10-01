@@ -148,7 +148,7 @@ const ProfilePage = () => {
       <Box className="profile-container" role="status" aria-live="polite">
         <Card className="profile-card">
           <CardBody
-            className="d-flex justify-content-center align-items-center"
+           
             style={{ minHeight: '400px' }}
           >
             <Spinner color={accentColor} size="lg" />
@@ -168,7 +168,7 @@ const ProfilePage = () => {
       `}</style>
       <Card className="profile-card">
         <CardHeader>
-          <h4 className="mb-0">{t('profile.header')}</h4>
+          <h4>{t('profile.header')}</h4>
         </CardHeader>
         <CardBody>
           <Box as="form" onSubmit={handleSubmit} className="profile-form">

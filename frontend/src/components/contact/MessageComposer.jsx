@@ -23,14 +23,14 @@ const MessageComposer = ({ onSend }) => {
   }
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardBody>
         <PageHeader
           title={t('contact.compose.title')}
           subtitle={t('contact.compose.subtitle')}
           mobileLayout="compact"
         />
-        <form onSubmit={submit} className="mt-2">
+        <form onSubmit={submit}>
           <FormControl mb={2}>
             <FormLabel>{t('contact.compose.subject')}</FormLabel>
             <Input

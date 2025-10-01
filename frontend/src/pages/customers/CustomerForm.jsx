@@ -199,7 +199,7 @@ const CustomerForm = ({
         </CardHeader>
             <CardBody>
               {error && (
-                <Alert status="error" className="mb-3">
+                <Alert status="error">
                   {error}
                 </Alert>
               )}
@@ -257,7 +257,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
@@ -276,7 +276,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="homePhone">
                         {t('customers.form.labels.homePhone')}
                       </FormLabel>
@@ -302,7 +302,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={12}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="address">
                         {t('customers.form.labels.address')}
                       </FormLabel>
@@ -324,7 +324,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={3}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="aptOrSuite">
                         {t('customers.form.labels.aptSuite')}
                       </FormLabel>
@@ -339,7 +339,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={3}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="city">{t('customers.form.labels.city')}</FormLabel>
                       <Input
                         type="text"
@@ -352,7 +352,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={3}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="state">{t('customers.form.labels.state')}</FormLabel>
                       <Input
                         type="text"
@@ -365,7 +365,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={3}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="zipCode">
                         {t('customers.form.labels.zipCode')}
                       </FormLabel>
@@ -382,7 +382,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="companyName">
                         {t('customers.form.labels.companyName')}
                       </FormLabel>
@@ -397,7 +397,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="customerType">
                         {t('customers.form.labels.customerType')}
                       </FormLabel>
@@ -421,7 +421,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="leadSource">
                         {t('customers.form.labels.leadSource')}
                       </FormLabel>
@@ -444,7 +444,7 @@ const CustomerForm = ({
                   </Box>
 
                   <Box md={6}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="defaultDiscount">
                         {t('customers.form.labels.defaultDiscount')}
                       </FormLabel>
@@ -463,7 +463,7 @@ const CustomerForm = ({
 
                 <Flex>
                   <Box md={12}>
-                    <div className="mb-3">
+                    <div>
                       <FormLabel htmlFor="note">{t('customers.form.labels.notes')}</FormLabel>
                       <Textarea
                         id="note"
@@ -485,7 +485,7 @@ const CustomerForm = ({
                     type="submit"
                     colorScheme="blue"
                     disabled={loading}
-                    className="d-flex align-items-center gap-2"
+                   
                   >
                     {loading ? <Spinner size="sm" /> : <Save size={18} />}
                     {isEditing

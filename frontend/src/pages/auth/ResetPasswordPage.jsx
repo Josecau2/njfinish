@@ -54,10 +54,10 @@ const ResetPasswordPage = () => {
     <div className="login-page-wrapper">
       <div className="login-left-panel" style={{ backgroundColor: loginBackground }}>
         <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>
+          <h1 style={{ color: rightPanelColors.text }}>
             {loginBrand.rightTitle || brand.logoAlt || t('auth.resetPassword.title')}
           </h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>
+          <p style={{ color: rightPanelColors.subtitle }}>
             {loginBrand.rightSubtitle || t('auth.resetPassword.subtitle')}
           </p>
           <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription || ''}</p>
@@ -66,13 +66,13 @@ const ResetPasswordPage = () => {
 
       <div className="login-right-panel">
         <div className="login-form-container">
-          <div className="text-center mb-4">
+          <div>
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">
+          <h2>
             {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
           </h2>
-          <p className="text-muted mb-4">
+          <p>
             {loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}
           </p>
 
@@ -89,10 +89,10 @@ const ResetPasswordPage = () => {
           )}
 
           <form onSubmit={handleReset}>
-            <div className="mb-3">
+            <div>
               <label htmlFor="password" className="form-label fw-medium">
                 {t('auth.resetPassword.passwordLabel')}
-                <span className="text-danger">*</span>
+                <span>*</span>
               </label>
               <input
                 type="password"
@@ -118,8 +118,8 @@ const ResetPasswordPage = () => {
             </div>
           </form>
 
-          <div className="text-center mt-4">
-            <Link to="/login" className="text-decoration-none">
+          <div>
+            <Link to="/login">
               {t('auth.backToLogin')}
             </Link>
           </div>

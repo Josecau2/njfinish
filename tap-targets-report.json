@@ -1,0 +1,747 @@
+{
+  "summary": {
+    "filesScanned": 253,
+    "totalIconButtons": 28,
+    "totalIssues": 35,
+    "highSeverity": 12,
+    "mediumSeverity": 23
+  },
+  "issues": [
+    {
+      "file": "frontend/src/components/AppHeader.js",
+      "line": 63,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/AppHeader.js",
+      "line": 86,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/CatalogTable.js",
+      "line": 344,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />"
+    },
+    {
+      "file": "frontend/src/components/CatalogTableEdit.js",
+      "line": 454,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />"
+    },
+    {
+      "file": "frontend/src/components/FileViewerModal.jsx",
+      "line": 309,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button colorScheme=\"brand\" onClick={handleDownload} leftIcon={<Icon as={Download} />}>"
+    },
+    {
+      "file": "frontend/src/components/FileViewerModal.jsx",
+      "line": 320,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button colorScheme=\"brand\" onClick={handleDownload} leftIcon={<Icon as={Download} />}>"
+    },
+    {
+      "file": "frontend/src/components/ItemSelectionContent.jsx",
+      "line": 1638,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/ItemSelectionContent.jsx",
+      "line": 1649,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/ItemSelectionContentEdit.jsx",
+      "line": 1486,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/ItemSelectionContentEdit.jsx",
+      "line": 1497,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/LoginPreview.jsx",
+      "line": 163,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+      "line": 690,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+      "line": 701,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+      "line": 53,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+      "line": 62,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+      "line": 97,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+      "line": 107,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/showroom/ShowroomModeToggle.jsx",
+      "line": 255,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button variant=\"outline\" leftIcon={<Icon as={Settings} />} onClick={openModal} alignSelf=\"flex-start\">"
+    },
+    {
+      "file": "frontend/src/components/StyleCarousel.jsx",
+      "line": 36,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/components/StyleCarousel.jsx",
+      "line": 42,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/helpers/notify.js",
+      "line": 65,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/customers/Customers.jsx",
+      "line": 207,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button colorScheme=\"brand\" leftIcon={<Icon as={Plus} boxSize={4} />} onClick={handleNewCustomer}>"
+    },
+    {
+      "file": "frontend/src/pages/customers/Customers.jsx",
+      "line": 399,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/customers/Customers.jsx",
+      "line": 409,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/payments/PaymentPage.jsx",
+      "line": 267,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button colorScheme=\"blue\" onClick={handleGoBack} minH=\"44px\" leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden=\"true\" />}>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "line": 374,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<MenuItem icon={<Icon as={Eye} boxSize={4} />} onClick={() => previewFile(file)}>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "line": 377,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<MenuItem icon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(file)}>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "line": 429,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button colorScheme=\"brand\" leftIcon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(previewModal.file)}>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/Proposals.jsx",
+      "line": 288,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/proposals/Proposals.jsx",
+      "line": 644,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/proposals/Proposals.jsx",
+      "line": 655,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/proposals/Proposals.jsx",
+      "line": 726,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/pages/proposals/Proposals.jsx",
+      "line": 735,
+      "type": "IconButton",
+      "size": "md",
+      "renderedSize": 40,
+      "severity": "medium",
+      "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+      "code": "<IconButton"
+    },
+    {
+      "file": "frontend/src/views/proposals/AdminProposalView.js",
+      "line": 264,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button variant=\"outline\" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>"
+    },
+    {
+      "file": "frontend/src/views/proposals/AdminProposalView.js",
+      "line": 280,
+      "type": "Icon with onClick",
+      "size": "unknown",
+      "renderedSize": 24,
+      "severity": "high",
+      "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+      "code": "<Button variant=\"outline\" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>"
+    }
+  ],
+  "byFile": {
+    "frontend/src/components/AppHeader.js": [
+      {
+        "file": "frontend/src/components/AppHeader.js",
+        "line": 63,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/AppHeader.js",
+        "line": 86,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/CatalogTable.js": [
+      {
+        "file": "frontend/src/components/CatalogTable.js",
+        "line": 344,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />"
+      }
+    ],
+    "frontend/src/components/CatalogTableEdit.js": [
+      {
+        "file": "frontend/src/components/CatalogTableEdit.js",
+        "line": 454,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />"
+      }
+    ],
+    "frontend/src/components/FileViewerModal.jsx": [
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 309,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button colorScheme=\"brand\" onClick={handleDownload} leftIcon={<Icon as={Download} />}>"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 320,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button colorScheme=\"brand\" onClick={handleDownload} leftIcon={<Icon as={Download} />}>"
+      }
+    ],
+    "frontend/src/components/ItemSelectionContent.jsx": [
+      {
+        "file": "frontend/src/components/ItemSelectionContent.jsx",
+        "line": 1638,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/ItemSelectionContent.jsx",
+        "line": 1649,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/ItemSelectionContentEdit.jsx": [
+      {
+        "file": "frontend/src/components/ItemSelectionContentEdit.jsx",
+        "line": 1486,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/ItemSelectionContentEdit.jsx",
+        "line": 1497,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/LoginPreview.jsx": [
+      {
+        "file": "frontend/src/components/LoginPreview.jsx",
+        "line": 163,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/model/ModificationBrowserModal.jsx": [
+      {
+        "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+        "line": 690,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+        "line": 701,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/pdf/DesktopPdfViewer.jsx": [
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 53,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 62,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 97,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 107,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/components/showroom/ShowroomModeToggle.jsx": [
+      {
+        "file": "frontend/src/components/showroom/ShowroomModeToggle.jsx",
+        "line": 255,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button variant=\"outline\" leftIcon={<Icon as={Settings} />} onClick={openModal} alignSelf=\"flex-start\">"
+      }
+    ],
+    "frontend/src/components/StyleCarousel.jsx": [
+      {
+        "file": "frontend/src/components/StyleCarousel.jsx",
+        "line": 36,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/components/StyleCarousel.jsx",
+        "line": 42,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/helpers/notify.js": [
+      {
+        "file": "frontend/src/helpers/notify.js",
+        "line": 65,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/pages/customers/Customers.jsx": [
+      {
+        "file": "frontend/src/pages/customers/Customers.jsx",
+        "line": 207,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button colorScheme=\"brand\" leftIcon={<Icon as={Plus} boxSize={4} />} onClick={handleNewCustomer}>"
+      },
+      {
+        "file": "frontend/src/pages/customers/Customers.jsx",
+        "line": 399,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/pages/customers/Customers.jsx",
+        "line": 409,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/pages/payments/PaymentPage.jsx": [
+      {
+        "file": "frontend/src/pages/payments/PaymentPage.jsx",
+        "line": 267,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button colorScheme=\"blue\" onClick={handleGoBack} minH=\"44px\" leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden=\"true\" />}>"
+      }
+    ],
+    "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+        "line": 374,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<MenuItem icon={<Icon as={Eye} boxSize={4} />} onClick={() => previewFile(file)}>"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+        "line": 377,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<MenuItem icon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(file)}>"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+        "line": 429,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button colorScheme=\"brand\" leftIcon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(previewModal.file)}>"
+      }
+    ],
+    "frontend/src/pages/proposals/Proposals.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/Proposals.jsx",
+        "line": 288,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/pages/proposals/Proposals.jsx",
+        "line": 644,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/pages/proposals/Proposals.jsx",
+        "line": 655,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/pages/proposals/Proposals.jsx",
+        "line": 726,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      },
+      {
+        "file": "frontend/src/pages/proposals/Proposals.jsx",
+        "line": 735,
+        "type": "IconButton",
+        "size": "md",
+        "renderedSize": 40,
+        "severity": "medium",
+        "suggestion": "Change to size=\"lg\" or add minW=\"44px\" minH=\"44px\"",
+        "code": "<IconButton"
+      }
+    ],
+    "frontend/src/views/proposals/AdminProposalView.js": [
+      {
+        "file": "frontend/src/views/proposals/AdminProposalView.js",
+        "line": 264,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button variant=\"outline\" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>"
+      },
+      {
+        "file": "frontend/src/views/proposals/AdminProposalView.js",
+        "line": 280,
+        "type": "Icon with onClick",
+        "size": "unknown",
+        "renderedSize": 24,
+        "severity": "high",
+        "suggestion": "Wrap in IconButton with size=\"lg\" for proper tap target",
+        "code": "<Button variant=\"outline\" onClick={() => navigate(-1)} leftIcon={<Icon as={ArrowLeft} />}>"
+      }
+    ]
+  }
+}

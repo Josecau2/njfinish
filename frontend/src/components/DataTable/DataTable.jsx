@@ -1,0 +1,70 @@
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Box,
+  useColorModeValue,
+} from '@chakra-ui/react'
+
+/**
+ * DataTable - Consistent table component with proper styling
+ *
+ * @param {Array} columns - Column definitions [{ key: string, label: string, width?: string }]
+ * @param {Array} data - Array of data objects
+ * @param {Function} onRowClick - Optional click handler for rows
+ * @param {Function} renderCell - Optional custom cell renderer (row, column) => ReactNode
+ */
+export function DataTable({ columns, data, onRowClick, renderCell }) {
+  const borderColor = useColorModeValue("#dee2e6", "#343a40")
+  const hoverBg = useColorModeValue("#f8f9fa", 'gray.750')
+  const headerBg = useColorModeValue("#f8f9fa", "#212529")
+  const headerTextColor = useColorModeValue("#343a40", "#ced4da")
+  const cellTextColor = useColorModeValue("#212529", "#dee2e6")
+
+  return (
+    <Box overflowX="auto" borderRadius="md" border="1px" borderColor={borderColor}>
+      <Table variant="simple" size="md">
+        <Thead style={{ backgroundColor: headerBg }}>
+          <Tr>
+            {columns.map((col) => (
+              <Th
+                key={col.key}
+                width={col.width}
+                textTransform="none"
+                fontSize="14px"
+                fontWeight="600"
+                style={{ color: headerTextColor }}
+              >
+                {col.label}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data.map((row, idx) => (
+            <Tr
+              key={idx}
+              onClick={() => onRowClick?.(row)}
+              cursor={onRowClick ? 'pointer' : 'default'}
+              _hover={onRowClick ? { bg: hoverBg } : undefined}
+              transition="background 0.15s ease"
+            >
+              {columns.map((col) => (
+                <Td
+                  key={col.key}
+                  fontSize="14px"
+                  style={{ color: cellTextColor }}
+                >
+                  {renderCell ? renderCell(row, col) : row[col.key]}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </Box>
+  )
+}

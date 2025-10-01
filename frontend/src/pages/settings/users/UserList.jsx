@@ -157,7 +157,7 @@ const UsersPage = () => {
         title={t('settings.users.header')}
         subtitle={t('settings.users.subtitle')}
         rightContent={
-          <div className="d-flex gap-2">
+          <div>
             <Button
               as={motion.button}
               variant="outline"
@@ -187,7 +187,7 @@ const UsersPage = () => {
       />
 
       {/* Stats Cards */}
-      <Flex className="mb-2">
+      <Flex>
         <Box md={4}>
           <Card className="settings-stats-card">
             <CardBody>
@@ -197,7 +197,7 @@ const UsersPage = () => {
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-primary">{filteredUsers.length}</h4>
-                  <small className="text-muted">{t('settings.users.stats.totalUsers')}</small>
+                  <small>{t('settings.users.stats.totalUsers')}</small>
                 </div>
               </div>
             </CardBody>
@@ -212,7 +212,7 @@ const UsersPage = () => {
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-success">{adminCount}</h4>
-                  <small className="text-muted">{t('settings.users.stats.administrators')}</small>
+                  <small>{t('settings.users.stats.administrators')}</small>
                 </div>
               </div>
             </CardBody>
@@ -227,7 +227,7 @@ const UsersPage = () => {
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-warning">{regularCount}</h4>
-                  <small className="text-muted">{t('settings.users.stats.regularUsers')}</small>
+                  <small>{t('settings.users.stats.regularUsers')}</small>
                 </div>
               </div>
             </CardBody>
@@ -238,7 +238,7 @@ const UsersPage = () => {
       {/* Search Section */}
       <Card className="settings-search-card">
         <CardBody>
-          <Flex className="align-items-center">
+          <Flex>
             <Box md={6} lg={4}>
               <InputGroup>
                 <InputLeftElement>
@@ -258,7 +258,7 @@ const UsersPage = () => {
               </InputGroup>
             </Box>
             <Box md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-              <span className="text-muted small">
+              <span>
                 {t('settings.users.showing', {
                   count: filteredUsers?.length || 0,
                   total: users?.length || 0,
@@ -294,22 +294,22 @@ const UsersPage = () => {
       {/* Table */}
       {!loading && (
         <Card className="settings-table-card">
-          <CardBody className="p-0">
+          <CardBody>
             {/* Desktop Table View */}
             <div className="d-none d-md-block table-wrap">
               <Table variant="simple" className="mb-0 table-modern">
                 <Thead className="settings-table-header">
                   <Tr>
-                    <Th className="text-center">#</Th>
+                    <Th>#</Th>
                     <Th>
-                      <div className="d-flex align-items-center gap-2">
+                      <div>
                         <UserIcon size={14} aria-hidden="true" />
                         {t('settings.users.table.name')}
                       </div>
                     </Th>
                     <Th>{t('settings.users.table.email')}</Th>
-                    <Th className="text-center">{t('settings.users.table.group')}</Th>
-                    <Th className="text-center">{t('settings.users.table.actions')}</Th>
+                    <Th>{t('settings.users.table.group')}</Th>
+                    <Th>{t('settings.users.table.actions')}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -318,7 +318,7 @@ const UsersPage = () => {
                       <Td colSpan={5} className="settings-empty-state">
                         <div className="settings-mobile-actions">
                           <Users size={48} className="settings-empty-icon" aria-hidden="true" />
-                          <p className="mb-0">{t('settings.users.empty.title')}</p>
+                          <p>{t('settings.users.empty.title')}</p>
                           <small>{t('settings.users.empty.subtitle')}</small>
                         </div>
                       </Td>
@@ -326,7 +326,7 @@ const UsersPage = () => {
                   ) : (
                     paginatedUsers.map((user, index) => (
                       <Tr key={user.id} className="settings-table-row">
-                        <Td className="text-center">
+                        <Td>
                           <Badge
                             variant="subtle"
                             className="px-2 py-1"
@@ -341,12 +341,12 @@ const UsersPage = () => {
                           </Badge>
                         </Td>
                         <Td>
-                          <div className="fw-medium text-dark">{user.name}</div>
+                          <div>{user.name}</div>
                         </Td>
                         <Td>
-                          <span className="text-muted">{user.email}</span>
+                          <span>{user.email}</span>
                         </Td>
-                        <Td className="text-center">
+                        <Td>
                           {user.group ? (
                             <Badge
                               colorScheme={getRoleColor(user.group.name)}
@@ -360,8 +360,8 @@ const UsersPage = () => {
                             </Badge>
                           )}
                         </Td>
-                        <Td className="text-center">
-                          <div className="d-flex justify-content-center gap-2">
+                        <Td>
+                          <div>
                             <Button
                               as={motion.button}
                               variant="ghost"
@@ -403,9 +403,9 @@ const UsersPage = () => {
             <div className="settings-mobile-cards d-md-none">
               {paginatedUsers?.length === 0 ? (
                 <div className="settings-empty-state">
-                  <div className="text-muted">
+                  <div>
                     <Users size={48} className="settings-empty-icon" aria-hidden="true" />
-                    <p className="mb-0">{t('settings.users.empty.title')}</p>
+                    <p>{t('settings.users.empty.title')}</p>
                     <small>{t('settings.users.empty.subtitle')}</small>
                   </div>
                 </div>
@@ -413,7 +413,7 @@ const UsersPage = () => {
                 paginatedUsers.map((user, index) => (
                   <div key={user.id} className="settings-mobile-card">
                     <div className="settings-mobile-card-header">
-                      <div className="d-flex justify-content-between align-items-center">
+                      <div>
                         <span>#{startIdx + index}</span>
                         <Badge
                           colorScheme={user.group ? getRoleColor(user.group.name) : 'secondary'}

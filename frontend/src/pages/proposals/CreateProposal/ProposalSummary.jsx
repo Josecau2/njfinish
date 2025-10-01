@@ -335,7 +335,7 @@ const ItemSelectionStep = ({
               <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
                 <div className="form-section">
                   <Flex>
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <FormLabel htmlFor="designer">Designer *</FormLabel>
                       <CreatableSelect
                         isClearable
@@ -352,11 +352,11 @@ const ItemSelectionStep = ({
                         onBlur={handleBlur}
                       />
                       {errors.designer && touched.designer && (
-                        <div className="text-danger small mt-1">{errors.designer}</div>
+                        <div>{errors.designer}</div>
                       )}
                     </Box>
 
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <FormLabel htmlFor="description">
                         {t('proposals.create.customerInfo.description')} *
                       </FormLabel>
@@ -370,11 +370,11 @@ const ItemSelectionStep = ({
                         placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
                       />
                       {errors.description && touched.description && (
-                        <div className="text-danger small mt-1">{errors.description}</div>
+                        <div>{errors.description}</div>
                       )}
                     </Box>
 
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <FormLabel htmlFor="status">{t('proposals.headers.status')}</FormLabel>
                       <CreatableSelect
                         isClearable
@@ -393,7 +393,7 @@ const ItemSelectionStep = ({
                       />
                     </Box>
 
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="date">{t('proposals.headers.date')}</FormLabel>
                         <DatePicker
@@ -410,7 +410,7 @@ const ItemSelectionStep = ({
                               updateFormData({ ...formData, date })
                             }
                           }}
-                          className="form-control"
+                         
                           dateFormat="MM/dd/yyyy"
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.headers.date')}
@@ -428,7 +428,7 @@ const ItemSelectionStep = ({
                       </div>
                     </Box>
 
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="designDate">
                           {t('proposals.create.customerInfo.designDoneDate')}
@@ -447,7 +447,7 @@ const ItemSelectionStep = ({
                               updateFormData({ ...formData, designDate: date })
                             }
                           }}
-                          className="form-control"
+                         
                           dateFormat="MM/dd/yyyy"
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.create.customerInfo.designDoneDate')}
@@ -465,7 +465,7 @@ const ItemSelectionStep = ({
                       </div>
                     </Box>
 
-                    <Box xs={12} md={2} className="mt-4">
+                    <Box xs={12} md={2}>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="measurementDate">
                           {t('proposals.create.customerInfo.measurementDoneDate')}
@@ -488,7 +488,7 @@ const ItemSelectionStep = ({
                               updateFormData({ ...formData, measurementDate: date })
                             }
                           }}
-                          className="form-control"
+                         
                           dateFormat="MM/dd/yyyy"
                           wrapperClassName="w-100"
                           placeholderText={t('proposals.create.customerInfo.measurementDoneDate')}
@@ -507,7 +507,7 @@ const ItemSelectionStep = ({
                     </Box>
 
                     {/* Follow up dates commented out
-                  <Box xs={12} md={2} className="mt-4">
+                  <Box xs={12} md={2}>
                     <div style={{ position: 'relative' }}>
                       <FormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
@@ -521,7 +521,7 @@ const ItemSelectionStep = ({
                             updateFormData({ ...formData, followUp1Date: date });
                           }
                         }}
-                        className="form-control"
+                       
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp1')} ${t('proposals.headers.date')}`}
                         wrapperClassName="w-100"
@@ -539,7 +539,7 @@ const ItemSelectionStep = ({
                     </div>
                   </Box>
 
-                  <Box xs={12} md={2} className="mt-4">
+                  <Box xs={12} md={2}>
                     <div style={{ position: 'relative' }}>
                       <FormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
@@ -553,7 +553,7 @@ const ItemSelectionStep = ({
                             updateFormData({ ...formData, followUp2Date: date });
                           }
                         }}
-                        className="form-control"
+                       
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp2')} ${t('proposals.headers.date')}`}
                         wrapperClassName="w-100"
@@ -571,7 +571,7 @@ const ItemSelectionStep = ({
                     </div>
                   </Box>
 
-                  <Box xs={12} md={2} className="mt-4">
+                  <Box xs={12} md={2}>
                     <div style={{ position: 'relative' }}>
                       <FormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
@@ -585,7 +585,7 @@ const ItemSelectionStep = ({
                             updateFormData({ ...formData, followUp3Date: date });
                           }
                         }}
-                        className="form-control"
+                       
                         dateFormat="MM/dd/yyyy"
                         placeholderText={`${t('proposals.status.followUp3')} ${t('proposals.headers.date')}`}
                         wrapperClassName="w-100"
@@ -669,7 +669,7 @@ const ItemSelectionStep = ({
                                 transition: 'all 0.2s ease',
                               }}
                             >
-                              <Icon as={Edit} className="me-2" /> {t('common.edit')}
+                              <Icon as={Edit} /> {t('common.edit')}
                             </MenuItem>
                             <MenuItem
                               onClick={() => openDeleteModal(index)}
@@ -680,7 +680,7 @@ const ItemSelectionStep = ({
                                 transition: 'all 0.2s ease',
                               }}
                             >
-                              <Icon as={Trash} className="me-2" /> {t('common.delete')}
+                              <Icon as={Trash} /> {t('common.delete')}
                             </MenuItem>
                             <MenuItem
                               onClick={() => duplicateVersion(index)}
@@ -691,7 +691,7 @@ const ItemSelectionStep = ({
                                 transition: 'all 0.2s ease',
                               }}
                             >
-                              <Icon as={Copy} className="me-2" />{' '}
+                              <Icon as={Copy} />{' '}
                               {t('proposals.create.summary.duplicate')}
                             </MenuItem>
                           </MenuList>

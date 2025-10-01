@@ -1,0 +1,29 @@
+{
+  "discovered_at": "2025-09-30T14:53:10.421Z",
+  "total_routes": 23,
+  "routes": [
+    "/",
+    "/admin/contractors",
+    "/admin/leads",
+    "/audit",
+    "/calendar",
+    "/contact",
+    "/customers",
+    "/customers/add",
+    "/dashboard",
+    "/orders",
+    "/payments",
+    "/profile",
+    "/proposals",
+    "/proposals/create",
+    "/quotes",
+    "/resources",
+    "/settings/customization",
+    "/settings/locations",
+    "/settings/manufacturers",
+    "/settings/multipliers",
+    "/settings/taxes",
+    "/settings/terms",
+    "/settings/users"
+  ]
+}

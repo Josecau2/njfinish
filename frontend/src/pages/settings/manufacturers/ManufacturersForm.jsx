@@ -53,7 +53,7 @@ const FormSection = ({ title, icon, children, className = '', customization }) =
 
   return (
     <Card className={`border-0 shadow-sm mb-4 ${className}`}>
-      <CardBody className="p-4">
+      <CardBody>
         <div className="d-flex align-items-center mb-4">
           <div
             className="rounded-circle d-flex align-items-center justify-content-center me-3"
@@ -166,7 +166,7 @@ const FileUploadCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="mb-3">
+    <div>
       <FormLabel className="fw-medium text-dark mb-2">{title}</FormLabel>
       <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
         <Icon as={icon} boxSize={12} color="gray.400" mb={2} />
@@ -188,7 +188,7 @@ const FileUploadCard = ({
       />
       {helpText && <Text fontSize="sm" className="text-muted d-block">{helpText}</Text>}
       {selectedFiles && (
-        <div className="mt-3">
+        <div>
           {Array.isArray(selectedFiles) ? (
             selectedFiles.length === 0 ? (
               <span className="text-danger small">{t('common.noFilesSelected')}</span>
@@ -200,7 +200,7 @@ const FileUploadCard = ({
             )
           ) : (
             <div className="text-success small">
-              <Image size={18} className="me-1" />
+              <Image size={18} />
               Image selected: {selectedFiles.name}
             </div>
           )}
@@ -619,7 +619,7 @@ const ManufacturerForm = () => {
           icon={DollarSign}
           customization={customization}
         >
-          <div className="mb-4">
+          <div>
             <FormLabel className="fw-medium text-dark mb-3">
               {t('settings.manufacturers.fields.priceInfoType')}
             </FormLabel>
@@ -642,7 +642,7 @@ const ManufacturerForm = () => {
                   id="msrpPrices"
                   checked={formData.isPriceMSRP}
                   onChange={() => handlePriceTypeChange(true)}
-                  className="mb-0"
+                 
                 />
                 <label
                   htmlFor="msrpPrices"
@@ -666,7 +666,7 @@ const ManufacturerForm = () => {
                   id="costPrices"
                   checked={!formData.isPriceMSRP}
                   onChange={() => handlePriceTypeChange(false)}
-                  className="mb-0"
+                 
                 />
                 <label
                   htmlFor="costPrices"
@@ -745,8 +745,8 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <Card className="border-0 shadow-sm">
-          <CardBody className="p-4">
+        <Card>
+          <CardBody>
             <div className="d-flex gap-3 justify-content-end flex-wrap">
               <Button
                 variant="outline"
@@ -778,7 +778,7 @@ const ManufacturerForm = () => {
               >
                 {loading ? (
                   <>
-                    <Spinner size="sm" className="me-2" />
+                    <Spinner size="sm" />
                     {t('settings.manufacturers.create.submitting')}
                   </>
                 ) : (

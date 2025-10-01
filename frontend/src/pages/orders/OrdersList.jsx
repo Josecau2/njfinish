@@ -440,8 +440,8 @@ const OrdersList = ({
       const endUser = getCustomerName()
       return (
         <div>
-          <div className="fw-semibold">{contractor}</div>
-          <div className="text-muted" style={{ fontSize: 12 }}>
+          <div>{contractor}</div>
+          <div style={{ fontSize: 12 }}>
             {endUser}
           </div>
         </div>
@@ -716,7 +716,7 @@ const OrdersList = ({
         )}
       </VStack>
 
-      <div className="mt-4">
+      <div>
         <PaginationComponent
           currentPage={page}
           totalPages={Math.ceil(filtered.length / perPage) || 1}

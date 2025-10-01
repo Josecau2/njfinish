@@ -43,7 +43,7 @@ const SignupPage = () => {
     <div className="container-fluid vh-100 d-flex p-0">
       {/* Left Panel */}
       <div className="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
-        <div className="w-100" style={{ maxWidth: '400px' }}>
+        <div style={{ maxWidth: '400px' }}>
           {/* <a href="/" className="text-decoration-none mb-4 d-inline-block">
             &larr; Back to login
           </a> */}
@@ -57,13 +57,13 @@ const SignupPage = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
+            <div>
               <label htmlFor="username" className="form-label fw-semibold">
-                Username <span className="text-danger">*</span>
+                Username <span>*</span>
               </label>
               <input
                 type="text"
-                className="form-control"
+               
                 id="username"
                 name="username"
                 placeholder="john_doe"
@@ -73,13 +73,13 @@ const SignupPage = () => {
               />
             </div>
 
-            <div className="mb-3">
+            <div>
               <label htmlFor="email" className="form-label fw-semibold">
-                Email <span className="text-danger">*</span>
+                Email <span>*</span>
               </label>
               <input
                 type="email"
-                className="form-control"
+               
                 id="email"
                 name="email"
                 placeholder="you@example.com"
@@ -91,12 +91,12 @@ const SignupPage = () => {
 
             <div className="mb-3 position-relative">
               <label htmlFor="password" className="form-label fw-semibold">
-                Password <span className="text-danger">*</span>
+                Password <span>*</span>
               </label>
               <div className="input-group">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="form-control"
+                 
                   id="password"
                   name="password"
                   placeholder="Enter your password"
@@ -124,7 +124,7 @@ const SignupPage = () => {
           </form>
 
           <div className="text-center mt-3">
-            <span className="text-muted">Already have an account? </span>
+            <span>Already have an account? </span>
             <a href="/login">Sign In</a>
           </div>
         </div>

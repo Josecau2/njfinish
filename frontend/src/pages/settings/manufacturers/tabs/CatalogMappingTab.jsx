@@ -2546,9 +2546,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   `}</style>
 
       {/* Sub-Types Management Section */}
-      <Card className="mb-3">
-        <CardHeader className="d-flex justify-content-between align-items-center">
-          <h6 className="mb-0">{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
+      <Card>
+        <CardHeader>
+          <h6>{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
           <Button
             colorScheme="blue"
             size="sm"
@@ -2563,38 +2563,38 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setShowSubTypeModal(true)
             }}
           >
-            <Plus size={16} aria-hidden="true" className="me-1" />{' '}
+            <Plus size={16} aria-hidden="true" />{' '}
             {t('settings.manufacturers.catalogMapping.subTypes.create')}
           </Button>
         </CardHeader>
         <CardBody>
           {subTypes.length === 0 ? (
-            <p className="text-muted mb-0">
+            <p>
               {t('settings.manufacturers.catalogMapping.subTypes.empty')}
             </p>
           ) : (
             <div className="row g-3">
               {subTypes.map((subType) => (
                 <div key={subType.id} className="col-md-6 col-lg-4">
-                  <Card className="h-100">
+                  <Card>
                     <CardBody>
-                      <h6 className="card-title">{subType.name}</h6>
+                      <h6>{subType.name}</h6>
                       {subType.description && (
                         <p className="card-text small text-muted">{subType.description}</p>
                       )}
-                      <div className="mb-2">
+                      <div>
                         {subType.requires_hinge_side && (
-                          <Badge colorScheme="info" className="me-1">
+                          <Badge colorScheme="info">
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
                           </Badge>
                         )}
                         {subType.requires_exposed_side && (
-                          <Badge colorScheme="warning" className="me-1">
+                          <Badge colorScheme="warning">
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
                           </Badge>
                         )}
                       </div>
-                      <div className="d-flex gap-1 flex-wrap">
+                      <div>
                         <Button
                           colorScheme="blue"
                           size="sm"
@@ -2647,7 +2647,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <div className="row g-2 mb-3">
         {/* Items per page - Full width on mobile */}
         <div className="col-12 col-sm-6 col-lg-auto">
-          <div className="d-flex align-items-center gap-2">
+          <div>
             <select
               className="form-select form-select-sm"
               style={{ width: 'auto', minWidth: '60px' }}
@@ -2679,7 +2679,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Search Filter - Prominent on mobile */}
         <div className="col-12 col-sm-12 col-lg-4 order-first order-lg-3">
-          <div className="position-relative">
+          <div>
             <input
               aria-label={t('settings.manufacturers.catalogMapping.search', 'Search styles')}
               type="text"
@@ -2747,7 +2747,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <>
         {/* Debug info - remove this later */}
         {process.env.NODE_ENV === 'development' && (
-          <small className="text-muted">
+          <small>
             Style Filter: "{styleFilter}" | Styles Count: {sortedUniqueStyles.length}
           </small>
         )}
@@ -2759,7 +2759,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <div>
                 <strong>Managing Style: "{styleFilter}"</strong>
                 <br />
-                <small className="text-muted">
+                <small>
                   {catalogData.filter((item) => item.style === styleFilter).length} items with this
                   style
                 </small>
@@ -2773,7 +2773,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   {isEditingStyleName ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      <span role="status"></span>
                       Saving...
                     </>
                   ) : (
@@ -2788,7 +2788,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   {isDeleting ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      <span role="status"></span>
                       Processing...
                     </>
                   ) : (
@@ -2803,7 +2803,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
-            <span className="fw-bold">
+            <span>
               {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', {
                 count: selectedItems.length,
               })}
@@ -2817,7 +2817,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {isBulkEditing ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span role="status"></span>
                     Editing...
                   </>
                 ) : (
@@ -2832,7 +2832,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {isBulkDeleting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span role="status"></span>
                     {t('settings.manufacturers.catalogMapping.bulk.deleting')}
                   </>
                 ) : (
@@ -2851,7 +2851,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <>
           {/* Desktop Table View - Hidden on mobile */}
           <div className="table-responsive table-container d-none d-md-block">
-            <Table className="mb-0">
+            <Table>
               <Thead>
                 <Tr>
                   <Th style={{ width: '35px', minWidth: '35px' }}>
@@ -2859,7 +2859,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       type="checkbox"
                       checked={isSelectAll}
                       onChange={(event) => handleSelectAll(event.currentTarget.checked)}
-                      className="form-check-input"
+                     
                       style={{
                         borderColor: '#6c757d',
                         borderWidth: '2px',
@@ -2926,7 +2926,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={(event) => handleSelectItem(item.id, event.currentTarget.checked)}
-                        className="form-check-input"
+                       
                         aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
                         style={{
                           borderColor: '#6c757d',
@@ -2950,7 +2950,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         size="sm"
                         color="dark"
                         onClick={() => handleShowStyleOnClick(item)}
-                        className="me-2"
+                       
                         style={{
                           backgroundColor: '#6c757d',
                           borderColor: '#6c757d',
@@ -3087,7 +3087,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <div className="card-body p-3">
                     {/* Card Header with checkbox and style */}
                     <div className="d-flex justify-content-between align-items-start mb-2">
-                      <div className="d-flex align-items-center">
+                      <div>
                         <input
                           type="checkbox"
                           checked={selectedItems.includes(item.id)}
@@ -3097,8 +3097,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           className="form-check-input me-2"
                         />
                         <div>
-                          <h6 className="card-title mb-1 fw-bold">{item.code}</h6>
-                          <small className="text-muted">{item.description}</small>
+                          <h6>{item.code}</h6>
+                          <small>{item.description}</small>
                         </div>
                       </div>
                       <Button
@@ -3117,18 +3117,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     {/* Card Content */}
                     <div className="row g-2 mb-3">
-                      <div className="col-6">
+                      <div>
                         <small className="text-muted d-block">Price</small>
-                        <span className="fw-bold">${item.price}</span>
+                        <span>${item.price}</span>
                       </div>
-                      <div className="col-6">
+                      <div>
                         <small className="text-muted d-block">Type</small>
                         <span>{item.type || 'N/A'}</span>
                       </div>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="d-flex flex-wrap gap-2">
+                    <div>
                       <Button
                         size="sm"
                         colorScheme="gray"
@@ -3212,7 +3212,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   sortOrder,
                 )
               }
-              className="me-2"
+             
             >
               {t('pagination.prevPageTitle')}
             </Button>
@@ -3287,7 +3287,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Checkbox>
             </div>
             <div className="row g-3">
-              <div className="col-md-6">
+              <div>
                 <FormLabel>Template</FormLabel>
                 <Select
                   value={assignFormGM.templateId}
@@ -3307,7 +3307,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ))}
                 </Select>
               </div>
-              <div className="col-md-3">
+              <div>
                 <FormLabel>Scope</FormLabel>
                 <Select
                   value={assignFormGM.scope}
@@ -3321,7 +3321,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <option value="item">Selected items</option>
                 </Select>
               </div>
-              <div className="col-md-3">
+              <div>
                 <FormLabel>Override price</FormLabel>
                 <Input
                   type="number"
@@ -3334,7 +3334,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             </div>
             {assignFormGM.scope === 'style' && (
-              <div className="mt-3">
+              <div>
                 <FormLabel>Target style</FormLabel>
                 <Select
                   value={assignFormGM.targetStyle}
@@ -3352,7 +3352,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             )}
             {assignFormGM.scope === 'type' && (
-              <div className="mt-3">
+              <div>
                 <FormLabel>Target type</FormLabel>
                 <Select
                   value={assignFormGM.targetType}
@@ -3375,12 +3375,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             )}
             <hr />
-            <div className="mt-2">
+            <div>
               <h6>Existing assignments</h6>
               {assignLoading ? (
                 <div>Loading…</div>
               ) : (
-                <div className="table-responsive">
+                <div>
                   <table className="table table-sm align-middle">
                     <thead>
                       <tr>
@@ -3425,7 +3425,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       ))}
                       {globalAssignments.length === 0 && (
                         <tr>
-                          <td colSpan="5" className="text-muted">
+                          <td colSpan="5">
                             No assignments
                           </td>
                         </tr>
@@ -3461,7 +3461,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
           <ModalBody>
-            <div className="table-responsive">
+            <div>
               <table className="table table-sm align-middle">
                 <thead>
                   <tr>
@@ -3518,7 +3518,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ))}
                   {itemGlobalList.length === 0 && (
                     <tr>
-                      <td colSpan="6" className="text-muted">
+                      <td colSpan="6">
                         No global templates apply
                       </td>
                     </tr>
@@ -3528,7 +3528,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </div>
             <hr />
             <div className="row g-3">
-              <div className="col-md-6">
+              <div>
                 <FormLabel>Add template to this item</FormLabel>
                 <Select
                   value={assignFormGM.templateId}
@@ -3548,7 +3548,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ))}
                 </Select>
               </div>
-              <div className="col-md-3">
+              <div>
                 <FormLabel>Override price</FormLabel>
                 <Input
                   type="number"
@@ -3622,11 +3622,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </option>
               ))}
             </Select>
-            <FormControl className="mb-2" isInvalid={!!errors.code}>
+            <FormControl isInvalid={!!errors.code}>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.code')}</FormLabel>
               <Input name="code" value={manualForm.code} onChange={handleManualChange} />
             </FormControl>
-            <FormControl className="mb-2" isInvalid={!!errors.description}>
+            <FormControl isInvalid={!!errors.description}>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.description')}</FormLabel>
               <Input
                 name="description"
@@ -3634,7 +3634,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 onChange={handleManualChange}
               />
             </FormControl>
-            <FormControl className="mb-2" isInvalid={!!errors.price}>
+            <FormControl isInvalid={!!errors.price}>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.price')}</FormLabel>
               <Input
                 type="number"
@@ -3644,7 +3644,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               />
             </FormControl>
 
-            <FormControl className="mb-2" isInvalid={!!errors.type}>
+            <FormControl isInvalid={!!errors.type}>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.type')}</FormLabel>
               <Input name="type" value={manualForm.type} onChange={handleManualChange} />
             </FormControl>
@@ -3689,7 +3689,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </Select>
 
             {['code', 'description', 'type'].map((field) => (
-              <FormControl key={field} className="mb-2">
+              <FormControl key={field}>
                 <FormLabel>
                   {field === 'code'
                     ? t('settings.manufacturers.catalogMapping.fields.code')
@@ -3707,7 +3707,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </FormControl>
             ))}
 
-            <FormControl className="mb-2">
+            <FormControl>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.price')}</FormLabel>
               <Input
                 type="number"
@@ -3751,7 +3751,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
           <ModalBody>
             {/* Short Name */}
-            <FormControl className="mb-3">
+            <FormControl>
               <FormLabel>{t('settings.manufacturers.catalogMapping.style.shortName')}</FormLabel>
               <Input
                 name="shortName"
@@ -3761,7 +3761,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </FormControl>
 
             {/* Description */}
-            <FormControl className="mb-3">
+            <FormControl>
               <FormLabel>{t('settings.manufacturers.catalogMapping.fields.description')}</FormLabel>
               <Textarea
                 name="description"
@@ -3790,8 +3790,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 })}
               </div>
             ) : styleForm.image ? (
-              <div className="mt-3">
-                <p className="mb-1">
+              <div>
+                <p>
                   <strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong>
                 </p>
                 <Image
@@ -3930,7 +3930,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   borderRadius: '8px',
                 }}
               >
-                <div className="text-center">
+                <div>
                   <div className="spinner-border text-primary mb-2" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
@@ -3957,7 +3957,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </option>
             </Select>
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.fields.price')}
             </FormLabel>
             <Input
@@ -3972,7 +3972,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               disabled={isAssemblyCostSaving}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.assembly.applyTo')}
             </FormLabel>
             <Select
@@ -4008,7 +4008,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     Existing Assembly Costs for "{selectedCatalogItem.code}" (
                     {selectedCatalogItem.type}):
                   </small>
-                  <div className="mt-2">
+                  <div>
                     {assemblyCostsByType[selectedCatalogItem.type].assemblyCosts.map(
                       (cost, idx) => (
                         <span
@@ -4027,7 +4027,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
               <div className="mt-3 p-3 bg-light rounded">
                 <small className="fw-bold text-muted">Existing Assembly Costs by Type:</small>
-                <div className="mt-2">
+                <div>
                   {availableTypes.map((typeItem) => {
                     const typeAssemblyCosts =
                       assemblyCostsByType[typeItem.type]?.assemblyCosts || []
@@ -4038,7 +4038,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         key={typeItem.type}
                         className="d-flex justify-content-between align-items-center mb-1"
                       >
-                        <small className="text-muted">{typeItem.type}:</small>
+                        <small>{typeItem.type}:</small>
                         <div>
                           {typeAssemblyCosts.map((cost, idx) => (
                             <span
@@ -4059,7 +4059,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {assemblyData.applyTo === 'type' && (
               <>
-                <FormLabel className="mt-2">
+                <FormLabel>
                   {t('settings.manufacturers.catalogMapping.assembly.selectItemType')}
                 </FormLabel>
                 <div
@@ -4074,7 +4074,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     return (
                       <div key={typeItem.type} className="form-check mb-2">
                         <input
-                          className="form-check-input"
+                         
                           type="radio"
                           name="singleTypeSelection"
                           id={`single-type-${typeItem.type}`}
@@ -4084,12 +4084,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <label
-                          className="form-check-label d-flex justify-content-between align-items-center w-100"
+                         
                           htmlFor={`single-type-${typeItem.type}`}
                         >
                           <div>
-                            <div className="fw-bold">{typeItem.type}</div>
-                            <small className="text-muted">{typeItem.count} items</small>
+                            <div>{typeItem.type}</div>
+                            <small>{typeItem.count} items</small>
                           </div>
                           <div>
                             {typeAssemblyCosts.map((cost, idx) => (
@@ -4112,7 +4112,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {assemblyData.applyTo === 'types' && (
               <>
-                <FormLabel className="mt-2">
+                <FormLabel>
                   {t(
                     'settings.manufacturers.catalogMapping.assembly.selectMultipleTypes',
                     'Select Item Types',
@@ -4130,7 +4130,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     return (
                       <div key={typeItem.type} className="form-check mb-2">
                         <input
-                          className="form-check-input"
+                         
                           type="checkbox"
                           id={`type-${typeItem.type}`}
                           checked={isSelected}
@@ -4151,12 +4151,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }}
                         />
                         <label
-                          className="form-check-label d-flex justify-content-between align-items-center w-100"
+                         
                           htmlFor={`type-${typeItem.type}`}
                         >
                           <div>
-                            <div className="fw-bold">{typeItem.type}</div>
-                            <small className="text-muted">{typeItem.count} items</small>
+                            <div>{typeItem.type}</div>
+                            <small>{typeItem.count} items</small>
                           </div>
                           <div>
                             {typeAssemblyCosts.map((cost, idx) => (
@@ -4226,7 +4226,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isAssemblyCostSaving ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4255,7 +4255,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderLeft')}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.hinges.right')}
             </FormLabel>
             <Input
@@ -4267,7 +4267,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderRight')}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.hinges.both')}
             </FormLabel>
             <Input
@@ -4279,7 +4279,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderBoth')}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.hinges.exposedSide')}
             </FormLabel>
             <Input
@@ -4321,7 +4321,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               }
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.fields.description')}
             </FormLabel>
             <Textarea
@@ -4332,7 +4332,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               rows={3}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.mod.notes')}
             </FormLabel>
             <Textarea
@@ -4343,7 +4343,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               rows={2}
             />
 
-            <FormLabel className="mt-2">
+            <FormLabel>
               {t('settings.manufacturers.catalogMapping.fields.price')}
             </FormLabel>
             <Input
@@ -4378,7 +4378,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             })}
           />
           <ModalBody>
-            <div className="mb-3">
+            <div>
               <p>
                 You are about to delete the style "<strong>{styleToDelete}</strong>". This will
                 affect{' '}
@@ -4388,10 +4388,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               <p>What would you like to do with the items that currently have this style?</p>
 
-              <div className="mt-3">
+              <div>
                 <div className="form-check mb-2">
                   <input
-                    className="form-check-input"
+                   
                     type="radio"
                     name="deleteOption"
                     id="deleteItems"
@@ -4403,9 +4403,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </label>
                 </div>
 
-                <div className="form-check">
+                <div>
                   <input
-                    className="form-check-input"
+                   
                     type="radio"
                     name="deleteOption"
                     id="mergeItems"
@@ -4421,7 +4421,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
 
               {mergeToStyle !== '' && (
-                <div className="mt-3">
+                <div>
                   <FormLabel>Select target style:</FormLabel>
                   <Select
                     value={mergeToStyle}
@@ -4440,7 +4440,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               )}
 
               <div className="mt-3 p-3 bg-light rounded">
-                <small className="text-muted">
+                <small>
                   {mergeToStyle ? (
                     <>
                       <strong>Smart Merge Action:</strong> All{' '}
@@ -4479,7 +4479,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isDeleting ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4531,7 +4531,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isDeletingItem ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4595,7 +4595,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isBulkDeleting ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4615,12 +4615,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
           <ModalBody>
-            <div className="mb-3">
+            <div>
               <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>
 
               {isLoadingBackups ? (
                 <div className="text-center py-3">
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <span role="status"></span>
                   Loading backups...
                 </div>
               ) : availableBackups.length === 0 ? (
@@ -4632,7 +4632,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {availableBackups.map((backup) => (
                     <div key={backup.uploadSessionId} className="form-check mb-2">
                       <input
-                        className="form-check-input"
+                       
                         type="radio"
                         name="backupSelection"
                         id={`backup-${backup.uploadSessionId}`}
@@ -4641,14 +4641,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         onChange={(event) => setSelectedBackup(event.currentTarget.value)}
                       />
                       <label
-                        className="form-check-label"
+                       
                         htmlFor={`backup-${backup.uploadSessionId}`}
                         aria-label={`Select backup ${backup.originalName}`}
                       >
                         <div>
                           <strong>{backup.originalName}</strong>
                           <br />
-                          <small className="text-muted">
+                          <small>
                             {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount}{' '}
                             items
                           </small>
@@ -4687,7 +4687,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isRollingBack ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4718,7 +4718,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </p>
 
               <div className="row g-3">
-                <div className="col-md-6">
+                <div>
                   <FormLabel>Style</FormLabel>
                   <Input
                     type="text"
@@ -4730,7 +4730,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   />
                 </div>
 
-                <div className="col-md-6">
+                <div>
                   <FormLabel>Type</FormLabel>
                   <Input
                     type="text"
@@ -4742,7 +4742,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   />
                 </div>
 
-                <div className="col-12">
+                <div>
                   <FormLabel>Description</FormLabel>
                   <Textarea
                     value={bulkEditForm.description}
@@ -4754,7 +4754,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   />
                 </div>
 
-                <div className="col-md-6">
+                <div>
                   <FormLabel>Price</FormLabel>
                   <Input
                     type="number"
@@ -4769,7 +4769,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
 
               <div className="mt-3 p-3 bg-light rounded">
-                <small className="text-muted">
+                <small>
                   <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will
                   preserve the existing values for each item.
                 </small>
@@ -4788,7 +4788,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isBulkEditing ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4814,7 +4814,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 items currently using this style.
               </p>
 
-              <div className="mb-3">
+              <div>
                 <FormLabel>Current Style Name</FormLabel>
                 <Input
                   type="text"
@@ -4824,7 +4824,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 />
               </div>
 
-              <div className="mb-3">
+              <div>
                 <FormLabel>New Style Name</FormLabel>
                 <Input
                   type="text"
@@ -4840,7 +4840,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
 
               <div className="p-3 bg-warning bg-opacity-10 rounded">
-                <small className="text-muted">
+                <small>
                   <strong>Warning:</strong> This will rename the style for all items currently using
                   "{styleNameEditForm.oldStyleName}". The change applies to all{' '}
                   {
@@ -4868,7 +4868,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isEditingStyleName ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                   
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4935,12 +4935,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </div>
 
                 {/* Existing Modification Cards */}
-                <div className="row">
+                <div>
                   {manufacturerCategories.map((category) => (
                     <div key={category.id} className="col-md-6 mb-4">
                       <div className="card h-100">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                          <h6 className="mb-0 d-flex align-items-center gap-2">
+                        <div>
+                          <h6>
                             {category.image && (
                               <>
                                 <Image
@@ -4970,7 +4970,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             )}
                             {category.name}
                           </h6>
-                          <div className="d-flex align-items-center gap-2">
+                          <div>
                             <span className="badge bg-secondary">
                               {t('settings.manufacturers.catalogMapping.modManagement.modsCount', {
                                 count: category.templates?.length || 0,
@@ -5007,14 +5007,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </Button>
                           </div>
                         </div>
-                        <div className="card-body">
+                        <div>
                           {category.templates?.length ? (
                             category.templates.map((template) => (
                               <div
                                 key={template.id}
-                                className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded"
+                               
                               >
-                                <div className="d-flex align-items-center gap-2">
+                                <div>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -5034,12 +5034,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   <div>
                                     <strong>{template.name}</strong>
                                     {template.defaultPrice && (
-                                      <span className="text-muted">
+                                      <span>
                                         {' '}
                                         - ${Number(template.defaultPrice).toFixed(2)}
                                       </span>
                                     )}
-                                    <div className="d-flex gap-1 mt-1">
+                                    <div>
                                       <Badge color={template.isReady ? 'success' : 'warning'}>
                                         {template.isReady
                                           ? t(
@@ -5064,7 +5064,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="d-flex gap-1">
+                                <div>
                                   <Button
                                     size="sm"
                                     color="outline-primary"
@@ -5143,7 +5143,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </div>
                             ))
                           ) : (
-                            <p className="text-muted">
+                            <p>
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
                             </p>
                           )}
@@ -5153,7 +5153,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   ))}
                   {!manufacturerCategories.length && (
                     <div className="col-12 text-center">
-                      <p className="text-muted">
+                      <p>
                         {t('settings.manufacturers.catalogMapping.modManagement.noCategories', {
                           addLabel: t('globalMods.ui.buttons.addModification', 'Add Modification'),
                         })}
@@ -5169,7 +5169,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {modificationStep === 1 && (
                   <div>
                     <h5>{t('globalMods.modal.add.step1Title')}</h5>
-                    <div className="mb-3">
+                    <div>
                       <Select
                         value={selectedModificationCategory}
                         onChange={(event) =>
@@ -5190,8 +5190,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     {selectedModificationCategory === 'new' && (
                       <div className="border rounded p-3 mb-3">
                         <h6>{t('globalMods.modal.add.createNew')}</h6>
-                        <div className="row">
-                          <div className="col-md-8">
+                        <div>
+                          <div>
                             <Input
                               placeholder={t('globalMods.modal.add.newSubmenuName')}
                               value={newCategory.name}
@@ -5200,7 +5200,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                             />
                           </div>
-                          <div className="col-md-4">
+                          <div>
                             <Input
                               type="number"
                               placeholder={t('globalMods.modal.add.orderIndex')}
@@ -5217,7 +5217,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </div>
                     )}
 
-                    <div className="d-flex gap-2">
+                    <div>
                       <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
                         Back to Overview
                       </Button>
@@ -5242,8 +5242,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     {/* Default Required Fields */}
                     <div className="border rounded p-3 mb-3">
                       <h6>Required Fields</h6>
-                      <div className="row">
-                        <div className="col-md-6">
+                      <div>
+                        <div>
                           <Input
                             placeholder="Modification name *"
                             value={newTemplate.name}
@@ -5252,7 +5252,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             }
                           />
                         </div>
-                        <div className="col-md-6">
+                        <div>
                           <Input
                             type="number"
                             placeholder={
@@ -5279,9 +5279,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                       {/* Slider Controls */}
                       <div className="row mb-3">
-                        <div className="col-md-4">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Height Slider"
                                 isChecked={guidedBuilder.sliders.height.enabled}
@@ -5300,8 +5300,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.sliders.height.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Min height"
@@ -5320,7 +5320,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }
                                   />
                                 </div>
-                                <div className="mb-2">
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Max height"
@@ -5375,9 +5375,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-4">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Width Slider"
                                 isChecked={guidedBuilder.sliders.width.enabled}
@@ -5396,8 +5396,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.sliders.width.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Min width"
@@ -5416,7 +5416,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }
                                   />
                                 </div>
-                                <div className="mb-2">
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Max width"
@@ -5471,9 +5471,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-4">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Depth Slider"
                                 isChecked={guidedBuilder.sliders.depth.enabled}
@@ -5492,8 +5492,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.sliders.depth.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Min depth"
@@ -5512,7 +5512,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }
                                   />
                                 </div>
-                                <div className="mb-2">
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Max depth"
@@ -5570,9 +5570,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                       {/* Additional Controls */}
                       <div className="row mb-3">
-                        <div className="col-md-3">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Side Selector"
                                 isChecked={guidedBuilder.sideSelector.enabled}
@@ -5588,8 +5588,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.sideSelector.enabled && (
-                              <div className="card-body">
-                                <small className="text-muted d-block mb-2">
+                              <div>
+                                <small>
                                   Limited to Left/Right options
                                 </small>
                                 <Input
@@ -5614,9 +5614,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Quantity Limits"
                                 isChecked={guidedBuilder.qtyRange.enabled}
@@ -5632,8 +5632,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.qtyRange.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     type="number"
                                     placeholder="Min qty"
@@ -5662,9 +5662,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Customer Notes"
                                 isChecked={guidedBuilder.notes.enabled}
@@ -5677,8 +5677,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.notes.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     placeholder="Notes placeholder"
                                     value={guidedBuilder.notes.placeholder}
@@ -5708,9 +5708,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 label="Customer Upload"
                                 isChecked={guidedBuilder.customerUpload.enabled}
@@ -5726,8 +5726,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               />
                             </div>
                             {guidedBuilder.customerUpload.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.uploadTitlePh',
@@ -5768,18 +5768,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                       {/* Description and Sample Image */}
                       <div className="row mb-3">
-                        <div className="col-md-8">
-                          <div className="card">
-                            <div className="card-header">
-                              <h6 className="mb-0">
+                        <div>
+                          <div>
+                            <div>
+                              <h6>
                                 {t(
                                   'settings.manufacturers.catalogMapping.builder.descriptions.header',
                                 )}
                               </h6>
                             </div>
-                            <div className="card-body">
-                              <div className="row">
-                                <div className="col-md-4">
+                            <div>
+                              <div>
+                                <div>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.internal',
@@ -5796,7 +5796,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }
                                   />
                                 </div>
-                                <div className="col-md-4">
+                                <div>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.customer',
@@ -5813,7 +5813,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }
                                   />
                                 </div>
-                                <div className="col-md-4">
+                                <div>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.installer',
@@ -5831,7 +5831,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   />
                                 </div>
                               </div>
-                              <div className="mt-2">
+                              <div>
                                 <Checkbox
                                   isChecked={guidedBuilder.descriptions.both}
                                   onChange={(event) =>
@@ -5852,9 +5852,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </div>
                           </div>
                         </div>
-                        <div className="col-md-4">
-                          <div className="card">
-                            <div className="card-header">
+                        <div>
+                          <div>
+                            <div>
                               <Checkbox
                                 isChecked={guidedBuilder.modSampleImage.enabled}
                                 onChange={(event) =>
@@ -5873,8 +5873,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </Checkbox>
                             </div>
                             {guidedBuilder.modSampleImage.enabled && (
-                              <div className="card-body">
-                                <div className="mb-2">
+                              <div>
+                                <div>
                                   <FormLabel>
                                     {t(
                                       'settings.manufacturers.catalogMapping.builder.sampleImage.upload',
@@ -5942,7 +5942,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               saveAsBlueprint: event.currentTarget.checked,
                             }))
                           }
-                          className="mt-2"
+                         
                         >
                           {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
                         </Checkbox>
@@ -5952,7 +5952,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </div>
                     </div>
 
-                    <div className="d-flex gap-2">
+                    <div>
                       <Button colorScheme="gray" onClick={() => setModificationStep(1)}>
                         {t('settings.manufacturers.catalogMapping.builder.buttons.back')}
                       </Button>
@@ -5996,7 +5996,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {creatingModification ? (
                             <>
                               <span
-                                className="spinner-border spinner-border-sm me-2"
+                               
                                 role="status"
                                 aria-hidden="true"
                               ></span>
@@ -6065,7 +6065,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {creatingModification ? (
                             <>
                               <span
-                                className="spinner-border spinner-border-sm me-2"
+                               
                                 role="status"
                                 aria-hidden="true"
                               ></span>
@@ -6091,13 +6091,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </Button>
                 </div>
 
-                <div className="row">
+                <div>
                   {globalGallery.map((category) => (
                     <div key={category.id} className="col-md-6 mb-4">
-                      <div className="card">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                          <h6 className="mb-0">{category.name}</h6>
-                          <div className="d-flex gap-2">
+                      <div>
+                        <div>
+                          <h6>{category.name}</h6>
+                          <div>
                             <Button
                               size="sm"
                               colorScheme="red"
@@ -6114,14 +6114,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </Button>
                           </div>
                         </div>
-                        <div className="card-body">
+                        <div>
                           {category.templates?.length ? (
                             category.templates.map((template) => (
                               <div
                                 key={template.id}
-                                className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded"
+                               
                               >
-                                <div className="d-flex align-items-center gap-2">
+                                <div>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -6141,12 +6141,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   <div>
                                     <strong>{template.name}</strong>
                                     {template.defaultPrice && (
-                                      <span className="text-muted">
+                                      <span>
                                         {' '}
                                         - ${Number(template.defaultPrice).toFixed(2)}
                                       </span>
                                     )}
-                                    <div className="d-flex gap-1 mt-1">
+                                    <div>
                                       <Badge color={template.isReady ? 'success' : 'warning'}>
                                         {template.isReady
                                           ? t(
@@ -6169,7 +6169,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                         </Badge>
                                       )}
                                     </div>
-                                    <div className="small text-muted">
+                                    <div>
                                       {template.fieldsConfig?.descriptions?.customer ||
                                         t(
                                           'settings.manufacturers.catalogMapping.gallery.noDescription',
@@ -6177,7 +6177,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="d-flex gap-1 flex-wrap">
+                                <div>
                                   <Button
                                     size="sm"
                                     color="outline-primary"
@@ -6287,7 +6287,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </div>
                             ))
                           ) : (
-                            <p className="text-muted">
+                            <p>
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
                             </p>
                           )}
@@ -6318,7 +6318,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
           <ModalBody>
             <div className="row g-3">
-              <div className="col-md-6">
+              <div>
                 <FormLabel>
                   {t('globalMods.modal.editCategory.nameLabel', 'Category Name')}
                 </FormLabel>
@@ -6329,7 +6329,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   }
                 />
               </div>
-              <div className="col-md-6">
+              <div>
                 <FormLabel>{t('globalMods.modal.editCategory.orderLabel', 'Order')}</FormLabel>
                 <Input
                   type="number"
@@ -6339,7 +6339,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   }
                 />
               </div>
-              <div className="col-12">
+              <div>
                 <FormLabel>
                   {t('globalMods.modal.editCategory.imageLabel', 'Category Image')}
                 </FormLabel>
@@ -6422,29 +6422,29 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     {t('globalMods.modal.deleteCategory.contains', {
                       count: categoryToDelete.templates.length,
                     })}
-                    <div className="mt-2">
-                      <div className="form-check">
+                    <div>
+                      <div>
                         <input
-                          className="form-check-input"
+                         
                           type="radio"
                           name="deleteMode"
                           id="deleteCancel"
                           value="cancel"
                           defaultChecked
                         />
-                        <label className="form-check-label" htmlFor="deleteCancel">
+                        <label htmlFor="deleteCancel">
                           {t('globalMods.modal.deleteCategory.cancel')}
                         </label>
                       </div>
-                      <div className="form-check">
+                      <div>
                         <input
-                          className="form-check-input"
+                         
                           type="radio"
                           name="deleteMode"
                           id="deleteWithMods"
                           value="withMods"
                         />
-                        <label className="form-check-label" htmlFor="deleteWithMods">
+                        <label htmlFor="deleteWithMods">
                           {t('globalMods.modal.deleteCategory.deleteWithMods')}
                         </label>
                       </div>
@@ -6500,8 +6500,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong>{' '}
                   {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}
                 </p>
-                <div className="mb-3">
-                  <label className="form-label">
+                <div>
+                  <label>
                     {t(
                       'globalMods.modal.deleteCategory.move.selectTarget',
                       'Select destination category',
@@ -6578,7 +6578,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <div className="border rounded p-3 mb-3">
               <h6>{t('common.basicInformation', 'Basic Information')}</h6>
               <div className="row g-3">
-                <div className="col-md-6">
+                <div>
                   <FormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</FormLabel>
                   <Input
                     value={editTemplate.name}
@@ -6587,7 +6587,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                   />
                 </div>
-                <div className="col-md-6">
+                <div>
                   <FormLabel>
                     {t('globalMods.modal.editTemplate.priceLabel', 'Default Price')}{' '}
                     {editTemplate.saveAsBlueprint &&
@@ -6608,7 +6608,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                   />
                 </div>
-                <div className="col-md-6">
+                <div>
                   <FormLabel>{t('globalMods.template.statusLabel', 'Status')}</FormLabel>
                   <Select
                     value={editTemplate.isReady ? 'ready' : 'draft'}
@@ -6623,10 +6623,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
                   </Select>
                 </div>
-                <div className="col-md-6">
+                <div>
                   <div className="form-check form-switch mt-4">
                     <input
-                      className="form-check-input"
+                     
                       type="checkbox"
                       id="showToBoth"
                       checked={editTemplate.showToBoth || false}
@@ -6634,14 +6634,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         setEditTemplate((t) => ({ ...t, showToBoth: event.currentTarget.checked }))
                       }
                     />
-                    <label className="form-check-label" htmlFor="showToBoth">
+                    <label htmlFor="showToBoth">
                       {t('globalMods.builder.descriptions.customer', 'Customer description')} &{' '}
                       {t('globalMods.builder.descriptions.installer', 'Installer description')}{' '}
                       {t('common.showToBoth', 'shown to both')}
                     </label>
                   </div>
                 </div>
-                <div className="col-12">
+                <div>
                   <FormLabel>
                     {t('globalMods.modal.editTemplate.sampleUploadLabel', 'Sample Image')}
                   </FormLabel>
@@ -6684,9 +6684,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               {/* Slider Controls */}
               <div className="row mb-3">
-                <div className="col-md-4">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.height.enabled}
                         onChange={(event) =>
@@ -6703,9 +6703,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.sliders.height.enabled && (
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-6">
+                      <div>
+                        <div>
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6724,7 +6724,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                             />
                           </div>
-                          <div className="col-6">
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6748,9 +6748,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-                <div className="col-md-4">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.width.enabled}
                         onChange={(event) =>
@@ -6767,9 +6767,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.sliders.width.enabled && (
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-6">
+                      <div>
+                        <div>
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6788,7 +6788,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                             />
                           </div>
-                          <div className="col-6">
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6812,9 +6812,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-                <div className="col-md-4">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.depth.enabled}
                         onChange={(event) =>
@@ -6831,9 +6831,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.sliders.depth.enabled && (
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-6">
+                      <div>
+                        <div>
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6852,7 +6852,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                             />
                           </div>
-                          <div className="col-6">
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6880,9 +6880,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               {/* Additional Controls */}
               <div className="row mb-3">
-                <div className="col-md-6">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.sideSelector.enabled}
                         onChange={(event) =>
@@ -6899,7 +6899,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.sideSelector.enabled && (
-                      <div className="card-body">
+                      <div>
                         <Input
                           placeholder={t(
                             'globalMods.builder.sideSelector.placeholder',
@@ -6927,9 +6927,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-                <div className="col-md-6">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.qtyRange.enabled}
                         onChange={(event) =>
@@ -6943,9 +6943,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.qtyRange.enabled && (
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-6">
+                      <div>
+                        <div>
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')}
                               type="number"
@@ -6961,7 +6961,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               }
                             />
                           </div>
-                          <div className="col-6">
+                          <div>
                             <Input
                               placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')}
                               type="number"
@@ -6986,9 +6986,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               {/* Notes and Upload Controls */}
               <div className="row mb-3">
-                <div className="col-md-6">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.notes.enabled}
                         onChange={(event) =>
@@ -7002,7 +7002,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.notes.enabled && (
-                      <div className="card-body">
+                      <div>
                         <Input
                           placeholder={t(
                             'globalMods.builder.customerNotes.placeholder',
@@ -7017,7 +7017,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <Checkbox
-                          className="mt-2"
+                         
                           isChecked={editGuidedBuilder.notes.showInRed}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
@@ -7032,9 +7032,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-                <div className="col-md-6">
-                  <div className="card">
-                    <div className="card-header">
+                <div>
+                  <div>
+                    <div>
                       <Checkbox
                         isChecked={editGuidedBuilder.customerUpload.enabled}
                         onChange={(event) =>
@@ -7051,7 +7051,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Checkbox>
                     </div>
                     {editGuidedBuilder.customerUpload.enabled && (
-                      <div className="card-body">
+                      <div>
                         <Input
                           placeholder={t(
                             'globalMods.builder.customerUpload.titlePlaceholder',
@@ -7069,7 +7069,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <Checkbox
-                          className="mt-2"
+                         
                           isChecked={editGuidedBuilder.customerUpload.required}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
@@ -7090,13 +7090,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
 
               {/* Descriptions */}
-              <div className="card">
-                <div className="card-header">
-                  <h6 className="mb-0">{t('globalMods.builder.title', 'Guided Builder')}</h6>
+              <div>
+                <div>
+                  <h6>{t('globalMods.builder.title', 'Guided Builder')}</h6>
                 </div>
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-4">
+                <div>
+                  <div>
+                    <div>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.internal',
@@ -7114,7 +7114,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         }
                       />
                     </div>
-                    <div className="col-md-4">
+                    <div>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.customer',
@@ -7132,7 +7132,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         }
                       />
                     </div>
-                    <div className="col-md-4">
+                    <div>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.installer',
@@ -7213,7 +7213,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         />
         <ModalBody>
           <Box>
-            <div className="mb-3">
+            <div>
               <FormLabel>{t('common.name', 'Name')} *</FormLabel>
               <Input
                 value={subTypeForm.name}
@@ -7226,7 +7226,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               />
             </div>
-            <div className="mb-3">
+            <div>
               <FormLabel>{t('common.description')}</FormLabel>
               <Textarea
                 rows={3}
@@ -7240,7 +7240,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               />
             </div>
-            <div className="mb-3">
+            <div>
               <Checkbox
                 id="requiresHingeSide"
                 isChecked={subTypeForm.requires_hinge_side}
@@ -7253,11 +7253,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeSelection')}
               </Checkbox>
-              <small className="text-muted">
+              <small>
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeHelp')}
               </small>
             </div>
-            <div className="mb-3">
+            <div>
               <Checkbox
                 id="requiresExposedSide"
                 isChecked={subTypeForm.requires_exposed_side}
@@ -7270,7 +7270,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedSelection')}
               </Checkbox>
-              <small className="text-muted">
+              <small>
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedHelp')}
               </small>
             </div>
@@ -7323,7 +7323,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           cardClassName="rounded-0 border-bottom"
         />
         <ModalBody>
-          <div className="mb-3">
+          <div>
             <FormLabel>
               {t(
                 'settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel',
@@ -7338,7 +7338,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </small>
           </div>
 
-          <div className="table-responsive" style={{ maxHeight: '400px' }}>
+          <div style={{ maxHeight: '400px' }}>
             <Table>
               <Thead>
                 <Tr>
@@ -7392,7 +7392,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Td>{group.description}</Td>
                     <Td>{group.type}</Td>
                     <Td>
-                      <small className="text-muted">
+                      <small>
                         {group.styles.slice(0, 3).join(', ')}
                         {group.styles.length > 3 &&
                           ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}

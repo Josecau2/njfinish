@@ -179,7 +179,7 @@ const LocationForm = () => {
         rightContent={
           <Button
             variant="ghost"
-            className="p-2"
+           
             onClick={() => navigate('/settings/locations')}
             style={{
               borderRadius: '8px',
@@ -194,11 +194,11 @@ const LocationForm = () => {
       />
 
       {/* Form Section */}
-      <Card className="border-0 shadow-sm">
-        <CardBody className="p-4">
+      <Card>
+        <CardBody>
           <form onSubmit={handleSubmit}>
             {/* Basic Information Section */}
-            <div className="mb-4">
+            <div>
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
                 <div
                   className="d-flex align-items-center justify-content-center"
@@ -215,7 +215,7 @@ const LocationForm = () => {
                 {t('settings.locations.form.titles.basicInfo')}
               </h5>
 
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.locationName')}
@@ -226,7 +226,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <MapPin size={18} className="text-primary" />
+                      <MapPin size={18} />
                     </InputLeftElement>
                     <Input
                       name="locationName"
@@ -257,7 +257,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Home size={18} className="text-success" />
+                      <Home size={18} />
                     </InputLeftElement>
                     <Input
                       name="address"
@@ -282,7 +282,7 @@ const LocationForm = () => {
             </div>
 
             {/* Contact Information Section */}
-            <div className="mb-4">
+            <div>
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
                 <div
                   className="d-flex align-items-center justify-content-center"
@@ -299,7 +299,7 @@ const LocationForm = () => {
                 {t('settings.locations.form.titles.contactInfo')}
               </h5>
 
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.website')}
@@ -310,7 +310,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Mail size={18} className="text-info" />
+                      <Mail size={18} />
                     </InputLeftElement>
                     <Input
                       name="website"
@@ -341,7 +341,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Mail size={18} className="text-warning" />
+                      <Mail size={18} />
                     </InputLeftElement>
                     <Input
                       name="email"
@@ -365,7 +365,7 @@ const LocationForm = () => {
                 </Box>
               </Flex>
 
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.phone')}
@@ -376,7 +376,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e6f0' }}
                     >
-                      <Phone size={18} className="text-success" />
+                      <Phone size={18} />
                     </InputLeftElement>
                     <Input
                       name="phone"
@@ -402,7 +402,7 @@ const LocationForm = () => {
             </div>
 
             {/* Location & Time Settings Section */}
-            <div className="mb-4">
+            <div>
               <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
                 <div
                   className="d-flex align-items-center justify-content-center"
@@ -419,7 +419,7 @@ const LocationForm = () => {
                 {t('settings.locations.form.titles.locationTime')}
               </h5>
 
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
                   <FormLabel className="fw-semibold text-dark">
                     {t('settings.locations.form.labels.country')}
@@ -485,7 +485,7 @@ const LocationForm = () => {
               </Flex>
 
               {currentTime && (
-                <Flex className="mb-3">
+                <Flex>
                   <Box md={6}>
                     <FormLabel className="fw-semibold text-dark">
                       {t('settings.locations.form.labels.currentTime')}
@@ -495,7 +495,7 @@ const LocationForm = () => {
                         pointerEvents="none"
                         style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}
                       >
-                        <Clock size={18} className="text-primary" />
+                        <Clock size={18} />
                       </InputLeftElement>
                       <Input
                         value={currentTime}
@@ -511,7 +511,7 @@ const LocationForm = () => {
                         }}
                       />
                     </InputGroup>
-                    <small className="text-muted">
+                    <small>
                       {t('settings.locations.form.hints.liveTime')}
                     </small>
                   </Box>
@@ -537,7 +537,7 @@ const LocationForm = () => {
                 }}
                 aria-label={t('common.cancel')}
               >
-                <ArrowLeft size={18} className="me-2" />
+                <ArrowLeft size={18} />
                 {t('common.cancel')}
               </Button>
               <Button
@@ -555,14 +555,14 @@ const LocationForm = () => {
               >
                 {loading ? (
                   <>
-                    <div className="spinner-border spinner-border-sm me-2" role="status">
+                    <div role="status">
                       <span className="visually-hidden">{t('common.loading')}</span>
                     </div>
                     {t('settings.locations.create.saving')}
                   </>
                 ) : (
                   <>
-                    <CheckCircle size={18} className="me-2" />
+                    <CheckCircle size={18} />
                     {t('settings.locations.create.submit')}
                   </>
                 )}

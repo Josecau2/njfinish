@@ -32,12 +32,12 @@ const SettingsTab = ({ contractor }) => {
   const formatBoolean = (value) => {
     return value ? (
       <Badge status="success">
-        <CheckCircle size={14} className="me-1" aria-hidden="true" />
+        <CheckCircle size={14} aria-hidden="true" />
         {t('contractorsAdmin.detail.enabled')}
       </Badge>
     ) : (
       <Badge status="error">
-        <XCircle size={14} className="me-1" aria-hidden="true" />
+        <XCircle size={14} aria-hidden="true" />
         {t('contractorsAdmin.detail.disabled')}
       </Badge>
     )
@@ -65,18 +65,18 @@ const SettingsTab = ({ contractor }) => {
   return (
     <Flex>
       {/* Module Settings */}
-      <Box md={6} className="mb-4">
+      <Box md={6}>
         <Card>
           <CardHeader>
             <strong>
-              <Shield size={16} className="me-2" aria-hidden="true" />
+              <Shield size={16} aria-hidden="true" />
               {t('contractorsAdmin.detail.moduleAccess.title')}
             </strong>
           </CardHeader>
           <CardBody>
             {Object.keys(modules).length === 0 ? (
               <Alert status="info">
-                <Info size={16} className="me-2" aria-hidden="true" />
+                <Info size={16} aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noModuleSettings')}
               </Alert>
             ) : (
@@ -84,12 +84,12 @@ const SettingsTab = ({ contractor }) => {
                 {Object.entries(modules).map(([key, value]) => (
                   <ListItem
                     key={key}
-                    className="d-flex justify-content-between align-items-center"
+                   
                   >
                     <span>
                       <strong>{moduleLabels[key] || key}</strong>
                       <br />
-                      <small className="text-muted">
+                      <small>
                         {key === 'dashboard' &&
                           t('contractorsAdmin.detail.settings.moduleDescriptions.dashboard')}
                         {key === 'proposals' &&
@@ -110,18 +110,18 @@ const SettingsTab = ({ contractor }) => {
       </Box>
 
       {/* Contractor Settings */}
-      <Box md={6} className="mb-4">
+      <Box md={6}>
         <Card>
           <CardHeader>
             <strong>
-              <Settings size={16} className="me-2" aria-hidden="true" />
+              <Settings size={16} aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.title')}
             </strong>
           </CardHeader>
           <CardBody>
             {Object.keys(parsedContractorSettings).length === 0 ? (
               <Alert status="info">
-                <Info size={16} className="me-2" aria-hidden="true" />
+                <Info size={16} aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noneConfigured')}
               </Alert>
             ) : (
@@ -129,12 +129,12 @@ const SettingsTab = ({ contractor }) => {
                 {Object.entries(parsedContractorSettings).map(([key, value]) => (
                   <ListItem
                     key={key}
-                    className="d-flex justify-content-between align-items-center"
+                   
                   >
                     <span>
                       <strong>{settingsLabels[key] || key.replace(/_/g, ' ')}</strong>
                       <br />
-                      <small className="text-muted">
+                      <small>
                         {key === 'allow_subcontractors' &&
                           t('contractorsAdmin.detail.settings.descriptions.allowSubcontractors')}
                         {key === 'max_users' &&
@@ -173,7 +173,7 @@ const SettingsTab = ({ contractor }) => {
         <Card>
           <CardHeader>
             <strong>
-              <Info size={16} className="me-2" aria-hidden="true" />
+              <Info size={16} aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.raw.title')}
             </strong>
           </CardHeader>
@@ -204,35 +204,35 @@ const SettingsTab = ({ contractor }) => {
           </CardHeader>
           <CardBody>
             <Flex>
-              <Box md={4} className="text-center border-end">
-                <h4 className="text-primary">{Object.values(modules).filter(Boolean).length}</h4>
-                <p className="text-muted mb-0">
+              <Box md={4}>
+                <h4>{Object.values(modules).filter(Boolean).length}</h4>
+                <p>
                   {t('contractorsAdmin.detail.settings.summary.enabledModules')}
                 </p>
-                <small className="text-muted">
+                <small>
                   {t('contractorsAdmin.detail.settings.summary.ofTotal', {
                     total: Object.keys(modules).length,
                   })}
                 </small>
               </Box>
-              <Box md={4} className="text-center border-end">
-                <h4 className="text-info">{Object.keys(contractorSettings).length}</h4>
-                <p className="text-muted mb-0">
+              <Box md={4}>
+                <h4>{Object.keys(contractorSettings).length}</h4>
+                <p>
                   {t('contractorsAdmin.detail.settings.summary.settingsConfigured')}
                 </p>
-                <small className="text-muted">
+                <small>
                   {t('contractorsAdmin.detail.settings.summary.customOptions')}
                 </small>
               </Box>
-              <Box md={4} className="text-center">
-                <h4 className="text-success">
+              <Box md={4}>
+                <h4>
                   {contractorSettings.max_users ||
                     t('contractorsAdmin.detail.settings.summary.unlimited')}
                 </h4>
-                <p className="text-muted mb-0">
+                <p>
                   {t('contractorsAdmin.detail.settings.summary.maxUsers')}
                 </p>
-                <small className="text-muted">
+                <small>
                   {t('contractorsAdmin.detail.settings.summary.userLimitHint')}
                 </small>
               </Box>

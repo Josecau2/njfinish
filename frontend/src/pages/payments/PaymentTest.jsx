@@ -40,8 +40,8 @@ const PaymentTest = () => {
                   'Embedded payment form is not configured. Please contact support.',
                 )}
               </Alert>
-              <FormControl className="mt-3">
-                <div className="mb-3">
+              <FormControl>
+                <div>
                   <FormLabel htmlFor="txn">
                     {t('payment.test.transactionIdLabel', 'Transaction ID')}
                   </FormLabel>
@@ -53,7 +53,7 @@ const PaymentTest = () => {
                     onClick={handleDispatchSuccess}
                     aria-label={t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   >
-                    <CreditCard size={18} className="me-2" />
+                    <CreditCard size={18} />
                     {t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   </Button>
                   <Button
@@ -70,7 +70,7 @@ const PaymentTest = () => {
                     onClick={() => navigate(-1)}
                     aria-label={t('common.goBack', 'Go Back')}
                   >
-                    <ArrowLeft size={18} className="me-2" />
+                    <ArrowLeft size={18} />
                     {t('common.goBack', 'Go Back')}
                   </Button>
                 </div>

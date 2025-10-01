@@ -122,8 +122,8 @@ const LoginPage = () => {
         style={{ backgroundColor: loginBackground }}
       >
         <div className="login-left-content">
-          <h1 className="mb-3" style={{ color: rightPanelColors.text }}>{loginBrand.rightTitle}</h1>
-          <p className="lead mb-4" style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightSubtitle}</p>
+          <h1 style={{ color: rightPanelColors.text }}>{loginBrand.rightTitle}</h1>
+          <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightSubtitle}</p>
           <p style={{ color: rightPanelColors.subtitle }}>{loginBrand.rightDescription}</p>
         </div>
       </div>
@@ -131,11 +131,11 @@ const LoginPage = () => {
       {/* Right Panel - Form */}
       <div className="login-right-panel">
         <div className="login-form-container">
-          <div className="text-center mb-4">
+          <div>
             <BrandLogo size={logoHeight} />
           </div>
-          <h2 className="mb-2 fw-bold">{loginBrand.title}</h2>
-          <p className="text-muted mb-4">{loginBrand.subtitle}</p>
+          <h2>{loginBrand.title}</h2>
+          <p>{loginBrand.subtitle}</p>
 
           {noticeMessage && (
             <div className="alert alert-info" role="status" aria-live="polite">
@@ -150,9 +150,9 @@ const LoginPage = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
+            <div>
               <label htmlFor="email" className="form-label fw-medium">
-                {t('auth.email')} <span className="text-danger">*</span>
+                {t('auth.email')} <span>*</span>
               </label>
               <input
                 type="email"
@@ -166,9 +166,9 @@ const LoginPage = () => {
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="password" className="form-label fw-medium">
-                {t('auth.password')} <span className="text-danger">*</span>
+                {t('auth.password')} <span>*</span>
               </label>
               <div className="input-group">
                 <input
@@ -195,23 +195,23 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div>
               {loginBrand.showKeepLoggedIn && (
-                <div className="form-check">
+                <div>
                   <input
-                    className="form-check-input"
+                   
                     type="checkbox"
                     id="keepLoggedIn"
                     checked={keepLoggedIn}
                     onChange={(e) => setKeepLoggedIn(e.target.checked)}
                   />
-                  <label className="form-check-label" htmlFor="keepLoggedIn">
+                  <label htmlFor="keepLoggedIn">
                     {t('auth.keepLoggedIn')}
                   </label>
                 </div>
               )}
               {loginBrand.showForgotPassword && (
-                <Link to="/forgot-password" className="small text-decoration-none">
+                <Link to="/forgot-password">
                   {t('auth.forgotPasswordLink')}
                 </Link>
               )}
@@ -223,9 +223,9 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
-          <div className="text-center mt-4">
-            <span className="text-muted">{t('auth.noAccountPrompt')}</span>{' '}
-            <Link to="/request-access" className="fw-semibold text-decoration-none">
+          <div>
+            <span>{t('auth.noAccountPrompt')}</span>{' '}
+            <Link to="/request-access">
               {t('auth.requestAccess.submit')}
             </Link>
           </div>

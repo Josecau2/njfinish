@@ -70,7 +70,7 @@ const EditManuMultiplier = () => {
 
   if (error)
     return (
-      <Alert status="error" className="text-center">
+      <Alert status="error">
         {error}
       </Alert>
     )
@@ -93,7 +93,7 @@ const EditManuMultiplier = () => {
         <CardHeader>{t('settings.multipliers.editManufacturer')}</CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
+            <div>
               <FormLabel htmlFor="name">{t('settings.multipliers.form.name')}</FormLabel>
               <Input
                 type="text"
@@ -106,7 +106,7 @@ const EditManuMultiplier = () => {
               />
             </div>
 
-            <div className="mb-3">
+            <div>
               <FormLabel htmlFor="email">{t('settings.multipliers.form.email')}</FormLabel>
               <Input
                 type="email"
@@ -119,7 +119,7 @@ const EditManuMultiplier = () => {
               />
             </div>
 
-            <div className="mb-3">
+            <div>
               <FormLabel htmlFor="multiplier">{t('settings.multipliers.form.multiplier')}</FormLabel>
               <Input
                 type="number"
@@ -137,11 +137,11 @@ const EditManuMultiplier = () => {
                 type="checkbox"
                 id="enabled"
                 name="enabled"
-                className="form-check-input"
+               
                 checked={formData.enabled}
                 onChange={handleChange}
               />
-              <label className="form-check-label" htmlFor="enabled">
+              <label htmlFor="enabled">
                 Enabled
               </label>
             </div>

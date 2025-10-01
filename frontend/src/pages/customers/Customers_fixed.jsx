@@ -134,8 +134,8 @@ const CustomerTable = ({
           color: getContrastColor(customization.headerBg || '#667eea'),
         }}
       >
-        <CardBody className="py-4">
-          <Flex className="align-items-center">
+        <CardBody>
+          <Flex>
             <Box>
               <h3 className="text-white mb-1 fw-bold">Customers</h3>
               <p className="text-white-50 mb-0">Manage your customer database</p>
@@ -152,7 +152,7 @@ const CustomerTable = ({
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  <Icon as={Plus} className="me-2" />
+                  <Icon as={Plus} />
                   Add Customer
                 </Button>
               </PermissionGate>
@@ -168,9 +168,9 @@ const CustomerTable = ({
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid #667eea' }}
           >
-            <CardBody className="py-3">
+            <CardBody>
               <div className="fs-4 fw-bold text-primary">{total || 0}</div>
-              <div className="text-muted small">Total Customers</div>
+              <div>Total Customers</div>
             </CardBody>
           </Card>
         </Box>
@@ -179,11 +179,11 @@ const CustomerTable = ({
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid #28a745' }}
           >
-            <CardBody className="py-3">
+            <CardBody>
               <div className="fs-4 fw-bold text-success">
                 {customers.filter((c) => !c.deleted_at).length}
               </div>
-              <div className="text-muted small">Active</div>
+              <div>Active</div>
             </CardBody>
           </Card>
         </Box>
@@ -192,11 +192,11 @@ const CustomerTable = ({
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid #ffc107' }}
           >
-            <CardBody className="py-3">
+            <CardBody>
               <div className="fs-4 fw-bold text-warning">
                 {customers.filter((c) => c.email).length}
               </div>
-              <div className="text-muted small">With Email</div>
+              <div>With Email</div>
             </CardBody>
           </Card>
         </Box>
@@ -205,9 +205,9 @@ const CustomerTable = ({
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid #dc3545' }}
           >
-            <CardBody className="py-3">
+            <CardBody>
               <div className="fs-4 fw-bold text-danger">{sortedFilteredCustomers.length}</div>
-              <div className="text-muted small">Filtered Results</div>
+              <div>Filtered Results</div>
             </CardBody>
           </Card>
         </Box>
@@ -232,24 +232,24 @@ const CustomerTable = ({
           <option value={25}>25 per page</option>
           <option value={50}>50 per page</option>
         </Select>
-        <div className="text-muted small">
+        <div>
           Showing {sortedFilteredCustomers.length} of {total} customers
-          {isContractor && <div className="text-primary">({contractorGroupName})</div>}
+          {isContractor && <div>({contractorGroupName})</div>}
         </div>
 
       {/* Loading State */}
       {loading && (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardBody className="text-center py-5">
-            <Spinner colorScheme="blue" className="mb-3" />
-            <p className="text-muted mb-0">Loading customers...</p>
+            <Spinner colorScheme="blue" />
+            <p>Loading customers...</p>
           </CardBody>
         </Card>
       )}
 
       {/* Error State */}
       {error && (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>Error:</strong> {error}
@@ -261,7 +261,7 @@ const CustomerTable = ({
       {/* Desktop Table */}
       {!loading && !error && (
         <Card className="border-0 shadow-sm d-none d-md-block">
-          <CardBody className="p-0">
+          <CardBody>
             <div style={{ overflowX: 'auto' }}>
               <Table hover responsive className="mb-0 table-modern">
                 <Thead style={{ backgroundColor: '#f8f9fa' }}>
@@ -274,7 +274,7 @@ const CustomerTable = ({
                       onClick={() => handleSort('name')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
-                      <div className="d-flex align-items-center gap-2">
+                      <div>
                         <Icon as={User} size="sm" />
                         Name
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
@@ -287,7 +287,7 @@ const CustomerTable = ({
                       onClick={() => handleSort('email')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
-                      <div className="d-flex align-items-center gap-2">
+                      <div>
                         <Icon as={Mail} size="sm" />
                         Email
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>
@@ -310,9 +310,9 @@ const CustomerTable = ({
                   {sortedFilteredCustomers?.length === 0 ? (
                     <Tr>
                       <Td colSpan="6" className="text-center py-5">
-                        <div className="text-muted">
-                          <Icon as={Search} size="xl" className="mb-3 opacity-25" />
-                          <p className="mb-0">No customers found</p>
+                        <div>
+                          <Icon as={Search} size="xl" />
+                          <p>No customers found</p>
                           <small>Try adjusting your search criteria</small>
                         </div>
                       </Td>
@@ -334,10 +334,10 @@ const CustomerTable = ({
                           </Badge>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light">
-                          <div className="fw-medium text-dark">{cust.name || 'N/A'}</div>
+                          <div>{cust.name || 'N/A'}</div>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light">
-                          <span className="text-muted">{cust.email || 'N/A'}</span>
+                          <span>{cust.email || 'N/A'}</span>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light">
                           <Badge
@@ -366,7 +366,7 @@ const CustomerTable = ({
                           </Badge>
                         </Td>
                         <Td className="py-3 border-0 border-bottom border-light text-center">
-                          <div className="d-flex justify-content-center gap-2">
+                          <div>
                             <PermissionGate action="update" resource="customer" item={cust}>
                               <button
                                 className="icon-btn"
@@ -399,13 +399,13 @@ const CustomerTable = ({
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
-        <div className="d-md-none">
+        <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card>
               <CardBody className="text-center py-5">
-                <div className="text-muted">
-                  <Icon as={Search} size="xl" className="mb-3 opacity-25" />
-                  <p className="mb-0">No customers found</p>
+                <div>
+                  <Icon as={Search} size="xl" />
+                  <p>No customers found</p>
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
@@ -427,7 +427,7 @@ const CustomerTable = ({
                     <span>0 Orders</span>
                   </div>
 
-                  <div className="d-flex justify-content-center gap-2">
+                  <div>
                     <PermissionGate action="update" resource="customer" item={cust}>
                       <button
                         className="icon-btn"

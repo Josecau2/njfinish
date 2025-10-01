@@ -1,0 +1,231 @@
+/* AppSidebar.module.css - Modern sidebar styling without !important */
+/* Replaces inline style injection from useEffect - removes all 15 !important declarations */
+
+/* Mobile-optimized sidebar CSS - matches legacy */
+.modernSidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1040;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modernSidebarHeader {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modernSidebarBrand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+  flex: 1;
+}
+
+.modernSidebarClose {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modernSidebarClose:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.modernSidebarFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Match legacy sidebar navigation styling */
+:global(.sidebar-nav) {
+  color: inherit;
+  padding: 0;
+}
+
+:global(.sidebar-brand-full) {
+  color: #fff;
+  cursor: pointer;
+}
+
+:global(.sidebar-footer-pin-btn) {
+  font-size: 0.875rem;
+}
+
+:global(.pin-label) {
+  margin-left: 0.25rem;
+}
+
+/* Ensure perfect icon alignment in collapsed mode - REMOVED !important */
+.modernSidebar :global(.chakra-stack) {
+  width: 100%;
+}
+
+.modernSidebar :global(.chakra-stack) > * {
+  width: 100%;
+}
+
+/* Base sidebar navigation styles - alignment handled per state below */
+.modernSidebar :global(.sidebar-nav) button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+/* Mobile adjustments - using lg breakpoint (1024px) */
+@media (max-width: 1023px) {
+  .modernSidebarClose {
+    display: flex;
+  }
+
+  .modernSidebarFooter {
+    display: none;
+  }
+}
+
+/* Desktop adjustments - using lg breakpoint (1024px) */
+@media (min-width: 1024px) {
+  .modernSidebarClose {
+    display: none;
+  }
+
+  .modernSidebarFooter {
+    display: flex;
+  }
+}
+
+/* ============================================ */
+/* COLLAPSED STATE - Sidebar width: 56px */
+/* ============================================ */
+
+/* Collapsed state styling - removed Bootstrap .sidebar-narrow class */
+.sidebarCollapsed :global(.sidebar-nav) :global(.nav-item) {
+  padding: 0 !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) :global(.nav-group-items) :global(.nav-item) {
+  padding: 0 !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding: 0.75rem 0 !important;
+  margin: 0 !important;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) :global(.nav-link) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0.75rem 0 !important;
+  gap: 0 !important;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) :global(.chakra-stack) {
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) :global(.chakra-text) {
+  display: none;
+}
+
+.sidebarCollapsed :global(.sidebar-brand-full) {
+  display: none;
+}
+
+/* Collapsed: Center all nav icons */
+.sidebarCollapsed :global(.sidebar-nav) :global(.nav-icon) {
+  margin: 0 !important;
+}
+
+.sidebarCollapsed :global(.sidebar-nav) :global(.chakra-icon) {
+  margin: 0 !important;
+}
+
+/* Collapsed: Hide chevron/expand icons */
+.sidebarCollapsed :global(.sidebar-nav) :global(.chakra-collapse) {
+  display: none;
+}
+
+/* ============================================ */
+/* EXPANDED STATE - Sidebar width: 256px */
+/* ============================================ */
+
+/* Expanded sidebar shows full labels and proper spacing */
+.sidebarExpanded :global(.sidebar-nav) button {
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+}
+
+.sidebarExpanded :global(.sidebar-nav) :global(.chakra-text) {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarExpanded :global(.sidebar-brand-full) {
+  display: block;
+}
+
+/* ============================================ */
+/* HOVER STATE - Desktop only with 1024px breakpoint */
+/* ============================================ */
+
+@media (min-width: 1024px) {
+  /* Smooth width transition on hover expand/collapse */
+  .modernSidebar {
+    transition: width 0.15s ease-in-out;
+  }
+
+  /* Collapsed sidebar on hover should show text labels */
+  .sidebarCollapsed:hover :global(.sidebar-nav) :global(.chakra-text) {
+    display: block;
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  .sidebarCollapsed:hover :global(.sidebar-brand-full) {
+    display: block;
+    animation: fadeIn 0.2s ease-in;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

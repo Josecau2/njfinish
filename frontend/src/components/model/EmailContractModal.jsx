@@ -21,7 +21,7 @@ const EmailContractModal = ({ show, onClose }) => {
         <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <p className='text-center'>
+          <p>
             {t(
               'contracts.noContractsMsg',
               'No contracts available for selection. Please go to contract settings to add one.',

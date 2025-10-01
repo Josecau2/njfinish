@@ -53,76 +53,76 @@ const OverviewTab = ({ contractor }) => {
   return (
     <Flex>
       {/* Stats Cards */}
-      <Box sm={6} lg={3} className="mb-4">
-        <Card className="text-center">
+      <Box sm={6} lg={3}>
+        <Card>
           <CardBody>
             <User size={32} className="text-primary mb-3" aria-hidden="true" />
-            <h3 className="text-primary">{contractor.stats?.user_count || 0}</h3>
-            <p className="text-muted mb-0">{t('contractorsAdmin.table.users')}</p>
+            <h3>{contractor.stats?.user_count || 0}</h3>
+            <p>{t('contractorsAdmin.table.users')}</p>
           </CardBody>
         </Card>
       </Box>
 
-      <Box sm={6} lg={3} className="mb-4">
-        <Card className="text-center">
+      <Box sm={6} lg={3}>
+        <Card>
           <CardBody>
             <Users size={32} className="text-warning mb-3" aria-hidden="true" />
-            <h3 className="text-warning">{contractor.stats?.customer_count || 0}</h3>
-            <p className="text-muted mb-0">{t('contractorsAdmin.table.customers')}</p>
+            <h3>{contractor.stats?.customer_count || 0}</h3>
+            <p>{t('contractorsAdmin.table.customers')}</p>
           </CardBody>
         </Card>
       </Box>
 
-      <Box sm={6} lg={3} className="mb-4">
-        <Card className="text-center">
+      <Box sm={6} lg={3}>
+        <Card>
           <CardBody>
             <BriefcaseBusiness size={32} className="text-success mb-3" aria-hidden="true" />
-            <h3 className="text-success">{contractor.stats?.proposal_count || 0}</h3>
-            <p className="text-muted mb-0">{t('contractorsAdmin.table.proposals')}</p>
+            <h3>{contractor.stats?.proposal_count || 0}</h3>
+            <p>{t('contractorsAdmin.table.proposals')}</p>
           </CardBody>
         </Card>
       </Box>
 
-      <Box sm={6} lg={3} className="mb-4">
-        <Card className="text-center">
+      <Box sm={6} lg={3}>
+        <Card>
           <CardBody>
             <LayoutGrid size={32} className="text-info mb-3" aria-hidden="true" />
-            <h3 className="text-info">
+            <h3>
               {enabledModules}/{totalModules}
             </h3>
-            <p className="text-muted mb-0">{t('contractorsAdmin.table.modules')}</p>
+            <p>{t('contractorsAdmin.table.modules')}</p>
           </CardBody>
         </Card>
       </Box>
 
       {/* Basic Information */}
-      <Box md={6} className="mb-4">
+      <Box md={6}>
         <Card>
           <CardHeader>
             <strong>{t('contractorsAdmin.detail.basicInfo.title')}</strong>
           </CardHeader>
           <CardBody>
             <List flush>
-              <ListItem className="d-flex justify-content-between align-items-center">
+              <ListItem>
                 <span>
-                  <Users size={16} className="me-2 text-muted" aria-hidden="true" />
+                  <Users size={16} aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.contractorName')}
                 </span>
                 <strong>{contractor.name}</strong>
               </ListItem>
-              <ListItem className="d-flex justify-content-between align-items-center">
+              <ListItem>
                 <span>
-                  <Calendar size={16} className="me-2 text-muted" aria-hidden="true" />
+                  <Calendar size={16} aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.createdDate')}
                 </span>
                 <span>{formatDate(contractor.created_at)}</span>
               </ListItem>
-              <ListItem className="d-flex justify-content-between align-items-center">
+              <ListItem>
                 <span>{t('contractorsAdmin.detail.basicInfo.groupType')}</span>
                 <Badge status="info">{contractor.group_type || 'contractor'}</Badge>
               </ListItem>
               {contractor.contractor_settings?.max_users && (
-                <ListItem className="d-flex justify-content-between align-items-center">
+                <ListItem>
                   <span>{t('contractorsAdmin.detail.basicInfo.maxUsers')}</span>
                   <span>{contractor.contractor_settings.max_users}</span>
                 </ListItem>
@@ -133,12 +133,12 @@ const OverviewTab = ({ contractor }) => {
       </Box>
 
       {/* Module Access */}
-      <Box md={6} className="mb-4">
+      <Box md={6}>
         <Card>
-          <CardHeader className="d-flex justify-content-between align-items-center">
+          <CardHeader>
             <strong>{t('contractorsAdmin.detail.moduleAccess.title')}</strong>
             <div>
-              <small className="text-muted">
+              <small>
                 {t('contractorsAdmin.detail.moduleAccess.enabledOfTotal', {
                   enabled: enabledModules,
                   total: totalModules,
@@ -147,15 +147,15 @@ const OverviewTab = ({ contractor }) => {
             </div>
           </CardHeader>
           <CardBody>
-            <div className="mb-3">
+            <div>
               <Progress
                 value={modulePercentage}
                 colorScheme={
                   modulePercentage > 75 ? 'green' : modulePercentage > 50 ? 'yellow' : 'red'
                 }
-                className="mb-2"
+               
               />
-              <small className="text-muted">
+              <small>
                 {t('contractorsAdmin.detail.moduleAccess.percentEnabled', {
                   percent: Math.round(modulePercentage),
                 })}
@@ -166,7 +166,7 @@ const OverviewTab = ({ contractor }) => {
               {moduleData.map((module) => (
                 <ListItem
                   key={module.key}
-                  className="d-flex justify-content-between align-items-center"
+                 
                 >
                   <span>
                     {module.enabled ? (
@@ -196,35 +196,35 @@ const OverviewTab = ({ contractor }) => {
           </CardHeader>
           <CardBody>
             <Flex>
-              <Box md={4} className="border-end">
-                <div className="text-center">
-                  <h4 className="text-primary">{contractor.stats?.user_count || 0}</h4>
-                  <p className="text-muted mb-0">
+              <Box md={4}>
+                <div>
+                  <h4>{contractor.stats?.user_count || 0}</h4>
+                  <p>
                     {t('contractorsAdmin.detail.activity.totalUsers')}
                   </p>
-                  <small className="text-muted">
+                  <small>
                     {t('contractorsAdmin.detail.activity.totalUsersHint')}
                   </small>
                 </div>
               </Box>
-              <Box md={4} className="border-end">
-                <div className="text-center">
-                  <h4 className="text-warning">{contractor.stats?.customer_count || 0}</h4>
-                  <p className="text-muted mb-0">
+              <Box md={4}>
+                <div>
+                  <h4>{contractor.stats?.customer_count || 0}</h4>
+                  <p>
                     {t('contractorsAdmin.detail.activity.totalCustomers')}
                   </p>
-                  <small className="text-muted">
+                  <small>
                     {t('contractorsAdmin.detail.activity.totalCustomersHint')}
                   </small>
                 </div>
               </Box>
               <Box md={4}>
-                <div className="text-center">
-                  <h4 className="text-success">{contractor.stats?.proposal_count || 0}</h4>
-                  <p className="text-muted mb-0">
+                <div>
+                  <h4>{contractor.stats?.proposal_count || 0}</h4>
+                  <p>
                     {t('contractorsAdmin.detail.activity.totalProposals')}
                   </p>
-                  <small className="text-muted">
+                  <small>
                     {t('contractorsAdmin.detail.activity.totalProposalsHint')}
                   </small>
                 </div>

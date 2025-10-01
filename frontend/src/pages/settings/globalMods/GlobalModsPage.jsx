@@ -419,7 +419,7 @@ const GlobalModsPage = () => {
   }
 
   return (
-    <div className="container-fluid">
+    <div>
       <style>{`
         /* Local, scoped mobile/a11y tweaks for Global Mods */
         .global-mods-actions { flex-wrap: wrap; gap: .5rem; }
@@ -463,20 +463,20 @@ const GlobalModsPage = () => {
 
       <Flex>
         <Box md={6}>
-          <Card className="mb-4">
+          <Card>
             <CardHeader>{t('globalMods.ui.galleryHeader')}</CardHeader>
             <CardBody>
               {loading && <div>{t('common.loading')}</div>}
-              {error && <div className="text-danger">{error}</div>}
+              {error && <div>{error}</div>}
               {/* Category Creation Section */}
               <Card className="mb-3 border-success">
                 <CardHeader className="bg-success text-white">
-                  <h6 className="mb-0">{t('globalMods.category.createTitle')}</h6>
+                  <h6>{t('globalMods.category.createTitle')}</h6>
                 </CardHeader>
                 <CardBody>
-                  <Flex className="mb-3">
+                  <Flex>
                     <Box md={6}>
-                      <label className="form-label">{t('globalMods.category.nameLabel')}</label>
+                      <label>{t('globalMods.category.nameLabel')}</label>
                       <Input
                         placeholder={t('globalMods.category.namePlaceholder')}
                         value={newCategory.name}
@@ -484,7 +484,7 @@ const GlobalModsPage = () => {
                       />
                     </Box>
                     <Box md={3}>
-                      <label className="form-label">{t('globalMods.category.orderLabel')}</label>
+                      <label>{t('globalMods.category.orderLabel')}</label>
                       <Input
                         type="number"
                         placeholder={t('globalMods.category.orderLabel')}
@@ -495,10 +495,10 @@ const GlobalModsPage = () => {
                       />
                     </Box>
                     <Box md={3}>
-                      <label className="form-label">{t('globalMods.category.actionLabel')}</label>
+                      <label>{t('globalMods.category.actionLabel')}</label>
                       <Button
                         colorScheme="blue"
-                        className="w-100"
+                       
                         onClick={createCategory}
                         disabled={!newCategory.name.trim()}
                       >
@@ -508,7 +508,7 @@ const GlobalModsPage = () => {
                   </Flex>
                   <Flex>
                     <Box md={6}>
-                      <label className="form-label">{t('globalMods.category.imageLabel')}</label>
+                      <label>{t('globalMods.category.imageLabel')}</label>
                       <Input
                         type="file"
                         accept="image/*"
@@ -520,11 +520,11 @@ const GlobalModsPage = () => {
                           }
                         }}
                       />
-                      <small className="text-muted">{t('globalMods.category.imageHint')}</small>
+                      <small>{t('globalMods.category.imageHint')}</small>
                     </Box>
                     <Box md={6}>
                       {newCategory.image ? (
-                        <div className="mt-2">
+                        <div>
                           <img
                             src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newCategory.image}`}
                             alt={t('globalMods.category.imageLabel')}
@@ -539,15 +539,15 @@ const GlobalModsPage = () => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div className="mt-1">
-                            <small className="text-success">
+                          <div>
+                            <small>
                               {t('globalMods.category.imageReady')}
                             </small>
                           </div>
                         </div>
                       ) : (
                         <div
-                          className="text-center text-muted p-3 border rounded mt-2"
+                         
                           style={{ backgroundColor: '#f8f9fa', width: 60, height: 60 }}
                         >
                           <small>📁</small>
@@ -559,7 +559,7 @@ const GlobalModsPage = () => {
               </Card>
 
               {gallery.map((cat) => (
-                <div key={cat.id} className="mb-4">
+                <div key={cat.id}>
                   <h6 className="mb-2 d-flex align-items-center gap-2">
                     {cat.image && (
                       <img
@@ -607,7 +607,7 @@ const GlobalModsPage = () => {
                     {(cat.templates || []).map((tpl) => (
                       <div key={tpl.id} className="col-12 col-md-6">
                         <div
-                          className="border rounded p-2 d-flex align-items-start position-relative"
+                         
                           style={{ gap: 10 }}
                         >
                           {(tpl.sampleImage || tpl.fieldsConfig?.modSampleImage?.enabled) && (
@@ -630,9 +630,9 @@ const GlobalModsPage = () => {
                               }}
                             />
                           )}
-                          <div className="flex-grow-1">
-                            <div className="fw-semibold">{tpl.name}</div>
-                            <div className="text-muted small">
+                          <div>
+                            <div>{tpl.name}</div>
+                            <div>
                               {tpl.defaultPrice != null
                                 ? `$${Number(tpl.defaultPrice).toFixed(2)}`
                                 : t('globalMods.template.blueprint')}
@@ -662,19 +662,19 @@ const GlobalModsPage = () => {
         </Box>
 
         <Box md={6}>
-          <Card className="mb-4">
+          <Card>
             <CardHeader>{t('globalMods.template.createHeader')}</CardHeader>
             <CardBody>
               {/* Required Fields Section */}
               <Card className="mb-4 border-primary">
                 <CardHeader className="bg-primary text-white">
-                  <h6 className="mb-0">{t('globalMods.template.requiredFields')}</h6>
+                  <h6>{t('globalMods.template.requiredFields')}</h6>
                 </CardHeader>
                 <CardBody>
-                  <Flex className="mb-3">
+                  <Flex>
                     <Box md={12}>
-                      <label className="form-label">
-                        {t('globalMods.template.nameLabel')} <span className="text-danger">*</span>
+                      <label>
+                        {t('globalMods.template.nameLabel')} <span>*</span>
                       </label>
                       <Input
                         placeholder={t('globalMods.template.namePlaceholder')}
@@ -684,17 +684,17 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.name.trim() && (
-                        <small className="text-danger">
+                        <small>
                           {t('globalMods.template.nameRequired')}
                         </small>
                       )}
                     </Box>
                   </Flex>
-                  <Flex className="mb-3">
+                  <Flex>
                     <Box md={12}>
-                      <label className="form-label">
+                      <label>
                         {t('globalMods.template.defaultPriceLabel')}{' '}
-                        <span className="text-danger">*</span>
+                        <span>*</span>
                       </label>
                       <Input
                         type="number"
@@ -707,7 +707,7 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.defaultPrice && (
-                        <small className="text-danger">
+                        <small>
                           {t('globalMods.template.defaultPriceRequired')}
                         </small>
                       )}
@@ -717,9 +717,9 @@ const GlobalModsPage = () => {
               </Card>
 
               {/* Optional Settings */}
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
-                  <label className="form-label">
+                  <label>
                     {t('globalMods.template.categoryOptionalLabel')}
                   </label>
                   <Select
@@ -735,7 +735,7 @@ const GlobalModsPage = () => {
                   </Select>
                 </Box>
                 <Box md={6}>
-                  <label className="form-label">{t('globalMods.template.statusLabel')}</label>
+                  <label>{t('globalMods.template.statusLabel')}</label>
                   <Select
                     value={newTemplate.isReady ? '1' : '0'}
                     onChange={(e) =>
@@ -751,7 +751,7 @@ const GlobalModsPage = () => {
               {/* Guided builder */}
               <div className="border rounded p-3 mb-3">
                 <h6>{t('globalMods.builder.title')}</h6>
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={4}>
                     <Checkbox
                       label={t('globalMods.builder.heightSlider')}
@@ -970,7 +970,7 @@ const GlobalModsPage = () => {
                   </Box>
                 </Flex>
 
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={6}>
                     <Checkbox
                       label={t('globalMods.builder.sideSelector.label')}
@@ -984,7 +984,7 @@ const GlobalModsPage = () => {
                     />
                     {guided.sideSelector.enabled && (
                       <Input
-                        className="mt-2"
+                       
                         placeholder={t('globalMods.builder.sideSelector.placeholder')}
                         value={guided.sideSelector.options?.join(',')}
                         onChange={(e) =>
@@ -1038,7 +1038,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         {builderErrors.qtyRange && (
-                          <div className="text-danger small align-self-center">
+                          <div>
                             {builderErrors.qtyRange}
                           </div>
                         )}
@@ -1047,7 +1047,7 @@ const GlobalModsPage = () => {
                   </Box>
                 </Flex>
 
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={4}>
                     <Checkbox
                       label={t('globalMods.builder.customerNotes.label')}
@@ -1060,7 +1060,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.notes.enabled && (
-                      <div className="mt-2">
+                      <div>
                         <Input
                           placeholder={t('globalMods.builder.customerNotes.placeholder')}
                           value={guided.notes.placeholder}
@@ -1072,7 +1072,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                          className="mt-1"
+                         
                           label={t('globalMods.builder.customerNotes.showInRed')}
                           checked={guided.notes.showInRed}
                           onChange={(e) =>
@@ -1097,7 +1097,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.customerUpload.enabled && (
-                      <div className="mt-2">
+                      <div>
                         <Input
                           placeholder={t('globalMods.builder.customerUpload.titlePlaceholder')}
                           value={guided.customerUpload.title}
@@ -1109,7 +1109,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                          className="mt-1"
+                         
                           label={t('globalMods.builder.customerUpload.required')}
                           checked={guided.customerUpload.required}
                           onChange={(e) =>
@@ -1179,10 +1179,10 @@ const GlobalModsPage = () => {
               {/* Sample Image Upload Section */}
               <Card className="mb-3 border-info">
                 <CardHeader className="bg-info text-white">
-                  <h6 className="mb-0">{t('globalMods.builder.sampleUpload.title')}</h6>
+                  <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
                 <CardBody>
-                  <Flex className="align-items-center">
+                  <Flex>
                     <Box md={6}>
                       <label className="form-label mb-2">
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
@@ -1197,9 +1197,9 @@ const GlobalModsPage = () => {
                             if (filename) setNewTemplate((n) => ({ ...n, sampleImage: filename }))
                           }
                         }}
-                        className="mb-2"
+                       
                       />
-                      <small className="text-muted">
+                      <small>
                         {t('globalMods.builder.sampleUpload.hint')}
                       </small>
                     </Box>
@@ -1220,8 +1220,8 @@ const GlobalModsPage = () => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div className="mt-2">
-                            <small className="text-success">
+                          <div>
+                            <small>
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
@@ -1230,7 +1230,7 @@ const GlobalModsPage = () => {
                         </div>
                       ) : (
                         <div
-                          className="text-center text-muted p-4 border rounded"
+                         
                           style={{ backgroundColor: '#f8f9fa' }}
                         >
                           <div>📷</div>
@@ -1250,7 +1250,7 @@ const GlobalModsPage = () => {
                   setNewTemplate((n) => ({ ...n, fieldsConfigText: e.target.value }))
                 }
               />
-              <div className="mt-3">
+              <div>
                 <Button
                   colorScheme="green"
                   onClick={createTemplate}
@@ -1269,7 +1269,7 @@ const GlobalModsPage = () => {
           <Card>
             <CardHeader>{t('globalMods.assign.header')}</CardHeader>
             <CardBody>
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={6}>
                   <Select
                     value={assignForm.templateId}
@@ -1298,7 +1298,7 @@ const GlobalModsPage = () => {
                   </Select>
                 </Box>
               </Flex>
-              <Flex className="mb-3">
+              <Flex>
                 <Box md={4}>
                   <Select
                     value={assignForm.scope}
@@ -1357,7 +1357,7 @@ const GlobalModsPage = () => {
                 {t('globalMods.assign.assignButton')}
               </Button>
 
-              <div className="mt-4">
+              <div>
                 <h6>{t('common.currentAssignments', 'Current Assignments')}</h6>
                 <Table size="sm" variant="simple">
                   <Thead>
@@ -1399,7 +1399,7 @@ const GlobalModsPage = () => {
                     ))}
                     {!assignments.length && (
                       <Tr>
-                        <Td colSpan={5} className="text-muted">
+                        <Td colSpan={5}>
                           {t('globalMods.assign.none')}
                         </Td>
                       </Tr>
@@ -1437,7 +1437,7 @@ const GlobalModsPage = () => {
               </Select>
 
               {selectedSubmenu === 'new' && (
-                <div className="mt-3">
+                <div>
                   <Input
                     placeholder={t('globalMods.modal.add.newSubmenuName')}
                     value={newCategory.name}
@@ -1448,7 +1448,7 @@ const GlobalModsPage = () => {
                     placeholder={t('globalMods.modal.add.orderIndex')}
                     value={newCategory.orderIndex}
                     onChange={(e) => setNewCategory((n) => ({ ...n, orderIndex: e.target.value }))}
-                    className="mt-2"
+                   
                   />
                   <Input
                     type="file"
@@ -1458,7 +1458,7 @@ const GlobalModsPage = () => {
                       const filename = await handleUploadImage(file)
                       if (filename) setNewCategory((n) => ({ ...n, image: filename }))
                     }}
-                    className="mt-2"
+                   
                   />
                 </div>
               )}
@@ -1485,13 +1485,13 @@ const GlobalModsPage = () => {
               {/* Required Fields Section */}
               <Card className="mb-4 border-primary">
                 <CardHeader className="bg-primary text-white">
-                  <h6 className="mb-0">Required Fields</h6>
+                  <h6>Required Fields</h6>
                 </CardHeader>
                 <CardBody>
-                  <Flex className="mb-3">
+                  <Flex>
                     <Box md={6}>
-                      <label className="form-label">
-                        {t('globalMods.template.nameLabel')} <span className="text-danger">*</span>
+                      <label>
+                        {t('globalMods.template.nameLabel')} <span>*</span>
                       </label>
                       <Input
                         placeholder={t('globalMods.template.namePlaceholder')}
@@ -1501,15 +1501,15 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.name.trim() && (
-                        <small className="text-danger">
+                        <small>
                           {t('globalMods.template.nameRequired')}
                         </small>
                       )}
                     </Box>
                     <Box md={6}>
-                      <label className="form-label">
+                      <label>
                         {t('globalMods.template.defaultPriceLabel')}{' '}
-                        <span className="text-danger">*</span>
+                        <span>*</span>
                       </label>
                       <Input
                         type="number"
@@ -1522,7 +1522,7 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.defaultPrice && (
-                        <small className="text-danger">
+                        <small>
                           {t('globalMods.template.defaultPriceRequired')}
                         </small>
                       )}
@@ -1534,7 +1534,7 @@ const GlobalModsPage = () => {
               {/* Guided builder - same as main form */}
               <div className="border rounded p-3 mb-3">
                 <h6>{t('globalMods.builder.title')}</h6>
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={4}>
                     <Checkbox
                       label={t('globalMods.builder.heightSlider')}
@@ -1753,7 +1753,7 @@ const GlobalModsPage = () => {
                   </Box>
                 </Flex>
 
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={6}>
                     <Checkbox
                       label={t('globalMods.builder.sideSelector.label')}
@@ -1767,7 +1767,7 @@ const GlobalModsPage = () => {
                     />
                     {guided.sideSelector.enabled && (
                       <Input
-                        className="mt-2"
+                       
                         placeholder={t('globalMods.builder.sideSelector.placeholder')}
                         value={guided.sideSelector.options?.join(',')}
                         onChange={(e) =>
@@ -1821,7 +1821,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         {builderErrors.qtyRange && (
-                          <div className="text-danger small align-self-center">
+                          <div>
                             {builderErrors.qtyRange}
                           </div>
                         )}
@@ -1830,7 +1830,7 @@ const GlobalModsPage = () => {
                   </Box>
                 </Flex>
 
-                <Flex className="mb-2">
+                <Flex>
                   <Box md={4}>
                     <Checkbox
                       label={t('globalMods.builder.customerNotes.label')}
@@ -1843,7 +1843,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.notes.enabled && (
-                      <div className="mt-2">
+                      <div>
                         <Input
                           placeholder={t('globalMods.builder.customerNotes.placeholder')}
                           value={guided.notes.placeholder}
@@ -1855,7 +1855,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                          className="mt-1"
+                         
                           label={t('globalMods.builder.customerNotes.showInRed')}
                           checked={guided.notes.showInRed}
                           onChange={(e) =>
@@ -1880,7 +1880,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.customerUpload.enabled && (
-                      <div className="mt-2">
+                      <div>
                         <Input
                           placeholder={t('globalMods.builder.customerUpload.titlePlaceholder')}
                           value={guided.customerUpload.title}
@@ -1892,7 +1892,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                          className="mt-1"
+                         
                           label={t('globalMods.builder.customerUpload.required')}
                           checked={guided.customerUpload.required}
                           onChange={(e) =>
@@ -1962,10 +1962,10 @@ const GlobalModsPage = () => {
               {/* Sample Image Upload Section */}
               <Card className="mb-3 border-info">
                 <CardHeader className="bg-info text-white">
-                  <h6 className="mb-0">{t('globalMods.builder.sampleUpload.title')}</h6>
+                  <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
                 <CardBody>
-                  <Flex className="align-items-center">
+                  <Flex>
                     <Box md={6}>
                       <label className="form-label mb-2">
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
@@ -1980,9 +1980,9 @@ const GlobalModsPage = () => {
                             if (filename) setNewTemplate((n) => ({ ...n, sampleImage: filename }))
                           }
                         }}
-                        className="mb-2"
+                       
                       />
-                      <small className="text-muted">
+                      <small>
                         {t('globalMods.builder.sampleUpload.hint')}
                       </small>
                     </Box>
@@ -2003,8 +2003,8 @@ const GlobalModsPage = () => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div className="mt-2">
-                            <small className="text-success">
+                          <div>
+                            <small>
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
@@ -2013,7 +2013,7 @@ const GlobalModsPage = () => {
                         </div>
                       ) : (
                         <div
-                          className="text-center text-muted p-4 border rounded"
+                         
                           style={{ backgroundColor: '#f8f9fa' }}
                         >
                           <div>📷</div>
@@ -2063,7 +2063,7 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.editCategory.title')}
             </ModalHeader>
         <ModalBody>
-          <Flex className="mb-3">
+          <Flex>
             <Box md={8}>
               <Input
                 placeholder={t('globalMods.modal.editCategory.namePlaceholder')}
@@ -2080,7 +2080,7 @@ const GlobalModsPage = () => {
               />
             </Box>
           </Flex>
-          <Flex className="mb-3">
+          <Flex>
             <Box md={12}>
               <Input
                 type="file"
@@ -2094,7 +2094,7 @@ const GlobalModsPage = () => {
                 }}
               />
               {editCategory.image && (
-                <div className="mt-2">
+                <div>
                   <img
                     src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
                     alt="Category"
@@ -2145,9 +2145,9 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.editTemplate.title')}
             </ModalHeader>
         <ModalBody>
-          <Flex className="mb-3">
+          <Flex>
             <Box md={6}>
-              <label className="form-label">{t('globalMods.modal.editTemplate.nameLabel')}</label>
+              <label>{t('globalMods.modal.editTemplate.nameLabel')}</label>
               <Input
                 placeholder={t('globalMods.modal.editTemplate.nameLabel')}
                 value={editTemplate.name}
@@ -2155,7 +2155,7 @@ const GlobalModsPage = () => {
               />
             </Box>
             <Box md={6}>
-              <label className="form-label">{t('globalMods.modal.editTemplate.priceLabel')}</label>
+              <label>{t('globalMods.modal.editTemplate.priceLabel')}</label>
               <Input
                 type="number"
                 step="0.01"
@@ -2165,9 +2165,9 @@ const GlobalModsPage = () => {
               />
             </Box>
           </Flex>
-          <Flex className="mb-3">
+          <Flex>
             <Box md={12}>
-              <label className="form-label">
+              <label>
                 {t('globalMods.modal.editTemplate.sampleUploadLabel')}
               </label>
               <Input
@@ -2180,7 +2180,7 @@ const GlobalModsPage = () => {
                 }}
               />
               {editTemplate.sampleImage && (
-                <div className="mt-2">
+                <div>
                   <img
                     src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
                     alt={t('globalMods.modal.editTemplate.sampleAlt')}
@@ -2200,7 +2200,7 @@ const GlobalModsPage = () => {
             </Box>
           </Flex>
           {/* Task 7: Add "Mark as Ready" toggle */}
-          <Flex className="mb-3">
+          <Flex>
             <Box md={12}>
               <div className="border-top pt-3">
                 <Checkbox
@@ -2238,12 +2238,12 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.gallery.title')}
             </ModalHeader>
         <ModalBody>
-          <div className="row">
+          <div>
             {gallery.map((category) => (
               <div key={category.id} className="col-md-6 mb-4">
-                <div className="card">
-                  <div className="card-header">
-                    <h6 className="mb-0 d-flex align-items-center gap-2">
+                <div>
+                  <div>
+                    <h6>
                       {category.image && (
                         <>
                           <img
@@ -2271,24 +2271,24 @@ const GlobalModsPage = () => {
                       {category.name}
                     </h6>
                   </div>
-                  <div className="card-body">
+                  <div>
                     {category.templates?.length ? (
                       category.templates.map((template) => (
                         <div
                           key={template.id}
-                          className="d-flex justify-content-between align-items-center mb-2 p-2 border rounded"
+                         
                         >
                           <div>
                             <strong>{template.name}</strong>
                             {template.defaultPrice && (
-                              <span className="text-muted">
+                              <span>
                                 {' '}
                                 - ${Number(template.defaultPrice).toFixed(2)}
                               </span>
                             )}
                             <Badge
                               color={template.isReady ? 'success' : 'warning'}
-                              className="ms-2"
+                             
                             >
                               {template.isReady
                                 ? t('globalMods.template.status.ready')
@@ -2325,7 +2325,7 @@ const GlobalModsPage = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-muted">{t('globalMods.modal.gallery.emptyCategory')}</p>
+                      <p>{t('globalMods.modal.gallery.emptyCategory')}</p>
                     )}
                   </div>
                   {/* close column wrapper */}
@@ -2345,7 +2345,7 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.assign.title')}
             </ModalHeader>
         <ModalBody>
-          <Flex className="mb-3">
+          <Flex>
             <Box md={6}>
               <Select
                 value={selectedManufacturer}
@@ -2374,7 +2374,7 @@ const GlobalModsPage = () => {
             </Box>
           </Flex>
 
-          <Flex className="mb-3">
+          <Flex>
             <Box md={4}>
               <Select
                 value={assignForm.scope}
@@ -2427,7 +2427,7 @@ const GlobalModsPage = () => {
             </Box>
           </Flex>
 
-          <div className="d-flex gap-2">
+          <div>
             <Button colorScheme="gray" onClick={() => setShowAssignModal(false)}>
               {t('globalMods.modal.assign.cancel')}
             </Button>
@@ -2480,17 +2480,17 @@ const GlobalModsPage = () => {
                   />
                 </p>
 
-              <div className="mb-3">
-                <div className="form-check">
+              <div>
+                <div>
                   <input
-                    className="form-check-input"
+                   
                     type="radio"
                     name="deleteMode"
                     id="moveMode"
                     checked={deleteMode === 'move'}
                     onChange={() => setDeleteMode('move')}
                   />
-                  <label className="form-check-label" htmlFor="moveMode">
+                  <label htmlFor="moveMode">
                     <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
                     {t('globalMods.modal.deleteCategory.move.recommended')}
                   </label>
@@ -2501,7 +2501,7 @@ const GlobalModsPage = () => {
                     <Select
                       value={moveToCategoryId}
                       onChange={(e) => setMoveToCategoryId(e.target.value)}
-                      className="w-50"
+                     
                     >
                       <option value="">
                         {t('globalMods.modal.deleteCategory.move.selectTarget')}
@@ -2527,15 +2527,15 @@ const GlobalModsPage = () => {
 
                 <div className="form-check mt-2">
                   <input
-                    className="form-check-input"
+                   
                     type="radio"
                     name="deleteMode"
                     id="withModsMode"
                     checked={deleteMode === 'withMods'}
                     onChange={() => setDeleteMode('withMods')}
                   />
-                  <label className="form-check-label" htmlFor="withModsMode">
-                    <strong className="text-danger">
+                  <label htmlFor="withModsMode">
+                    <strong>
                       {t('globalMods.modal.deleteCategory.withMods.label')}
                     </strong>{' '}
                     {t('globalMods.modal.deleteCategory.withMods.permanent')}

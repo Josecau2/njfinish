@@ -1,0 +1,888 @@
+{
+  "summary": {
+    "filesScanned": 253,
+    "totalSpinners": 66,
+    "needsSkeleton": 64,
+    "appropriateSpinners": 2
+  },
+  "issues": {
+    "spinnerWithText": [
+      {
+        "file": "frontend/src/App.jsx",
+        "line": 38,
+        "code": "<Spinner size='lg' color='brand.500' thickness='3px' speed='0.65s' />",
+        "context": "    <Spinner size='lg' color='brand.500' thickness='3px' speed='0.65s' />\r\n  </Center>\r\n)\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/AppContent.js",
+        "line": 47,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" thickness=\"3px\" speed=\"0.65s\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" thickness=\"3px\" speed=\"0.65s\" />\n          </Center>\n        }\n      >"
+      },
+      {
+        "file": "frontend/src/components/contact/MessageHistory.jsx",
+        "line": 210,
+        "code": "<Spinner size=\"md\" color=\"blue.500\" />",
+        "context": "            <Spinner size=\"md\" color=\"blue.500\" />\r\n          </Flex>\r\n        ) : (\r\n          <Stack spacing={4}>\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 226,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 245,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "            <Spinner color=\"blue.500\" />\r\n          </Center>\r\n        )\r\n      }\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 252,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 280,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "            <Spinner color=\"blue.500\" />\r\n          </Center>\r\n        )\r\n      }\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 287,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/model/EmailProposalModal.jsx",
+        "line": 319,
+        "code": "<Spinner size='sm' />",
+        "context": "                  <Spinner size='sm' />\r\n                  <Text>{t('proposalCommon.sending')}</Text>\r\n                </HStack>\r\n              ) : (\r"
+      },
+      {
+        "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+        "line": 745,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "                <Spinner size=\"lg\" />\r\n                <Text mt={4} color=\"gray.500\">\r\n                  {t('modificationBrowser.loading', 'Loading modifications...')}\r\n                </Text>\r"
+      },
+      {
+        "file": "frontend/src/components/model/PrintPaymentReceiptModal.jsx",
+        "line": 280,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                <Spinner size=\"sm\" />\r\n                <Text>{t('paymentReceipt.modal.generating', 'Generating...')}</Text>\r\n              </HStack>\r\n            ) : (\r"
+      },
+      {
+        "file": "frontend/src/components/model/PrintProposalModal.jsx",
+        "line": 581,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    <Text>{t('proposalCommon.downloading')}</Text>\r\n                  </HStack>\r\n                ) : (\r"
+      },
+      {
+        "file": "frontend/src/components/model/PrintProposalModal.jsx",
+        "line": 659,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    <Text>{t('proposalCommon.downloading')}</Text>\r\n                  </HStack>\r\n                ) : (\r"
+      },
+      {
+        "file": "frontend/src/components/NotificationBell.js",
+        "line": 297,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "            <Spinner size=\"sm\" />\n          </Flex>\n        ) : Array.isArray(notifications) && notifications.length > 0 ? (\n          <Stack spacing={1} px={2} py={2}>"
+      },
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 73,
+        "code": "<Spinner />",
+        "context": "            <Spinner />\r\n          </Center>\r\n        )}\r\n        {error && (\r"
+      },
+      {
+        "file": "frontend/src/components/pdf/MobilePdfViewer.jsx",
+        "line": 34,
+        "code": "<Spinner />",
+        "context": "            <Spinner />\r\n          </Center>\r\n        )}\r\n        {error && (\r"
+      },
+      {
+        "file": "frontend/src/layout/DefaultLayout.jsx",
+        "line": 113,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\n      </Center>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/CustomersTab.jsx",
+        "line": 214,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\n      </Flex>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/ProposalsTab.jsx",
+        "line": 322,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "        <Spinner colorScheme=\"blue\" />\n      </div>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/ProposalsTab.jsx",
+        "line": 591,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "                  <Spinner colorScheme=\"blue\" size=\"lg\" />\n                  <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>\n                </div>\n              ) : proposalDetail"
+      },
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail.jsx",
+        "line": 67,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "          <Spinner size=\"lg\" color=\"blue.500\" />\r\n        </Flex>\r\n      </Container>\r\n    )\r"
+      },
+      {
+        "file": "frontend/src/pages/admin/Contractors.jsx",
+        "line": 133,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "        <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n      </Container>\r\n    )\r\n  }\r"
+      },
+      {
+        "file": "frontend/src/pages/admin/LeadsPage.jsx",
+        "line": 364,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n              </Flex>\r\n            ) : filteredLeads.length === 0 ? (\r\n              <Text color=\"gray.500\">{t('leadsPage.table.noResults')}</T"
+      },
+      {
+        "file": "frontend/src/pages/calender/index.jsx",
+        "line": 179,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"blue.500\" />\r\n              </Flex>\r\n            ) : (\r\n              <Stack spacing={6}>\r"
+      },
+      {
+        "file": "frontend/src/pages/contractor/ContractorDashboard.jsx",
+        "line": 151,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "        <Spinner size=\"lg\" />\r\n      </Flex>\r\n    )\r\n  }\r"
+      },
+      {
+        "file": "frontend/src/pages/contracts/index.jsx",
+        "line": 402,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text fontSize=\"sm\" color=\"gray.500\">\r\n                  {t('common.loading', 'Loading...')}\r\n                </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/contracts/index.jsx",
+        "line": 735,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text fontSize=\"sm\" color=\"gray.500\">\r\n                  {t('contracts.loadingDetails')}\r\n                </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/customers/CustomerForm.jsx",
+        "line": 490,
+        "code": "{loading ? <Spinner size=\"sm\" /> : <Save size={18} />}",
+        "context": "                    {loading ? <Spinner size=\"sm\" /> : <Save size={18} />}\r\n                    {isEditing\r\n                      ? t('customers.form.actions.update')\r\n                      : t('custo"
+      },
+      {
+        "file": "frontend/src/pages/customers/Customers.jsx",
+        "line": 293,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" />\r\n            <Text color=\"gray.500\">{t('customers.loading', 'Loading customers...')}</Text>\r\n          </Center>\r\n        )}\r"
+      },
+      {
+        "file": "frontend/src/pages/customers/Customers_broken.jsx",
+        "line": 210,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "            <Spinner colorScheme=\"blue\" size=\"lg\" />\r\n            <p >Loading customers...</p>\r\n          </CardBody>\r\n        </Card>\r"
+      },
+      {
+        "file": "frontend/src/pages/customers/Customers_fixed.jsx",
+        "line": 244,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "            <Spinner colorScheme=\"blue\" />\r\n            <p>Loading customers...</p>\r\n          </CardBody>\r\n        </Card>\r"
+      },
+      {
+        "file": "frontend/src/pages/customers/EditCustomerPage.jsx",
+        "line": 279,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "            <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n            <Text mt={4} color=\"gray.500\">\r\n              {t('customers.loading')}\r\n            </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 340,
+        "code": "{loading ? <Spinner size=\"sm\" color={accent} /> : value}",
+        "context": "                    {loading ? <Spinner size=\"sm\" color={accent} /> : value}\r\n                  </Text>\r\n                </Flex>\r\n              </CardBody>\r"
+      },
+      {
+        "file": "frontend/src/pages/orders/OrderDetails.jsx",
+        "line": 284,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\r\n        <Text color=\"gray.500\">{t('common.loading', 'Loading...')}</Text>\r\n      </Center>\r\n    )\r"
+      },
+      {
+        "file": "frontend/src/pages/payments/PaymentPage.jsx",
+        "line": 248,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "        <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n      </Container>\r\n    )\r\n  }\r"
+      },
+      {
+        "file": "frontend/src/pages/payments/PaymentPage.jsx",
+        "line": 382,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "                  <Spinner color=\"blue.500\" />\r\n                </Flex>\r\n              )}\r\n\r"
+      },
+      {
+        "file": "frontend/src/pages/profile/index.jsx",
+        "line": 269,
+        "code": "<Spinner size=\"sm\" mr={2} color={accentTextColor} /> {t('profile.saving')}",
+        "context": "                    <Spinner size=\"sm\" mr={2} color={accentTextColor} /> {t('profile.saving')}\n                  </>\n                ) : (\n                  t('profile.updateProfile')"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/DesignUpload.jsx",
+        "line": 210,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n              ) : filteredCollections.length === 0 ? (\r\n                <Text color=\"gray.500\" fontStyle=\"italic\">\r\n                  {t('propo"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+        "line": 311,
+        "code": "<Spinner size=\"xl\" color=\"brand.500\" />",
+        "context": "                  <Spinner size=\"xl\" color=\"brand.500\" />\r\n                  <Text color=\"gray.600\">{t('files.uploading')}</Text>\r\n                </>\r\n              ) : (\r"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+        "line": 244,
+        "code": "<Spinner alignSelf=\"center\" size=\"lg\" color=\"brand.500\" />",
+        "context": "                        <Spinner alignSelf=\"center\" size=\"lg\" color=\"brand.500\" />\n                      ) : enabledManufacturers.length === 0 ? (\n                        <Text color=\"gray.500\" fontSt"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+        "line": 293,
+        "code": "<Spinner size=\"md\" color=\"brand.500\" />",
+        "context": "                                      <Spinner size=\"md\" color=\"brand.500\" />\n                                    </Box>\n                                  )}\n                                  <img"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposalForm.jsx",
+        "line": 272,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text mt={4} color=\"gray.500\">\r\n                  {t('proposals.create.loadingManufacturer')}\r\n                </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/public/PublicProposalPage.jsx",
+        "line": 72,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "        <Spinner colorScheme=\"blue\" />\n      </div>\n  \n  )"
+      },
+      {
+        "file": "frontend/src/pages/Resources/index.jsx",
+        "line": 718,
+        "code": "<Spinner size=\"xl\" color={accentColor} thickness=\"4px\" />",
+        "context": "          <Spinner size=\"xl\" color={accentColor} thickness=\"4px\" />\n        </Center>\n      </Container>\n    )"
+      },
+      {
+        "file": "frontend/src/pages/settings/customization/LoginCustomizerPage.jsx",
+        "line": 315,
+        "code": "leftIcon={saving ? <Spinner size=\"sm\" /> : <Save size={18} />}",
+        "context": "          leftIcon={saving ? <Spinner size=\"sm\" /> : <Save size={18} />}\n          onClick={handleSave}\n          isDisabled={loading || saving}\n          isLoading={saving}"
+      },
+      {
+        "file": "frontend/src/pages/settings/customization/LoginCustomizerPage.jsx",
+        "line": 330,
+        "code": "<Spinner color=\"blue.500\" size=\"lg\" />",
+        "context": "            <Spinner color=\"blue.500\" size=\"lg\" />\n            <Text color=\"gray.500\" mt={3} mb={0}>\n              {t('settings.customization.login.loading')}\n            </Text>"
+      },
+      {
+        "file": "frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx",
+        "line": 714,
+        "code": "{loading ? <Spinner size=\"sm\" /> : <Icon as={Trash} boxSize={4} />}",
+        "context": "                        {loading ? <Spinner size=\"sm\" /> : <Icon as={Trash} boxSize={4} />}\r\n                      </Button>\r\n                    </HStack>\r\n                  </Box>\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 146,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" />\r\n            <Text mt={4} color=\"gray.500\">\r\n              {t('settings.locations.loading')}\r\n            </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
+        "line": 780,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    {t('settings.manufacturers.create.submitting')}\r\n                  </>\r\n                ) : (\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/ManufacturersList.jsx",
+        "line": 221,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"blue.500\" />\r\n          </Flex>\r\n        )}\r\n\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+        "line": 2343,
+        "code": "isCleaningDuplicates ? <Spinner size=\"sm\" /> : <Icon as={RefreshCw} boxSize={4} ",
+        "context": "                isCleaningDuplicates ? <Spinner size=\"sm\" /> : <Icon as={RefreshCw} boxSize={4} />\n              }\n              minH=\"44px\"\n            >"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+        "line": 204,
+        "code": "<Spinner color=\"brand.500\" />",
+        "context": "          <Spinner color=\"brand.500\" />\n          <Text mt={3}>{t('styles.loading', 'Loading style pictures...')}</Text>\n        </CardBody>\n      </Card>"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+        "line": 681,
+        "code": "<Spinner color=\"brand.500\" size=\"lg\" />",
+        "context": "          <Spinner color=\"brand.500\" size=\"lg\" />\n          <Text>{t('types.loading', 'Loading types...')}</Text>\n        </VStack>\n      </Box>"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+        "line": 1256,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                        <Spinner size=\"sm\" />\n                        <Text>{t('types.assign.loading', 'Loading catalog items...')}</Text>\n                      </VStack>\n                    ) : !moda"
+      },
+      {
+        "file": "frontend/src/pages/settings/multipliers/EditManuMultiplier.jsx",
+        "line": 69,
+        "code": "if (loading) return <Spinner className=\"mx-auto\" />",
+        "context": "  if (loading) return <Spinner className=\"mx-auto\" />\r\n\r\n  if (error)\r\n    return (\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/taxes/TaxesPage.jsx",
+        "line": 182,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "              <Spinner size=\"lg\" color=\"brand.500\" />\r\n            </Flex>\r\n          ) : taxes.length > 0 ? (\r\n            <Stack spacing={4}>\r"
+      },
+      {
+        "file": "frontend/src/pages/settings/users/UserList.jsx",
+        "line": 288,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "            <Spinner colorScheme=\"blue\" size=\"lg\" />\n            <p >{t('settings.users.loading')}</p>\n          </CardBody>\n        </Card>"
+      },
+      {
+        "file": "frontend/src/pages/settings/usersGroup/EditUserGroup.jsx",
+        "line": 229,
+        "code": "<Spinner size=\"lg\" color={customization.headerBg ? undefined : 'blue.500'} thick",
+        "context": "          <Spinner size=\"lg\" color={customization.headerBg ? undefined : 'blue.500'} thickness=\"4px\" speed=\"0.7s\" />\r\n          <Text color=\"gray.500\">{t('settings.userGroups.edit.loadingOne')}</Text>"
+      },
+      {
+        "file": "frontend/src/pages/settings/usersGroup/UserGroupList.jsx",
+        "line": 137,
+        "code": "{isUpdating && <Spinner size=\"xs\" />}",
+        "context": "        {isUpdating && <Spinner size=\"xs\" />}\n      </HStack>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/settings/usersGroup/UserGroupList.jsx",
+        "line": 146,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "          <Spinner size=\"lg\" color=\"brand.500\" />\n          <Text color=\"gray.500\">{t('common.loadingUserGroups')}</Text>\n        </VStack>\n      </Container>"
+      },
+      {
+        "file": "frontend/src/views/notifications/NotificationsPage.js",
+        "line": 340,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "                <Spinner size=\"lg\" />\r\n              </Flex>\r\n            )}\r\n\r"
+      },
+      {
+        "file": "frontend/src/views/proposals/AdminProposalView.js",
+        "line": 250,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\r\n        <Text color=\"gray.500\">{t('common.loading', 'Loading...')}</Text>\r\n      </Center>\r\n    )\r"
+      }
+    ],
+    "spinnerInList": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/SettingsTab.jsx",
+        "line": 296,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                  </Flex>\r\n                </Td>\r\n              </Tr>\r"
+      }
+    ],
+    "spinnerInCard": [
+      {
+        "file": "frontend/src/pages/profile/index.jsx",
+        "line": 154,
+        "code": "<Spinner color={accentColor} size=\"lg\" />",
+        "context": "            <Spinner color={accentColor} size=\"lg\" />\n          </CardBody>\n        </Card>\n      </Box>"
+      }
+    ]
+  },
+  "byFile": {
+    "frontend/src/App.jsx": [
+      {
+        "file": "frontend/src/App.jsx",
+        "line": 38,
+        "code": "<Spinner size='lg' color='brand.500' thickness='3px' speed='0.65s' />",
+        "context": "    <Spinner size='lg' color='brand.500' thickness='3px' speed='0.65s' />\r\n  </Center>\r\n)\r\n\r"
+      }
+    ],
+    "frontend/src/components/AppContent.js": [
+      {
+        "file": "frontend/src/components/AppContent.js",
+        "line": 47,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" thickness=\"3px\" speed=\"0.65s\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" thickness=\"3px\" speed=\"0.65s\" />\n          </Center>\n        }\n      >"
+      }
+    ],
+    "frontend/src/components/contact/MessageHistory.jsx": [
+      {
+        "file": "frontend/src/components/contact/MessageHistory.jsx",
+        "line": 210,
+        "code": "<Spinner size=\"md\" color=\"blue.500\" />",
+        "context": "            <Spinner size=\"md\" color=\"blue.500\" />\r\n          </Flex>\r\n        ) : (\r\n          <Stack spacing={4}>\r"
+      }
+    ],
+    "frontend/src/components/FileViewerModal.jsx": [
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 226,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 245,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "            <Spinner color=\"blue.500\" />\r\n          </Center>\r\n        )\r\n      }\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 252,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 280,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "            <Spinner color=\"blue.500\" />\r\n          </Center>\r\n        )\r\n      }\r"
+      },
+      {
+        "file": "frontend/src/components/FileViewerModal.jsx",
+        "line": 287,
+        "code": "<Spinner />",
+        "context": "          <Spinner />\r\n        </Center>\r\n      )\r\n\r"
+      }
+    ],
+    "frontend/src/components/model/EmailProposalModal.jsx": [
+      {
+        "file": "frontend/src/components/model/EmailProposalModal.jsx",
+        "line": 319,
+        "code": "<Spinner size='sm' />",
+        "context": "                  <Spinner size='sm' />\r\n                  <Text>{t('proposalCommon.sending')}</Text>\r\n                </HStack>\r\n              ) : (\r"
+      }
+    ],
+    "frontend/src/components/model/ModificationBrowserModal.jsx": [
+      {
+        "file": "frontend/src/components/model/ModificationBrowserModal.jsx",
+        "line": 745,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "                <Spinner size=\"lg\" />\r\n                <Text mt={4} color=\"gray.500\">\r\n                  {t('modificationBrowser.loading', 'Loading modifications...')}\r\n                </Text>\r"
+      }
+    ],
+    "frontend/src/components/model/PrintPaymentReceiptModal.jsx": [
+      {
+        "file": "frontend/src/components/model/PrintPaymentReceiptModal.jsx",
+        "line": 280,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                <Spinner size=\"sm\" />\r\n                <Text>{t('paymentReceipt.modal.generating', 'Generating...')}</Text>\r\n              </HStack>\r\n            ) : (\r"
+      }
+    ],
+    "frontend/src/components/model/PrintProposalModal.jsx": [
+      {
+        "file": "frontend/src/components/model/PrintProposalModal.jsx",
+        "line": 581,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    <Text>{t('proposalCommon.downloading')}</Text>\r\n                  </HStack>\r\n                ) : (\r"
+      },
+      {
+        "file": "frontend/src/components/model/PrintProposalModal.jsx",
+        "line": 659,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    <Text>{t('proposalCommon.downloading')}</Text>\r\n                  </HStack>\r\n                ) : (\r"
+      }
+    ],
+    "frontend/src/components/NotificationBell.js": [
+      {
+        "file": "frontend/src/components/NotificationBell.js",
+        "line": 297,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "            <Spinner size=\"sm\" />\n          </Flex>\n        ) : Array.isArray(notifications) && notifications.length > 0 ? (\n          <Stack spacing={1} px={2} py={2}>"
+      }
+    ],
+    "frontend/src/components/pdf/DesktopPdfViewer.jsx": [
+      {
+        "file": "frontend/src/components/pdf/DesktopPdfViewer.jsx",
+        "line": 73,
+        "code": "<Spinner />",
+        "context": "            <Spinner />\r\n          </Center>\r\n        )}\r\n        {error && (\r"
+      }
+    ],
+    "frontend/src/components/pdf/MobilePdfViewer.jsx": [
+      {
+        "file": "frontend/src/components/pdf/MobilePdfViewer.jsx",
+        "line": 34,
+        "code": "<Spinner />",
+        "context": "            <Spinner />\r\n          </Center>\r\n        )}\r\n        {error && (\r"
+      }
+    ],
+    "frontend/src/layout/DefaultLayout.jsx": [
+      {
+        "file": "frontend/src/layout/DefaultLayout.jsx",
+        "line": 113,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\n      </Center>\n    )\n  }"
+      }
+    ],
+    "frontend/src/pages/admin/ContractorDetail/CustomersTab.jsx": [
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/CustomersTab.jsx",
+        "line": 214,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\n      </Flex>\n    )\n  }"
+      }
+    ],
+    "frontend/src/pages/admin/ContractorDetail/ProposalsTab.jsx": [
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/ProposalsTab.jsx",
+        "line": 322,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "        <Spinner colorScheme=\"blue\" />\n      </div>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail/ProposalsTab.jsx",
+        "line": 591,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "                  <Spinner colorScheme=\"blue\" size=\"lg\" />\n                  <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>\n                </div>\n              ) : proposalDetail"
+      }
+    ],
+    "frontend/src/pages/admin/ContractorDetail.jsx": [
+      {
+        "file": "frontend/src/pages/admin/ContractorDetail.jsx",
+        "line": 67,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "          <Spinner size=\"lg\" color=\"blue.500\" />\r\n        </Flex>\r\n      </Container>\r\n    )\r"
+      }
+    ],
+    "frontend/src/pages/admin/Contractors.jsx": [
+      {
+        "file": "frontend/src/pages/admin/Contractors.jsx",
+        "line": 133,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "        <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n      </Container>\r\n    )\r\n  }\r"
+      }
+    ],
+    "frontend/src/pages/admin/LeadsPage.jsx": [
+      {
+        "file": "frontend/src/pages/admin/LeadsPage.jsx",
+        "line": 364,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n              </Flex>\r\n            ) : filteredLeads.length === 0 ? (\r\n              <Text color=\"gray.500\">{t('leadsPage.table.noResults')}</T"
+      }
+    ],
+    "frontend/src/pages/calender/index.jsx": [
+      {
+        "file": "frontend/src/pages/calender/index.jsx",
+        "line": 179,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"blue.500\" />\r\n              </Flex>\r\n            ) : (\r\n              <Stack spacing={6}>\r"
+      }
+    ],
+    "frontend/src/pages/contractor/ContractorDashboard.jsx": [
+      {
+        "file": "frontend/src/pages/contractor/ContractorDashboard.jsx",
+        "line": 151,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "        <Spinner size=\"lg\" />\r\n      </Flex>\r\n    )\r\n  }\r"
+      }
+    ],
+    "frontend/src/pages/contracts/index.jsx": [
+      {
+        "file": "frontend/src/pages/contracts/index.jsx",
+        "line": 402,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text fontSize=\"sm\" color=\"gray.500\">\r\n                  {t('common.loading', 'Loading...')}\r\n                </Text>\r"
+      },
+      {
+        "file": "frontend/src/pages/contracts/index.jsx",
+        "line": 735,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text fontSize=\"sm\" color=\"gray.500\">\r\n                  {t('contracts.loadingDetails')}\r\n                </Text>\r"
+      }
+    ],
+    "frontend/src/pages/customers/CustomerForm.jsx": [
+      {
+        "file": "frontend/src/pages/customers/CustomerForm.jsx",
+        "line": 490,
+        "code": "{loading ? <Spinner size=\"sm\" /> : <Save size={18} />}",
+        "context": "                    {loading ? <Spinner size=\"sm\" /> : <Save size={18} />}\r\n                    {isEditing\r\n                      ? t('customers.form.actions.update')\r\n                      : t('custo"
+      }
+    ],
+    "frontend/src/pages/customers/Customers.jsx": [
+      {
+        "file": "frontend/src/pages/customers/Customers.jsx",
+        "line": 293,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" />\r\n            <Text color=\"gray.500\">{t('customers.loading', 'Loading customers...')}</Text>\r\n          </Center>\r\n        )}\r"
+      }
+    ],
+    "frontend/src/pages/customers/Customers_broken.jsx": [
+      {
+        "file": "frontend/src/pages/customers/Customers_broken.jsx",
+        "line": 210,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "            <Spinner colorScheme=\"blue\" size=\"lg\" />\r\n            <p >Loading customers...</p>\r\n          </CardBody>\r\n        </Card>\r"
+      }
+    ],
+    "frontend/src/pages/customers/Customers_fixed.jsx": [
+      {
+        "file": "frontend/src/pages/customers/Customers_fixed.jsx",
+        "line": 244,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "            <Spinner colorScheme=\"blue\" />\r\n            <p>Loading customers...</p>\r\n          </CardBody>\r\n        </Card>\r"
+      }
+    ],
+    "frontend/src/pages/customers/EditCustomerPage.jsx": [
+      {
+        "file": "frontend/src/pages/customers/EditCustomerPage.jsx",
+        "line": 279,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "            <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n            <Text mt={4} color=\"gray.500\">\r\n              {t('customers.loading')}\r\n            </Text>\r"
+      }
+    ],
+    "frontend/src/pages/dashboard/Dashboard.jsx": [
+      {
+        "file": "frontend/src/pages/dashboard/Dashboard.jsx",
+        "line": 340,
+        "code": "{loading ? <Spinner size=\"sm\" color={accent} /> : value}",
+        "context": "                    {loading ? <Spinner size=\"sm\" color={accent} /> : value}\r\n                  </Text>\r\n                </Flex>\r\n              </CardBody>\r"
+      }
+    ],
+    "frontend/src/pages/orders/OrderDetails.jsx": [
+      {
+        "file": "frontend/src/pages/orders/OrderDetails.jsx",
+        "line": 284,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\r\n        <Text color=\"gray.500\">{t('common.loading', 'Loading...')}</Text>\r\n      </Center>\r\n    )\r"
+      }
+    ],
+    "frontend/src/pages/payments/PaymentPage.jsx": [
+      {
+        "file": "frontend/src/pages/payments/PaymentPage.jsx",
+        "line": 248,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />",
+        "context": "        <Spinner size=\"lg\" color=\"blue.500\" thickness=\"4px\" speed=\"0.7s\" />\r\n      </Container>\r\n    )\r\n  }\r"
+      },
+      {
+        "file": "frontend/src/pages/payments/PaymentPage.jsx",
+        "line": 382,
+        "code": "<Spinner color=\"blue.500\" />",
+        "context": "                  <Spinner color=\"blue.500\" />\r\n                </Flex>\r\n              )}\r\n\r"
+      }
+    ],
+    "frontend/src/pages/profile/index.jsx": [
+      {
+        "file": "frontend/src/pages/profile/index.jsx",
+        "line": 269,
+        "code": "<Spinner size=\"sm\" mr={2} color={accentTextColor} /> {t('profile.saving')}",
+        "context": "                    <Spinner size=\"sm\" mr={2} color={accentTextColor} /> {t('profile.saving')}\n                  </>\n                ) : (\n                  t('profile.updateProfile')"
+      },
+      {
+        "file": "frontend/src/pages/profile/index.jsx",
+        "line": 154,
+        "code": "<Spinner color={accentColor} size=\"lg\" />",
+        "context": "            <Spinner color={accentColor} size=\"lg\" />\n          </CardBody>\n        </Card>\n      </Box>"
+      }
+    ],
+    "frontend/src/pages/proposals/CreateProposal/DesignUpload.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/DesignUpload.jsx",
+        "line": 210,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n              ) : filteredCollections.length === 0 ? (\r\n                <Text color=\"gray.500\" fontStyle=\"italic\">\r\n                  {t('propo"
+      }
+    ],
+    "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/FileUploadSection.jsx",
+        "line": 311,
+        "code": "<Spinner size=\"xl\" color=\"brand.500\" />",
+        "context": "                  <Spinner size=\"xl\" color=\"brand.500\" />\r\n                  <Text color=\"gray.600\">{t('files.uploading')}</Text>\r\n                </>\r\n              ) : (\r"
+      }
+    ],
+    "frontend/src/pages/proposals/CreateProposal/ManufacturerSelect.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+        "line": 244,
+        "code": "<Spinner alignSelf=\"center\" size=\"lg\" color=\"brand.500\" />",
+        "context": "                        <Spinner alignSelf=\"center\" size=\"lg\" color=\"brand.500\" />\n                      ) : enabledManufacturers.length === 0 ? (\n                        <Text color=\"gray.500\" fontSt"
+      },
+      {
+        "file": "frontend/src/pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+        "line": 293,
+        "code": "<Spinner size=\"md\" color=\"brand.500\" />",
+        "context": "                                      <Spinner size=\"md\" color=\"brand.500\" />\n                                    </Box>\n                                  )}\n                                  <img"
+      }
+    ],
+    "frontend/src/pages/proposals/CreateProposalForm.jsx": [
+      {
+        "file": "frontend/src/pages/proposals/CreateProposalForm.jsx",
+        "line": 272,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "                <Spinner size=\"lg\" color=\"brand.500\" />\r\n                <Text mt={4} color=\"gray.500\">\r\n                  {t('proposals.create.loadingManufacturer')}\r\n                </Text>\r"
+      }
+    ],
+    "frontend/src/pages/public/PublicProposalPage.jsx": [
+      {
+        "file": "frontend/src/pages/public/PublicProposalPage.jsx",
+        "line": 72,
+        "code": "<Spinner colorScheme=\"blue\" />",
+        "context": "        <Spinner colorScheme=\"blue\" />\n      </div>\n  \n  )"
+      }
+    ],
+    "frontend/src/pages/Resources/index.jsx": [
+      {
+        "file": "frontend/src/pages/Resources/index.jsx",
+        "line": 718,
+        "code": "<Spinner size=\"xl\" color={accentColor} thickness=\"4px\" />",
+        "context": "          <Spinner size=\"xl\" color={accentColor} thickness=\"4px\" />\n        </Center>\n      </Container>\n    )"
+      }
+    ],
+    "frontend/src/pages/settings/customization/LoginCustomizerPage.jsx": [
+      {
+        "file": "frontend/src/pages/settings/customization/LoginCustomizerPage.jsx",
+        "line": 315,
+        "code": "leftIcon={saving ? <Spinner size=\"sm\" /> : <Save size={18} />}",
+        "context": "          leftIcon={saving ? <Spinner size=\"sm\" /> : <Save size={18} />}\n          onClick={handleSave}\n          isDisabled={loading || saving}\n          isLoading={saving}"
+      },
+      {
+        "file": "frontend/src/pages/settings/customization/LoginCustomizerPage.jsx",
+        "line": 330,
+        "code": "<Spinner color=\"blue.500\" size=\"lg\" />",
+        "context": "            <Spinner color=\"blue.500\" size=\"lg\" />\n            <Text color=\"gray.500\" mt={3} mb={0}>\n              {t('settings.customization.login.loading')}\n            </Text>"
+      }
+    ],
+    "frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx": [
+      {
+        "file": "frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx",
+        "line": 714,
+        "code": "{loading ? <Spinner size=\"sm\" /> : <Icon as={Trash} boxSize={4} />}",
+        "context": "                        {loading ? <Spinner size=\"sm\" /> : <Icon as={Trash} boxSize={4} />}\r\n                      </Button>\r\n                    </HStack>\r\n                  </Box>\r"
+      }
+    ],
+    "frontend/src/pages/settings/locations/LocationList.jsx": [
+      {
+        "file": "frontend/src/pages/settings/locations/LocationList.jsx",
+        "line": 146,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"brand.500\" />\r\n            <Text mt={4} color=\"gray.500\">\r\n              {t('settings.locations.loading')}\r\n            </Text>\r"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/ManufacturersForm.jsx",
+        "line": 780,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                    {t('settings.manufacturers.create.submitting')}\r\n                  </>\r\n                ) : (\r"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/ManufacturersList.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/ManufacturersList.jsx",
+        "line": 221,
+        "code": "<Spinner size=\"lg\" color=\"blue.500\" />",
+        "context": "            <Spinner size=\"lg\" color=\"blue.500\" />\r\n          </Flex>\r\n        )}\r\n\r"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+        "line": 2343,
+        "code": "isCleaningDuplicates ? <Spinner size=\"sm\" /> : <Icon as={RefreshCw} boxSize={4} ",
+        "context": "                isCleaningDuplicates ? <Spinner size=\"sm\" /> : <Icon as={RefreshCw} boxSize={4} />\n              }\n              minH=\"44px\"\n            >"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+        "line": 204,
+        "code": "<Spinner color=\"brand.500\" />",
+        "context": "          <Spinner color=\"brand.500\" />\n          <Text mt={3}>{t('styles.loading', 'Loading style pictures...')}</Text>\n        </CardBody>\n      </Card>"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+        "line": 681,
+        "code": "<Spinner color=\"brand.500\" size=\"lg\" />",
+        "context": "          <Spinner color=\"brand.500\" size=\"lg\" />\n          <Text>{t('types.loading', 'Loading types...')}</Text>\n        </VStack>\n      </Box>"
+      },
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+        "line": 1256,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                        <Spinner size=\"sm\" />\n                        <Text>{t('types.assign.loading', 'Loading catalog items...')}</Text>\n                      </VStack>\n                    ) : !moda"
+      }
+    ],
+    "frontend/src/pages/settings/multipliers/EditManuMultiplier.jsx": [
+      {
+        "file": "frontend/src/pages/settings/multipliers/EditManuMultiplier.jsx",
+        "line": 69,
+        "code": "if (loading) return <Spinner className=\"mx-auto\" />",
+        "context": "  if (loading) return <Spinner className=\"mx-auto\" />\r\n\r\n  if (error)\r\n    return (\r"
+      }
+    ],
+    "frontend/src/pages/settings/taxes/TaxesPage.jsx": [
+      {
+        "file": "frontend/src/pages/settings/taxes/TaxesPage.jsx",
+        "line": 182,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "              <Spinner size=\"lg\" color=\"brand.500\" />\r\n            </Flex>\r\n          ) : taxes.length > 0 ? (\r\n            <Stack spacing={4}>\r"
+      }
+    ],
+    "frontend/src/pages/settings/users/UserList.jsx": [
+      {
+        "file": "frontend/src/pages/settings/users/UserList.jsx",
+        "line": 288,
+        "code": "<Spinner colorScheme=\"blue\" size=\"lg\" />",
+        "context": "            <Spinner colorScheme=\"blue\" size=\"lg\" />\n            <p >{t('settings.users.loading')}</p>\n          </CardBody>\n        </Card>"
+      }
+    ],
+    "frontend/src/pages/settings/usersGroup/EditUserGroup.jsx": [
+      {
+        "file": "frontend/src/pages/settings/usersGroup/EditUserGroup.jsx",
+        "line": 229,
+        "code": "<Spinner size=\"lg\" color={customization.headerBg ? undefined : 'blue.500'} thick",
+        "context": "          <Spinner size=\"lg\" color={customization.headerBg ? undefined : 'blue.500'} thickness=\"4px\" speed=\"0.7s\" />\r\n          <Text color=\"gray.500\">{t('settings.userGroups.edit.loadingOne')}</Text>"
+      }
+    ],
+    "frontend/src/pages/settings/usersGroup/UserGroupList.jsx": [
+      {
+        "file": "frontend/src/pages/settings/usersGroup/UserGroupList.jsx",
+        "line": 137,
+        "code": "{isUpdating && <Spinner size=\"xs\" />}",
+        "context": "        {isUpdating && <Spinner size=\"xs\" />}\n      </HStack>\n    )\n  }"
+      },
+      {
+        "file": "frontend/src/pages/settings/usersGroup/UserGroupList.jsx",
+        "line": 146,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "          <Spinner size=\"lg\" color=\"brand.500\" />\n          <Text color=\"gray.500\">{t('common.loadingUserGroups')}</Text>\n        </VStack>\n      </Container>"
+      }
+    ],
+    "frontend/src/views/notifications/NotificationsPage.js": [
+      {
+        "file": "frontend/src/views/notifications/NotificationsPage.js",
+        "line": 340,
+        "code": "<Spinner size=\"lg\" />",
+        "context": "                <Spinner size=\"lg\" />\r\n              </Flex>\r\n            )}\r\n\r"
+      }
+    ],
+    "frontend/src/views/proposals/AdminProposalView.js": [
+      {
+        "file": "frontend/src/views/proposals/AdminProposalView.js",
+        "line": 250,
+        "code": "<Spinner size=\"lg\" color=\"brand.500\" />",
+        "context": "        <Spinner size=\"lg\" color=\"brand.500\" />\r\n        <Text color=\"gray.500\">{t('common.loading', 'Loading...')}</Text>\r\n      </Center>\r\n    )\r"
+      }
+    ],
+    "frontend/src/pages/settings/manufacturers/tabs/SettingsTab.jsx": [
+      {
+        "file": "frontend/src/pages/settings/manufacturers/tabs/SettingsTab.jsx",
+        "line": 296,
+        "code": "<Spinner size=\"sm\" />",
+        "context": "                    <Spinner size=\"sm\" />\r\n                  </Flex>\r\n                </Td>\r\n              </Tr>\r"
+      }
+    ]
+  }
+}

@@ -24,8 +24,8 @@ const PaymentCancel = () => {
       <Box maxW="800px" mx="auto">
         <Card>
           <CardBody className="text-center py-5">
-              <h4 className="mb-2">{t('payments.toast.paymentCancelled', 'Payment Cancelled')}</h4>
-              <p className="text-muted mb-4">
+              <h4>{t('payments.toast.paymentCancelled', 'Payment Cancelled')}</h4>
+              <p>
                 {t(
                   'payment.error.generic',
                   'There was an error processing your payment. Please try again.',

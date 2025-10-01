@@ -90,11 +90,11 @@ const TermsPage = () => {
         title={t('settings.terms.title', 'Terms & Conditions')}
         subtitle={t('settings.terms.subtitle', 'Edit terms and track acceptance')}
       />
-      <Flex className="g-3">
+      <Flex>
         <Box lg={6}>
-          <Card className="border-0 shadow-sm">
+          <Card>
             <CardBody>
-              <h6 className="mb-3">{t('settings.terms.editor', 'Editor')}</h6>
+              <h6>{t('settings.terms.editor', 'Editor')}</h6>
               <FormControl>
                 <Textarea
                   rows={16}
@@ -125,9 +125,9 @@ const TermsPage = () => {
           </Card>
         </Box>
         <Box lg={6}>
-          <Card className="border-0 shadow-sm">
+          <Card>
             <CardBody>
-              <h6 className="mb-3">{t('settings.terms.acceptance', 'Acceptance')}</h6>
+              <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
               <div className="text-muted small mb-2">
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </div>
@@ -136,7 +136,7 @@ const TermsPage = () => {
                   <Tr>
                     <Th>{t('common.user', 'User')}</Th>
                     <Th>{t('common.email', 'Email')}</Th>
-                    <Th className="text-end">
+                    <Th>
                       {t('settings.terms.status', 'Status')}
                     </Th>
                   </Tr>
@@ -146,7 +146,7 @@ const TermsPage = () => {
                     <Tr key={u.id}>
                       <Td>{u.name || '-'}</Td>
                       <Td>{u.email || '-'}</Td>
-                      <Td className="text-end">
+                      <Td>
                         {u.accepted ? (
                           <Badge status="success">
                             {t('settings.terms.accepted', 'Accepted')}

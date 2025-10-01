@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-09-30T15:22:39.572Z",
+  "totalRoutes": 23,
+  "totalErrors": 0,
+  "routeResults": {
+    "/": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/admin/contractors": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/admin/leads": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/audit": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/calendar": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/contact": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/customers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/customers/add": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/dashboard": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/orders": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/payments": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/profile": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/proposals": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/proposals/create": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/quotes": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/resources": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/customization": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/locations": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/manufacturers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/multipliers": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/taxes": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/terms": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    },
+    "/settings/users": {
+      "status": "clean",
+      "errorCount": 0,
+      "errors": []
+    }
+  },
+  "errors": []
+}
