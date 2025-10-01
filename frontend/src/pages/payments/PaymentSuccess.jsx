@@ -53,7 +53,7 @@ const PaymentSuccess = () => {
                 aria-hidden="true"
               />
 
-              <VStack spacing={2}>
+              <VStack spacing={4}>
                 <Heading as="h4" size="lg" color="gray.800">
                   {t('payment.completed.title', 'Payment Completed')}
                 </Heading>
@@ -79,7 +79,7 @@ const PaymentSuccess = () => {
                 </Alert>
               )}
 
-              <HStack spacing={3} wrap="wrap" justify="center">
+              <HStack spacing={4} wrap="wrap" justify="center">
                 <Button
                   colorScheme="blue"
                   onClick={() => navigate('/payments')}

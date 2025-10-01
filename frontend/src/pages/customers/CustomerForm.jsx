@@ -176,7 +176,7 @@ const CustomerForm = ({
       <Card variant="outline" borderRadius="xl" shadow="sm">
         <CardHeader>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-            <VStack align="start" spacing={1}>
+            <VStack align="start" spacing={4}>
               <Text fontSize="xl" fontWeight="bold" color="gray.800">
                 {isEditing ? t('customers.form.titles.edit') : t('customers.form.titles.add')}
               </Text>

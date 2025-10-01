@@ -280,7 +280,7 @@ const OrderDetails = () => {
 
   if (loading) {
     return (
-      <Center py={16} flexDirection="column" gap={3}>
+      <Center py={16} flexDirection="column" gap={4}>
         <Spinner size="lg" color="brand.500" />
         <Text color="gray.500">{t('common.loading', 'Loading...')}</Text>
       </Center>
@@ -550,7 +550,7 @@ const OrderDetails = () => {
                     onClick={() => setPreviewImg(resolvedPrimaryManufacturer.imgUrl)}
                   />
                 )}
-                <Stack spacing={1} minW={0}>
+                <Stack spacing={4} minW={0}>
                   <Text>
                     <Text as="span" fontWeight="semibold">
                       {t('orders.common.manufacturer', 'Manufacturer')}:
@@ -574,7 +574,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.order', 'Order')}
             </CardHeader>
-            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+            <CardBody as={Stack} spacing={4} fontSize="sm" color="gray.700">
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.headers.orderNumber', 'Order #')}:
@@ -595,7 +595,7 @@ const OrderDetails = () => {
                   ? new Date(order.accepted_at || order.date || order.createdAt).toLocaleDateString()
                   : t('common.na')}
               </Text>
-              <Text display="flex" alignItems="center" gap={2}>
+              <Text display="flex" alignItems="center" gap={4}>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.status', 'Status')}:
                 </Text>{' '}
@@ -616,7 +616,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.customer', 'Customer')}
             </CardHeader>
-            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+            <CardBody as={Stack} spacing={4} fontSize="sm" color="gray.700">
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.name', 'Name')}:
@@ -648,7 +648,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.totals', 'Totals')}
             </CardHeader>
-            <CardBody as={Stack} spacing={2} fontSize="sm" color="gray.700">
+            <CardBody as={Stack} spacing={4} fontSize="sm" color="gray.700">
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.subtotalStyles', 'Subtotal (Styles)')}:
@@ -745,7 +745,7 @@ const OrderDetails = () => {
                             <Td maxW="320px">
                               <Text fontWeight="medium">{it.name || it.description || it.item || '-'}</Text>
                               {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                                <Stack spacing={1} mt={2} fontSize="xs" color="gray.600">
+                                <Stack spacing={4} mt={2} fontSize="xs" color="gray.600">
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
                                     const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
@@ -756,7 +756,7 @@ const OrderDetails = () => {
                                 </Stack>
                               )}
                               {attachments.length > 0 && (
-                                <HStack spacing={2} mt={3} wrap="wrap">
+                                <HStack spacing={4} mt={3} wrap="wrap">
                                   {attachments.map((url, ii) => (
                                     <Image
                                       key={`att-${idx}-${ii}`}
@@ -825,7 +825,7 @@ const OrderDetails = () => {
                   {t('orders.details.noItems', 'No items')}
                 </Center>
               ) : (
-                <Stack spacing={3}>
+                <Stack spacing={4}>
                   {parsed.items.map((it, idx) => {
                     const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
                     const title = it.name || it.description || it.item || '-'
@@ -844,7 +844,7 @@ const OrderDetails = () => {
                     } catch (_) {}
                     return (
                       <Card key={`mobile-item-${idx}`} variant="outline">
-                        <CardBody as={Stack} spacing={3}>
+                        <CardBody as={Stack} spacing={4}>
                           <HStack align="flex-start" spacing={4}>
                             {thumb ? (
                               <Image
@@ -871,10 +871,10 @@ const OrderDetails = () => {
                                 —
                               </Box>
                             )}
-                            <Stack spacing={2} flex="1">
+                            <Stack spacing={4} flex="1">
                               <Text fontWeight="semibold">{title}</Text>
                               {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                                <Stack spacing={1} fontSize="xs" color="gray.600">
+                                <Stack spacing={4} fontSize="xs" color="gray.600">
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
                                     const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
@@ -890,7 +890,7 @@ const OrderDetails = () => {
                                 {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
                               </Text>
                               {(it.hingeSide || it.exposedSide) && (
-                                <HStack spacing={2} fontSize="xs" color="gray.600">
+                                <HStack spacing={4} fontSize="xs" color="gray.600">
                                   {it.hingeSide && (
                                     <Badge colorScheme="brand" borderRadius="full" px={2}>
                                       {t('orders.details.hingeSide', 'Hinge Side')}: {it.hingeSide}
@@ -904,7 +904,7 @@ const OrderDetails = () => {
                                 </HStack>
                               )}
                               {attachments.length > 0 && (
-                                <HStack spacing={2} wrap="wrap">
+                                <HStack spacing={4} wrap="wrap">
                                   {attachments.map((url, ii) => (
                                     <Image
                                       key={`att-mobile-${idx}-${ii}`}
@@ -958,9 +958,9 @@ const OrderDetails = () => {
                   return (
                     <Card key={`manufacturer-${i}`} variant="outline">
                       <CardHeader fontWeight="semibold">{headerLabel}</CardHeader>
-                      <CardBody as={Stack} spacing={3} fontSize="sm" color="gray.700">
+                      <CardBody as={Stack} spacing={4} fontSize="sm" color="gray.700">
                         {(m?.styleName || m?.style || m?.styleImage) && (
-                          <HStack spacing={3} align="center">
+                          <HStack spacing={4} align="center">
                             {m.styleImage && (
                               <Image
                                 src={m.styleImage}
@@ -972,7 +972,7 @@ const OrderDetails = () => {
                                 onClick={() => setPreviewImg(m.styleImage)}
                               />
                             )}
-                            <Stack spacing={1}>
+                            <Stack spacing={4}>
                               <Text fontSize="xs" color="gray.500">
                                 {t('orders.details.selectedStyle', 'Selected Style')}
                               </Text>
@@ -980,7 +980,7 @@ const OrderDetails = () => {
                             </Stack>
                           </HStack>
                         )}
-                        <VStack align="stretch" spacing={2}>
+                        <VStack align="stretch" spacing={4}>
                           <Text>
                             <Text as="span" fontWeight="semibold">
                               {t('orders.details.styleTotal', 'Style Total')}:

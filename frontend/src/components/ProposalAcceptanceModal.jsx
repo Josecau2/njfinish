@@ -197,7 +197,7 @@ const ProposalAcceptanceModal = ({
             </Stack>
           </ModalBody>
 
-          <ModalFooter gap={3}>
+          <ModalFooter gap={4}>
             <Button
               variant='ghost'
               onClick={handleClose}

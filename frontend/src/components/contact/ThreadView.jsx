@@ -25,7 +25,7 @@ const Bubble = ({ mine, author, text, time }) => (
       borderRadius="md"
     >
       <Text fontSize="xs" color="gray.500" mb={1}>
-        {author} • {new Date(time).toLocaleString()}
+        {author} ï¿½ {new Date(time).toLocaleString()}
       </Text>
       <Text fontWeight="semibold" whiteSpace="pre-wrap">
         {text}
@@ -122,7 +122,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
             </Box>
 
             {thread.status === 'open' && (
-              <Flex gap={3} align="flex-start" direction={{ base: 'column', md: 'row' }}>
+              <Flex gap={4} align="flex-start" direction={{ base: 'column', md: 'row' }}>
                 <Box flex="1">
                   <Textarea
                     rows={3}

@@ -15,8 +15,8 @@ export default function StyleMerger({ leftStyles = [], rightStyles = [], onMerge
 
   return (
     <Box as="form" onSubmit={handleSubmit}>
-      <Stack spacing={3}>
-        <Stack direction={{ base: 'column', sm: 'row' }} spacing={3} role="group" aria-label="Select styles to merge">
+      <Stack spacing={4}>
+        <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} role="group" aria-label="Select styles to merge">
           <FormControl>
             <FormLabel fontSize="sm" color="gray.500">
               From

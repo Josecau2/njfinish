@@ -707,13 +707,13 @@ const ItemSelectionStep = ({
               >
                 <TabList>
                   <Tab>
-                    <Flex align='center' gap={2}>
+                    <Flex align='center' gap={4}>
                       <Icon as={List} boxSize={4} />
                       <Text>{t('proposalColumns.items')}</Text>
                     </Flex>
                   </Tab>
                   <Tab>
-                    <Flex align='center' gap={2}>
+                    <Flex align='center' gap={4}>
                       <Icon as={File} boxSize={4} />
                       <Text>{t('proposals.create.files.title')}</Text>
                     </Flex>
@@ -730,7 +730,7 @@ const ItemSelectionStep = ({
                     />
                   </TabPanel>
                   <TabPanel px={0}>
-                    <Stack spacing={3} mt={2} color='gray.600'>
+                    <Stack spacing={4} mt={2} color='gray.600'>
                       <Text fontSize='lg' fontWeight='semibold' color='gray.800'>
                         {t('proposals.create.files.title')}
                       </Text>

@@ -456,7 +456,7 @@ const OrdersList = ({
       <PageHeader title={title} subtitle={subtitle} icon={ShoppingCart} />
 
       {/* Status Filter Buttons */}
-      <HStack spacing={2} wrap="wrap" mb={4}>
+      <HStack spacing={4} wrap="wrap" mb={4}>
         {STATUS_OPTIONS.map((status) => (
           <Button
             key={status}
@@ -518,7 +518,7 @@ const OrdersList = ({
             {paged.length === 0 ? (
               <Tr>
                 <Td colSpan={8} textAlign="center" py={5}>
-                  <VStack spacing={3}>
+                  <VStack spacing={4}>
                     <ShoppingCart size={48} color="gray" />
                     <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
                     <Text fontSize="sm" color="gray.500">
@@ -555,7 +555,7 @@ const OrdersList = ({
                       </Badge>
                     </Td>
                     <Td>
-                      <VStack align="start" spacing={1}>
+                      <VStack align="start" spacing={4}>
                         <Badge colorScheme={getPaymentColorScheme(paymentInfo.status)} borderRadius="full">
                           {paymentInfo.label}
                         </Badge>
@@ -568,7 +568,7 @@ const OrdersList = ({
                       </VStack>
                     </Td>
                     <Td>
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         {paymentInfo.showButton && (
                           <Button
                             colorScheme="blue"
@@ -608,9 +608,9 @@ const OrdersList = ({
       </Box>
 
       {/* Mobile card list */}
-      <VStack display={{ base: 'flex', lg: 'none' }} spacing={2}>
+      <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
         {paged.length === 0 ? (
-          <VStack spacing={3} textAlign="center" py={5}>
+          <VStack spacing={4} textAlign="center" py={5}>
             <ShoppingCart size={48} color="gray" />
             <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
             <Text fontSize="sm" color="gray.500">
@@ -623,9 +623,9 @@ const OrdersList = ({
             return (
               <Card key={item.id} size="sm" as="article">
                 <CardBody>
-                  <VStack align="stretch" spacing={3}>
+                  <VStack align="stretch" spacing={4}>
                     <Flex justify="space-between" align="center">
-                      <VStack align="start" spacing={1}>
+                      <VStack align="start" spacing={4}>
                         {isContractor ? (
                           <Text fontWeight="semibold">{item.customer?.name || t('common.na')}</Text>
                         ) : (
@@ -642,7 +642,7 @@ const OrdersList = ({
                           </VStack>
                         )}
                       </VStack>
-                      <VStack align="end" spacing={1}>
+                      <VStack align="end" spacing={4}>
                         <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
                           {item.status || 'accepted'}
                         </Badge>
@@ -659,7 +659,7 @@ const OrdersList = ({
                         </VStack>
                       </VStack>
                     </Flex>
-                    <VStack align="stretch" spacing={1}>
+                    <VStack align="stretch" spacing={4}>
                       <Text fontSize="sm" color="gray.600">
                         {new Date(
                           item.accepted_at || item.date || item.createdAt,
@@ -677,7 +677,7 @@ const OrdersList = ({
                         t('common.na')}
                     </Text>
                     {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
-                      <HStack spacing={2} flexWrap="wrap">
+                      <HStack spacing={4} flexWrap="wrap">
                         {paymentInfo.showButton && (
                           <Button
                             colorScheme="blue"

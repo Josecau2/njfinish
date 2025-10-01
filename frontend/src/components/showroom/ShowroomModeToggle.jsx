@@ -163,7 +163,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
             )}
           </FormControl>
 
-          <VStack align="start" spacing={1}>
+          <VStack align="start" spacing={4}>
             <HStack>
               <Text fontWeight="semibold">{t('showroom.modal.status', 'Status')}:</Text>
               <Button
@@ -231,9 +231,9 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
 
   return (
     <Box borderWidth="1px" borderRadius="lg" p={4} bg="white" shadow="sm">
-      <Stack spacing={3}>
+      <Stack spacing={4}>
         <HStack justify="space-between">
-          <HStack spacing={3}>
+          <HStack spacing={4}>
             <Icon as={Eye} color={showroomMode ? 'green.500' : 'gray.400'} />
             <Stack spacing={0}>
               <Text fontWeight="semibold">{t('showroom.title', 'Showroom Mode')}</Text>

@@ -265,7 +265,7 @@ const SettingsTab = ({ manufacturer }) => {
   }
 
   const renderTable = (data, selectedFields, multiplierCalc) => (
-    <Stack spacing={3} mt={4}>
+    <Stack spacing={4} mt={4}>
       <Text fontSize="sm" color="gray.600">
         {t(
           'settings.manufacturers.settings.sampleItems',
@@ -381,7 +381,7 @@ const SettingsTab = ({ manufacturer }) => {
                 {multiplier1Error}
               </Text>
             )}
-            <Stack direction={{ base: 'column', md: 'row' }} spacing={3} align={{ md: 'center' }}>
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={Search} boxSize={4} color="gray.400" />
@@ -417,7 +417,7 @@ const SettingsTab = ({ manufacturer }) => {
                   defaultValue: 'Page {{page}} of {{total}}',
                 })}
               </Text>
-              <Flex align="center" gap={2}>
+              <Flex align="center" gap={4}>
                 <FormLabel htmlFor="itemsPerPage1" mb={0} fontSize="sm" color="gray.600">
                   {t('common.itemsPerPage', 'Items per page:')}
                 </FormLabel>
@@ -497,7 +497,7 @@ const SettingsTab = ({ manufacturer }) => {
                 {multiplier2Error}
               </Text>
             )}
-            <Stack direction={{ base: 'column', md: 'row' }} spacing={3} align={{ md: 'center' }}>
+            <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
                   <Icon as={Search} boxSize={4} color="gray.400" />
@@ -538,7 +538,7 @@ const SettingsTab = ({ manufacturer }) => {
                   defaultValue: 'Page {{page}} of {{total}}',
                 })}
               </Text>
-              <Flex align="center" gap={2}>
+              <Flex align="center" gap={4}>
                 <FormLabel htmlFor="itemsPerPage2" mb={0} fontSize="sm" color="gray.600">
                   {t('common.itemsPerPage', 'Items per page:')}
                 </FormLabel>

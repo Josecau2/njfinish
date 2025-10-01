@@ -280,9 +280,9 @@ const ManufacturersList = () => {
                   </Box>
 
                   <Flex flex="1" direction="column" gap={4} minW="0">
-                    <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3}>
+                    <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={4}>
                       <Box minW="0">
-                        <HStack spacing={2} align="center">
+                        <HStack spacing={4} align="center">
                           <Icon as={Building2} boxSize={5} color="blue.500" />
                           <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
                             {manufacturer.name}
@@ -307,14 +307,14 @@ const ManufacturersList = () => {
                     </Flex>
 
                     <HStack spacing={4} align="flex-start" flexWrap="wrap">
-                      <HStack spacing={2} minW="0">
+                      <HStack spacing={4} minW="0">
                         <Icon as={Mail} boxSize={4} color="gray.400" />
                         <Text fontSize="sm" color="gray.600" noOfLines={1}>
                           {manufacturer.email || t('settings.manufacturers.noEmail', 'No email provided')}
                         </Text>
                       </HStack>
 
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         <Icon as={FileText} boxSize={4} color="gray.400" />
                         <Tag size="sm" variant="subtle" colorScheme="gray">
                           <TagLabel>
@@ -327,7 +327,7 @@ const ManufacturersList = () => {
                     </HStack>
 
                     <Flex align="center" justify="space-between" flexWrap="wrap" gap={4}>
-                      <HStack spacing={3}>
+                      <HStack spacing={4}>
                         <Switch
                           colorScheme="blue"
                           isChecked={Boolean(manufacturer.status)}

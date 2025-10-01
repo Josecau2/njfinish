@@ -507,7 +507,7 @@ const PdfLayoutCustomization = () => {
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
           <Card variant="outline">
             <CardHeader bg="gray.50" borderBottomWidth="1px">
-              <HStack spacing={3} align="center">
+              <HStack spacing={4} align="center">
                 <Box
                   bg="brand.500"
                   color="white"
@@ -557,7 +557,7 @@ const PdfLayoutCustomization = () => {
                 </FormControl>
 
                 <Box>
-                  <HStack spacing={2} mb={3}>
+                  <HStack spacing={4} mb={3}>
                     <Badge colorScheme="blue" textTransform="uppercase" fontSize="xs" borderRadius="sm">
                       {t('settings.customization.pdf.badges.colors')}
                     </Badge>
@@ -570,7 +570,7 @@ const PdfLayoutCustomization = () => {
                       <FormLabel fontSize="sm" color="gray.600">
                         {t('settings.customization.pdf.labels.backgroundColor')}
                       </FormLabel>
-                      <HStack spacing={3}>
+                      <HStack spacing={4}>
                         <Input
                           type="color"
                           name="headerBgColor"
@@ -589,7 +589,7 @@ const PdfLayoutCustomization = () => {
                       <FormLabel fontSize="sm" color="gray.600">
                         {t('settings.customization.pdf.labels.textColor')}
                       </FormLabel>
-                      <HStack spacing={3}>
+                      <HStack spacing={4}>
                         <Input
                           type="color"
                           name="headerTxtColor"
@@ -612,7 +612,7 @@ const PdfLayoutCustomization = () => {
 
           <Card variant="outline">
             <CardHeader bg="gray.50" borderBottomWidth="1px">
-              <HStack spacing={3} align="center">
+              <HStack spacing={4} align="center">
                 <Box
                   bg="brand.500"
                   color="white"
@@ -666,7 +666,7 @@ const PdfLayoutCustomization = () => {
                     role="button"
                     tabIndex={0}
                   >
-                    <VStack spacing={2} color="gray.600">
+                    <VStack spacing={4} color="gray.600">
                       <Icon as={ImageIcon} boxSize={6} />
                       <Text>
                         {dragActive
@@ -686,7 +686,7 @@ const PdfLayoutCustomization = () => {
                       {t('settings.customization.pdf.labels.logoPreview')}
                     </FormLabel>
                     <HStack
-                      spacing={3}
+                      spacing={4}
                       bg="gray.50"
                       borderRadius="md"
                       borderWidth="1px"
@@ -787,7 +787,7 @@ const PdfLayoutCustomization = () => {
         <ModalOverlay />
         <ModalContent maxH="90vh" overflow="hidden">
           <ModalHeader bg={formData.headerBgColor} color={getContrastColor(formData.headerBgColor)}>
-            <HStack spacing={3} align="center">
+            <HStack spacing={4} align="center">
               <Icon as={Settings} />
               <Text>{t('settings.customization.pdf.preview.title')}</Text>
             </HStack>

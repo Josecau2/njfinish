@@ -305,7 +305,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
           >
-            <Stack spacing={3} align="center">
+            <Stack spacing={4} align="center">
               {uploading ? (
                 <>
                   <Spinner size="xl" color="brand.500" />
@@ -346,7 +346,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               <Heading as="h4" size="sm" mb={4} color="gray.700">
                 {t('files.uploadedCount', { count: files.length })}
               </Heading>
-              <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={5}>
+              <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
                 {files.map((file) => {
                   const IconComponent = getFileIconComponent(file.type)
                   return (
@@ -388,7 +388,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                           </Menu>
                         </Flex>
 
-                        <Stack spacing={2} align="center">
+                        <Stack spacing={4} align="center">
                           <Icon as={IconComponent} boxSize={10} color="brand.400" />
                           <Text fontWeight="semibold" noOfLines={2} textAlign="center">
                             {file.name}

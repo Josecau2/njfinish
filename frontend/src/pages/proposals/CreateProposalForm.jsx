@@ -207,7 +207,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
     if (currentStep !== TOTAL_STEPS) return null
 
     return (
-      <HStack spacing={2} flexWrap="wrap">
+      <HStack spacing={4} flexWrap="wrap">
         <Button
           colorScheme="green"
           leftIcon={<Icon as={Printer} boxSize={4} />}
@@ -409,7 +409,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             display={{ base: 'block', md: 'none' }}
             style={{ backdropFilter: 'saturate(140%) blur(8px)' }}
           >
-            <HStack spacing={2}>
+            <HStack spacing={4}>
               <Button
                 variant="outline"
                 colorScheme="gray"

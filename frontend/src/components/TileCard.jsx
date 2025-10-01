@@ -53,7 +53,7 @@ const TileCard = ({
           />
         </AspectRatio>
       )}
-      <VStack align="start" spacing={2}>
+      <VStack align="start" spacing={4}>
         {title && (
           <Text
             fontWeight="medium"

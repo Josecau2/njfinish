@@ -236,20 +236,20 @@ const LocationPage = () => {
                 <Tr>
                   <Th textAlign="center">#</Th>
                   <Th>
-                    <HStack spacing={2}>
+                    <HStack spacing={4}>
                       <Icon as={MapPin} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.locationName')}</Text>
                     </HStack>
                   </Th>
                   <Th>{t('settings.locations.table.address')}</Th>
                   <Th>
-                    <HStack spacing={2}>
+                    <HStack spacing={4}>
                       <Icon as={Mail} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.email')}</Text>
                     </HStack>
                   </Th>
                   <Th>
-                    <HStack spacing={2}>
+                    <HStack spacing={4}>
                       <Icon as={Globe} boxSize={4} aria-hidden="true" />
                       <Text>{t('settings.locations.table.website')}</Text>
                     </HStack>
@@ -261,7 +261,7 @@ const LocationPage = () => {
                 {filteredData.length === 0 ? (
                   <Tr>
                     <Td colSpan={6} textAlign="center" py={8}>
-                      <VStack spacing={3} color="gray.500">
+                      <VStack spacing={4} color="gray.500">
                         <Icon as={MapPin} boxSize={8} opacity={0.3} aria-hidden="true" />
                         <Text>{t('settings.locations.empty.title')}</Text>
                         <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
@@ -315,7 +315,7 @@ const LocationPage = () => {
                             _hover={{ textDecoration: 'underline' }}
                             fontSize="sm"
                           >
-                            <HStack spacing={1}>
+                            <HStack spacing={4}>
                               <Text>{location.website}</Text>
                               <Icon as={ExternalLink} boxSize={3} aria-hidden="true" />
                             </HStack>
@@ -327,7 +327,7 @@ const LocationPage = () => {
                         )}
                       </Td>
                       <Td textAlign="center">
-                        <HStack spacing={2} justify="center">
+                        <HStack spacing={4} justify="center">
                           <Button
                             variant="outline"
                             size="sm"
@@ -364,7 +364,7 @@ const LocationPage = () => {
 
           {totalPages > 1 && (
             <Box borderTopWidth="1px" borderColor={stickyBorder} p={4}>
-              <Flex justify="space-between" align="center" wrap="wrap" gap={3}>
+              <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
                 <Text fontSize="sm" color="gray.500">
                   {t('settings.locations.showingRange', {
                     start: filteredData.length === 0 ? 0 : startIdx,

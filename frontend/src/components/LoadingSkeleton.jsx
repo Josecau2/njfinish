@@ -12,7 +12,7 @@ export function PageSkeleton() {
 
 export function TileSkeleton() {
   return (
-    <Stack spacing={3}>
+    <Stack spacing={4}>
       <Skeleton height="150px" borderRadius="md" /> {/* Image */}
       <Skeleton height="20px" width="60%" />
       <Skeleton height="16px" width="40%" />

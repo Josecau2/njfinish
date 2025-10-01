@@ -285,7 +285,7 @@ const EditLocation = () => {
               </Box>
             </Stack>
 
-            <Stack direction={{ base: 'column', sm: 'row' }} spacing={3} mt={8} justify="flex-end">
+            <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} mt={8} justify="flex-end">
               <Button variant="outline" colorScheme="gray" onClick={handleCancel}>
                 {t('common.cancel')}
               </Button>

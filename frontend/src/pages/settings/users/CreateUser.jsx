@@ -37,7 +37,7 @@ import PageHeader from '../../../components/PageHeader'
 const FormSection = ({ title, icon, children }) => (
   <Card mb={6} shadow="sm" borderRadius="lg">
     <CardBody p={6}>
-      <HStack spacing={3} mb={4}>
+      <HStack spacing={4} mb={4}>
         <Box p={2} borderRadius="md" bg="brand.50">
           <Icon as={icon} boxSize={5} color="brand.600" />
         </Box>
@@ -417,7 +417,7 @@ const AddUserForm = () => {
             mb={4}
           >
             <Flex align="center" justify="space-between">
-              <HStack spacing={3}>
+              <HStack spacing={4}>
                 <Box
                   w={8}
                   h={8}
@@ -613,7 +613,7 @@ const AddUserForm = () => {
           <CardBody p={6}>
             <Flex
               direction={{ base: 'column-reverse', md: 'row' }}
-              gap={3}
+              gap={4}
               justify="flex-end"
               align="center"
             >

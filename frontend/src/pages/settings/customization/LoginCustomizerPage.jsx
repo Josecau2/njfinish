@@ -342,7 +342,7 @@ const LoginCustomizerPage = () => {
               <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
                 <GridItem>
                   <VStack align="stretch" spacing={6}>
-                    <Flex align="center" gap={3}>
+                    <Flex align="center" gap={4}>
                       <Flex
                         align="center"
                         justify="center"
@@ -429,7 +429,7 @@ const LoginCustomizerPage = () => {
                       <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
                         {t('settings.customization.login.logoSize.label')}
                       </FormLabel>
-                      <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'center' }} gap={3}>
+                      <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'center' }} gap={4}>
                         <Slider
                           min={32}
                           max={160}
@@ -454,7 +454,7 @@ const LoginCustomizerPage = () => {
                       <FormLabel fontWeight="semibold" color="gray.700" mb={3}>
                         {t('settings.customization.login.options.title')}
                       </FormLabel>
-                      <VStack spacing={3} align="stretch">
+                      <VStack spacing={4} align="stretch">
                         <Box p={3} bg="gray.50" borderWidth="1px" borderColor="gray.200" borderRadius="8px">
                           <Checkbox
                             isChecked={settings.showForgotPassword}
@@ -489,7 +489,7 @@ const LoginCustomizerPage = () => {
 
                 <GridItem>
                   <VStack align="stretch" spacing={6}>
-                    <Flex align="center" gap={3}>
+                    <Flex align="center" gap={4}>
                       <Flex
                         align="center"
                         justify="center"
@@ -580,7 +580,7 @@ const LoginCustomizerPage = () => {
 
               <Box mt={6}>
                 <VStack align="stretch" spacing={6}>
-                  <Flex align="center" gap={3}>
+                  <Flex align="center" gap={4}>
                     <Flex
                       align="center"
                       justify="center"
@@ -704,7 +704,7 @@ const LoginCustomizerPage = () => {
                   </Grid>
 
                   <Box borderTop="1px" borderColor="gray.200" pt={4} mt={4}>
-                    <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'end' }} gap={3}>
+                    <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'end' }} gap={4}>
                       <Box flex="1">
                         <FormControl>
                           <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
@@ -746,7 +746,7 @@ const LoginCustomizerPage = () => {
                 <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
                   <GridItem>
                     <VStack align="stretch" spacing={6}>
-                      <Flex align="center" gap={3}>
+                      <Flex align="center" gap={4}>
                         <Flex
                           align="center"
                           justify="center"
@@ -833,7 +833,7 @@ const LoginCustomizerPage = () => {
 
                   <GridItem>
                     <VStack align="stretch" spacing={6}>
-                      <Flex align="center" gap={3}>
+                      <Flex align="center" gap={4}>
                         <Flex
                           align="center"
                           justify="center"

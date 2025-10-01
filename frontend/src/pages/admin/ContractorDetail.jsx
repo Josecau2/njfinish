@@ -113,7 +113,7 @@ const ContractorDetail = () => {
           </Button>
 
           <Flex align="center" gap={4} flex="1" flexWrap="wrap">
-            <Flex align="center" gap={3} minW="0">
+            <Flex align="center" gap={4} minW="0">
               <Icon as={Users} boxSize={6} color="blue.500" />
               <Box minW="0">
                 <Text fontSize="xl" fontWeight="semibold" noOfLines={1}>
@@ -139,9 +139,9 @@ const ContractorDetail = () => {
             isLazy
           >
             <CardHeader borderBottomWidth="1px" borderColor="gray.100">
-              <TabList flexWrap="wrap" gap={2}>
+              <TabList flexWrap="wrap" gap={4}>
                 {tabConfig.map((tab) => (
-                  <Tab key={tab.key} px={4} py={2} display="flex" alignItems="center" gap={2}>
+                  <Tab key={tab.key} px={4} py={2} display="flex" alignItems="center" gap={4}>
                     <Icon as={tab.icon} boxSize={4} />
                     {t(tab.labelKey)}
                   </Tab>

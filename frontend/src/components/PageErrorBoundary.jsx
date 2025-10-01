@@ -35,7 +35,7 @@ class PageErrorBoundaryClass extends Component {
                   <AlertTriangle size={48} />
                 </Box>
 
-                <Stack spacing={2}>
+                <Stack spacing={4}>
                   <Heading size="lg" style={{ color="red.600" }}>
                     {pageName} Error
                   </Heading>
@@ -56,7 +56,7 @@ class PageErrorBoundaryClass extends Component {
                   </Alert>
                 )}
 
-                <Stack direction={{ base: 'column', md: 'row' }} spacing={2} w="full" justify="center">
+                <Stack direction={{ base: 'column', md: 'row' }} spacing={4} w="full" justify="center">
                   <Button
                     leftIcon={<RefreshCw size={16} />}
                     colorScheme="blue"

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
   <Card className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
     <CardBody className="p-3 p-md-4">
-      <HStack mb={3} align="center" spacing={3}>
+      <HStack mb={3} align="center" spacing={4}>
         <Box
           borderRadius="full"
           w="32px"
@@ -147,7 +147,7 @@ const AddUserGroupForm = () => {
       <style>{`.settings-form-container .btn, .notification-mobile-dropdown .btn, .btn { min-height: 44px; }`}</style>
       <PageHeader
         title={
-          <HStack spacing={3} align="center">
+          <HStack spacing={4} align="center">
             <Box
               w="48px"
               h="48px"
@@ -174,7 +174,7 @@ const AddUserGroupForm = () => {
       <form onSubmit={handleSubmit}>
         <FormControl>
           <FormSection title={t('settings.userGroups.form.titles.groupInfo')} customization={customization}>
-            <Flex gap={3} wrap="wrap">
+            <Flex gap={4} wrap="wrap">
               <Box flex="1 1 300px">
                 <CustomFormInput
                   label={t('settings.userGroups.form.labels.name')}
@@ -210,7 +210,7 @@ const AddUserGroupForm = () => {
             </Flex>
 
             <Box mt={4}>
-              <HStack mb={2} align="center" spacing={3}>
+              <HStack mb={2} align="center" spacing={4}>
                 <Box w="24px" h="24px" bg="green.50" color="green.500" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                   ✓
                 </Box>
@@ -218,7 +218,7 @@ const AddUserGroupForm = () => {
                   {t('settings.userGroups.create.afterCreateTitle')}
                 </Text>
               </HStack>
-              <Flex gap={2} wrap="wrap">
+              <Flex gap={4} wrap="wrap">
                 <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
                 </Box>
@@ -238,7 +238,7 @@ const AddUserGroupForm = () => {
           {formData.group_type === 'contractor' && (
             <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} customization={customization}>
               <Box mb={4} p={3} borderRadius="md" bg="#e7f3ff" border="1px solid #b3d7ff">
-                <HStack spacing={3} align="start">
+                <HStack spacing={4} align="start">
                   <Box w="32px" h="32px" bg={customization.headerBg || "purple.500"} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                     <Icon as={Settings} size={14} />
                   </Box>
@@ -249,7 +249,7 @@ const AddUserGroupForm = () => {
                 </HStack>
               </Box>
 
-              <Flex gap={3} wrap="wrap">
+              <Flex gap={4} wrap="wrap">
                 {Object.entries(formData.modules).map(([module, enabled]) => (
                   <Box key={module} flex="1 1 180px">
                     <HStack justify="space-between">
@@ -280,7 +280,7 @@ const AddUserGroupForm = () => {
 
           <Card>
             <CardBody>
-              <HStack justify="flex-end" spacing={3}>
+              <HStack justify="flex-end" spacing={4}>
                 <Button
                   type="button"
                   variant="ghost"

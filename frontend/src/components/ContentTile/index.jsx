@@ -57,7 +57,7 @@ export default function ContentTile({
       }}
     >
       <CardBody p={4}>
-        <VStack align="stretch" spacing={3}>
+        <VStack align="stretch" spacing={4}>
           <Box display="flex" justifyContent="space-between" alignItems="flex-start">
             <Badge
               colorScheme={badgeColorScheme}
@@ -66,7 +66,7 @@ export default function ContentTile({
             >
               {type || 'file'}
             </Badge>
-            <HStack spacing={1}>
+            <HStack spacing={4}>
               {onDownload && (
                 <MotionButton
                   variant="ghost"
@@ -121,11 +121,11 @@ export default function ContentTile({
             </HStack>
           </Box>
 
-          <HStack spacing={3} align="flex-start">
+          <HStack spacing={4} align="flex-start">
             <Box color="gray.500" flexShrink={0} mt={0.5}>
               {isImage ? <Image size={18} /> : <File size={18} />}
             </Box>
-            <VStack align="flex-start" spacing={1} flex={1} minW={0}>
+            <VStack align="flex-start" spacing={4} flex={1} minW={0}>
               <Text
                 fontWeight="semibold"
                 noOfLines={1}

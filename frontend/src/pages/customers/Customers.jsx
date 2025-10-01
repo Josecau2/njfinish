@@ -289,7 +289,7 @@ const CustomerTable = ({
         </Card>
 
         {loading && (
-          <Center py={16} flexDirection="column" gap={3}>
+          <Center py={16} flexDirection="column" gap={4}>
             <Spinner size="lg" color="brand.500" />
             <Text color="gray.500">{t('customers.loading', 'Loading customers...')}</Text>
           </Center>
@@ -321,7 +321,7 @@ const CustomerTable = ({
                               onClick={() => handleSort('name')}
                               rightIcon={<Icon as={getSortIcon('name')} boxSize={4} />}
                             >
-                              <HStack spacing={2}>
+                              <HStack spacing={4}>
                                 <Icon as={User} boxSize={4} />
                                 <Text>{t('customers.name', 'Name')}</Text>
                               </HStack>
@@ -334,20 +334,20 @@ const CustomerTable = ({
                               onClick={() => handleSort('email')}
                               rightIcon={<Icon as={getSortIcon('email')} boxSize={4} />}
                             >
-                              <HStack spacing={2}>
+                              <HStack spacing={4}>
                                 <Icon as={Mail} boxSize={4} />
                                 <Text>{t('customers.email', 'Email')}</Text>
                               </HStack>
                             </Button>
                           </Th>
                           <Th>
-                            <HStack spacing={2}>
+                            <HStack spacing={4}>
                               <Icon as={Phone} boxSize={4} />
                               <Text>{t('customers.phone', 'Phone')}</Text>
                             </HStack>
                           </Th>
                           <Th>
-                            <HStack spacing={2}>
+                            <HStack spacing={4}>
                               <Icon as={MapPin} boxSize={4} />
                               <Text>{t('customers.address', 'Address')}</Text>
                             </HStack>
@@ -361,7 +361,7 @@ const CustomerTable = ({
                         {filteredCount === 0 ? (
                           <Tr>
                             <Td colSpan={8}>
-                              <Center py={12} flexDirection="column" gap={3}>
+                              <Center py={12} flexDirection="column" gap={4}>
                                 <Icon as={Search} boxSize={10} color="gray.300" />
                                 <Text>{t('customers.noResults')}</Text>
                                 <Text fontSize="sm" color="gray.500">
@@ -393,7 +393,7 @@ const CustomerTable = ({
                                 </Badge>
                               </Td>
                               <Td>
-                                <HStack spacing={2} justify="center">
+                                <HStack spacing={4} justify="center">
                                   <PermissionGate action="update" resource="customer" item={cust}>
                                     <IconButton
                                       aria-label={t('customers.editTooltip', 'Edit customer')}
@@ -430,7 +430,7 @@ const CustomerTable = ({
               {filteredCount === 0 ? (
                 <Card variant="outline">
                   <CardBody>
-                    <Center flexDirection="column" gap={3}>
+                    <Center flexDirection="column" gap={4}>
                       <Icon as={Search} boxSize={10} color="gray.300" />
                       <Text>{t('customers.noResults')}</Text>
                       <Text fontSize="sm" color="gray.500">
@@ -445,28 +445,28 @@ const CustomerTable = ({
                     <CardBody>
                       <Stack spacing={4}>
                         <HStack justify="space-between" align="flex-start">
-                          <Stack spacing={1}>
+                          <Stack spacing={4}>
                             <Text fontWeight="semibold">{cust.name || 'N/A'}</Text>
                             <Badge colorScheme="gray" alignSelf="flex-start">
                               {t('customers.main', 'Main')}
                             </Badge>
                           </Stack>
                         </HStack>
-                        <Stack spacing={2} fontSize="sm" color="gray.600">
-                          <HStack spacing={2}>
+                        <Stack spacing={4} fontSize="sm" color="gray.600">
+                          <HStack spacing={4}>
                             <Icon as={Mail} boxSize={4} />
                             <Text>{cust.email || 'N/A'}</Text>
                           </HStack>
-                          <HStack spacing={2}>
+                          <HStack spacing={4}>
                             <Icon as={Phone} boxSize={4} />
                             <Text>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Text>
                           </HStack>
-                          <HStack spacing={2}>
+                          <HStack spacing={4}>
                             <Icon as={MapPin} boxSize={4} />
                             <Text>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Text>
                           </HStack>
                         </Stack>
-                        <HStack spacing={3}>
+                        <HStack spacing={4}>
                           <Badge colorScheme="blue" flexShrink={0}>
                             {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
                           </Badge>
@@ -474,7 +474,7 @@ const CustomerTable = ({
                             {t('customers.ordersCount', { count: 0 })}
                           </Badge>
                         </HStack>
-                        <HStack spacing={3}>
+                        <HStack spacing={4}>
                           <PermissionGate action="update" resource="customer" item={cust}>
                             <Button
                               size="sm"

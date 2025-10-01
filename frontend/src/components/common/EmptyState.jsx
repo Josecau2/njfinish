@@ -10,7 +10,7 @@ const EmptyState = ({
   children,
 }) => {
   return (
-    <VStack spacing={3} py={4} textAlign="center" className={className} role="status" aria-live="polite">
+    <VStack spacing={4} py={4} textAlign="center" className={className} role="status" aria-live="polite">
       <Box opacity={0.35}>
         <Icon as={IconComponent} boxSize={8} />
       </Box>

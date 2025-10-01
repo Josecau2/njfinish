@@ -256,7 +256,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   </FormHelperText>
                 </FormControl>
 
-                <FormControl display="flex" alignItems="center" gap={3}>
+                <FormControl display="flex" alignItems="center" gap={4}>
                   <Switch
                     id="autoEmailOnAccept"
                     name="autoEmailOnAccept"

@@ -35,7 +35,7 @@ const ColorField = ({ label, name, value, onChange }) => (
     <FormLabel fontSize="sm" fontWeight="medium" color="gray.600">
       {label}
     </FormLabel>
-    <HStack spacing={3} align="center">
+    <HStack spacing={4} align="center">
       <Input
         type="color"
         name={name}
@@ -189,7 +189,7 @@ const CustomizationPage = () => {
           <Card variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack spacing={5}>
-                <Stack direction="row" align="center" spacing={3}>
+                <Stack direction="row" align="center" spacing={4}>
                   <Flex
                     align="center"
                     justify="center"
@@ -276,7 +276,7 @@ const CustomizationPage = () => {
           <Card variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack spacing={5}>
-                <Stack direction="row" align="center" spacing={3}>
+                <Stack direction="row" align="center" spacing={4}>
                   <Flex
                     align="center"
                     justify="center"

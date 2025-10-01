@@ -279,7 +279,7 @@ const PaymentsList = ({ isContractor }) => {
         <Alert status="error" mb={3} role="alert">{String(error)}</Alert>
       ) : null}
 
-      <HStack spacing={2} wrap="wrap" mb={4}>
+      <HStack spacing={4} wrap="wrap" mb={4}>
         {STATUS_OPTIONS.map((status) => (
           <Button
             key={status}
@@ -309,7 +309,7 @@ const PaymentsList = ({ isContractor }) => {
             />
           </InputGroup>
         </Box>
-        <HStack spacing={3}>
+        <HStack spacing={4}>
           {!isContractor && (
             <Button colorScheme="blue" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={16} />} aria-label={t('payments.create.button', 'Create payment')}>
               <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
@@ -340,7 +340,7 @@ const PaymentsList = ({ isContractor }) => {
             ) : filtered.length === 0 ? (
               <Tr>
                 <Td colSpan={7} textAlign="center" py={5}>
-                  <VStack spacing={3}>
+                  <VStack spacing={4}>
                     <CreditCardIcon size={48} />
                     <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
                     <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
@@ -357,13 +357,13 @@ const PaymentsList = ({ isContractor }) => {
                     <Td>{renderCustomerCell(payment)}</Td>
                     <Td>{getDisplayOrderNumber(payment)}</Td>
                     <Td>
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         <Text>{formatPaymentAmount(payment)}</Text>
                         {renderGatewayBadge(payment?.gateway)}
                       </HStack>
                     </Td>
                     <Td>
-                      <VStack align="start" spacing={1}>
+                      <VStack align="start" spacing={4}>
                         <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                         {payment?.status === 'completed' && payment?.paidAt ? (
                           <Text fontSize="xs" color="gray.500">{t('payments.appliedOn', 'Applied on')} {new Date(payment?.paidAt).toLocaleDateString()}</Text>
@@ -372,7 +372,7 @@ const PaymentsList = ({ isContractor }) => {
                     </Td>
                     <Td color="gray.500">{payment?.transactionId || t('common.na')}</Td>
                     <Td>
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         {canPayOnline ? (
                           <Button colorScheme="blue" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                             {t('payments.actions.makePayment', 'Make Payment')}
@@ -400,11 +400,11 @@ const PaymentsList = ({ isContractor }) => {
         </Table>
       </Box>
 
-      <VStack display={{ base: 'flex', lg: 'none' }} spacing={2}>
+      <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
         {loading ? (
           <Text textAlign="center" py={4}>{t('common.loading', 'Loading...')}</Text>
         ) : filtered.length === 0 ? (
-          <VStack spacing={3} textAlign="center" py={5}>
+          <VStack spacing={4} textAlign="center" py={5}>
             <CreditCardIcon size={48} />
             <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
             <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
@@ -415,12 +415,12 @@ const PaymentsList = ({ isContractor }) => {
             return (
               <Card key={payment?.id || Math.random()} size="sm" as="article">
                 <CardBody>
-                  <VStack align="stretch" spacing={3}>
+                  <VStack align="stretch" spacing={4}>
                     <Flex justify="space-between" align="center">
                       <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
                       <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                     </Flex>
-                    <VStack align="stretch" spacing={1}>
+                    <VStack align="stretch" spacing={4}>
                       <Text fontSize="sm" color="gray.600">{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Text>
                       <Flex justify="space-between" align="center">
                         <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment?.gateway)}</Text>

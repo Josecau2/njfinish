@@ -904,7 +904,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       </Text>
                     )}
 
-                    <HStack spacing={2}>
+                    <HStack spacing={4}>
                       <Badge colorScheme="orange">
                         {totals.announcements}
                       </Badge>

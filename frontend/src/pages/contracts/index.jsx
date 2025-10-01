@@ -350,7 +350,7 @@ const Contracts = () => {
                 justify="flex-end"
                 flex="1"
               >
-                <HStack spacing={2} justify="flex-end">
+                <HStack spacing={4} justify="flex-end">
                   <Text fontSize="sm" color="gray.500">
                     {t('common.itemsPerPage')}
                   </Text>
@@ -398,7 +398,7 @@ const Contracts = () => {
         {loading ? (
           <Card variant="outline">
             <CardBody>
-              <Center py={12} flexDirection="column" gap={3}>
+              <Center py={12} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
                 <Text fontSize="sm" color="gray.500">
                   {t('common.loading', 'Loading...')}
@@ -411,7 +411,7 @@ const Contracts = () => {
             {filteredCount === 0 ? (
               <Card variant="outline">
                 <CardBody>
-                  <Center flexDirection="column" gap={3}>
+                  <Center flexDirection="column" gap={4}>
                     <Icon as={Search} boxSize={10} color="gray.300" />
                     <Text fontWeight="medium">{t('contracts.empty.title')}</Text>
                     <Text fontSize="sm" color="gray.500">
@@ -429,7 +429,7 @@ const Contracts = () => {
                     <Card key={item.id} variant="outline" height="100%">
                       <CardHeader pb={2}>
                         <HStack justify="space-between" align="center">
-                          <HStack spacing={2} align="center">
+                          <HStack spacing={4} align="center">
                             <Icon as={Calendar} boxSize={4} color="gray.400" />
                             <Text fontSize="sm" color="gray.500">
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
@@ -439,7 +439,7 @@ const Contracts = () => {
                       </CardHeader>
                       <CardBody pt={0}>
                         <Stack spacing={4}>
-                          <HStack spacing={3} align="center">
+                          <HStack spacing={4} align="center">
                             <Box
                               w={10}
                               h={10}
@@ -465,7 +465,7 @@ const Contracts = () => {
                           <Text fontSize="sm" color="gray.600" noOfLines={2}>
                             {item.description || t('contracts.noDescription')}
                           </Text>
-                          <HStack spacing={2} align="center">
+                          <HStack spacing={4} align="center">
                             <Box
                               display="inline-flex"
                               alignItems="center"
@@ -522,7 +522,7 @@ const Contracts = () => {
                     {filteredCount === 0 ? (
                       <Tr>
                         <Td colSpan={6}>
-                          <Center py={12} flexDirection="column" gap={3}>
+                          <Center py={12} flexDirection="column" gap={4}>
                             <Icon as={Search} boxSize={10} color="gray.300" />
                             <Text>{t('contracts.empty.title')}</Text>
                             <Text fontSize="sm" color="gray.500">
@@ -566,7 +566,7 @@ const Contracts = () => {
                             </Badge>
                           </Td>
                           <Td>
-                            <HStack justify="center" spacing={3}>
+                            <HStack justify="center" spacing={4}>
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -618,7 +618,7 @@ const Contracts = () => {
           </ModalHeader>
           <ModalBody p={6}>
             {loadings ? (
-              <Center py={10} flexDirection="column" gap={3}>
+              <Center py={10} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
                 <Text fontSize="sm" color="gray.500">
                   {t('contracts.loadingDetails')}

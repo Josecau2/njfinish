@@ -202,7 +202,7 @@ const RequestAccessPage = () => {
                 <Text fontWeight="500" mb={2}>
                   {copy.benefitsHeading}
                 </Text>
-                <List spacing={1} fontSize="sm">
+                <List spacing={4} fontSize="sm">
                   {benefits.map((item, idx) => (
                     <ListItem key={idx} display="flex" alignItems="flex-start">
                       <ListIcon as={Circle} boxSize={2} mt={1.5} mr={2} fill="currentColor" />
@@ -228,8 +228,8 @@ const RequestAccessPage = () => {
             )}
 
             <Box as="form" onSubmit={handleSubmit}>
-              <VStack spacing={3}>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} w="100%">
+              <VStack spacing={4}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
                   <FormControl isRequired>
                     <FormLabel htmlFor="firstName" fontWeight="500">
                       {copy.fields.firstNameLabel}
@@ -265,7 +265,7 @@ const RequestAccessPage = () => {
                   </FormControl>
                 </SimpleGrid>
 
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} w="100%">
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
                   <FormControl isRequired>
                     <FormLabel htmlFor="email" fontWeight="500">
                       {copy.fields.emailLabel}
@@ -300,7 +300,7 @@ const RequestAccessPage = () => {
                   </FormControl>
                 </SimpleGrid>
 
-                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} w="100%">
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="100%">
                   <FormControl>
                     <FormLabel htmlFor="city" fontWeight="500">
                       {copy.fields.cityLabel}

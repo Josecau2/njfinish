@@ -185,7 +185,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
             </Alert>
           )}
         </ModalBody>
-        <ModalFooter gap={3}>
+        <ModalFooter gap={4}>
           {!isForced && (
             <Button colorScheme='gray' isDisabled minH='44px'>
               {disabledPromptLabel}

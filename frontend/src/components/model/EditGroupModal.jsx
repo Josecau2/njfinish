@@ -123,7 +123,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
           </Stack>
         </ModalBody>
-        <ModalFooter gap={3}>
+        <ModalFooter gap={4}>
           <Button variant='outline' onClick={onClose}>
             {t('common.cancel')}
           </Button>

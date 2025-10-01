@@ -163,7 +163,7 @@ const TaxesPage = () => {
         <CardBody>
           <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'flex-start', md: 'center' }}>
             <Tooltip label={t('settings.taxes.help.tooltip')} placement="bottom-start">
-              <Flex align="center" gap={2} color="gray.500">
+              <Flex align="center" gap={4} color="gray.500">
                 <Icon as={HelpCircle} boxSize={5} aria-hidden="true" />
                 <Text fontSize="sm">{t('settings.taxes.help.hover')}</Text>
               </Flex>
@@ -217,7 +217,7 @@ const TaxesPage = () => {
                             {t('settings.taxes.fields.default')}
                           </FormLabel>
                           {tax.isDefault ? (
-                            <Badge colorScheme="green" borderRadius="full" px={3} py={1} display="inline-flex" alignItems="center" gap={1}>
+                            <Badge colorScheme="green" borderRadius="full" px={3} py={1} display="inline-flex" alignItems="center" gap={4}>
                               <Icon as={Check} boxSize={4} aria-hidden="true" />
                               {t('settings.taxes.fields.defaultBadge')}
                             </Badge>
@@ -246,7 +246,7 @@ const TaxesPage = () => {
               </RadioGroup>
             </Stack>
           ) : (
-            <Flex direction="column" align="center" justify="center" py={12} color="gray.500" gap={3}>
+            <Flex direction="column" align="center" justify="center" py={12} color="gray.500" gap={4}>
               <Icon as={Coins} boxSize={12} opacity={0.2} aria-hidden="true" />
               <Text fontSize="lg" fontWeight="semibold">
                 {t('settings.taxes.empty.title')}
@@ -307,7 +307,7 @@ const TaxesPage = () => {
                         </InputGroup>
                       </Box>
 
-                      <Flex gap={2} flex={{ base: 1, md: '0 0 220px' }}>
+                      <Flex gap={4} flex={{ base: 1, md: '0 0 220px' }}>
                         <Button
                           colorScheme="green"
                           flex={1}

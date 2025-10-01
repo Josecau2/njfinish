@@ -8,7 +8,7 @@ const ResponsiveTable = ({ data = [], columns = [] }) => {
       <Stack spacing={4}>
         {data.map((row, i) => (
           <Card key={i} p={4} borderWidth="1px">
-            <Stack spacing={3}>
+            <Stack spacing={4}>
               {columns.map(col => (
                 <Box key={col.key}>
                   <Text fontSize="xs" color="gray.500" fontWeight="semibold">

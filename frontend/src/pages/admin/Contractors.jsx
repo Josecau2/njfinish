@@ -168,7 +168,7 @@ const Contractors = () => {
 
               <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={4}>
                 <Box bg="blue.50" borderRadius="lg" p={4}>
-                  <HStack spacing={3} align="center">
+                  <HStack spacing={4} align="center">
                     <Icon as={Users} boxSize={5} color="blue.600" />
                     <Box>
                       <Text fontSize="xs" color="blue.700" textTransform="uppercase" fontWeight="semibold">
@@ -181,7 +181,7 @@ const Contractors = () => {
                   </HStack>
                 </Box>
                 <Box bg="teal.50" borderRadius="lg" p={4}>
-                  <HStack spacing={3} align="center">
+                  <HStack spacing={4} align="center">
                     <Icon as={User} boxSize={5} color="teal.600" />
                     <Box>
                       <Text fontSize="xs" color="teal.700" textTransform="uppercase" fontWeight="semibold">
@@ -194,7 +194,7 @@ const Contractors = () => {
                   </HStack>
                 </Box>
                 <Box bg="orange.50" borderRadius="lg" p={4}>
-                  <HStack spacing={3} align="center">
+                  <HStack spacing={4} align="center">
                     <Icon as={Layers} boxSize={5} color="orange.600" />
                     <Box>
                       <Text fontSize="xs" color="orange.700" textTransform="uppercase" fontWeight="semibold">
@@ -207,7 +207,7 @@ const Contractors = () => {
                   </HStack>
                 </Box>
                 <Box bg="green.50" borderRadius="lg" p={4}>
-                  <HStack spacing={3} align="center">
+                  <HStack spacing={4} align="center">
                     <Icon as={ChartBar} boxSize={5} color="green.600" />
                     <Box>
                       <Text fontSize="xs" color="green.700" textTransform="uppercase" fontWeight="semibold">
@@ -243,7 +243,7 @@ const Contractors = () => {
                   {sortedFilteredContractors.length === 0 ? (
                     <Tr>
                       <Td colSpan={7} textAlign="center" py={10}>
-                        <Stack spacing={2} align="center">
+                        <Stack spacing={4} align="center">
                           <Icon as={Search} boxSize={8} color="gray.300" />
                           <Text color="gray.500">{t('contractorsAdmin.empty.title', 'No contractors found')}</Text>
                           <Text fontSize="sm" color="gray.400">
@@ -256,7 +256,7 @@ const Contractors = () => {
                     sortedFilteredContractors.map((contractor) => (
                       <Tr key={contractor.id}>
                         <Td>
-                          <Stack spacing={1}>
+                          <Stack spacing={4}>
                             <Text fontWeight="semibold">{contractor.name}</Text>
                             <Text fontSize="xs" color="gray.500">
                               ID: {contractor.id}
@@ -267,7 +267,7 @@ const Contractors = () => {
                         <Td>{contractor.customer_count || 0}</Td>
                         <Td>{contractor.proposal_count || 0}</Td>
                         <Td>
-                          <HStack spacing={2} flexWrap="wrap">
+                          <HStack spacing={4} flexWrap="wrap">
                             {getModuleBadges(contractor.modules)}
                           </HStack>
                         </Td>
@@ -292,13 +292,13 @@ const Contractors = () => {
             </TableContainer>
 
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
-              <Stack spacing={3}>
+              <Stack spacing={4}>
                 {sortedFilteredContractors.map((contractor) => (
                   <Card key={contractor.id} borderRadius="lg" variant="outline">
                     <CardBody>
-                      <Stack spacing={3}>
+                      <Stack spacing={4}>
                         <HStack justify="space-between" align="flex-start">
-                          <Stack spacing={1}>
+                          <Stack spacing={4}>
                             <Text fontWeight="semibold">{contractor.name}</Text>
                             <Text fontSize="xs" color="gray.500">
                               ID: {contractor.id}
@@ -314,7 +314,7 @@ const Contractors = () => {
                             {t('contractorsAdmin.actions.view', 'View')}
                           </Button>
                         </HStack>
-                        <SimpleGrid columns={3} spacing={3}>
+                        <SimpleGrid columns={3} spacing={4}>
                           <Box textAlign="center">
                             <Text fontSize="xs" color="gray.500">
                               {t('contractorsAdmin.table.users', 'Users')}
@@ -340,11 +340,11 @@ const Contractors = () => {
                             </Badge>
                           </Box>
                         </SimpleGrid>
-                        <Stack spacing={1}>
+                        <Stack spacing={4}>
                           <Text fontSize="xs" color="gray.500">
                             {t('contractorsAdmin.table.modules', 'Modules')}
                           </Text>
-                          <HStack spacing={2} flexWrap="wrap" align="flex-start">
+                          <HStack spacing={4} flexWrap="wrap" align="flex-start">
                             {getModuleBadges(contractor.modules)}
                           </HStack>
                         </Stack>

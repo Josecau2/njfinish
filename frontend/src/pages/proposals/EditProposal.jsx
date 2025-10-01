@@ -478,7 +478,7 @@ const EditProposal = ({
         alignItems="center"
         flexWrap="wrap"
       >
-        <HStack spacing={3}>
+        <HStack spacing={4}>
           <Text fontSize="lg" color="gray.500" fontWeight="medium">
             {t('proposals.edit.title', 'Edit Quote')}
           </Text>
@@ -493,7 +493,7 @@ const EditProposal = ({
             </Badge>
           )}
         </HStack>
-        <HStack spacing={2} flexWrap="wrap">
+        <HStack spacing={4} flexWrap="wrap">
           <Button
             colorScheme="green"
             leftIcon={<Printer />}
@@ -769,7 +769,7 @@ const EditProposal = ({
           {/* Tabs section for manufacturers */}
 
           {/* Version badges */}
-          <HStack spacing={3} overflowX="auto" pb={2}>
+          <HStack spacing={4} overflowX="auto" pb={2}>
             {versionDetails.map((version, index) => {
               const isSelected = index === selectedVersionIndex
               return (
@@ -789,7 +789,7 @@ const EditProposal = ({
                   justifyContent="space-between"
                   minW="120px"
                 >
-                  <VStack spacing={1} alignItems="start">
+                  <VStack spacing={4} alignItems="start">
                     {!isContractor && (
                       <Text fontWeight="bold" fontSize="xs">
                         {version.versionName}
@@ -839,13 +839,13 @@ const EditProposal = ({
           >
             <TabList>
               <Tab>
-                <HStack spacing={2}>
+                <HStack spacing={4}>
                   <Icon as={List} />
                   <Text>{t('common.items', 'Items')}</Text>
                 </HStack>
               </Tab>
               <Tab>
-                <HStack spacing={2}>
+                <HStack spacing={4}>
                   <Icon as={File} />
                   <Text>{t('common.files', 'Files')}</Text>
                 </HStack>
@@ -888,7 +888,7 @@ const EditProposal = ({
             {isFormDisabled ? (
               // Show status message instead of buttons when quote is locked OR when contractor views accepted quote
               <Alert status="success" borderRadius="lg">
-                <VStack spacing={2} textAlign="center" w="full">
+                <VStack spacing={4} textAlign="center" w="full">
                   <HStack>
                     <CheckCircle />
                     <Text fontSize="lg" fontWeight="semibold">

@@ -677,7 +677,7 @@ const TypesTab = ({ manufacturer }) => {
   if (loading) {
     return (
       <Box minH="400px" display="flex" alignItems="center" justifyContent="center">
-        <VStack spacing={3}>
+        <VStack spacing={4}>
           <Spinner color="brand.500" size="lg" />
           <Text>{t('types.loading', 'Loading types...')}</Text>
         </VStack>
@@ -689,11 +689,11 @@ const TypesTab = ({ manufacturer }) => {
     <Box>
       <Card>
         <CardHeader bg="gray.50" borderBottom="1px" borderColor="gray.200">
-          <Flex justify="space-between" align="center" wrap="wrap" gap={3}>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <Text fontSize="xl" fontWeight="bold" color="brand.600">
               {t('types.ui.header', 'Type Pictures & Management')}
             </Text>
-            <HStack spacing={2} wrap="wrap">
+            <HStack spacing={4} wrap="wrap">
               <Button
                 colorScheme="green"
                 leftIcon={<Plus size={16} />}
@@ -766,7 +766,7 @@ const TypesTab = ({ manufacturer }) => {
 
           {/* Filter Controls */}
           <Box mb={6} p={4} bg="gray.50" borderRadius="md">
-            <Flex gap={3} wrap="wrap">
+            <Flex gap={4} wrap="wrap">
               <Box flex="1" minW="200px">
                 <FormLabel fontWeight="semibold" color="brand.600">
                   {t('types.ui.filterByStyle', 'Filter by Style')}
@@ -822,9 +822,9 @@ const TypesTab = ({ manufacturer }) => {
           {selectedItems.length > 0 && (
             <Box mb={4}>
               <Alert status="info" borderRadius="md">
-                <VStack align="start" spacing={3} w="full">
+                <VStack align="start" spacing={4} w="full">
                   <Text>{selectedItems.length} item(s) selected</Text>
-                  <HStack spacing={3} wrap="wrap">
+                  <HStack spacing={4} wrap="wrap">
                     <Button
                       colorScheme="blue"
                       onClick={() => setBulkTypeChangeModalVisible(true)}
@@ -892,7 +892,7 @@ const TypesTab = ({ manufacturer }) => {
                       <Text fontWeight="semibold" color="brand.600" mb={2}>
                         {typeName}
                       </Text>
-                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={3}>
+                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
                         {typeItems.map((type) => {
                           const isSelected = selectedItems.includes(type.id)
                           return (
@@ -926,7 +926,7 @@ const TypesTab = ({ manufacturer }) => {
                                     bg="rgba(0, 0, 0, 0.6)"
                                     opacity={hoveredId === type.id ? 1 : 0}
                                     transition="opacity 0.3s ease"
-                                    gap={2}
+                                    gap={4}
                                   >
                                     <Button
                                       size="sm"
@@ -953,7 +953,7 @@ const TypesTab = ({ manufacturer }) => {
                                   </Flex>
                                 )}
                               </Box>
-                              <Stack spacing={2} px={3} pb={3}>
+                              <Stack spacing={4} px={3} pb={3}>
                                 <Text fontSize="sm" color="gray.600" minH="2.5em">
                                   {type.longDescription ||
                                     t(
@@ -1216,7 +1216,7 @@ const TypesTab = ({ manufacturer }) => {
                       <Text fontSize="sm" color="gray.600" mb={2}>
                         {t('types.assign.filterByType', 'Filter by type:')}
                       </Text>
-                      <Flex wrap="wrap" gap={1}>
+                      <Flex wrap="wrap" gap={4}>
                         {modalCatalogItems.filters.uniqueTypes
                           .filter((tn) => tn && tn !== selectedType?.type)
                           .slice(0, 40)
@@ -1307,7 +1307,7 @@ const TypesTab = ({ manufacturer }) => {
                               onChange={(e) => handleModalItemSelection(item.id, e.target.checked)}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <VStack align="start" spacing={1}>
+                              <VStack align="start" spacing={4}>
                                 <Text fontWeight="semibold">{item.description}</Text>
                                 <Text fontSize="sm" color="gray.600">
                                   {t('types.assign.currentType', 'Current Type')}: {item.type || t('common.none', 'None')} | {t('common.style', 'Style')}: {item.style || t('common.none', 'None')}

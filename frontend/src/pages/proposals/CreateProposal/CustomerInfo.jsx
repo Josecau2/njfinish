@@ -356,7 +356,7 @@ const CustomerInfoStep = ({
                 )}
               </Flex>
 
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isInvalid={!!errors.customerName} isRequired>
                   <FormLabel htmlFor="customerName">
                     {t('proposals.create.customerInfo.customerName')}
@@ -418,7 +418,7 @@ const CustomerInfoStep = ({
                 </FormControl>
               </SimpleGrid>
 
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 {canAssignDesigner && (
                   <FormControl isInvalid={!!errors.designer} isRequired>
                     <FormLabel htmlFor="designer">
@@ -479,9 +479,9 @@ const CustomerInfoStep = ({
                 </FormControl>
               </SimpleGrid>
 
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl>
-                  <Stack spacing={3}>
+                  <Stack spacing={4}>
                     <Controller
                       name="measurementDone"
                       control={control}
@@ -535,7 +535,7 @@ const CustomerInfoStep = ({
                 </FormControl>
 
                 <FormControl>
-                  <Stack spacing={3}>
+                  <Stack spacing={4}>
                     <Controller
                       name="designDone"
                       control={control}
@@ -611,7 +611,7 @@ const CustomerInfoStep = ({
                       {t('proposals.create.customerInfo.additionalInfo')}
                     </Text>
 
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                       <FormControl isInvalid={!!errors.location} isRequired>
                         <FormLabel htmlFor="location">{t('profile.location')}</FormLabel>
                         <Controller
@@ -666,7 +666,7 @@ const CustomerInfoStep = ({
                       </FormControl>
                     </SimpleGrid>
 
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                       <FormControl>
                         <FormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</FormLabel>
                         <Controller

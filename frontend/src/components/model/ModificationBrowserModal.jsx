@@ -343,7 +343,7 @@ const ModificationBrowserModal = ({
             if (slider.enabled === false) return null
             const value = modification.selectedOptions[sliderKey] ?? slider.min
             return (
-              <Stack key={sliderKey} spacing={2}>
+              <Stack key={sliderKey} spacing={4}>
                 <HStack justify="space-between">
                   <Text fontWeight="medium" textTransform="capitalize">
                     {t('proposalUI.custom.choose', 'Choose')} {sliderKey}
@@ -381,9 +381,9 @@ const ModificationBrowserModal = ({
           })}
 
         {config.sideSelector && config.sideSelector.enabled !== false && (
-          <Stack spacing={2}>
+          <Stack spacing={4}>
             <Text fontWeight="medium">{t('modificationBrowser.sideSelector.label', 'Side Selection')}</Text>
-            <HStack spacing={3}>
+            <HStack spacing={4}>
               {(config.sideSelector.options || []).map((option) => {
                 const isSelected = modification.selectedOptions.sideSelector === option
                 const display = option === 'L'
@@ -416,7 +416,7 @@ const ModificationBrowserModal = ({
         )}
 
         {config.qtyRange && config.qtyRange.enabled !== false && (
-          <Stack spacing={2}>
+          <Stack spacing={4}>
             <Text fontWeight="medium">{t('modificationBrowser.qty.label', 'Quantity')}</Text>
             <NumberInput
               min={config.qtyRange.min}
@@ -448,8 +448,8 @@ const ModificationBrowserModal = ({
         )}
 
         {config.customerUpload && config.customerUpload.enabled !== false && (
-          <Stack spacing={2}>
-            <HStack spacing={1}>
+          <Stack spacing={4}>
+            <HStack spacing={4}>
               <Text fontWeight="medium">
                 {config.customerUpload.title || t('modificationBrowser.upload.label', 'File Upload')}
               </Text>
@@ -490,7 +490,7 @@ const ModificationBrowserModal = ({
           cursor="pointer"
           onClick={() => handleCategorySelect(category)}
         >
-          <Stack spacing={3}>
+          <Stack spacing={4}>
             <Text fontWeight="semibold" noOfLines={2}>
               {category.name}
             </Text>
@@ -520,7 +520,7 @@ const ModificationBrowserModal = ({
           cursor="pointer"
           onClick={() => handleTemplateSelect(template)}
         >
-          <Stack spacing={3} h="100%">
+          <Stack spacing={4} h="100%">
             {(template.sampleImage || template.fieldsConfig?.modSampleImage?.enabled) && (
               <Box
                 bg="gray.50"
@@ -541,7 +541,7 @@ const ModificationBrowserModal = ({
                 />
               </Box>
             )}
-            <Stack spacing={1} flex="1">
+            <Stack spacing={4} flex="1">
               <HStack justify="space-between" align="flex-start">
                 <Text fontWeight="semibold" noOfLines={2}>
                   {template.name}
@@ -583,9 +583,9 @@ const ModificationBrowserModal = ({
     if (!selectedTemplate) return null
     return (
       <Stack spacing={5}>
-        <Stack spacing={2}>
+        <Stack spacing={4}>
           <HStack justify="space-between" align="flex-start">
-            <Stack spacing={1} flex="1">
+            <Stack spacing={4} flex="1">
               <Text fontSize="lg" fontWeight="semibold">
                 {selectedTemplate.name}
               </Text>
@@ -595,7 +595,7 @@ const ModificationBrowserModal = ({
                 </Text>
               )}
             </Stack>
-            <Stack spacing={1} align="flex-end">
+            <Stack spacing={4} align="flex-end">
               {selectedTemplate.effectivePrice && (
                 <Text fontWeight="bold">
                   ${Number(selectedTemplate.effectivePrice).toFixed(2)}
@@ -652,7 +652,7 @@ const ModificationBrowserModal = ({
         {renderModificationConfig()}
 
         {(!selectedTemplate.fieldsConfig?.qtyRange || selectedTemplate.fieldsConfig.qtyRange.enabled === false) && (
-          <Stack spacing={2}>
+          <Stack spacing={4}>
             <Text fontWeight="medium">{t('modificationBrowser.qty.label', 'Quantity')}</Text>
             <NumberInput
               min={1}
@@ -685,7 +685,7 @@ const ModificationBrowserModal = ({
       <ModalContent borderRadius="xl" overflow="hidden">
         <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor="gray.100">
           <HStack justify="space-between" align="center">
-            <HStack spacing={2} align="center">
+            <HStack spacing={4} align="center">
               {showBackButton && (
                 <IconButton
                   icon={<ArrowLeft size={18} />}
@@ -723,7 +723,7 @@ const ModificationBrowserModal = ({
               ]}
             />
 
-            <HStack spacing={3}>
+            <HStack spacing={4}>
               <Box flex="1" position="relative">
                 <Input
                   pl={10}
@@ -753,7 +753,7 @@ const ModificationBrowserModal = ({
               ) : (
                 <Alert status="info" variant="subtle" borderRadius="md">
                   <AlertIcon />
-                  <Stack spacing={1}>
+                  <Stack spacing={4}>
                     <Text fontWeight="semibold">
                       {t('modificationBrowser.empty.title', 'No categories found')}
                     </Text>
@@ -783,7 +783,7 @@ const ModificationBrowserModal = ({
         <Divider borderColor="gray.100" />
 
         <ModalFooter px={6} py={4} bg="white">
-          <HStack spacing={3} justify="flex-end" w="full">
+          <HStack spacing={4} justify="flex-end" w="full">
             <Button variant="outline" onClick={onClose}>
               {t('common.cancel', 'Cancel')}
             </Button>

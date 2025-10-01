@@ -244,7 +244,7 @@ const ModificationModalEdit = ({
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <HStack spacing={3}>
+          <HStack spacing={4}>
             <Button variant="outline" onClick={onClose}>
               {t('common.cancel', 'Cancel')}
             </Button>

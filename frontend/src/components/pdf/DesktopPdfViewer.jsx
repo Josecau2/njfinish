@@ -49,7 +49,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         </Button>
       </HStack>
 
-      <HStack spacing={2} justify="center">
+      <HStack spacing={4} justify="center">
         <IconButton
           aria-label="Zoom out"
           icon={<ZoomOut size={18} />}

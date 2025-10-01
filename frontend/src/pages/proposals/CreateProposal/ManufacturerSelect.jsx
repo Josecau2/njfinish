@@ -209,7 +209,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                 <Heading size="md" color="gray.800">
                   {t('proposals.create.manufacturer.title')}
                 </Heading>
-                <Stack direction="row" spacing={3} align="center">
+                <Stack direction="row" spacing={4} align="center">
                   {!hideBack && (
                     <MotionButton
                       variant="outline"
@@ -247,7 +247,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                           {t('proposals.create.manufacturer.empty', 'No manufacturers available.')}
                         </Text>
                       ) : (
-                        <SimpleGrid columns={gridColumns} spacing={5}>
+                        <SimpleGrid columns={gridColumns} spacing={6}>
                           {enabledManufacturers.map((manufacturer) => {
                             const isSelected = String(manufacturer.id) === field.value
                             const imageStatus = cardImageState[manufacturer.id]
@@ -319,7 +319,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                     </Box>
                                   )}
                                 </Box>
-                                <Stack spacing={2} p={4} align="center">
+                                <Stack spacing={4} p={4} align="center">
                                   <Heading as="h3" size="sm" textAlign="center" color="gray.800">
                                     {manufacturer.name}
                                   </Heading>

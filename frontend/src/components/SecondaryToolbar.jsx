@@ -21,7 +21,7 @@ const SecondaryToolbar = ({ children, ...props }) => {
       data-scroll-region
       {...props}
     >
-      <HStack spacing={2} align="center" minW="fit-content">
+      <HStack spacing={4} align="center" minW="fit-content">
         {children}
       </HStack>
     </Flex>

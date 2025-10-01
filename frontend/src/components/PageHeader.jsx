@@ -78,7 +78,7 @@ const PageHeader = ({
         >
           {/* Title Section */}
           <Box flex="1" minW="0">
-            <Flex align="center" gap={3} mb={2}>
+            <Flex align="center" gap={4} mb={2}>
               {Icon && (
                 <Box
                   p={2}
@@ -112,7 +112,7 @@ const PageHeader = ({
           {(actions.length > 0 || rightContent || children) && (
             <Box flexShrink={0}>
               <HStack
-                spacing={3}
+                spacing={4}
                 flexWrap={{ base: 'wrap', md: 'nowrap' }}
                 justify={{ base: 'flex-start', md: 'flex-end' }}
               >

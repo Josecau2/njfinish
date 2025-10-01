@@ -229,7 +229,7 @@ const ManuMultipliers = () => {
           icon={Users}
           actions={[
             <Badge key="group-count" variant="subtle" colorScheme="gray" px={3} py={1} borderRadius="md">
-              <HStack spacing={2}>
+              <HStack spacing={4}>
                 <Icon as={Users} boxSize={4} aria-hidden="true" />
                 <Text fontSize="sm">{mergedGroups.length} {t('settings.userGroups.multipliers.groups')}</Text>
               </HStack>
@@ -338,7 +338,7 @@ const ManuMultipliers = () => {
                 <Thead bg={tableHeaderBg}>
                   <Tr>
                     <Th>
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         <Icon as={Users} boxSize={4} aria-hidden="true" />
                         <Text>{t('settings.userGroups.multipliers.table.groupName')}</Text>
                       </HStack>
@@ -352,7 +352,7 @@ const ManuMultipliers = () => {
                   {paginatedGroups.length === 0 ? (
                     <Tr>
                       <Td colSpan={4}>
-                        <Center py={12} flexDirection="column" gap={3}>
+                        <Center py={12} flexDirection="column" gap={4}>
                           <Icon as={Search} boxSize={10} color="gray.300" />
                           <Text>{t('settings.userGroups.multipliers.empty.title')}</Text>
                           <Text fontSize="sm" color="gray.500">
@@ -375,7 +375,7 @@ const ManuMultipliers = () => {
                           </Badge>
                         </Td>
                         <Td py={4}>
-                          <HStack spacing={3}>
+                          <HStack spacing={4}>
                             <Switch
                               size="md"
                               colorScheme="brand"

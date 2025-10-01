@@ -136,7 +136,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
           </Stack>
         </ModalBody>
-        <ModalFooter gap={3}>
+        <ModalFooter gap={4}>
           <Button variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
             {t('editManufacturerModal.actions.cancel')}
           </Button>

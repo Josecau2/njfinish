@@ -2263,7 +2263,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         title={t('settings.manufacturers.catalogMapping.title')}
         mobileLayout="compact"
         rightContent={
-          <HStack spacing={2} flexWrap="wrap" className="catalog-actions">
+          <HStack spacing={4} flexWrap="wrap" className="catalog-actions">
             <Button
               bg={headerBg}
               color={textColor}

@@ -29,10 +29,10 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
   }
 
   return (
-    <VStack align="stretch" spacing={3} className={className}>
+    <VStack align="stretch" spacing={4} className={className}>
       <HStack justify="space-between" align="center">
         <Text fontWeight="semibold">{title}</Text>
-        <HStack spacing={2}>
+        <HStack spacing={4}>
           <IconButton
             aria-label="Scroll left"
             icon={<ChevronLeft size={18} />}
@@ -50,7 +50,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
 
       <HStack
         ref={scrollerRef}
-        spacing={3}
+        spacing={4}
         overflowX="auto"
         py={1}
         role="list"
@@ -87,7 +87,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
                 onClick={() => handleSelect(id)}
                 aria-pressed={isSelected}
               >
-                <VStack spacing={2} align="stretch">
+                <VStack spacing={4} align="stretch">
                   <Box
                     borderRadius="md"
                     overflow="hidden"

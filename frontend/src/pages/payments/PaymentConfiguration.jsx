@@ -243,7 +243,7 @@ const PaymentConfiguration = () => {
 
         <Card variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
-            <HStack spacing={3} align="center">
+            <HStack spacing={4} align="center">
               <Icon as={CreditCard} boxSize={5} color="blue.500" />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.gateway.title', 'Gateway Settings')}
@@ -419,7 +419,7 @@ const PaymentConfiguration = () => {
 
         <Card variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
-            <HStack spacing={3} align="center">
+            <HStack spacing={4} align="center">
               <Icon as={CreditCard} boxSize={5} color="green.500" />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.preview.title', 'Configuration Preview')}
@@ -427,9 +427,9 @@ const PaymentConfiguration = () => {
             </HStack>
           </CardHeader>
           <CardBody>
-            <Stack spacing={3} bg={previewBg} borderRadius="lg" p={4} borderWidth="1px" borderColor="gray.100">
+            <Stack spacing={4} bg={previewBg} borderRadius="lg" p={4} borderWidth="1px" borderColor="gray.100">
               {previewDetails.map((item) => (
-                <Flex key={item.label} justify="space-between" wrap="wrap" gap={3}>
+                <Flex key={item.label} justify="space-between" wrap="wrap" gap={4}>
                   <Text fontWeight="semibold" color="gray.600">
                     {item.label}
                   </Text>

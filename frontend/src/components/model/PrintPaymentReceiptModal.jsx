@@ -228,7 +228,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
               </Alert>
             )}
 
-            <Stack spacing={3} fontSize="sm" bg="gray.50" borderRadius="md" p={4} borderWidth="1px" borderColor="gray.100">
+            <Stack spacing={4} fontSize="sm" bg="gray.50" borderRadius="md" p={4} borderWidth="1px" borderColor="gray.100">
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('paymentReceipt.modal.paymentAmount', 'Amount')}:
@@ -276,7 +276,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
           </Button>
           <Button colorScheme="brand" onClick={downloadReceipt} isDisabled={isLoading}>
             {isLoading ? (
-              <HStack spacing={2}>
+              <HStack spacing={4}>
                 <Spinner size="sm" />
                 <Text>{t('paymentReceipt.modal.generating', 'Generating...')}</Text>
               </HStack>

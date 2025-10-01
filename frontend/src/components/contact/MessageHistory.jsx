@@ -73,7 +73,7 @@ const MessageHistory = ({
   )
 
   const renderUserGroup = () => (
-    <Stack spacing={2}>
+    <Stack spacing={4}>
       {groupedThreads.map((group) => (
         <Box
           key={group.userId}
@@ -85,14 +85,14 @@ const MessageHistory = ({
           _hover={{ bg: 'gray.50' }}
           onClick={() => onSelectUser && onSelectUser(group.userId)}
         >
-          <Flex justify="space-between" align="center" gap={3}>
+          <Flex justify="space-between" align="center" gap={4}>
             <Box minW={0}>
               <Text fontWeight="semibold" noOfLines={1}>
                 {group.name}
               </Text>
               {group.lastAt > 0 && (
                 <Text fontSize="xs" color="gray.500" noOfLines={1}>
-                  {new Date(group.lastAt).toLocaleString()} • {group.lastSubject}
+                  {new Date(group.lastAt).toLocaleString()} ï¿½ {group.lastSubject}
                 </Text>
               )}
             </Box>
@@ -108,7 +108,7 @@ const MessageHistory = ({
   )
 
   const renderThreadList = () => (
-    <Stack spacing={2}>
+    <Stack spacing={4}>
       {threads.map((thread) => (
         <Box
           key={thread.id}
@@ -120,9 +120,9 @@ const MessageHistory = ({
           _hover={{ bg: 'gray.50' }}
           onClick={() => onSelect(thread.id)}
         >
-          <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" gap={3}>
+          <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" gap={4}>
             <Box minW={0}>
-              <HStack spacing={2} align="center" flexWrap="wrap">
+              <HStack spacing={4} align="center" flexWrap="wrap">
                 <Text fontWeight="semibold" noOfLines={1}>
                   {thread.subject}
                 </Text>
@@ -140,7 +140,7 @@ const MessageHistory = ({
               </HStack>
             </Box>
 
-            <HStack spacing={2} align="center" justify={{ base: 'flex-start', md: 'flex-end' }}>
+            <HStack spacing={4} align="center" justify={{ base: 'flex-start', md: 'flex-end' }}>
               {Number(thread.unreadCount) > 0 && (
                 <Badge colorScheme="red" borderRadius="full" px={2}>
                   {thread.unreadCount}
@@ -157,7 +157,7 @@ const MessageHistory = ({
   )
 
   const renderPagination = () => (
-    <HStack spacing={2} justify="center" mt={3}>
+    <HStack spacing={4} justify="center" mt={3}>
       <Button
         size="sm"
         variant="ghost"

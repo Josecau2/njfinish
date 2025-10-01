@@ -110,7 +110,7 @@ const LoginPreview = ({ config }) => {
       py={{ base: 10, lg: 12 }}
       bg={config.backgroundColor || "gray.900"}
     >
-      <Stack spacing={3} textAlign="center" maxW="md">
+      <Stack spacing={4} textAlign="center" maxW="md">
         <Heading size="lg" color={marketingColors.text} fontWeight="bold">
           {config.rightTitle}
         </Heading>
@@ -138,7 +138,7 @@ const LoginPreview = ({ config }) => {
           mb={2}
         />
       )}
-      <Stack spacing={1}>
+      <Stack spacing={4}>
         <Heading size='md'>{config.title}</Heading>
         <Text color='gray.500'>{config.subtitle}</Text>
       </Stack>
@@ -197,7 +197,7 @@ const LoginPreview = ({ config }) => {
           mb={2}
         />
       )}
-      <Stack spacing={1}>
+      <Stack spacing={4}>
         <Heading size='md'>Reset your password</Heading>
         <Text color='gray.500'>Enter the email you use to sign in and we'll send reset instructions.</Text>
       </Stack>
@@ -226,7 +226,7 @@ const LoginPreview = ({ config }) => {
           mb={2}
         />
       )}
-      <Stack spacing={1}>
+      <Stack spacing={4}>
         <Heading size='md'>{config.requestAccessTitle || 'Request Access'}</Heading>
         {config.requestAccessSubtitle && (
           <Text color='gray.500'>{config.requestAccessSubtitle}</Text>
@@ -236,9 +236,9 @@ const LoginPreview = ({ config }) => {
         )}
       </Stack>
       {benefits.length > 0 && (
-        <Stack spacing={1} fontSize='sm' color='gray.600'>
+        <Stack spacing={4} fontSize='sm' color='gray.600'>
           <Text fontWeight='medium'>Benefits</Text>
-          <Stack spacing={1} pl={2}>
+          <Stack spacing={4} pl={2}>
             {benefits.map((item, index) => (
               <Text key={index}>• {item}</Text>
             ))}
@@ -246,7 +246,7 @@ const LoginPreview = ({ config }) => {
         </Stack>
       )}
       <Stack as='form' spacing={4} onSubmit={(event) => event.preventDefault()}>
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           <FormControl>
             <FormLabel htmlFor='login-preview-first'>First name</FormLabel>
             <Input id='login-preview-first' placeholder='Jane' isDisabled />
@@ -256,7 +256,7 @@ const LoginPreview = ({ config }) => {
             <Input id='login-preview-last' placeholder='Doe' isDisabled />
           </FormControl>
         </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           <FormControl>
             <FormLabel htmlFor='login-preview-req-email'>Email</FormLabel>
             <Input
@@ -274,7 +274,7 @@ const LoginPreview = ({ config }) => {
             />
           </FormControl>
         </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3}>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
           <FormControl>
             <FormLabel htmlFor='login-preview-req-city'>City</FormLabel>
             <Input id='login-preview-req-city' placeholder='City' isDisabled />
@@ -324,7 +324,7 @@ const LoginPreview = ({ config }) => {
 
   return (
     <Stack spacing={6}>
-      <Flex justify='center' wrap='wrap' gap={2}>
+      <Flex justify='center' wrap='wrap' gap={4}>
         {previewOptions.map((option) => (
           <Button
             key={option.key}

@@ -162,7 +162,7 @@ export default function FileViewerModal({
     if (!inlineUrl && ['image', 'video', 'audio', 'pdf'].includes(detectedType)) {
       return (
         <Alert status="warning" borderRadius="md">
-          <HStack spacing={3} align="center">
+          <HStack spacing={4} align="center">
             <Icon as={Link2Off} boxSize={5} />
             <Text>Preview unavailable. Try downloading the file.</Text>
           </HStack>
@@ -213,7 +213,7 @@ export default function FileViewerModal({
       if (!inlineUrl) {
         return (
           <Alert status="warning" borderRadius="md">
-            <HStack spacing={3} align="center">
+            <HStack spacing={4} align="center">
               <Icon as={Link2Off} boxSize={5} />
               <Text>PDF preview unavailable. Try downloading the file.</Text>
             </HStack>

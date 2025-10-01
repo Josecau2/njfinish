@@ -243,7 +243,7 @@ const CustomersTab = ({ contractor, groupId }) => {
     <Flex direction="column" gap={6}>
       <Card>
         <CardHeader borderBottomWidth="1px">
-          <Flex align="center" gap={2}>
+          <Flex align="center" gap={4}>
             <Icon as={Users} boxSize={5} color="gray.500" aria-hidden="true" />
             <Heading size="sm">
               {t('contractorsAdmin.detail.customers.header', {
@@ -317,7 +317,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                   <Thead>
                     <Tr>
                       <Th cursor="pointer" onClick={() => handleSort('name')}>
-                        <Flex align="center" gap={2}>
+                        <Flex align="center" gap={4}>
                           <Text>{t('customers.name')}</Text>
                           {sortConfig.key === 'name' && (
                             <Icon
@@ -329,7 +329,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         </Flex>
                       </Th>
                       <Th cursor="pointer" onClick={() => handleSort('email')}>
-                        <Flex align="center" gap={2}>
+                        <Flex align="center" gap={4}>
                           <Text>{t('customers.email')}</Text>
                           {sortConfig.key === 'email' && (
                             <Icon
@@ -343,7 +343,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                       <Th>{t('contractorsAdmin.detail.customers.table.phone')}</Th>
                       <Th>{t('contractorsAdmin.detail.customers.table.address')}</Th>
                       <Th cursor="pointer" onClick={() => handleSort('created_at')}>
-                        <Flex align="center" gap={2}>
+                        <Flex align="center" gap={4}>
                           <Text>{t('contractorsAdmin.detail.customers.table.created')}</Text>
                           {sortConfig.key === 'created_at' && (
                             <Icon
@@ -371,7 +371,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                       paginatedCustomers.map((customer) => (
                         <Tr key={customer.id}>
                           <Td>
-                            <Flex align="center" gap={3}>
+                            <Flex align="center" gap={4}>
                               <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
                               <Box>
                                 <Text fontWeight="semibold">{customer.name}</Text>
@@ -383,7 +383,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           </Td>
                           <Td>
                             {customer.email ? (
-                              <Flex align="center" gap={2}>
+                              <Flex align="center" gap={4}>
                                 <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
                                 <Text>{customer.email}</Text>
                               </Flex>
@@ -395,7 +395,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           </Td>
                           <Td>
                             {customer.phone ? (
-                              <Flex align="center" gap={2}>
+                              <Flex align="center" gap={4}>
                                 <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
                                 <Text>{formatPhone(customer.phone)}</Text>
                               </Flex>
@@ -407,7 +407,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           </Td>
                           <Td>
                             {formatAddress(customer) ? (
-                              <Flex align="center" gap={2} alignItems="flex-start">
+                              <Flex align="center" gap={4} alignItems="flex-start">
                                 <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
                                 <Text>{formatAddress(customer)}</Text>
                               </Flex>
@@ -418,7 +418,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                             )}
                           </Td>
                           <Td>
-                            <Flex align="center" gap={2}>
+                            <Flex align="center" gap={4}>
                               <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
                               <Text>{formatDate(customer.created_at)}</Text>
                             </Flex>
@@ -450,8 +450,8 @@ const CustomersTab = ({ contractor, groupId }) => {
                     <Card key={customer.id} variant="outline">
                       <CardBody>
                         <Stack spacing={4}>
-                          <Flex justify="space-between" align="flex-start" gap={3}>
-                            <Flex align="center" gap={2} minW={0}>
+                          <Flex justify="space-between" align="flex-start" gap={4}>
+                            <Flex align="center" gap={4} minW={0}>
                               <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
                               <Box minW={0}>
                                 <Text fontWeight="semibold" noOfLines={1}>
@@ -469,11 +469,11 @@ const CustomersTab = ({ contractor, groupId }) => {
                             </Badge>
                           </Flex>
 
-                          <Stack spacing={2} fontSize="sm">
+                          <Stack spacing={4} fontSize="sm">
                             <Box>
                               <Text color="gray.500">{t('customers.email')}</Text>
                               {customer.email ? (
-                                <Flex align="center" gap={2}>
+                                <Flex align="center" gap={4}>
                                   <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
                                   <Text noOfLines={1}>{customer.email}</Text>
                                 </Flex>
@@ -490,7 +490,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                   {t('contractorsAdmin.detail.customers.table.phone')}
                                 </Text>
                                 {customer.phone ? (
-                                  <Flex align="center" gap={2}>
+                                  <Flex align="center" gap={4}>
                                     <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
                                     <Text>{formatPhone(customer.phone)}</Text>
                                   </Flex>
@@ -504,7 +504,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                 <Text color="gray.500">
                                   {t('contractorsAdmin.detail.customers.table.created')}
                                 </Text>
-                                <Flex align="center" gap={2}>
+                                <Flex align="center" gap={4}>
                                   <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
                                   <Text>{formatDate(customer.created_at)}</Text>
                                 </Flex>
@@ -516,7 +516,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                 <Text color="gray.500">
                                   {t('contractorsAdmin.detail.customers.table.address')}
                                 </Text>
-                                <Flex align="flex-start" gap={2}>
+                                <Flex align="flex-start" gap={4}>
                                   <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
                                   <Text>{formatAddress(customer)}</Text>
                                 </Flex>

@@ -170,7 +170,7 @@ const EditUserForm = () => {
               {/* Basic Information Section */}
               <Card>
                 <CardHeader>
-                  <HStack spacing={3}>
+                  <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={User} boxSize={5} color="brand.600" />
                     </Box>
@@ -290,7 +290,7 @@ const EditUserForm = () => {
               {/* Personal Address Section */}
               <Card>
                 <CardHeader>
-                  <HStack spacing={3}>
+                  <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Home} boxSize={5} color="brand.600" />
                     </Box>
@@ -372,7 +372,7 @@ const EditUserForm = () => {
               {/* Company Information Section */}
               <Card>
                 <CardHeader>
-                  <HStack spacing={3}>
+                  <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Building} boxSize={5} color="brand.600" />
                     </Box>
@@ -468,7 +468,7 @@ const EditUserForm = () => {
               {/* Password Section */}
               <Card>
                 <CardHeader>
-                  <HStack spacing={3}>
+                  <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Lock} boxSize={5} color="brand.600" />
                     </Box>

@@ -18,7 +18,7 @@ const Page404 = () => {
                 >
                   404
                 </Heading>
-                <VStack align="start" spacing={2}>
+                <VStack align="start" spacing={4}>
                   <Heading size="lg" pt={3}>
                     Oops! You're lost.
                   </Heading>

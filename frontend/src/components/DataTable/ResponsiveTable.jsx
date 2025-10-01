@@ -15,7 +15,7 @@ export function ResponsiveTable({ columns, data, onRowClick, renderCell }) {
 
   if (isMobile) {
     return (
-      <Stack spacing={2}>
+      <Stack spacing={4}>
         {data.map((row, idx) => (
           <MobileListCard
             key={idx}

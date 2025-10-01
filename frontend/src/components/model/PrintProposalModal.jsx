@@ -378,7 +378,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     control={control}
                     name="showProposalItems"
                     render={({ field }) => (
-                      <HStack spacing={3} align="center">
+                      <HStack spacing={4} align="center">
                         <Switch
                           id="showProposalItems"
                           colorScheme="brand"
@@ -400,7 +400,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     control={control}
                     name="showGroupItems"
                     render={({ field }) => (
-                      <HStack spacing={3} align="center">
+                      <HStack spacing={4} align="center">
                         <Switch
                           id="showGroupItems"
                           colorScheme="brand"
@@ -422,7 +422,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     control={control}
                     name="showPriceSummary"
                     render={({ field }) => (
-                      <HStack spacing={3} align="center">
+                      <HStack spacing={4} align="center">
                         <Switch
                           id="showPriceSummary"
                           colorScheme="brand"
@@ -450,7 +450,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                       {t('proposalCommon.selectVersion')}
                     </Text>
                     {versionOptions.length > 1 && (
-                      <HStack spacing={2}>
+                      <HStack spacing={4}>
                         <Button size="sm" variant="outline" onClick={selectAllVersions}>
                           {t('common.selectAll', 'Select All')}
                         </Button>
@@ -471,7 +471,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                           refreshPreview({ selectedVersions: next })
                         }}
                       >
-                        <SimpleGrid columns={isMobile ? 1 : 2} spacing={3}>
+                        <SimpleGrid columns={isMobile ? 1 : 2} spacing={4}>
                           {versionOptions.map((opt) => (
                             <Checkbox
                               key={opt.value}
@@ -498,7 +498,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                   <Text fontWeight="semibold">
                     {t('proposalCommon.selectColumns')}
                   </Text>
-                  <HStack spacing={2}>
+                  <HStack spacing={4}>
                     <Button size="sm" variant="outline" onClick={selectAllColumns}>
                       {t('common.selectAll', 'Select All')}
                     </Button>
@@ -519,7 +519,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                         refreshPreview({ selectedColumns: withFixed })
                       }}
                     >
-                      <SimpleGrid columns={isMobile ? 1 : 2} spacing={3}>
+                      <SimpleGrid columns={isMobile ? 1 : 2} spacing={4}>
                         {columnOptions.map((opt) => (
                           <Checkbox
                             key={opt.value}
@@ -544,7 +544,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <HStack spacing={3} flexWrap={isMobile ? 'wrap' : 'nowrap'} width="100%" justify={isMobile ? 'stretch' : 'flex-end'}>
+            <HStack spacing={4} flexWrap={isMobile ? 'wrap' : 'nowrap'} width="100%" justify={isMobile ? 'stretch' : 'flex-end'}>
               <MotionButton
                 variant="outline"
                 colorScheme="gray"
@@ -552,7 +552,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
               >
-                <HStack spacing={2} justify="center" width="100%">
+                <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Eye} boxSize={4} />
                   <Text>{t('proposalCommon.preview', 'Preview')}</Text>
                 </HStack>
@@ -564,7 +564,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
               >
-                <HStack spacing={2} justify="center" width="100%">
+                <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Printer} boxSize={4} />
                   <Text>{t('proposalCommon.print', 'Print')}</Text>
                 </HStack>
@@ -577,12 +577,12 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 flex={isMobile ? '1' : 'unset'}
               >
                 {isLoading ? (
-                  <HStack spacing={2} justify="center" width="100%">
+                  <HStack spacing={4} justify="center" width="100%">
                     <Spinner size="sm" />
                     <Text>{t('proposalCommon.downloading')}</Text>
                   </HStack>
                 ) : (
-                  <HStack spacing={2} justify="center" width="100%">
+                  <HStack spacing={4} justify="center" width="100%">
                     <Icon as={Download} boxSize={4} />
                     <Text>{t('proposalCommon.downloadPdf')}</Text>
                   </HStack>
@@ -639,7 +639,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           </ModalBody>
           <Divider />
           <ModalFooter>
-            <HStack spacing={3}>
+            <HStack spacing={4}>
               <MotionButton
                 variant="outline"
                 colorScheme="gray"
@@ -655,12 +655,12 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
               >
                 {isLoading ? (
-                  <HStack spacing={2}>
+                  <HStack spacing={4}>
                     <Spinner size="sm" />
                     <Text>{t('proposalCommon.downloading')}</Text>
                   </HStack>
                 ) : (
-                  <HStack spacing={2}>
+                  <HStack spacing={4}>
                     <Icon as={Download} boxSize={4} />
                     <Text>{t('proposalCommon.downloadPdf')}</Text>
                   </HStack>

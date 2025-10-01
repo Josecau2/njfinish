@@ -526,7 +526,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
       {/* Status Tabs (desktop only) */}
       <Box display={{ base: 'none', lg: 'block' }} mb={4}>
-        <HStack spacing={2} wrap="wrap">
+        <HStack spacing={4} wrap="wrap">
           {tabs.map((tab, idx) => {
             const isActive = activeTab === tab
             const count = tabCounts[tab] || 0
@@ -556,7 +556,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       {/* Search and Filters (desktop only) */}
       <Box display={{ base: 'none', lg: 'block' }} mb={4}>
         <Flex justify="space-between" align="center">
-          <HStack spacing={2} flex={1} maxW="520px">
+          <HStack spacing={4} flex={1} maxW="520px">
             <InputGroup>
               <InputLeftElement>
                 <Search size={16} />
@@ -605,7 +605,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 {paginatedItems?.length === 0 ? (
                   <Tr>
                     <Td colSpan={canAssignDesigner ? 7 : 6} textAlign="center" py={8}>
-                      <VStack spacing={3}>
+                      <VStack spacing={4}>
                         <Search size={48} color="gray" />
                         <Text>{t('proposals.empty.title')}</Text>
                         <Text fontSize="sm" color="gray.500">
@@ -638,7 +638,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                         </Badge>
                       </Td>
                       <Td textAlign="center">
-                        <HStack spacing={3} justify="center">
+                        <HStack spacing={4} justify="center">
                           {renderStatusActions(item)}
                           <PermissionGate action="update" resource="proposal" item={item}>
                             <IconButton
@@ -681,7 +681,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
           {mobileItems.length === 0 ? (
             <Card>
               <CardBody textAlign="center" py={8}>
-                <VStack spacing={3}>
+                <VStack spacing={4}>
                   <Search size={32} color="gray" />
                   <Text>{t('proposals.empty.title')}</Text>
                   <Text fontSize="sm" color="gray.500">
@@ -700,7 +700,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       {getTabLabel(item.status || 'Draft')}
                     </Badge>
                   </Flex>
-                  <VStack spacing={2} align="stretch" mb={3}>
+                  <VStack spacing={4} align="stretch" mb={3}>
                     <Text fontSize="sm">
                       {new Date(item.date || item.createdAt).toLocaleDateString()}
                     </Text>
@@ -720,7 +720,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       {item.description}
                     </Text>
                   )}
-                  <HStack spacing={3}>
+                  <HStack spacing={4}>
                     {/* Primary visible actions */}
                     {!item.is_locked && (
                       <IconButton

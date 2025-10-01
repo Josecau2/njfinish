@@ -252,9 +252,9 @@ const StylePicturesTab = ({ manufacturer }) => {
     <Box>
       <Card mb={4}>
         <CardHeader>
-          <Flex direction={{ base: 'column', md: 'row' }} gap={3} align={{ base: 'stretch', md: 'center' }} justify="space-between">
+          <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }} justify="space-between">
             <Box>
-              <HStack spacing={2} align="center">
+              <HStack spacing={4} align="center">
                 <Text as="h5" fontWeight="semibold">
                   {t('styles.header', 'Style Pictures for {{name}}', { name: manufacturer.name })}
                 </Text>
@@ -274,7 +274,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                 )}
               </Text>
             </Box>
-            <HStack spacing={3} align="center">
+            <HStack spacing={4} align="center">
               <Input
                 placeholder={t('styles.searchPlaceholder', 'Search styles...')}
                 value={searchTerm}
@@ -291,7 +291,7 @@ const StylePicturesTab = ({ manufacturer }) => {
 
       <Card>
         <CardBody>
-          <Flex wrap="wrap" gap={3}>
+          <Flex wrap="wrap" gap={4}>
             {filteredStyles.map((style, index) => (
               <Box
                 key={style.id || index}
@@ -343,7 +343,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     transition="opacity 0.2s ease-in-out"
                     borderRadius="md"
                   >
-                    <HStack spacing={3}>
+                    <HStack spacing={4}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -396,7 +396,7 @@ const StylePicturesTab = ({ manufacturer }) => {
         <ModalContent>
           <ModalHeader>{t('styles.createHeader', 'Add Style')}</ModalHeader>
           <ModalBody>
-            <Flex direction="column" gap={3}>
+            <Flex direction="column" gap={4}>
               <Box>
                 <FormLabel>{t('styles.name', 'Style Name')}</FormLabel>
                 <Input

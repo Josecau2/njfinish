@@ -213,7 +213,7 @@ const DesignImportStep = ({
                   {t('proposals.create.design.noStylesFound', 'No styles found for this search.')}
                 </Text>
               ) : (
-                <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5 }} spacing={5} w="full" justifyItems="center">
+                <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5 }} spacing={6} w="full" justifyItems="center">
                   {filteredCollections.map((style) => (
                     <Box
                       key={style.id}
@@ -293,7 +293,7 @@ const DesignImportStep = ({
           py={3}
           zIndex={1}
         >
-          <SimpleGrid columns={2} spacing={3}>
+          <SimpleGrid columns={2} spacing={4}>
             <MotionButton
               variant={activeTab === 'manual' ? 'solid' : 'outline'}
               colorScheme="brand"

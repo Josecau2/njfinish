@@ -345,7 +345,7 @@ const LeadsPage = () => {
                 <FormLabel fontSize="sm" color="gray.600">
                   {t('leadsPage.filters.help', 'Need help?')}
                 </FormLabel>
-                <Flex align="center" gap={2} color="gray.500">
+                <Flex align="center" gap={4} color="gray.500">
                   <Icon as={HelpCircle} boxSize={5} aria-hidden="true" />
                   <Text fontSize="sm">{t('leadsPage.helpText', 'Use filters to narrow down leads.')}</Text>
                 </Flex>
@@ -443,7 +443,7 @@ const LeadsPage = () => {
                     return (
                       <Card key={lead.id} w="100%" variant="outline">
                         <CardBody>
-                          <VStack align="stretch" spacing={3}>
+                          <VStack align="stretch" spacing={4}>
                             <Flex justify="space-between" align="start">
                               <Box>
                                 <Text fontWeight="600" fontSize="md">
@@ -488,7 +488,7 @@ const LeadsPage = () => {
                               </Text>
                             </Box>
 
-                            <Flex gap={2} wrap="wrap">
+                            <Flex gap={4} wrap="wrap">
                               <Select
                                 size="sm"
                                 flex="1"
@@ -537,7 +537,7 @@ const LeadsPage = () => {
                     {selectedLeadSubmittedText}
                   </Text>
                 </Box>
-                <HStack spacing={3}>
+                <HStack spacing={4}>
                   {selectedLeadStatusBadge && (
                     <Badge colorScheme={selectedLeadStatusBadge.colorScheme} variant="subtle" px={3} py={1} borderRadius="full">
                       {selectedLeadStatusBadge.text}
@@ -567,7 +567,7 @@ const LeadsPage = () => {
                             {selectedLead.email || t('common.na')}
                           </Text>
                         </Box>
-                        <Stack spacing={1}>
+                        <Stack spacing={4}>
                           <Text fontSize="sm" color="gray.500">
                             {t('leadsPage.modal.contact.phone')}
                           </Text>
@@ -587,7 +587,7 @@ const LeadsPage = () => {
 
                   <Card variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={2} color="blue.500">
+                      <HStack spacing={4} color="blue.500">
                         <Icon as={Send} boxSize={5} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.message.heading')}</Text>
                       </HStack>
@@ -605,7 +605,7 @@ const LeadsPage = () => {
 
                   <Card variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={2} color="blue.500">
+                      <HStack spacing={4} color="blue.500">
                         <Icon as={FileText} boxSize={5} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.notes.heading')}</Text>
                       </HStack>
@@ -641,13 +641,13 @@ const LeadsPage = () => {
 
                   <Card variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={2} color="blue.500">
+                      <HStack spacing={4} color="blue.500">
                         <Icon as={Send} boxSize={5} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.addNote.heading')}</Text>
                       </HStack>
                     </CardHeader>
                     <CardBody pt={3}>
-                      <Stack spacing={3}>
+                      <Stack spacing={4}>
                         <Textarea
                           rows={4}
                           placeholder={t('leadsPage.modal.addNote.placeholder')}

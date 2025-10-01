@@ -157,7 +157,7 @@ const ContractorDashboard = () => {
     <PageContainer maxW="container.xl" py={{ base: 6, md: 10 }}>
       <Card>
         <CardHeader borderBottomWidth="1px">
-          <Stack spacing={1}>
+          <Stack spacing={4}>
             <Heading size="md">{t('dashboard.welcome', { group: groupName })}</Heading>
             <Text color="gray.500">{t('dashboard.portal')}</Text>
           </Stack>
@@ -175,7 +175,7 @@ const ContractorDashboard = () => {
                 {showProposals && (
                   <Card bg="brand.600" color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
-                      <Stack spacing={1}>
+                      <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
                           {stats.proposals}
                         </Text>
@@ -193,7 +193,7 @@ const ContractorDashboard = () => {
                 {showCustomers && (
                   <Card bg="green.600" color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
-                      <Stack spacing={1}>
+                      <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
                           {stats.customers}
                         </Text>
@@ -210,9 +210,9 @@ const ContractorDashboard = () => {
               </SimpleGrid>
             )}
 
-            <Stack spacing={3}>
+            <Stack spacing={4}>
               <Heading size="sm">{t('dashboard.quickActions')}</Heading>
-              <Wrap spacing={3} shouldWrapChildren>
+              <Wrap spacing={4} shouldWrapChildren>
                 {showProposals && (
                   <Button
                     minH="44px"

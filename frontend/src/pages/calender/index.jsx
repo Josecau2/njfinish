@@ -148,7 +148,7 @@ const CalendarView = () => {
         <Card>
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
-              <HStack spacing={3} flex="1">
+              <HStack spacing={4} flex="1">
                 <Icon as={Filter} color="gray.400" />
                 <Select value={eventType} onChange={handleFilterChange} maxW="240px">
                   {EVENT_TYPES.map((type) => (
@@ -228,7 +228,7 @@ const CalendarView = () => {
                 </Box>
 
                 {filteredEvents.length === 0 && (
-                  <Flex direction="column" align="center" py={10} color="gray.500" gap={2}>
+                  <Flex direction="column" align="center" py={10} color="gray.500" gap={4}>
                     <Icon as={Calendar} boxSize={12} opacity={0.3} />
                     <Text fontSize="lg" fontWeight="medium">
                       No events found

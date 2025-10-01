@@ -35,7 +35,7 @@ import { getContrastColor } from '../../../utils/colorUtils'
 const FormSection = ({ title, icon, customization, children }) => (
   <Card variant="outline" borderRadius="xl" shadow="sm">
     <CardBody>
-      <HStack spacing={3} align="center" mb={4}>
+      <HStack spacing={4} align="center" mb={4}>
         <Flex
           align="center"
           justify="center"
@@ -225,7 +225,7 @@ const EditUserGroupForm = () => {
   if (loadingData) {
     return (
       <Container maxW="4xl" py={12}>
-        <Flex direction="column" align="center" justify="center" minH="300px" gap={3}>
+        <Flex direction="column" align="center" justify="center" minH="300px" gap={4}>
           <Spinner size="lg" color={customization.headerBg ? undefined : 'blue.500'} thickness="4px" speed="0.7s" />
           <Text color="gray.500">{t('settings.userGroups.edit.loadingOne')}</Text>
         </Flex>
@@ -295,7 +295,7 @@ const EditUserGroupForm = () => {
               customization={customization}
             >
               <Box borderRadius="lg" bg="blue.50" borderWidth="1px" borderColor="blue.100" p={4}>
-                <HStack align="flex-start" spacing={3}>
+                <HStack align="flex-start" spacing={4}>
                   <Flex
                     align="center"
                     justify="center"
@@ -320,7 +320,7 @@ const EditUserGroupForm = () => {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} pt={2}>
                 {Object.entries(formData.modules).map(([module, enabled]) => (
-                  <FormControl key={module} display="flex" alignItems="flex-start" gap={3}>
+                  <FormControl key={module} display="flex" alignItems="flex-start" gap={4}>
                     <Switch
                       id={`module-${module}`}
                       name={`modules.${module}`}
@@ -354,7 +354,7 @@ const EditUserGroupForm = () => {
 
           <Card variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
-              <Stack direction={{ base: 'column', md: 'row' }} spacing={3} justify="flex-end">
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={4} justify="flex-end">
                 <Button
                   variant="outline"
                   colorScheme="gray"

@@ -349,7 +349,7 @@ const Dashboard = () => {
           <Card>
             <CardBody>
               <HStack justify="space-between" mb={4}>
-                <HStack spacing={3}>
+                <HStack spacing={4}>
                   <Icon as={Newspaper} boxSize={6} color="purple.500" />
                   <Text fontSize="lg" fontWeight="semibold">
                     {t('dashboard.latestProductUpdates')}
@@ -385,7 +385,7 @@ const Dashboard = () => {
 
           <Card>
             <CardBody>
-              <HStack spacing={3} mb={4}>
+              <HStack spacing={4} mb={4}>
                 <Icon as={Link2} boxSize={6} color="blue.500" />
                 <Text fontSize="lg" fontWeight="semibold">
                   {t('dashboard.quickLinks')}
@@ -393,10 +393,10 @@ const Dashboard = () => {
               </HStack>
 
               {resourceLinks.length > 0 ? (
-                <List spacing={3}>
+                <List spacing={4}>
                   {resourceLinks.map((link) => (
                     <ListItem key={link.id}>
-                      <HStack align="flex-start" spacing={3}>
+                      <HStack align="flex-start" spacing={4}>
                         {getLinkIcon(link.type)}
                         <Box>
                           <Text fontWeight="medium">{link.title}</Text>
@@ -429,7 +429,7 @@ const Dashboard = () => {
         <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6}>
           <Card>
             <CardBody>
-              <HStack spacing={3} mb={4}>
+              <HStack spacing={4} mb={4}>
                 <Icon as={FileIcon} boxSize={6} color="orange.500" />
                 <Text fontSize="lg" fontWeight="semibold">
                   {t('dashboard.recentFiles')}
@@ -437,10 +437,10 @@ const Dashboard = () => {
               </HStack>
 
               {resourceFiles.length > 0 ? (
-                <List spacing={3}>
+                <List spacing={4}>
                   {resourceFiles.map((file) => (
                     <ListItem key={file.id}>
-                      <HStack align="flex-start" spacing={3}>
+                      <HStack align="flex-start" spacing={4}>
                         {getFileIcon(file.type)}
                         <Box>
                           <Text fontWeight="medium" fontSize="sm" wordBreak="break-all">
@@ -464,7 +464,7 @@ const Dashboard = () => {
 
           <Card gridColumn={{ base: 'span 1', xl: 'span 2' }}>
             <CardBody>
-              <HStack spacing={3} mb={4}>
+              <HStack spacing={4} mb={4}>
                 <Icon as={ClipboardList} boxSize={6} color="teal.500" />
                 <Text fontSize="lg" fontWeight="semibold">
                   {t('dashboard.myLatestProposals')}
@@ -472,7 +472,7 @@ const Dashboard = () => {
               </HStack>
 
               {latestProposals.length > 0 ? (
-                <List spacing={3}>
+                <List spacing={4}>
                   {latestProposals.slice(0, 5).map((proposal) => (
                     <ListItem key={proposal.id}>
                       <Flex justify="space-between" align="flex-start" gap={4}>

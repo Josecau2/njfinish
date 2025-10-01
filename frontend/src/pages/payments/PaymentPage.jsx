@@ -338,7 +338,7 @@ const PaymentPage = () => {
               )}
 
               {intentError && (
-                <Stack spacing={3}>
+                <Stack spacing={4}>
                   <Alert status="error" borderRadius="md">
                     <AlertIcon />
                     {intentError}
@@ -358,7 +358,7 @@ const PaymentPage = () => {
               {receiptUrl && (
                 <Alert status="success" borderRadius="md">
                   <AlertIcon />
-                  <HStack spacing={2}>
+                  <HStack spacing={4}>
                     <Text>
                       {t('payment.receipt.available', 'Receipt available')}:
                     </Text>
@@ -409,7 +409,7 @@ const PaymentPage = () => {
                 </Alert>
               )}
 
-              <HStack justify="flex-end" spacing={3} wrap="wrap">
+              <HStack justify="flex-end" spacing={4} wrap="wrap">
                 {isCompleted && (
                   <Button colorScheme="blue" onClick={handleViewPayments} minH="44px">
                     {t('payment.viewPayments', 'View Payments')}

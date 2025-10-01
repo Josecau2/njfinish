@@ -34,7 +34,7 @@ const FormSection = ({ title, icon, children }) => (
   <Card variant="outline" borderRadius="xl" shadow="sm">
     <CardBody>
       <Stack spacing={4}>
-        <Stack direction="row" align="center" spacing={3}>
+        <Stack direction="row" align="center" spacing={4}>
           <Box
             w="40px"
             h="40px"
@@ -497,7 +497,7 @@ const EditCustomerPage = () => {
 
           <Card variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
-              <Stack direction={{ base: 'column', md: 'row' }} spacing={3} justify="flex-end">
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={4} justify="flex-end">
                 <Button
                   variant="outline"
                   colorScheme="gray"

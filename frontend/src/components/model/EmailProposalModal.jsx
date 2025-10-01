@@ -249,7 +249,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               <FormErrorMessage>{errors.body && errors.body.message}</FormErrorMessage>
             </FormControl>
 
-            <HStack spacing={3} align='center'>
+            <HStack spacing={4} align='center'>
               <Controller
                 control={control}
                 name='sendCopy'
@@ -276,7 +276,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               </Text>
             )}
 
-            <HStack spacing={3} align='center'>
+            <HStack spacing={4} align='center'>
               <Controller
                 control={control}
                 name='updateCustomerEmail'
@@ -298,7 +298,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
         </ModalBody>
 
         <ModalFooter>
-          <HStack spacing={3}>
+          <HStack spacing={4}>
             <MotionButton
               variant='outline'
               colorScheme='gray'
@@ -315,7 +315,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               whileTap={{ scale: 0.98 }}
             >
               {loading ? (
-                <HStack spacing={2}>
+                <HStack spacing={4}>
                   <Spinner size='sm' />
                   <Text>{t('proposalCommon.sending')}</Text>
                 </HStack>

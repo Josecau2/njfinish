@@ -125,7 +125,7 @@ const UserGroupList = () => {
     const isUpdating = updatingModule === `${group.id}-${module}`
 
     return (
-      <HStack spacing={2}>
+      <HStack spacing={4}>
         <Switch
           id={`${group.id}-${module}`}
           isChecked={isEnabled}
@@ -285,7 +285,7 @@ const UserGroupList = () => {
                       </Badge>
                     </HStack>
 
-                    <Grid templateColumns="1fr 1fr" gap={3} mb={4}>
+                    <Grid templateColumns="1fr 1fr" gap={4} mb={4}>
                       <GridItem>
                         <HStack justify="space-between">
                           <Text fontSize="sm" color="gray.600">

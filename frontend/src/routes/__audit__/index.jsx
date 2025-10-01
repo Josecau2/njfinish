@@ -55,7 +55,7 @@ function ModalsPlayground() {
         <Text mb={4} color="gray.600">
           Click a modal name to open it:
         </Text>
-        <Stack spacing={2}>
+        <Stack spacing={4}>
           {manifest.modals.map(name => (
             <Link key={name} href={`?open=${name}`} color="brand.500">
               {name}

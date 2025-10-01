@@ -1517,7 +1517,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             </Heading>
                             <Flex
                                 className="current-style-content"
-                                gap={3}
+                                gap={4}
                                 align="flex-start"
                             >
                                 <Box
@@ -1598,7 +1598,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 <Heading size="sm" mb={0}>
                                     {t('proposalUI.otherStyles')}
                                 </Heading>
-                                <HStack spacing={2} align="center">
+                                <HStack spacing={4} align="center">
                                     <Button
                                         size="sm"
                                         variant={isStylesCollapsed ? 'solid' : 'outline'}
@@ -1632,7 +1632,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                                     {filteredItems.length > 0 && !isStylesCollapsed && (
                                         <HStack
-                                            spacing={2}
+                                            spacing={4}
                                             display={{ base: 'flex', md: 'none' }}
                                         >
                                             <IconButton
@@ -1690,7 +1690,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 {t('proposalUI.styleComparison.selectItemsMessage')}
                                             </Text>
                                         ) : isStylesCollapsed ? (
-                                            <Stack className="styles-compact-list" spacing={2}>
+                                            <Stack className="styles-compact-list" spacing={4}>
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const isCurrentStyle = styleItem.id === selectedStyleData?.id;
                                                     const hasAnyItems = filteredItems.length > 0;
@@ -1871,7 +1871,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 <Box mt={5} className="custom-items-mobile" maxW="100%">
                     <Stack
                         direction={{ base: 'column', md: 'row' }}
-                        spacing={3}
+                        spacing={4}
                         align={{ base: 'stretch', md: 'center' }}
                         mb={3}
                     >

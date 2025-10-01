@@ -133,12 +133,12 @@ const ContactInfoEditor = ({ info, onSave }) => {
 
         <Box as="form" mt={4} onSubmit={handleSave}>
           <Box bg="gray.50" borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor="gray.100">
-            <HStack spacing={2} mb={3}>
+            <HStack spacing={4} mb={3}>
               <Badge colorScheme="blue">{t('contact.editor.visibilityBadge', 'Settings')}</Badge>
               <Text fontWeight="semibold">{t('contact.editor.visibilitySettings')}</Text>
             </HStack>
 
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               {visibilityControls.map(({ key, label }) => (
                 <Checkbox key={key} name={key} isChecked={form[key]} onChange={handleChange}>
                   {label}
@@ -152,7 +152,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
               const hidden = !form[visibleFlag]
               return (
                 <FormControl key={key} isDisabled={hidden}>
-                  <FormLabel display="flex" alignItems="center" gap={2} fontWeight="semibold">
+                  <FormLabel display="flex" alignItems="center" gap={4} fontWeight="semibold">
                     {label}
                     {hidden && (
                       <Badge colorScheme="gray" borderRadius="md">
