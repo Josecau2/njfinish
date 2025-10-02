@@ -1,6 +1,6 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import { Alert, Badge, Box, Button, CardBody, Flex, FormLabel, HStack, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'

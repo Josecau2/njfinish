@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Badge, Box, Button, CardBody, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useToast } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useToast } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import {

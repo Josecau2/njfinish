@@ -1,7 +1,7 @@
 import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Badge, Box, Button, CardBody, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
