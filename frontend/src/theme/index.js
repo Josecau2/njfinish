@@ -105,19 +105,39 @@ const Button = {
       color: 'brand.600',
       _hover: {
         bg: 'brand.50',
+        _dark: {
+          bg: 'whiteAlpha.100',
+        },
       },
       _active: {
         borderColor: 'brand.700',
         color: 'brand.700',
+        _dark: {
+          borderColor: 'brand.400',
+          color: 'brand.400',
+        },
+      },
+      _dark: {
+        borderColor: 'brand.400',
+        color: 'brand.300',
       },
     },
     ghost: {
       color: 'brand.600',
       _hover: {
         bg: 'brand.50',
+        _dark: {
+          bg: 'whiteAlpha.100',
+        },
       },
       _active: {
         color: 'brand.700',
+        _dark: {
+          color: 'brand.400',
+        },
+      },
+      _dark: {
+        color: 'brand.300',
       },
     },
   },
@@ -168,6 +188,7 @@ const inputLikeComponent = {
       field: {
         borderWidth: '1px',
         borderColor: 'border',
+        bg: 'surface',
         _hover: {
           borderColor: 'brand.300',
         },
@@ -183,7 +204,16 @@ const inputLikeComponent = {
           bg: 'slate.100',
         },
         _focusVisible: {
-          bg: 'white',
+          bg: 'surface',
+        },
+        _dark: {
+          bg: 'gray.700',
+          _hover: {
+            bg: 'gray.600',
+          },
+          _focusVisible: {
+            bg: 'gray.800',
+          },
         },
       },
     },
@@ -289,11 +319,17 @@ const Table = {
     simple: {
       th: {
         bg: 'brand.50',
+        _dark: {
+          bg: 'gray.800',
+        },
       },
       tbody: {
         tr: {
           _hover: {
             bg: 'brand.50',
+            _dark: {
+              bg: 'whiteAlpha.100',
+            },
           },
         },
       },
@@ -313,23 +349,36 @@ const Menu = {
       borderColor: 'border',
       boxShadow: 'md',
       py: 2,
+      bg: 'surface',
     },
     item: {
       fontWeight: '500',
       _hover: {
         bg: 'brand.50',
         color: 'brand.700',
+        _dark: {
+          bg: 'whiteAlpha.100',
+          color: 'brand.300',
+        },
       },
       _focus: {
         bg: 'brand.50',
         color: 'brand.700',
         outline: 'none',
+        _dark: {
+          bg: 'whiteAlpha.100',
+          color: 'brand.300',
+        },
       },
       _focusVisible: {
         bg: 'brand.50',
         color: 'brand.700',
         boxShadow: 'inset 0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
+        _dark: {
+          bg: 'whiteAlpha.100',
+          color: 'brand.300',
+        },
       },
     },
     button: {

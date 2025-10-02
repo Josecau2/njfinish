@@ -443,7 +443,7 @@ const OrdersList = ({
       return (
         <div>
           <div>{contractor}</div>
-          <div style={{ fontSize: "12px" }}>
+          <div style={{ fontSize: 12 }}>
             {endUser}
           </div>
         </div>

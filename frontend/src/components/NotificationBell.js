@@ -48,13 +48,13 @@ const NotificationBell = () => {
 
   const customization = useSelector((state) => state.customization) || {}
 
-  const fallbackTextColor = useColorModeValue('#0f172a', '#e2e8f0')
+  const fallbackTextColor = useColorModeValue('slate.900', 'gray.200')
   const optimalTextColor = customization.headerBg
     ? getContrastColor(customization.headerBg)
     : fallbackTextColor
 
   const menuBg = useColorModeValue('white', 'slate.800')
-  const menuBorder = useColorModeValue('rgba(15,23,42,0.12)', 'rgba(148,163,184,0.24)')
+  const menuBorder = useColorModeValue('blackAlpha.200', 'whiteAlpha.200')
   const unreadBackground = useColorModeValue('brand.50', 'slate.700')
   const emptyStateColor = useColorModeValue('muted', 'slate.300')
 

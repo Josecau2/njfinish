@@ -27,6 +27,9 @@ const PageHeader = ({
   const { t } = useTranslation()
   const borderColor = useColorModeValue('gray.200', 'gray.600')
   const subtitleColor = useColorModeValue('gray.600', 'gray.400')
+  const iconBg = useColorModeValue('brand.50', 'brand.900')
+  const iconColor = useColorModeValue('brand.500', 'brand.300')
+  const titleColor = useColorModeValue('gray.900', 'white')
 
   return (
     <Box
@@ -83,8 +86,8 @@ const PageHeader = ({
                 <Box
                   p={2}
                   borderRadius="md"
-                  bg="brand.50"
-                  color="brand.500"
+                  bg={iconBg}
+                  color={iconColor}
                   aria-hidden="true"
                 >
                   <Icon size={24} />
@@ -94,8 +97,7 @@ const PageHeader = ({
                 as="h1"
                 size="lg"
                 fontWeight="semibold"
-                color="gray.900"
-                _dark={{ color: 'white' }}
+                color={titleColor}
                 noOfLines={2}
               >
                 {title}

@@ -21,6 +21,7 @@ const AppModal = ({
   ...props
 }) => {
   const overlayBg = useColorModeValue('blackAlpha.600', 'blackAlpha.600')
+  const borderColor = useColorModeValue('border', 'gray.600')
 
   return (
     <Modal
@@ -34,7 +35,7 @@ const AppModal = ({
       <ModalOverlay bg={overlayBg} />
       <ModalContent borderRadius="lg">
         {title && (
-          <ModalHeader borderBottomWidth="1px">
+          <ModalHeader borderBottomWidth="1px" borderColor={borderColor}>
             {title}
           </ModalHeader>
         )}

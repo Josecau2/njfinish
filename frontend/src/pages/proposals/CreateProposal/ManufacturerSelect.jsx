@@ -17,7 +17,7 @@ const buildSelectStyles = (hasError) => ({
   control: (provided, state) => ({
     ...provided,
     minHeight: '44px',
-    borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
+    borderColor: hasError ? 'red.500' : state.isFocused ? 'blue.500' : provided.borderColor,
     boxShadow: 'none',
     '&:hover': {
       bordercolor: "blue.500",
@@ -30,8 +30,8 @@ const buildSelectStyles = (hasError) => ({
   option: (provided, state) => ({
     ...provided,
     fontSize: "md",
-    backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
-    color: state.isFocused ? '#1a202c' : provided.color,
+    backgroundColor: state.isFocused ? 'blue.50' : provided.backgroundColor,
+    color: state.isFocused ? 'gray.800' : provided.color,
   }),
   valueContainer: (provided) => ({
     ...provided,
@@ -257,9 +257,17 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                   }
                                 }}
                                 outline="none"
-                                _focus={{ boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.6)', borderColor: 'blue.500' }}
+                                _focus={{ boxShadow: '0 0 0 3px', borderColor: 'blue.500', outlineColor: 'blue.300' }}
                                 borderColor={isSelected ? cardHoverBorder : 'gray.200'}
-                                boxShadow={isSelected ? '0 0 0 2px rgba(49, 130, 206, 0.4)' : 'sm'}
+                                boxShadow={isSelected ? '0 0 0 2px' : 'sm'}
+                                sx={{
+                                  '&:focus': {
+                                    boxShadow: '0 0 0 3px var(--chakra-colors-blue-300)'
+                                  },
+                                  '&[data-selected="true"]': {
+                                    boxShadow: '0 0 0 2px var(--chakra-colors-brand-400)'
+                                  }
+                                }}
                                 whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.98 }}
                                 transition="all 0.2s ease"

@@ -1,7 +1,5 @@
-import StandardCard from './StandardCard'
 import React from 'react'
 import { Box, Image, Text, VStack, useColorModeValue, AspectRatio } from '@chakra-ui/react'
-import StandardCard from './StandardCard'
 
 const TileCard = ({
   image,
@@ -12,10 +10,12 @@ const TileCard = ({
   children,
   ...props
 }) => {
-  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const borderColor = useColorModeValue('border', 'gray.600')
   const selectedBorderColor = useColorModeValue('brand.500', 'brand.300')
   const selectedBg = useColorModeValue('brand.50', 'brand.900')
+  const defaultBg = useColorModeValue('surface', 'gray.800')
   const shadow = useColorModeValue('xs', 'dark-lg')
+  const descriptionColor = useColorModeValue('gray.600', 'gray.400')
 
   return (
     <Box
@@ -23,8 +23,7 @@ const TileCard = ({
       borderColor={isSelected ? selectedBorderColor : borderColor}
       borderRadius="md"
       overflow="hidden"
-      bg={isSelected ? selectedBg : 'white'}
-      _dark={{ bg: isSelected ? selectedBg : 'gray.800' }}
+      bg={isSelected ? selectedBg : defaultBg}
       shadow={shadow}
       cursor={onClick ? 'pointer' : 'default'}
       onClick={onClick}
@@ -62,8 +61,7 @@ const TileCard = ({
         {description && (
           <Text
             fontSize="xs"
-            color="gray.600"
-            _dark={{ color: 'gray.400' }}
+            color={descriptionColor}
             noOfLines={3}
           >
             {description}

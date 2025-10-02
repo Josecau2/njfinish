@@ -20,7 +20,7 @@ const buildSelectStyles = (hasError) => ({
   control: (provided, state) => ({
     ...provided,
     minHeight: '44px',
-    borderColor: hasError ? '#E53E3E' : state.isFocused ? '#3182ce' : provided.borderColor,
+    borderColor: hasError ? 'red.500' : state.isFocused ? 'blue.500' : provided.borderColor,
     boxShadow: 'none',
     '&:hover': {
       bordercolor: "blue.500",
@@ -33,8 +33,8 @@ const buildSelectStyles = (hasError) => ({
   option: (provided, state) => ({
     ...provided,
     fontSize: "md",
-    backgroundColor: state.isFocused ? '#eef2ff' : provided.backgroundColor,
-    color: state.isFocused ? '#1a202c' : provided.color,
+    backgroundColor: state.isFocused ? 'blue.50' : provided.backgroundColor,
+    color: state.isFocused ? 'gray.800' : provided.color,
   }),
   valueContainer: (provided) => ({
     ...provided,

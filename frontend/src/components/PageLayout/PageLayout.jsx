@@ -1,6 +1,4 @@
-import StandardCard from '../StandardCard'
-import { Box, Container, Heading, Text } from '@chakra-ui/react'
-import StandardCard from '../StandardCard'
+import { Box, Container, Heading, Text, useColorModeValue } from '@chakra-ui/react'
 
 /**
  * PageLayout - Consistent page wrapper for all application pages
@@ -24,10 +22,15 @@ export function PageLayout({
   maxWidth = '1400px',
   noCard = false,
 }) {
+  const bgColor = useColorModeValue('background', 'gray.900')
+  const cardBg = useColorModeValue('surface', 'gray.800')
+  const titleColor = useColorModeValue('text', 'white')
+  const subtitleColor = useColorModeValue('muted', 'gray.400')
+
   return (
     <Box
-      minH="100vh" style={{ backgroundColor: "gray.50" }}
-      _dark={{ bg: "gray.900" }}
+      minH="100vh"
+      bg={bgColor}
       pt={6}
       pb={12}
       px={{ base: 4, md: 8 }}
@@ -40,16 +43,14 @@ export function PageLayout({
               as="h1"
               size="xl"
               mb={subtitle ? 2 : 0}
-              style={{ color: "gray.900" }}
-              _dark={{ color: "white" }}
+              color={titleColor}
             >
               {title}
             </Heading>
             {subtitle && (
               <Text
                 fontSize="md"
-                style={{ color: "gray.600" }}
-                _dark={{ color: "gray.400" }}
+                color={subtitleColor}
               >
                 {subtitle}
               </Text>
@@ -61,8 +62,8 @@ export function PageLayout({
         {noCard ? (
           children
         ) : (
-          <Box style={{ backgroundColor: "white" }}
-            _dark={{ bg: "gray.800" }}
+          <Box
+            bg={cardBg}
             borderRadius="lg"
             boxShadow="sm"
             p={{ base: 4, md: 6 }}

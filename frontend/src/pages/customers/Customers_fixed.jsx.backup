@@ -125,7 +125,7 @@ const CustomerTable = ({
     <Container
       fluid
       className="p-2 m-2 customer-listing"
-      fontSize="xs" style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
+      style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
     >
       {/* Header Section */}
       <StandardCard
@@ -279,7 +279,7 @@ const CustomerTable = ({
                       <div>
                         <Icon as={User} size="sm" />
                         Name
-                        <span style={{ fontSize: "12px", opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('name')}
                         </span>
                       </div>
@@ -292,7 +292,7 @@ const CustomerTable = ({
                       <div>
                         <Icon as={Mail} size="sm" />
                         Email
-                        <span style={{ fontSize: "12px", opacity: 0.7 }}>
+                        <span style={{ fontSize: "xs", opacity: 0.7 }}>
                           {getSortIcon('email')}
                         </span>
                       </div>
@@ -326,8 +326,9 @@ const CustomerTable = ({
                           <Badge
                             colorScheme="gray"
                             className="px-3 py-2"
-                            fontSize="xs" style={{
+                            style={{
                               borderRadius: '15px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >
@@ -344,8 +345,9 @@ const CustomerTable = ({
                           <Badge
                             status="info"
                             className="px-3 py-2"
-                            fontSize="xs" style={{
+                            style={{
                               borderRadius: '20px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >
@@ -356,8 +358,9 @@ const CustomerTable = ({
                           <Badge
                             status="success"
                             className="px-3 py-2"
-                            fontSize="xs" style={{
+                            style={{
                               borderRadius: '20px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >

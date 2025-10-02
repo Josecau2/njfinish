@@ -101,7 +101,7 @@ const CatalogTableEdit = ({
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || '#667eea'
+  const headerBg = customization.headerBg || 'brand.500'
   const textColor = getContrastColor(headerBg)
 
   const [partQuery, setPartQuery] = useState('')
@@ -301,9 +301,10 @@ const CatalogTableEdit = ({
                     height: 'auto',
                     maxHeight: '455px',
                     objectFit: 'contain',
-                    background: '#ffffff',
+                    background: 'white',
                     borderRadius: '6px',
-                    border: '1px solid #dee2e6',
+                    border: '1px solid',
+                    borderColor: 'var(--chakra-colors-gray-300)',
                   }}
                   onError={(e) => {
                     if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
@@ -318,7 +319,7 @@ const CatalogTableEdit = ({
               <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
                 <div className="mb-3">
                   <span className="badge text-bg-secondary me-2">{t('Type')}</span>
-                  <strong style={{ fontSize: "lg" }}>{selectedTypeInfo.type}</strong>
+                  <strong style={{ fontSize: "18px" }}>{selectedTypeInfo.type}</strong>
                 </div>
                 {selectedTypeInfo.code && (
                   <div className="mb-2 border-bottom pb-2">
@@ -340,7 +341,7 @@ const CatalogTableEdit = ({
                 )}
                 <div
                   className="mt-3"
-                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: "md" }}
+                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: "16px" }}
                 >
                   <strong className="text-muted d-block mb-2">Description:</strong>
                   {selectedTypeInfo.longDescription ||
@@ -426,7 +427,7 @@ const CatalogTableEdit = ({
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-info ms-2"
-                        style={{ fontSize: "xs", padding: '0.1rem 0.3rem', flexShrink: 0 }}
+                        style={{ fontSize: "12px", padding: '0.1rem 0.3rem', flexShrink: 0 }}
                         onClick={(e) => {
                           e.stopPropagation()
                           openTypeModal(getItemType(item))
@@ -447,17 +448,17 @@ const CatalogTableEdit = ({
           {!readOnly && (
             <>
               <Checkbox
-                label={<span style={{ fontSize: "md" }}>{t('proposalUI.addOnTop')}</span>}
+                label={<span style={{ fontSize: "16px" }}>{t('proposalUI.addOnTop')}</span>}
                 checked={addOnTop}
                 onChange={(e) => setAddOnTop(e.target.checked)}
                 style={{ transform: 'scale(1.1)' }}
               />
               <div className="d-flex align-items-center gap-2">
                 <Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
-                <span style={{ fontWeight: 'bold', fontSize: "md" }}>{t('proposalUI.copy')}</span>
+                <span style={{ fontWeight: 'bold', fontSize: "16px" }}>{t('proposalUI.copy')}</span>
               </div>
               <Checkbox
-                label={<span style={{ fontSize: "md" }}>{t('proposalUI.group')}</span>}
+                label={<span style={{ fontSize: "16px" }}>{t('proposalUI.group')}</span>}
                 checked={groupEnabled}
                 onChange={(e) => setGroupEnabled(e.target.checked)}
                 style={{ transform: 'scale(1.1)' }}
@@ -530,7 +531,7 @@ const CatalogTableEdit = ({
               const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
 
               const rowStyle = item.unavailable
-                ? { color: '#b00020', textDecoration: 'line-through' }
+                ? { color: 'var(--chakra-colors-red-600)', textDecoration: 'line-through' }
                 : undefined
               return (
                 <React.Fragment key={idx}>
@@ -540,10 +541,11 @@ const CatalogTableEdit = ({
                       backgroundColor: item.unavailable
                         ? undefined
                         : idx % 2 === 0
-                          ? '#fbfdff'
-                          : '#ffffff',
-                      borderBottom: '2px solid #e6ebf1',
-                      ...(idx === 0 ? { borderTop: '2px solid #e6ebf1' } : {}),
+                          ? 'var(--chakra-colors-gray-50)'
+                          : 'white',
+                      borderBottom: '2px solid',
+                      borderBottomColor: 'var(--chakra-colors-gray-200)',
+                      ...(idx === 0 ? { borderTop: '2px solid', borderTopColor: 'var(--chakra-colors-gray-200)' } : {}),
                     }}
                   >
                     <Td style={{ width: '56px' }}>
@@ -560,7 +562,7 @@ const CatalogTableEdit = ({
                           backgroundColor: headerBg,
                           color: textColor,
                           fontWeight: 700,
-                          fontSize: "md",
+                          fontSize: "16px",
                           letterSpacing: '0.2px',
                         }}
                         title={`Row ${idx + 1}`}
@@ -606,7 +608,7 @@ const CatalogTableEdit = ({
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-info"
-                            style={{ fontSize: "xs", padding: '0.15rem 0.4rem' }}
+                            style={{ fontSize: "12px", padding: '0.15rem 0.4rem' }}
                             onClick={() => openTypeModal(getItemType(item))}
                             title={`View ${getItemType(item)} specifications`}
                           >
@@ -622,7 +624,7 @@ const CatalogTableEdit = ({
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                             (!item.hingeSide || item.hingeSide === '-')
-                              ? '#ffebee'
+                              ? 'var(--chakra-colors-red-50)'
                               : 'transparent',
                         }}
                       >
@@ -632,7 +634,7 @@ const CatalogTableEdit = ({
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <div
                                   className="text-danger mb-1"
-                                  style={{ fontSize: "xs", fontWeight: 'bold' }}
+                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
@@ -675,7 +677,7 @@ const CatalogTableEdit = ({
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                             (!item.exposedSide || item.exposedSide === '-')
-                              ? '#ffebee'
+                              ? 'var(--chakra-colors-red-50)'
                               : 'transparent',
                         }}
                       >
@@ -685,7 +687,7 @@ const CatalogTableEdit = ({
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <div
                                   className="text-danger mb-1"
-                                  style={{ fontSize: "xs", fontWeight: 'bold' }}
+                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
                                 >
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
@@ -779,18 +781,18 @@ const CatalogTableEdit = ({
                                 color: textColor,
                                 padding: '8px 16px',
                                 paddingLeft: '56px',
-                                fontSize: "sm",
+                                fontSize: "14px",
                                 borderTop: `2px solid ${headerBg}`,
                                 borderLeft: `6px solid ${headerBg}`,
                                 borderTopLeftRadius: '6px',
                                 borderTopRightRadius: '6px',
-                                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
+                                boxShadow: 'inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)',
                               }}
                             >
                               <Icon
                                 as={Wrench}
                                 className="me-2"
-                                style={{ fontSize: "sm", color: textColor }}
+                                style={{ fontSize: "14px", color: textColor }}
                               />
                               <span className="fw-bold">{t('proposalDoc.modifications')}</span>
                             </Td>
@@ -799,16 +801,17 @@ const CatalogTableEdit = ({
                             <React.Fragment key={`modgrp-${idx}-${gkey}`}>
                               <Tr
                                 className="modification-category"
-                                style={{ backgroundColor: '#f1f3f5' }}
+                                style={{ backgroundColor: 'var(--chakra-colors-gray-100)' }}
                               >
                                 <Td
                                   colSpan={10}
                                   className="fw-semibold text-secondary"
                                   style={{
                                     paddingLeft: '72px',
-                                    fontSize: "sm",
+                                    fontSize: "14px",
                                     borderLeft: `6px solid ${headerBg}`,
-                                    borderBottom: '1px solid #dee2e6',
+                                    borderBottom: '1px solid',
+                                    borderBottomColor: 'var(--chakra-colors-gray-300)',
                                   }}
                                 >
                                   📂 {gkey}
@@ -822,12 +825,12 @@ const CatalogTableEdit = ({
                                     <Tr
                                       className="modification-item"
                                       style={{
-                                        backgroundColor: '#fcfcfd',
+                                        backgroundColor: 'var(--chakra-colors-gray-50)',
                                         borderLeft: `6px solid ${headerBg}`,
-                                        fontSize: "sm",
+                                        fontSize: "14px",
                                         borderBottom: isLastRow
                                           ? `2px solid ${headerBg}`
-                                          : '1px solid #e9ecef',
+                                          : '1px solid var(--chakra-colors-gray-200)',
                                       }}
                                     >
                                       <Td
@@ -847,9 +850,9 @@ const CatalogTableEdit = ({
                                               alignItems: 'center',
                                               padding: '2px 10px',
                                               borderRadius: '9999px',
-                                              backgroundColor: '#f3f5f7',
+                                              backgroundColor: 'var(--chakra-colors-gray-100)',
                                               border: `1px solid ${headerBg}`,
-                                              color: '#212529',
+                                              color: 'var(--chakra-colors-gray-800)',
                                               fontWeight: 600,
                                               lineHeight: 1.2,
                                             }}
@@ -864,11 +867,12 @@ const CatalogTableEdit = ({
                                               <span
                                                 className="text-muted"
                                                 style={{
-                                                  fontSize: "sm",
+                                                  fontSize: "14px",
                                                   padding: '2px 8px',
                                                   borderRadius: '6px',
-                                                  background: '#f8f9fa',
-                                                  border: '1px dashed #ced4da',
+                                                  background: 'var(--chakra-colors-gray-50)',
+                                                  border: '1px dashed',
+                                                  borderColor: 'var(--chakra-colors-gray-400)',
                                                 }}
                                               >
                                                 {details}
@@ -895,7 +899,7 @@ const CatalogTableEdit = ({
                                             style={{
                                               cursor: 'pointer',
                                               color: "red.500",
-                                              fontSize: "sm",
+                                              fontSize: "14px",
                                             }}
                                             onClick={() =>
                                               handleDeleteModification(
@@ -914,7 +918,8 @@ const CatalogTableEdit = ({
                                           <div
                                             style={{
                                               height: '10px',
-                                              borderBottom: '1px dashed #cfd4da',
+                                              borderBottom: '1px dashed',
+                                              borderBottomColor: 'var(--chakra-colors-gray-400)',
                                             }}
                                           />
                                         </Td>
@@ -947,7 +952,7 @@ const CatalogTableEdit = ({
             : 0
           const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
           const rowStyle = item.unavailable
-            ? { color: '#b00020', textDecoration: 'line-through' }
+            ? { color: 'var(--chakra-colors-red-600)', textDecoration: 'line-through' }
             : undefined
 
           return (
@@ -955,9 +960,10 @@ const CatalogTableEdit = ({
               <div
                 className="item-card-mobile"
                 style={{
-                  border: '2px solid #e6ebf1',
+                  border: '2px solid',
+                  borderColor: 'var(--chakra-colors-gray-200)',
                   borderRadius: '8px',
-                  backgroundColor: idx % 2 === 0 ? '#fbfdff' : '#ffffff',
+                  backgroundColor: idx % 2 === 0 ? 'var(--chakra-colors-gray-50)' : 'white',
                   marginBottom: '12px',
                 }}
               >
@@ -969,7 +975,7 @@ const CatalogTableEdit = ({
                         style={{
                           cursor: 'pointer',
                           color: 'var(--cui-primary)',
-                          fontSize: "lg",
+                          fontSize: "18px",
                         }}
                         onClick={() => handleOpenModificationModal(idx, item.id)}
                       />
@@ -977,7 +983,7 @@ const CatalogTableEdit = ({
                         style={{
                           cursor: 'pointer',
                           color: 'var(--cui-danger)',
-                          fontSize: "lg",
+                          fontSize: "18px",
                         }}
                         onClick={() => handleDelete(idx)}
                       />
@@ -1012,7 +1018,7 @@ const CatalogTableEdit = ({
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-info"
-                        style={{ fontSize: "xs", padding: '0.15rem 0.4rem' }}
+                        style={{ fontSize: "12px", padding: '0.15rem 0.4rem' }}
                         onClick={() => openTypeModal(getItemType(item))}
                         title={`View ${getItemType(item)} specifications`}
                       >
@@ -1050,7 +1056,7 @@ const CatalogTableEdit = ({
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                             (!item.hingeSide || item.hingeSide === '-')
-                              ? '#ffebee'
+                              ? 'var(--chakra-colors-red-50)'
                               : 'transparent',
                           padding: '0.5rem',
                           borderRadius: '4px',
@@ -1061,7 +1067,7 @@ const CatalogTableEdit = ({
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <div
                               className="text-danger mb-2"
-                              style={{ fontSize: "xs", fontWeight: 'bold' }}
+                              style={{ fontSize: "12px", fontWeight: 'bold' }}
                             >
                               {t('validation.selectHingeSide', {
                                 defaultValue: 'Select hinge side',
@@ -1100,7 +1106,7 @@ const CatalogTableEdit = ({
                           backgroundColor:
                             subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                             (!item.exposedSide || item.exposedSide === '-')
-                              ? '#ffebee'
+                              ? 'var(--chakra-colors-red-50)'
                               : 'transparent',
                           padding: '0.5rem',
                           borderRadius: '4px',
@@ -1111,7 +1117,7 @@ const CatalogTableEdit = ({
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <div
                               className="text-danger mb-2"
-                              style={{ fontSize: "xs", fontWeight: 'bold' }}
+                              style={{ fontSize: "12px", fontWeight: 'bold' }}
                             >
                               {t('validation.selectExposedSide', {
                                 defaultValue: 'Select exposed finished side',
@@ -1186,7 +1192,7 @@ const CatalogTableEdit = ({
                       marginRight: 'auto',
                       maxWidth: '90%',
                       position: 'relative',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      boxShadow: 'sm',
                     }}
                   >
                     {/* Item indicator badge */}
@@ -1203,7 +1209,7 @@ const CatalogTableEdit = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: "xs",
+                        fontSize: "12px",
                         fontWeight: 'bold',
                         border: `2px solid ${headerBg}`,
                       }}
@@ -1220,7 +1226,7 @@ const CatalogTableEdit = ({
                     >
                       <span
                         style={{
-                          fontSize: "xs",
+                          fontSize: "12px",
                           fontWeight: '600',
                           color: textColor,
                           textTransform: 'uppercase',
@@ -1240,7 +1246,7 @@ const CatalogTableEdit = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: "sm",
+                        fontSize: "14px",
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -1255,7 +1261,7 @@ const CatalogTableEdit = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: "sm",
+                        fontSize: "14px",
                         marginBottom: '0',
                       }}
                     >

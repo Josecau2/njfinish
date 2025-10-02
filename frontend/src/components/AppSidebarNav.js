@@ -16,15 +16,15 @@ const isActivePath = (pathname, target) => {
 }
 
 const buildColors = (fontColor) => {
-  const base = fontColor && fontColor.trim() ? fontColor : '#e2e8f0'
-  const icon = base.toLowerCase() === '#ffffff' ? '#e2e8f0' : '#cbd5f5'
+  const base = fontColor && fontColor.trim() ? fontColor : 'gray.200'
+  const icon = base.toLowerCase() === '#ffffff' || base === 'white' ? 'gray.200' : 'blue.200'
   return {
     fontColor: base,
     iconColor: icon,
-    accentColor: '#ffffff',
-    hoverBg: 'rgba(255, 255, 255, 0.08)',
-    activeBg: 'rgba(255, 255, 255, 0.16)',
-    borderColor: 'rgba(148, 163, 184, 0.2)',
+    accentColor: 'white',
+    hoverBg: 'whiteAlpha.100',
+    activeBg: 'whiteAlpha.200',
+    borderColor: 'whiteAlpha.200',
   }
 }
 
@@ -274,7 +274,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           width: 100%;
         }
         .c-sidebar-nav .simplebar-scrollbar:before {
-          background: rgba(148, 163, 184, 0.4);
+          background: var(--chakra-colors-whiteAlpha-400);
         }
         .c-sidebar-nav[data-collapsed="true"] .simplebar-scrollbar:before {
           opacity: 0;
@@ -308,7 +308,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           text-decoration: none;
         }
         .c-sidebar-nav .nav-link:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--chakra-colors-whiteAlpha-100);
         }
         .c-sidebar-nav[data-collapsed="true"] .nav-link {
           justify-content: center;
@@ -346,7 +346,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           font-weight: 600;
           padding: 0.1rem 0.45rem;
           border-radius: 999px;
-          background: rgba(148, 163, 184, 0.24);
+          background: var(--chakra-colors-whiteAlpha-200);
         }
         .c-sidebar-nav .nav-group {
           position: relative;
@@ -372,9 +372,9 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         }
         .nav-group-popover {
           min-width: 220px;
-          background: rgba(15, 23, 42, 0.95);
-          color: #f8fafc;
-          border: 1px solid rgba(148, 163, 184, 0.2);
+          background: var(--chakra-colors-slate-900);
+          color: var(--chakra-colors-slate-50);
+          border: 1px solid var(--chakra-colors-whiteAlpha-200);
           border-radius: 12px;
           padding: 0.35rem 0;
         }
@@ -399,7 +399,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         }
         .nav-group-menu-item.active,
         .nav-group-menu-item:hover {
-          background: rgba(96, 165, 250, 0.16);
+          background: var(--chakra-colors-blue-100);
         }
       `}</style>
       <nav className="c-sidebar-nav" data-collapsed={collapsed ? 'true' : 'false'}>

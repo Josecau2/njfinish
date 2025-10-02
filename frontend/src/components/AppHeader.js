@@ -33,10 +33,10 @@ const AppHeader = () => {
   const customization = useSelector((state) => state.customization)
   const authUser = useSelector((state) => state.auth?.user)
 
-  const headerBg = customization.headerBg || '#0f172a'
+  const headerBg = customization.headerBg || 'slate.900'
   const headerTextColor = customization.headerFontColor || getContrastColor(headerBg)
 
-  const hoverBg = useColorModeValue('rgba(15,23,42,0.08)', 'rgba(255,255,255,0.12)')
+  const hoverBg = useColorModeValue('blackAlpha.100', 'whiteAlpha.200')
 
   // Desktop collapse toggle removed for legacy parity. Sidebar is controlled via hover/pin and mobile menu.
 
@@ -51,8 +51,8 @@ const AppHeader = () => {
         bg={headerBg}
         color={headerTextColor}
         borderBottom="1px solid"
-        borderColor="rgba(15,23,42,0.15)"
-        _dark={{ borderColor: 'rgba(255,255,255,0.08)' }}
+        borderColor="blackAlpha.200"
+        _dark={{ borderColor: 'whiteAlpha.100' }}
         h="60px"
         px={{ base: 4, md: 6 }}
         align="center"

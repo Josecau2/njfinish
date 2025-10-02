@@ -18,11 +18,11 @@ import {
  * @param {Function} renderCell - Optional custom cell renderer (row, column) => ReactNode
  */
 export function DataTable({ columns, data, onRowClick, renderCell }) {
-  const borderColor = useColorModeValue("#dee2e6", "#343a40")
-  const hoverBg = useColorModeValue("#f8f9fa", 'gray.750')
-  const headerBg = useColorModeValue("#f8f9fa", "#212529")
-  const headerTextColor = useColorModeValue("#343a40", "#ced4da")
-  const cellTextColor = useColorModeValue("#212529", "#dee2e6")
+  const borderColor = useColorModeValue("gray.300", "gray.600")
+  const hoverBg = useColorModeValue("gray.50", 'gray.750')
+  const headerBg = useColorModeValue("gray.50", "gray.800")
+  const headerTextColor = useColorModeValue("gray.700", "gray.300")
+  const cellTextColor = useColorModeValue("gray.800", "gray.200")
 
   return (
     <Box overflowX="auto" borderRadius="md" border="1px" borderColor={borderColor}>

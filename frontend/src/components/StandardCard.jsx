@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Card } from '@chakra-ui/react'
+import { Card, useColorModeValue } from '@chakra-ui/react'
 
 /**
  * StandardCard - Consistent card styling across the entire app
@@ -28,16 +28,21 @@ export const StandardCard = forwardRef(function StandardCard(
   },
   ref,
 ) {
+  // Use semantic tokens for dark mode support
+  const defaultBg = useColorModeValue('surface', 'gray.800')
+  const defaultBorderColor = useColorModeValue('border', 'gray.600')
+  const hoverBorderColor = useColorModeValue('blue.300', 'blue.500')
+
   const interactiveProps = interactive
     ? {
         cursor: 'pointer',
-        _hover: { shadow: 'md', borderColor: 'blue.300' },
+        _hover: { shadow: 'md', borderColor: hoverBorderColor },
         transition: 'all 0.15s ease',
       }
     : {}
 
-  const resolvedBg = bg ?? (variant === 'outline' ? 'white' : undefined)
-  const resolvedBorderColor = borderColor ?? (variant === 'outline' ? 'gray.200' : undefined)
+  const resolvedBg = bg ?? (variant === 'outline' ? defaultBg : undefined)
+  const resolvedBorderColor = borderColor ?? (variant === 'outline' ? defaultBorderColor : undefined)
 
   return (
     <Card

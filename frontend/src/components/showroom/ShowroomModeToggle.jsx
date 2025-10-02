@@ -24,6 +24,7 @@ import {
   Switch,
   Stack,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { Settings, Eye } from 'lucide-react'
 import { isAdmin } from '../../helpers/permissions'
@@ -46,6 +47,11 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const [showModal, setShowModal] = useState(false)
   const [tempMultiplier, setTempMultiplier] = useState(1.0)
   const [validationError, setValidationError] = useState('')
+
+  const cardBg = useColorModeValue('surface', 'gray.800')
+  const borderColor = useColorModeValue('border', 'gray.600')
+  const subtitleColor = useColorModeValue('gray.500', 'gray.400')
+  const descriptionColor = useColorModeValue('gray.600', 'gray.400')
 
   const allowed = isAdmin(user)
   useEffect(() => {
@@ -176,7 +182,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
                 {showroomMode ? t('common.on', 'ON') : t('common.off', 'OFF')}
               </Button>
             </HStack>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={descriptionColor}>
               {showroomMode
                 ? t(
                     'showroom.modal.activeText',
@@ -230,14 +236,14 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   }
 
   return (
-    <Box borderWidth="1px" borderRadius="lg" p={4} bg="white" shadow="sm">
+    <Box borderWidth="1px" borderColor={borderColor} borderRadius="lg" p={4} bg={cardBg} shadow="sm">
       <Stack spacing={4}>
         <HStack justify="space-between">
           <HStack spacing={4}>
             <Icon as={Eye} color={showroomMode ? 'green.500' : 'gray.400'} />
             <Stack spacing={0}>
               <Text fontWeight="semibold">{t('showroom.title', 'Showroom Mode')}</Text>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color={subtitleColor}>
                 {t('showroom.subtitle', 'Adjust pricing with a temporary multiplier for customers.')}
               </Text>
             </Stack>
@@ -249,7 +255,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
             size="lg"
           />
         </HStack>
-        <Text fontSize="sm" color="gray.600">
+        <Text fontSize="sm" color={descriptionColor}>
           {t('showroom.currentMultiplier', 'Current multiplier')}: {showroomMultiplier.toFixed(2)}x
         </Text>
         <Button variant="outline" leftIcon={<Icon as={Settings} />} onClick={openModal} alignSelf="flex-start">

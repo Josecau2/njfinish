@@ -21,15 +21,15 @@ function buildBrandFromLegacy() {
 
     // Map app colors to the brand color keys used by components
     const colors = {
-      headerBg: appCfg.headerBg || '#0f172a',
-      headerText: appCfg.headerFontColor || '#ffffff',
-      sidebarBg: appCfg.sidebarBg || '#0f0f0f',
-      sidebarText: appCfg.sidebarFontColor || '#ffffff',
+      headerBg: appCfg.headerBg || 'slate.900',
+      headerText: appCfg.headerFontColor || 'white',
+      sidebarBg: appCfg.sidebarBg || 'gray.900',
+      sidebarText: appCfg.sidebarFontColor || 'white',
       // Reasonable fallbacks to avoid undefined access
-      text: '#0f172a',
-      accent: '#2563eb',
-      surface: '#f8fafc',
-      logoBg: appCfg.logoBg || '#000000',
+      text: 'slate.900',
+      accent: 'brand.500',
+      surface: 'slate.50',
+      logoBg: appCfg.logoBg || 'black',
     }
 
     // Prefer login logo; fall back to app logo image
@@ -93,14 +93,14 @@ export function getBrandColors() {
     if (typeof window !== 'undefined') {
       const appCfg = window.__APP_CUSTOMIZATION__ || {}
       return {
-        headerBg: appCfg.headerBg || '#0f172a',
-        headerText: appCfg.headerFontColor || '#ffffff',
-        sidebarBg: appCfg.sidebarBg || '#0f0f0f',
-        sidebarText: appCfg.sidebarFontColor || '#ffffff',
-        text: '#0f172a',
-        accent: '#2563eb',
-        surface: '#f8fafc',
-        logoBg: appCfg.logoBg || '#000000',
+        headerBg: appCfg.headerBg || 'slate.900',
+        headerText: appCfg.headerFontColor || 'white',
+        sidebarBg: appCfg.sidebarBg || 'gray.900',
+        sidebarText: appCfg.sidebarFontColor || 'white',
+        text: 'slate.900',
+        accent: 'brand.500',
+        surface: 'slate.50',
+        logoBg: appCfg.logoBg || 'black',
       }
     }
   } catch {}

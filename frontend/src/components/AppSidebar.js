@@ -80,8 +80,8 @@ const AppSidebar = () => {
     .filter(Boolean)
     .join(' ')
 
-  const sidebarBg = customization.sidebarBg || '#0f172a'
-  const sidebarColor = customization.sidebarFontColor || '#f8fafc'
+  const sidebarBg = customization.sidebarBg || 'slate.900'
+  const sidebarColor = customization.sidebarFontColor || 'slate.50'
   const overlayColor = useColorModeValue('blackAlpha.400', 'blackAlpha.600')
 
   const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
@@ -132,7 +132,8 @@ const AppSidebar = () => {
       w={collapsed ? "56px" : "256px"}
       bg={sidebarBg}
       color={sidebarColor}
-      borderRight="1px solid rgba(255, 255, 255, 0.1)"
+      borderRight="1px solid"
+      borderRightColor="whiteAlpha.100"
       role="navigation"
       transition="width 0.15s ease-in-out"
       overflow="hidden"
@@ -144,7 +145,8 @@ const AppSidebar = () => {
         px={4}
         py={3}
         h="60px"
-        borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+        borderBottom="1px solid"
+        borderBottomColor="whiteAlpha.100"
         flexShrink={0}
       >
         <HStack spacing={3} minW={0} flex="1">
@@ -187,8 +189,8 @@ const AppSidebar = () => {
           <IconButton size="lg" aria-label="Close sidebar"
             icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
             variant="ghost"
-            color="rgba(255, 255, 255, 0.8)"
-            _hover={{ bg: "rgba(255, 255, 255, 0.1)", color: "white" }}
+            color="whiteAlpha.800"
+            _hover={{ bg: "whiteAlpha.100", color: "white" }}
             minW="44px"
             h="44px"
             onClick={handleClose}
@@ -211,11 +213,11 @@ const AppSidebar = () => {
             background: 'transparent',
           },
           '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255, 255, 255, 0.2)',
+            background: 'whiteAlpha.200',
             borderRadius: '4px',
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            background: 'rgba(255, 255, 255, 0.3)',
+            background: 'whiteAlpha.300',
           },
         }}
       >
@@ -225,7 +227,8 @@ const AppSidebar = () => {
       {/* Sidebar Footer - matches legacy CSidebarFooter */}
       <Flex
         direction="column"
-        borderTop="1px solid rgba(255, 255, 255, 0.1)"
+        borderTop="1px solid"
+        borderTopColor="whiteAlpha.100"
         p={2}
         flexShrink={0}
         className={styles.modernSidebarFooter}
@@ -242,11 +245,11 @@ const AppSidebar = () => {
             <IconButton size="lg" aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
               icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               variant="outline"
-              color="rgba(255, 255, 255, 0.8)"
-              borderColor="rgba(255, 255, 255, 0.3)"
+              color="whiteAlpha.800"
+              borderColor="whiteAlpha.300"
               _hover={{
-                bg: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.5)",
+                bg: "whiteAlpha.100",
+                borderColor: "whiteAlpha.500",
                 color: "white"
               }}
               onClick={handlePinToggle}
@@ -259,12 +262,13 @@ const AppSidebar = () => {
               px={3}
               py={2}
               borderRadius="md"
-              border="1px solid rgba(255, 255, 255, 0.3)"
-              color="rgba(255, 255, 255, 0.8)"
+              border="1px solid"
+              borderColor="whiteAlpha.300"
+              color="whiteAlpha.800"
               bg="transparent"
               _hover={{
-                bg: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.5)",
+                bg: "whiteAlpha.100",
+                borderColor: "whiteAlpha.500",
                 color: "white"
               }}
               onClick={handlePinToggle}

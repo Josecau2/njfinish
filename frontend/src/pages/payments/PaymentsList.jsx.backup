@@ -256,7 +256,7 @@ const PaymentsList = ({ isContractor }) => {
       return (
         <div>
           <div>{contractorName}</div>
-          <div style={{ fontSize: "12px" }}>{customerName}</div>
+          <div style={{ fontSize: 12 }}>{customerName}</div>
         </div>
       )
     }
