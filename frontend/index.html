@@ -24,39 +24,61 @@
       // Inline customization bootstrap for dev. In production, server injects values in <head>.
       (function(){
         try {
-          // Only load fallback JSON if server did NOT inject customization already
-          if (typeof window.__APP_CUSTOMIZATION__ === 'undefined') {
-            var xhr1 = new XMLHttpRequest();
-            xhr1.open('GET', '/assets/customization/app-customization.json?_=' + Date.now(), false); // sync small request
-            xhr1.send(null);
-            if (xhr1.status === 200) {
-              try { window.__APP_CUSTOMIZATION__ = JSON.parse(xhr1.responseText); } catch {}
+          function fetchJSON(url) {
+            return new Promise(function(resolve) {
+              var xhr = new XMLHttpRequest();
+              xhr.open('GET', url, true); // async request
+              xhr.onload = function() {
+                if (xhr.status === 200) {
+                  try { resolve(JSON.parse(xhr.responseText)); } catch { resolve(null); }
+                } else {
+                  resolve(null);
+                }
+              };
+              xhr.onerror = function() { resolve(null); };
+              xhr.send(null);
+            });
+          }
+
+          function applyCustomization() {
+            var root = document.documentElement;
+            var c = window.__APP_CUSTOMIZATION__ || {};
+            if (c.headerBg) root.style.setProperty('--header-bg', c.headerBg);
+            if (c.headerFontColor) root.style.setProperty('--header-fg', c.headerFontColor);
+            if (c.sidebarBg) root.style.setProperty('--sidebar-bg', c.sidebarBg);
+            if (c.sidebarFontColor) root.style.setProperty('--sidebar-fg', c.sidebarFontColor);
+            if (location.pathname === '/login') {
+              var lc = window.__LOGIN_CUSTOMIZATION__ || {};
+              if (lc.backgroundColor) root.style.setProperty('--login-bg', lc.backgroundColor);
+              // Also set page title if provided
+              if (lc.rightTitle && document.title && document.title === 'NJ Cabinets') {
+                document.title = lc.rightTitle;
+              }
+            } else if (c.logoText && document.title === 'NJ Cabinets') {
+              document.title = c.logoText;
             }
+          }
+
+          // Load customization asynchronously
+          var promises = [];
+          if (typeof window.__APP_CUSTOMIZATION__ === 'undefined') {
+            promises.push(
+              fetchJSON('/assets/customization/app-customization.json?_=' + Date.now())
+                .then(function(data) { if (data) window.__APP_CUSTOMIZATION__ = data; })
+            );
           }
           if (typeof window.__LOGIN_CUSTOMIZATION__ === 'undefined') {
-            var xhr2 = new XMLHttpRequest();
-            xhr2.open('GET', '/assets/customization/login-customization.json?_=' + Date.now(), false);
-            xhr2.send(null);
-            if (xhr2.status === 200) {
-              try { window.__LOGIN_CUSTOMIZATION__ = JSON.parse(xhr2.responseText); } catch {}
-            }
+            promises.push(
+              fetchJSON('/assets/customization/login-customization.json?_=' + Date.now())
+                .then(function(data) { if (data) window.__LOGIN_CUSTOMIZATION__ = data; })
+            );
           }
-          // Apply critical colors immediately
-          var root = document.documentElement;
-          var c = window.__APP_CUSTOMIZATION__ || {};
-          if (c.headerBg) root.style.setProperty('--header-bg', c.headerBg);
-          if (c.headerFontColor) root.style.setProperty('--header-fg', c.headerFontColor);
-          if (c.sidebarBg) root.style.setProperty('--sidebar-bg', c.sidebarBg);
-          if (c.sidebarFontColor) root.style.setProperty('--sidebar-fg', c.sidebarFontColor);
-          if (location.pathname === '/login') {
-            var lc = window.__LOGIN_CUSTOMIZATION__ || {};
-            if (lc.backgroundColor) root.style.setProperty('--login-bg', lc.backgroundColor);
-            // Also set page title if provided
-            if (lc.rightTitle && document.title && document.title === 'NJ Cabinets') {
-              document.title = lc.rightTitle;
-            }
-          } else if (c.logoText && document.title === 'NJ Cabinets') {
-            document.title = c.logoText;
+
+          // Apply customization once loaded
+          if (promises.length > 0) {
+            Promise.all(promises).then(applyCustomization);
+          } else {
+            applyCustomization();
           }
         } catch (e) { /* silent */ }
       })();

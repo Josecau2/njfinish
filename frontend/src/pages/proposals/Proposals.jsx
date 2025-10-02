@@ -540,10 +540,11 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 placeholder={t('proposals.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label={t('proposals.searchPlaceholder')}
               />
             </InputGroup>
           </HStack>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
             {t('proposals.showingCount', {
               count: filteredProposals?.length || 0,
               total: proposal?.length || 0,

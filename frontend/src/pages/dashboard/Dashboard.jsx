@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
 import { useTranslation } from 'react-i18next'
@@ -126,7 +126,7 @@ const Dashboard = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  const fetchLinks = async () => {
+  const fetchLinks = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/resources/links')
       if (response.data.success) {
@@ -135,9 +135,9 @@ const Dashboard = () => {
     } catch (error) {
       console.warn('Failed to load resource links', error)
     }
-  }
+  }, [])
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/resources/files')
       if (response.data.success) {
@@ -146,7 +146,7 @@ const Dashboard = () => {
     } catch (error) {
       console.warn('Failed to load resource files', error)
     }
-  }
+  }, [])
 
   useEffect(() => {
     let interval = null
@@ -186,19 +186,19 @@ const Dashboard = () => {
     return () => clearInterval(interval)
   }, [activeOrders])
 
-  const handleCreateProposal = () => {
+  const handleCreateProposal = useCallback(() => {
     navigate('/quotes/create')
-  }
+  }, [navigate])
 
-  const handleCreateQuickProposal = () => {
+  const handleCreateQuickProposal = useCallback(() => {
     navigate('/quotes/create?quick=yes')
-  }
+  }, [navigate])
 
-  const handleViewAllProposals = () => {
+  const handleViewAllProposals = useCallback(() => {
     navigate('/quotes')
-  }
+  }, [navigate])
 
-  const getStatusColor = (status) => {
+  const getStatusColor = useCallback((status) => {
     switch (status) {
       case 'active':
       case 'approved':
@@ -213,9 +213,9 @@ const Dashboard = () => {
       default:
         return 'gray'
     }
-  }
+  }, [])
 
-  const translateStatus = (status) => {
+  const translateStatus = useCallback((status) => {
     if (!status) return ''
     const normalizedStatus = status.toLowerCase().replace(/\s+/g, '')
 
@@ -238,17 +238,17 @@ const Dashboard = () => {
 
     const translationKey = statusMap[normalizedStatus] || normalizedStatus
     return t(`status.${translationKey}`, status)
-  }
+  }, [t])
 
-  const getFileIcon = (type) => {
+  const getFileIcon = useCallback((type) => {
     const IconComponent = fileIconMap[type?.toLowerCase()] || FileIcon
     return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color="blue.500" />
-  }
+  }, [])
 
-  const getLinkIcon = (type) => {
+  const getLinkIcon = useCallback((type) => {
     const IconComponent = linkIconMap[type?.toLowerCase()] || Link2
     return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color="blue.500" />
-  }
+  }, [])
 
   const proposalStatLoading = typeof activeProposals !== 'number'
   const ordersStatLoading = typeof activeOrders !== 'number'
@@ -322,7 +322,13 @@ const Dashboard = () => {
                       {label}
                     </Text>
                   </HStack>
-                  <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+                  <Text
+                    fontSize="3xl"
+                    fontWeight="bold"
+                    color="gray.800"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
                     {loading ? <Spinner size="sm" color={accent} /> : value}
                   </Text>
                 </Flex>
