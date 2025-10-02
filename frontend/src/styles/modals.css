@@ -4,7 +4,72 @@
  */
 
 /* ============================================
-   MODAL BASE STYLES
+   CHAKRA UI MODAL STYLES
+   ============================================ */
+
+/* Chakra Modal Content - Modern rounded style with border */
+.chakra-modal__content {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden;
+}
+
+/* Chakra Modal Header */
+.chakra-modal__header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Chakra Modal Body */
+.chakra-modal__body {
+  padding: 1rem 1.5rem;
+}
+
+/* Chakra Modal Footer */
+.chakra-modal__footer {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-top: none;
+  gap: 0.75rem;
+}
+
+/* Chakra Modal Close Button */
+.chakra-modal__close-btn {
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+/* Chakra Modal - Responsive adjustments */
+@media (max-width: 768px) {
+  .chakra-modal__content {
+    border-radius: 12px !important;
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .chakra-modal__header {
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+    font-size: 1.125rem;
+  }
+
+  .chakra-modal__body {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .chakra-modal__footer {
+    padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+    flex-direction: column-reverse;
+  }
+
+  .chakra-modal__footer > button {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   MODAL BASE STYLES (Legacy)
    ============================================ */
 
 /* Modal size variants */
