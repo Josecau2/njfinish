@@ -1,9 +1,7 @@
 import React, { Suspense, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Center, Spinner } from '@chakra-ui/react'
-import './tailwind.css'
-import './main.css'
-import './responsive.css'
+// CSS imports removed - now loaded in index.jsx for optimal cascade
 import LoginPage from './pages/auth/LoginPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'

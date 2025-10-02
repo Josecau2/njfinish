@@ -4,9 +4,13 @@ import { Provider } from 'react-redux'
 import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import 'core-js'
-import './styles/reset.css'
-import './styles/utilities.css'
-import './styles/fixes.css'
+// CSS Load Order - All styles loaded before React tree to prevent FOUC
+import './styles/reset.css'        // 1. Reset - box-sizing, overflow guards
+import './styles/utilities.css'    // 2. Utilities - spacing scale, helpers
+import './styles/fixes.css'         // 3. Fixes - overflow guards, iOS safe area
+import './tailwind.css'             // 4. Tailwind - utility classes, focus rings
+import './main.css'                 // 5. Main - login, PDF, modals
+import './responsive.css'           // 6. Responsive - overrides (must be last)
 import './i18n'
 
 import App from './App.jsx'
