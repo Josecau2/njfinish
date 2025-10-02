@@ -1,23 +1,25 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box, SimpleGrid, Heading, Stack, Link, Text, Button, IconButton, VStack, HStack } from '@chakra-ui/react';
 
-// Import manifest from AUDIT folder
-let manifest = {
+// Default manifest - will be loaded async
+let manifestData = {
   modals: [],
   components: [],
   buttons: ["Primary", "Secondary", "Tertiary", "Destructive", "IconOnly"]
 };
 
-try {
-  // Try to dynamically import manifest - will fail in production builds
-  const manifestData = await fetch('/AUDIT/manifest.json');
-  if (manifestData.ok) {
-    manifest = await manifestData.json();
+// Load manifest dynamically
+async function loadManifest() {
+  try {
+    const response = await fetch('/AUDIT/manifest.json');
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (e) {
+    console.warn('Could not load manifest.json', e);
   }
-} catch (e) {
-  // Fallback to empty manifest
-  console.warn('Could not load manifest.json', e);
+  return manifestData;
 }
 
 export function AuditRoutes() {
@@ -61,6 +63,11 @@ function ModalsPlayground() {
   const [isOpen, setIsOpen] = useState(false);
   const [ModalComponent, setModalComponent] = useState(null);
   const [loadError, setLoadError] = useState(null);
+  const [manifest, setManifest] = useState(manifestData);
+
+  useEffect(() => {
+    loadManifest().then(setManifest);
+  }, []);
 
   const openModal = async (name) => {
     setLoadError(null);
@@ -131,6 +138,12 @@ function ModalsPlayground() {
 }
 
 function ComponentsGrid() {
+  const [manifest, setManifest] = useState(manifestData);
+
+  useEffect(() => {
+    loadManifest().then(setManifest);
+  }, []);
+
   return (
     <Box p={8}>
       <Heading size="md" mb={4}>Components Grid</Heading>
