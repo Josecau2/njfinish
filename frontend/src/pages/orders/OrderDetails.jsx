@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
+import StandardCard from '../../components/StandardCard'
 import { useTranslation } from 'react-i18next'
 import {
   Container,
@@ -14,7 +15,6 @@ import {
   Button,
   Icon,
   Badge,
-  StandardCard,
   Table,
   Thead,
   Tbody,

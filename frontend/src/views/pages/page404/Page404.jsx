@@ -41,7 +41,7 @@ const Page404 = () => {
                 borderRightRadius={0}
               />
               <Button
-                colorScheme="blue"
+                colorScheme="brand"
                 size="lg"
                 type="button"
                 aria-label="Search"

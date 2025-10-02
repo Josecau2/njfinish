@@ -150,7 +150,7 @@ const TaxesPage = () => {
                 <Text fontSize="sm">{t('settings.taxes.help.hover')}</Text>
               </Flex>
             </Tooltip>
-            <Badge colorScheme="blue" variant="subtle" px={3} py={1} borderRadius="full">
+            <Badge colorScheme="brand" variant="subtle" px={3} py={1} borderRadius="full">
               {t('settings.taxes.stats.total', { count: taxes?.length || 0 })}
             </Badge>
           </Flex>

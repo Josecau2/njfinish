@@ -66,7 +66,7 @@ const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, 
     <Stack as="form" onSubmit={handleSubmit} spacing={4}>
       <PaymentElement options={{ layout: 'tabs' }} />
       <Flex justify="flex-end">
-        <Button type="submit" colorScheme="blue" isDisabled={!stripe || !elements || submitting} minH="44px">
+        <Button type="submit" colorScheme="brand" isDisabled={!stripe || !elements || submitting} minH="44px">
           {submitting && <Spinner size="sm" mr={2} />}
           {submitLabel}
         </Button>
@@ -251,7 +251,7 @@ const PaymentPage = () => {
               <AlertIcon />
               {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
             </Alert>
-            <Button colorScheme="blue" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}>
+            <Button colorScheme="brand" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}>
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
@@ -331,7 +331,7 @@ const PaymentPage = () => {
                     {intentError}
                   </Alert>
                   <Button
-                    colorScheme="blue"
+                    colorScheme="brand"
                     variant="outline"
                     onClick={initializeIntent}
                     isLoading={intentLoading}
@@ -355,7 +355,7 @@ const PaymentPage = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       variant="link"
-                      colorScheme="blue"
+                      colorScheme="brand"
                       fontWeight="semibold"
                       minH="44px"
                     >
@@ -398,7 +398,7 @@ const PaymentPage = () => {
 
               <HStack justify="flex-end" spacing={4} wrap="wrap">
                 {isCompleted && (
-                  <Button colorScheme="blue" onClick={handleViewPayments} minH="44px">
+                  <Button colorScheme="brand" onClick={handleViewPayments} minH="44px">
                     {t('payment.viewPayments', 'View Payments')}
                   </Button>
                 )}

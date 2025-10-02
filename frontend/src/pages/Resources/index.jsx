@@ -740,7 +740,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
           <HStack spacing={4}>
             <Button
               leftIcon={<Plus size={ICON_SIZE_MD} />}
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={() => openCategoryModal()}
             >
               {t('resources.actions.newCategory', 'New Category')}
@@ -871,7 +871,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       <Badge colorScheme="green">
                         {totals.links}
                       </Badge>
-                      <Badge colorScheme="blue">
+                      <Badge colorScheme="brand">
                         {totals.files}
                       </Badge>
                     </HStack>
@@ -896,7 +896,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </Button>
 
             {/* Resource tabs */}
-            <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed" colorScheme="blue">
+            <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed" colorScheme="brand">
               <TabList>
                 <Tab>{t('resources.types.announcements', 'Announcements')} ({(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).length})</Tab>
                 <Tab>{t('resources.types.links', 'Links')} ({(resourceData?.links || []).filter(item => passesFilters(item, 'links')).length})</Tab>
@@ -907,7 +907,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openAnnouncementModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openAnnouncementModal()} alignSelf="flex-start">
                         {t('resources.actions.newAnnouncement', 'New Announcement')}
                       </Button>
                     )}
@@ -973,7 +973,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openLinkModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openLinkModal()} alignSelf="flex-start">
                         {t('resources.actions.newLink', 'New Link')}
                       </Button>
                     )}
@@ -1046,7 +1046,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openFileModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openFileModal()} alignSelf="flex-start">
                         {t('resources.actions.newFile', 'New File')}
                       </Button>
                     )}
@@ -1205,7 +1205,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             <Button variant="ghost" mr={3} onClick={closeCategoryModal}>
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="blue" onClick={handleSaveCategory} isLoading={actionLoading}>
+            <Button colorScheme="brand" onClick={handleSaveCategory} isLoading={actionLoading}>
               {t('common.save', 'Save')}
             </Button>
           </ModalFooter>
@@ -1283,7 +1283,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={async () => {
                 try {
                   setActionLoading(true)
@@ -1378,7 +1378,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={async () => {
                 try {
                   setActionLoading(true)
@@ -1497,7 +1497,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={async () => {
                 try {
                   setActionLoading(true)

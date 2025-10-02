@@ -40,6 +40,7 @@ import {
   useDisclosure,
   useToast,
   useColorModeValue,
+  Icon,
 } from '@chakra-ui/react'
 import { Search, CreditCard as CreditCardIcon, Plus } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
@@ -287,7 +288,7 @@ const PaymentsList = ({ isContractor }) => {
           <Button
             key={status}
             variant={statusFilter === status ? 'solid' : 'outline'}
-            colorScheme={statusFilter === status ? 'blue' : 'gray'}
+            colorScheme={statusFilter === status ? 'brand' : 'gray'}
             size="sm"
             minH="44px"
             onClick={() => setStatusFilter(status)}
@@ -297,11 +298,11 @@ const PaymentsList = ({ isContractor }) => {
         ))}
       </HStack>
 
-      <Flex justify="space-between" align="center" mb={4}>
-        <Box flex={1} maxW="520px">
+      <Flex justify="space-between" align="center" mb={4} role="search">
+        <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
           <InputGroup>
-            <InputLeftElement>
-              <Search size={ICON_SIZE_MD} />
+            <InputLeftElement pointerEvents="none">
+              <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
             </InputLeftElement>
             <Input
               type="search"
@@ -314,18 +315,18 @@ const PaymentsList = ({ isContractor }) => {
         </Box>
         <HStack spacing={4}>
           {!isContractor && (
-            <Button colorScheme="blue" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={ICON_SIZE_MD} />} aria-label={t('payments.create.button', 'Create payment')}>
+            <Button colorScheme="brand" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={ICON_SIZE_MD} />} aria-label={t('payments.create.button', 'Create payment')}>
               <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
             </Button>
           )}
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
             {t('payments.showingCount', { count: filtered.length, total: payments.length })}
           </Text>
         </HStack>
       </Flex>
 
       <Box display={{ base: 'none', lg: 'block' }}>
-        <Box overflowX="auto" data-scroll-region>
+        <TableContainer>
           <Table size="sm" variant="simple">
           <Thead>
             <Tr>
@@ -378,7 +379,7 @@ const PaymentsList = ({ isContractor }) => {
                     <Td>
                       <HStack spacing={4}>
                         {canPayOnline ? (
-                          <Button colorScheme="blue" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
+                          <Button colorScheme="brand" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                             {t('payments.actions.makePayment', 'Make Payment')}
                           </Button>
                         ) : null}
@@ -402,7 +403,7 @@ const PaymentsList = ({ isContractor }) => {
             )}
           </Tbody>
         </Table>
-        </Box>
+        </TableContainer>
       </Box>
 
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
@@ -435,7 +436,7 @@ const PaymentsList = ({ isContractor }) => {
                       ) : null}
                     </VStack>
                     {canPayOnline ? (
-                      <Button colorScheme="blue" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
+                      <Button colorScheme="brand" size="sm" minH="44px" onClick={(e) => { e.stopPropagation(); navigate(`/payments/${payment?.id}/pay`) }}>
                         {t('payments.actions.makePayment', 'Make Payment')}
                       </Button>
                     ) : null}

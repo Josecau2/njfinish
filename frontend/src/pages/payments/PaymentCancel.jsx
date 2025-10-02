@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Container, CardBody, Box, Button } from '@chakra-ui/react'
+import { CardBody, Box, Flex, Button } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
+import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
@@ -11,7 +12,7 @@ const PaymentCancel = () => {
   const navigate = useNavigate()
 
   return (
-    <Container maxW="full" className="payment-result">
+    <PageContainer className="payment-result">
       <style>{`
         .payment-result .btn { min-height: 44px; }
       `}</style>
@@ -33,7 +34,7 @@ const PaymentCancel = () => {
                   'There was an error processing your payment. Please try again.',
                 )}
               </p>
-              <div className="d-flex gap-2 justify-content-center">
+              <Flex gap={2} justify="center">
                 <Button
                   colorScheme="brand"
                   onClick={() => navigate('/payments')}
@@ -52,11 +53,11 @@ const PaymentCancel = () => {
                   <ArrowLeft size={ICON_SIZE_MD} style={{ marginRight: '0.5rem' }} />
                   {t('common.goBack', 'Go Back')}
                 </Button>
-              </div>
+              </Flex>
             </CardBody>
           </StandardCard>
         </Box>
-      </Container>
+      </PageContainer>
   )
 }
 export default PaymentCancel

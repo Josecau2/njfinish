@@ -281,7 +281,7 @@ const Dashboard = () => {
           actions={[
             <Button
               key="new"
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={handleCreateProposal}
             >
               {t('dashboard.newProposal')}
@@ -399,7 +399,7 @@ const Dashboard = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             variant="link"
-                            colorScheme="blue"
+                            colorScheme="brand"
                             fontSize="sm"
                             wordBreak="break-all"
                           >

@@ -167,7 +167,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
         >
           {t('termsModal.title')}
         </ModalHeader>
-        {!isForced ? <ModalCloseButton /> : null}
+        {!isForced ? <ModalCloseButton aria-label="Close modal" /> : null}
         <ModalBody
           ref={modalBodyRef}
           maxH='400px'

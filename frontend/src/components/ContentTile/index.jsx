@@ -60,7 +60,7 @@ export default function ContentTile({
               {onDownload && (
                 <MotionButton
                   variant="ghost"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   height="44px"
                   minW="44px"
                   p={2}

@@ -23,6 +23,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Icon,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { MobileListCard } from '../../components/StandardCard'
@@ -464,8 +465,9 @@ const OrdersList = ({
           <Button
             key={status}
             variant={statusFilter === status ? 'solid' : 'outline'}
-            colorScheme={statusFilter === status ? 'blue' : 'gray'}
+            colorScheme={statusFilter === status ? 'brand' : 'gray'}
             size="sm"
+            minH="44px"
             onClick={() => {
               setStatusFilter(status)
               setPage(1)
@@ -478,21 +480,21 @@ const OrdersList = ({
 
       {/* Toolbar: search + count */}
       <Flex justify="space-between" align="center" mb={4} role="search">
-        <Box flex={1} maxW="520px">
+        <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
           <InputGroup>
-            <InputLeftElement>
-              <Search size={ICON_SIZE_MD} />
+            <InputLeftElement pointerEvents="none">
+              <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
             </InputLeftElement>
             <Input
             type="search"
-            placeholder="Search by customer, order number, or description"
+            placeholder={t('orders.searchPlaceholder', 'Search by customer, order number, or description')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label={t('orders.searchAria', 'Search orders by customer name')}
           />
         </InputGroup>
         </Box>
-        <Text fontSize="sm" color="gray.500">
+        <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
           {t('orders.showingCount', {
             count: filtered.length,
             total: Array.isArray(orders) ? orders.length : 0,
@@ -502,7 +504,7 @@ const OrdersList = ({
 
       {/* Desktop / tablet table */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <Box overflowX="auto" data-scroll-region>
+        <TableContainer>
           <Table size="sm" variant="simple">
           <Thead>
             <Tr>
@@ -575,7 +577,7 @@ const OrdersList = ({
                       <HStack spacing={4}>
                         {paymentInfo.showButton && (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="brand"
                             size="sm"
                             leftIcon={<CreditCard size={ICON_SIZE_MD} />}
                             onClick={(e) => {
@@ -609,7 +611,7 @@ const OrdersList = ({
               )}
           </Tbody>
         </Table>
-        </Box>
+        </TableContainer>
       </Box>
 
       {/* Mobile card list */}
@@ -697,7 +699,7 @@ const OrdersList = ({
                       <HStack spacing={4} flexWrap="wrap">
                         {paymentInfo.showButton && (
                           <Button
-                            colorScheme="blue"
+                            colorScheme="brand"
                             size="sm"
                             leftIcon={<CreditCard size={ICON_SIZE_MD} />}
                             onClick={(e) => {

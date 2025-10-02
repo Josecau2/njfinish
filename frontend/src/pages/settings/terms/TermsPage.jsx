@@ -1,9 +1,10 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button } from '@chakra-ui/react'
+import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
+import PageContainer from '../../../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
@@ -103,23 +104,24 @@ const TermsPage = () => {
                   onChange={(e) => setContent(e.target.value)}
                   placeholder={t('settings.terms.placeholder', 'Enter terms and conditions...')}
                 />
-                <div className="mt-3 d-flex gap-2">
-                  <Button colorScheme="blue" disabled={saving} onClick={() => onSave(false)}>
+                <HStack mt={3} gap={2}>
+                  <Button colorScheme="brand" isDisabled={saving} onClick={() => onSave(false)} minH="44px">
                     {saving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
                   </Button>
                   <Button
-                    status="warning"
+                    colorScheme="orange"
                     variant="outline"
-                    disabled={saving}
+                    isDisabled={saving}
                     onClick={() => onSave(true)}
+                    minH="44px"
                   >
                     {t('settings.terms.publishNew', 'Publish as new version')}
                   </Button>
-                </div>
+                </HStack>
                 {version && (
-                  <div className="text-muted mt-2 small">
+                  <Text color="gray.500" mt={2} fontSize="sm">
                     {t('settings.terms.currentVersion', 'Current version')}: {version}
-                  </div>
+                  </Text>
                 )}
               </FormControl>
             </CardBody>
@@ -129,9 +131,9 @@ const TermsPage = () => {
           <StandardCard>
             <CardBody>
               <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
-              <div className="text-muted small mb-2">
+              <Text color="gray.500" fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
-              </div>
+              </Text>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -149,7 +151,7 @@ const TermsPage = () => {
                       <Td>{u.email || '-'}</Td>
                       <Td>
                         {u.accepted ? (
-                          <Badge status="success">
+                          <Badge colorScheme="green">
                             {t('settings.terms.accepted', 'Accepted')}
                           </Badge>
                         ) : (

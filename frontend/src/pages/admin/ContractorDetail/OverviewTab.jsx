@@ -172,13 +172,13 @@ const OverviewTab = ({ contractor }) => {
                 >
                   <span>
                     {module.enabled ? (
-                      <CheckCircle size={ICON_SIZE_MD} className="me-2 text-success" aria-hidden="true" />
+                      <Icon as={CheckCircle} boxSize={ICON_BOX_MD} color="green.500" mr={2} aria-hidden="true" />
                     ) : (
-                      <XCircle size={ICON_SIZE_MD} className="me-2 text-danger" aria-hidden="true" />
+                      <Icon as={XCircle} boxSize={ICON_BOX_MD} color="red.500" mr={2} aria-hidden="true" />
                     )}
                     {module.label}
                   </span>
-                  <Badge color={module.enabled ? module.color : 'secondary'}>
+                  <Badge colorScheme={module.enabled ? (module.colorScheme || 'green') : 'gray'}>
                     {module.enabled
                       ? t('contractorsAdmin.detail.enabled')
                       : t('contractorsAdmin.detail.disabled')}

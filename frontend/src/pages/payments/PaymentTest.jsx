@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Alert, CardBody, Box, Container, FormControl, Input, FormLabel, Flex, Button } from '@chakra-ui/react'
+import { Alert, CardBody, Box, FormControl, Input, FormLabel, Flex, Button, SimpleGrid } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
+import PageContainer from '../../components/PageContainer'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import { useState } from 'react'
@@ -23,7 +24,7 @@ const PaymentTest = () => {
   }
 
   return (
-    <Container maxW="full" className="payment-test">
+    <PageContainer className="payment-test">
       <style>{`
         .payment-test .btn { min-height: 44px; }
       `}</style>
@@ -32,8 +33,8 @@ const PaymentTest = () => {
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
         icon={CreditCard}
       />
-      <Flex>
-        <Box md={8} className="mx-auto">
+      <SimpleGrid columns={{ base: 1 }} spacing={4}>
+        <Box maxW="container.md" mx="auto">
           <StandardCard>
             <CardBody>
               <Alert status="info" aria-live="polite" role="status">
@@ -80,8 +81,8 @@ const PaymentTest = () => {
             </CardBody>
           </StandardCard>
         </Box>
-      </Flex>
-    </Container>
+      </SimpleGrid>
+    </PageContainer>
   )
 }
 export default PaymentTest

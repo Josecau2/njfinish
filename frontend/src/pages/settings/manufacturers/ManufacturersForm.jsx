@@ -25,27 +25,28 @@ import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 // Move component definitions outside to prevent re-creation on every render
-const FormSection = ({ title, icon, children, className = '', customization }) => {
+const FormSection = ({ title, icon, children, customization }) => {
   const headerBg = customization?.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
 
   return (
-    <StandardCard className={`border-0 shadow-sm mb-4 ${className}`}>
+    <StandardCard border="none" boxShadow="sm" mb={4}>
       <CardBody>
-        <div className="d-flex align-items-center mb-4">
-          <div
-            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: headerBg,
-              color: textColor,
-            }}
+        <Flex align="center" mb={4}>
+          <Flex
+            borderRadius="full"
+            align="center"
+            justify="center"
+            mr={3}
+            w="40px"
+            h="40px"
+            bg={headerBg}
+            color={textColor}
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} />
-          </div>
-          <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-        </div>
+          </Flex>
+          <Text as="h6" mb={0} fontWeight="semibold" color="gray.800">{title}</Text>
+        </Flex>
         {children}
       </CardBody>
     </StandardCard>
@@ -84,7 +85,7 @@ const CustomFormInput = ({
         onChange={onChange}
         placeholder={placeholder}
         isInvalid={isInvalid}
-        className={icon ? 'border-start-0' : ''}
+        borderLeftWidth={icon ? 0 : undefined}
         {...props}
       />
       {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
@@ -124,7 +125,7 @@ const CustomFormTextarea = ({
         onChange={onChange}
         placeholder={placeholder}
         isInvalid={isInvalid}
-        className={icon ? 'border-start-0' : ''}
+        borderLeftWidth={icon ? 0 : undefined}
         {...props}
       />
       {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
@@ -144,9 +145,9 @@ const FileUploadCard = ({
   const { t } = useTranslation()
 
   return (
-    <div>
-      <FormLabel className="fw-medium text-dark mb-2">{title}</FormLabel>
-      <div className="border-2 border-dashed rounded-3 p-4 text-center position-relative bg-light">
+    <Box>
+      <FormLabel fontWeight="medium" color="gray.800" mb={2}>{title}</FormLabel>
+      <Box border="2px dashed" borderColor="gray.300" borderRadius="lg" p={4} textAlign="center" position="relative" bg="gray.50">
         <Icon as={icon} boxSize={12} color="gray.400" mb={2} />
         <Text color="gray.500" mb={2}>{t('common.clickToBrowse')}</Text>
       <Input
@@ -164,28 +165,28 @@ const FileUploadCard = ({
           cursor: 'pointer',
         }}
       />
-      {helpText && <Text fontSize="sm" className="text-muted d-block">{helpText}</Text>}
+      {helpText && <Text fontSize="sm" color="gray.600" display="block">{helpText}</Text>}
       {selectedFiles && (
-        <div>
+        <Box>
           {Array.isArray(selectedFiles) ? (
             selectedFiles.length === 0 ? (
-              <span className="text-danger small">{t('common.noFilesSelected')}</span>
+              <Text as="span" color="red.500" fontSize="sm">{t('common.noFilesSelected')}</Text>
             ) : (
-              <div className="text-success small">
+              <Flex color="green.600" fontSize="sm" align="center" justify="center">
                 <CloudUpload size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                 {selectedFiles.length} file(s) selected
-              </div>
+              </Flex>
             )
           ) : (
-            <div className="text-success small">
+            <Flex color="green.600" fontSize="sm" align="center" justify="center">
               <Image size={ICON_SIZE_MD} />
               Image selected: {selectedFiles.name}
-            </div>
+            </Flex>
           )}
-        </div>
+        </Box>
       )}
-    </div>
-  </div>
+    </Box>
+  </Box>
   )
 }
 
@@ -367,7 +368,7 @@ const ManufacturerForm = () => {
     const multiplier = parseFloat(formData.costMultiplier)
 
     return (
-      <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
+      <Text fontSize="sm" color="blue.500" mt={2} display="flex" alignItems="center">
         <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
@@ -378,9 +379,11 @@ const ManufacturerForm = () => {
   return (
     <Container
       maxW="full"
-      className="p-2 m-2 manufacturer-form"
+      p={2}
+      m={2}
       bg="gray.50"
       minH="100vh"
+      className="manufacturer-form"
     >
       <style>{`
           @media (max-width: 1023px) {
@@ -443,8 +446,8 @@ const ManufacturerForm = () => {
 
       <form onSubmit={handleSubmit}>
         {/* Information Notice */}
-        <StandardCard className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
-          <CardBody className="py-3 px-4" bg="blue.50">
+        <StandardCard border="none" boxShadow="sm" mb={4} borderLeft={`4px solid ${headerBg}`}>
+          <CardBody py={3} px={4} bg="blue.50">
             <HStack align="flex-start" spacing={4}>
               <Info size={ICON_SIZE_MD} style={{ color: "blue.500", marginTop: '0.25rem' }} />
               <Text mb={0} color="blue.600">
@@ -461,8 +464,8 @@ const ManufacturerForm = () => {
           icon={Building}
           customization={customization}
         >
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.manufacturerName')}
                 name="name"
@@ -475,7 +478,7 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.name}
               />
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.orderEmail')}
                 name="email"
@@ -489,10 +492,10 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.email}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
 
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.phone')}
                 name="phone"
@@ -506,7 +509,7 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.phone}
               />
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.website')}
                 name="website"
@@ -520,7 +523,7 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.website}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
 
           <CustomFormInput
             label={t('settings.manufacturers.fields.address')}
@@ -535,8 +538,8 @@ const ManufacturerForm = () => {
           />
 
           {/* ETA Information */}
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.assembledEtaDays', 'Assembled Items ETA')}
                 name="assembledEtaDays"
@@ -546,14 +549,14 @@ const ManufacturerForm = () => {
                 value={formData.assembledEtaDays}
                 onChange={handleChange}
               />
-              <Text fontSize="sm" className="text-muted ms-3">
+              <Text fontSize="sm" color="gray.600" ms={3}>
                 {t(
                   'settings.manufacturers.help.assembledEta',
                   'Estimated delivery time for assembled cabinets',
                 )}
               </Text>
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t(
                   'settings.manufacturers.fields.unassembledEtaDays',
@@ -566,14 +569,14 @@ const ManufacturerForm = () => {
                 value={formData.unassembledEtaDays}
                 onChange={handleChange}
               />
-              <Text fontSize="sm" className="text-muted ms-3">
+              <Text fontSize="sm" color="gray.600" ms={3}>
                 {t(
                   'settings.manufacturers.help.unassembledEta',
                   'Estimated delivery time for unassembled cabinets',
                 )}
               </Text>
             </Box>
-          </Flex>
+          </SimpleGrid>
         </FormSection>
 
         {/* Logo Upload */}
@@ -598,18 +601,24 @@ const ManufacturerForm = () => {
           icon={DollarSign}
           customization={customization}
         >
-          <div>
-            <FormLabel className="fw-medium text-dark mb-3">
+          <Box>
+            <FormLabel fontWeight="medium" color="gray.800" mb={3}>
               {t('settings.manufacturers.fields.priceInfoType')}
             </FormLabel>
-            <div
-              className="d-flex flex-column gap-2"
+            <VStack
+              spacing={2}
               role="radiogroup"
               aria-label={t('settings.manufacturers.fields.priceInfoType')}
             >
-              <div
-                className={`border rounded-3 p-3 cursor-pointer transition-all ${formData.isPriceMSRP ? 'border-primary bg-light' : 'border-light'}`}
-                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+              <Box
+                border="1px solid"
+                borderColor={formData.isPriceMSRP ? 'blue.500' : 'gray.200'}
+                borderRadius="lg"
+                p={3}
+                cursor="pointer"
+                transition="all 0.3s ease"
+                bg={formData.isPriceMSRP ? 'gray.50' : 'white'}
+                w="full"
                 role="radio"
                 tabIndex={0}
                 aria-checked={formData.isPriceMSRP}
@@ -621,19 +630,27 @@ const ManufacturerForm = () => {
                   id="msrpPrices"
                   checked={formData.isPriceMSRP}
                   onChange={() => handlePriceTypeChange(true)}
-                 
+
                 />
-                <label
+                <Text
+                  as="label"
                   htmlFor="msrpPrices"
-                  className="ms-2 fw-medium"
-                  style={{ cursor: 'pointer' }}
+                  ms={2}
+                  fontWeight="medium"
+                  cursor="pointer"
                 >
                   {t('settings.manufacturers.fields.msrpOption')}
-                </label>
-              </div>
-              <div
-                className={`border rounded-3 p-3 cursor-pointer transition-all ${!formData.isPriceMSRP ? 'border-primary bg-light' : 'border-light'}`}
-                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                </Text>
+              </Box>
+              <Box
+                border="1px solid"
+                borderColor={!formData.isPriceMSRP ? 'blue.500' : 'gray.200'}
+                borderRadius="lg"
+                p={3}
+                cursor="pointer"
+                transition="all 0.3s ease"
+                bg={!formData.isPriceMSRP ? 'gray.50' : 'white'}
+                w="full"
                 role="radio"
                 tabIndex={0}
                 aria-checked={!formData.isPriceMSRP}
@@ -645,21 +662,23 @@ const ManufacturerForm = () => {
                   id="costPrices"
                   checked={!formData.isPriceMSRP}
                   onChange={() => handlePriceTypeChange(false)}
-                 
+
                 />
-                <label
+                <Text
+                  as="label"
                   htmlFor="costPrices"
-                  className="ms-2 fw-medium"
-                  style={{ cursor: 'pointer' }}
+                  ms={2}
+                  fontWeight="medium"
+                  cursor="pointer"
                 >
                   {t('settings.manufacturers.fields.costOption')}
-                </label>
-              </div>
-            </div>
-          </div>
+                </Text>
+              </Box>
+            </VStack>
+          </Box>
 
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('settings.manufacturers.fields.costMultiplier')}
                 name="costMultiplier"
@@ -674,7 +693,7 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.costMultiplier}
               />
               {formData.costMultiplier && (
-                <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
+                <Text fontSize="sm" color="blue.500" mt={2} display="flex" alignItems="center">
                   <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
@@ -684,7 +703,7 @@ const ManufacturerForm = () => {
                 </Text>
               )}
             </Box>
-          </Flex>
+          </SimpleGrid>
         </FormSection>
 
         {/* Instructions */}
@@ -726,7 +745,7 @@ const ManufacturerForm = () => {
         {/* Action Buttons */}
         <StandardCard>
           <CardBody>
-            <div className="d-flex gap-3 justify-content-end flex-wrap">
+            <Flex gap={3} justify="flex-end" wrap="wrap">
               <Button
                 variant="outline"
                 colorScheme="gray"
@@ -766,7 +785,7 @@ const ManufacturerForm = () => {
                   </>
                 )}
               </Button>
-            </div>
+            </Flex>
           </CardBody>
         </StandardCard>
       </form>

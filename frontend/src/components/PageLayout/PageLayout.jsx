@@ -1,4 +1,5 @@
-import { Box, Container, Heading, Text, useColorModeValue } from '@chakra-ui/react'
+import { Box, Heading, Text, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../PageContainer'
 
 /**
  * PageLayout - Consistent page wrapper for all application pages
@@ -35,7 +36,7 @@ export function PageLayout({
       pb={12}
       px={{ base: 4, md: 8 }}
     >
-      <Container maxW={maxWidth}>
+      <PageContainer>
         {/* Page Header */}
         {title && (
           <Box mb={8}>
@@ -71,7 +72,7 @@ export function PageLayout({
             {children}
           </Box>
         )}
-      </Container>
+      </PageContainer>
     </Box>
   )
 }

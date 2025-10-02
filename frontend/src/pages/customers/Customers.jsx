@@ -213,17 +213,20 @@ const CustomerTable = ({
         <StandardCard variant="outline">
           <CardBody>
             <Stack direction={{ base: 'column', lg: 'row' }} spacing={4} align={{ base: 'stretch', lg: 'center' }}>
-              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
-                <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
-                </InputLeftElement>
-                <Input
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value.toLowerCase())}
-                  placeholder={t('customers.searchPlaceholder')}
-                  aria-label={t('customers.searchAriaLabel', 'Search customers')}
-                />
-              </InputGroup>
+              <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  </InputLeftElement>
+                  <Input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value.toLowerCase())}
+                    placeholder={t('customers.searchPlaceholder')}
+                    aria-label={t('customers.searchAriaLabel', 'Search customers')}
+                  />
+                </InputGroup>
+              </Box>
 
               <Select
                 maxW={{ base: 'full', lg: '200px' }}
@@ -325,7 +328,7 @@ const CustomerTable = ({
             <Box display={{ base: 'none', lg: 'block' }}>
               <StandardCard variant="outline">
                 <CardBody>
-                  <Box overflowX="auto" data-scroll-region>
+                  <TableContainer>
                     <Table variant="simple">
                       <Thead>
                         <Tr>
@@ -399,7 +402,7 @@ const CustomerTable = ({
                               <Td color="gray.600" isTruncated maxW="150px">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
                               <Td color="gray.600" isTruncated maxW="250px">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
                               <Td>
-                                <Badge colorScheme="blue">
+                                <Badge colorScheme="brand">
                                   {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
                                 </Badge>
                               </Td>
@@ -414,7 +417,7 @@ const CustomerTable = ({
                                     <IconButton size="lg" aria-label={t('customers.editTooltip', 'Edit customer')}
                                       icon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                                       variant="outline"
-                                      colorScheme="blue"
+                                      colorScheme="brand"
                                       onClick={() => handleEdit(cust)}
                                     />
                                   </PermissionGate>
@@ -433,7 +436,7 @@ const CustomerTable = ({
                         )}
                       </Tbody>
                     </Table>
-                  </Box>
+                  </TableContainer>
                 </CardBody>
               </StandardCard>
             </Box>
@@ -479,7 +482,7 @@ const CustomerTable = ({
                           </HStack>
                         </Stack>
                         <HStack spacing={4}>
-                          <Badge colorScheme="blue" flexShrink={0}>
+                          <Badge colorScheme="brand" flexShrink={0}>
                             {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
                           </Badge>
                           <Badge colorScheme="green" flexShrink={0}>
@@ -491,7 +494,7 @@ const CustomerTable = ({
                             <Button
                               size="sm"
                               variant="outline"
-                              colorScheme="blue"
+                              colorScheme="brand"
                               leftIcon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                               flex="1"
                               onClick={() => handleEdit(cust)}

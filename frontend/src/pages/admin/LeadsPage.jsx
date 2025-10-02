@@ -1,9 +1,9 @@
 import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Badge, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
-import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
+import { RefreshCw, Send, FileText, X, HelpCircle, Percent, Search } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
 import Swal from 'sweetalert2'
@@ -301,11 +301,18 @@ const LeadsPage = () => {
                 <FormLabel fontSize="sm" color="gray.600">
                   {t('leadsPage.filters.searchLabel', 'Search')}
                 </FormLabel>
-                <Input
-                  placeholder={t('leadsPage.filters.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                />
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
+                  </InputLeftElement>
+                  <Input
+                    type="search"
+                    placeholder={t('leadsPage.filters.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    aria-label={t('leadsPage.filters.searchPlaceholder')}
+                  />
+                </InputGroup>
               </FormControl>
 
               <FormControl>
@@ -335,7 +342,7 @@ const LeadsPage = () => {
             ) : (
               <>
                 {/* Desktop table view */}
-                <Box overflowX="auto" data-scroll-region display={{ base: 'none', xl: 'block' }}>
+                <TableContainer display={{ base: 'none', xl: 'block' }}>
                   <Table variant="simple" size="md">
 
                     <Thead>
@@ -408,7 +415,7 @@ const LeadsPage = () => {
                       })}
                     </Tbody>
                   </Table>
-                </Box>
+                </TableContainer>
 
                 {/* Mobile card view */}
                 <VStack spacing={4} display={{ base: 'flex', xl: 'none' }} px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }}>
@@ -635,7 +642,7 @@ const LeadsPage = () => {
                         />
                         <Flex justify="flex-end">
                           <Button
-                            colorScheme="blue"
+                            colorScheme="brand"
                             leftIcon={savingNote ? undefined : <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             onClick={handleNoteSubmit}
                             isLoading={savingNote}

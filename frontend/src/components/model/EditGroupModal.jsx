@@ -127,7 +127,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
           <Button variant='outline' onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button colorScheme='blue' type='submit'>
+          <Button colorScheme='brand' type='submit' minH='44px'>
             {t('common.save')}
           </Button>
         </ModalFooter>

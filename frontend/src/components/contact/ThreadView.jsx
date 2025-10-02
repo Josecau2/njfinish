@@ -127,7 +127,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
                     </Badge>
                   )}
                 </Box>
-                <Button colorScheme="blue" onClick={handleSend} alignSelf={{ base: 'flex-end', md: 'center' }}>
+                <Button colorScheme="brand" onClick={handleSend} alignSelf={{ base: 'flex-end', md: 'center' }}>
                   {t('contact.thread.reply')}
                 </Button>
               </Flex>

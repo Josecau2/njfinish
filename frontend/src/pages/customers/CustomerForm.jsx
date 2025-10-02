@@ -186,8 +186,8 @@ const CustomerForm = ({
               )}
 
               <form onSubmit={handleSubmit}>
-                <Flex>
-                  <Box md={6}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <Box>
                     <div style={{ marginBottom: 'var(--sp-3)' }}>
                       <FormLabel htmlFor="name">
                         {t('customers.form.labels.fullName')} *
@@ -212,7 +212,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={6}>
+                  <Box>
                     <div style={{ marginBottom: 'var(--sp-3)' }}>
                       <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
                       <InputGroup>
@@ -233,10 +233,10 @@ const CustomerForm = ({
                       )}
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={6}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
                       <InputGroup>
@@ -255,7 +255,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={6}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="homePhone">
                         {t('customers.form.labels.homePhone')}
@@ -278,10 +278,10 @@ const CustomerForm = ({
                       )}
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={12}>
+                <SimpleGrid columns={{ base: 1 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="address">
                         {t('customers.form.labels.address')}
@@ -300,10 +300,10 @@ const CustomerForm = ({
                       </InputGroup>
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={3}>
+                <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="aptOrSuite">
                         {t('customers.form.labels.aptSuite')}
@@ -318,7 +318,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={3}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="city">{t('customers.form.labels.city')}</FormLabel>
                       <Input
@@ -331,7 +331,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={3}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="state">{t('customers.form.labels.state')}</FormLabel>
                       <Input
@@ -344,7 +344,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={3}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="zipCode">
                         {t('customers.form.labels.zipCode')}
@@ -358,10 +358,10 @@ const CustomerForm = ({
                       />
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={6}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="companyName">
                         {t('customers.form.labels.companyName')}
@@ -376,7 +376,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={6}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="customerType">
                         {t('customers.form.labels.customerType')}
@@ -397,10 +397,10 @@ const CustomerForm = ({
                       </Select>
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={6}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="leadSource">
                         {t('customers.form.labels.leadSource')}
@@ -423,7 +423,7 @@ const CustomerForm = ({
                     </div>
                   </Box>
 
-                  <Box md={6}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="defaultDiscount">
                         {t('customers.form.labels.defaultDiscount')}
@@ -439,10 +439,10 @@ const CustomerForm = ({
                       />
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
-                <Flex>
-                  <Box md={12}>
+                <SimpleGrid columns={{ base: 1 }} spacing={4}>
+                  <Box>
                     <div>
                       <FormLabel htmlFor="note">{t('customers.form.labels.notes')}</FormLabel>
                       <Textarea
@@ -455,16 +455,16 @@ const CustomerForm = ({
                       />
                     </div>
                   </Box>
-                </Flex>
+                </SimpleGrid>
 
                 <div className="d-flex justify-content-end gap-2">
-                  <Button type="button" variant="outline" colorScheme="gray" onClick={handleCancel} disabled={loading}>
+                  <Button type="button" variant="outline" colorScheme="gray" onClick={handleCancel} isDisabled={loading}>
                     {t('customers.form.actions.cancel')}
                   </Button>
                   <Button
                     type="submit"
-                    colorScheme="blue"
-                    disabled={loading}
+                    colorScheme="brand"
+                    isDisabled={loading}
 
                   >
                     {loading ? <Spinner size="sm" /> : <Save size={ICON_SIZE_MD} />}

@@ -1,8 +1,9 @@
 import StandardCard from '../../components/StandardCard'
+import PageContainer from '../../components/PageContainer'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Alert, Badge, Box, Button, CardBody, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
@@ -488,7 +489,7 @@ const EditProposal = ({
         </HStack>
       </Box>
 
-      <Container
+      <PageContainer
         fluid
         className="dashboard-container"
         style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
@@ -576,7 +577,7 @@ const EditProposal = ({
                      
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
-                      disabled={isFormDisabled}
+                      isDisabled={isFormDisabled}
                       placeholderText={t('common.date', 'Date')}
                     />
                     <Calendar
@@ -603,7 +604,7 @@ const EditProposal = ({
                      
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
-                      disabled={isFormDisabled}
+                      isDisabled={isFormDisabled}
                       placeholderText={t('common.designDate', 'Design Date')}
                     />
                     <Calendar
@@ -632,7 +633,7 @@ const EditProposal = ({
                      
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="w-100"
-                      disabled={isFormDisabled}
+                      isDisabled={isFormDisabled}
                       placeholderText={t('common.measurementDate', 'Measurement Date')}
                     />
                     <Calendar
@@ -661,7 +662,7 @@ const EditProposal = ({
                              
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
-                              disabled={isFormDisabled}
+                              isDisabled={isFormDisabled}
                               placeholderText="Follow up 1 Date"
                             />
                             <FaCalendarAlt
@@ -686,7 +687,7 @@ const EditProposal = ({
                              
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
-                              disabled={isFormDisabled}
+                              isDisabled={isFormDisabled}
                               placeholderText="Follow up 2 Date"
                             />
                             <FaCalendarAlt
@@ -711,7 +712,7 @@ const EditProposal = ({
                              
                               dateFormat="MM/dd/yyyy"
                               wrapperClassName="w-100"
-                              disabled={isFormDisabled}
+                              isDisabled={isFormDisabled}
                               placeholderText="Follow up 3 Date"
                             />
                             <FaCalendarAlt
@@ -897,7 +898,7 @@ const EditProposal = ({
             )}
           </VStack>
         </Box>
-      </Container>
+      </PageContainer>
 
       {/* Modals */}
       <PrintProposalModal
@@ -933,7 +934,7 @@ const EditProposal = ({
               >
                 {t('common.cancel', 'Cancel')}
               </Button>
-              <Button colorScheme="blue" onClick={saveEditVersionName}>
+              <Button colorScheme="brand" onClick={saveEditVersionName}>
                 {t('common.save', 'Save')}
               </Button>
             </ModalFooter>

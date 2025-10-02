@@ -52,8 +52,9 @@ const CustomFormInput = ({
   ...props
 }) => (
   <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
       {label}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
     <InputGroup>
       {icon && (
@@ -252,8 +253,9 @@ const EditUserGroupForm = () => {
               />
 
               <FormControl isRequired mb={4}>
-                <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
+                <FormLabel fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
                   {t('settings.userGroups.form.labels.type')}
+                  <Text as="span" color="red.500" ml={1}>*</Text>
                 </FormLabel>
                 <Select
                   name="group_type"
@@ -317,11 +319,11 @@ const EditUserGroupForm = () => {
                           },
                         }))
                       }}
-                      colorScheme="blue"
+                      colorScheme="brand"
                       size="lg"
                     />
                     <Box>
-                      <FormLabel htmlFor={`module-${module}`} mb={1} fontSize="sm" fontWeight="semibold">
+                      <FormLabel htmlFor={`module-${module}`} fontWeight="medium" color="gray.800" mb={1} fontSize="sm">
                         {module.charAt(0).toUpperCase() + module.slice(1)}
                       </FormLabel>
                       <Text fontSize="xs" color="gray.600">
@@ -348,7 +350,7 @@ const EditUserGroupForm = () => {
                 </Button>
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   minH="44px"
                   isLoading={loading}
                   leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}

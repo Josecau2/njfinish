@@ -59,7 +59,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.errorTitle')}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="blue">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand">
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -76,7 +76,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.notFoundTitle')}</AlertTitle>
             <AlertDescription>{t('contractorsAdmin.detail.notFoundText')}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="blue">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand">
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -105,7 +105,7 @@ const ContractorDetail = () => {
                 </Text>
               </Box>
             </Flex>
-            <Badge colorScheme="blue" borderRadius="md" px={3} py={1} fontSize="sm">
+            <Badge colorScheme="brand" borderRadius="md" px={3} py={1} fontSize="sm">
               {contractor.group_type || t('contractorsAdmin.detail.contractor')}
             </Badge>
           </Flex>
@@ -116,7 +116,7 @@ const ContractorDetail = () => {
             index={activeTabIndex}
             onChange={setActiveTabIndex}
             variant="soft-rounded"
-            colorScheme="blue"
+            colorScheme="brand"
             isLazy
           >
             <CardHeader borderBottomWidth="1px" borderColor="gray.100">

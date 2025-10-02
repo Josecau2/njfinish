@@ -140,7 +140,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
           <Button variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
             {t('editManufacturerModal.actions.cancel')}
           </Button>
-          <Button colorScheme="blue" type="submit" aria-label="Save manufacturer changes">
+          <Button colorScheme="brand" type="submit" minH="44px" aria-label="Save manufacturer changes">
             {t('editManufacturerModal.actions.save')}
           </Button>
         </ModalFooter>

@@ -1,12 +1,28 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Select, Switch } from '@chakra-ui/react'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Switch,
+  Button,
+  VStack,
+  HStack,
+  useToast,
+} from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
 import { fetchLocations } from '../store/slices/locationSlice'
-// import { Save, X } from '@/icons';
 
 const EditUserModal = ({ visible, onClose, user }) => {
   const dispatch = useDispatch()
+  const toast = useToast()
   const { list: locations } = useSelector((state) => state.locations)
 
   const [formData, setFormData] = useState({
@@ -32,7 +48,6 @@ const EditUserModal = ({ visible, onClose, user }) => {
         confirmPassword: '',
         userGroup: user.role,
         locationId: user.locationId?.toString() || '',
-
         isSalesRep: user.isSalesRep,
       })
     }
@@ -48,98 +63,142 @@ const EditUserModal = ({ visible, onClose, user }) => {
 
   const handleSubmit = () => {
     if (formData.password && formData.password !== formData.confirmPassword) {
-      return Swal.fire('Error!', 'Passwords do not match.', 'error')
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      })
+      return
     }
 
-    // Dispatch updateUser here (you’ll need to implement that)
+    // Dispatch updateUser here (you'll need to implement that)
     onClose()
   }
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
-      {/* UI-TASK: Scoped responsive/touch styles */}
-      <style>{`
-                            .edit-user-modal .form-control, .edit-user-modal .form-select { min-height: 44px; }
-                            .edit-user-modal .btn { min-height: 44px; }
-                            @media (max-width: 576px) {
-                                .edit-user-modal .modal-footer { flex-wrap: wrap; }
-                                .edit-user-modal .modal-footer .btn { width: 100%; }
-                            }
-                        `}</style>
-      <ModalHeader>Edit User</ModalHeader>
-      <ModalBody className="edit-user-modal">
-        <Input
-          label="Name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="mb-2"
-        />
-        <Input
-          label="Email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="mb-2"
-        />
-        <Select
-          label="User Group"
-          name="userGroup"
-          value={formData.userGroup}
-          onChange={handleChange}
-          className="mb-2"
-        >
-          <option value="">-- Select Group --</option>
-          <option value="User">User</option>
-          <option value="Admin">Admin</option>
-          <option value="Contractor">Contractor</option>
-        </Select>
-        <Select
-          label="Location"
-          name="locationId"
-          value={formData.locationId}
-          onChange={handleChange}
-          className="mb-2"
-        >
-          <option value="">Select location</option>
-          {locations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.locationName}
-            </option>
-          ))}
-        </Select>
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          className="mb-2"
-        />
-        <Input
-          label="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          className="mb-2"
-        />
-        <Switch
-          label="Sales Representative"
-          name="isSalesRep"
-          checked={formData.isSalesRep}
-          onChange={handleChange}
-        />
-      </ModalBody>
-            </ModalContent>
-    <ModalFooter>
-        <Button colorScheme="gray" onClick={onClose} aria-label="Cancel editing user">
-          Cancel
-        </Button>
-        <Button colorScheme="blue" onClick={handleSubmit} aria-label="Save user changes">
-          Save Changes
-        </Button>
-      </ModalFooter>
+    <Modal
+      isOpen={visible}
+      onClose={onClose}
+      size={{ base: 'full', md: 'md' }}
+      scrollBehavior="inside"
+      isCentered
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Edit User</ModalHeader>
+        <ModalCloseButton aria-label="Close modal" />
+        <ModalBody>
+          <VStack spacing={4} align="stretch">
+            <FormControl isRequired>
+              <FormLabel>Name</FormLabel>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>User Group</FormLabel>
+              <Select
+                name="userGroup"
+                value={formData.userGroup}
+                onChange={handleChange}
+                minH="44px"
+              >
+                <option value="">-- Select Group --</option>
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+                <option value="Contractor">Contractor</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Location</FormLabel>
+              <Select
+                name="locationId"
+                value={formData.locationId}
+                onChange={handleChange}
+                minH="44px"
+              >
+                <option value="">Select location</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.locationName}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Password (leave blank to keep current)</FormLabel>
+              <Input
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Confirm Password</FormLabel>
+              <Input
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
+
+            <FormControl display="flex" alignItems="center">
+              <FormLabel mb="0">Sales Representative</FormLabel>
+              <Switch
+                name="isSalesRep"
+                isChecked={formData.isSalesRep}
+                onChange={handleChange}
+              />
+            </FormControl>
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <HStack spacing={3}>
+            <Button
+              variant="outline"
+              colorScheme="gray"
+              onClick={onClose}
+              minH="44px"
+              aria-label="Cancel editing user"
+            >
+              Cancel
+            </Button>
+            <Button
+              colorScheme="brand"
+              onClick={handleSubmit}
+              minH="44px"
+              aria-label="Save user changes"
+            >
+              Save Changes
+            </Button>
+          </HStack>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   )
 }

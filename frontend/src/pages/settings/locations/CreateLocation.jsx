@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
-import { FormControl, Input, FormLabel, Select, CardBody, CardHeader, Container, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, CardBody, CardHeader, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage, Heading, Text, Icon, Divider, Spinner } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
+import PageContainer from '../../../components/PageContainer'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import ct from 'countries-and-timezones'
@@ -154,17 +155,18 @@ const LocationForm = () => {
   }
 
   return (
-    <Container
-      maxW="full"
-      className="p-2 m-2"
+    <PageContainer
+      p={2}
+      m={2}
       style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
     >
       {/* Header Section */}
       <PageHeader
         title={
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
+          <Flex align="center" gap={3}>
+            <Flex
+              align="center"
+              justify="center"
               style={{
                 width: '48px',
                 height: '48px',
@@ -173,9 +175,9 @@ const LocationForm = () => {
               }}
             >
               <MapPin size={24} style={{ color: 'white' }} />
-            </div>
+            </Flex>
             {t('settings.locations.create.title')}
-          </div>
+          </Flex>
         }
         subtitle={t('settings.locations.create.subtitle')}
         rightContent={
@@ -200,10 +202,11 @@ const LocationForm = () => {
         <CardBody>
           <form onSubmit={handleSubmit}>
             {/* Basic Information Section */}
-            <div>
-              <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div
-                  className="d-flex align-items-center justify-content-center"
+            <Box>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color="gray.700" display="flex" alignItems="center" gap={2}>
+                <Flex
+                  align="center"
+                  justify="center"
                   style={{
                     width: '32px',
                     height: '32px',
@@ -213,22 +216,19 @@ const LocationForm = () => {
                   }}
                 >
                   <Home size={ICON_SIZE_MD} />
-                </div>
+                </Flex>
                 {t('settings.locations.form.titles.basicInfo')}
-              </h5>
+              </Heading>
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.locationName')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
-                    >
-                      <MapPin size={ICON_SIZE_MD} />
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color="gray.400" />
                     </InputLeftElement>
                     <Input
                       name="locationName"
@@ -236,11 +236,10 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.locationName}
                       placeholder={t('settings.locations.form.placeholders.locationName')}
-                      style={{
-                        border: '1px solid var(--chakra-colors-gray-200)',
-                        fontSize: "sm",
-                        padding: '12px 16px',
-                      }}
+                      borderColor="gray.200"
+                      fontSize="sm"
+                      py={3}
+                      px={4}
                     />
                   </InputGroup>
                   {errors.locationName && (
@@ -250,16 +249,16 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.address')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Home size={ICON_SIZE_MD} />
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color="gray.400" />
                     </InputLeftElement>
                     <Input
                       name="address"
@@ -281,13 +280,14 @@ const LocationForm = () => {
                   )}
                 </Box>
               </Flex>
-            </div>
+            </Box>
 
             {/* Contact Information Section */}
-            <div>
-              <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div
-                  className="d-flex align-items-center justify-content-center"
+            <Box mt={6}>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color="gray.700" display="flex" alignItems="center" gap={2}>
+                <Flex
+                  align="center"
+                  justify="center"
                   style={{
                     width: '32px',
                     height: '32px',
@@ -297,22 +297,22 @@ const LocationForm = () => {
                   }}
                 >
                   <Mail size={ICON_SIZE_MD} />
-                </div>
+                </Flex>
                 {t('settings.locations.form.titles.contactInfo')}
-              </h5>
+              </Heading>
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.website')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Mail size={ICON_SIZE_MD} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" />
                     </InputLeftElement>
                     <Input
                       name="website"
@@ -334,16 +334,16 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.email')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Mail size={ICON_SIZE_MD} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" />
                     </InputLeftElement>
                     <Input
                       name="email"
@@ -369,16 +369,16 @@ const LocationForm = () => {
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.phone')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Phone size={ICON_SIZE_MD} />
+                      <Icon as={Phone} boxSize={ICON_BOX_MD} color="gray.400" />
                     </InputLeftElement>
                     <Input
                       name="phone"
@@ -401,13 +401,14 @@ const LocationForm = () => {
                   )}
                 </Box>
               </Flex>
-            </div>
+            </Box>
 
             {/* Location & Time Settings Section */}
-            <div>
-              <h5 className="mb-3 text-dark fw-semibold d-flex align-items-center gap-2">
-                <div
-                  className="d-flex align-items-center justify-content-center"
+            <Box mt={6}>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color="gray.700" display="flex" alignItems="center" gap={2}>
+                <Flex
+                  align="center"
+                  justify="center"
                   style={{
                     width: '32px',
                     height: '32px',
@@ -417,15 +418,15 @@ const LocationForm = () => {
                   }}
                 >
                   <Clock size={ICON_SIZE_MD} />
-                </div>
+                </Flex>
                 {t('settings.locations.form.titles.locationTime')}
-              </h5>
+              </Heading>
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.country')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="country"
@@ -453,23 +454,22 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel className="fw-semibold text-dark">
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                     {t('settings.locations.form.labels.timezone')}
-                    <span style={{ color: "red.500", marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="timezone"
                     value={formData.timezone}
                     onChange={handleChange}
                     isInvalid={!!errors.timezone}
-                    disabled={!formData.country}
-                    style={{
-                      border: '1px solid var(--chakra-colors-gray-200)',
-                      borderRadius: '8px',
-                      fontSize: "sm",
-                      padding: '12px 16px',
-                      backgroundColor: !formData.country ? "gray.50" : 'white',
-                    }}
+                    isDisabled={!formData.country}
+                    borderColor="gray.200"
+                    borderRadius="md"
+                    fontSize="sm"
+                    px={4}
+                    py={3}
+                    bg={!formData.country ? "gray.50" : 'white'}
                   >
                     <option value="">{t('settings.locations.form.select.timezone')}</option>
                     {timezonesForCountry.map((tz) => (
@@ -489,7 +489,7 @@ const LocationForm = () => {
               {currentTime && (
                 <Flex>
                   <Box md={6}>
-                    <FormLabel className="fw-semibold text-dark">
+                    <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
                       {t('settings.locations.form.labels.currentTime')}
                     </FormLabel>
                     <InputGroup>
@@ -497,7 +497,7 @@ const LocationForm = () => {
                         pointerEvents="none"
                         style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}
                       >
-                        <Clock size={ICON_SIZE_MD} />
+                        <Icon as={Clock} boxSize={ICON_BOX_MD} color="gray.400" />
                       </InputLeftElement>
                       <Input
                         value={currentTime}
@@ -513,24 +513,26 @@ const LocationForm = () => {
                         }}
                       />
                     </InputGroup>
-                    <small>
+                    <Text fontSize="sm" color="gray.600" mt={1}>
                       {t('settings.locations.form.hints.liveTime')}
-                    </small>
+                    </Text>
                   </Box>
                 </Flex>
               )}
-            </div>
+            </Box>
 
             {/* Divider */}
-            <hr className="my-4" style={{ border: '1px solid var(--chakra-colors-gray-200)' }} />
+            <Divider my={4} borderColor="gray.200" />
 
             {/* Action Buttons */}
-            <div className="d-flex gap-3 justify-content-end">
+            <Flex gap={3} justify="flex-end">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleCancel}
-                className="px-4 py-2 fw-semibold"
+                px={4}
+                py={2}
+                fontWeight="semibold"
                 style={{
                   border: '1px solid var(--chakra-colors-gray-200)',
                   borderRadius: '8px',
@@ -545,21 +547,23 @@ const LocationForm = () => {
               <Button
                 type="submit"
                 colorScheme="green"
-                disabled={loading}
-                className="px-4 py-2 fw-semibold"
+                isDisabled={loading}
+                minH="44px"
+                px={4}
+                py={2}
+                fontWeight="semibold"
+                borderRadius="md"
+                bgGradient={loading ? undefined : "linear(45deg, green.500, teal.400)"}
+                bg={loading ? "gray.500" : undefined}
+                boxShadow="0 2px 4px rgba(40, 167, 69, 0.2)"
                 style={{
                   border: 'none',
-                  borderRadius: '8px',
-                  background: loading ? "gray.500" : 'linear-gradient(45deg, #28a745, #20c997)',
-                  boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
                   minHeight: '44px',
                 }}
               >
                 {loading ? (
                   <>
-                    <div role="status">
-                      <span className="visually-hidden">{t('common.loading')}</span>
-                    </div>
+                    <Spinner size="sm" mr={2} />
                     {t('settings.locations.create.saving')}
                   </>
                 ) : (
@@ -569,11 +573,11 @@ const LocationForm = () => {
                   </>
                 )}
               </Button>
-            </div>
+            </Flex>
           </form>
         </CardBody>
       </StandardCard>
-    </Container>
+    </PageContainer>
   )
 }
 

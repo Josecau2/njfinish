@@ -152,7 +152,7 @@ const ProposalAcceptanceModal = ({
       <ModalContent as={motion.div} {...contentMotionProps}>
         <form onSubmit={submitProposal}>
           <ModalHeader>{t('proposalAcceptance.title')}</ModalHeader>
-          <ModalCloseButton disabled={isSubmitting} />
+          <ModalCloseButton disabled={isSubmitting} aria-label="Close modal" />
 
           <ModalBody>
             <Stack spacing={4}>

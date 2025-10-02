@@ -208,7 +208,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
         {!isContractor && (
           <>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
               minH="44px"
               onClick={() => setShowEmailModal(true)}

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { Box, Button, CardBody, Container, Flex, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftAddon, Select, Textarea, useToast } from '@chakra-ui/react'
+import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Text, Textarea, useToast, VStack } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
+import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import {
   User,
@@ -20,22 +21,22 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 // External component definitions to prevent re-rendering
 const FormSection = ({ title, icon, children, className = '' }) => (
-  <StandardCard className={`border-0 shadow-sm mb-4 ${className}`}>
+  <StandardCard className={`border-0 shadow-sm ${className}`} mb={4}>
     <CardBody>
-      <div>
-        <div
-          className="rounded-circle d-flex align-items-center justify-content-center me-3"
-          style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: 'var(--chakra-colors-blue-50)',
-            color: "blue.500",
-          }}
+      <HStack>
+        <Flex
+          align="center"
+          justify="center"
+          borderRadius="full"
+          w="40px"
+          h="40px"
+          bg="blue.50"
+          color="blue.500"
         >
           <Icon as={icon} boxSize={ICON_BOX_MD} />
-        </div>
-        <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
-      </div>
+        </Flex>
+        <Text as="h6" mb={0} fontWeight="semibold" color="gray.700">{title}</Text>
+      </HStack>
       {children}
     </CardBody>
   </StandardCard>
@@ -55,9 +56,9 @@ const CustomFormInput = ({
   ...props
 }) => (
   <div>
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700" mb={2}>
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
     <InputGroup>
       {icon && (
@@ -122,9 +123,9 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <div>
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2">
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700" mb={2}>
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
     <InputGroup>
       {icon && (
@@ -297,33 +298,34 @@ const AddCustomerForm = () => {
   }
 
   return (
-    <Container fluid className="p-2 m-2 add-new-customer bg-body" minH="100vh">
+    <PageContainer fluid p={2} m={2} className="add-new-customer bg-body" minH="100vh">
       <style>{`
         .add-new-customer .btn { min-height: 44px; }
       `}</style>
       {/* Header Section */}
       <PageHeader
         title={
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: '48px',
-                height: '48px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-              }}
+          <HStack gap={3}>
+            <Flex
+              align="center"
+              justify="center"
+              w="48px"
+              h="48px"
+              bg="rgba(255, 255, 255, 0.2)"
+              borderRadius="12px"
             >
               <Icon as={UserPlus} boxSize={6} color="white" />
-            </div>
+            </Flex>
             {t('customers.form.titles.add')}
-          </div>
+          </HStack>
         }
         subtitle="Create a new customer profile with detailed information"
         rightContent={
           <Button
             variant="outline" colorScheme="gray"
-            className="shadow-sm px-4 fw-semibold"
+            className="shadow-sm"
+            px={4}
+            fontWeight="semibold"
             onClick={() => navigate('/customers')}
             aria-label={t('form.actions.backToCustomers')}
             style={{
@@ -341,8 +343,8 @@ const AddCustomerForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Basic Information Section */}
         <FormSection title={t('customers.form.titles.basicInfo')} icon={User}>
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.fullName')}
                 name="name"
@@ -355,7 +357,7 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.email')}
                 name="email"
@@ -369,10 +371,10 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
 
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormSelect
                 label={t('customers.form.labels.customerType')}
                 name="customerType"
@@ -388,7 +390,7 @@ const AddCustomerForm = () => {
                 <option value="Other">{t('form.types.other')}</option>
               </CustomFormSelect>
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.companyName')}
                 name="companyName"
@@ -400,13 +402,13 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
         </FormSection>
 
         {/* Address Information Section */}
         <FormSection title={t('customers.form.titles.addressInfo')} icon={MapPin}>
-          <Flex>
-            <Box md={8}>
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            <Box gridColumn={{ base: '1', md: 'span 2' }}>
               <CustomFormInput
                 label={t('customers.form.labels.address')}
                 name="address"
@@ -419,7 +421,7 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-            <Box md={4}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.aptSuite')}
                 name="aptOrSuite"
@@ -430,10 +432,10 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
 
-          <Flex>
-            <Box md={4}>
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.city')}
                 name="city"
@@ -445,7 +447,7 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-            <Box md={4}>
+            <Box>
               <CustomFormSelect
                 label={t('customers.form.labels.state')}
                 name="state"
@@ -508,7 +510,7 @@ const AddCustomerForm = () => {
                 <option value="WY">Wyoming</option>
               </CustomFormSelect>
             </Box>
-            <Box md={4}>
+            <Box>
               <CustomFormInput
                 label={t('customers.form.labels.zipCode')}
                 name="zipCode"
@@ -520,13 +522,13 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
         </FormSection>
 
         {/* Contact Information Section */}
         <FormSection title={t('customers.form.titles.contactInfo')} icon={Phone}>
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormInput
                 label={t('form.labels.mobile')}
                 name="mobile"
@@ -539,7 +541,7 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('form.labels.homePhone')}
                 name="homePhone"
@@ -551,13 +553,13 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
         </FormSection>
 
         {/* Business Information Section */}
         <FormSection title={t('form.titles.businessInfo')} icon={Building}>
-          <Flex>
-            <Box md={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <Box>
               <CustomFormSelect
                 label={t('form.labels.leadSource')}
                 name="leadSource"
@@ -575,7 +577,7 @@ const AddCustomerForm = () => {
                 <option value="Website">{t('form.sources.website')}</option>
               </CustomFormSelect>
             </Box>
-            <Box md={6}>
+            <Box>
               <CustomFormInput
                 label={t('form.labels.defaultDiscount')}
                 name="defaultDiscount"
@@ -589,10 +591,10 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               />
             </Box>
-          </Flex>
+          </SimpleGrid>
 
           <div>
-            <FormLabel className="fw-medium text-dark mb-2">{t('form.labels.notes')}</FormLabel>
+            <FormLabel fontWeight="medium" color="gray.700" mb={2}>{t('form.labels.notes')}</FormLabel>
             <Textarea
               id="note"
               name="note"
@@ -607,12 +609,13 @@ const AddCustomerForm = () => {
         {/* Action Buttons */}
         <StandardCard>
           <CardBody>
-            <div className="d-flex gap-3 justify-content-end form-buttons">
+            <Flex gap={3} justify="flex-end" className="form-buttons">
               <Button
                 variant="outline" colorScheme="gray"
                 size="lg"
                 onClick={() => navigate('/customers')}
-                className="px-4 fw-semibold"
+                px={4}
+                fontWeight="semibold"
                 style={{
                   borderRadius: '5px',
                   border: '1px solid var(--chakra-colors-gray-200)',
@@ -625,8 +628,9 @@ const AddCustomerForm = () => {
               <Button
                 type="submit"
                 size="lg"
-                disabled={isSubmitting}
-                className="px-5 fw-semibold"
+                isDisabled={isSubmitting}
+                px={5}
+                fontWeight="semibold"
                 style={{
                   borderRadius: '5px',
                   border: 'none',
@@ -642,7 +646,7 @@ const AddCustomerForm = () => {
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >
-                      <span className="visually-hidden">{t('common.loading')}</span>
+                      <Text as="span" srOnly>{t('common.loading')}</Text>
                     </div>
                     {t('form.actions.saving')}
                   </>
@@ -653,11 +657,11 @@ const AddCustomerForm = () => {
                   </>
                 )}
               </Button>
-            </div>
+            </Flex>
           </CardBody>
         </StandardCard>
       </form>
-    </Container>
+    </PageContainer>
   )
 }
 

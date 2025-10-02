@@ -82,7 +82,7 @@ const Contractors = () => {
     const enabledModules = Object.entries(modules)
       .filter(([, value]) => value === true)
       .map(([key]) => (
-        <Badge key={key} colorScheme="blue" variant="subtle">
+        <Badge key={key} colorScheme="brand" variant="subtle">
           {moduleLabels[key] || key}
         </Badge>
       ))
@@ -130,17 +130,21 @@ const Contractors = () => {
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
             <Stack spacing={5}>
-              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
-                <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
-                </InputLeftElement>
-                <Input
-                  placeholder={t('contractorsAdmin.searchPlaceholder', 'Search contractors')}
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  minH="44px"
-                />
-              </InputGroup>
+              <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  </InputLeftElement>
+                  <Input
+                    type="search"
+                    placeholder={t('contractorsAdmin.searchPlaceholder', 'Search contractors')}
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    aria-label={t('contractorsAdmin.searchPlaceholder', 'Search contractors')}
+                    minH="44px"
+                  />
+                </InputGroup>
+              </Box>
 
               <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={4}>
                 <Box bg="blue.50" borderRadius="lg" p={4}>
@@ -202,7 +206,7 @@ const Contractors = () => {
 
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
-            <Box overflowX="auto" data-scroll-region>
+            <TableContainer>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -252,7 +256,7 @@ const Contractors = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            colorScheme="blue"
+                            colorScheme="brand"
                             leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             onClick={() => handleView(contractor)}
                             minH="36px"
@@ -265,7 +269,7 @@ const Contractors = () => {
                   )}
                 </Tbody>
               </Table>
-            </Box>
+            </TableContainer>
 
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={4}>
@@ -283,7 +287,7 @@ const Contractors = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            colorScheme="blue"
+                            colorScheme="brand"
                             onClick={() => handleView(contractor)}
                             leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                           >

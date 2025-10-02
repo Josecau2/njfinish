@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useRef } from 'react'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, Container, Flex, Input, InputGroup, InputLeftElement, Select, Spinner, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, Heading, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useToast } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Plus,
@@ -162,65 +162,70 @@ const UsersPage = () => {
       />
 
       {/* Stats Cards */}
-      <Flex>
-        <Box md={4}>
-          <StandardCard className="settings-stats-card">
-            <CardBody>
-              <Flex align="center" justify="center" mb={2}>
-                <div className="settings-stat-icon primary">
-                  <Users size={ICON_SIZE_MD} aria-hidden="true" />
-                </div>
-                <div>
-                  <h4 className="mb-0 fw-bold text-primary">{filteredUsers.length}</h4>
-                  <small>{t('settings.users.stats.totalUsers')}</small>
-                </div>
-              </Flex>
-            </CardBody>
-          </StandardCard>
-        </Box>
-        <Box md={4}>
-          <StandardCard className="settings-stats-card">
-            <CardBody>
-              <Flex align="center" justify="center" mb={2}>
-                <div className="settings-stat-icon success">
-                  <Gear size={ICON_SIZE_MD} aria-hidden="true" />
-                </div>
-                <div>
-                  <h4 className="mb-0 fw-bold text-success">{adminCount}</h4>
-                  <small>{t('settings.users.stats.administrators')}</small>
-                </div>
-              </Flex>
-            </CardBody>
-          </StandardCard>
-        </Box>
-        <Box md={4}>
-          <StandardCard className="settings-stats-card">
-            <CardBody>
-              <Flex align="center" justify="center" mb={2}>
-                <div className="settings-stat-icon warning">
-                  <UserIcon size={ICON_SIZE_MD} aria-hidden="true" />
-                </div>
-                <div>
-                  <h4 className="mb-0 fw-bold text-warning">{regularCount}</h4>
-                  <small>{t('settings.users.stats.regularUsers')}</small>
-                </div>
-              </Flex>
-            </CardBody>
-          </StandardCard>
-        </Box>
-      </Flex>
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+        <StandardCard className="settings-stats-card">
+          <CardBody>
+            <Stat>
+              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+                <Flex align="center" gap={2}>
+                  <Icon as={Users} boxSize={ICON_BOX_MD} color="brand.500" aria-hidden="true" />
+                  {t('settings.users.stats.totalUsers')}
+                </Flex>
+              </StatLabel>
+              <StatNumber fontSize="2xl" fontWeight="bold" color="brand.500">
+                {filteredUsers.length}
+              </StatNumber>
+            </Stat>
+          </CardBody>
+        </StandardCard>
+        <StandardCard className="settings-stats-card">
+          <CardBody>
+            <Stat>
+              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+                <Flex align="center" gap={2}>
+                  <Icon as={Gear} boxSize={ICON_BOX_MD} color="green.500" aria-hidden="true" />
+                  {t('settings.users.stats.administrators')}
+                </Flex>
+              </StatLabel>
+              <StatNumber fontSize="2xl" fontWeight="bold" color="green.500">
+                {adminCount}
+              </StatNumber>
+            </Stat>
+          </CardBody>
+        </StandardCard>
+        <StandardCard className="settings-stats-card">
+          <CardBody>
+            <Stat>
+              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+                <Flex align="center" gap={2}>
+                  <Icon as={UserIcon} boxSize={ICON_BOX_MD} color="orange.500" aria-hidden="true" />
+                  {t('settings.users.stats.regularUsers')}
+                </Flex>
+              </StatLabel>
+              <StatNumber fontSize="2xl" fontWeight="bold" color="orange.500">
+                {regularCount}
+              </StatNumber>
+            </Stat>
+          </CardBody>
+        </StandardCard>
+      </SimpleGrid>
 
       {/* Search Section */}
       <StandardCard className="settings-search-card">
         <CardBody>
-          <Flex>
-            <Box md={6} lg={4}>
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            justify="space-between"
+            align={{ base: 'stretch', md: 'center' }}
+            gap={4}
+          >
+            <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
-                <InputLeftElement>
-                  <Search size={ICON_SIZE_MD} aria-hidden="true" />
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
                 </InputLeftElement>
                 <Input
-                  type="text"
+                  type="search"
                   placeholder={t('settings.users.searchPlaceholder')}
                   value={filterText}
                   onChange={(e) => {
@@ -232,13 +237,13 @@ const UsersPage = () => {
                 />
               </InputGroup>
             </Box>
-            <Box md={6} lg={8} className="text-md-end mt-3 mt-md-0">
-              <span>
+            <Box textAlign={{ base: 'left', md: 'right' }}>
+              <Text color="gray.600">
                 {t('settings.users.showing', {
                   count: filteredUsers?.length || 0,
                   total: users?.length || 0,
                 })}
-              </span>
+              </Text>
             </Box>
           </Flex>
         </CardBody>
@@ -248,10 +253,13 @@ const UsersPage = () => {
       {error && (
         <StandardCard className="settings-search-card">
           <CardBody>
-            <div className="alert alert-danger mb-0">
-              <strong>{t('common.error')}:</strong> {t('settings.users.loadFailed')}:{' '}
-              {error.message || error.toString() || t('common.error')}
-            </div>
+            <Alert status="error" mb={0}>
+              <AlertIcon />
+              <Box>
+                <Text fontWeight="bold" display="inline">{t('common.error')}:</Text> {t('settings.users.loadFailed')}:{' '}
+                {error.message || error.toString() || t('common.error')}
+              </Box>
+            </Alert>
           </CardBody>
         </StandardCard>
       )}
@@ -260,8 +268,8 @@ const UsersPage = () => {
       {loading && (
         <StandardCard className="settings-table-card">
           <CardBody className="settings-empty-state">
-            <Spinner colorScheme="blue" size="lg" />
-            <p className="text-muted mt-3 mb-0">{t('settings.users.loading')}</p>
+            <Spinner colorScheme="brand" size="lg" />
+            <Text color="gray.500" mt={3} mb={0}>{t('settings.users.loading')}</Text>
           </CardBody>
         </StandardCard>
       )}
@@ -272,7 +280,7 @@ const UsersPage = () => {
           <CardBody p={0}>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
-              <Box overflowX="auto" data-scroll-region>
+              <TableContainer>
                 <Table variant="simple">
                 <Thead className="settings-table-header">
                   <Tr>
@@ -305,13 +313,12 @@ const UsersPage = () => {
                         <Td>
                           <Badge
                             variant="subtle"
-                            className="px-2 py-1"
-                            style={{
-                              borderRadius: '15px',
-                              fontSize: "xs",
-                              fontWeight: '500',
-                              color: "gray.500",
-                            }}
+                            borderRadius="full"
+                            fontSize="xs"
+                            fontWeight="500"
+                            colorScheme="gray"
+                            px={2}
+                            py={1}
                           >
                             {startIdx + index}
                           </Badge>
@@ -373,7 +380,7 @@ const UsersPage = () => {
                   )}
                 </Tbody>
               </Table>
-              </Box>
+              </TableContainer>
             </Box>
 
             {/* Mobile Card View */}
@@ -405,13 +412,13 @@ const UsersPage = () => {
                         <span className="settings-mobile-label">
                           {t('settings.users.table.name')}
                         </span>
-                        <span className="settings-mobile-value fw-medium">{user.name}</span>
+                        <Text className="settings-mobile-value" fontWeight="medium">{user.name}</Text>
                       </div>
                       <div className="settings-mobile-field">
                         <span className="settings-mobile-label">
                           {t('settings.users.table.email')}
                         </span>
-                        <span className="settings-mobile-value text-muted">{user.email}</span>
+                        <Text className="settings-mobile-value" color="gray.500">{user.email}</Text>
                       </div>
                       <div className="settings-mobile-actions">
                       <Button

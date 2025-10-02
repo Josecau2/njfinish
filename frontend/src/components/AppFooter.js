@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box } from '@chakra-ui/react'
+import { Flex, Text, Button } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import TermsModal from './TermsModal'
 
@@ -11,30 +11,29 @@ const AppFooter = () => {
 
   return (
     <>
-      <style>{`
-      .modern-footer { padding: .5rem 1rem; font-size:.9rem; }
-      .modern-footer .btn-link{ padding:.25rem .25rem; min-height:36px; }
-      @media (max-width:575.98px){ .modern-footer{ padding:.5rem .75rem; font-size:.85rem; } }
-    `}</style>
-      <Box className="modern-footer footer">
-        <div>
-          {/* <a href="https://coreui.io" target="_blank" rel="noopener noreferrer">
-          CoreUI
-        </a> */}
-          <span className="ms-1">
-            &copy; {currentYear} {customization.logoText || 'NJ Cabinets'}. All rights reserved.
-          </span>
-        </div>
-        <div className="ms-auto">
-          {/* <span className="me-1">Powered by</span>
-        <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
-          CoreUI React Admin &amp; Dashboard Template
-        </a> */}
-          <button className="btn btn-link p-0" onClick={() => setShowTerms(true)}>
-            Terms & Conditions
-          </button>
-        </div>
-      </Box>
+      <Flex
+        as="footer"
+        py={{ base: 2, md: 2 }}
+        px={{ base: 3, md: 4 }}
+        fontSize={{ base: 'sm', md: 'md' }}
+        justify="space-between"
+        align="center"
+        wrap="wrap"
+        gap={2}
+      >
+        <Text fontSize="inherit">
+          &copy; {currentYear} {customization.logoText || 'NJ Cabinets'}. All rights reserved.
+        </Text>
+        <Button
+          variant="link"
+          size="sm"
+          minH="36px"
+          onClick={() => setShowTerms(true)}
+          fontSize="inherit"
+        >
+          Terms & Conditions
+        </Button>
+      </Flex>
       <TermsModal
         visible={showTerms}
         requireScroll={false}

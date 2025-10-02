@@ -152,7 +152,7 @@ const CalendarView = () => {
                 leftIcon={<Icon as={RefreshCw} boxSize={ICON_BOX_MD} />}
                 onClick={handleRefresh}
                 variant="outline"
-                colorScheme="blue"
+                colorScheme="brand"
                 alignSelf={{ base: 'flex-start', md: 'initial' }}
               >
                 Refresh
@@ -170,7 +170,7 @@ const CalendarView = () => {
             ) : (
               <Stack spacing={6}>
                 <HStack spacing={4} flexWrap="wrap">
-                  <Badge colorScheme="blue" borderRadius="md" px={3} py={1}>
+                  <Badge colorScheme="brand" borderRadius="md" px={3} py={1}>
                     Total events: {metrics.total}
                   </Badge>
                   {metrics.perType.map((metric) => (

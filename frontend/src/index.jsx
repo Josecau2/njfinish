@@ -8,7 +8,7 @@ import 'core-js'
 import './styles/reset.css'        // 1. Reset - box-sizing, overflow guards
 import './styles/utilities.css'    // 2. Utilities - spacing scale, helpers
 import './styles/fixes.css'         // 3. Fixes - overflow guards, iOS safe area
-import './tailwind.css'             // 4. Tailwind - utility classes, focus rings
+import './styles/base.css'          // 4. Base - typography, accessibility
 import './main.css'                 // 5. Main - login, PDF, modals
 import './responsive.css'           // 6. Responsive - overrides (must be last)
 import './i18n'

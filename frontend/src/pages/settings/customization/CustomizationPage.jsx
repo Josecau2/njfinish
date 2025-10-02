@@ -149,7 +149,7 @@ const CustomizationPage = () => {
           <Button
             key="save"
             leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-            colorScheme="blue"
+            colorScheme="brand"
             onClick={handleSave}
             isLoading={loading}
             minH="44px"
@@ -218,7 +218,7 @@ const CustomizationPage = () => {
                   />
                   <Button
                     variant="outline"
-                    colorScheme="blue"
+                    colorScheme="brand"
                     leftIcon={<Icon as={Image} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                     onClick={() => fileInputRef.current?.click()}
                     minH="44px"

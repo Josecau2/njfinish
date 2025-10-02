@@ -10,12 +10,14 @@ import {
   FormControl,
   FormLabel,
   Icon,
+  IconButton,
   Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Stack,
+  VStack,
   Tab,
   TabList,
   TabPanel,
@@ -335,8 +337,8 @@ const ItemSelectionStep = ({
             <React.Fragment>
               <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
                 <div className="form-section">
-                  <Flex>
-                    <Box xs={12} md={2}>
+                  <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
+                    <Box>
                       <FormLabel htmlFor="designer">Designer *</FormLabel>
                       <CreatableSelect
                         isClearable
@@ -357,7 +359,7 @@ const ItemSelectionStep = ({
                       )}
                     </Box>
 
-                    <Box xs={12} md={2}>
+                    <Box>
                       <FormLabel htmlFor="description">
                         {t('proposals.create.customerInfo.description')} *
                       </FormLabel>
@@ -375,7 +377,7 @@ const ItemSelectionStep = ({
                       )}
                     </Box>
 
-                    <Box xs={12} md={2}>
+                    <Box>
                       <FormLabel htmlFor="status">{t('proposals.headers.status')}</FormLabel>
                       <CreatableSelect
                         isClearable
@@ -394,7 +396,7 @@ const ItemSelectionStep = ({
                       />
                     </Box>
 
-                    <Box xs={12} md={2}>
+                    <Box>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="date">{t('proposals.headers.date')}</FormLabel>
                         <DatePicker
@@ -429,7 +431,7 @@ const ItemSelectionStep = ({
                       </div>
                     </Box>
 
-                    <Box xs={12} md={2}>
+                    <Box>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="designDate">
                           {t('proposals.create.customerInfo.designDoneDate')}
@@ -466,7 +468,7 @@ const ItemSelectionStep = ({
                       </div>
                     </Box>
 
-                    <Box xs={12} md={2}>
+                    <Box>
                       <div style={{ position: 'relative' }}>
                         <FormLabel htmlFor="measurementDate">
                           {t('proposals.create.customerInfo.measurementDoneDate')}
@@ -508,7 +510,7 @@ const ItemSelectionStep = ({
                     </Box>
 
                     {/* Follow up dates commented out
-                  <Box xs={12} md={2}>
+                  <Box>
                     <div style={{ position: 'relative' }}>
                       <FormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</FormLabel>
                       <DatePicker
@@ -604,7 +606,7 @@ const ItemSelectionStep = ({
                     </div>
                   </Box>
                   */}
-                  </Flex>
+                  </SimpleGrid>
                 </div>
               </FormControl>
 
@@ -624,72 +626,62 @@ const ItemSelectionStep = ({
                       }}
                       onClick={() => handleBadgeClick(index, version)}
                     >
-                      <div>
+                      <VStack align="start" spacing={1}>
                         {!isContractor && (
-                          <strong style={{ display: 'block' }}>{version.versionName}</strong>
+                          <Text fontWeight="bold" display="block">{version.versionName}</Text>
                         )}
-                        <small
-                          style={{ fontSize: "12px", color: isSelected ? '#a9c7ff' : '#4a6fa5' }}
+                        <Text
+                          fontSize="xs"
+                          color={isSelected ? 'blue.200' : 'blue.700'}
                         >
                           $ {version.manufacturerData?.costMultiplier || 'N/A'}
-                        </small>
-                      </div>
+                        </Text>
+                      </VStack>
 
                       {!isContractor && (
                         <Menu onClick={(e) => e.stopPropagation()}>
                           <MenuButton
-                            color="transparent"
+                            as={IconButton}
+                            icon={<Icon as={MoreHorizontal} />}
+                            variant="ghost"
                             size="sm"
-                            style={{
-                              padding: '0 4px',
-                              color: isSelected ? '#d0e7ff' : '#084298',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              boxShadow: 'none',
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <Icon as={MoreHorizontal} />
-                          </MenuButton>
+                            color={isSelected ? 'blue.200' : 'blue.700'}
+                            _hover={{ bg: isSelected ? 'blue.700' : 'blue.50' }}
+                            aria-label="More options"
+                          />
                           <MenuList
-                            style={{
-                              minWidth: '120px',
-                              border: '1px solid #e0e0e0',
-                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                              borderRadius: '4px',
-                              padding: '4px 0',
-                            }}
+                            minW="120px"
+                            borderColor="gray.200"
+                            boxShadow="md"
+                            borderRadius="md"
+                            py={1}
                           >
                             <MenuItem
                               onClick={() => openEditModal(index)}
-                              style={{ padding: '6px 12px',
-                                fontSize: "14px",
-                                color: '#333',
-                                transition: 'all 0.2s ease',
-                              }}
+                              py={2}
+                              px={3}
+                              fontSize="sm"
+                              icon={<Icon as={Edit} />}
                             >
-                              <Icon as={Edit} /> {t('common.edit')}
+                              {t('common.edit')}
                             </MenuItem>
                             <MenuItem
                               onClick={() => openDeleteModal(index)}
-                              style={{ padding: '6px 12px',
-                                fontSize: "14px",
-                                color: "red.500",
-                                transition: 'all 0.2s ease',
-                              }}
+                              py={2}
+                              px={3}
+                              fontSize="sm"
+                              color="red.600"
+                              icon={<Icon as={Trash} />}
                             >
-                              <Icon as={Trash} /> {t('common.delete')}
+                              {t('common.delete')}
                             </MenuItem>
                             <MenuItem
                               onClick={() => duplicateVersion(index)}
-                              style={{ padding: '6px 12px',
-                                fontSize: "14px",
-                                color: '#333',
-                                transition: 'all 0.2s ease',
-                              }}
+                              py={2}
+                              px={3}
+                              fontSize="sm"
+                              icon={<Icon as={Copy} />}
                             >
-                              <Icon as={Copy} />{' '}
                               {t('proposals.create.summary.duplicate')}
                             </MenuItem>
                           </MenuList>

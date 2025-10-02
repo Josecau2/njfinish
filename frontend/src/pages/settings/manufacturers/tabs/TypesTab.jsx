@@ -668,7 +668,7 @@ const TypesTab = ({ manufacturer }) => {
                 {t('types.ui.createType', 'Create Type')}
               </Button>
               <Button
-                colorScheme="blue"
+                colorScheme="brand"
                 variant="outline"
                 onClick={() => setViewMode(viewMode === 'grid' ? 'table' : 'grid')}
                 size="md"
@@ -787,7 +787,7 @@ const TypesTab = ({ manufacturer }) => {
                   <Text>{selectedItems.length} item(s) selected</Text>
                   <HStack spacing={4} wrap="wrap">
                     <Button
-                      colorScheme="blue"
+                      colorScheme="brand"
                       onClick={() => setBulkTypeChangeModalVisible(true)}
                       size="sm"
                     >
@@ -989,7 +989,7 @@ const TypesTab = ({ manufacturer }) => {
                     <Td>{type.description || 'No description'}</Td>
                     <Td>
                       <Button
-                        colorScheme="blue"
+                        colorScheme="brand"
                         aria-label={t('types.meta.editType', 'Edit Type')}
                         onClick={() => handleEditType(type)}
                         style={{ minHeight: '44px', minWidth: '44px' }}
@@ -1031,9 +1031,9 @@ const TypesTab = ({ manufacturer }) => {
         <PageHeader title="Edit Type" />
         <ModalBody>
           {selectedType && (
-            <Flex>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               {/* Left Column - Image Management */}
-              <Box md={6}>
+              <Box>
                 <div>
                   <strong>{t('types.meta.type', 'Type')}:</strong> {selectedType.type}
                 </div>
@@ -1128,7 +1128,7 @@ const TypesTab = ({ manufacturer }) => {
                   />
                   <HStack mt={2}>
                     <Button
-                      colorScheme="blue"
+                      colorScheme="brand"
                       isDisabled={savingDescId === selectedType.type}
                       onClick={() => saveTypeDescription(selectedType.type)}
                       isLoading={savingDescId === selectedType.type}
@@ -1141,7 +1141,7 @@ const TypesTab = ({ manufacturer }) => {
               </Box>
 
               {/* Right Column - Catalog Items Assignment */}
-              <Box w={{ base: 'full', md: '50%' }} pl={{ md: 4 }}>
+              <Box>
                 <Box mb={4}>
                   <Text fontWeight="bold" color="brand.600" fontSize="lg" mb={2}>
                     {t('types.assign.header', 'Assign Catalog Items to This Type')}
@@ -1315,7 +1315,7 @@ const TypesTab = ({ manufacturer }) => {
                   )}
                 </Box>
               </Box>
-            </Flex>
+            </SimpleGrid>
           )}
         </ModalBody>
         {assignSuccess && (
@@ -1347,7 +1347,7 @@ const TypesTab = ({ manufacturer }) => {
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button
-            colorScheme="blue"
+            colorScheme="brand"
             onClick={handleImageUpload}
             isDisabled={!selectedFile || uploadingImage}
             isLoading={uploadingImage}
@@ -1485,7 +1485,7 @@ const TypesTab = ({ manufacturer }) => {
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               isDisabled={creatingType || !createForm.typeName.trim()}
               isLoading={creatingType}
               loadingText={t('common.saving', 'Saving...')}
@@ -1551,8 +1551,8 @@ const TypesTab = ({ manufacturer }) => {
                 empty to keep existing values.
               </Text>
 
-              <Flex gap={4} wrap="wrap">
-                <Box flex="1" minW="200px">
+              <SimpleGrid columns={{ base: 1 }} spacing={4}>
+                <Box>
                   <FormLabel>{t('common.type', 'Type')}</FormLabel>
                   <Input
                     value={bulkEditForm.type}
@@ -1560,7 +1560,7 @@ const TypesTab = ({ manufacturer }) => {
                     placeholder="Leave empty to keep existing"
                   />
                 </Box>
-              </Flex>
+              </SimpleGrid>
 
               <Box>
                 <FormLabel>{t('common.description', 'Description')}</FormLabel>
@@ -1591,7 +1591,7 @@ const TypesTab = ({ manufacturer }) => {
               Cancel
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={handleBulkEdit}
               isDisabled={isBulkEditing}
               isLoading={isBulkEditing}
@@ -1655,7 +1655,7 @@ const TypesTab = ({ manufacturer }) => {
               Cancel
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={handleTypeRename}
               isDisabled={isRenamingType || !typeNameEditForm.newTypeName.trim()}
               isLoading={isRenamingType}
@@ -1719,7 +1719,7 @@ const TypesTab = ({ manufacturer }) => {
               Cancel
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={handleBulkTypeChange}
               isDisabled={isChangingType || !newTypeCategory.trim()}
               isLoading={isChangingType}

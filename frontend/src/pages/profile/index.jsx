@@ -159,9 +159,9 @@ const ProfilePage = () => {
           <Box as="form" onSubmit={handleSubmit} className="profile-form">
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
               <FormControl isRequired isInvalid={!!errors.name}>
-                <FormLabel htmlFor="name">
+                <FormLabel htmlFor="name" fontSize="sm" fontWeight="medium" color="gray.700">
                   {t('profile.fullName')}
-                  <span style={{ color: 'red', marginLeft: '4px' }}>*</span>
+                  <Text as="span" color="red.500" ml={1}>*</Text>
                 </FormLabel>
                 <Input
                   id="name"
@@ -216,9 +216,9 @@ const ProfilePage = () => {
 
               {!isContractor && (
                 <FormControl isRequired isInvalid={!!errors.location}>
-                  <FormLabel htmlFor="location">
+                  <FormLabel htmlFor="location" fontSize="sm" fontWeight="medium" color="gray.700">
                     {t('profile.location')}
-                    <span style={{ color: 'red', marginLeft: '4px' }}>*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     id="location"

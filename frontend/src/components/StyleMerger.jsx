@@ -53,7 +53,7 @@ export default function StyleMerger({ leftStyles = [], rightStyles = [], onMerge
         <Button
           type="submit"
           variant="outline"
-          colorScheme="blue"
+          colorScheme="brand"
           alignSelf="flex-start"
           isDisabled={!left || !right || left === right}
         >

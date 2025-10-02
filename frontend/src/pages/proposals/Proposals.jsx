@@ -12,7 +12,7 @@ import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal'
 import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
-import { Badge, Box, Button, CardBody, Container, Flex, HStack, Heading, IconButton, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Container, Flex, HStack, Heading, Icon, IconButton, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import {
@@ -511,13 +511,14 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
               <Button
                 key={idx}
                 variant={isActive ? 'solid' : 'outline'}
-                colorScheme={isActive ? 'blue' : 'gray'}
+                colorScheme={isActive ? 'brand' : 'gray'}
+                minH="44px"
                 onClick={() => {
                   setActiveTab(tab)
                   setCurrentPage(1)
                 }}
                 rightIcon={
-                  <Badge colorScheme={isActive ? 'blue' : 'gray'} fontSize="xs">
+                  <Badge colorScheme={isActive ? 'brand' : 'gray'} fontSize="xs">
                     {count}
                   </Badge>
                 }
@@ -531,20 +532,21 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
       {/* Search and Filters (desktop only) */}
       <Box display={{ base: 'none', lg: 'block' }} mb={4}>
-        <Flex justify="space-between" align="center">
-          <HStack spacing={4} flex={1} maxW="520px">
+        <Flex justify="space-between" align="center" role="search">
+          <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
             <InputGroup>
-              <InputLeftElement>
-                <Search size={ICON_SIZE_MD} />
+              <InputLeftElement pointerEvents="none">
+                <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
               </InputLeftElement>
               <Input
+                type="search"
                 placeholder={t('proposals.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 aria-label={t('proposals.searchPlaceholder')}
               />
             </InputGroup>
-          </HStack>
+          </Box>
           <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
             {t('proposals.showingCount', {
               count: filteredProposals?.length || 0,
@@ -558,7 +560,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       <Box display={{ base: 'none', lg: 'block' }}>
         <StandardCard>
           <CardBody p={0}>
-            <Box overflowX="auto" data-scroll-region>
+            <TableContainer>
               <Table variant="simple">
               <Thead>
                 <Tr>
@@ -650,7 +652,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 )}
               </Tbody>
             </Table>
-            </Box>
+            </TableContainer>
           </CardBody>
         </StandardCard>
       </Box>

@@ -19,7 +19,7 @@ const EmailContractModal = ({ show, onClose }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton aria-label="Close modal" />
         <ModalBody>
           <p>
             {t(

@@ -178,7 +178,7 @@ const ContactUs = () => {
               <Tabs
                 index={tabIndex}
                 onChange={(idx) => setActiveTab(adminTabs[idx])}
-                colorScheme="blue"
+                colorScheme="brand"
               >
                 <TabList overflowX="auto">
                   <Tab>

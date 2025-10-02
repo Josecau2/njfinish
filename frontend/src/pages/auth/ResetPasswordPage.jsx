@@ -144,7 +144,7 @@ const ResetPasswordPage = () => {
 
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   size="lg"
                   width="100%"
                   minH="44px"
@@ -157,9 +157,7 @@ const ResetPasswordPage = () => {
             </Box>
 
             <Text textAlign="center">
-              <Link as={RouterLink} to="/login" color="blue.600">
-                minH="44px"
-                py={2}
+              <Link as={RouterLink} to="/login" color="blue.600" minH="44px" py={2}>
                 {t('auth.backToLogin')}
               </Link>
             </Text>

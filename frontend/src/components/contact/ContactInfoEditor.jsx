@@ -120,7 +120,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
         <Box as="form" mt={4} onSubmit={handleSave}>
           <Box bg="gray.50" borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor="gray.100">
             <HStack spacing={4} mb={3}>
-              <Badge colorScheme="blue">{t('contact.editor.visibilityBadge', 'Settings')}</Badge>
+              <Badge colorScheme="brand">{t('contact.editor.visibilityBadge', 'Settings')}</Badge>
               <Text fontWeight="semibold">{t('contact.editor.visibilitySettings')}</Text>
             </HStack>
 
@@ -163,7 +163,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
             })}
           </Stack>
 
-          <Button type="submit" colorScheme="blue" mt={6} isLoading={saving}>
+          <Button type="submit" colorScheme="brand" mt={6} isLoading={saving}>
             {saving ? t('common.saving') : t('contact.editor.save')}
           </Button>
         </Box>

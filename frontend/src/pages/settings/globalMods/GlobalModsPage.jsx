@@ -438,7 +438,7 @@ const GlobalModsPage = () => {
         rightContent={
           <div className="global-mods-actions d-flex">
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={() => setShowCreateModModal(true)}
               aria-label={t('globalMods.ui.buttons.addModification')}
             >
@@ -452,7 +452,7 @@ const GlobalModsPage = () => {
               {t('globalMods.ui.buttons.gallery')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={() => setShowAssignModal(true)}
               aria-label={t('globalMods.ui.buttons.assignModification')}
             >
@@ -498,10 +498,10 @@ const GlobalModsPage = () => {
                     <Box md={3}>
                       <label>{t('globalMods.category.actionLabel')}</label>
                       <Button
-                        colorScheme="blue"
+                        colorScheme="brand"
                        
                         onClick={createCategory}
-                        disabled={!newCategory.name.trim()}
+                        isDisabled={!newCategory.name.trim()}
                       >
                         {t('globalMods.category.addButton')}
                       </Button>
@@ -1255,7 +1255,7 @@ const GlobalModsPage = () => {
                 <Button
                   colorScheme="green"
                   onClick={createTemplate}
-                  disabled={
+                  isDisabled={
                     Object.keys(builderErrors).length > 0 ||
                     !newTemplate.name.trim() ||
                     !newTemplate.defaultPrice
@@ -1351,9 +1351,9 @@ const GlobalModsPage = () => {
                 </Box>
               </Flex>
               <Button
-                colorScheme="blue"
+                colorScheme="brand"
                 onClick={assignTemplate}
-                disabled={!assignForm.templateId || !assignForm.manufacturerId}
+                isDisabled={!assignForm.templateId || !assignForm.manufacturerId}
               >
                 {t('globalMods.assign.assignButton')}
               </Button>
@@ -1469,9 +1469,9 @@ const GlobalModsPage = () => {
                   {t('common.cancel')}
                 </Button>
                 <Button
-                  colorScheme="blue"
+                  colorScheme="brand"
                   onClick={() => setCreateStep(2)}
-                  disabled={!selectedSubmenu || (selectedSubmenu === 'new' && !newCategory.name)}
+                  isDisabled={!selectedSubmenu || (selectedSubmenu === 'new' && !newCategory.name)}
                 >
                   {t('globalMods.modal.add.nextBuilder')}
                 </Button>
@@ -2031,13 +2031,13 @@ const GlobalModsPage = () => {
                   {t('common.back')}
                 </Button>
                 <Button
-                  colorScheme="blue"
+                  colorScheme="brand"
                   onClick={async () => {
                     await createTemplate()
                     setShowCreateModModal(false)
                     setCreateStep(1)
                   }}
-                  disabled={
+                  isDisabled={
                     Object.keys(builderErrors).length > 0 ||
                     !newTemplate.name.trim() ||
                     !newTemplate.defaultPrice
@@ -2124,9 +2124,9 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.editCategory.cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={saveEditCategory}
-              disabled={!editCategory.name.trim()}
+              isDisabled={!editCategory.name.trim()}
             >
               {t('globalMods.modal.editCategory.save')}
             </Button>
@@ -2222,7 +2222,7 @@ const GlobalModsPage = () => {
               {t('common.cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={saveEditTemplate}
               disabled={!editTemplate.name.trim()}
             >
@@ -2264,7 +2264,7 @@ const GlobalModsPage = () => {
                             }}
                           />
                           <Badge
-                            colorScheme="blue"
+                            colorScheme="brand"
                             title={t('globalMods.modal.gallery.categoryImageUploaded')}
                           >
                             Img
@@ -2300,7 +2300,7 @@ const GlobalModsPage = () => {
                           </div>
                           <Button
                             size="sm"
-                            colorScheme="blue"
+                            colorScheme="brand"
                             onClick={async () => {
                               // Immediately create a new template cloned from this one (independent of existing assignments)
                               try {
@@ -2435,7 +2435,7 @@ const GlobalModsPage = () => {
               {t('globalMods.modal.assign.cancel')}
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               onClick={async () => {
                 setAssignForm((prev) => ({ ...prev, manufacturerId: selectedManufacturer }))
                 await assignTemplate()

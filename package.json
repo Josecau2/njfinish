@@ -42,7 +42,8 @@
     "test:audit:headed": "playwright test --headed",
     "test:audit:update": "playwright test --update-snapshots",
     "bundle:analyze": "vite build --config frontend/vite.config.mjs --mode analyze",
-    "bundle:analyze:legacy": "npm run build:frontend && npx webpack-bundle-analyzer frontend/build/static/js/*.js"
+    "bundle:analyze:legacy": "npm run build:frontend && npx webpack-bundle-analyzer frontend/build/static/js/*.js",
+    "seed:e2e": "node scripts/seed-e2e.js"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.27.0",

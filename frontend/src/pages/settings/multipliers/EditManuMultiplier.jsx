@@ -153,7 +153,7 @@ const EditManuMultiplier = () => {
               <Button colorScheme="gray" onClick={() => navigate(-1)}>
                 Cancel
               </Button>
-              <Button colorScheme="blue" type="submit">
+              <Button colorScheme="brand" type="submit">
                 Save Changes
               </Button>
             </div>

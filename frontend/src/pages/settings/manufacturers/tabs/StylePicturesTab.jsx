@@ -240,7 +240,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                 <Text as="h5" fontWeight="semibold">
                   {t('styles.header', 'Style Pictures for {{name}}', { name: manufacturer.name })}
                 </Text>
-                <Badge colorScheme="blue">
+                <Badge colorScheme="brand">
                   {t('styles.count', '{{count}} Styles', { count: filteredStyles.length })}
                 </Badge>
                 {searchTerm && (

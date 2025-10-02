@@ -335,17 +335,20 @@ const Contracts = () => {
               align={{ base: 'stretch', lg: 'center' }}
               justify="space-between"
             >
-              <InputGroup maxW={{ base: 'full', lg: '360px' }}>
-                <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
-                </InputLeftElement>
-                <Input
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder={t('contracts.searchPlaceholder')}
-                  aria-label={t('contracts.searchPlaceholder')}
-                />
-              </InputGroup>
+              <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  </InputLeftElement>
+                  <Input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder={t('contracts.searchPlaceholder')}
+                    aria-label={t('contracts.searchPlaceholder')}
+                  />
+                </InputGroup>
+              </Box>
               <Stack
                 direction={{ base: 'column', md: 'row' }}
                 spacing={4}
@@ -511,7 +514,7 @@ const Contracts = () => {
         ) : (
           <StandardCard variant="outline">
             <CardBody p={0}>
-              <Box overflowX="auto" data-scroll-region>
+              <TableContainer>
                 <Table variant="simple">
                   <Thead>
                     <Tr>
@@ -596,8 +599,8 @@ const Contracts = () => {
                       ))
                     )}
                   </Tbody>
-                </Table>
-              </Box>
+              </Table>
+              </TableContainer>
             </CardBody>
           </StandardCard>
         )}

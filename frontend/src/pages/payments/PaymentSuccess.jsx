@@ -70,7 +70,7 @@ const PaymentSuccess = () => {
 
               <HStack spacing={4} wrap="wrap" justify="center">
                 <Button
-                  colorScheme="blue"
+                  colorScheme="brand"
                   onClick={() => navigate('/payments')}
                   aria-label={t('payments.title.admin', 'All Payments')}
                   minH="44px"

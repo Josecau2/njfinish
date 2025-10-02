@@ -39,7 +39,7 @@ const AppModal = ({
             {title}
           </ModalHeader>
         )}
-        <ModalCloseButton />
+        <ModalCloseButton aria-label="Close modal" />
         <ModalBody>
           {children}
         </ModalBody>

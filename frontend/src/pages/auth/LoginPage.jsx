@@ -260,7 +260,7 @@ const LoginPage = () => {
 
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   size="lg"
                   width="100%"
                   minH="44px"

@@ -524,7 +524,7 @@ const PdfLayoutCustomization = () => {
 
                 <Box>
                   <HStack spacing={4} mb={3}>
-                    <Badge colorScheme="blue" textTransform="uppercase" fontSize="xs" borderRadius="sm">
+                    <Badge colorScheme="brand" textTransform="uppercase" fontSize="xs" borderRadius="sm">
                       {t('settings.customization.pdf.badges.colors')}
                     </Badge>
                     <Text fontWeight="semibold" color="gray.700">

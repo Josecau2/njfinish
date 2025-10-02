@@ -44,6 +44,7 @@ import { Edit, Trash, Plus, Search, Mail, MapPin, Globe, ExternalLink } from 'lu
 
 import PaginationControls from '../../../components/PaginationControls'
 import PageHeader from '../../../components/PageHeader'
+import PageContainer from '../../../components/PageContainer'
 import { MobileListCard } from '../../../components/StandardCard'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
@@ -199,25 +200,27 @@ const LocationPage = () => {
             direction={{ base: 'column', md: 'row' }}
             gap={4}
           >
-            <Box flex={1} maxW={{ base: 'full', md: '400px' }}>
+            <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
                 </InputLeftElement>
                 <Input
+                  type="search"
                   placeholder={t('settings.locations.searchPlaceholder')}
                   value={filterText}
                   onChange={(event) => {
                     setFilterText(event.target.value)
                     setCurrentPage(1)
                   }}
+                  aria-label={t('settings.locations.searchPlaceholder')}
                   borderRadius="md"
                 />
               </InputGroup>
             </Box>
 
             <HStack spacing={4} justify="flex-end">
-              <Badge colorScheme="blue" variant="subtle" px={3} py={1} borderRadius="full">
+              <Badge colorScheme="brand" variant="subtle" px={3} py={1} borderRadius="full">
                 {t('settings.locations.stats.total', { count: locations?.length || 0 })}
               </Badge>
               <Text fontSize="sm" color="gray.500">

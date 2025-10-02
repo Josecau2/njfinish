@@ -1,10 +1,10 @@
 /**
  * Modal Styles - Centralized modal component styling
- * Extracted from main.css for better organization
+ * Pure Chakra UI modal overrides only
  */
 
 /* ============================================
-   CHAKRA UI MODAL STYLES
+   CHAKRA UI MODAL OVERRIDES
    ============================================ */
 
 /* Chakra Modal Content - Modern rounded style with border */
@@ -41,7 +41,11 @@
   right: 1.25rem;
 }
 
-/* Chakra Modal - Responsive adjustments */
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+/* Chakra Modal - Mobile optimizations */
 @media (max-width: 768px) {
   .chakra-modal__content {
     border-radius: 12px;
@@ -65,107 +69,8 @@
 
   .chakra-modal__footer > button {
     width: 100%;
+    min-height: 44px;
   }
-}
-
-/* ============================================
-   MODAL BASE STYLES (Legacy)
-   ============================================ */
-
-/* Modal size variants */
-.modal-xl {
-  max-width: min(1200px, 95vw); /* Responsive max-width that scales with viewport */
-}
-
-/* Modal container */
-.modal-content {
-  border-radius: 20px;
-  border: none;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  pointer-events: auto;
-  position: relative;
-}
-
-/* Modal header */
-.modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 20px 20px 0 0;
-  padding: 1.5rem 2rem;
-  border: none;
-  pointer-events: auto;
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Modal body */
-.modal-body {
-  padding: 2rem;
-  background: #f8f9fa;
-  pointer-events: auto;
-}
-
-/* Modal footer */
-.modal-footer {
-  pointer-events: auto;
-}
-
-/* ============================================
-   MODAL Z-INDEX MANAGEMENT
-   ============================================ */
-
-/* Legacy Bootstrap modals - use consistent z-index from system */
-/* Chakra uses 1400 for modals by default, we use 1050 for legacy modals */
-.specs-modal,
-.modal {
-  z-index: 1050;
-}
-
-.specs-modal .modal-dialog,
-.modal .modal-dialog {
-  position: relative;
-  margin: auto;
-  pointer-events: auto;
-}
-
-.specs-modal .modal-content,
-.modal .modal-content {
-  position: relative;
-  pointer-events: auto;
-}
-
-.specs-modal .modal-backdrop,
-.modal-backdrop,
-.modal-backdrop.show {
-  z-index: 1040;
-}
-
-/* ============================================
-   MODAL DISPLAY & INTERACTION
-   ============================================ */
-
-/* Ensure modals are displayed and clickable when visible */
-.modal.show {
-  display: block;
-}
-
-/* Ensure all modal dialogs have proper transform and positioning */
-.modal.show .modal-dialog {
-  transform: translate(0, 0);
-  pointer-events: auto;
-}
-
-/* Ensure modal shows properly when visible */
-.specs-modal.show {
-  display: block;
-}
-
-.specs-modal .modal-dialog {
-  transform: none;
 }
 
 /* ============================================
@@ -173,75 +78,20 @@
    ============================================ */
 
 /* Custom scrollbar for modal body */
-.modal-body::-webkit-scrollbar {
+.chakra-modal__body::-webkit-scrollbar {
   width: 8px;
 }
 
-.modal-body::-webkit-scrollbar-track {
+.chakra-modal__body::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.modal-body::-webkit-scrollbar-thumb {
+.chakra-modal__body::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 4px;
 }
 
-.modal-body::-webkit-scrollbar-thumb:hover {
+.chakra-modal__body::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
-}
-
-/* ============================================
-   RESPONSIVE MODAL STYLES
-   ============================================ */
-
-/* Responsive modal styles for contractor detail page */
-@media (max-width: 1023px) {
-  .proposal-detail-modal .modal-dialog {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-  }
-
-  .proposal-detail-modal .modal-content {
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-  }
-
-  .proposal-detail-modal .modal-body {
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  /* General mobile modal improvements */
-  .modal-dialog {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-  }
-
-  .modal-content {
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-  }
-
-  .modal-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #dee2e6;
-  }
-
-  .modal-body {
-    overflow-y: auto;
-    flex: 1;
-    padding: 20px;
-  }
-
-  .modal-footer {
-    padding: 16px 20px;
-    border-top: 1px solid #dee2e6;
-  }
 }

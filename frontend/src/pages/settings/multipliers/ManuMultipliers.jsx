@@ -309,7 +309,7 @@ const ManuMultipliers = () => {
 
         <StandardCard variant="outline">
           <CardBody p={0}>
-            <Box overflowX="auto" data-scroll-region>
+            <TableContainer>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -346,7 +346,7 @@ const ManuMultipliers = () => {
                           </Text>
                         </Td>
                         <Td py={4}>
-                          <Badge colorScheme="blue" variant="subtle" borderRadius="full" px={3} py={1} fontWeight="semibold">
+                          <Badge colorScheme="brand" variant="subtle" borderRadius="full" px={3} py={1} fontWeight="semibold">
                             {group.multiplier ? `${group.multiplier}` : t('common.na')}
                           </Badge>
                         </Td>
@@ -397,7 +397,7 @@ const ManuMultipliers = () => {
                   )}
                 </Tbody>
               </Table>
-            </Box>
+            </TableContainer>
             {totalPages > 1 && (
               <Box px={4} py={3}>
                 <PaginationComponent

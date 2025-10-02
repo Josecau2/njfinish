@@ -136,7 +136,7 @@ const ManufacturersList = () => {
   const headerActions = [
     <Button
       key="create"
-      colorScheme="blue"
+      colorScheme="brand"
       leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
       onClick={handleCreateManufacturer}
     >
@@ -282,7 +282,7 @@ const ManufacturersList = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          colorScheme="blue"
+                          colorScheme="brand"
                           leftIcon={<Icon as={Edit3} boxSize={ICON_BOX_MD} />}
                           onClick={() => handleEdit(manufacturer.id)}
                         >
@@ -314,7 +314,7 @@ const ManufacturersList = () => {
                     <Flex align="center" justify="space-between" flexWrap="wrap" gap={4}>
                       <HStack spacing={4}>
                         <Switch
-                          colorScheme="blue"
+                          colorScheme="brand"
                           isChecked={Boolean(manufacturer.status)}
                           onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
                         />

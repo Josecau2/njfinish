@@ -65,7 +65,7 @@ export default function NeutralModal({
         >
           {title}
         </ModalHeader>
-        <ModalCloseButton color={headerTextColor} />
+        <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
         <ModalBody>{children}</ModalBody>
         {footer ? <ModalFooter>{footer}</ModalFooter> : null}
       </ModalContent>

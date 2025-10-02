@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
+import { Box, Flex, Text, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
@@ -69,10 +69,10 @@ export default function PublicProposalPage() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center p-5" role="status" aria-live="polite">
-        <Spinner colorScheme="blue" />
-      </div>
-  
+      <Flex justify="center" p={5} role="status" aria-live="polite">
+        <Spinner colorScheme="brand" />
+      </Flex>
+
   )
   }
 
@@ -125,13 +125,13 @@ export default function PublicProposalPage() {
           {typeof total === 'number' && (
             <div>
               <h6>{t('publicQuote.total')}</h6>
-              <p className="fs-4 fw-bold">
+              <Text fontSize="xl" fontWeight="bold">
                 $
                 {total.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </p>
+              </Text>
             </div>
           )}
 
@@ -151,7 +151,7 @@ export default function PublicProposalPage() {
             </div>
           )}
 
-          <div className="mt-4 d-flex gap-2">
+          <Flex mt={4} gap={2}>
             <Button
               colorScheme="green"
               isDisabled={isLocked || accepting}
@@ -165,7 +165,7 @@ export default function PublicProposalPage() {
                   ? t('publicQuote.acceptButton.alreadyAccepted')
                   : t('publicQuote.acceptButton.accept')}
             </Button>
-          </div>
+          </Flex>
         </CardBody>
       </StandardCard>
     </div>

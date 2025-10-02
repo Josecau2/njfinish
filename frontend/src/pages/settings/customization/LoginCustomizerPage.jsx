@@ -1,6 +1,7 @@
 import StandardCard from '../../../components/StandardCard'
+import PageContainer from '../../../components/PageContainer'
 import { useState, useEffect } from 'react'
-import { Box, Button, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Textarea, Checkbox, Grid, GridItem, Container, Spinner, InputGroup, InputLeftElement, Slider, SliderTrack, SliderFilledTrack, SliderThumb, VStack, HStack, Text, Flex, useToast, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Textarea, Checkbox, Grid, GridItem, Spinner, InputGroup, InputLeftElement, Slider, SliderTrack, SliderFilledTrack, SliderThumb, VStack, HStack, Text, Flex, useToast, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Settings,
@@ -247,15 +248,14 @@ const LoginCustomizerPage = () => {
     const count = text?.length || 0
     const isOverLimit = count > max
     return (
-      <small className={`text-${isOverLimit ? 'danger' : 'muted'}`}>
+      <Text as="small" color={isOverLimit ? 'red.500' : 'gray.500'}>
         {/* {count}/{max} characters */}
-      </small>
+      </Text>
     )
   }
 
   return (
-    <Container
-      maxW="full"
+    <PageContainer
       bg={bgColor}
       minH="100vh"
       p={4}
@@ -694,7 +694,7 @@ const LoginCustomizerPage = () => {
                       <Box>
                         <MotionButton
                           variant="solid"
-                          colorScheme="blue"
+                          colorScheme="brand"
                           isDisabled={testingEmail}
                           isLoading={testingEmail}
                           loadingText={t('settings.customization.login.smtp.testing')}
@@ -951,7 +951,7 @@ const LoginCustomizerPage = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Container>
+    </PageContainer>
   )
 }
 

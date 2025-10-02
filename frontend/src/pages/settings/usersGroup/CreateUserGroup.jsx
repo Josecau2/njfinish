@@ -11,8 +11,8 @@ import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 
 const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
-  <StandardCard className={`border-0 shadow-sm mb-2 mb-md-4 ${className}`}>
-    <CardBody className="p-3 p-md-4">
+  <StandardCard mb={{ base: 2, md: 4 }} className={`border-0 shadow-sm ${className}`}>
+    <CardBody p={{ base: 3, md: 4 }}>
       <HStack mb={3} align="center" spacing={4}>
         <Box
           borderRadius="full"
@@ -46,9 +46,9 @@ const CustomFormInput = ({
   ...props
 }) => (
   <Box mb={3}>
-    <FormLabel htmlFor={name} className="fw-medium text-dark mb-2 small">
+    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
       {label}
-      {required && <span className="text-danger ms-1">*</span>}
+      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
     <Input
       id={name}
@@ -191,9 +191,9 @@ const AddUserGroupForm = () => {
               </Box>
               <Box flex="1 1 200px">
                 <Box mb={3}>
-                  <FormLabel className="fw-medium text-dark mb-2 small">
+                  <FormLabel fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
                     {t('settings.userGroups.form.labels.type')}
-                    <span className="text-danger ms-1">*</span>
+                    <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="group_type"
@@ -221,18 +221,18 @@ const AddUserGroupForm = () => {
                 </Text>
               </HStack>
               <Flex gap={4} wrap="wrap">
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
+                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
-                </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
+                </Flex>
+                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.setPermissions')}</Text>
-                </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
+                </Flex>
+                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.manageAccess')}</Text>
-                </Box>
-                <Box className="d-flex align-items-center p-2 rounded-2" bg="gray.50">
+                </Flex>
+                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
                   <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.bulkManagement')}</Text>
-                </Box>
+                </Flex>
               </Flex>
             </Box>
           </FormSection>

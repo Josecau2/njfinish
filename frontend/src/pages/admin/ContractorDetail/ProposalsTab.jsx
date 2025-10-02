@@ -53,16 +53,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   // Status definitions with counts and colors
   const statusDefinitions = {
-    all: { label: t('proposals.tabs.all'), color: 'primary', Icon: Clipboard },
-    draft: { label: t('proposals.status.draft'), color: 'secondary', Icon: Clipboard },
-    sent: { label: t('proposals.status.sent'), color: 'info', Icon: Send },
-    pending: { label: t('contractorsAdmin.detail.proposals.status.pending'), color: 'warning', Icon: Clock },
-    approved: { label: t('contractorsAdmin.detail.proposals.status.approved'), color: 'success', Icon: CheckCircle },
-    accepted: { label: t('proposals.status.accepted'), color: 'success', Icon: CheckCircle },
-    rejected: { label: t('proposals.status.rejected'), color: 'danger', Icon: XCircle },
-    expired: { label: t('proposals.status.expired'), color: 'dark', Icon: Clock },
-    in_progress: { label: t('contractorsAdmin.detail.proposals.status.inProgress'), color: 'info', Icon: Clock },
-    completed: { label: t('contractorsAdmin.detail.proposals.status.completed'), color: 'success', Icon: CheckCircle }
+    all: { label: t('proposals.tabs.all'), color: 'brand', Icon: Clipboard },
+    draft: { label: t('proposals.status.draft'), color: 'gray', Icon: Clipboard },
+    sent: { label: t('proposals.status.sent'), color: 'blue', Icon: Send },
+    pending: { label: t('contractorsAdmin.detail.proposals.status.pending'), color: 'orange', Icon: Clock },
+    approved: { label: t('contractorsAdmin.detail.proposals.status.approved'), color: 'green', Icon: CheckCircle },
+    accepted: { label: t('proposals.status.accepted'), color: 'green', Icon: CheckCircle },
+    rejected: { label: t('proposals.status.rejected'), color: 'red', Icon: XCircle },
+    expired: { label: t('proposals.status.expired'), color: 'gray', Icon: Clock },
+    in_progress: { label: t('contractorsAdmin.detail.proposals.status.inProgress'), color: 'blue', Icon: Clock },
+    completed: { label: t('contractorsAdmin.detail.proposals.status.completed'), color: 'green', Icon: CheckCircle }
   }
 
   // Debounce search term
@@ -282,15 +282,15 @@ const ProposalsTab = ({ contractor, groupId }) => {
   if (loading) {
     return (
       <div minH="200px">
-        <Spinner colorScheme="blue" />
+        <Spinner colorScheme="brand" />
       </div>
     )
   }
 
   return (
     <>
-      <Flex>
-        <Box xs={12}>
+      <SimpleGrid columns={{ base: 1 }} spacing={4}>
+        <Box>
           <StandardCard>
             <CardHeader>
               <strong>
@@ -302,8 +302,8 @@ const ProposalsTab = ({ contractor, groupId }) => {
               {error && notifyError(t('contractorsAdmin.detail.proposals.loadFailed'), typeof error === 'string' ? error : '')}
 
               {/* Search and Status Filter Chips */}
-              <Flex>
-                <Box md={6}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                <Box>
                   <InputGroup>
                     <InputLeftElement aria-hidden="true">
                       <Search size={ICON_SIZE_MD} />
@@ -317,10 +317,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     />
                   </InputGroup>
                 </Box>
-                <Box md={6}>
+                <Box>
                   <Text fontSize="sm" color="gray.500">{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
                 </Box>
-              </Flex>
+              </SimpleGrid>
 
               {/* Status Filter Chips */}
               <div>
@@ -337,7 +337,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         size="sm"
                        
                         onClick={() => handleStatusFilterChange(status)}
-                        disabled={count === 0 && status !== 'all'}
+                        isDisabled={count === 0 && status !== 'all'}
                       >
                         {(() => { const Icon = definition.Icon; return <Icon size={14} aria-hidden="true" />; })()}
                         {definition.label}
@@ -356,7 +356,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </div>
 
               {/* Table */}
-              <Box overflowX="auto" data-scroll-region>
+              <TableContainer>
                 <Table variant="striped">
                   <Thead>
                     <Tr>
@@ -481,10 +481,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                             <ButtonGroup size="sm">
                               <Tooltip content="View Details">
                                 <Button
-                                  color="outline-info"
+                                  variant="outline"
+                                  colorScheme="brand"
                                   size="sm"
                                   minH="44px"
-                                  className="icon-btn"
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.viewDetails', 'View proposal details')}
                                   onClick={() => handleViewProposal(proposal)}
                                 >
@@ -493,10 +493,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               </Tooltip>
                               <Tooltip content="Go to Proposal">
                                 <Button
-                                  color="outline-primary"
+                                  variant="outline"
+                                  colorScheme="brand"
                                   size="sm"
                                   minH="44px"
-                                  className="icon-btn"
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.open', 'Open proposal')}
                                   onClick={() => handleGoToProposal(proposal.id)}
                                 >
@@ -510,7 +510,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     )}
                   </Tbody>
                 </Table>
-              </Box>
+              </TableContainer>
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
@@ -526,7 +526,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
             </CardBody>
           </StandardCard>
         </Box>
-      </Flex>
+      </SimpleGrid>
 
       {/* Enhanced Proposal Detail Modal */}
       <Modal
@@ -542,7 +542,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
               {t('contractorsAdmin.detail.proposals.modal.title')}
               {selectedProposal && (
-                <Badge color={getStatusColor(selectedProposal.status)}>
+                <Badge colorScheme={getStatusColor(selectedProposal.status)} borderRadius="full">
                   {statusDefinitions[selectedProposal.status]?.label || selectedProposal.status || 'Draft'}
                 </Badge>
               )}
@@ -551,14 +551,14 @@ const ProposalsTab = ({ contractor, groupId }) => {
             <ModalBody>
               {proposalDetails.loading ? (
                 <div minH="300px">
-                  <Spinner colorScheme="blue" size="lg" />
+                  <Spinner colorScheme="brand" size="lg" />
                   <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>
                 </div>
               ) : proposalDetails.data ? (
                 <div>
                   {/* Header Summary */}
-                  <Flex>
-                    <Box md={8}>
+                  <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                    <Box gridColumn={{ base: '1', md: 'span 2' }}>
                       <h4>{proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}</h4>
                       <div>
                         <div>
@@ -575,23 +575,23 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         </div>
                       </div>
                     </Box>
-                    <Box md={4}>
+                    <Box>
                       <div>
                         <h3>{formatCurrency(calculateTotalAmount(proposalDetails.data))}</h3>
                         <small>{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</small>
                       </div>
                       <Button
-                        colorScheme="blue"
+                        colorScheme="brand"
                         size="sm"
-                        className="icon-btn"
+                        leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
+                        minH="44px"
                         aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                         onClick={() => handleGoToProposal(proposalDetails.data.id)}
                       >
-                        <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
                         {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                       </Button>
                     </Box>
-                  </Flex>
+                  </SimpleGrid>
 
                   <Accordion flush>
                     {/* Basic Information */}
@@ -604,8 +604,8 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <Flex>
-                          <Box md={6}>
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                          <Box>
                             <List>
                               <ListItem>
                                 <span>{t('contractorsAdmin.detail.proposals.modal.proposalId')}</span>
@@ -613,7 +613,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               </ListItem>
                               <ListItem>
                                 <span>{t('proposals.headers.status')}</span>
-                                <Badge color={getStatusColor(proposalDetails.data.status)}>
+                                <Badge colorScheme={getStatusColor(proposalDetails.data.status)} borderRadius="full" px={3} py={1}>
                                   {(() => { const Icon = getStatusIcon(proposalDetails.data.status); return <Icon size={14} aria-hidden="true" />; })()}
                                   {statusDefinitions[proposalDetails.data.status]?.label || proposalDetails.data.status || t('proposals.status.draft')}
                                 </Badge>
@@ -628,7 +628,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               </ListItem>
                             </List>
                           </Box>
-                          <Box md={6}>
+                          <Box>
                             <List>
                               <ListItem>
                                 <span>{t('contractorsAdmin.detail.proposals.modal.created')}</span>
@@ -656,7 +656,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               )}
                             </List>
                           </Box>
-                        </Flex>
+                        </SimpleGrid>
 
                         {proposalDetails.data.description && (
                           <div>
@@ -723,7 +723,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                          <Box overflowX="auto" data-scroll-region>
+                          <TableContainer>
                             <Table variant="striped">
                               <Thead>
                                 <Tr>
@@ -750,12 +750,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 ))}
                               </Tbody>
                             </Table>
-                          </Box>
+                          </TableContainer>
 
                           <div>
-                            <Flex>
-                              <Box md={6}></Box>
-                              <Box md={6}>
+                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                              <Box></Box>
+                              <Box>
                                 <div>
                                   <span>{t('contractorsAdmin.detail.proposals.totals.subtotal')}:</span>
                                   <span>{formatCurrency(proposalDetails.data.subtotal_amount || proposalDetails.data.total_amount)}</span>
@@ -771,7 +771,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   <strong>{formatCurrency(proposalDetails.data.total_amount)}</strong>
                                 </div>
                               </Box>
-                            </Flex>
+                            </SimpleGrid>
                           </div>
                         </AccordionPanel>
                       </AccordionItem>
@@ -789,13 +789,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
               <div>
                 {selectedProposal && (
                   <Button
-                    colorScheme="blue"
+                    colorScheme="brand"
                     variant="outline"
-                    className="icon-btn"
+                    leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
+                    minH="44px"
                     aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                     onClick={() => handleGoToProposal(selectedProposal.id)}
                   >
-                    <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
                     {t('contractorsAdmin.detail.proposals.modal.openFull')}
                   </Button>
                 )}

@@ -49,7 +49,7 @@ const MessageComposer = ({ onSend }) => {
               placeholder={t('contact.compose.messagePh')}
             />
           </FormControl>
-          <Button type="submit" colorScheme="blue" isLoading={sending}>
+          <Button type="submit" colorScheme="brand" isLoading={sending}>
             {sending ? t('contact.compose.sending') : t('contact.compose.send')}
           </Button>
         </form>

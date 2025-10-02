@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useMemo, useRef } from 'react'
-import { Box, Button, CardBody, CardHeader, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Stack, Text, Icon } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
@@ -10,6 +10,8 @@ import { formatDateTime, getCurrentDate } from '../../../utils/dateHelpers'
 import { fetchLocationById, updateLocation } from '../../../store/slices/locationSlice'
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { MapPin, Home, Mail, Phone, Clock, Globe } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const INITIAL_FORM = {
   locationName: '',
@@ -197,41 +199,84 @@ const EditLocation = () => {
             <Stack spacing={6}>
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.locationName}>
-                  <FormLabel>{t('settings.locations.form.labels.locationName')}</FormLabel>
-                  <Input name="locationName" value={formData.locationName} onChange={handleChange} />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.locationName')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input name="locationName" value={formData.locationName} onChange={handleChange} />
+                  </InputGroup>
                   <FormErrorMessage>{errors.locationName}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.address}>
-                  <FormLabel>{t('settings.locations.form.labels.address')}</FormLabel>
-                  <Input name="address" value={formData.address} onChange={handleChange} />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.address')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input name="address" value={formData.address} onChange={handleChange} />
+                  </InputGroup>
                   <FormErrorMessage>{errors.address}</FormErrorMessage>
                 </FormControl>
               </SimpleGrid>
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.website}>
-                  <FormLabel>{t('settings.locations.form.labels.website')}</FormLabel>
-                  <Input name="website" value={formData.website} onChange={handleChange} />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.website')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={Globe} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input name="website" value={formData.website} onChange={handleChange} />
+                  </InputGroup>
                   <FormErrorMessage>{errors.website}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.email}>
-                  <FormLabel>{t('settings.locations.form.labels.email')}</FormLabel>
-                  <Input type="email" name="email" value={formData.email} onChange={handleChange} />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.email')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input type="email" name="email" value={formData.email} onChange={handleChange} />
+                  </InputGroup>
                   <FormErrorMessage>{errors.email}</FormErrorMessage>
                 </FormControl>
               </SimpleGrid>
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.phone}>
-                  <FormLabel>{t('settings.locations.form.labels.phone')}</FormLabel>
-                  <Input name="phone" value={formData.phone} onChange={handleChange} />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.phone')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={Phone} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input name="phone" value={formData.phone} onChange={handleChange} />
+                  </InputGroup>
                   <FormErrorMessage>{errors.phone}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.country}>
-                  <FormLabel>{t('settings.locations.form.labels.country')}</FormLabel>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.country')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
                   <Select name="country" value={formData.country} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.country')}</option>
                     {countries.map((country) => (
@@ -246,7 +291,10 @@ const EditLocation = () => {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.timezone}>
-                  <FormLabel>{t('settings.locations.form.labels.timezone')}</FormLabel>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.timezone')}
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
                   <Select name="timezone" value={formData.timezone} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.timezone')}</option>
                     {timezonesForCountry.map((tz) => (
@@ -259,8 +307,15 @@ const EditLocation = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>{t('settings.locations.form.labels.currentTime')}</FormLabel>
-                  <Input value={currentTime} isReadOnly tabIndex={-1} bg="gray.100" cursor="not-allowed" />
+                  <FormLabel fontSize="sm" fontWeight="semibold" color="gray.700">
+                    {t('settings.locations.form.labels.currentTime')}
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={Clock} boxSize={ICON_BOX_MD} color="gray.400" />
+                    </InputLeftElement>
+                    <Input value={currentTime} isReadOnly tabIndex={-1} bg="gray.100" cursor="not-allowed" />
+                  </InputGroup>
                 </FormControl>
               </SimpleGrid>
 
@@ -275,7 +330,7 @@ const EditLocation = () => {
               <Button variant="outline" colorScheme="gray" onClick={handleCancel}>
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" colorScheme="blue" isLoading={loading} loadingText={t('settings.locations.edit.updating')}>
+              <Button type="submit" colorScheme="brand" isLoading={loading} loadingText={t('settings.locations.edit.updating')}>
                 {t('settings.locations.edit.update')}
               </Button>
             </Stack>

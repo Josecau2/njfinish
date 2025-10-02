@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
 import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
-import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -271,7 +271,7 @@ const CatalogTable = ({
   }
   return (
     <div className="mt-5 mb-5">
-      <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4 catalog-controls-mobile">
+      <Flex flexWrap="wrap" gap={3} align="center" justify="space-between" mb={4} className="catalog-controls-mobile">
         <div
           className="position-relative flex-grow-1"
           style={{ minWidth: '200px', maxWidth: '600px' }}
@@ -300,10 +300,12 @@ const CatalogTable = ({
               style={{ maxHeight: '260px', overflowY: 'auto' }}
             >
               {filteredOptions.map((item) => (
-                <div
+                <Flex
                   key={item.id}
-                  className="dropdown-item-wrapper d-flex justify-content-between align-items-center"
-                  style={{ padding: '0.25rem' }}
+                  className="dropdown-item-wrapper"
+                  justify="space-between"
+                  align="center"
+                  p={1}
                 >
                   <button
                     type="button"
@@ -315,10 +317,15 @@ const CatalogTable = ({
                     <strong>{item.code}</strong> — {item.description}
                   </button>
                   {hasTypeMetadata(item.type) && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-info ms-2"
-                      style={{ fontSize: "12px", padding: '0.1rem 0.3rem', flexShrink: 0 }}
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      colorScheme="blue"
+                      ml={2}
+                      fontSize="xs"
+                      px={2}
+                      py={0.5}
+                      flexShrink={0}
                       onClick={(e) => {
                         e.stopPropagation()
                         openTypeModal(item.type)
@@ -326,9 +333,9 @@ const CatalogTable = ({
                       title={`View ${item.type} specifications`}
                     >
                       Specs
-                    </button>
+                    </Button>
                   )}
-                </div>
+                </Flex>
               ))}
             </div>
           )}
@@ -336,7 +343,7 @@ const CatalogTable = ({
 
         <div className="d-flex flex-wrap align-items-center gap-3 flex-shrink-0">
           <Checkbox
-            label={<span style={{ fontSize: "16px" }}>{t('proposalUI.addOnTop')}</span>}
+            label={<Text fontSize="md">{t('proposalUI.addOnTop')}</Text>}
             checked={addOnTop}
             onChange={(e) => setAddOnTop(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -344,11 +351,11 @@ const CatalogTable = ({
 
           <div className="d-flex align-items-center gap-2">
             <Icon as={Copy} style={{ cursor: 'pointer' }} onClick={handleCopy} />
-            <span style={{ fontWeight: 'bold', fontSize: "16px" }}>{t('proposalUI.copy')}</span>
+            <Text fontWeight="bold" fontSize="md">{t('proposalUI.copy')}</Text>
           </div>
 
           <Checkbox
-            label={<span style={{ fontSize: "16px" }}>{t('proposalUI.group')}</span>}
+            label={<Text fontSize="md">{t('proposalUI.group')}</Text>}
             checked={groupEnabled}
             onChange={(e) => setGroupEnabled(e.target.checked)}
             style={{ transform: 'scale(1.1)' }}
@@ -369,7 +376,7 @@ const CatalogTable = ({
         </div>
 
         {/* Close controls wrapper */}
-      </div>
+      </Flex>
 
       {/* Detailed type info modal */}
       <Modal
@@ -387,7 +394,7 @@ const CatalogTable = ({
               onClose={() => setShowTypeModal(false)}
             />
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton aria-label="Close modal" />
           <ModalBody className="p-3 p-md-4">
           {selectedTypeInfo ? (
             <div className="d-flex flex-column flex-md-row gap-4">
@@ -426,7 +433,7 @@ const CatalogTable = ({
               <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
                 <div className="mb-3">
                   <span className="badge text-bg-secondary me-2">{t('Type')}</span>
-                  <strong style={{ fontSize: "18px" }}>{selectedTypeInfo.type}</strong>
+                  <Text as="strong" fontSize="lg">{selectedTypeInfo.type}</Text>
                 </div>
                 {selectedTypeInfo.code && (
                   <div className="mb-2 border-bottom pb-2">
@@ -446,15 +453,17 @@ const CatalogTable = ({
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </div>
                 )}
-                <div
+                <Text
                   className="mt-3"
-                  style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: "16px" }}
+                  whiteSpace="pre-wrap"
+                  lineHeight="1.6"
+                  fontSize="md"
                 >
                   <strong className="text-muted d-block mb-2">Description:</strong>
                   {selectedTypeInfo.longDescription ||
                     selectedTypeInfo.description ||
                     t('No description available for this type.')}
-                </div>
+                </Text>
               </div>
               {/* close outer flex wrapper */}
             </div>
@@ -616,15 +625,18 @@ const CatalogTable = ({
                           }
                         })()}
                         {hasTypeMetadata(item.type) && (
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-info"
-                            style={{ fontSize: "12px", padding: '0.15rem 0.4rem' }}
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            colorScheme="blue"
+                            fontSize="xs"
+                            px={2}
+                            py={0.5}
                             onClick={() => openTypeModal(item.type)}
                             title={`View ${item.type} specifications`}
                           >
                             Specs
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </Td>
@@ -643,14 +655,15 @@ const CatalogTable = ({
                           <div>
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
-                                <div
+                                <Text
                                   className="text-danger mb-1"
-                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
+                                  fontSize="xs"
+                                  fontWeight="bold"
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
-                                </div>
+                                </Text>
                               )}
                             <div className="d-flex gap-1">
                               {hingeOptions.map((opt) => (
@@ -695,14 +708,15 @@ const CatalogTable = ({
                           <div>
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
-                                <div
+                                <Text
                                   className="text-danger mb-1"
-                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
+                                  fontSize="xs"
+                                  fontWeight="bold"
                                 >
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
                                   })}
-                                </div>
+                                </Text>
                               )}
                             <div className="d-flex gap-1">
                               {exposedOptions.map((opt) => (
@@ -783,12 +797,12 @@ const CatalogTable = ({
                           <Tr className="modification-header">
                             <Td
                               colSpan={10}
+                              fontSize="sm"
                               style={{
                                 backgroundColor: headerBg,
                                 color: textColor,
                                 padding: '8px 16px',
                                 paddingLeft: '56px',
-                                fontSize: "14px",
                                 borderTop: `2px solid ${headerBg}`,
                                 borderLeft: `6px solid ${headerBg}`,
                                 borderTopLeftRadius: '6px',
@@ -799,9 +813,10 @@ const CatalogTable = ({
                               <Icon
                                 as={Wrench}
                                 className="me-2"
-                                style={{ fontSize: "14px", color: textColor }}
+                                boxSize={3.5}
+                                color={textColor}
                               />
-                              <span className="fw-bold">{t('proposalDoc.modifications')}</span>
+                              <Text as="span" fontWeight="bold">{t('proposalDoc.modifications')}</Text>
                             </Td>
                           </Tr>
                           {groupKeys.map((gkey, gi) => (
@@ -1020,11 +1035,15 @@ const CatalogTable = ({
                   <div className="item-number">{idx + 1}</div>
                   <div className="item-actions">
                     <Icon as={Settings}
-                      style={{ cursor: 'pointer', color: 'var(--cui-primary)', fontSize: "18px" }}
+                      cursor="pointer"
+                      color="var(--cui-primary)"
+                      boxSize={4.5}
                       onClick={() => handleOpenModificationModal(idx, item.id)}
                     />
                     <Icon as={Trash}
-                      style={{ cursor: 'pointer', color: 'var(--cui-danger)', fontSize: "18px" }}
+                      cursor="pointer"
+                      color="var(--cui-danger)"
+                      boxSize={4.5}
                       onClick={() => handleDelete(idx)}
                     />
                   </div>
@@ -1045,15 +1064,18 @@ const CatalogTable = ({
                       ) : null}
                     </span>
                     {hasTypeMetadata(item.type) && (
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-info"
-                        style={{ fontSize: "12px", padding: '0.15rem 0.4rem' }}
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        colorScheme="blue"
+                        fontSize="xs"
+                        px={2}
+                        py={0.5}
                         onClick={() => openTypeModal(item.type)}
                         title={`View ${item.type} specifications`}
                       >
                         Specs
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -1096,14 +1118,15 @@ const CatalogTable = ({
                         <span className="item-label">{t('proposalColumns.hingeSide')}</span>
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
-                            <div
+                            <Text
                               className="text-danger mb-2"
-                              style={{ fontSize: "12px", fontWeight: 'bold' }}
+                              fontSize="xs"
+                              fontWeight="bold"
                             >
                               {t('validation.selectHingeSide', {
                                 defaultValue: 'Select hinge side',
                               })}
-                            </div>
+                            </Text>
                           )}
                         <div className="btn-group-mobile">
                           {hingeOptions.map((opt) => (
@@ -1145,14 +1168,15 @@ const CatalogTable = ({
                         <span className="item-label">{t('proposalColumns.exposedSide')}</span>
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
-                            <div
+                            <Text
                               className="text-danger mb-2"
-                              style={{ fontSize: "12px", fontWeight: 'bold' }}
+                              fontSize="xs"
+                              fontWeight="bold"
                             >
                               {t('validation.selectExposedSide', {
                                 defaultValue: 'Select exposed finished side',
                               })}
-                            </div>
+                            </Text>
                           )}
                         <div className="btn-group-mobile">
                           {exposedOptions.map((opt) => (

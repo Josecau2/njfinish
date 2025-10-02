@@ -200,7 +200,7 @@ const PaymentConfiguration = () => {
           <Button
             key="save"
             leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-            colorScheme="blue"
+            colorScheme="brand"
             onClick={handleSave}
             isLoading={configLoading}
             isDisabled={configLoading || !isDirty}
@@ -282,7 +282,7 @@ const PaymentConfiguration = () => {
                     <Switch
                       isChecked={formData.cardPaymentsEnabled}
                       onChange={(event) => handleInputChange('cardPaymentsEnabled', event.target.checked)}
-                      colorScheme="blue"
+                      colorScheme="brand"
                     />
                   </FormControl>
 

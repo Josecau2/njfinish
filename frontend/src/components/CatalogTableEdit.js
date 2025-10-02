@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -280,7 +280,7 @@ const CatalogTableEdit = ({
               onClose={() => setShowTypeModal(false)}
             />
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton aria-label="Close modal" />
           <ModalBody className="p-3 p-md-4">
           {selectedTypeInfo ? (
             <div className="d-flex flex-column flex-md-row gap-4">
@@ -318,24 +318,24 @@ const CatalogTableEdit = ({
               </div>
               <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
                 <div className="mb-3">
-                  <span className="badge text-bg-secondary me-2">{t('Type')}</span>
+                  <Badge colorScheme="gray" mr={2}>{t('Type')}</Badge>
                   <strong style={{ fontSize: "18px" }}>{selectedTypeInfo.type}</strong>
                 </div>
                 {selectedTypeInfo.code && (
                   <div className="mb-2 border-bottom pb-2">
-                    <span className="text-muted fw-medium">Code:</span>{' '}
+                    <Text as="span" color="gray.600" fontWeight="medium">Code:</Text>{' '}
                     <strong>{selectedTypeInfo.code}</strong>
                   </div>
                 )}
                 {selectedTypeInfo.name && (
                   <div className="mb-2 border-bottom pb-2">
-                    <span className="text-muted fw-medium">Name:</span>{' '}
+                    <Text as="span" color="gray.600" fontWeight="medium">Name:</Text>{' '}
                     <strong>{selectedTypeInfo.name}</strong>
                   </div>
                 )}
                 {selectedTypeInfo.shortName && (
                   <div className="mb-3 border-bottom pb-2">
-                    <span className="text-muted fw-medium">Short:</span>{' '}
+                    <Text as="span" color="gray.600" fontWeight="medium">Short:</Text>{' '}
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </div>
                 )}
@@ -343,7 +343,7 @@ const CatalogTableEdit = ({
                   className="mt-3"
                   style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: "16px" }}
                 >
-                  <strong className="text-muted d-block mb-2">Description:</strong>
+                  <Text as="strong" color="gray.600" display="block" mb={2}>Description:</Text>
                   {selectedTypeInfo.longDescription ||
                     selectedTypeInfo.description ||
                     t('No description available for this type.')}
@@ -351,9 +351,9 @@ const CatalogTableEdit = ({
               </div>
             </div>
           ) : (
-            <div className="text-muted text-center p-4 border rounded bg-light">
+            <Box color="gray.600" textAlign="center" p={4} border="1px solid" borderColor="gray.200" borderRadius="md" bg="gray.50">
               {t('No type information available.')}
-            </div>
+            </Box>
           )}
 
           </ModalBody>
@@ -577,20 +577,24 @@ const CatalogTableEdit = ({
                         value={item.qty}
                         onChange={(e) => updateQty(idx, parseInt(e.target.value))}
                         style={{ width: '70px', textAlign: 'center' }}
-                        disabled={readOnly}
+                        isDisabled={readOnly}
                       />
                     </Td>
 
                     <Td style={rowStyle}>
-                      <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
-                        <div
-                          className="d-flex align-items-baseline gap-2 flex-wrap"
+                      <Flex align="center" gap={2} style={{ minWidth: 0 }}>
+                        <Flex
+                          align="baseline"
+                          gap={2}
+                          wrap="wrap"
                           style={{ minWidth: 0 }}
                         >
                           <strong>{item.code}</strong>
                           {item?.description ? (
-                            <span
-                              className="text-muted text-truncate"
+                            <Text
+                              as="span"
+                              color="gray.600"
+                              noOfLines={1}
                               style={{
                                 maxWidth: '420px',
                                 display: 'inline-block',
@@ -601,9 +605,9 @@ const CatalogTableEdit = ({
                               title={item.description}
                             >
                               — {item.description}
-                            </span>
+                            </Text>
                           ) : null}
-                        </div>
+                        </Flex>
                         {hasTypeMetadata(getItemType(item)) && (
                           <button
                             type="button"
@@ -615,7 +619,7 @@ const CatalogTableEdit = ({
                             Specs
                           </button>
                         )}
-                      </div>
+                      </Flex>
                     </Td>
 
                     {subTypeRequirements.requiresHinge && (
@@ -632,16 +636,18 @@ const CatalogTableEdit = ({
                           <div>
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
-                                <div
-                                  className="text-danger mb-1"
-                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
+                                <Box
+                                  color="red.500"
+                                  mb={1}
+                                  fontSize="12px"
+                                  fontWeight="bold"
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
-                                </div>
+                                </Box>
                               )}
-                            <div className="d-flex gap-1">
+                            <Flex gap={1}>
                               {hingeOptions.map((opt) => (
                                 <button
                                   key={opt}
@@ -663,7 +669,7 @@ const CatalogTableEdit = ({
                                   {codeToLabel(opt)}
                                 </button>
                               ))}
-                            </div>
+                            </Flex>
                           </div>
                         ) : (
                           t('common.na')
@@ -685,16 +691,18 @@ const CatalogTableEdit = ({
                           <div>
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
-                                <div
-                                  className="text-danger mb-1"
-                                  style={{ fontSize: "12px", fontWeight: 'bold' }}
+                                <Box
+                                  color="red.500"
+                                  mb={1}
+                                  fontSize="12px"
+                                  fontWeight="bold"
                                 >
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
                                   })}
-                                </div>
+                                </Box>
                               )}
-                            <div className="d-flex gap-1">
+                            <Flex gap={1}>
                               {exposedOptions.map((opt) => (
                                 <button
                                   key={opt}
@@ -716,7 +724,7 @@ const CatalogTableEdit = ({
                                   {codeToLabel(opt)}
                                 </button>
                               ))}
-                            </div>
+                            </Flex>
                           </div>
                         ) : (
                           t('common.na')
@@ -734,7 +742,7 @@ const CatalogTableEdit = ({
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
                         </span>
                       ) : (
-                        <span className="text-muted">{formatPrice(0)}</span>
+                        <Text as="span" color="gray.600">{formatPrice(0)}</Text>
                       )}
                     </Td>
 
@@ -791,10 +799,10 @@ const CatalogTableEdit = ({
                             >
                               <Icon
                                 as={Wrench}
-                                className="me-2"
+                                mr={2}
                                 style={{ fontSize: "14px", color: textColor }}
                               />
-                              <span className="fw-bold">{t('proposalDoc.modifications')}</span>
+                              <Text as="span" fontWeight="bold">{t('proposalDoc.modifications')}</Text>
                             </Td>
                           </Tr>
                           {groupKeys.map((gkey, gi) => (
@@ -864,24 +872,23 @@ const CatalogTableEdit = ({
                                               mod?.selectedOptions,
                                             )
                                             return details ? (
-                                              <span
-                                                className="text-muted"
-                                                style={{
-                                                  fontSize: "14px",
-                                                  padding: '2px 8px',
-                                                  borderRadius: '6px',
-                                                  background: 'var(--chakra-colors-gray-50)',
-                                                  border: '1px dashed',
-                                                  borderColor: 'var(--chakra-colors-gray-400)',
-                                                }}
+                                              <Text
+                                                as="span"
+                                                color="gray.600"
+                                                fontSize="14px"
+                                                padding="2px 8px"
+                                                borderRadius="6px"
+                                                bg="gray.50"
+                                                border="1px dashed"
+                                                borderColor="gray.400"
                                               >
                                                 {details}
-                                              </span>
+                                              </Text>
                                             ) : null
                                           })()}
                                         </div>
                                       </Td>
-                                      <Td className="fw-medium text-success">
+                                      <Td color="green.500" fontWeight="medium">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
                                       <Td style={{ color: "gray.500" }}>
@@ -890,7 +897,7 @@ const CatalogTableEdit = ({
                                       <Td>
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
                                       </Td>
-                                      <Td className="fw-semibold text-success">
+                                      <Td color="green.500" fontWeight="semibold">
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td style={{ textAlign: 'center' }}>
@@ -993,26 +1000,28 @@ const CatalogTableEdit = ({
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.item')}</span>
-                  <div
-                    className="d-flex align-items-center gap-2 flex-wrap"
+                  <Flex
+                    align="center"
+                    gap={2}
+                    wrap="wrap"
                     style={{ minWidth: 0 }}
                   >
                     <span className="item-value item-code" style={rowStyle}>
                       <strong>{item.code}</strong>
                     </span>
                     {item?.description ? (
-                      <span
-                        className="text-muted text-truncate"
-                        style={{
-                          maxWidth: '220px',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
+                      <Text
+                        as="span"
+                        color="gray.600"
+                        noOfLines={1}
+                        maxWidth="220px"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
                         title={item.description}
                       >
                         — {item.description}
-                      </span>
+                      </Text>
                     ) : null}
                     {hasTypeMetadata(getItemType(item)) && (
                       <button
@@ -1025,18 +1034,18 @@ const CatalogTableEdit = ({
                         Specs
                       </button>
                     )}
-                  </div>
+                  </Flex>
                 </div>
 
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.qty')}</span>
-                  <input
+                  <Input
                     type="number"
                     min="1"
                     value={item.qty}
                     onChange={(e) => updateQty(idx, parseInt(e.target.value))}
                     className="qty-input-mobile"
-                    disabled={readOnly}
+                    isDisabled={readOnly}
                   />
                 </div>
 
@@ -1065,14 +1074,16 @@ const CatalogTableEdit = ({
                         <span className="item-label">{t('proposalColumns.hingeSide')}</span>
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
-                            <div
-                              className="text-danger mb-2"
-                              style={{ fontSize: "12px", fontWeight: 'bold' }}
+                            <Box
+                              color="red.500"
+                              mb={2}
+                              fontSize="12px"
+                              fontWeight="bold"
                             >
                               {t('validation.selectHingeSide', {
                                 defaultValue: 'Select hinge side',
                               })}
-                            </div>
+                            </Box>
                           )}
                         <div className="btn-group-mobile">
                           {hingeOptions.map((opt) => (
@@ -1115,14 +1126,16 @@ const CatalogTableEdit = ({
                         <span className="item-label">{t('proposalColumns.exposedSide')}</span>
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
-                            <div
-                              className="text-danger mb-2"
-                              style={{ fontSize: "12px", fontWeight: 'bold' }}
+                            <Box
+                              color="red.500"
+                              mb={2}
+                              fontSize="12px"
+                              fontWeight="bold"
                             >
                               {t('validation.selectExposedSide', {
                                 defaultValue: 'Select exposed finished side',
                               })}
-                            </div>
+                            </Box>
                           )}
                         <div className="btn-group-mobile">
                           {exposedOptions.map((opt) => (

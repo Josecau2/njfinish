@@ -1424,7 +1424,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                             <Button
                                                 size="sm"
                                                 variant={isStylesCollapsed ? 'solid' : 'outline'}
-                                                colorScheme="blue"
+                                                colorScheme="brand"
                                                 onClick={() => setIsStylesCollapsed(!isStylesCollapsed)}
                                                 px={3}
                                                 minH="44px"
@@ -1725,7 +1725,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             {t('proposalUI.custom.taxable')}
                         </Checkbox>
                         <Button
-                            colorScheme="blue"
+                            colorScheme="brand"
                             minW="80px"
                             onClick={handleAddCustomItem}
                         >

@@ -493,7 +493,7 @@ const EditCustomerPage = () => {
                 </Button>
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   minH="44px"
                   isLoading={isSubmitting}
                   leftIcon={!isSubmitting ? <Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" /> : undefined}
