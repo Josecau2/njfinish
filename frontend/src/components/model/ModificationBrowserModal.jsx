@@ -689,6 +689,8 @@ const ModificationBrowserModal = ({
             <HStack spacing={4} align="center">
               {showBackButton && (
                 <IconButton
+                  minW="44px"
+                  minH="44px"
                   icon={<ArrowLeft size={ICON_SIZE_MD} />}
                   variant="ghost"
                   aria-label={t('modificationBrowser.buttons.back', 'Back')}
@@ -700,6 +702,8 @@ const ModificationBrowserModal = ({
               </Text>
             </HStack>
             <IconButton
+              minW="44px"
+              minH="44px"
               icon={<X size={ICON_SIZE_MD} />}
               variant="ghost"
               aria-label={t('modificationBrowser.buttons.close', 'Close')}

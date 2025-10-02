@@ -10,6 +10,8 @@ const DocsLink = (props) => {
   return (
     <div className="float-end">
       <Link
+        minH="44px"
+        py={2}
         {...rest}
         href={_href}
         rel="noreferrer noopener"

@@ -1458,6 +1458,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     display={{ base: 'flex', md: 'none' }}
                                                 >
                                                     <IconButton
+                                                      minW="44px"
+                                                      minH="44px"
                                                         icon={<ChevronLeft size={ICON_SIZE_MD} />}
                                                         size="sm"
                                                         variant="outline"
@@ -1469,6 +1471,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         minW="44px"
                                                     />
                                                     <IconButton
+                                                      minW="44px"
+                                                      minH="44px"
                                                         icon={<ChevronRight size={ICON_SIZE_MD} />}
                                                         size="sm"
                                                         variant="outline"

@@ -172,6 +172,8 @@ const ForgotPasswordPage = () => {
 
             <Text textAlign="center">
               <Link as={RouterLink} to="/login" color="blue.600">
+                minH="44px"
+                py={2}
                 {t('auth.backToLogin')}
               </Link>
             </Text>

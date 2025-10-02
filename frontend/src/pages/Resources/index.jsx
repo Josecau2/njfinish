@@ -977,6 +977,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           <HStack justify="space-between">
                             <VStack align="start" flex={1}>
                               <Link href={link.url} isExternal color="blue.500" fontWeight="bold">
+                                minH="44px"
+                                py={2}
                                 {link.title}
                               </Link>
                               {link.description && (

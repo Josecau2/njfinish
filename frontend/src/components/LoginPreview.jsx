@@ -162,6 +162,8 @@ const LoginPreview = ({ config }) => {
             />
             <InputRightElement>
               <IconButton
+                minW="44px"
+                minH="44px"
                 variant='ghost'
                 size='sm'
                 aria-label={showPassword ? 'Hide password' : 'Show password'}

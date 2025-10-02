@@ -11,6 +11,8 @@ const DocsExample = ({ children, href, tabContentClassName }) => {
     <Box className="example" borderWidth="1px" borderRadius="md" overflow="hidden" bg="white" boxShadow="sm">
       <Flex justify="flex-end" gap={4} px={4} py={3} bg="gray.50" borderBottomWidth="1px" borderColor="gray.100">
         <Link
+          minH="44px"
+          py={2}
           href="#"
           display="inline-flex"
           alignItems="center"
@@ -24,6 +26,8 @@ const DocsExample = ({ children, href, tabContentClassName }) => {
         </Link>
         {documentationLink && (
           <Link
+            minH="44px"
+            py={2}
             href={documentationLink}
             target="_blank"
             rel="noopener noreferrer"

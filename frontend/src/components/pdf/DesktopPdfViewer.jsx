@@ -46,12 +46,15 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       <HStack justify="space-between">
         <Text fontWeight="semibold">PDF Preview</Text>
         <Button variant="ghost" size="sm" onClick={onClose}>
+          minH="44px"
           Close
         </Button>
       </HStack>
 
       <HStack spacing={4} justify="center">
         <IconButton
+          minW="44px"
+          minH="44px"
           aria-label="Zoom out"
           icon={<ZoomOut size={ICON_SIZE_MD} />}
           size="sm"
@@ -61,6 +64,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
           {(scale * 100).toFixed(0)}%
         </Text>
         <IconButton
+          minW="44px"
+          minH="44px"
           aria-label="Zoom in"
           icon={<ZoomIn size={ICON_SIZE_MD} />}
           size="sm"
@@ -96,6 +101,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
 
       <HStack justify="center" spacing={4}>
         <IconButton
+          minW="44px"
+          minH="44px"
           aria-label="Previous page"
           icon={<ChevronLeft size={ICON_SIZE_MD} />}
           size="sm"
@@ -106,6 +113,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
           {pageNumber} / {numPages || '--'}
         </Text>
         <IconButton
+          minW="44px"
+          minH="44px"
           aria-label="Next page"
           icon={<ChevronRight size={ICON_SIZE_MD} />}
           size="sm"

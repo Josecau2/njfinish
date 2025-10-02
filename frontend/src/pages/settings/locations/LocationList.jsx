@@ -295,6 +295,8 @@ const LocationPage = () => {
                       <Td>
                         {location.email ? (
                           <Link
+                            minH="44px"
+                            py={2}
                             href={`mailto:${location.email}`}
                             color="brand.500"
                             _hover={{ textDecoration: 'underline' }}
@@ -311,6 +313,8 @@ const LocationPage = () => {
                       <Td>
                         {location.website ? (
                           <Link
+                            minH="44px"
+                            py={2}
                             href={
                               location.website?.startsWith('http')
                                 ? location.website
@@ -446,6 +450,8 @@ const LocationPage = () => {
                     <HStack spacing={2}>
                       <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.500" flexShrink={0} />
                       <Link
+                        minH="44px"
+                        py={2}
                         href={`mailto:${location.email}`}
                         color="brand.500"
                         _hover={{ textDecoration: 'underline' }}
@@ -460,6 +466,8 @@ const LocationPage = () => {
                     <HStack spacing={2}>
                       <Icon as={Globe} boxSize={ICON_BOX_MD} color="gray.500" flexShrink={0} />
                       <Link
+                        minH="44px"
+                        py={2}
                         href={location.website?.startsWith('http') ? location.website : `https://${location.website}`}
                         isExternal
                         color="brand.500"

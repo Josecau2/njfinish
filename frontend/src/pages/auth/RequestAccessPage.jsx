@@ -407,6 +407,8 @@ const RequestAccessPage = () => {
             <Text textAlign="center" fontSize="sm">
               {copy.alreadyHaveAccess}{' '}
               <Link as={RouterLink} to="/login" color="blue.600" fontWeight="600">
+                minH="44px"
+                py={2}
                 {copy.signIn}
               </Link>
             </Text>

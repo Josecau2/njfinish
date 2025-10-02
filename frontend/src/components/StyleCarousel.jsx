@@ -35,12 +35,16 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
         <Text fontWeight="semibold">{title}</Text>
         <HStack spacing={4}>
           <IconButton
+            minW="44px"
+            minH="44px"
             aria-label="Scroll left"
             icon={<ChevronLeft size={ICON_SIZE_MD} />}
             variant="ghost"
             onClick={() => scrollBy(-SCROLL_AMOUNT)}
           />
           <IconButton
+            minW="44px"
+            minH="44px"
             aria-label="Scroll right"
             icon={<ChevronRight size={ICON_SIZE_MD} />}
             variant="ghost"
