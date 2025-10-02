@@ -174,7 +174,7 @@ const UserGroupList = () => {
 
           {/* Desktop table */}
           <Box display={{ base: 'none', md: 'block' }}>
-            <TableContainer overflowX="auto" data-scroll-region>
+            <Box overflowX="auto" data-scroll-region>
               <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
@@ -237,7 +237,7 @@ const UserGroupList = () => {
                 )}
               </Tbody>
             </Table>
-            </TableContainer>
+            </Box>
           </Box>
 
           {/* Mobile card list */}

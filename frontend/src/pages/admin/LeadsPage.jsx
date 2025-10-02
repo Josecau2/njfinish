@@ -333,7 +333,7 @@ const LeadsPage = () => {
             ) : (
               <>
                 {/* Desktop table view */}
-                <TableContainer display={{ base: 'none', lg: 'block' }}>
+                <Box overflowX="auto" data-scroll-region display={{ base: 'none', lg: 'block' }}>
                   <Table variant="simple">
                     <Thead>
                       <Tr>
@@ -393,7 +393,7 @@ const LeadsPage = () => {
                       })}
                     </Tbody>
                   </Table>
-                </TableContainer>
+                </Box>
 
                 {/* Mobile card view */}
                 <VStack spacing={4} display={{ base: 'flex', lg: 'none' }}>

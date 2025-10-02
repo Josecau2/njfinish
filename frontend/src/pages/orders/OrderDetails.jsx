@@ -704,7 +704,7 @@ const OrderDetails = () => {
           </CardHeader>
           <CardBody>
             <Box display={{ base: 'none', md: 'block' }}>
-              <TableContainer>
+              <Box overflowX="auto" data-scroll-region>
                 <Table variant="simple" size="sm">
                   <Thead bg="gray.50">
                     <Tr>
@@ -819,7 +819,7 @@ const OrderDetails = () => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </Box>
             </Box>
 
             <Box display={{ base: 'block', md: 'none' }}>

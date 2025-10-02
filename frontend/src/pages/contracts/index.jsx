@@ -511,7 +511,7 @@ const Contracts = () => {
         ) : (
           <StandardCard variant="outline">
             <CardBody p={0}>
-              <TableContainer>
+              <Box overflowX="auto" data-scroll-region>
                 <Table variant="simple">
                   <Thead bg="gray.50">
                     <Tr>
@@ -597,7 +597,7 @@ const Contracts = () => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </Box>
             </CardBody>
           </StandardCard>
         )}

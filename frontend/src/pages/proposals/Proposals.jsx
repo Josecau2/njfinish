@@ -558,7 +558,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       <Box display={{ base: 'none', lg: 'block' }}>
         <StandardCard>
           <CardBody p={0}>
-            <TableContainer overflowX="auto" data-scroll-region>
+            <Box overflowX="auto" data-scroll-region>
               <Table variant="simple">
               <Thead>
                 <Tr>
@@ -650,7 +650,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 )}
               </Tbody>
             </Table>
-            </TableContainer>
+            </Box>
           </CardBody>
         </StandardCard>
       </Box>

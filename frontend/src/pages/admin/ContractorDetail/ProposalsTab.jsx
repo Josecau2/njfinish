@@ -356,7 +356,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </div>
 
               {/* Table */}
-              <TableContainer overflowX="auto" data-scroll-region>
+              <Box overflowX="auto" data-scroll-region>
                 <Table variant="striped" className="table-modern">
                   <Thead>
                     <Tr>
@@ -510,7 +510,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </Box>
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
@@ -723,7 +723,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                          <TableContainer>
+                          <Box overflowX="auto" data-scroll-region>
                             <Table variant="striped">
                               <Thead>
                                 <Tr>
@@ -750,7 +750,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 ))}
                               </Tbody>
                             </Table>
-                          </TableContainer>
+                          </Box>
 
                           <div>
                             <Flex>

@@ -324,7 +324,7 @@ const PaymentsList = ({ isContractor }) => {
       </Flex>
 
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer overflowX="auto" data-scroll-region>
+        <Box overflowX="auto" data-scroll-region>
           <Table size="sm" variant="simple">
           <Thead>
             <Tr>
@@ -401,7 +401,7 @@ const PaymentsList = ({ isContractor }) => {
             )}
           </Tbody>
         </Table>
-        </TableContainer>
+        </Box>
       </Box>
 
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>

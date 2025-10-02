@@ -272,7 +272,7 @@ const UsersPage = () => {
           <CardBody>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
-              <TableContainer overflowX="auto" data-scroll-region>
+              <Box overflowX="auto" data-scroll-region>
                 <Table variant="simple" className="mb-0 table-modern">
                 <Thead className="settings-table-header">
                   <Tr>
@@ -373,7 +373,7 @@ const UsersPage = () => {
                   )}
                 </Tbody>
               </Table>
-              </TableContainer>
+              </Box>
             </Box>
 
             {/* Mobile Card View */}

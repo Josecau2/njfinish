@@ -290,7 +290,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             </SimpleGrid>
 
             <Box display={{ base: 'none', md: 'block' }}>
-              <TableContainer borderWidth="1px" borderColor="gray.100" borderRadius="lg">
+              <Box overflowX="auto" data-scroll-region borderWidth="1px" borderColor="gray.100" borderRadius="lg">
                 <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
@@ -413,7 +413,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </Box>
             </Box>
 
             <Box display={{ base: 'block', md: 'none' }}>

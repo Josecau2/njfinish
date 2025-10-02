@@ -310,7 +310,7 @@ const ManuMultipliers = () => {
 
         <StandardCard variant="outline">
           <CardBody p={0}>
-            <TableContainer>
+            <Box overflowX="auto" data-scroll-region>
               <Table variant="simple">
                 <Thead bg={tableHeaderBg}>
                   <Tr>
@@ -398,7 +398,7 @@ const ManuMultipliers = () => {
                   )}
                 </Tbody>
               </Table>
-            </TableContainer>
+            </Box>
             {totalPages > 1 && (
               <Box px={4} py={3}>
                 <PaginationComponent

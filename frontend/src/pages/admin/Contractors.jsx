@@ -202,7 +202,7 @@ const Contractors = () => {
 
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
-            <TableContainer>
+            <Box overflowX="auto" data-scroll-region>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -265,7 +265,7 @@ const Contractors = () => {
                   )}
                 </Tbody>
               </Table>
-            </TableContainer>
+            </Box>
 
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={4}>

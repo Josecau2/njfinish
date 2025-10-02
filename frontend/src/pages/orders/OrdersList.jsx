@@ -501,7 +501,7 @@ const OrdersList = ({
 
       {/* Desktop / tablet table */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer overflowX="auto" data-scroll-region>
+        <Box overflowX="auto" data-scroll-region>
           <Table size="sm" variant="simple">
           <Thead>
             <Tr>
@@ -608,7 +608,7 @@ const OrdersList = ({
               )}
           </Tbody>
         </Table>
-        </TableContainer>
+        </Box>
       </Box>
 
       {/* Mobile card list */}

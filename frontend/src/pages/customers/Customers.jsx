@@ -325,7 +325,7 @@ const CustomerTable = ({
             <Box display={{ base: 'none', lg: 'block' }}>
               <StandardCard variant="outline">
                 <CardBody>
-                  <TableContainer>
+                  <Box overflowX="auto" data-scroll-region>
                     <Table variant="simple">
                       <Thead>
                         <Tr>
@@ -433,7 +433,7 @@ const CustomerTable = ({
                         )}
                       </Tbody>
                     </Table>
-                  </TableContainer>
+                  </Box>
                 </CardBody>
               </StandardCard>
             </Box>
