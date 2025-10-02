@@ -306,6 +306,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           background: transparent;
           display: flex;
           align-items: center;
+          justify-content: flex-start;
           gap: 0.75rem;
           font-size: 0.95rem;
           font-weight: 500;
@@ -315,6 +316,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           cursor: pointer;
           transition: background 0.15s ease, color 0.15s ease;
           text-decoration: none;
+          text-align: left;
         }
         .c-sidebar-nav .nav-link:hover {
           background: var(--chakra-colors-whiteAlpha-100);
@@ -345,10 +347,15 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         .c-sidebar-nav .nav-icon {
           width: 1.5rem;
           height: 1.5rem;
+          min-width: 1.5rem;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+        }
+        .c-sidebar-nav .nav-icon svg {
+          width: 1.25rem;
+          height: 1.25rem;
         }
         .c-sidebar-nav .nav-icon-bullet span {
           width: 6px;
@@ -360,6 +367,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           flex: 1;
           min-width: 0;
           white-space: nowrap;
+          text-align: left;
+          line-height: 1.4;
         }
         .c-sidebar-nav .nav-link-badge {
           font-size: 0.65rem;
