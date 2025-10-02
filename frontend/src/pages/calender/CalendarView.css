@@ -127,27 +127,27 @@
 
 /* Week and Day view - hide time slots completely */
 .fc-timegrid-body {
-  display: none !important;
+  display: none;
 }
 
 .fc-timegrid-divider {
-  display: none !important;
+  display: none;
 }
 
 .fc-timegrid-slot-label {
-  display: none !important;
+  display: none;
 }
 
 .fc-timegrid-slots {
-  display: none !important;
+  display: none;
 }
 
 .fc-timegrid-axis {
-  display: none !important;
+  display: none;
 }
 
 .fc-timegrid-col-events {
-  display: none !important;
+  display: none;
 }
 
 /* Show only all-day section in week/day views */

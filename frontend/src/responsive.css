@@ -246,7 +246,7 @@ body {
   /* Reduce spacing on mobile */
   /* Hide dividers on tight screens to save space */
   .header .vr {
-    display: none !important;
+    display: none;
   }
 
   .header .navbar-nav .nav-link {
@@ -1974,7 +1974,7 @@ body {
 @media (max-width: 767.98px) {
   /* Hide desktop table on mobile */
   .table-responsive-md {
-    display: none !important;
+    display: none;
   }
 
   /* Show mobile card view */
@@ -2022,7 +2022,7 @@ body {
 
   /* Hide the separator line on mobile */
   .style-selection-mobile .style-separator {
-    display: none !important;
+    display: none;
   }
 
   /* Current style section */
@@ -2251,7 +2251,7 @@ body {
 
   /* Hide carousel controls on desktop since we're showing all items */
   .other-styles-header .carousel-controls {
-    display: none !important;
+    display: none;
   }
 
   /* Compact/Collapsed View Styles */
@@ -2471,7 +2471,7 @@ body {
     min-height: 180px;
     overflow: hidden;
     width: 100%;
-    position: relative !important;
+    position: relative;
   }
 
   /* Improve mobile style item cards */
@@ -3087,7 +3087,7 @@ body {
 
 /* Responsive utility classes */
 .u-mobile-only {
-  display: none !important;
+  display: none;
 }
 
 .u-desktop-only {
@@ -3100,7 +3100,7 @@ body {
   }
 
   .u-desktop-only {
-    display: none !important;
+    display: none;
   }
 
   /* Force all flex containers to behave on mobile */
@@ -3168,7 +3168,7 @@ body {
 
 /* Utility visibility */
 .mobile-only {
-  display: none !important;
+  display: none;
 }
 .desktop-only {
   display: block;
@@ -3179,7 +3179,7 @@ body {
     display: block;
   }
   .desktop-only {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -3431,7 +3431,7 @@ body {
 
 .proposal-progress-bar .d-flex.justify-content-between {
   gap: 0;
-  position: relative !important;
+  position: relative;
   padding: 0;
 }
 
