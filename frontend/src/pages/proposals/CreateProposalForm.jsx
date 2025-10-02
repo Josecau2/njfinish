@@ -1,23 +1,10 @@
+import StandardCard from '../../components/StandardCard'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  Spinner,
-  Stack,
-  Text,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Container, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { ClipboardList, Settings as SettingsIcon, FileSignature, Printer, Mail, FileText } from 'lucide-react'
 
 import CustomerInfoStep from './CreateProposal/CustomerInfo'
@@ -267,14 +254,14 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       case 3:
         if (!manufacturerData || Object.keys(manufacturerData).length === 0) {
           return (
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardBody textAlign="center" py={10}>
                 <Spinner size="lg" color="brand.500" />
                 <Text mt={4} color="gray.500">
                   {t('proposals.create.loadingManufacturer')}
                 </Text>
               </CardBody>
-            </Card>
+            </StandardCard>
           )
         }
 
@@ -337,7 +324,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
           actions={headerActions}
         />
 
-        <Card variant="outline" aria-label={t('proposals.create.progress', 'Progress')}>
+        <StandardCard variant="outline" aria-label={t('proposals.create.progress', 'Progress')}>
           <CardBody py={4}>
             <Box position="relative" px={{ base: 2, md: 6 }}>
               <Box
@@ -392,7 +379,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               </Flex>
             </Box>
           </CardBody>
-        </Card>
+        </StandardCard>
 
         <Box>{renderStep()}</Box>
 

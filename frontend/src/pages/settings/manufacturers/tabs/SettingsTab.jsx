@@ -1,36 +1,7 @@
+import StandardCard from '../../../../components/StandardCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Checkbox,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Select,
-  Spinner,
-  Stack,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react'
+import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Select, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
 import { ChevronDown, Search } from 'lucide-react'
 import PaginationControls from '../../../../components/PaginationControls'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -332,7 +303,7 @@ const SettingsTab = ({ manufacturer }) => {
 
   return (
     <Stack spacing={8}>
-      <Card>
+      <StandardCard>
         <CardBody>
           <Stack spacing={4}>
             <Heading size="sm">
@@ -443,9 +414,9 @@ const SettingsTab = ({ manufacturer }) => {
             </Flex>
           </Stack>
         </CardBody>
-      </Card>
+      </StandardCard>
 
-      <Card>
+      <StandardCard>
         <CardBody>
           <Stack spacing={4}>
             <Heading size="sm">
@@ -564,7 +535,7 @@ const SettingsTab = ({ manufacturer }) => {
             </Flex>
           </Stack>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Stack>
   )
 }

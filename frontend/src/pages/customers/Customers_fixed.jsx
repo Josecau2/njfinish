@@ -1,5 +1,6 @@
+import StandardCard, { MobileListCard } from '../../components/StandardCard'
 import React, { useState, useMemo, useEffect } from 'react'
-import { Input, Spinner, Select, Container, Flex, Box, Card, CardBody, Badge, Icon } from '@chakra-ui/react'
+import { Input, Spinner, Select, Container, Flex, Box, Badge, Icon, VStack, HStack, Text, IconButton, CardBody, Table, Thead, Tbody, Tr, Th, Td, Button, InputGroup, InputLeftAddon } from '@chakra-ui/react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice'
 import { useNavigate } from 'react-router-dom'
@@ -127,7 +128,7 @@ const CustomerTable = ({
       style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
     >
       {/* Header Section */}
-      <Card
+      <StandardCard
         className="border-0 shadow-sm  mb-2"
         style={{
           background: customization.headerBg || "purple.500",
@@ -159,12 +160,12 @@ const CustomerTable = ({
             </Box>
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Stats Cards */}
       <Flex className="mb-3 g-2">
         <Box sm={6} md={3}>
-          <Card
+          <StandardCard
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid var(--chakra-colors-purple-500)' }}
           >
@@ -172,10 +173,10 @@ const CustomerTable = ({
               <div className="fs-4 fw-bold text-primary">{total || 0}</div>
               <div>Total Customers</div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box sm={6} md={3}>
-          <Card
+          <StandardCard
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid var(--chakra-colors-green-500)' }}
           >
@@ -185,10 +186,10 @@ const CustomerTable = ({
               </div>
               <div>Active</div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box sm={6} md={3}>
-          <Card
+          <StandardCard
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid var(--chakra-colors-yellow-400)' }}
           >
@@ -198,10 +199,10 @@ const CustomerTable = ({
               </div>
               <div>With Email</div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box sm={6} md={3}>
-          <Card
+          <StandardCard
             className="border-0 shadow-sm text-center h-100"
             style={{ borderLeft: '4px solid var(--chakra-colors-red-500)' }}
           >
@@ -209,13 +210,13 @@ const CustomerTable = ({
               <div className="fs-4 fw-bold text-danger">{sortedFilteredCustomers.length}</div>
               <div>Filtered Results</div>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
 
       {/* Search and Filters */}
-      <div className="toolbar">
-        <InputGroup>
+      <Flex className="toolbar" mb={4} gap={3} align="center" wrap="wrap">
+        <InputGroup flex={1} minW="200px">
           <InputLeftAddon>
             <Icon as={Search} />
           </InputLeftAddon>
@@ -226,41 +227,42 @@ const CustomerTable = ({
             onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
           />
         </InputGroup>
-        <Select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+        <Select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} w="auto">
           <option value={5}>5 per page</option>
           <option value={10}>10 per page</option>
           <option value={25}>25 per page</option>
           <option value={50}>50 per page</option>
         </Select>
-        <div>
+        <Text fontSize="sm">
           Showing {sortedFilteredCustomers.length} of {total} customers
-          {isContractor && <div>({contractorGroupName})</div>}
-        </div>
+          {isContractor && <Text as="span" ml={1}>({contractorGroupName})</Text>}
+        </Text>
+      </Flex>
 
       {/* Loading State */}
       {loading && (
-        <Card>
+        <StandardCard>
           <CardBody className="text-center py-5">
             <Spinner colorScheme="blue" />
             <p>Loading customers...</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Error State */}
       {error && (
-        <Card>
+        <StandardCard>
           <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>Error:</strong> {error}
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Desktop Table */}
       {!loading && !error && (
-        <Card className="border-0 shadow-sm d-none d-md-block">
+        <StandardCard className="border-0 shadow-sm d-none d-md-block">
           <CardBody>
             <div style={{ overflowX: 'auto' }}>
               <Table hover responsive className="mb-0 table-modern">
@@ -324,8 +326,9 @@ const CustomerTable = ({
                           <Badge
                             colorScheme="gray"
                             className="px-3 py-2"
-                            style={{ borderRadius: '15px',
-                              fontSize="xs",
+                            style={{
+                              borderRadius: '15px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >
@@ -342,8 +345,9 @@ const CustomerTable = ({
                           <Badge
                             status="info"
                             className="px-3 py-2"
-                            style={{ borderRadius: '20px',
-                              fontSize="xs",
+                            style={{
+                              borderRadius: '20px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >
@@ -354,8 +358,9 @@ const CustomerTable = ({
                           <Badge
                             status="success"
                             className="px-3 py-2"
-                            style={{ borderRadius: '20px',
-                              fontSize="xs",
+                            style={{
+                              borderRadius: '20px',
+                              fontSize: '12px',
                               fontWeight: '500',
                             }}
                           >
@@ -391,14 +396,14 @@ const CustomerTable = ({
               </Table>
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card>
+            <StandardCard>
               <CardBody className="text-center py-5">
                 <div>
                   <Icon as={Search} size="xl" />
@@ -406,46 +411,59 @@ const CustomerTable = ({
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
-            </Card>
+            </StandardCard>
           ) : (
-            <div className="mobile-customer-cards">
+            <VStack spacing={3} align="stretch">
               {sortedFilteredCustomers?.map((cust) => (
-                <div key={cust.id} className="card--compact">
-                  <div className="card__head">
-                    <h3 className="card__title">{cust.name || 'N/A'}</h3>
-                    <Badge colorScheme="gray" className="status-pill">
-                      Main
-                    </Badge>
-                  </div>
+                <MobileListCard key={cust.id}>
+                  <VStack align="stretch" spacing={3}>
+                    <HStack justify="space-between" align="start">
+                      <VStack align="start" spacing={1}>
+                        <Text fontWeight="semibold" fontSize="lg">{cust.name || 'N/A'}</Text>
+                        <Text fontSize="sm" color="gray.600">{cust.email || 'N/A'}</Text>
+                      </VStack>
+                      <Badge colorScheme="gray" px={2} py={1}>
+                        Main
+                      </Badge>
+                    </HStack>
 
-                  <div className="card__meta">
-                    <span>{cust.email || 'N/A'}</span>
-                    <span>{cust.proposalCount || 0} Proposals</span>
-                    <span>0 Orders</span>
-                  </div>
+                    <HStack spacing={4}>
+                      <VStack align="start" spacing={0}>
+                        <Text fontSize="xs" color="gray.500">Proposals</Text>
+                        <Badge colorScheme="blue">{cust.proposalCount || 0}</Badge>
+                      </VStack>
+                      <VStack align="start" spacing={0}>
+                        <Text fontSize="xs" color="gray.500">Orders</Text>
+                        <Badge colorScheme="green">0</Badge>
+                      </VStack>
+                    </HStack>
 
-                  <div>
-                    <PermissionGate action="update" resource="customer" item={cust}>
-                      <button
-                        className="icon-btn"
-                        onClick={() => handleEdit(cust)}
-                        aria-label="Edit customer"
-                      >
-                        <Icon as={Edit} />
-                      </button>
-                    </PermissionGate>
-                    <PermissionGate action="delete" resource="customer" item={cust}>
-                      <button
-                        className="icon-btn"
-                        onClick={() => handleDelete(cust.id)}
-                        aria-label="Delete customer"
-                      >
-                        <Icon as={Trash} />
-                      </button>
-                    </PermissionGate>
-                  </div>
+                    <HStack spacing={2}>
+                      <PermissionGate action="update" resource="customer" item={cust}>
+                        <IconButton
+                          icon={<Icon as={Edit} />}
+                          onClick={() => handleEdit(cust)}
+                          aria-label="Edit customer"
+                          size="sm"
+                          colorScheme="blue"
+                          variant="outline"
+                        />
+                      </PermissionGate>
+                      <PermissionGate action="delete" resource="customer" item={cust}>
+                        <IconButton
+                          icon={<Icon as={Trash} />}
+                          onClick={() => handleDelete(cust.id)}
+                          aria-label="Delete customer"
+                          size="sm"
+                          colorScheme="red"
+                          variant="outline"
+                        />
+                      </PermissionGate>
+                    </HStack>
+                  </VStack>
+                </MobileListCard>
               ))}
-            </div>
+            </VStack>
           )}
         </div>
       )}
@@ -462,15 +480,8 @@ const CustomerTable = ({
         </div>
       )}
     </Container>
-  
   )
 }
 
-        </div>
-  )
-}
-
-</div>
-</div>
-    </div>
 export default withContractorScope(CustomerTable, 'customers')
+

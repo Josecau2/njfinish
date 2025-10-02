@@ -1,25 +1,7 @@
+import StandardCard from '../../../components/StandardCard'
 
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  Input,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, SimpleGrid, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Settings, Image, Palette, Save, Trash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -186,7 +168,7 @@ const CustomizationPage = () => {
         )}
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} alignItems="stretch">
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack spacing={5}>
                 <Stack direction="row" align="center" spacing={4}>
@@ -271,9 +253,9 @@ const CustomizationPage = () => {
                 )}
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack spacing={5}>
                 <Stack direction="row" align="center" spacing={4}>
@@ -354,7 +336,7 @@ const CustomizationPage = () => {
                 </Stack>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
       </Stack>
     </Container>

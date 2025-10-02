@@ -1,35 +1,10 @@
+import StandardCard from '../../components/StandardCard'
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import {
-  Container,
-  Stack,
-  Box,
-  SimpleGrid,
-  HStack,
-  VStack,
-  Text,
-  Button,
-  Icon,
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Spinner,
-  Center,
-  Alert,
-  AlertIcon,
-  Divider,
-} from '@chakra-ui/react'
+import { Container, Stack, Box, SimpleGrid, HStack, VStack, Text, Button, Icon, Badge, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Center, Alert, AlertIcon, Divider } from '@chakra-ui/react'
 import {
   ArrowLeft,
   User,
@@ -297,7 +272,7 @@ const AdminProposalView = () => {
     )
   }
   const headerSubtitle =
-    headerSubtitleParts.join(' • ') || t('adminQuote.ui.detailSubtitle', 'Proposal overview')
+    headerSubtitleParts.join(' ï¿½ ') || t('adminQuote.ui.detailSubtitle', 'Proposal overview')
 
   const headerActions = [
     <Button
@@ -351,7 +326,7 @@ const AdminProposalView = () => {
 
         <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} alignItems="start">
           <Stack spacing={6} gridColumn={{ lg: 'span 2' }}>
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader bg="gray.50" borderBottomWidth="1px">
                 <Text fontWeight="semibold" color="gray.800">
                   {t('adminQuote.ui.overview', 'Quote Overview')}
@@ -427,10 +402,10 @@ const AdminProposalView = () => {
                   </Stack>
                 )}
               </CardBody>
-            </Card>
+            </StandardCard>
 
             {parsedData.items && parsedData.items.length > 0 && (
-              <Card variant="outline">
+              <StandardCard variant="outline">
                 <CardHeader bg="gray.50" borderBottomWidth="1px">
                   <HStack spacing={2}>
                     <Icon as={ClipboardList} />
@@ -511,12 +486,12 @@ const AdminProposalView = () => {
                     </HStack>
                   </Stack>
                 </CardBody>
-              </Card>
+              </StandardCard>
             )}
           </Stack>
 
           <Stack spacing={6}>
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader bg="gray.50" borderBottomWidth="1px">
                 <HStack spacing={2}>
                   <Icon as={History} />
@@ -558,7 +533,7 @@ const AdminProposalView = () => {
                   </Stack>
                 )}
               </CardBody>
-            </Card>
+            </StandardCard>
           </Stack>
         </SimpleGrid>
       </Stack>

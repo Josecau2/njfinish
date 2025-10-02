@@ -1,20 +1,6 @@
+import StandardCard from '../StandardCard'
 import React, { useMemo, useState } from 'react'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Checkbox,
-  FormControl,
-  FormLabel,
-  HStack,
-  Input,
-  SimpleGrid,
-  Stack,
-  Text,
-  Textarea,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Checkbox, FormControl, FormLabel, HStack, Input, SimpleGrid, Stack, Text, Textarea } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
@@ -123,7 +109,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
   ]
 
   return (
-    <Card borderRadius="lg" boxShadow="sm">
+    <StandardCard borderRadius="lg" boxShadow="sm">
       <CardBody>
         <PageHeader
           title={t('contact.editor.title')}
@@ -182,7 +168,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
           </Button>
         </Box>
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }
 

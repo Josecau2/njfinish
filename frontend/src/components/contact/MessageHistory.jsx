@@ -1,17 +1,6 @@
+import StandardCard from '../StandardCard'
 import React, { useEffect, useMemo } from 'react'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  HStack,
-  Icon,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, HStack, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
@@ -197,7 +186,7 @@ const MessageHistory = ({
   const hasThreads = groupByUser ? groupedThreads.length > 0 : (threads?.length || 0) > 0
 
   return (
-    <Card borderRadius="lg" boxShadow="sm">
+    <StandardCard borderRadius="lg" boxShadow="sm">
       <CardBody>
         <PageHeader
           title={t('contact.history.title')}
@@ -223,7 +212,7 @@ const MessageHistory = ({
           </Stack>
         )}
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }
 

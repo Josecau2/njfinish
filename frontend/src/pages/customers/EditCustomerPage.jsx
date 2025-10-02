@@ -1,27 +1,9 @@
+import StandardCard from '../../components/StandardCard'
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../../utils/colorUtils'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Select,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  Textarea,
-} from '@chakra-ui/react'
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Text, Textarea } from '@chakra-ui/react'
 import PageHeader from '../../components/PageHeader'
 import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -31,7 +13,7 @@ import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 
 const FormSection = ({ title, icon, children }) => (
-  <Card variant="outline" borderRadius="xl" shadow="sm">
+  <StandardCard variant="outline" borderRadius="xl" shadow="sm">
     <CardBody>
       <Stack spacing={4}>
         <Stack direction="row" align="center" spacing={4}>
@@ -54,7 +36,7 @@ const FormSection = ({ title, icon, children }) => (
         {children}
       </Stack>
     </CardBody>
-  </Card>
+  </StandardCard>
 )
 
 const CustomFormInput = ({
@@ -274,14 +256,14 @@ const EditCustomerPage = () => {
   if (isLoading) {
     return (
       <Container maxW="5xl" py={12}>
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
             <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
             <Text mt={4} color="gray.500">
               {t('customers.loading')}
             </Text>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Container>
     )
   }
@@ -495,7 +477,7 @@ const EditCustomerPage = () => {
             </FormControl>
           </FormSection>
 
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack direction={{ base: 'column', md: 'row' }} spacing={4} justify="flex-end">
                 <Button
@@ -523,7 +505,7 @@ const EditCustomerPage = () => {
                 </Button>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Stack>
       </Box>
     </Container>

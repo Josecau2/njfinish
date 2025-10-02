@@ -15,8 +15,8 @@ import {
   Icon,
   Badge,
   Card,
-  CardBody,
   CardHeader,
+  CardBody,
   Table,
   Thead,
   Tbody,
@@ -45,6 +45,7 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { ShoppingCart, ArrowLeft, FileText, Download, Mail, Trash } from 'lucide-react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
@@ -533,7 +534,7 @@ const OrderDetails = () => {
         />
 
         {resolvedPrimaryManufacturer && (
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader fontWeight="semibold">
               {t('orders.details.manufacturerDetails', 'Manufacturer Details')}
             </CardHeader>
@@ -566,11 +567,11 @@ const OrderDetails = () => {
                 </Stack>
               </HStack>
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader fontWeight="semibold">
               {t('orders.details.order', 'Order')}
             </CardHeader>
@@ -610,9 +611,9 @@ const OrderDetails = () => {
                 {order?.accepted_at ? new Date(order.accepted_at).toLocaleString() : t('common.na')}
               </Text>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader fontWeight="semibold">
               {t('orders.details.customer', 'Customer')}
             </CardHeader>
@@ -642,9 +643,9 @@ const OrderDetails = () => {
                 {order?.customer?.address || order?.customer_address || t('common.na')}
               </Text>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader fontWeight="semibold">
               {t('orders.details.totals', 'Totals')}
             </CardHeader>
@@ -692,7 +693,7 @@ const OrderDetails = () => {
                 {currency(displaySummary.grandTotal)}
               </Text>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
 
         <Card variant="outline">
@@ -843,7 +844,7 @@ const OrderDetails = () => {
                       }
                     } catch (_) {}
                     return (
-                      <Card key={`mobile-item-${idx}`} variant="outline">
+                      <StandardCard key={`mobile-item-${idx}`} variant="outline">
                         <CardBody as={Stack} spacing={4}>
                           <HStack align="flex-start" spacing={4}>
                             {thumb ? (
@@ -933,7 +934,7 @@ const OrderDetails = () => {
                             </Stack>
                           </HStack>
                         </CardBody>
-                      </Card>
+                      </StandardCard>
                     )
                   })}
                 </Stack>
@@ -956,7 +957,7 @@ const OrderDetails = () => {
                     m.manufacturerName || m.name || `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`
                   const totals = m?.summary || {}
                   return (
-                    <Card key={`manufacturer-${i}`} variant="outline">
+                    <StandardCard key={`manufacturer-${i}`} variant="outline">
                       <CardHeader fontWeight="semibold">{headerLabel}</CardHeader>
                       <CardBody as={Stack} spacing={4} fontSize="sm" color="gray.700">
                         {(m?.styleName || m?.style || m?.styleImage) && (
@@ -1025,7 +1026,7 @@ const OrderDetails = () => {
                           </Text>
                         </VStack>
                       </CardBody>
-                    </Card>
+                    </StandardCard>
                   )
                 })}
               </SimpleGrid>

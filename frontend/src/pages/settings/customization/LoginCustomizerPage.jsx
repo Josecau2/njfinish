@@ -1,37 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import { useState, useEffect } from 'react'
-import {
-  Box,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  Card,
-  CardBody,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  Checkbox,
-  Grid,
-  GridItem,
-  Container,
-  Spinner,
-  InputGroup,
-  InputLeftElement,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  VStack,
-  HStack,
-  Text,
-  Flex,
-  useToast,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Box, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Textarea, Checkbox, Grid, GridItem, Container, Spinner, InputGroup, InputLeftElement, Slider, SliderTrack, SliderFilledTrack, SliderThumb, VStack, HStack, Text, Flex, useToast, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Settings,
@@ -325,18 +294,18 @@ const LoginCustomizerPage = () => {
       </PageHeader>
 
       {loading && (
-        <Card bg={cardBg} shadow="sm" borderWidth="0">
+        <StandardCard bg={cardBg} shadow="sm" borderWidth="0">
           <CardBody textAlign="center" py={8}>
             <Spinner color="blue.500" size="lg" />
             <Text color="gray.500" mt={3} mb={0}>
               {t('settings.customization.login.loading')}
             </Text>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {!loading && (
-        <Card bg={cardBg} shadow="sm" borderWidth="0">
+        <StandardCard bg={cardBg} shadow="sm" borderWidth="0">
           <CardBody>
             <Box as="form">
               <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
@@ -941,7 +910,7 @@ const LoginCustomizerPage = () => {
               </Box>
             </Box>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       <Modal

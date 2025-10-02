@@ -1,24 +1,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  Heading,
-  Icon,
-  Input,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Tabs,
-  TabList,
-  Tab,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tabs, TabList, Tab, Text, useBreakpointValue } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
@@ -108,7 +92,7 @@ const DesignImportStep = ({
 
   return (
     <Box w="full">
-      <Card my={4} shadow="md" w="full">
+      <StandardCard my={4} shadow="md" w="full">
         <CardBody p={{ base: 4, md: 6 }}>
           <Flex justify="space-between" align="center" mb={6} gap={4} flexWrap="wrap">
             <Heading size="md" color="gray.800">
@@ -280,7 +264,7 @@ const DesignImportStep = ({
             </Stack>
           )}
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {isMobile && (
         <Box

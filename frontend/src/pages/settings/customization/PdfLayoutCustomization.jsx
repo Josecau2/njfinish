@@ -1,42 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  Container,
-  Stack,
-  Box,
-  SimpleGrid,
-  HStack,
-  VStack,
-  Text,
-  Button,
-  Icon,
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Spinner,
-  Center,
-  Alert,
-  AlertIcon,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-  Textarea,
-  Input,
-  Image,
-  FormControl,
-  FormLabel,
-} from '@chakra-ui/react'
+import { Container, Stack, Box, SimpleGrid, HStack, VStack, Text, Button, Icon, Badge, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Center, Alert, AlertIcon, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Textarea, Input, Image, FormControl, FormLabel } from '@chakra-ui/react'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { FileText, Settings, Image as ImageIcon, Save, Trash, Globe, Building } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -505,7 +469,7 @@ const PdfLayoutCustomization = () => {
         )}
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader bg="gray.50" borderBottomWidth="1px">
               <HStack spacing={4} align="center">
                 <Box
@@ -608,9 +572,9 @@ const PdfLayoutCustomization = () => {
                 </Box>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline">
+          <StandardCard variant="outline">
             <CardHeader bg="gray.50" borderBottomWidth="1px">
               <HStack spacing={4} align="center">
                 <Box
@@ -779,7 +743,7 @@ const PdfLayoutCustomization = () => {
                 </FormControl>
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
       </Stack>
 

@@ -1,3 +1,4 @@
+import StandardCard from '../StandardCard'
 import { useBreakpointValue, Stack, Text, Box } from '@chakra-ui/react'
 import { DataTable } from './DataTable'
 import { MobileListCard } from '../StandardCard'

@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { Card } from '@chakra-ui/react'
 
 /**
@@ -15,12 +16,18 @@ import { Card } from '@chakra-ui/react'
  * @param {ReactNode} children - Card content (usually CardHeader, CardBody, CardFooter)
  * @param {object} ...props - Additional Chakra props
  */
-export function StandardCard({
-  variant = 'outline',
-  interactive = false,
-  children,
-  ...props
-}) {
+export const StandardCard = forwardRef(function StandardCard(
+  {
+    variant = 'outline',
+    interactive = false,
+    children,
+    className,
+    bg,
+    borderColor,
+    ...props
+  },
+  ref,
+) {
   const interactiveProps = interactive
     ? {
         cursor: 'pointer',
@@ -29,17 +36,28 @@ export function StandardCard({
       }
     : {}
 
+  const resolvedBg = bg ?? (variant === 'outline' ? 'white' : undefined)
+  const resolvedBorderColor = borderColor ?? (variant === 'outline' ? 'gray.200' : undefined)
+
   return (
     <Card
+      ref={ref}
       variant={variant}
       borderRadius="lg"
+      w="full"
+      display="flex"
+      flexDirection="column"
+      alignItems="stretch"
+      bg={resolvedBg}
+      borderColor={resolvedBorderColor}
       {...interactiveProps}
+      className={className}
       {...props}
     >
       {children}
     </Card>
   )
-}
+})
 
 /**
  * MobileListCard - Standardized card for mobile list/table views
@@ -54,16 +72,22 @@ export function StandardCard({
  * @param {ReactNode} children - Direct content (NOT CardBody - padding already applied)
  * @param {object} ...props - Additional Chakra props
  */
-export function MobileListCard({ interactive = false, children, ...props }) {
+export const MobileListCard = forwardRef(function MobileListCard(
+  { interactive = false, children, className, ...props },
+  ref,
+) {
   return (
     <StandardCard
+      ref={ref}
       interactive={interactive}
       p={{ base: 4, md: 5 }}
+      w="full"
+      className={className}
       {...props}
     >
       {children}
     </StandardCard>
   )
-}
+})
 
 export default StandardCard

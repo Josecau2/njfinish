@@ -1,6 +1,6 @@
+import StandardCard from '../StandardCard'
 import React, { useState } from 'react'
 import { CardBody, FormControl, FormLabel, Input, Textarea, Button } from '@chakra-ui/react'
-import StandardCard from '../StandardCard'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -54,8 +54,7 @@ const MessageComposer = ({ onSend }) => {
           </Button>
         </form>
       </CardBody>
-    </StandardCard>
-  
+  </StandardCard>
   )
 }
 

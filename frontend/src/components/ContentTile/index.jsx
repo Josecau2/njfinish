@@ -1,14 +1,7 @@
+import StandardCard from '../StandardCard'
 import React from 'react'
-import {
-  Card,
-  CardBody,
-  Badge,
-  Button,
-  HStack,
-  VStack,
-  Text,
-  Box
-} from '@chakra-ui/react'
+import { Badge, Button, HStack, VStack, Text, Box } from '@chakra-ui/react'
+import StandardCard from '../StandardCard'
 import { motion } from 'framer-motion'
 import { Download, Edit2, Trash2, File, Image } from 'lucide-react'
 
@@ -37,7 +30,7 @@ export default function ContentTile({
   const badgeColorScheme = isImage ? 'blue' : 'gray'
 
   return (
-    <Card
+    <StandardCard
       height="100%"
       shadow="sm"
       cursor="pointer"
@@ -51,7 +44,7 @@ export default function ContentTile({
           e.preventDefault()
           onOpen?.()
     </div>
-  
+
   )
         }
       }}
@@ -148,6 +141,6 @@ export default function ContentTile({
           </HStack>
         </VStack>
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }

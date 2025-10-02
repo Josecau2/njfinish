@@ -1,27 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  FormLabel,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Radio,
-  RadioGroup,
-  Spinner,
-  Stack,
-  Text,
-  Tooltip,
-  useToast,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Container, Flex, FormLabel, Icon, IconButton, Input, InputGroup, InputRightAddon, Radio, RadioGroup, Spinner, Stack, Text, Tooltip, useToast } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { Check, Coins, HelpCircle, Percent, Plus, Save, Trash, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -159,7 +139,7 @@ const TaxesPage = () => {
         actions={headerActions}
       />
 
-      <Card mb={6}>
+      <StandardCard mb={6}>
         <CardBody>
           <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'flex-start', md: 'center' }}>
             <Tooltip label={t('settings.taxes.help.tooltip')} placement="bottom-start">
@@ -173,9 +153,9 @@ const TaxesPage = () => {
             </Badge>
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
-      <Card>
+      <StandardCard>
         <CardBody>
           {loading ? (
             <Flex align="center" justify="center" py={12}>
@@ -336,7 +316,7 @@ const TaxesPage = () => {
             </Box>
           )}
         </CardBody>
-      </Card>
+      </StandardCard>
     </Container>
   )
 }

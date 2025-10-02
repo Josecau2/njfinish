@@ -1,21 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import {
-  Alert,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Heading,
-  Icon,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  Wrap,
-} from '@chakra-ui/react'
+import { Alert, Button, Flex, Heading, Icon, SimpleGrid, Spinner, Stack, Text, Wrap } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { FileText, User } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageContainer from '../../components/PageContainer'
@@ -155,7 +142,7 @@ const ContractorDashboard = () => {
 
   return (
     <PageContainer maxW="container.xl" py={{ base: 6, md: 10 }}>
-      <Card>
+      <StandardCard>
         <CardHeader borderBottomWidth="1px">
           <Stack spacing={4}>
             <Heading size="md">{t('dashboard.welcome', { group: groupName })}</Heading>
@@ -173,7 +160,7 @@ const ContractorDashboard = () => {
             {hasStatsCards && (
               <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} gap={4}>
                 {showProposals && (
-                  <Card bg="brand.600" color="white" shadow="lg">
+                  <StandardCard bg="brand.600" color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
                       <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
@@ -187,11 +174,11 @@ const ContractorDashboard = () => {
                         <Icon as={FileText} boxSize={6} />
                       </Flex>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 )}
 
                 {showCustomers && (
-                  <Card bg="green.600" color="white" shadow="lg">
+                  <StandardCard bg="green.600" color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
                       <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">
@@ -205,7 +192,7 @@ const ContractorDashboard = () => {
                         <Icon as={User} boxSize={6} />
                       </Flex>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 )}
               </SimpleGrid>
             )}
@@ -248,7 +235,7 @@ const ContractorDashboard = () => {
             </Stack>
           </Stack>
         </CardBody>
-      </Card>
+      </StandardCard>
     </PageContainer>
   )
 }

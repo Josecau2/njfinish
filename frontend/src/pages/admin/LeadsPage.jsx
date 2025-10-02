@@ -1,44 +1,7 @@
+import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Textarea,
-  Th,
-  Thead,
-  Tr,
-  useToast,
-  VStack,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, useToast, VStack } from '@chakra-ui/react'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
@@ -314,7 +277,7 @@ const LeadsPage = () => {
           actions={[refreshButton]}
         />
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardBody>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
               <FormControl>
@@ -352,9 +315,9 @@ const LeadsPage = () => {
               </FormControl>
             </SimpleGrid>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardHeader borderBottomWidth="1px">
             <Text fontWeight="semibold">{t('leadsPage.table.title', 'Leads')}</Text>
           </CardHeader>
@@ -441,7 +404,7 @@ const LeadsPage = () => {
                       ? new Date(lead.createdAt).toLocaleString()
                       : '�'
                     return (
-                      <Card key={lead.id} w="100%" variant="outline">
+                      <StandardCard key={lead.id} w="100%" variant="outline">
                         <CardBody>
                           <VStack align="stretch" spacing={4}>
                             <Flex justify="space-between" align="start">
@@ -515,14 +478,14 @@ const LeadsPage = () => {
                             </Flex>
                           </VStack>
                         </CardBody>
-                      </Card>
+                      </StandardCard>
                     )
                   })}
                 </VStack>
               </>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
 
         <Modal isOpen={!!selectedLead} onClose={closeModal} size={{ base: "full", lg: "5xl" }} scrollBehavior="inside">
           <ModalOverlay />
@@ -555,7 +518,7 @@ const LeadsPage = () => {
             <ModalBody>
               {selectedLead && (
                 <Stack spacing={6} pb={4}>
-                  <Card variant="outline">
+                  <StandardCard variant="outline">
                     <CardBody>
                       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                         <Box>
@@ -582,9 +545,9 @@ const LeadsPage = () => {
                         </Stack>
                       </SimpleGrid>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
 
-                  <Card variant="outline">
+                  <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
                         <Icon as={Send} boxSize={5} aria-hidden="true" />
@@ -600,9 +563,9 @@ const LeadsPage = () => {
                         </Text>
                       </Box>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
 
-                  <Card variant="outline">
+                  <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
                         <Icon as={FileText} boxSize={5} aria-hidden="true" />
@@ -636,9 +599,9 @@ const LeadsPage = () => {
                         </Box>
                       )}
                     </CardBody>
-                  </Card>
+                  </StandardCard>
 
-                  <Card variant="outline">
+                  <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
                         <Icon as={Send} boxSize={5} aria-hidden="true" />
@@ -667,7 +630,7 @@ const LeadsPage = () => {
                         </Flex>
                       </Stack>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 </Stack>
               )}
             </ModalBody>

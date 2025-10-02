@@ -1,5 +1,6 @@
+import StandardCard from '../../components/StandardCard'
 import React, { useState, useMemo, useEffect } from 'react';
-import { Input, Spinner, Select, Container, Flex, Box, Card, CardBody, Badge, Icon } from '@chakra-ui/react'
+import { Input, Spinner, Select, Container, Flex, Box, Badge, Icon } from '@chakra-ui/react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice'
 import { useNavigate } from 'react-router-dom'
@@ -127,7 +128,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
   return (
     <Container fluid className="p-2 m-2 customer-listing" style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}>
       {/* Header Section */}
-      <Card className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || "blue.600", color: customization.headerTextColor || "white" }}>
+      <StandardCard className="border-0 shadow-sm  mb-2" style={{ background: customization.headerBg || "blue.600", color: customization.headerTextColor || "white" }}>
         <CardBody>
           <Flex>
             <Box>
@@ -153,10 +154,10 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             </Box>
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Search and Stats */}
-      <Card className="border-0 shadow-sm  mb-1 ">
+      <StandardCard className="border-0 shadow-sm  mb-1 ">
         <CardBody>
           <Flex>
             <Box md={6} lg={4}>
@@ -199,32 +200,32 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
             </Box>
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Loading State */}
       {loading && (
-        <Card>
+        <StandardCard>
           <CardBody className="text-center py-5">
             <Spinner colorScheme="blue" size="lg" />
             <p className="text-muted mt-3 mb-0">Loading customers...</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Error State */}
       {error && (
-        <Card>
+        <StandardCard>
           <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>Error:</strong> {error}
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Desktop Table */}
       {!loading && !error && (
-        <Card className="border-0 shadow-sm d-none d-md-block">
+        <StandardCard className="border-0 shadow-sm d-none d-md-block">
           <CardBody>
             <div style={{ overflowX: 'auto' }}>
               <Table hover responsive>
@@ -374,14 +375,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
               </Table>
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card>
+            <StandardCard>
               <CardBody className="text-center py-5">
                 <div>
                   <Icon as={Search} size="xl" />
@@ -389,11 +390,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
-            </Card>
+            </StandardCard>
           ) : (
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
-                <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
+                <StandardCard key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
                   <CardBody>
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
@@ -490,7 +491,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       </PermissionGate>
                     </div>
                   </CardBody>
-                </Card>
+                </StandardCard>
               ))}
             </div>
           )}
@@ -553,14 +554,14 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
               </div>
             
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Mobile Card Layout */}
       {!loading && !error && (
         <div>
           {sortedFilteredCustomers?.length === 0 ? (
-            <Card>
+            <StandardCard>
               <CardBody className="text-center py-5">
                 <div>
                   <Icon as={Search} size="xl" />
@@ -568,11 +569,11 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                   <small>Try adjusting your search criteria</small>
                 </div>
               </CardBody>
-            </Card>
+            </StandardCard>
           ) : (
             <div className="mobile-customer-cards">
               {sortedFilteredCustomers?.map((cust) => (
-                <Card key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
+                <StandardCard key={cust.id} className="mb-3 customer-mobile-card border-0 shadow-sm">
                   <CardBody>
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
@@ -669,7 +670,7 @@ const CustomerTable = ({ isContractor, contractorGroupId, contractorModules, con
                       </PermissionGate>
                     </div>
                   </CardBody>
-                </Card>
+                </StandardCard>
               ))}
             </div>
           )}

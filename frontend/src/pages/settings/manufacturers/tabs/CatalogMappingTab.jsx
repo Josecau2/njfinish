@@ -1,46 +1,9 @@
+import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Checkbox,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Spinner,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Textarea,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  useToast,
-} from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, Checkbox, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
@@ -2546,7 +2509,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   `}</style>
 
       {/* Sub-Types Management Section */}
-      <Card>
+      <StandardCard>
         <CardHeader>
           <h6>{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
           <Button
@@ -2576,7 +2539,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <div className="row g-3">
               {subTypes.map((subType) => (
                 <div key={subType.id} className="col-md-6 col-lg-4">
-                  <Card>
+                  <StandardCard>
                     <CardBody>
                       <h6>{subType.name}</h6>
                       {subType.description && (
@@ -2635,13 +2598,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </Button>
                       </div>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 </div>
               ))}
             </div>
           )}
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Mobile-Optimized Filters and Pagination */}
       <div className="row g-2 mb-3">
@@ -2859,7 +2822,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       type="checkbox"
                       checked={isSelectAll}
                       onChange={(event) => handleSelectAll(event.currentTarget.checked)}
-                     
+
                       style={{
                         bordercolor: "gray.500",
                         borderWidth: '2px',
@@ -2926,7 +2889,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={(event) => handleSelectItem(item.id, event.currentTarget.checked)}
-                       
+
                         aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
                         style={{
                           bordercolor: "gray.500",
@@ -2950,7 +2913,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         size="sm"
                         color="dark"
                         onClick={() => handleShowStyleOnClick(item)}
-                       
+
                         style={{
                           backgroundcolor: "gray.500",
                           bordercolor: "gray.500",
@@ -3081,109 +3044,95 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </div>
 
             {/* Mobile Cards */}
-            <div className="mobile-cards-container">
+            <VStack spacing={3} align="stretch">
               {currentItems.map((item, index) => (
-                <div key={index} className="card mb-3 mobile-catalog-card">
-                  <div className="card-body p-3">
-                    {/* Card Header with checkbox and style */}
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <div>
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.id)}
-                          onChange={(event) =>
-                            handleSelectItem(item.id, event.currentTarget.checked)
-                          }
-                          className="form-check-input me-2"
-                        />
-                        <div>
-                          <h6>{item.code}</h6>
-                          <small>{item.description}</small>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        style={{
-                          backgroundcolor: "gray.500",
-                          bordercolor: "gray.500",
-                          color: 'white',
-                          fontSize: "xs",
-                          padding: '2px 8px',
-                        }}
-                      >
-                        {item.style}
-                      </Button>
-                    </div>
+                <StandardCard key={index} p={3}>
+                  {/* Card Header with checkbox and style */}
+                  <HStack justify="space-between" align="start" mb={2}>
+                    <HStack align="start" spacing={2}>
+                      <Checkbox
+                        isChecked={selectedItems.includes(item.id)}
+                        onChange={(event) =>
+                          handleSelectItem(item.id, event.target.checked)
+                        }
+                      />
+                      <VStack align="start" spacing={0}>
+                        <Text fontWeight="semibold">{item.code}</Text>
+                        <Text fontSize="sm" color="gray.600">{item.description}</Text>
+                      </VStack>
+                    </HStack>
+                    <Badge
+                      colorScheme="gray"
+                      fontSize="xs"
+                      px={2}
+                      py={1}
+                    >
+                      {item.style}
+                    </Badge>
+                  </HStack>
 
-                    {/* Card Content */}
-                    <div className="row g-2 mb-3">
-                      <div>
-                        <small className="text-muted d-block">Price</small>
-                        <span>${item.price}</span>
-                      </div>
-                      <div>
-                        <small className="text-muted d-block">Type</small>
-                        <span>{item.type || 'N/A'}</span>
-                      </div>
-                    </div>
+                  {/* Card Content */}
+                  <HStack spacing={4} mb={3}>
+                    <VStack align="start" spacing={0}>
+                      <Text fontSize="xs" color="gray.500">Price</Text>
+                      <Text>${item.price}</Text>
+                    </VStack>
+                    <VStack align="start" spacing={0}>
+                      <Text fontSize="xs" color="gray.500">Type</Text>
+                      <Text>{item.type || 'N/A'}</Text>
+                    </VStack>
+                  </HStack>
 
-                    {/* Card Actions */}
-                    <div>
-                      <Button
-                        size="sm"
-                        colorScheme="gray"
-                        onClick={() => handleEditClick(item)}
-                        className="flex-fill"
-                      >
-                        ✏️ Edit
-                      </Button>
+                  {/* Card Actions */}
+                  <HStack spacing={2} wrap="wrap">
+                    <Button
+                      size="sm"
+                      colorScheme="gray"
+                      onClick={() => handleEditClick(item)}
+                      flex={1}
+                    >
+                      ✏️ Edit
+                    </Button>
 
-                      <Button
-                        size="sm"
-                        onClick={() => handleManageStyleClick(item)}
-                        style={{
-                          backgroundColor: headerBg,
-                          borderColor: headerBg,
-                          color: textColor,
-                        }}
-                        className="flex-fill"
-                        title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
-                      >
-                        🎨 Style
-                      </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleManageStyleClick(item)}
+                      bg={headerBg}
+                      color={textColor}
+                      _hover={{ opacity: 0.8 }}
+                      flex={1}
+                      title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
+                    >
+                      🎨 Style
+                    </Button>
 
-                      <Button
-                        size="sm"
-                        onClick={() => handleModificationDetailsClick(item)}
-                        style={{
-                          backgroundColor: headerBg,
-                          borderColor: headerBg,
-                          color: textColor,
-                        }}
-                        className="flex-fill"
-                        title={t(
-                          'settings.manufacturers.catalogMapping.actions.modificationDetails',
-                        )}
-                      >
-                        🔧 Modify
-                      </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleModificationDetailsClick(item)}
+                      bg={headerBg}
+                      color={textColor}
+                      _hover={{ opacity: 0.8 }}
+                      flex={1}
+                      title={t(
+                        'settings.manufacturers.catalogMapping.actions.modificationDetails',
+                      )}
+                    >
+                      🔧 Modify
+                    </Button>
 
-                      <Button
-                        size="sm"
-                        colorScheme="red"
-                        onClick={() => handleDeleteClick(item.id)}
-                        style={{
-                          fontSize: "xs",
-                          padding: '4px 8px',
-                        }}
-                      >
-                        🗑️
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      onClick={() => handleDeleteClick(item.id)}
+                      fontSize="xs"
+                      px={2}
+                    >
+                      🗑️
+                    </Button>
+                  </HStack>
+                </StandardCard>
               ))}
-            </div>
+            </VStack>
           </div>
         </>
       )}
@@ -3212,7 +3161,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   sortOrder,
                 )
               }
-             
+
             >
               {t('pagination.prevPageTitle')}
             </Button>
@@ -4074,7 +4023,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     return (
                       <div key={typeItem.type} className="form-check mb-2">
                         <input
-                         
+
                           type="radio"
                           name="singleTypeSelection"
                           id={`single-type-${typeItem.type}`}
@@ -4084,7 +4033,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <label
-                         
+
                           htmlFor={`single-type-${typeItem.type}`}
                         >
                           <div>
@@ -4130,7 +4079,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     return (
                       <div key={typeItem.type} className="form-check mb-2">
                         <input
-                         
+
                           type="checkbox"
                           id={`type-${typeItem.type}`}
                           checked={isSelected}
@@ -4151,7 +4100,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }}
                         />
                         <label
-                         
+
                           htmlFor={`type-${typeItem.type}`}
                         >
                           <div>
@@ -4226,7 +4175,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isAssemblyCostSaving ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4391,7 +4340,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <div>
                 <div className="form-check mb-2">
                   <input
-                   
+
                     type="radio"
                     name="deleteOption"
                     id="deleteItems"
@@ -4405,7 +4354,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                 <div>
                   <input
-                   
+
                     type="radio"
                     name="deleteOption"
                     id="mergeItems"
@@ -4479,7 +4428,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isDeleting ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4531,7 +4480,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isDeletingItem ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4595,7 +4544,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isBulkDeleting ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4632,7 +4581,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {availableBackups.map((backup) => (
                     <div key={backup.uploadSessionId} className="form-check mb-2">
                       <input
-                       
+
                         type="radio"
                         name="backupSelection"
                         id={`backup-${backup.uploadSessionId}`}
@@ -4641,7 +4590,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         onChange={(event) => setSelectedBackup(event.currentTarget.value)}
                       />
                       <label
-                       
+
                         htmlFor={`backup-${backup.uploadSessionId}`}
                         aria-label={`Select backup ${backup.originalName}`}
                       >
@@ -4687,7 +4636,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isRollingBack ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4788,7 +4737,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isBulkEditing ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4868,7 +4817,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {isEditingStyleName ? (
                 <>
                   <span
-                   
+
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -4898,9 +4847,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           />
           <ModalBody>
             {modificationView === 'cards' && (
-              <div>
+              <Box>
                 {/* Main Action Buttons */}
-                <div className="d-flex gap-3 mb-4 justify-content-center">
+                <HStack spacing={3} mb={4} justify="center">
                   <Button
                     colorScheme="blue"
                     size="lg"
@@ -4922,25 +4871,25 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   >
                     {t('globalMods.ui.buttons.addModification', 'Add Modification')}
                   </Button>
-                  <Button color="info" size="lg" onClick={() => setModificationView('gallery')}>
+                  <Button colorScheme="blue" size="lg" onClick={() => setModificationView('gallery')}>
                     {t('globalMods.ui.buttons.gallery', 'Gallery')}
                   </Button>
                   <Button
-                    color="success"
+                    colorScheme="green"
                     size="lg"
                     onClick={() => setShowAssignGlobalModsModal(true)}
                   >
                     {t('globalMods.ui.buttons.assignModification', 'Assign Modification')}
                   </Button>
-                </div>
+                </HStack>
 
                 {/* Existing Modification Cards */}
-                <div>
+                <VStack spacing={4} align="stretch">
                   {manufacturerCategories.map((category) => (
-                    <div key={category.id} className="col-md-6 mb-4">
-                      <div className="card h-100">
-                        <div>
-                          <h6>
+                    <StandardCard key={category.id} h="full">
+                      <Box p={4}>
+                        <HStack justify="space-between" mb={3}>
+                          <HStack spacing={2}>
                             {category.image && (
                               <>
                                 <Image
@@ -4969,17 +4918,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 </Badge>
                               </>
                             )}
-                            {category.name}
-                          </h6>
-                          <div>
-                            <span className="badge bg-secondary">
+                            <Text fontWeight="semibold" fontSize="lg">{category.name}</Text>
+                          </HStack>
+                          <HStack spacing={2}>
+                            <Badge colorScheme="gray">
                               {t('settings.manufacturers.catalogMapping.modManagement.modsCount', {
                                 count: category.templates?.length || 0,
                               })}
-                            </span>
+                            </Badge>
                             <Button
                               size="sm"
-                              color="warning"
+                              colorScheme="yellow"
                               variant="outline"
                               title={t('globalMods.category.editTooltip')}
                               onClick={() => {
@@ -5006,16 +4955,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             >
                               🗑️ {t('common.delete')}
                             </Button>
-                          </div>
-                        </div>
-                        <div>
+                          </HStack>
+                        </HStack>
+                        <VStack spacing={2} align="stretch">
                           {category.templates?.length ? (
                             category.templates.map((template) => (
-                              <div
+                              <HStack
                                 key={template.id}
-                               
+                                p={3}
+                                borderWidth="1px"
+                                borderRadius="md"
+                                justify="space-between"
+                                align="center"
                               >
-                                <div>
+                                <HStack spacing={3}>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -5033,16 +4986,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }}
                                     />
                                   )}
-                                  <div>
-                                    <strong>{template.name}</strong>
-                                    {template.defaultPrice && (
-                                      <span>
-                                        {' '}
-                                        - ${Number(template.defaultPrice).toFixed(2)}
-                                      </span>
-                                    )}
-                                    <div>
-                                      <Badge color={template.isReady ? 'success' : 'warning'}>
+                                  <VStack align="start" spacing={1}>
+                                    <HStack>
+                                      <Text fontWeight="semibold">{template.name}</Text>
+                                      {template.defaultPrice && (
+                                        <Text color="gray.600">
+                                          - ${Number(template.defaultPrice).toFixed(2)}
+                                        </Text>
+                                      )}
+                                    </HStack>
+                                    <HStack spacing={2}>
+                                      <Badge colorScheme={template.isReady ? 'green' : 'yellow'}>
                                         {template.isReady
                                           ? t(
                                               'settings.manufacturers.catalogMapping.gallery.badges.ready',
@@ -5063,13 +5017,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                           )}
                                         </Badge>
                                       )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
+                                    </HStack>
+                                  </VStack>
+                                </HStack>
+                                <HStack spacing={1}>
                                   <Button
                                     size="sm"
-                                    color="outline-primary"
+                                    colorScheme="blue"
+                                    variant="outline"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.edit',
                                     )}
@@ -5099,7 +5054,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="outline-danger"
+                                    colorScheme="red"
+                                    variant="outline"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
                                     )}
@@ -5119,7 +5075,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="outline-warning"
+                                    colorScheme="yellow"
+                                    variant="outline"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.move',
                                     )}
@@ -5132,7 +5089,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="outline-success"
+                                    colorScheme="green"
+                                    variant="outline"
                                     title={t('globalMods.modal.assign.title')}
                                     onClick={() => {
                                       setAssignFormGM((f) => ({ ...f, templateId: template.id }))
@@ -5141,30 +5099,31 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   >
                                     🎯
                                   </Button>
-                                </div>
-                              </div>
+                                </HStack>
+                              </HStack>
                             ))
                           ) : (
-                            <p>
+                            <Text color="gray.500" py={4} textAlign="center">
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
-                            </p>
+                            </Text>
                           )}
-                        </div>
-                      </div>
-                    </div>
+                        </VStack>
+                      </Box>
+                    </StandardCard>
                   ))}
                   {!manufacturerCategories.length && (
-                    <div className="col-12 text-center">
-                      <p>
+                    <Box textAlign="center" py={4}>
+                      <Text>
                         {t('settings.manufacturers.catalogMapping.modManagement.noCategories', {
                           addLabel: t('globalMods.ui.buttons.addModification', 'Add Modification'),
                         })}
-                      </p>
-                    </div>
+                      </Text>
+                    </Box>
                   )}
-                </div>
-              </div>
+                </VStack>
+              </Box>
             )}
+
 
             {modificationView === 'addNew' && (
               <div>
@@ -5944,7 +5903,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               saveAsBlueprint: event.currentTarget.checked,
                             }))
                           }
-                         
+
                         >
                           {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
                         </Checkbox>
@@ -5998,7 +5957,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {creatingModification ? (
                             <>
                               <span
-                               
+
                                 role="status"
                                 aria-hidden="true"
                               ></span>
@@ -6067,7 +6026,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {creatingModification ? (
                             <>
                               <span
-                               
+
                                 role="status"
                                 aria-hidden="true"
                               ></span>
@@ -6121,7 +6080,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             category.templates.map((template) => (
                               <div
                                 key={template.id}
-                               
+
                               >
                                 <div>
                                   {template.sampleImage && (
@@ -6428,7 +6387,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <div>
                       <div>
                         <input
-                         
+
                           type="radio"
                           name="deleteMode"
                           id="deleteCancel"
@@ -6441,7 +6400,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </div>
                       <div>
                         <input
-                         
+
                           type="radio"
                           name="deleteMode"
                           id="deleteWithMods"
@@ -6629,7 +6588,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <div>
                   <div className="form-check form-switch mt-4">
                     <input
-                     
+
                       type="checkbox"
                       id="showToBoth"
                       checked={editTemplate.showToBoth || false}
@@ -7020,7 +6979,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <Checkbox
-                         
+
                           isChecked={editGuidedBuilder.notes.showInRed}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
@@ -7072,7 +7031,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }
                         />
                         <Checkbox
-                         
+
                           isChecked={editGuidedBuilder.customerUpload.required}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({

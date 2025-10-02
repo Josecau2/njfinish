@@ -1,33 +1,10 @@
+import StandardCard from '../../../components/StandardCard'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addManufacturer } from '../../../store/slices/manufacturersSlice'
 import { getContrastColor } from '../../../utils/colorUtils'
-import {
-  FormControl,
-  Input,
-  FormLabel,
-  Textarea,
-  Checkbox,
-  Card,
-  CardBody,
-  Alert,
-  AlertIcon,
-  Flex,
-  Box,
-  Container,
-  FormHelperText,
-  FormErrorMessage,
-  InputGroup,
-  InputLeftAddon,
-  Spinner,
-  Button,
-  Icon,
-  VStack,
-  HStack,
-  Text,
-  CloseButton,
-} from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Textarea, Checkbox, Alert, AlertIcon, Flex, Box, Container, FormHelperText, FormErrorMessage, InputGroup, InputLeftAddon, Spinner, Button, Icon, VStack, HStack, Text, CloseButton } from '@chakra-ui/react'
 import {
   Mail,
   Image,
@@ -52,7 +29,7 @@ const FormSection = ({ title, icon, children, className = '', customization }) =
   const textColor = getContrastColor(headerBg)
 
   return (
-    <Card className={`border-0 shadow-sm mb-4 ${className}`}>
+    <StandardCard className={`border-0 shadow-sm mb-4 ${className}`}>
       <CardBody>
         <div className="d-flex align-items-center mb-4">
           <div
@@ -70,7 +47,7 @@ const FormSection = ({ title, icon, children, className = '', customization }) =
         </div>
         {children}
       </CardBody>
-    </Card>
+    </StandardCard>
 
   )
 }
@@ -465,7 +442,7 @@ const ManufacturerForm = () => {
 
       <form onSubmit={handleSubmit}>
         {/* Information Notice */}
-        <Card className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
+        <StandardCard className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CardBody className="py-3 px-4" bg="blue.50">
             <HStack align="flex-start" spacing={4}>
               <Info size={16} style={{ color: "blue.500", marginTop: '0.25rem' }} />
@@ -475,7 +452,7 @@ const ManufacturerForm = () => {
               </Text>
             </HStack>
           </CardBody>
-        </Card>
+        </StandardCard>
 
         {/* Basic Information */}
         <FormSection
@@ -746,7 +723,7 @@ const ManufacturerForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <Card>
+        <StandardCard>
           <CardBody>
             <div className="d-flex gap-3 justify-content-end flex-wrap">
               <Button
@@ -790,7 +767,7 @@ const ManufacturerForm = () => {
               </Button>
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       </form>
     </Container>
   )

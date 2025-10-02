@@ -1,3 +1,4 @@
+import StandardCard from '../../components/StandardCard'
 import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'

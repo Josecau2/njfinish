@@ -1,48 +1,10 @@
+import StandardCard from '../../../components/StandardCard'
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
-import {
-  Flex,
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Table,
-  Tbody,
-  Td,
-  Thead,
-  Th,
-  Tr,
-  Badge,
-  Button,
-  Select,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  Spinner,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  List,
-  ListItem,
-  Alert,
-  ButtonGroup,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Progress,
-  Tooltip,
-  TableContainer,
-  Text
-} from '@chakra-ui/react'
+import { Flex, Box, Table, Tbody, Td, Thead, Th, Tr, Badge, Button, Select, InputGroup, InputLeftElement, Input, Spinner, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, List, ListItem, Alert, ButtonGroup, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Progress, Tooltip, TableContainer, Text } from '@chakra-ui/react'
 import EmptyState from '../../../components/common/EmptyState'
 import { notifyError } from '../../../helpers/notify'
 import {
@@ -328,7 +290,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
     <>
       <Flex>
         <Box xs={12}>
-          <Card>
+          <StandardCard>
             <CardHeader>
               <strong>
                 <BriefcaseBusiness size={16} aria-hidden="true" />
@@ -559,7 +521,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 </div>
               )}
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
 

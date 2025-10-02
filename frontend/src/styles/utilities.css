@@ -11,12 +11,7 @@
   --space-3xl: 64px;
 }
 
-/* Remove default margins that cause gaps */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Box-sizing is already set in reset.css - removed duplicate global reset to avoid Chakra conflicts */
 
 /* Page content spacing */
 .page-content {
@@ -38,20 +33,6 @@
 .section:last-child {
   margin-bottom: 0;
 }
-
-/* Card spacing - DISABLED: Using Chakra Card components exclusively */
-/* .card {
-  padding: var(--space-lg);
-  border-radius: 12px;
-  background: var(--chakra-colors-surface);
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
-}
-
-@media (max-width: 1023px) {
-  .card {
-    padding: var(--space-md);
-  }
-} */
 
 /* Stack spacing utilities */
 .stack-xs > * + * {

@@ -12,34 +12,8 @@ import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal'
 import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Badge,
-  Button,
-  IconButton,
-  Box,
-  Flex,
-  Text,
-  VStack,
-  HStack,
-  Card,
-  CardBody,
-  Heading,
-  Container,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Table, Thead, Tbody, Tr, Th, Td, Badge, Button, IconButton, Box, Flex, Text, VStack, HStack, Heading, Container, Menu, MenuButton, MenuList, MenuItem, Input, InputGroup, InputLeftElement, useColorModeValue } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import {
   Pencil,
   Trash2,
@@ -579,7 +553,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
       {/* Desktop Table */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <Card>
+        <StandardCard>
           <CardBody p={0}>
             <Table variant="simple">
               <Thead>
@@ -671,7 +645,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
               </Tbody>
             </Table>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
 
       {/* Mobile Compact UI */}
@@ -679,7 +653,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         {/* Compact card list */}
         <VStack spacing={4} align="stretch">
           {mobileItems.length === 0 ? (
-            <Card>
+            <StandardCard>
               <CardBody textAlign="center" py={8}>
                 <VStack spacing={4}>
                   <Search size={32} color="gray" />
@@ -689,10 +663,10 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                   </Text>
                 </VStack>
               </CardBody>
-            </Card>
+            </StandardCard>
           ) : (
             mobileItems.map((item) => (
-              <Card key={item.id}>
+              <StandardCard key={item.id}>
                 <CardBody>
                   <Flex justify="space-between" align="center" mb={3}>
                     <Heading size="md">{item.customer?.name || t('common.na')}</Heading>
@@ -765,7 +739,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     </Menu>
                   </HStack>
                 </CardBody>
-              </Card>
+              </StandardCard>
             ))
           )}
           {filteredProposals && mobileCount < filteredProposals.length && (
@@ -779,7 +753,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       </Box>
 
       {/* Pagination */}
-      <Card mt={4}>
+      <StandardCard mt={4}>
         <CardBody>
           <PaginationComponent
             currentPage={currentPage}
@@ -788,7 +762,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             itemsPerPage={itemsPerPage}
           />
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Proposal Acceptance Modal */}
       <ProposalAcceptanceModal

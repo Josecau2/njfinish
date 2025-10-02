@@ -2,30 +2,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  Input,
-  Radio,
-  RadioGroup,
-  Select,
-  Stack,
-  Switch,
-  Text,
-  Textarea,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Radio, RadioGroup, Select, Stack, Switch, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
 
 import PageHeader from '../../components/PageHeader'
@@ -241,7 +219,7 @@ const PaymentConfiguration = () => {
           </Alert>
         )}
 
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
               <Icon as={CreditCard} boxSize={5} color="blue.500" />
@@ -415,9 +393,9 @@ const PaymentConfiguration = () => {
               </FormControl>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
               <Icon as={CreditCard} boxSize={5} color="green.500" />
@@ -443,7 +421,7 @@ const PaymentConfiguration = () => {
               )}
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Stack>
     </Container>
   )

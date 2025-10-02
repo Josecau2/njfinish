@@ -1,36 +1,10 @@
+import StandardCard from '../../components/StandardCard'
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import {
-  Alert,
-  AlertIcon,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Text,
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Container, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text } from '@chakra-ui/react'
 import { Search, Users, User, Layers, BriefcaseBusiness as Briefcase, BarChart3 as ChartBar } from 'lucide-react'
 
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
@@ -151,7 +125,7 @@ const Contractors = () => {
           </Alert>
         )}
 
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
             <Stack spacing={5}>
               <InputGroup maxW={{ base: 'full', lg: '360px' }}>
@@ -222,9 +196,9 @@ const Contractors = () => {
               </SimpleGrid>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody>
             <TableContainer>
               <Table variant="simple">
@@ -294,7 +268,7 @@ const Contractors = () => {
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={4}>
                 {sortedFilteredContractors.map((contractor) => (
-                  <Card key={contractor.id} borderRadius="lg" variant="outline">
+                  <StandardCard key={contractor.id} borderRadius="lg" variant="outline">
                     <CardBody>
                       <Stack spacing={4}>
                         <HStack justify="space-between" align="flex-start">
@@ -353,7 +327,7 @@ const Contractors = () => {
                         </Text>
                       </Stack>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 ))}
               </Stack>
             </Box>
@@ -369,7 +343,7 @@ const Contractors = () => {
               </Box>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
       </Stack>
     </Container>
   )

@@ -1,32 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useRef } from 'react'
-import {
-  Input,
-  Spinner,
-  Container,
-  Flex,
-  Box,
-  Card,
-  CardBody,
-  Badge,
-  Button,
-  useToast,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  InputGroup,
-  InputLeftElement,
-  Select
-} from '@chakra-ui/react'
+import { Input, Spinner, Container, Flex, Box, Badge, Button, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure, Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Select } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Plus,
@@ -189,7 +163,7 @@ const UsersPage = () => {
       {/* Stats Cards */}
       <Flex>
         <Box md={4}>
-          <Card className="settings-stats-card">
+          <StandardCard className="settings-stats-card">
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon primary">
@@ -201,10 +175,10 @@ const UsersPage = () => {
                 </div>
               </Flex>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box md={4}>
-          <Card className="settings-stats-card">
+          <StandardCard className="settings-stats-card">
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon success">
@@ -216,10 +190,10 @@ const UsersPage = () => {
                 </div>
               </Flex>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
         <Box md={4}>
-          <Card className="settings-stats-card">
+          <StandardCard className="settings-stats-card">
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon warning">
@@ -231,12 +205,12 @@ const UsersPage = () => {
                 </div>
               </Flex>
             </CardBody>
-          </Card>
+          </StandardCard>
         </Box>
       </Flex>
 
       {/* Search Section */}
-      <Card className="settings-search-card">
+      <StandardCard className="settings-search-card">
         <CardBody>
           <Flex>
             <Box md={6} lg={4}>
@@ -267,33 +241,33 @@ const UsersPage = () => {
             </Box>
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Error State */}
       {error && (
-        <Card className="settings-search-card">
+        <StandardCard className="settings-search-card">
           <CardBody>
             <div className="alert alert-danger mb-0">
               <strong>{t('common.error')}:</strong> {t('settings.users.loadFailed')}:{' '}
               {error.message || error.toString() || t('common.error')}
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Loading State */}
       {loading && (
-        <Card className="settings-table-card">
+        <StandardCard className="settings-table-card">
           <CardBody className="settings-empty-state">
             <Spinner colorScheme="blue" size="lg" />
             <p className="text-muted mt-3 mb-0">{t('settings.users.loading')}</p>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
 
       {/* Table */}
       {!loading && (
-        <Card className="settings-table-card">
+        <StandardCard className="settings-table-card">
           <CardBody>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }} className="table-wrap">
@@ -481,7 +455,7 @@ const UsersPage = () => {
               />
             </Box>
           </CardBody>
-        </Card>
+        </StandardCard>
       )}
       {/* Delete Confirmation Dialog */}
       <AlertDialog

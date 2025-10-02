@@ -1,20 +1,7 @@
+import StandardCard from '../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FormControl,
-  Input,
-  FormLabel,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Box,
-  Select,
-  Spinner,
-  Button,
-  FormErrorMessage,
-  SimpleGrid,
-} from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Flex, Box, Select, Spinner, Button, FormErrorMessage, SimpleGrid } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserById, updateUser } from '../../store/slices/userSlice'
 import Swal from 'sweetalert2'
@@ -146,12 +133,12 @@ const ProfilePage = () => {
   if (isLoading) {
     return (
       <Box className="profile-container" role="status" aria-live="polite">
-        <Card className="profile-card">
+        <StandardCard className="profile-card">
           <CardBody minH="400px"
           >
             <Spinner color={accentColor} size="lg" />
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
     )
   }
@@ -164,7 +151,7 @@ const ProfilePage = () => {
           .profile-card { margin: 0 .5rem; }
         }
       `}</style>
-      <Card className="profile-card">
+      <StandardCard className="profile-card">
         <CardHeader>
           <h4>{t('profile.header')}</h4>
         </CardHeader>
@@ -273,7 +260,7 @@ const ProfilePage = () => {
             </Flex>
           </Box>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Box>
   )
 }

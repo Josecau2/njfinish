@@ -122,7 +122,7 @@ body {
 
 .header .header-toggler:focus {
   box-shadow: none;
-  outline: none !important;
+  outline: none;
 }
 
 /* Header Navigation Spacing - FORCE VERTICAL CENTER */
@@ -140,8 +140,8 @@ body {
 .header .navbar-nav .nav-item {
   display: flex;
   align-items: center;
-  justify-content: center !important;
-  height: 100% !important;
+  justify-content: center;
+  height: 100%;
   padding: 0;
   margin: 0;
 }
@@ -152,7 +152,7 @@ body {
   transition: background-color 0.15s ease-in-out;
   margin: 0;
   vertical-align: middle;
-  line-height: 1 !important;
+  line-height: 1;
   display: flex;
   align-items: center;
   height: 100%;
@@ -165,8 +165,8 @@ body {
 /* Dropdown specific fix */
 .header .dropdown-toggle {
   display: flex;
-  align-items: center !important;
-  height: 100% !important;
+  align-items: center;
+  height: 100%;
 }
 
 /* Language switcher fix */
@@ -230,9 +230,9 @@ body {
   /* Make username responsive on mobile - show but constrain width */
   .header .header-toggler span {
     max-width: 120px;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 0.95rem;
   }
 
@@ -271,21 +271,21 @@ body {
   .modal.show .modal-dialog:has([data-testid='quote-preview']),
   .modal.show .modal-dialog:has(.quote-preview-content) {
     height: 100vh;
-    max-height: 100vh !important;
+    max-height: 100vh;
   }
 
   .modal-content:has([data-testid='quote-preview']),
   .modal-content:has(.quote-preview-content) {
     height: 100vh;
-    display: flex !important;
-    flex-direction: column !important;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Quote Preview Modal Body - mobile optimization */
   .modal-content:has([data-testid='quote-preview']) .modal-body,
   .modal-content:has(.quote-preview-content) .modal-body {
     flex: 1;
-    overflow: hidden !important;
+    overflow: hidden;
     padding: 0;
   }
 
@@ -293,9 +293,9 @@ body {
   .modal-content:has([data-testid='quote-preview']) .modal-body > div,
   .modal-content:has(.quote-preview-content) .modal-body > div {
     height: 100%;
-    max-height: calc(100vh - 120px) !important; /* Account for header and footer */
-    overflow: auto !important;
-    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+    max-height: calc(100vh - 120px); /* Account for header and footer */
+    overflow: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 
   /* Quote Preview content scaling for mobile */
@@ -394,13 +394,6 @@ body {
 
 /* 4. Component-specific overrides
 -------------------------------------------------- */
-
-/* Cards */
-.card {
-  border: none;
-  box-shadow: var(--cui-box-shadow);
-  border-radius: var(--cui-border-radius-lg);
-}
 
 /* Buttons */
 .btn {
@@ -836,7 +829,7 @@ body {
 
   .page-header-dynamic .header-icon-container {
     width: 40px;
-    height: 40px !important;
+    height: 40px;
   }
 
   .page-header-dynamic .header-icon-container > * {
@@ -915,18 +908,6 @@ body {
 
 .data-table-card .table tbody tr:last-child td {
   border-bottom: none;
-}
-
-.mobile-card-view .card {
-  border: 1px solid var(--cui-border-color-translucent);
-  border-radius: var(--cui-border-radius-lg);
-  box-shadow: var(--cui-box-shadow-sm);
-  margin-bottom: 1.5rem;
-  border-radius: 10px;
-  border: 2px solid #e9ecef;
-  padding: 0.8rem 1rem;
-  transition: all 0.3s ease;
-  font-size: 1rem;
 }
 
 .mobile-card-view .customer-name {
@@ -2003,20 +1984,20 @@ body {
   .catalog-controls-mobile .position-relative {
     order: 1;
     width: 100%;
-    max-width: none !important;
+    max-width: none;
   }
 
   .catalog-controls-mobile .d-flex.flex-wrap {
     order: 3;
     justify-content: space-between;
-    width: 100% !important;
+    width: 100%;
   }
 
   .catalog-controls-mobile .flex-shrink-0:last-child {
     order: 2;
     width: 100%;
-    max-width: none !important;
-    min-width: 0 !important;
+    max-width: none;
+    min-width: 0;
   }
 
   /* Style section controls mobile layout */
@@ -2025,11 +2006,11 @@ body {
     gap: 1.5rem;
     margin-bottom: 1.5rem;
     padding: 0 1rem;
-    width: 100% !important;
+    width: 100%;
     max-width: 100%;
     overflow-x: hidden;
     /* Center children (cards) on mobile */
-    align-items: center !important;
+    align-items: center;
   }
 
   /* Hide the separator line on mobile */
@@ -2041,13 +2022,13 @@ body {
   .style-selection-mobile .current-style-section {
     min-width: 0;
     padding: 1.5rem;
-    background: white !important;
+    background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin-bottom: 1.5rem;
-    width: 100% !important;
+    width: 100%;
     /* Constrain and center the main style card for nicer mobile look */
-    max-width: 480px !important;
+    max-width: 480px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -2055,18 +2036,18 @@ body {
   .style-selection-mobile .current-style-content {
     flex-direction: row;
     gap: 1.25rem;
-    align-items: flex-start !important;
+    align-items: flex-start;
   }
 
   .style-selection-mobile .current-style-image {
     width: 110px;
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
   }
 
   .style-selection-mobile .current-style-image img {
     width: 100%;
-    height: 150px !important;
-    object-fit: contain !important;
+    height: 150px;
+    object-fit: contain;
     background-color: #f8f9fa;
     border-radius: 10px;
   }
@@ -2074,14 +2055,14 @@ body {
   .style-selection-mobile .current-style-info {
     gap: 0.75rem;
     flex: 1;
-    min-width: 0 !important;
+    min-width: 0;
     padding-top: 0.25rem;
   }
 
   .style-selection-mobile h5 {
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
-    font-weight: 600 !important;
+    font-weight: 600;
   }
 
   .style-selection-mobile .d-flex.align-items-center {
@@ -2101,7 +2082,7 @@ body {
   .style-selection-mobile .current-style-info .d-flex.align-items-center:last-child {
     gap: 0.5rem;
     justify-content: space-between;
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
     padding-right: 0.5rem;
   }
 
@@ -2114,10 +2095,10 @@ body {
   /* Constrain the assembly text to prevent overflow */
   .style-selection-mobile .current-style-info .d-flex.align-items-center:last-child span {
     flex: 1;
-    min-width: 0 !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     margin-right: 0.5rem;
   }
 
@@ -2126,11 +2107,11 @@ body {
     padding: 1.5rem;
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-    width: 100% !important;
-    min-height: 300px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    min-height: 300px;
     /* Center the other styles section consistently with main style card */
-    max-width: 480px !important;
+    max-width: 480px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -2143,7 +2124,7 @@ body {
   .style-selection-mobile .other-styles-header {
     flex-direction: column;
     gap: 0.75rem;
-    align-items: center !important;
+    align-items: center;
     margin-bottom: 1rem;
   }
 
@@ -2156,23 +2137,23 @@ body {
     font-size: 0.875rem;
     border-radius: 8px;
     min-width: 44px;
-    height: 44px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Override the carousel container on mobile */
   .style-selection-mobile .other-styles-carousel-container {
     max-height: none;
-    overflow: visible !important;
+    overflow: visible;
     padding-right: 0;
   }
 
   /* When collapsed on mobile, ensure proper spacing */
   .style-selection-mobile .other-styles-carousel-container.collapsed-view {
     max-height: 300px;
-    overflow-y: auto !important;
+    overflow-y: auto;
   }
 }
 
@@ -2209,12 +2190,12 @@ body {
   .other-styles-carousel-container {
     /* Remove restrictive max-height and overflow */
     max-height: none;
-    overflow: visible !important;
+    overflow: visible;
   }
 
   .other-styles-carousel-container.collapsed-view {
     max-height: 300px;
-    overflow-y: auto !important;
+    overflow-y: auto;
   }
 
   .styles-carousel-container {
@@ -2223,21 +2204,21 @@ body {
 
   .styles-carousel-track {
     flex-wrap: wrap;
-    width: 100% !important;
-    transform: none !important;
+    width: 100%;
+    transform: none;
     gap: 1rem;
   }
 
   .style-carousel-item {
     min-width: 180px;
-    max-width: 180px !important;
+    max-width: 180px;
     margin-bottom: 1rem;
   }
 
   .style-carousel-item img {
     height: 160px;
-    width: 100% !important;
-    object-fit: contain !important;
+    width: 100%;
+    object-fit: contain;
     border-radius: 10px;
     background-color: #f8f9fa;
   }
@@ -2247,9 +2228,9 @@ body {
     margin-top: 0.75rem;
     font-size: 0.875rem;
     min-height: 80px;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .style-carousel-item .mt-2.p-2.rounded div {
@@ -2269,10 +2250,10 @@ body {
   /* Compact/Collapsed View Styles */
   .styles-compact-list {
     display: flex;
-    flex-direction: column !important;
+    flex-direction: column;
     gap: 0.5rem;
-    max-height: 300px !important;
-    overflow-y: auto !important;
+    max-height: 300px;
+    overflow-y: auto;
     padding: 0.5rem;
     background-color: #f8f9fa;
     border-radius: 8px;
@@ -2280,15 +2261,15 @@ body {
 
   .compact-style-item {
     display: flex;
-    justify-content: space-between !important;
-    align-items: center !important;
+    justify-content: space-between;
+    align-items: center;
     padding: 0.75rem 1rem;
     background-color: #ffffff;
     border-width: 1px;
     border-style: solid;
     border-color: #e9ecef;
     border-radius: 6px;
-    cursor: pointer !important;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
 
@@ -2305,8 +2286,8 @@ body {
 
   .compact-style-item .style-info {
     display: flex;
-    flex-direction: column !important;
-    align-items: flex-start !important;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .compact-style-item .style-name {
@@ -2328,7 +2309,7 @@ body {
 
   .compact-style-item .style-price {
     font-size: 1.1rem;
-    font-weight: 600 !important;
+    font-weight: 600;
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
   }
@@ -2349,15 +2330,15 @@ body {
   /* Toggle button touch-friendly on mobile */
   .other-styles-header .btn {
     min-height: 44px;
-    min-width: 44px !important;
+    min-width: 44px;
   }
 
   .styles-compact-list {
     display: flex;
-    flex-direction: column !important;
+    flex-direction: column;
     gap: 0.5rem;
-    max-height: 300px !important;
-    overflow-y: auto !important;
+    max-height: 300px;
+    overflow-y: auto;
     padding: 0.5rem;
     background-color: #f8f9fa;
     border-radius: 8px;
@@ -2365,15 +2346,15 @@ body {
 
   .compact-style-item {
     display: flex;
-    justify-content: space-between !important;
-    align-items: center !important;
+    justify-content: space-between;
+    align-items: center;
     padding: 0.75rem;
     background-color: #ffffff;
     border-width: 1px;
     border-style: solid;
     border-color: #e9ecef;
     border-radius: 6px;
-    cursor: pointer !important;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
 
@@ -2391,10 +2372,10 @@ body {
 
   .compact-style-item .style-info {
     display: flex;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    flex: 1 !important;
-    min-width: 0 !important;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
   }
 
   .compact-style-item .style-name {
@@ -2402,8 +2383,8 @@ body {
     font-weight: 500;
     color: #333;
     margin-bottom: 0.25rem;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .compact-style-item.current-style .style-name {
@@ -2422,7 +2403,7 @@ body {
     font-weight: 600;
     padding: 0.4rem 0.6rem;
     border-radius: 4px;
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
     margin-left: 0.5rem;
   }
 
@@ -2441,7 +2422,7 @@ body {
 @media (min-width: 1024px) and (max-width: 991.98px) {
   .style-carousel-item {
     min-width: 160px;
-    max-width: 160px !important;
+    max-width: 160px;
   }
 
   .style-carousel-item img {
@@ -2454,25 +2435,25 @@ body {
   .styles-carousel-track {
     gap: 0.5rem;
     width: auto; /* Override the calculated width */
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
   }
 
   .style-carousel-item {
     min-width: calc(
       48% - 0.25rem
     ); /* Show 2 items per row on mobile, slightly smaller */
-    max-width: calc(48% - 0.25rem) !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
-    flex-basis: calc(48% - 0.25rem) !important;
+    max-width: calc(48% - 0.25rem);
+    flex-shrink: 0;
+    flex-grow: 0;
+    flex-basis: calc(48% - 0.25rem);
   }
 
   .style-carousel-item img {
     height: 100px;
     border-radius: 8px;
-    width: 100% !important;
+    width: 100%;
     max-width: 100%;
-    object-fit: contain !important;
+    object-fit: contain;
     background-color: #f8f9fa;
     border: 1px solid #e9ecef;
   }
@@ -2480,9 +2461,9 @@ body {
   /* Make carousel container properly sized for mobile */
   .styles-carousel-container {
     padding: 0.5rem 0;
-    min-height: 180px !important;
-    overflow: hidden !important;
-    width: 100% !important;
+    min-height: 180px;
+    overflow: hidden;
+    width: 100%;
     position: relative !important;
   }
 
@@ -2493,21 +2474,21 @@ body {
     font-size: 0.7rem;
     border-radius: 6px;
     text-align: center;
-    line-height: 1.2 !important;
-    min-height: 60px !important;
+    line-height: 1.2;
+    min-height: 60px;
   }
 
   .style-carousel-item .mt-2.p-2.rounded strong {
     font-size: 0.8rem;
     display: block;
-    font-weight: 600 !important;
+    font-weight: 600;
   }
 
   .style-carousel-item .mt-2.p-2.rounded div {
     font-size: 0.7rem;
     margin-bottom: 0.2rem;
     word-wrap: break-word;
-    overflow-wrap: break-word !important;
+    overflow-wrap: break-word;
   }
 
   /* Custom items mobile layout */
@@ -2518,8 +2499,8 @@ body {
 
   .custom-items-mobile input[style*='flex: 1'] {
     width: 100%;
-    flex: none !important;
-    max-width: none !important;
+    flex: none;
+    max-width: none;
   }
 
   .custom-items-mobile .form-check {
@@ -2537,7 +2518,7 @@ body {
 
   .totals-summary-mobile table {
     max-width: none;
-    width: 100% !important;
+    width: 100%;
   }
 
   .totals-summary-mobile input[style*='width: 60px'] {
@@ -2689,7 +2670,7 @@ body {
 @media (max-width: 576px) {
   .mobile-action-btn {
     width: 100%;
-    justify-content: center !important;
+    justify-content: center;
     margin-bottom: 8px;
   }
 
@@ -2708,10 +2689,10 @@ body {
 .proposal-actions-grid {
   display: grid;
   gap: 0.75rem;
-  align-items: stretch !important;
-  justify-items: stretch !important;
-  width: 100% !important;
-  max-width: 880px !important;
+  align-items: stretch;
+  justify-items: stretch;
+  width: 100%;
+  max-width: 880px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -2736,14 +2717,14 @@ body {
 /* Desktop: three columns side by side, centered container */
 @media (min-width: 992px) {
   .proposal-actions-grid {
-    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
   }
 }
 
 .proposal-action-btn {
   min-height: 48px;
   border-radius: 12px;
-  font-weight: 700 !important;
+  font-weight: 700;
 }
 
 /* Visual emphasis for primary action */
@@ -2861,7 +2842,7 @@ body {
 .pdf-object,
 .pdf-embed {
   width: 100%;
-  height: 100% !important;
+  height: 100%;
   border: none;
   background: var(--pdf-viewer-surface);
   min-height: inherit;
@@ -2887,18 +2868,18 @@ body {
   .pdf-viewer-modal .modal-dialog {
     margin: 0;
     max-width: none;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: none !important;
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
   }
 
   .pdf-viewer-modal .modal-content {
     height: 100vh;
-    max-height: none !important;
+    max-height: none;
     border-radius: 0;
     border: none;
-    display: flex !important;
-    flex-direction: column !important;
+    display: flex;
+    flex-direction: column;
   }
 
   /* PDF Modal Header - Mobile */
@@ -2908,17 +2889,17 @@ body {
     background: #343a40;
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    min-height: var(--pdf-mobile-header-height) !important;
+    min-height: var(--pdf-mobile-header-height);
   }
 
   .pdf-viewer-modal .modal-header .modal-title {
     font-size: 1rem;
     font-weight: 600;
     color: white;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    max-width: calc(100vw - 120px) !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100vw - 120px);
   }
 
   .pdf-viewer-modal .modal-header .btn-close {
@@ -2926,15 +2907,15 @@ body {
     border: none;
     color: white;
     opacity: 0.8;
-    font-size: 1.2rem !important;
+    font-size: 1.2rem;
     padding: 8px;
     margin: -8px;
     border-radius: 6px;
-    width: 44px !important;
-    height: 44px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .pdf-viewer-modal .modal-header .btn-close:hover {
@@ -2946,7 +2927,7 @@ body {
   .pdf-viewer-modal .modal-body {
     flex: 1;
     padding: 0;
-    overflow: hidden !important;
+    overflow: hidden;
     background: var(--pdf-viewer-bg);
   }
 
@@ -2954,7 +2935,7 @@ body {
     height: calc(
       100vh - var(--pdf-mobile-header-height) - var(--pdf-mobile-footer-height)
     );
-    min-height: auto !important;
+    min-height: auto;
     border-radius: 0;
     background: #1a1a1a;
   }
@@ -2983,7 +2964,7 @@ body {
   .pdf-viewer-modal .pdf-fallback .btn {
     min-height: 48px;
     border-radius: 8px;
-    font-weight: 600 !important;
+    font-weight: 600;
     padding: 12px 24px;
   }
 
@@ -2993,19 +2974,19 @@ body {
     padding: 12px 16px;
     background: #343a40;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    min-height: var(--pdf-mobile-footer-height) !important;
-    display: flex !important;
+    min-height: var(--pdf-mobile-footer-height);
+    display: flex;
     gap: 12px;
-    justify-content: center !important;
-    align-items: center !important;
+    justify-content: center;
+    align-items: center;
   }
 
   .pdf-viewer-modal .modal-footer .btn {
     flex: 1;
-    max-width: 140px !important;
-    min-height: 48px !important;
+    max-width: 140px;
+    min-height: 48px;
     border-radius: 8px;
-    font-weight: 600 !important;
+    font-weight: 600;
     font-size: 0.95rem;
     border: none;
     transition: all 0.2s ease;
@@ -3019,7 +3000,7 @@ body {
   .pdf-viewer-modal .modal-footer .btn-primary:hover,
   .pdf-viewer-modal .modal-footer .btn-primary:active {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
   }
 
   .pdf-viewer-modal .modal-footer .btn-secondary {
@@ -3038,7 +3019,7 @@ body {
 @media (min-width: 1024px) and (max-width: 991.98px) {
   .pdf-viewer-modal .modal-dialog {
     max-width: 95vw;
-    width: 95vw !important;
+    width: 95vw;
     margin: 20px auto;
   }
 
@@ -3048,7 +3029,7 @@ body {
 
   .pdf-viewer-modal .pdf-viewer-container {
     height: calc(100vh - 200px);
-    min-height: 500px !important;
+    min-height: 500px;
   }
 }
 
@@ -3056,14 +3037,14 @@ body {
 @media (min-width: 992px) {
   .pdf-viewer-modal .modal-dialog {
     max-width: 90vw;
-    width: 90vw !important;
+    width: 90vw;
     margin: 30px auto;
   }
 
   .pdf-viewer-modal .modal-content {
     max-height: calc(100vh - 60px);
     border-radius: 12px;
-    overflow: hidden !important;
+    overflow: hidden;
   }
 
   .pdf-viewer-modal .modal-header {
@@ -3079,7 +3060,7 @@ body {
 
   .pdf-viewer-modal .pdf-viewer-container {
     height: calc(100vh - 180px);
-    min-height: 600px !important;
+    min-height: 600px;
     border-radius: 8px;
     margin: 8px;
   }
@@ -3125,7 +3106,7 @@ body {
   /* Prevent tables from breaking layout */
   .table-responsive {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch !important;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -3373,7 +3354,7 @@ body {
   .header {
     padding: 1rem;
     flex-direction: column;
-    align-items: stretch !important;
+    align-items: stretch;
     gap: 1rem;
   }
 
@@ -3384,11 +3365,6 @@ body {
 
   .header h4 {
     font-size: 1.25rem;
-  }
-
-  /* Make form cards stack better on mobile */
-  .dashboard-container .card {
-    margin-bottom: 1rem;
   }
 
   .dashboard-container .card-body h5 {
@@ -3413,7 +3389,7 @@ body {
 .mobile-tab-button {
   min-height: 60px;
   border-radius: 8px;
-  font-weight: 500 !important;
+  font-weight: 500;
   border: 1px solid #dee2e6;
   transition: all 0.2s ease;
 }
@@ -3460,7 +3436,7 @@ body {
 
   .proposal-step-number {
     width: 32px;
-    height: 32px !important;
+    height: 32px;
     font-size: 13px;
   }
 }

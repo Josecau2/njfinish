@@ -2,29 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Box,
-  Flex,
-  FormControl,
-  Input,
-  FormLabel,
-  Textarea,
-  Select,
-  Spinner,
-  Alert,
-  Container,
-  Button,
-  InputGroup,
-  InputLeftAddon,
-  SimpleGrid,
-  VStack,
-  HStack,
-  Text,
-  FormErrorMessage,
-} from '@chakra-ui/react'
+import { Box, Flex, FormControl, Input, FormLabel, Textarea, Select, Spinner, Alert, Container, Button, InputGroup, InputLeftAddon, SimpleGrid, VStack, HStack, Text, FormErrorMessage } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { User, Mail, Save, ArrowLeft, Phone, MapPin } from 'lucide-react'
 import { createCustomer, updateCustomer, fetchCustomers } from '../../store/slices/customerSlice'
 import withContractorScope from '../../components/withContractorScope'
@@ -173,7 +152,7 @@ const CustomerForm = ({
 
   return (
     <Container maxW="7xl" py={6}>
-      <Card variant="outline" borderRadius="xl" shadow="sm">
+      <StandardCard variant="outline" borderRadius="xl" shadow="sm">
         <CardHeader>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <VStack align="start" spacing={4}>
@@ -484,7 +463,7 @@ const CustomerForm = ({
                     type="submit"
                     colorScheme="blue"
                     disabled={loading}
-                   
+
                   >
                     {loading ? <Spinner size="sm" /> : <Save size={18} />}
                     {isEditing
@@ -494,7 +473,7 @@ const CustomerForm = ({
                 </div>
               </form>
             </CardBody>
-          </Card>
+          </StandardCard>
     </Container>
   )
 }

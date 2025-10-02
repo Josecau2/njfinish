@@ -1,31 +1,10 @@
+import StandardCard from '../../components/StandardCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  Icon,
-  Spinner,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react'
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Container, Flex, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
 import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from 'lucide-react'
 import { fetchContractor } from '../../store/slices/contractorSlice'
 import OverviewTab from './ContractorDetail/OverviewTab'
@@ -130,7 +109,7 @@ const ContractorDetail = () => {
           </Flex>
         </Flex>
 
-        <Card>
+        <StandardCard>
           <Tabs
             index={activeTabIndex}
             onChange={setActiveTabIndex}
@@ -161,7 +140,7 @@ const ContractorDetail = () => {
               </TabPanels>
             </CardBody>
           </Tabs>
-        </Card>
+        </StandardCard>
       </Stack>
     </Container>
   )

@@ -1,3 +1,4 @@
+import StandardCard from './StandardCard'
 import { Box, Table, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
 import StandardCard from './StandardCard';
 

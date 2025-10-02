@@ -1,31 +1,6 @@
 import { useEffect, useState } from 'react'
-import {
-  Badge,
-  Box,
-  Card,
-  CardBody,
-  Center,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  SimpleGrid,
-  Stack,
-  Switch,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Badge, Box, Center, Container, Flex, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, SimpleGrid, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { useDispatch, useSelector } from 'react-redux'
 import { Search, Settings, Users, User, Pencil } from 'lucide-react'
 import Swal from 'sweetalert2'
@@ -238,7 +213,7 @@ const ManuMultipliers = () => {
         />
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-          <Card variant="outline" borderColor="green.100">
+          <StandardCard variant="outline" borderColor="green.100">
             <CardBody>
               <HStack spacing={4} align="center">
                 <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg="green.50" color="green.500">
@@ -254,9 +229,9 @@ const ManuMultipliers = () => {
                 </Box>
               </HStack>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline" borderColor="red.100">
+          <StandardCard variant="outline" borderColor="red.100">
             <CardBody>
               <HStack spacing={4} align="center">
                 <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg="red.50" color="red.500">
@@ -272,9 +247,9 @@ const ManuMultipliers = () => {
                 </Box>
               </HStack>
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card variant="outline" borderColor={`${accentColor}40`}>
+          <StandardCard variant="outline" borderColor={`${accentColor}40`}>
             <CardBody>
               <HStack spacing={4} align="center">
                 <Flex
@@ -298,10 +273,10 @@ const ManuMultipliers = () => {
                 </Box>
               </HStack>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <InputGroup maxW={{ base: 'full', md: '360px' }}>
@@ -329,9 +304,9 @@ const ManuMultipliers = () => {
               </Box>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardBody p={0}>
             <TableContainer>
               <Table variant="simple">
@@ -433,7 +408,7 @@ const ManuMultipliers = () => {
               </Box>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
 
         <EditGroupModal
           show={showModal}

@@ -51,14 +51,7 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Card pattern */
-  .card {
-    @apply bg-white rounded-lg shadow-sm border border-slate-200;
-  }
-
-  .card-elevated {
-    @apply bg-white rounded-lg shadow-lg border border-slate-200;
-  }
+  /* Legacy card patterns removed - use StandardCard/MobileListCard components instead */
 }
 
 /* Utility layer for project-specific utilities */

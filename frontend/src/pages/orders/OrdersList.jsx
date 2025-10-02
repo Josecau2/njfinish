@@ -1,3 +1,4 @@
+import StandardCard from '../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -607,7 +608,7 @@ const OrdersList = ({
       </Box>
 
       {/* Mobile card list */}
-      <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
+      <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch" w="full">
         {paged.length === 0 ? (
           <VStack spacing={4} textAlign="center" py={5}>
             <ShoppingCart size={48} color="gray" />
@@ -620,7 +621,20 @@ const OrdersList = ({
           paged.map((item) => {
             const paymentInfo = getPaymentStatus(item.id)
             return (
-              <MobileListCard key={item.id} minH="280px">
+              <MobileListCard
+                key={item.id}
+                minH="280px"
+                interactive
+                onClick={() => openDetails(item.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    openDetails(item.id)
+                  }
+                }}
+              >
                   <VStack align="stretch" spacing={4} h="full" justify="space-between">
                     <Flex justify="space-between" align="center">
                       <VStack align="start" spacing={4}>

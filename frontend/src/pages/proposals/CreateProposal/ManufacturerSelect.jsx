@@ -3,25 +3,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import CreatableSelect from 'react-select/creatable'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Box,
-  Card,
-  CardBody,
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  useBreakpointValue,
-  useColorModeValue,
-} from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { useForm, Controller } from 'react-hook-form'
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice'
@@ -201,7 +184,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   return (
     <Box w="full" my={4}>
-      <Card shadow="md" borderRadius="xl">
+      <StandardCard shadow="md" borderRadius="xl">
         <CardBody p={{ base: 4, md: 6 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
@@ -380,7 +363,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
             </Stack>
           </form>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Box>
   )
 }

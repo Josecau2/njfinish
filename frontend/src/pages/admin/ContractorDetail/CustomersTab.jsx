@@ -1,31 +1,8 @@
+import StandardCard from '../../../components/StandardCard'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Alert,
-  Badge,
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react'
+import { Alert, Badge, Box, Flex, Heading, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
 import {
   Search,
   Users,
@@ -241,7 +218,7 @@ const CustomersTab = ({ contractor, groupId }) => {
 
   return (
     <Flex direction="column" gap={6}>
-      <Card>
+      <StandardCard>
         <CardHeader borderBottomWidth="1px">
           <Flex align="center" gap={4}>
             <Icon as={Users} boxSize={5} color="gray.500" aria-hidden="true" />
@@ -447,7 +424,7 @@ const CustomersTab = ({ contractor, groupId }) => {
               ) : (
                 <Stack spacing={4}>
                   {paginatedCustomers.map((customer) => (
-                    <Card key={customer.id} variant="outline">
+                    <StandardCard key={customer.id} variant="outline">
                       <CardBody>
                         <Stack spacing={4}>
                           <Flex justify="space-between" align="flex-start" gap={4}>
@@ -525,7 +502,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           </Stack>
                         </Stack>
                       </CardBody>
-                    </Card>
+                    </StandardCard>
                   ))}
                 </Stack>
               )}
@@ -543,7 +520,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             )}
           </Stack>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Flex>
   )
 }

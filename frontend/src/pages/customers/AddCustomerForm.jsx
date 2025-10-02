@@ -1,22 +1,6 @@
 import { useState, useRef } from 'react'
-import {
-  FormControl,
-  Input,
-  FormLabel,
-  Select,
-  Flex,
-  Box,
-  Card,
-  CardBody,
-  Container,
-  Icon,
-  Textarea,
-  InputGroup,
-  InputLeftAddon,
-  Button,
-  FormErrorMessage,
-  useToast,
-} from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, Flex, Box, Container, Icon, Textarea, InputGroup, InputLeftAddon, Button, FormErrorMessage, useToast } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import {
   User,
@@ -35,7 +19,7 @@ import { useTranslation } from 'react-i18next'
 
 // External component definitions to prevent re-rendering
 const FormSection = ({ title, icon, children, className = '' }) => (
-  <Card className={`border-0 shadow-sm mb-4 ${className}`}>
+  <StandardCard className={`border-0 shadow-sm mb-4 ${className}`}>
     <CardBody>
       <div>
         <div
@@ -53,7 +37,7 @@ const FormSection = ({ title, icon, children, className = '' }) => (
       </div>
       {children}
     </CardBody>
-  </Card>
+  </StandardCard>
 )
 
 const CustomFormInput = ({
@@ -620,7 +604,7 @@ const AddCustomerForm = () => {
         </FormSection>
 
         {/* Action Buttons */}
-        <Card>
+        <StandardCard>
           <CardBody>
             <div className="d-flex gap-3 justify-content-end form-buttons">
               <Button
@@ -653,7 +637,7 @@ const AddCustomerForm = () => {
                 {isSubmitting ? (
                   <>
                     <div
-                     
+
                       role="status"
                       style={{ width: '16px', height: '16px' }}
                     >
@@ -670,7 +654,7 @@ const AddCustomerForm = () => {
               </Button>
             </div>
           </CardBody>
-        </Card>
+        </StandardCard>
       </form>
     </Container>
   )

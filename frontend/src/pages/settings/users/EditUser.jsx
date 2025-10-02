@@ -1,27 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import { useEffect } from 'react'
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Input,
-  Select,
-  Switch,
-  Button,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  useToast,
-  Icon,
-  Flex,
-  Divider,
-} from '@chakra-ui/react'
+import { Box, Container, SimpleGrid, FormControl, FormLabel, FormErrorMessage, Input, Select, Switch, Button, VStack, HStack, Text, Heading, useToast, Icon, Flex, Divider } from '@chakra-ui/react'
 import { useForm, Controller } from 'react-hook-form'
 import { motion, useReducedMotion } from 'framer-motion'
 import { User, Lock, ArrowLeft, Home, Building } from '@/icons-lucide'
@@ -168,7 +147,7 @@ const EditUserForm = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={8} align="stretch">
               {/* Basic Information Section */}
-              <Card>
+              <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
@@ -285,10 +264,10 @@ const EditUserForm = () => {
                     </FormControl>
                   </SimpleGrid>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Personal Address Section */}
-              <Card>
+              <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
@@ -367,10 +346,10 @@ const EditUserForm = () => {
                     </Box>
                   </VStack>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Company Information Section */}
-              <Card>
+              <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
@@ -463,10 +442,10 @@ const EditUserForm = () => {
                     </Box>
                   </VStack>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Password Section */}
-              <Card>
+              <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
@@ -511,7 +490,7 @@ const EditUserForm = () => {
                     </FormControl>
                   </SimpleGrid>
                 </CardBody>
-              </Card>
+              </StandardCard>
 
               {/* Form Actions */}
               <HStack spacing={4} justify="flex-end" pt={4}>

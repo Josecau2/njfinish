@@ -1,28 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  Grid,
-  GridItem,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Select,
-  Spinner,
-  Stack,
-  Switch,
-  Tag,
-  TagLabel,
-  Text,
-  Tooltip,
-} from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
 import {
   Building2,
   Mail,
@@ -176,7 +154,7 @@ const ManufacturersList = () => {
           actions={headerActions}
         />
 
-        <Card>
+        <StandardCard>
           <CardBody>
             <Grid templateColumns={{ base: '1fr', md: '2fr 1fr 1fr' }} gap={4} alignItems="center">
               <GridItem>
@@ -214,7 +192,7 @@ const ManufacturersList = () => {
               </GridItem>
             </Grid>
           </CardBody>
-        </Card>
+        </StandardCard>
 
         {loading && (
           <Flex align="center" justify="center" py={16}>
@@ -223,30 +201,30 @@ const ManufacturersList = () => {
         )}
 
         {error && !loading && (
-          <Card borderColor="red.200" borderWidth="1px">
+          <StandardCard borderColor="red.200" borderWidth="1px">
             <CardBody>
               <Text color="red.500" fontWeight="semibold">
                 {t('common.error')}:
               </Text>
               <Text color="red.400">{error}</Text>
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
 
         {!loading && filteredManufacturers.length === 0 && (
-          <Card>
+          <StandardCard>
             <CardBody textAlign="center" py={16}>
               <Icon as={Filter} boxSize={10} color="gray.300" mb={4} />
               <Text fontSize="lg" color="gray.600">
                 {t('settings.manufacturers.emptyState', 'No manufacturers match the current filters.')}
               </Text>
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
 
         <Stack spacing={4}>
           {filteredManufacturers.map((manufacturer) => (
-            <Card
+            <StandardCard
               key={manufacturer.id}
               borderRadius="xl"
               boxShadow="md"
@@ -356,7 +334,7 @@ const ManufacturersList = () => {
                   </Flex>
                 </Flex>
               </CardBody>
-            </Card>
+            </StandardCard>
           ))}
         </Stack>
       </Stack>

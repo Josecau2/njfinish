@@ -1,34 +1,7 @@
+import StandardCard from './StandardCard'
 import { useEffect, useMemo, useRef, useState, useDeferredValue, startTransition, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    Box,
-    Button,
-    Checkbox,
-    CloseButton,
-    Divider,
-    Flex,
-    Heading,
-    HStack,
-    Icon,
-    IconButton,
-    Image,
-    Input,
-    NumberInput,
-    NumberInputField,
-    Stack,
-    Switch,
-    Table,
-    TableContainer,
-    Tbody,
-    Td,
-    Text,
-    Th,
-    Thead,
-    Tr,
-} from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import ModificationBrowserModal from './model/ModificationBrowserModal'
 import { useDispatch, useSelector } from 'react-redux';

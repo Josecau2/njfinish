@@ -1,25 +1,6 @@
+import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Spinner,
-  Alert,
-  Badge,
-  Input,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  FormLabel,
-  Button,
-  HStack,
-  Flex,
-  Box,
-  Text,
-} from '@chakra-ui/react'
+import { Spinner, Alert, Badge, Input, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, FormLabel, Button, HStack, Flex, Box, Text } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
@@ -199,28 +180,28 @@ const StylePicturesTab = ({ manufacturer }) => {
 
   if (loading) {
     return (
-      <Card>
+      <StandardCard>
         <CardBody textAlign="center" py={10}>
           <Spinner color="brand.500" />
           <Text mt={3}>{t('styles.loading', 'Loading style pictures...')}</Text>
         </CardBody>
-      </Card>
+      </StandardCard>
     )
   }
 
   if (error) {
     return (
-      <Card>
+      <StandardCard>
         <CardBody>
           <Alert status="error">{error}</Alert>
         </CardBody>
-      </Card>
+      </StandardCard>
     )
   }
 
   if (!manufacturer?.id) {
     return (
-      <Card>
+      <StandardCard>
         <CardBody>
           <Alert status="info">
             {t(
@@ -229,13 +210,13 @@ const StylePicturesTab = ({ manufacturer }) => {
             )}
           </Alert>
         </CardBody>
-      </Card>
+      </StandardCard>
     )
   }
 
   if (!stylesMeta || stylesMeta.length === 0) {
     return (
-      <Card>
+      <StandardCard>
         <CardBody>
           <Alert status="info">
             {t(
@@ -244,13 +225,13 @@ const StylePicturesTab = ({ manufacturer }) => {
             )}
           </Alert>
         </CardBody>
-      </Card>
+      </StandardCard>
     )
   }
 
   return (
     <Box>
-      <Card mb={4}>
+      <StandardCard mb={4}>
         <CardHeader>
           <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }} justify="space-between">
             <Box>
@@ -287,9 +268,9 @@ const StylePicturesTab = ({ manufacturer }) => {
             </HStack>
           </Flex>
         </CardHeader>
-      </Card>
+      </StandardCard>
 
-      <Card>
+      <StandardCard>
         <CardBody>
           <Flex wrap="wrap" gap={4}>
             {filteredStyles.map((style, index) => (
@@ -388,7 +369,7 @@ const StylePicturesTab = ({ manufacturer }) => {
             ))}
           </Flex>
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Create Style Modal */}
       <Modal isOpen={createModal} onClose={() => setCreateModal(false)}>

@@ -1,4 +1,6 @@
+import StandardCard from '../StandardCard'
 import { Box, Container, Heading, Text } from '@chakra-ui/react'
+import StandardCard from '../StandardCard'
 
 /**
  * PageLayout - Consistent page wrapper for all application pages

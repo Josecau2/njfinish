@@ -3,23 +3,8 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, Container, Flex, Heading, HStack, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
@@ -258,7 +243,7 @@ const PaymentPage = () => {
           subtitle={t('payment.unavailable.subtitle', 'Card payments are currently disabled')}
           icon={CreditCard}
         />
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
             <Alert status="warning" borderRadius="md" mb={6}>
               <AlertIcon />
@@ -268,7 +253,7 @@ const PaymentPage = () => {
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Container>
     )
   }
@@ -286,7 +271,7 @@ const PaymentPage = () => {
       />
 
       <Flex justify="center">
-        <Card w="full" maxW="xl" borderRadius="xl" shadow="sm">
+        <StandardCard w="full" maxW="xl" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <Flex justify="space-between" align="center" gap={4} wrap="wrap">
               <Box>
@@ -427,7 +412,7 @@ const PaymentPage = () => {
               </HStack>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Flex>
     </Container>
   )

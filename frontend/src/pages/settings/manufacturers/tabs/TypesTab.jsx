@@ -1,46 +1,6 @@
+import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Box,
-  Spinner,
-  Alert,
-  Badge,
-  Input,
-  FormLabel,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  Textarea,
-  Checkbox,
-  Button,
-  Text,
-  HStack,
-  VStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  InputGroup,
-  InputLeftElement,
-  IconButton,
-  Stack,
-  SimpleGrid,
-  Image,
-  useToast,
-} from '@chakra-ui/react'
+import { Flex, Box, Spinner, Alert, Badge, Input, FormLabel, Modal, ModalBody, ModalFooter, ModalOverlay, ModalContent, ModalHeader, Textarea, Checkbox, Button, Text, HStack, VStack, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Menu, MenuButton, MenuList, MenuItem, InputGroup, InputLeftElement, IconButton, Stack, SimpleGrid, Image, useToast } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import PageHeader from '../../../../components/PageHeader'
@@ -687,7 +647,7 @@ const TypesTab = ({ manufacturer }) => {
 
   return (
     <Box>
-      <Card>
+      <StandardCard>
         <CardHeader bg="gray.50" borderBottom="1px" borderColor="gray.200">
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <Text fontSize="xl" fontWeight="bold" color="brand.600">
@@ -1042,7 +1002,7 @@ const TypesTab = ({ manufacturer }) => {
             </Table>
           )}
         </CardBody>
-      </Card>
+      </StandardCard>
 
       {/* Image Edit Modal */}
       <style>{`

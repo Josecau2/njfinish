@@ -1,6 +1,6 @@
+import StandardCard from '../StandardCard'
 import React from 'react'
 import { CardBody, Flex, Stack, Text, Box } from '@chakra-ui/react'
-import StandardCard from '../StandardCard'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 

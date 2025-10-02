@@ -1,28 +1,8 @@
+import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import {
-  Alert,
-  AlertIcon,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  Spinner,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Container, Flex, HStack, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 import PageHeader from '../../components/PageHeader'
@@ -191,7 +171,7 @@ const ContactUs = () => {
 
       <Stack spacing={6}>
         {isAdmin ? (
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Tabs
                 index={tabIndex}
@@ -284,9 +264,9 @@ const ContactUs = () => {
                 </TabPanels>
               </Tabs>
             </CardBody>
-          </Card>
+          </StandardCard>
         ) : (
-          <Card variant="outline" borderRadius="xl" shadow="sm">
+          <StandardCard variant="outline" borderRadius="xl" shadow="sm">
             <CardBody>
               <Stack spacing={6}>
                 <ContactInfoCard loading={infoLoading} info={info} />
@@ -303,7 +283,7 @@ const ContactUs = () => {
                 <ThreadView loading={threadLoading} thread={selectedThread} onReply={onReply} />
               </Stack>
             </CardBody>
-          </Card>
+          </StandardCard>
         )}
       </Stack>
     </Container>

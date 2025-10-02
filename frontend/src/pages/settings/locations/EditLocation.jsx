@@ -1,5 +1,6 @@
+import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useMemo, useRef } from 'react'
-import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, SimpleGrid, Stack, Text, StandardCard } from '@chakra-ui/react'
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, Select, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
 import Swal from 'sweetalert2'

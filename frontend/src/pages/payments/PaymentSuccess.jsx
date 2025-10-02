@@ -1,21 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Alert,
-  AlertIcon,
-  Container,
-  Card,
-  CardBody,
-  Box,
-  Icon,
-  Button,
-  Heading,
-  Text,
-  HStack,
-  VStack,
-  Code
-} from '@chakra-ui/react'
+import { Alert, AlertIcon, Container, Box, Icon, Button, Heading, Text, HStack, VStack, Code } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CheckCircle, CreditCard } from 'lucide-react'
 
@@ -43,7 +30,7 @@ const PaymentSuccess = () => {
       />
 
       <Box maxW="800px" mx="auto">
-        <Card variant="outline" borderRadius="xl" shadow="sm">
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
             <VStack spacing={6}>
               <Icon
@@ -103,7 +90,7 @@ const PaymentSuccess = () => {
               </HStack>
             </VStack>
           </CardBody>
-        </Card>
+        </StandardCard>
       </Box>
     </Container>
   )

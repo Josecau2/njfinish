@@ -1,32 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Heading,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  useToast,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useToast } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import {
   Download,
@@ -274,7 +249,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   return (
     <>
-      <Card shadow="md" borderRadius="xl" borderColor={dragActive ? 'brand.300' : 'transparent'}>
+      <StandardCard shadow="md" borderRadius="xl" borderColor={dragActive ? 'brand.300' : 'transparent'}>
         <CardHeader borderBottomWidth="1px" borderColor="gray.100" bg="gray.50">
           <Heading size="md" color="gray.800">
             {t('files.sectionTitle', 'Supporting files')}
@@ -350,7 +325,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                 {files.map((file) => {
                   const IconComponent = getFileIconComponent(file.type)
                   return (
-                    <Card key={file.id} borderWidth="1px" borderRadius="lg" shadow="sm">
+                    <StandardCard key={file.id} borderWidth="1px" borderRadius="lg" shadow="sm">
                       <CardBody>
                         <Flex justify="space-between" align="center" mb={4}>
                           <Badge
@@ -398,7 +373,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                           </Text>
                         </Stack>
                       </CardBody>
-                    </Card>
+                    </StandardCard>
                   )
                 })}
               </SimpleGrid>
@@ -414,7 +389,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             </Box>
           ) : null}
         </CardBody>
-      </Card>
+      </StandardCard>
 
       <Modal isOpen={previewModal.open} onClose={() => setPreviewModal({ open: false, file: null })} size="xl" isCentered>
         <ModalOverlay />

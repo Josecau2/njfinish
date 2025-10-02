@@ -3,23 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
 import { useTranslation } from 'react-i18next'
 import { getFreshestToken } from '../../utils/authToken'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  List,
-  ListItem,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Container, Flex, HStack, Icon, List, ListItem, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
 import ContractorDashboard from '../contractor/ContractorDashboard'
@@ -311,7 +296,7 @@ const Dashboard = () => {
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
           {statCards.map(({ id, label, value, loading, icon, accent }) => (
-            <Card
+            <StandardCard
               key={id}
               sx={{ ...modernCardStyle, ...(hoveredCard === id ? hoverStyle : {}) }}
               onMouseEnter={() => setHoveredCard(id)}
@@ -341,12 +326,12 @@ const Dashboard = () => {
                   </Text>
                 </Flex>
               </CardBody>
-            </Card>
+            </StandardCard>
           ))}
         </SimpleGrid>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-          <Card>
+          <StandardCard>
             <CardBody>
               <HStack justify="space-between" mb={4}>
                 <HStack spacing={4}>
@@ -381,9 +366,9 @@ const Dashboard = () => {
                 </Box>
               )}
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card>
+          <StandardCard>
             <CardBody>
               <HStack spacing={4} mb={4}>
                 <Icon as={Link2} boxSize={6} color="blue.500" />
@@ -423,11 +408,11 @@ const Dashboard = () => {
                 </Box>
               )}
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
 
         <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6}>
-          <Card>
+          <StandardCard>
             <CardBody>
               <HStack spacing={4} mb={4}>
                 <Icon as={FileIcon} boxSize={6} color="orange.500" />
@@ -460,9 +445,9 @@ const Dashboard = () => {
                 </Box>
               )}
             </CardBody>
-          </Card>
+          </StandardCard>
 
-          <Card gridColumn={{ base: 'span 1', xl: 'span 2' }}>
+          <StandardCard gridColumn={{ base: 'span 1', xl: 'span 2' }}>
             <CardBody>
               <HStack spacing={4} mb={4}>
                 <Icon as={ClipboardList} boxSize={6} color="teal.500" />
@@ -503,7 +488,7 @@ const Dashboard = () => {
                 </Button>
               </Box>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
       </Stack>
     </Container>

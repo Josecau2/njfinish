@@ -1,12 +1,7 @@
+import StandardCard from './StandardCard'
 import React from 'react'
-import {
-  Box,
-  Image,
-  Text,
-  VStack,
-  useColorModeValue,
-  AspectRatio
-} from '@chakra-ui/react'
+import { Box, Image, Text, VStack, useColorModeValue, AspectRatio } from '@chakra-ui/react'
+import StandardCard from './StandardCard'
 
 const TileCard = ({
   image,

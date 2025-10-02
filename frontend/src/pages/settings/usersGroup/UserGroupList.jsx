@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Switch, Spinner, Alert, Container, Button, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Grid, GridItem, Box, useColorModeValue, StandardCard } from '@chakra-ui/react'
+import { Badge, Switch, Spinner, Alert, Container, Button, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Grid, GridItem, Box, useColorModeValue } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
 import { useNavigate } from 'react-router-dom'

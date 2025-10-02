@@ -1,48 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  SimpleGrid,
-  Skeleton,
-  SkeletonText,
-  Spinner,
-  Stack,
-  Stat,
-  StatLabel,
-  StatNumber,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Text,
-  Select,
-  useDisclosure,
-  useToast,
-  Center,
-  VStack,
-} from '@chakra-ui/react'
+import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, Container, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, SimpleGrid, Skeleton, SkeletonText, Spinner, Stack, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text, Select, useDisclosure, useToast, Center, VStack } from '@chakra-ui/react'
+import StandardCard from '../../components/StandardCard'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Search, Pencil, Trash, Plus, User, Mail, Phone, MapPin, Users, ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react'
@@ -215,41 +174,41 @@ const CustomerTable = ({
         />
 
         <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
-          <Card variant="outline" borderColor="brand.500">
+          <StandardCard variant="outline" borderColor="brand.500">
             <CardBody>
               <Stat>
                 <StatLabel color="gray.500">{t('customers.total')}</StatLabel>
                 <StatNumber>{total || 0}</StatNumber>
               </Stat>
             </CardBody>
-          </Card>
-          <Card variant="outline" borderColor="green.500">
+          </StandardCard>
+          <StandardCard variant="outline" borderColor="green.500">
             <CardBody>
               <Stat>
                 <StatLabel color="gray.500">{t('customers.active')}</StatLabel>
                 <StatNumber>{activeCustomers}</StatNumber>
               </Stat>
             </CardBody>
-          </Card>
-          <Card variant="outline" borderColor="blue.500">
+          </StandardCard>
+          <StandardCard variant="outline" borderColor="blue.500">
             <CardBody>
               <Stat>
                 <StatLabel color="gray.500">{t('customers.withEmail')}</StatLabel>
                 <StatNumber>{customersWithEmail}</StatNumber>
               </Stat>
             </CardBody>
-          </Card>
-          <Card variant="outline" borderColor="red.500">
+          </StandardCard>
+          <StandardCard variant="outline" borderColor="red.500">
             <CardBody>
               <Stat>
                 <StatLabel color="gray.500">{t('customers.filtered')}</StatLabel>
                 <StatNumber>{filteredCount}</StatNumber>
               </Stat>
             </CardBody>
-          </Card>
+          </StandardCard>
         </SimpleGrid>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardBody>
             <Stack direction={{ base: 'column', lg: 'row' }} spacing={4} align={{ base: 'stretch', lg: 'center' }}>
               <InputGroup maxW={{ base: 'full', lg: '360px' }}>
@@ -289,13 +248,13 @@ const CustomerTable = ({
               </Box>
             </Stack>
           </CardBody>
-        </Card>
+        </StandardCard>
 
         {loading && (
           <>
             {/* Desktop Skeleton */}
             <Box display={{ base: 'none', lg: 'block' }}>
-              <Card variant="outline">
+              <StandardCard variant="outline">
                 <CardBody>
                   <Table variant="simple">
                     <Thead>
@@ -326,13 +285,13 @@ const CustomerTable = ({
                     </Tbody>
                   </Table>
                 </CardBody>
-              </Card>
+              </StandardCard>
             </Box>
 
             {/* Mobile Skeleton */}
             <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>
               {[1, 2, 3].map((i) => (
-                <Card key={i} variant="outline">
+                <StandardCard key={i} variant="outline">
                   <CardBody>
                     <VStack align="stretch" spacing={3}>
                       <Skeleton height="24px" width="60%" />
@@ -344,7 +303,7 @@ const CustomerTable = ({
                       </HStack>
                     </VStack>
                   </CardBody>
-                </Card>
+                </StandardCard>
               ))}
             </Stack>
           </>
@@ -362,7 +321,7 @@ const CustomerTable = ({
         {!loading && !error && (
           <>
             <Box display={{ base: 'none', lg: 'block' }}>
-              <Card variant="outline">
+              <StandardCard variant="outline">
                 <CardBody>
                   <TableContainer>
                     <Table variant="simple">
@@ -474,12 +433,12 @@ const CustomerTable = ({
                     </Table>
                   </TableContainer>
                 </CardBody>
-              </Card>
+              </StandardCard>
             </Box>
 
             <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>
               {filteredCount === 0 ? (
-                <Card variant="outline">
+                <StandardCard variant="outline">
                   <CardBody>
                     <Center flexDirection="column" gap={4}>
                       <Icon as={Search} boxSize={10} color="gray.300" />
@@ -489,10 +448,10 @@ const CustomerTable = ({
                       </Text>
                     </Center>
                   </CardBody>
-                </Card>
+                </StandardCard>
               ) : (
                 sortedFilteredCustomers.map((cust) => (
-                  <Card key={cust.id} variant="outline">
+                  <StandardCard key={cust.id} variant="outline">
                     <CardBody>
                       <Stack spacing={4}>
                         <HStack justify="space-between" align="flex-start">
@@ -553,13 +512,13 @@ const CustomerTable = ({
                         </HStack>
                       </Stack>
                     </CardBody>
-                  </Card>
+                  </StandardCard>
                 ))
               )}
             </Stack>
 
             {totalPages > 1 && (
-              <Card variant="outline">
+              <StandardCard variant="outline">
                 <CardBody>
                   <PaginationComponent
                     currentPage={currentPage}
@@ -568,7 +527,7 @@ const CustomerTable = ({
                     itemsPerPage={itemsPerPage}
                   />
                 </CardBody>
-              </Card>
+              </StandardCard>
             )}
           </>
         )}

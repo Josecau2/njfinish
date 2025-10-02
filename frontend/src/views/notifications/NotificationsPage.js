@@ -1,25 +1,6 @@
+import StandardCard from '../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Badge,
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  Flex,
-  Heading,
-  Icon,
-  HStack,
-  Select,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Alert, AlertDescription, AlertIcon, Badge, Box, Button, ButtonGroup, Container, Flex, Heading, Icon, HStack, Select, Spinner, Stack, Text } from '@chakra-ui/react'
 import { Bell, Check, CheckCircle2, Info, RefreshCw, UserPlus, XCircle } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -215,7 +196,7 @@ const NotificationsPage = () => {
 
   return (
     <Container maxW="6xl" py={6} aria-busy={loading}>
-      <Card>
+      <StandardCard>
         <CardHeader>
           <Flex
             direction={{ base: 'column', md: 'row' }}
@@ -352,7 +333,7 @@ const NotificationsPage = () => {
                   const priorityColor = getPriorityColor(notification.priority)
                   const clickable = Boolean(notification.action_url)
                   return (
-                    <Card
+                    <StandardCard
                       key={notification.id}
                       borderWidth={1}
                       borderLeftWidth={!notification.is_read ? 4 : 2}
@@ -421,7 +402,7 @@ const NotificationsPage = () => {
                           </Flex>
                         </Flex>
                       </CardBody>
-                    </Card>
+                    </StandardCard>
                   )
                 })}
               </Stack>
@@ -467,7 +448,7 @@ const NotificationsPage = () => {
             )}
           </Stack>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Container>
   )
 

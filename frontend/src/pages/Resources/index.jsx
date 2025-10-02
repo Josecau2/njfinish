@@ -1,10 +1,11 @@
+import StandardCard from '../../components/StandardCard'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import { getFreshestToken } from '../../utils/authToken'
 import { getContrastColor } from '../../utils/colorUtils'
-import { Alert, Badge, Box, Container, FormControl, InputGroup, InputLeftElement, Input, Select, Switch, Textarea, FormLabel, Flex, Link, Modal, ModalOverlay, ModalContent, ModalBody, ModalFooter, ModalHeader, ModalCloseButton, Spinner, Button, Icon, Text, Heading, VStack, HStack, Divider, List, ListItem, Grid, GridItem, SimpleGrid, Tabs, TabList, TabPanels, Tab, TabPanel, Stack, Image, AspectRatio, Center, useColorModeValue, useToast, StandardCard } from '@chakra-ui/react'
+import { Alert, Badge, Box, Container, FormControl, InputGroup, InputLeftElement, Input, Select, Switch, Textarea, FormLabel, Flex, Link, Modal, ModalOverlay, ModalContent, ModalBody, ModalFooter, ModalHeader, ModalCloseButton, Spinner, Button, Icon, Text, Heading, VStack, HStack, Divider, List, ListItem, Grid, GridItem, SimpleGrid, Tabs, TabList, TabPanels, Tab, TabPanel, Stack, Image, AspectRatio, Center, useColorModeValue, useToast } from '@chakra-ui/react'
 import {
   ArrowLeft,
   Download,

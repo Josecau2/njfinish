@@ -1,23 +1,10 @@
+import StandardCard from '../../components/StandardCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  Select,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Container, Flex, HStack, Icon, Select, Spinner, Stack, Text } from '@chakra-ui/react'
 import { Calendar, Filter, RefreshCw } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useNavigate } from 'react-router-dom'
@@ -145,7 +132,7 @@ const CalendarView = () => {
           icon={Calendar}
         />
 
-        <Card>
+        <StandardCard>
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <HStack spacing={4} flex="1">
@@ -170,9 +157,9 @@ const CalendarView = () => {
               </Button>
             </Flex>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card>
+        <StandardCard>
           <CardBody>
             {loading ? (
               <Flex align="center" justify="center" minH="360px">
@@ -243,7 +230,7 @@ const CalendarView = () => {
               </Stack>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
 
         <style>{`
           .fc {

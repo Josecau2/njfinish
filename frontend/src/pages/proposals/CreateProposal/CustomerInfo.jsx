@@ -1,26 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import {
-  Box,
-  Card,
-  CardBody,
-  Flex,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Input,
-  Checkbox,
-  SimpleGrid,
-  Button,
-  useToast,
-  HStack,
-  Text,
-  Collapse,
-  Textarea,
-  Stack,
-  Icon,
-  Divider,
-  Heading,
-} from '@chakra-ui/react'
+import { Box, Flex, FormControl, FormLabel, FormErrorMessage, Input, Checkbox, SimpleGrid, Button, useToast, HStack, Text, Collapse, Textarea, Stack, Icon, Divider, Heading } from '@chakra-ui/react'
+import StandardCard from '../../../components/StandardCard'
 import { useForm, Controller } from 'react-hook-form'
 import CreatableSelect from 'react-select/creatable'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -335,7 +315,7 @@ const CustomerInfoStep = ({
 
   return (
     <Box w="full" my={4}>
-      <Card shadow="md" borderRadius="xl">
+      <StandardCard shadow="md" borderRadius="xl">
         <CardBody p={{ base: 4, md: 6 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
@@ -732,7 +712,7 @@ const CustomerInfoStep = ({
             </Stack>
           </form>
         </CardBody>
-      </Card>
+      </StandardCard>
     </Box>
   )
 }

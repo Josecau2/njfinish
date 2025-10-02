@@ -1,30 +1,8 @@
+import StandardCard from '../../../../components/StandardCard'
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getContrastColor } from '../../../../utils/colorUtils'
-import {
-  Container,
-  Stack,
-  Card,
-  CardHeader,
-  CardBody,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Input,
-  Textarea,
-  Checkbox,
-  RadioGroup,
-  Radio,
-  Switch,
-  HStack,
-  VStack,
-  Text,
-  Button,
-  Alert,
-  AlertIcon,
-  Box,
-} from '@chakra-ui/react'
+import { Container, Stack, SimpleGrid, FormControl, FormLabel, FormHelperText, Input, Textarea, Checkbox, RadioGroup, Radio, Switch, HStack, VStack, Text, Button, Alert, AlertIcon, Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -177,7 +155,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
         <form onSubmit={handleSubmit}>
           <Stack spacing={6}>
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.basicInfo', 'Basic Information')}
               </CardHeader>
@@ -205,9 +183,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   <Textarea id="address" name="address" rows={3} value={formData.address} onChange={handleChange} />
                 </FormControl>
               </CardBody>
-            </Card>
+            </StandardCard>
 
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.emailSettings', 'Manufacturer Email Settings')}
               </CardHeader>
@@ -270,9 +248,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   </FormLabel>
                 </FormControl>
               </CardBody>
-            </Card>
+            </StandardCard>
 
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.pricing', 'Pricing & Delivery')}
               </CardHeader>
@@ -359,9 +337,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   </FormControl>
                 </SimpleGrid>
               </CardBody>
-            </Card>
+            </StandardCard>
 
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
                 {t('settings.manufacturers.fields.instructions')}
               </CardHeader>
@@ -376,9 +354,9 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   />
                 </FormControl>
               </CardBody>
-            </Card>
+            </StandardCard>
 
-            <Card variant="outline">
+            <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.assets', 'Assets & Uploads')}
               </CardHeader>
@@ -415,7 +393,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
                   </FormControl>
                 </Stack>
               </CardBody>
-            </Card>
+            </StandardCard>
 
             <Box textAlign="right">
               <Button

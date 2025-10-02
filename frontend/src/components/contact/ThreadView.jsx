@@ -1,15 +1,6 @@
+import StandardCard from '../StandardCard'
 import React, { useState } from 'react'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  Stack,
-  Text,
-  Textarea,
-} from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, Stack, Text, Textarea } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -40,7 +31,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
 
   if (!thread) {
     return (
-      <Card borderRadius="lg" boxShadow="sm">
+      <StandardCard borderRadius="lg" boxShadow="sm">
         <CardBody>
           <PageHeader
             title={t('contact.thread.title')}
@@ -48,7 +39,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
             mobileLayout="compact"
           />
         </CardBody>
-      </Card>
+      </StandardCard>
     )
   }
 
@@ -68,7 +59,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
     : false
 
   return (
-    <Card borderRadius="lg" boxShadow="sm">
+    <StandardCard borderRadius="lg" boxShadow="sm">
       <CardBody>
         <PageHeader
           title={thread.subject}
@@ -144,7 +135,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
           </Stack>
         )}
       </CardBody>
-    </Card>
+    </StandardCard>
   )
 }
 
