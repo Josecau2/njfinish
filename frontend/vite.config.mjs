@@ -121,8 +121,8 @@ export default defineConfig(({ mode }) => {
           replacement: `${path.resolve(__dirname, 'src')}/`,
         },
       ],
-      // Ensure only a single copy of React/ReactDOM is used across dependencies
-      dedupe: ['react', 'react-dom'],
+      // Ensure only a single copy of React/ReactDOM, Emotion, and Framer Motion is used across dependencies
+      dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled', 'framer-motion'],
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
     server: {

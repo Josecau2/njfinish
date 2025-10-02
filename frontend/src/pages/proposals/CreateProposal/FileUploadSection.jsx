@@ -16,8 +16,8 @@ import {
 import axiosInstance from '../../../helpers/axiosInstance'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
-const MotionBox = motion(Box)
-const MotionButton = motion(Button)
+const MotionBox = motion.create(Box)
+const MotionButton = motion.create(Button)
 const apiUrl = import.meta.env.VITE_API_URL
 
 const acceptedTypes = {

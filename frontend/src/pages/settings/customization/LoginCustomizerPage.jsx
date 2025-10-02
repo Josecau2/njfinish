@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 const DEFAULT_SETTINGS = {
   logo: '',

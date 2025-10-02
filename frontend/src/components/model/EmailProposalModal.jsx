@@ -29,7 +29,7 @@ import {
   DEFAULT_PROPOSAL_PDF_COLUMNS,
 } from '../../helpers/proposalPdfBuilder'
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
   const { t, i18n } = useTranslation()

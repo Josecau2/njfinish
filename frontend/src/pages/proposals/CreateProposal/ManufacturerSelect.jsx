@@ -10,8 +10,8 @@ import { useForm, Controller } from 'react-hook-form'
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice'
 import { isAdmin } from '../../../helpers/permissions'
 
-const MotionBox = motion(Box)
-const MotionButton = motion(Button)
+const MotionBox = motion.create(Box)
+const MotionButton = motion.create(Button)
 
 const buildSelectStyles = (hasError) => ({
   control: (provided, state) => ({

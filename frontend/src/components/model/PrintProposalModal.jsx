@@ -34,7 +34,7 @@ import {
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const BASE_PAGE_WIDTH_PX = 794
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
   const { t, i18n } = useTranslation()

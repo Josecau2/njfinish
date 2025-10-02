@@ -13,7 +13,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const buildSelectStyles = (hasError) => ({

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { Download, Edit2, Trash2, File, Image } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 // Simple, generic content tile used to display a file/link-like item.
 // ACCESSIBILITY COMPLIANT: All touch targets ≥44×44px with proper ARIA labels

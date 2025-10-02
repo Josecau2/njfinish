@@ -10,7 +10,7 @@ import { CloudUpload, PenSquare, UploadCloud } from 'lucide-react'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 const DesignImportStep = ({
   updateFormData,
