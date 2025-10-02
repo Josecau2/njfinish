@@ -89,8 +89,9 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
     }
 
     if (!collapsedOverride) {
-      sharedStyle.paddingLeft = `calc(1rem + ${depth} * 0.75rem)`
-      sharedStyle.paddingRight = '1rem'
+      // Base padding 0.85rem, nested items add 0.5rem per level
+      sharedStyle.paddingLeft = depth > 0 ? `calc(0.85rem + ${depth} * 0.5rem)` : '0.85rem'
+      sharedStyle.paddingRight = '0.85rem'
     }
 
     const content = (
@@ -234,8 +235,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
             color: open || active ? colors.accentColor : colors.fontColor,
             backgroundColor: open || active ? colors.activeBg : 'transparent',
             minHeight: '44px',
-            paddingLeft: `calc(1rem + ${depth} * 0.75rem)`,
-            paddingRight: '1rem',
+            paddingLeft: depth > 0 ? `calc(0.85rem + ${depth} * 0.5rem)` : '0.85rem',
+            paddingRight: '0.85rem',
           }}
         >
           {getIconElement(item.icon, colors)}
@@ -382,7 +383,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           display: block;
         }
         .c-sidebar-nav .nav-group-items .nav-item {
-          padding-left: 0.35rem;
+          padding-left: 0;
         }
         .c-sidebar-nav .nav-caret {
           margin-left: auto;
