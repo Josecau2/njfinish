@@ -306,6 +306,14 @@ const AppSidebar = () => {
           m={0}
           bg="transparent"
           boxShadow="none"
+          overflow="hidden"
+          sx={{
+            // Remove all default Chakra Drawer padding/margin
+            '& > *': {
+              padding: 0,
+              margin: 0,
+            }
+          }}
           className={sidebarClassNames}
         >
           {SidebarBody}

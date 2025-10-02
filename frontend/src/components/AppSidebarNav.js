@@ -293,7 +293,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         .c-sidebar-nav .nav {
           list-style: none;
           margin: 0;
-          padding: 0.75rem 0;
+          padding: 0.5rem 0;
         }
         .c-sidebar-nav .nav-item {
           position: relative;
@@ -308,15 +308,25 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           gap: 0.75rem;
           font-size: 0.95rem;
           font-weight: 500;
-          padding: 0.85rem 1rem;
+          padding: 0.75rem 1rem;
           min-height: 44px;
-          border-radius: 10px;
+          border-radius: 8px;
           cursor: pointer;
           transition: background 0.15s ease, color 0.15s ease;
           text-decoration: none;
         }
         .c-sidebar-nav .nav-link:hover {
           background: var(--chakra-colors-whiteAlpha-100);
+        }
+        /* Mobile: tighter padding for better use of space */
+        @media (max-width: 1023px) {
+          .c-sidebar-nav .nav {
+            padding: 0.25rem 0;
+          }
+          .c-sidebar-nav .nav-link {
+            padding: 0.7rem 0.85rem;
+            border-radius: 6px;
+          }
         }
         .c-sidebar-nav[data-collapsed="true"] .nav-link {
           justify-content: center;
