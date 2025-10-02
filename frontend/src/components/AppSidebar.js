@@ -66,7 +66,8 @@ const AppSidebar = () => {
   })()
 
   const isDesktop = useBreakpointValue({ base: false, lg: true })
-  const collapsed = !sidebarPinned && sidebarUnfoldable
+  // Mobile is NEVER collapsed - always show full nav with icons + labels
+  const collapsed = isDesktop && !sidebarPinned && sidebarUnfoldable
 
   const sidebarClassNames = [
     styles.modernSidebar,
@@ -129,7 +130,10 @@ const AppSidebar = () => {
       ref={sidebarRef}
       direction="column"
       h="100vh"
-      w={collapsed ? "56px" : "256px"}
+      w={{
+        base: "100%",  // Mobile: full width of drawer (280px)
+        lg: collapsed ? "56px" : "256px"  // Desktop: responsive to collapsed state
+      }}
       bg={sidebarBg}
       color={sidebarColor}
       borderRight="1px solid"
@@ -288,9 +292,22 @@ const AppSidebar = () => {
 
   if (!isDesktop) {
     return (
-      <Drawer isOpen={sidebarShow} placement="left" onClose={handleClose} size="xs">
+      <Drawer
+        isOpen={sidebarShow}
+        placement="left"
+        onClose={handleClose}
+        // Remove default size to use custom width
+      >
         <DrawerOverlay bg={overlayColor} />
-        <DrawerContent maxW="360px" w="85vw" className={sidebarClassNames} bg="transparent">
+        <DrawerContent
+          maxW="280px"
+          w="85vw"
+          p={0}
+          m={0}
+          bg="transparent"
+          boxShadow="none"
+          className={sidebarClassNames}
+        >
           {SidebarBody}
         </DrawerContent>
       </Drawer>
@@ -308,7 +325,7 @@ const AppSidebar = () => {
       transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      zIndex="1040"
+      zIndex="1050"
       className={sidebarClassNames}
     >
       {SidebarBody}
