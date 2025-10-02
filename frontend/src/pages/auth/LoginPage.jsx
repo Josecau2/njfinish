@@ -230,7 +230,6 @@ const LoginPage = () => {
                         icon={showPassword ? <EyeOff size={ICON_SIZE_MD} /> : <Eye size={ICON_SIZE_MD} />}
                         onClick={() => setShowPassword(!showPassword)}
                         variant="ghost"
-                        size="sm"
                         tabIndex={-1}
                         minW="44px"
                         minH="44px"
@@ -273,7 +272,7 @@ const LoginPage = () => {
 
             <Text textAlign="center">
               {t('auth.noAccountPrompt')}{' '}
-              <Link as={RouterLink} to="/request-access" color="blue.600">
+              <Link as={RouterLink} to="/request-access" color="blue.600" minH="44px" py={2}>
                 {t('auth.requestAccess.submit')}
               </Link>
             </Text>

@@ -125,7 +125,7 @@ const SignupPage = () => {
 
           <div className="text-center mt-3">
             <span>Already have an account? </span>
-            <a href="/login">Sign In</a>
+            <a href="/login" style={{ minHeight: '44px', padding: '8px 0', display: 'inline-block' }}>Sign In</a>
           </div>
         </div>
       </div>

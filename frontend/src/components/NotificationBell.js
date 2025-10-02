@@ -286,7 +286,7 @@ const NotificationBell = () => {
           <Flex align="center" justify="space-between">
             <Text fontWeight="semibold">Notifications</Text>
             {unreadCount > 0 && (
-              <Button size="sm" variant="ghost" onClick={handleMarkAllAsRead} isDisabled={fetching}>
+              <Button size="sm" minH="44px" variant="ghost" onClick={handleMarkAllAsRead} isDisabled={fetching}>
                 Mark all read
               </Button>
             )}

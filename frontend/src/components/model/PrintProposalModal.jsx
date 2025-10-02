@@ -452,10 +452,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     </Text>
                     {versionOptions.length > 1 && (
                       <HStack spacing={4}>
-                        <Button size="sm" variant="outline" onClick={selectAllVersions}>
+                        <Button size="sm" minH="44px" variant="outline" onClick={selectAllVersions}>
                           {t('common.selectAll', 'Select All')}
                         </Button>
-                        <Button size="sm" variant="outline" onClick={clearVersions}>
+                        <Button size="sm" minH="44px" variant="outline" onClick={clearVersions}>
                           {t('common.clear', 'Clear')}
                         </Button>
                       </HStack>
@@ -500,10 +500,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     {t('proposalCommon.selectColumns')}
                   </Text>
                   <HStack spacing={4}>
-                    <Button size="sm" variant="outline" onClick={selectAllColumns}>
+                    <Button size="sm" minH="44px" variant="outline" onClick={selectAllColumns}>
                       {t('common.selectAll', 'Select All')}
                     </Button>
-                    <Button size="sm" variant="outline" onClick={clearColumns}>
+                    <Button size="sm" minH="44px" variant="outline" onClick={clearColumns}>
                       {t('common.clear', 'Clear')}
                     </Button>
                   </HStack>

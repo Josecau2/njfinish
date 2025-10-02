@@ -43,13 +43,13 @@ function AuditIndex() {
     <Box p={8}>
       <Heading size="md" mb={4}>UI Audit Playground</Heading>
       <Stack spacing={4}>
-        <Link href="/__audit__/modals" color="brand.500">
+        <Link href="/__audit__/modals" color="brand.500" minH="44px" py={2}>
           Modals Playground
         </Link>
-        <Link href="/__audit__/components" color="brand.500">
+        <Link href="/__audit__/components" color="brand.500" minH="44px" py={2}>
           Components Grid
         </Link>
-        <Link href="/__audit__/buttons" color="brand.500">
+        <Link href="/__audit__/buttons" color="brand.500" minH="44px" py={2}>
           Button Variants
         </Link>
       </Stack>
@@ -173,7 +173,7 @@ function ButtonVariants() {
         <Box>
           <Heading size="xs" mb={3}>Primary Buttons</Heading>
           <HStack spacing={4} wrap="wrap">
-            <Button colorScheme="brand" size="sm">Small</Button>
+            <Button colorScheme="brand" size="sm" minH="44px">Small</Button>
             <Button colorScheme="brand" size="md">Medium</Button>
             <Button colorScheme="brand" size="lg">Large</Button>
           </HStack>
@@ -182,7 +182,7 @@ function ButtonVariants() {
         <Box>
           <Heading size="xs" mb={3}>Secondary Buttons</Heading>
           <HStack spacing={4} wrap="wrap">
-            <Button variant="outline" size="sm">Small Outline</Button>
+            <Button variant="outline" size="sm" minH="44px">Small Outline</Button>
             <Button variant="outline" size="md">Medium Outline</Button>
             <Button variant="outline" size="lg">Large Outline</Button>
           </HStack>
@@ -191,7 +191,7 @@ function ButtonVariants() {
         <Box>
           <Heading size="xs" mb={3}>Tertiary Buttons</Heading>
           <HStack spacing={4} wrap="wrap">
-            <Button variant="ghost" size="sm">Small Ghost</Button>
+            <Button variant="ghost" size="sm" minH="44px">Small Ghost</Button>
             <Button variant="ghost" size="md">Medium Ghost</Button>
             <Button variant="ghost" size="lg">Large Ghost</Button>
           </HStack>
@@ -200,7 +200,7 @@ function ButtonVariants() {
         <Box>
           <Heading size="xs" mb={3}>Destructive Buttons</Heading>
           <HStack spacing={4} wrap="wrap">
-            <Button colorScheme="red" size="sm">Delete Small</Button>
+            <Button colorScheme="red" size="sm" minH="44px">Delete Small</Button>
             <Button colorScheme="red" size="md">Delete Medium</Button>
             <Button colorScheme="red" size="lg">Delete Large</Button>
           </HStack>
@@ -209,7 +209,7 @@ function ButtonVariants() {
         <Box>
           <Heading size="xs" mb={3}>Icon-Only Buttons (Must be >= 44x44px)</Heading>
           <HStack spacing={4} wrap="wrap">
-            <IconButton aria-label="Menu" icon={<span>☰</span>} size="sm" />
+            <IconButton aria-label="Menu" icon={<span>☰</span>} minW="44px" minH="44px" />
             <IconButton aria-label="Search" icon={<span>🔍</span>} size="md" />
             <IconButton aria-label="Settings" icon={<span>⚙️</span>} size="lg" />
             <IconButton
@@ -227,7 +227,7 @@ function ButtonVariants() {
           <HStack spacing={4} wrap="wrap">
             <Button isDisabled>Disabled Primary</Button>
             <Button variant="outline" isDisabled>Disabled Outline</Button>
-            <IconButton aria-label="Disabled" icon={<span>✗</span>} isDisabled />
+            <IconButton aria-label="Disabled" icon={<span>✗</span>} minW="44px" minH="44px" isDisabled />
           </HStack>
         </Box>
       </VStack>

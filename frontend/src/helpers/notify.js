@@ -67,7 +67,6 @@ const showToast = ({ status, title, description, duration = 4000 }) => {
             minW="44px"
             minH="44px"
             variant="ghost"
-            size="sm"
             aria-label="Close notification"
             icon={<X size={14} />}
             onClick={onClose}

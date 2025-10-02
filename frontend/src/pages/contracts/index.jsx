@@ -372,6 +372,7 @@ const Contracts = () => {
                 <ButtonGroup size="sm" isAttached alignSelf={{ base: 'flex-start', md: 'auto' }}>
                   <Button
                     colorScheme="brand"
+                    minH="44px"
                     variant={viewMode === 'card' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('card')}
                   >
@@ -379,6 +380,7 @@ const Contracts = () => {
                   </Button>
                   <Button
                     colorScheme="brand"
+                    minH="44px"
                     variant={viewMode === 'table' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('table')}
                   >

@@ -67,7 +67,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
           mobileLayout="compact"
           rightContent={
             thread.status === 'open' ? (
-              <Button size="sm" variant="outline" colorScheme="gray" onClick={() => onClose?.(thread.id)}>
+              <Button size="sm" minH="44px" variant="outline" colorScheme="gray" onClick={() => onClose?.(thread.id)}>
                 {t('contact.thread.close')}
               </Button>
             ) : null

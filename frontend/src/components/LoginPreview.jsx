@@ -165,7 +165,6 @@ const LoginPreview = ({ config }) => {
                 minW="44px"
                 minH="44px"
                 variant='ghost'
-                size='sm'
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 icon={<Icon as={showPassword ? EyeOff : Eye} boxSize={ICON_BOX_MD} />}
                 onClick={() => setShowPassword((prev) => !prev)}

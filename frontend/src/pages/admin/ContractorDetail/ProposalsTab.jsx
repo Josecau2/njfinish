@@ -483,6 +483,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 <Button
                                   color="outline-info"
                                   size="sm"
+                                  minH="44px"
                                   className="icon-btn"
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.viewDetails', 'View proposal details')}
                                   onClick={() => handleViewProposal(proposal)}
@@ -494,6 +495,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 <Button
                                   color="outline-primary"
                                   size="sm"
+                                  minH="44px"
                                   className="icon-btn"
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.open', 'Open proposal')}
                                   onClick={() => handleGoToProposal(proposal.id)}
