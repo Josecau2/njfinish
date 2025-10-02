@@ -420,7 +420,7 @@ const AdminProposalView = () => {
                 <CardBody>
                   <TableContainer>
                     <Table variant="simple" size="sm">
-                      <Thead bg="gray.50">
+                      <Thead>
                         <Tr>
                           <Th>{t('proposalColumns.item', 'Item')}</Th>
                           <Th>{t('common.description', 'Description')}</Th>

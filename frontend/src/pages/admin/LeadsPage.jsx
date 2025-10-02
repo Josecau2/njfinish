@@ -336,7 +336,7 @@ const LeadsPage = () => {
               <>
                 {/* Desktop table view */}
                 <Box overflowX="auto" data-scroll-region display={{ base: 'none', xl: 'block' }}>
-                  <Table variant="simple" size="md" width="full" tableLayout={{ base: "fixed", xl: "auto" }}>
+                  <Table variant="simple" size="md">
 
                     <Thead>
                       <Tr>
@@ -361,22 +361,22 @@ const LeadsPage = () => {
                           : '�'
                         return (
                           <Tr key={lead.id}>
-                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {displayName}
                             </Td>
-                            <Td maxW={{ base: '240px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {lead.email || '?'}
                             </Td>
-                            <Td maxW={{ base: '180px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {phone}
                             </Td>
-                            <Td maxW={{ base: '240px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {location}
                             </Td>
-                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {company}
                             </Td>
-                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                            <Td>
                               {submittedAt}
                             </Td>
                             <Td>

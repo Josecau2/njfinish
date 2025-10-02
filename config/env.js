@@ -23,6 +23,10 @@ const defaults = {
   UPLOAD_PATH: './uploads',
   RESOURCES_UPLOAD_DIR: './uploads/resources',
   CORS_ALLOWED_ORIGINS: [
+    'https://app.njcabinets.com',
+    'http://app.njcabinets.com',
+    'https://api.njcabinets.com',
+    'http://api.njcabinets.com',
     'https://app.njcontractors.com',
     'https://app.nj.contractors',
     'http://app.nj.contractors',

@@ -12,6 +12,8 @@ import { isAdmin } from '../../../helpers/permissions'
 import { resolveAssetUrl } from '../../../utils/assetUtils'
 import { buildUploadUrl } from '../../../utils/uploads'
 
+const FALLBACK_MANUFACTURER_IMAGE = `${import.meta.env?.BASE_URL || '/'}images/nologo.png`
+
 const MotionBox = motion.create(Box)
 const MotionButton = motion.create(Button)
 
@@ -135,15 +137,29 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
     [formData, isUserAdmin, getValues, setValue, updateFormData],
   )
 
-  const handleImageState = useCallback((manufacturerId, status) => {
-    setCardImageState((prev) => ({ ...prev, [manufacturerId]: status }))
+  const handleImageLoaded = useCallback((manufacturerId) => {
+    setCardImageState((prev) => {
+      if (prev[manufacturerId] === 'fallback') {
+        return prev
+      }
+      return { ...prev, [manufacturerId]: 'loaded' }
+    })
+  }, [])
+
+  const handleImageError = useCallback((manufacturerId) => {
+    setCardImageState((prev) => {
+      if (prev[manufacturerId] === 'fallback') {
+        return prev
+      }
+      return { ...prev, [manufacturerId]: 'fallback' }
+    })
   }, [])
 
   const getImageSrc = useCallback(
     (manufacturer) => {
       const status = cardImageState[manufacturer.id]
-      if (!manufacturer.image || status === 'error') {
-        return '/images/nologo.png'
+      if (!manufacturer.image || status === 'fallback') {
+        return FALLBACK_MANUFACTURER_IMAGE
       }
       const img = String(manufacturer.image || '').trim()
       // If absolute URL, data URI, or already /uploads based, use resolver to add token when needed
@@ -298,8 +314,15 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                     src={getImageSrc(manufacturer)}
                                     alt={manufacturer.name}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    onLoad={() => handleImageState(manufacturer.id, 'loaded')}
-                                    onError={() => handleImageState(manufacturer.id, 'error')}
+                                    onLoad={() => handleImageLoaded(manufacturer.id)}
+                                    onError={(event) => {
+                                      if (cardImageState[manufacturer.id] === 'fallback') {
+                                        event.currentTarget.onerror = null
+                                        return
+                                      }
+                                      handleImageError(manufacturer.id)
+                                      event.currentTarget.src = FALLBACK_MANUFACTURER_IMAGE
+                                    }}
                                   />
                                   {isSelected && (
                                     <Box

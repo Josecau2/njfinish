@@ -273,7 +273,7 @@ const UsersPage = () => {
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
               <Box overflowX="auto" data-scroll-region>
-                <Table variant="simple" className="mb-0 table-modern">
+                <Table variant="simple">
                 <Thead className="settings-table-header">
                   <Tr>
                     <Th>#</Th>

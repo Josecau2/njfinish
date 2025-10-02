@@ -70,24 +70,38 @@ app.use((req, res, next) => {
 const allowedOrigins = env.CORS_ALLOWED_ORIGINS;
 
 // Configure CORS based on environment
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-  if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+const baseCorsOptions = {
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
-app.use(cors(corsOptions));
+const corsOptionsDelegate = (req, callback) => {
+  const origin = req.header('Origin');
+
+  // Always allow same-origin or non-browser requests
+  if (!origin) {
+    return callback(null, { ...baseCorsOptions, origin: true, credentials: true });
+  }
+
+  // Loosen CORS restrictions for public asset delivery
+  if (req.path && req.path.startsWith('/uploads')) {
+    return callback(null, {
+      ...baseCorsOptions,
+      origin: true,
+      credentials: false,
+      methods: ['GET', 'HEAD', 'OPTIONS'],
+    });
+  }
+
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, { ...baseCorsOptions, origin, credentials: true });
+  }
+
+  console.warn('CORS blocked origin:', origin);
+  return callback(new Error('Not allowed by CORS'));
+};
+
+app.use(cors(corsOptionsDelegate));
 
 // app.use(cors());
 // Stripe webhook must be mounted before body parsers so we can access the raw payload

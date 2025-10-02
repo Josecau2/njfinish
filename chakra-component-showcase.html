@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chakra UI Components Showcase</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@chakra-ui/react@2.8.2/dist/chakra-ui-react.umd.js"></script>
+    <script src="https://unpkg.com/@emotion/react@11.11.1/dist/emotion-react.umd.min.js"></script>
+    <script src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: system-ui, sans-serif; }
+        .section { margin-bottom: 40px; }
+        h2 { border-bottom: 2px solid #319795; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { ChakraProvider, Button, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Box, VStack, HStack, Heading, Text, Badge } = window['@chakra-ui/react'];
+
+        function App() {
+            return (
+                <ChakraProvider>
+                    <Box p={8} maxW="1200px" mx="auto">
+                        <Heading as="h1" mb={8} color="teal.600">
+                            Chakra UI Components Showcase
+                        </Heading>
+
+                        {/* Button Variations */}
+                        <Box className="section" mb={8}>
+                            <Heading as="h2" size="lg" mb={4}>Button Variations</Heading>
+
+                            <VStack spacing={6} align="stretch">
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Solid Variants (Default)</Text>
+                                    <HStack spacing={4} flexWrap="wrap">
+                                        <Button colorScheme="blue">Blue Button</Button>
+                                        <Button colorScheme="teal">Teal Button</Button>
+                                        <Button colorScheme="green">Green Button</Button>
+                                        <Button colorScheme="red">Red Button</Button>
+                                        <Button colorScheme="purple">Purple Button</Button>
+                                        <Button colorScheme="orange">Orange Button</Button>
+                                    </HStack>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Outline Variants</Text>
+                                    <HStack spacing={4} flexWrap="wrap">
+                                        <Button variant="outline" colorScheme="blue">Blue Outline</Button>
+                                        <Button variant="outline" colorScheme="teal">Teal Outline</Button>
+                                        <Button variant="outline" colorScheme="green">Green Outline</Button>
+                                        <Button variant="outline" colorScheme="red">Red Outline</Button>
+                                    </HStack>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Ghost Variants</Text>
+                                    <HStack spacing={4} flexWrap="wrap">
+                                        <Button variant="ghost" colorScheme="blue">Blue Ghost</Button>
+                                        <Button variant="ghost" colorScheme="teal">Teal Ghost</Button>
+                                        <Button variant="ghost" colorScheme="green">Green Ghost</Button>
+                                        <Button variant="ghost" colorScheme="red">Red Ghost</Button>
+                                    </HStack>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Sizes</Text>
+                                    <HStack spacing={4} flexWrap="wrap" alignItems="center">
+                                        <Button size="xs" colorScheme="teal">Extra Small</Button>
+                                        <Button size="sm" colorScheme="teal">Small</Button>
+                                        <Button size="md" colorScheme="teal">Medium</Button>
+                                        <Button size="lg" colorScheme="teal">Large</Button>
+                                    </HStack>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>States</Text>
+                                    <HStack spacing={4} flexWrap="wrap">
+                                        <Button colorScheme="blue">Normal</Button>
+                                        <Button colorScheme="blue" isLoading>Loading</Button>
+                                        <Button colorScheme="blue" isDisabled>Disabled</Button>
+                                        <Button colorScheme="blue" leftIcon={<span>📁</span>}>With Icon</Button>
+                                    </HStack>
+                                </Box>
+                            </VStack>
+                        </Box>
+
+                        {/* Table Variations */}
+                        <Box className="section">
+                            <Heading as="h2" size="lg" mb={4}>Table Variations</Heading>
+
+                            <VStack spacing={6} align="stretch">
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Simple Table</Text>
+                                    <TableContainer>
+                                        <Table variant="simple">
+                                            <Thead>
+                                                <Tr>
+                                                    <Th>Name</Th>
+                                                    <Th>Email</Th>
+                                                    <Th>Role</Th>
+                                                    <Th isNumeric>Orders</Th>
+                                                </Tr>
+                                            </Thead>
+                                            <Tbody>
+                                                <Tr>
+                                                    <Td>John Doe</Td>
+                                                    <Td>john@example.com</Td>
+                                                    <Td><Badge colorScheme="green">Admin</Badge></Td>
+                                                    <Td isNumeric>45</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>Jane Smith</Td>
+                                                    <Td>jane@example.com</Td>
+                                                    <Td><Badge colorScheme="blue">User</Badge></Td>
+                                                    <Td isNumeric>28</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>Bob Johnson</Td>
+                                                    <Td>bob@example.com</Td>
+                                                    <Td><Badge colorScheme="purple">Manager</Badge></Td>
+                                                    <Td isNumeric>72</Td>
+                                                </Tr>
+                                            </Tbody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Striped Table</Text>
+                                    <TableContainer>
+                                        <Table variant="striped" colorScheme="teal">
+                                            <Thead>
+                                                <Tr>
+                                                    <Th>Product</Th>
+                                                    <Th>Category</Th>
+                                                    <Th>Status</Th>
+                                                    <Th isNumeric>Price</Th>
+                                                </Tr>
+                                            </Thead>
+                                            <Tbody>
+                                                <Tr>
+                                                    <Td>Cabinet A</Td>
+                                                    <Td>Kitchen</Td>
+                                                    <Td><Badge colorScheme="green">In Stock</Badge></Td>
+                                                    <Td isNumeric>$1,250</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>Cabinet B</Td>
+                                                    <Td>Bathroom</Td>
+                                                    <Td><Badge colorScheme="yellow">Low Stock</Badge></Td>
+                                                    <Td isNumeric>$850</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>Cabinet C</Td>
+                                                    <Td>Living Room</Td>
+                                                    <Td><Badge colorScheme="red">Out of Stock</Badge></Td>
+                                                    <Td isNumeric>$2,100</Td>
+                                                </Tr>
+                                            </Tbody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+
+                                <Box>
+                                    <Text fontWeight="bold" mb={2}>Sized Table (Small)</Text>
+                                    <TableContainer>
+                                        <Table size="sm" variant="simple">
+                                            <Thead>
+                                                <Tr>
+                                                    <Th>ID</Th>
+                                                    <Th>Customer</Th>
+                                                    <Th>Status</Th>
+                                                    <Th isNumeric>Total</Th>
+                                                </Tr>
+                                            </Thead>
+                                            <Tbody>
+                                                <Tr>
+                                                    <Td>#001</Td>
+                                                    <Td>Alice Williams</Td>
+                                                    <Td><Badge size="sm" colorScheme="green">Completed</Badge></Td>
+                                                    <Td isNumeric>$3,450</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>#002</Td>
+                                                    <Td>Charlie Brown</Td>
+                                                    <Td><Badge size="sm" colorScheme="orange">Pending</Badge></Td>
+                                                    <Td isNumeric>$1,890</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td>#003</Td>
+                                                    <Td>Diana Prince</Td>
+                                                    <Td><Badge size="sm" colorScheme="blue">Processing</Badge></Td>
+                                                    <Td isNumeric>$5,200</Td>
+                                                </Tr>
+                                            </Tbody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            </VStack>
+                        </Box>
+                    </Box>
+                </ChakraProvider>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

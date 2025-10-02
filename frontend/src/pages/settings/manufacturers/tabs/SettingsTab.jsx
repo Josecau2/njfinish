@@ -245,9 +245,9 @@ const SettingsTab = ({ manufacturer }) => {
           { count: Math.min(data.length, 5) },
         )}
       </Text>
-      <TableContainer borderWidth="1px" borderRadius="lg" borderColor="gray.100">
+      <TableContainer>
         <Table size="sm" variant="striped">
-          <Thead bg="gray.50">
+          <Thead>
             <Tr>
               {selectedFields.map((field, index) => (
                 <Th key={`header-${index}`} textTransform="none" fontSize="xs" color="gray.600">

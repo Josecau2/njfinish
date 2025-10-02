@@ -335,7 +335,7 @@ const PdfLayoutCustomization = () => {
 
         <Box overflowX="auto" borderWidth="1px" borderColor="gray.200" borderRadius="lg" mb={6}>
           <Table variant="simple" size="sm">
-            <Thead bg="gray.50">
+            <Thead>
               <Tr>
                 <Th>#</Th>
                 <Th>{t('common.qty')}</Th>

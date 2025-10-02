@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
-import PageContainer from '../../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import {
   Container,
@@ -15,9 +14,7 @@ import {
   Button,
   Icon,
   Badge,
-  Card,
-  CardHeader,
-  CardBody,
+  StandardCard,
   Table,
   Thead,
   Tbody,
@@ -46,13 +43,11 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from '@chakra-ui/react'
-import StandardCard from '../../components/StandardCard'
 import { ShoppingCart, ArrowLeft, FileText, Download, Mail, Trash } from 'lucide-react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { isAdmin } from '../../helpers/permissions'
-import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -292,12 +287,12 @@ const OrderDetails = () => {
 
   if (error) {
     return (
-      <PageContainer>
+      <Container maxW="lg" py={10}>
         <Alert status="error" borderRadius="md">
           <AlertIcon />
           <Text>{error}</Text>
         </Alert>
-      </PageContainer>
+      </Container>
     )
   }
   const handleViewPdf = async () => {
@@ -419,7 +414,7 @@ const OrderDetails = () => {
         size="sm"
         variant="outline"
         colorScheme="brand"
-        leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
+        leftIcon={<Icon as={FileText} boxSize={4} />}
         onClick={handleViewPdf}
       >
         {t('orders.actions.viewPdf', 'View PDF')}
@@ -431,7 +426,7 @@ const OrderDetails = () => {
         size="sm"
         variant="outline"
         colorScheme="gray"
-        leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
+        leftIcon={<Icon as={Download} boxSize={4} />}
         onClick={handleDownloadPdf}
         isLoading={downloading}
       >
@@ -444,7 +439,7 @@ const OrderDetails = () => {
         size="sm"
         colorScheme="brand"
         variant="solid"
-        leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
+        leftIcon={<Icon as={Mail} boxSize={4} />}
         onClick={handleResendEmail}
         isLoading={resending}
       >
@@ -457,7 +452,7 @@ const OrderDetails = () => {
         size="sm"
         colorScheme="red"
         variant="outline"
-        leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
+        leftIcon={<Icon as={Trash} boxSize={4} />}
         onClick={handleDeleteOrder}
       >
         {t('orders.actions.deleteOrder', 'Delete Order')}
@@ -471,7 +466,7 @@ const OrderDetails = () => {
       size="sm"
       variant="outline"
       colorScheme="gray"
-      leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
+      leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
       onClick={handleBack}
     >
       {t('common.back', 'Back')}
@@ -522,7 +517,7 @@ const OrderDetails = () => {
     return 'brand'
   }
   return (
-    <PageContainer>
+    <Container maxW="7xl" py={6}>
       <Stack spacing={6}>
         <PageHeader
           title={`${t('orders.details.title', 'Order Details')} - ${displayOrderNumber}`}
@@ -698,13 +693,13 @@ const OrderDetails = () => {
           </StandardCard>
         </SimpleGrid>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardHeader fontWeight="semibold">
             {t('orders.details.items', 'Items')}
           </CardHeader>
           <CardBody>
             <Box display={{ base: 'none', md: 'block' }}>
-              <Box overflowX="auto" data-scroll-region>
+              <TableContainer>
                 <Table variant="simple" size="sm">
                   <Thead bg="gray.50">
                     <Tr>
@@ -819,7 +814,7 @@ const OrderDetails = () => {
                     )}
                   </Tbody>
                 </Table>
-              </Box>
+              </TableContainer>
             </Box>
 
             <Box display={{ base: 'block', md: 'none' }}>
@@ -846,7 +841,7 @@ const OrderDetails = () => {
                       }
                     } catch (_) {}
                     return (
-                      <StandardCard key={`mobile-item-${idx}`} variant="outline">
+                      <Card key={`mobile-item-${idx}`} variant="outline">
                         <CardBody as={Stack} spacing={4}>
                           <HStack align="flex-start" spacing={4}>
                             {thumb ? (
@@ -936,16 +931,16 @@ const OrderDetails = () => {
                             </Stack>
                           </HStack>
                         </CardBody>
-                      </StandardCard>
+                      </Card>
                     )
                   })}
                 </Stack>
               )}
             </Box>
           </CardBody>
-        </Card>
+        </StandardCard>
 
-        <Card variant="outline">
+        <StandardCard variant="outline">
           <CardHeader fontWeight="semibold">
             {t('orders.details.manufacturers', 'Manufacturers')}
           </CardHeader>
@@ -1034,9 +1029,9 @@ const OrderDetails = () => {
               </SimpleGrid>
             )}
           </CardBody>
-        </Card>
+        </StandardCard>
       </Stack>
-      <Modal size={{ base: "full", lg: "5xl" }} scrollBehavior="inside" isOpen={showPdf} onClose={closePdfModal}>
+      <Modal size={{ base: "full", lg: "5xl" }} isOpen={showPdf} onClose={closePdfModal}>
         <ModalOverlay />
         <ModalContent maxH="90vh">
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1067,7 +1062,7 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal size={{ base: "full", lg: "xl" }} scrollBehavior="inside" isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
+      <Modal size={{ base: "full", lg: "xl" }} isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1082,7 +1077,7 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={notice.visible} onClose={closeNotice} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={notice.visible} onClose={closeNotice}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1133,7 +1128,7 @@ const OrderDetails = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-    </PageContainer>
+    </Container>
   )
 }
 

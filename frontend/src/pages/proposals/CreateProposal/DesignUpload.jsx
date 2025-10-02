@@ -8,6 +8,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import { CloudUpload, PenSquare, UploadCloud } from 'lucide-react'
 import axiosInstance from '../../../helpers/axiosInstance'
+import { buildUploadUrl } from '../../../utils/uploads'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion.create(Button)
@@ -21,7 +22,6 @@ const DesignImportStep = ({
   prevStep,
 }) => {
   const { t } = useTranslation()
-  const apiUrl = import.meta.env.VITE_API_URL
   const fileInputRef = useRef(null)
 
   const [activeTab, setActiveTab] = useState('manual')
@@ -222,7 +222,7 @@ const DesignImportStep = ({
                         <LazyLoadImage
                           src={
                             style.styleVariants?.[0]?.image
-                              ? `${apiUrl}/uploads/images/${style.styleVariants[0].image}`
+                              ? buildUploadUrl(`/uploads/images/${style.styleVariants[0].image}`)
                               : '/images/nologo.png'
                           }
                           alt={style.styleVariants?.[0]?.shortName || style.style}
@@ -233,7 +233,7 @@ const DesignImportStep = ({
                             const fileName = style.styleVariants?.[0]?.image
                             if (fileName && !event.target.dataset.fallbackTried) {
                               event.target.dataset.fallbackTried = '1'
-                              event.target.src = `${apiUrl}/uploads/manufacturer_catalogs/${fileName}`
+                              event.target.src = buildUploadUrl(`/uploads/manufacturer_catalogs/${fileName}`)
                             } else {
                               event.target.src = '/images/nologo.png'
                             }

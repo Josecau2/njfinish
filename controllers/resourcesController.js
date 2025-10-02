@@ -1042,28 +1042,34 @@ async function getCategoryThumbnail(req, res) {
   try {
     const user = req.user;
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+      res.type('text/plain');
+      return res.status(401).send('Unauthorized');
     }
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+      res.type('text/plain');
+      return res.status(400).send('Invalid category ID');
     }
     const category = await ResourceCategory.findByPk(id);
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     const ref = category.thumbnail_url;
     if (!ref || !isRelativeStorageRef(ref)) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     let absolutePath;
     try {
       absolutePath = safeResolveStoragePath(ref);
     } catch (error) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     if (!fs.existsSync(absolutePath)) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     const mime = guessImageMimeFromPath(absolutePath);
     res.setHeader('Content-Type', mime);
@@ -1076,7 +1082,8 @@ async function getCategoryThumbnail(req, res) {
     return stream.pipe(res);
   } catch (error) {
     console.error('Error serving category thumbnail:', error);
-    return res.status(500).json({ success: false, message: 'Failed to load thumbnail' });
+    res.type('text/plain');
+    return res.status(500).send('Failed to load thumbnail');
   }
 }
 
@@ -1120,28 +1127,34 @@ async function getFileThumbnail(req, res) {
   try {
     const user = req.user;
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+      res.type('text/plain');
+      return res.status(401).send('Unauthorized');
     }
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid file ID' });
+      res.type('text/plain');
+      return res.status(400).send('Invalid file ID');
     }
     const record = await ResourceFile.findByPk(id);
     if (!record || record.is_deleted) {
-      return res.status(404).json({ success: false, message: 'File not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     const ref = record.thumbnail_url;
     if (!ref || !isRelativeStorageRef(ref)) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     let absolutePath;
     try {
       absolutePath = safeResolveStoragePath(ref);
     } catch (error) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     if (!fs.existsSync(absolutePath)) {
-      return res.status(404).json({ success: false, message: 'Thumbnail not found' });
+      res.type('text/plain');
+      return res.status(404).send('Not found');
     }
     const mime = guessImageMimeFromPath(absolutePath);
     res.setHeader('Content-Type', mime);
@@ -1154,7 +1167,8 @@ async function getFileThumbnail(req, res) {
     return stream.pipe(res);
   } catch (error) {
     console.error('Error serving file thumbnail:', error);
-    return res.status(500).json({ success: false, message: 'Failed to load thumbnail' });
+    res.type('text/plain');
+    return res.status(500).send('Failed to load thumbnail');
   }
 }
 async function getLinks(req, res) {

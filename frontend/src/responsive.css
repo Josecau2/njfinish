@@ -445,21 +445,6 @@ body {
   background-color: var(--app-white);
 }
 
-/* Tables */
-@media (max-width: 767.98px) {
-  /* Hide desktop tables on mobile */
-  .table-responsive-md {
-    display: none;
-  }
-  /* Prevent any table from forcing horizontal scroll */
-  .card .table,
-  .card table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-  }
-}
-
 /* Mobile Card Layouts (to be used with a wrapper class like .mobile-cards-view) */
 .mobile-cards-view {
   display: none;
@@ -894,29 +879,6 @@ body {
   overflow: hidden;
 }
 
-.data-table-card .table {
-  margin-bottom: 0;
-}
-
-.data-table-card .table thead th {
-  background-color: var(--cui-light);
-  border-bottom: 1px solid var(--app-border-color);
-  color: var(--app-gray-700);
-  font-weight: 600;
-  padding: 1rem;
-  vertical-align: middle;
-}
-
-.data-table-card .table tbody td {
-  padding: 1rem;
-  vertical-align: middle;
-  border-color: var(--app-border-color-translucent);
-}
-
-.data-table-card .table tbody tr:last-child td {
-  border-bottom: none;
-}
-
 .mobile-card-view .customer-name {
   font-weight: 600;
   color: var(--app-gray-800);
@@ -1266,113 +1228,6 @@ body {
   border-radius: var(--app-border-radius-lg);
 }
 
-.settings-table-responsive .table {
-  min-width: 800px; /* Ensure table doesn't get too cramped on desktop */
-  margin-bottom: 0;
-}
-
-.settings-table-responsive .table th,
-.settings-table-responsive .table td {
-  white-space: nowrap;
-  vertical-align: middle;
-  padding: 1.25rem 1rem;
-  border: none;
-}
-
-.settings-table-responsive .table th {
-  font-weight: 600;
-  font-size: 0.8125rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--app-gray-700);
-  background-color: var(--app-gray-100);
-  border-bottom: none;
-}
-
-.settings-table-responsive .table th:first-child {
-  border-top-left-radius: var(--app-border-radius-lg);
-}
-
-.settings-table-responsive .table th:last-child {
-  border-top-right-radius: var(--app-border-radius-lg);
-}
-
-.settings-table-responsive .table td {
-  border-bottom: 1px solid var(--app-gray-200);
-  font-size: 0.9375rem;
-}
-
-.settings-table-responsive .table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.settings-table-responsive .table tbody tr:hover {
-  background-color: var(--app-gray-50);
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
-}
-
-/* Improve button spacing and sizing */
-.settings-action-btn {
-  min-width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--app-border-radius);
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.settings-action-btn:hover.edit {
-  background-color: rgba(13, 110, 253, 0.1);
-  border-color: rgba(13, 110, 253, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
-}
-
-.settings-action-btn:hover.delete {
-  background-color: rgba(220, 53, 69, 0.1);
-  border-color: rgba(220, 53, 69, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.15);
-}
-
-/* Enhanced badges */
-.settings-badge {
-  padding: 0.5rem 0.875rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: var(--app-border-radius-pill);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-/* User info display improvements */
-.user-info-display .fw-medium {
-  font-size: 0.9375rem;
-  color: var(--app-gray-900);
-  font-weight: 600;
-}
-
-.user-info-display .text-muted {
-  font-size: 0.875rem;
-  color: var(--app-gray-600);
-}
-
-/* Index badge styling */
-.settings-index-badge {
-  background-color: var(--app-gray-100);
-  color: var(--app-gray-600);
-  border-radius: var(--app-border-radius-pill);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  min-width: 2rem;
-  text-align: center;
-}
-
-/* Desktop-specific improvements */
 @media (min-width: 1024px) {
   .settings-container {
     padding: 2rem;
@@ -1397,17 +1252,8 @@ body {
     box-shadow: var(--app-box-shadow-sm);
   }
 
-  /* Enhanced spacing for desktop tables */
-  .settings-table-responsive .table th,
-  .settings-table-responsive .table td {
-    padding: 1.25rem 1.25rem;
-  }
-
   /* Action buttons group */
-  .table .d-flex.justify-content-center.gap-2 {
-    gap: 0.75rem;
   }
-}
 
 /* Mobile Card View for Settings Tables */
 @media (max-width: 1023px) {
@@ -1973,10 +1819,7 @@ body {
 
 @media (max-width: 767.98px) {
   /* Hide desktop table on mobile */
-  .table-responsive-md {
-    display: none;
-  }
-
+  
   /* Show mobile card view */
   .mobile-card-view {
     display: block;
@@ -3111,11 +2954,7 @@ body {
   }
 
   /* Prevent tables from breaking layout */
-  .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
-}
 
 /* Tablet-specific overflow protection */
 @media (min-width: 1024px) and (max-width: 991.98px) {

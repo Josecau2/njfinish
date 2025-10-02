@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chakra UI Comparison - Your Theme vs Default</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .main-title {
+            color: white;
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .column {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .column-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid;
+        }
+        .left .column-title {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+        .right .column-title {
+            color: #667eea;
+            border-color: #667eea;
+        }
+        .theme-info {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .section {
+            margin-bottom: 32px;
+        }
+        .section-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 16px;
+            padding-left: 8px;
+            border-left: 4px solid #94a3b8;
+        }
+        .demo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* YOUR THEME STYLES (Left Column) */
+        .left .btn {
+            padding: 0 20px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .left .btn-solid {
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+        .left .btn-solid:hover {
+            background: #1d4ed8;
+            transform: scale(0.98);
+        }
+        .left .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            color: #1d4ed8;
+        }
+        .left .btn-outline:hover {
+            background: #eff6ff;
+        }
+        .left .btn-ghost {
+            background: transparent;
+            border: none;
+            color: #1d4ed8;
+        }
+        .left .btn-ghost:hover {
+            background: #eff6ff;
+        }
+        .left .btn-sm { height: 36px; font-size: 13px; padding: 0 12px; }
+        .left .btn-lg { height: 48px; font-size: 16px; padding: 0 24px; }
+
+        .left table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+            background: #ffffff;
+        }
+        .left th {
+            background: #eff6ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #64748b;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .left td {
+            padding: 12px;
+            font-size: 14px;
+            color: #0f172a;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .left tbody tr:hover {
+            background: #eff6ff;
+        }
+
+        .left .input-field {
+            height: 44px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: #ffffff;
+            font-size: 14px;
+            width: 100%;
+        }
+        .left .input-field:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.6);
+        }
+
+        .left .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* DEFAULT CHAKRA STYLES (Right Column) */
+        .right .btn {
+            padding: 0 16px;
+            height: 40px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .right .btn-solid {
+            background: #4299E1;
+            color: white;
+            border: none;
+        }
+        .right .btn-solid:hover {
+            background: #3182CE;
+        }
+        .right .btn-outline {
+            background: transparent;
+            border: 2px solid #4299E1;
+            color: #4299E1;
+        }
+        .right .btn-outline:hover {
+            background: rgba(66, 153, 225, 0.1);
+        }
+        .right .btn-ghost {
+            background: transparent;
+            border: none;
+            color: #4299E1;
+        }
+        .right .btn-ghost:hover {
+            background: rgba(66, 153, 225, 0.1);
+        }
+        .right .btn-sm { height: 32px; font-size: 13px; padding: 0 12px; }
+        .right .btn-lg { height: 48px; font-size: 16px; padding: 0 24px; }
+
+        .right table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #E2E8F0;
+        }
+        .right th {
+            background: #F7FAFC;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #2D3748;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .right td {
+            padding: 12px;
+            font-size: 14px;
+            color: #4A5568;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .right tbody tr:hover {
+            background: #F7FAFC;
+        }
+
+        .right .input-field {
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+            background: #ffffff;
+            font-size: 14px;
+            width: 100%;
+        }
+        .right .input-field:focus {
+            outline: none;
+            border-color: #3182CE;
+            box-shadow: 0 0 0 1px #3182CE;
+        }
+
+        .right .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Shared badge colors */
+        .badge-green { background: #C6F6D5; color: #22543D; }
+        .badge-yellow { background: #FEFCBF; color: #744210; }
+        .badge-red { background: #FED7D7; color: #742A2A; }
+        .badge-blue { background: #BEE3F8; color: #2C5282; }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+        .color-swatch {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            padding: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="main-title">Chakra UI Theme Comparison</h1>
+    <p class="subtitle">Your Custom Theme vs Default Chakra UI</p>
+
+    <div class="comparison-grid">
+        <!-- LEFT COLUMN: YOUR THEME -->
+        <div class="column left">
+            <div class="column-title">Your Custom Theme (njcabinets)</div>
+            <div class="theme-info">
+                <strong>Brand Color:</strong> #2563eb (Blue 500)<br>
+                <strong>Border Radius:</strong> 12px (md)<br>
+                <strong>Button Height:</strong> 44px<br>
+                <strong>Font:</strong> Inter
+            </div>
+
+            <!-- Buttons -->
+            <div class="section">
+                <div class="section-name">Buttons</div>
+                <div class="demo-grid">
+                    <button class="btn btn-solid">Solid</button>
+                    <button class="btn btn-outline">Outline</button>
+                    <button class="btn btn-ghost">Ghost</button>
+                </div>
+                <div class="demo-grid" style="margin-top: 12px;">
+                    <button class="btn btn-solid btn-sm">Small</button>
+                    <button class="btn btn-solid">Medium</button>
+                    <button class="btn btn-solid btn-lg">Large</button>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="section">
+                <div class="section-name">Input Fields</div>
+                <input type="text" class="input-field" placeholder="Enter your text...">
+            </div>
+
+            <!-- Badges -->
+            <div class="section">
+                <div class="section-name">Badges</div>
+                <div class="demo-grid">
+                    <span class="badge badge-green">Success</span>
+                    <span class="badge badge-yellow">Warning</span>
+                    <span class="badge badge-red">Error</span>
+                    <span class="badge badge-blue">Info</span>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="section">
+                <div class="section-name">Table</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cabinet A</td>
+                                <td><span class="badge badge-green">In Stock</span></td>
+                                <td>$1,250</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet B</td>
+                                <td><span class="badge badge-yellow">Low Stock</span></td>
+                                <td>$850</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet C</td>
+                                <td><span class="badge badge-red">Out</span></td>
+                                <td>$2,100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Color Palette -->
+            <div class="section">
+                <div class="section-name">Brand Color Palette</div>
+                <div class="color-palette">
+                    <div class="color-swatch" style="background: #eff6ff;">50</div>
+                    <div class="color-swatch" style="background: #dbeafe;">100</div>
+                    <div class="color-swatch" style="background: #bfdbfe;">200</div>
+                    <div class="color-swatch" style="background: #93c5fd;">300</div>
+                    <div class="color-swatch" style="background: #60a5fa;">400</div>
+                    <div class="color-swatch" style="background: #2563eb;">500</div>
+                    <div class="color-swatch" style="background: #1d4ed8;">600</div>
+                    <div class="color-swatch" style="background: #1e40af;">700</div>
+                    <div class="color-swatch" style="background: #1e3a8a;">800</div>
+                    <div class="color-swatch" style="background: #172554;">900</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: DEFAULT CHAKRA -->
+        <div class="column right">
+            <div class="column-title">Default Chakra UI</div>
+            <div class="theme-info">
+                <strong>Brand Color:</strong> #4299E1 (Blue 400)<br>
+                <strong>Border Radius:</strong> 6px (md)<br>
+                <strong>Button Height:</strong> 40px<br>
+                <strong>Font:</strong> System UI
+            </div>
+
+            <!-- Buttons -->
+            <div class="section">
+                <div class="section-name">Buttons</div>
+                <div class="demo-grid">
+                    <button class="btn btn-solid">Solid</button>
+                    <button class="btn btn-outline">Outline</button>
+                    <button class="btn btn-ghost">Ghost</button>
+                </div>
+                <div class="demo-grid" style="margin-top: 12px;">
+                    <button class="btn btn-solid btn-sm">Small</button>
+                    <button class="btn btn-solid">Medium</button>
+                    <button class="btn btn-solid btn-lg">Large</button>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="section">
+                <div class="section-name">Input Fields</div>
+                <input type="text" class="input-field" placeholder="Enter your text...">
+            </div>
+
+            <!-- Badges -->
+            <div class="section">
+                <div class="section-name">Badges</div>
+                <div class="demo-grid">
+                    <span class="badge badge-green">SUCCESS</span>
+                    <span class="badge badge-yellow">WARNING</span>
+                    <span class="badge badge-red">ERROR</span>
+                    <span class="badge badge-blue">INFO</span>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="section">
+                <div class="section-name">Table</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cabinet A</td>
+                                <td><span class="badge badge-green">IN STOCK</span></td>
+                                <td>$1,250</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet B</td>
+                                <td><span class="badge badge-yellow">LOW STOCK</span></td>
+                                <td>$850</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet C</td>
+                                <td><span class="badge badge-red">OUT</span></td>
+                                <td>$2,100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Color Palette -->
+            <div class="section">
+                <div class="section-name">Brand Color Palette</div>
+                <div class="color-palette">
+                    <div class="color-swatch" style="background: #EBF8FF;">50</div>
+                    <div class="color-swatch" style="background: #BEE3F8;">100</div>
+                    <div class="color-swatch" style="background: #90CDF4;">200</div>
+                    <div class="color-swatch" style="background: #63B3ED;">300</div>
+                    <div class="color-swatch" style="background: #4299E1;">400</div>
+                    <div class="color-swatch" style="background: #3182CE;">500</div>
+                    <div class="color-swatch" style="background: #2B6CB0;">600</div>
+                    <div class="color-swatch" style="background: #2C5282;">700</div>
+                    <div class="color-swatch" style="background: #2A4365;">800</div>
+                    <div class="color-swatch" style="background: #1A365D;">900</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 1600px; margin: 40px auto; padding: 32px; background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #334155;">Key Differences</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; color: #2563eb; margin-bottom: 12px;">Your Theme ✨</h3>
+                <ul style="line-height: 1.8; color: #64748b; padding-left: 20px;">
+                    <li><strong>Larger tap targets:</strong> 44px height (WCAG AA compliant)</li>
+                    <li><strong>Rounder corners:</strong> 12px border radius (modern look)</li>
+                    <li><strong>Deeper blue:</strong> #2563eb brand color (Blue 500)</li>
+                    <li><strong>Softer borders:</strong> More subtle border colors</li>
+                    <li><strong>Better shadows:</strong> More depth and dimension</li>
+                    <li><strong>Table styling:</strong> Border and shadow on tables</li>
+                    <li><strong>Badge style:</strong> Full rounded (pill shape)</li>
+                    <li><strong>Focus states:</strong> Custom focus ring with 2px shadow</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; color: #4299e1; margin-bottom: 12px;">Default Chakra UI</h3>
+                <ul style="line-height: 1.8; color: #64748b; padding-left: 20px;">
+                    <li><strong>Standard height:</strong> 40px button height</li>
+                    <li><strong>Tighter radius:</strong> 6px border radius</li>
+                    <li><strong>Lighter blue:</strong> #4299E1 brand color (Blue 400)</li>
+                    <li><strong>Outline variant:</strong> 2px border width</li>
+                    <li><strong>Minimal shadows:</strong> Subtle depth</li>
+                    <li><strong>Table styling:</strong> Simple borders only</li>
+                    <li><strong>Badge style:</strong> Subtle rounded corners, UPPERCASE text</li>
+                    <li><strong>Focus states:</strong> Standard 1px box shadow</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

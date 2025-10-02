@@ -323,6 +323,10 @@ const Table = {
       width: '100%',
       minWidth: '100%',
       tableLayout: { base: 'fixed', xl: 'auto' },
+      border: '1px solid',
+      borderColor: 'borderStrong',
+      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.08)',
+      backgroundColor: 'surface',
     },
     thead: {
       th: {
@@ -335,6 +339,13 @@ const Table = {
         whiteSpace: 'normal',
         wordBreak: 'break-word',
       },
+      tr: {
+        _last: {
+          td: {
+            borderBottomWidth: 0,
+          },
+        },
+      },
     },
     th: {
       fontWeight: '600',
@@ -342,11 +353,13 @@ const Table = {
       fontSize: 'sm',
       color: 'muted',
       borderColor: 'border',
+      borderBottomWidth: '1px',
       whiteSpace: 'normal',
       wordBreak: 'break-word',
     },
     td: {
       borderColor: 'border',
+      borderBottomWidth: '1px',
       fontSize: 'sm',
       whiteSpace: 'normal',
       wordBreak: 'break-word',

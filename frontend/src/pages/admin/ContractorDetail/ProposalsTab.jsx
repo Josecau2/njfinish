@@ -357,11 +357,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
               {/* Table */}
               <Box overflowX="auto" data-scroll-region>
-                <Table variant="striped" className="table-modern">
+                <Table variant="striped">
                   <Thead>
                     <Tr>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('title')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.title')}
@@ -372,7 +372,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         ))}
                       </Th>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('customer_name')}
                       >
                         {t('proposals.headers.customer')}
@@ -383,7 +383,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         ))}
                       </Th>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('status')}
                       >
                         {t('proposals.headers.status')}
@@ -394,7 +394,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         ))}
                       </Th>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('total_amount')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.amount')}
@@ -405,7 +405,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         ))}
                       </Th>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('createdAt')}
                       >
                         {t('proposals.headers.date')}
@@ -416,7 +416,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         ))}
                       </Th>
                       <Th
-                        className="cursor-pointer"
+                        cursor="pointer"
                         onClick={() => handleSort('updatedAt')}
                       >
                         {t('contractorsAdmin.detail.proposals.table.updated')}
@@ -443,7 +443,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       </Tr>
                     ) : (
                       displayProposals.map((proposal) => (
-                        <Tr key={proposal.id} className="align-middle">
+                        <Tr key={proposal.id} verticalAlign="middle">
                           <Td>
                             <div>
                               <div>{proposal.title || `Proposal #${proposal.id}`}</div>

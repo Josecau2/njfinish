@@ -101,8 +101,6 @@ const LocationPage = () => {
     navigate(noisy)
   }
 
-  const tableBg = useColorModeValue('white', 'gray.800')
-  const headerBg = useColorModeValue('gray.50', 'gray.700')
   const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
   const stickyBorder = useColorModeValue('gray.200', 'gray.700')
 
@@ -237,8 +235,8 @@ const LocationPage = () => {
         <Card>
           <CardBody p={0}>
             <Box overflowX="auto">
-              <Table variant="simple" bg={tableBg}>
-              <Thead bg={headerBg}>
+              <Table variant="simple">
+              <Thead>
                 <Tr>
                   <Th textAlign="center">#</Th>
                   <Th>

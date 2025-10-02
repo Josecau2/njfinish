@@ -195,8 +195,7 @@ const ManuMultipliers = () => {
   const enabledCount = mergedGroups.filter((group) => group.enabled === 1).length
   const disabledCount = mergedGroups.length - enabledCount
   const accentColor = customization?.headerBg || "purple.500"
-  const tableHeaderBg = useColorModeValue('gray.50', 'gray.900')
-
+  
   return (
     <PageContainer>
       <Stack spacing={6}>
@@ -312,7 +311,7 @@ const ManuMultipliers = () => {
           <CardBody p={0}>
             <Box overflowX="auto" data-scroll-region>
               <Table variant="simple">
-                <Thead bg={tableHeaderBg}>
+                <Thead>
                   <Tr>
                     <Th>
                       <HStack spacing={4}>

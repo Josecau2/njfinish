@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Chakra UI Comparison - Your Theme vs Default</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .main-title {
+            color: white;
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .column {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .column-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid;
+        }
+        .left .column-title {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+        .right .column-title {
+            color: #4299e1;
+            border-color: #4299e1;
+        }
+        .theme-info {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .section {
+            margin-bottom: 32px;
+        }
+        .section-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 16px;
+            padding-left: 8px;
+            border-left: 4px solid #94a3b8;
+        }
+
+        /* Sidebar Navigation Demo */
+        .sidebar-demo-container {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .sidebar-demo {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+        .sidebar-collapsed {
+            width: 56px;
+        }
+        .sidebar-expanded {
+            width: 256px;
+        }
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .sidebar-logo-text {
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        .sidebar-logo-icon {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .sidebar-nav {
+            padding: 8px 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 12px;
+            position: relative;
+        }
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .nav-item.active {
+            background: rgba(37, 99, 235, 0.2);
+            color: white;
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #2563eb;
+        }
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 8px;
+        }
+        .pin-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .pin-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        /* Collapsed state adjustments */
+        .sidebar-collapsed .sidebar-header {
+            justify-content: center;
+            padding: 16px 0;
+        }
+        .sidebar-collapsed .sidebar-logo-text,
+        .sidebar-collapsed .close-btn {
+            display: none;
+        }
+        .sidebar-collapsed .nav-item {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar-collapsed .nav-label {
+            display: none;
+        }
+        .sidebar-collapsed .pin-btn-text {
+            display: none;
+        }
+
+        /* Your theme sidebar */
+        .left .sidebar-demo {
+            background: #0f172a;
+        }
+
+        /* Default Chakra sidebar */
+        .right .sidebar-demo {
+            background: #1A202C;
+        }
+
+        /* Demo grid for other components */
+        .demo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Button styles */
+        .btn {
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+        .left .btn {
+            padding: 0 20px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .right .btn {
+            padding: 0 16px;
+            height: 40px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-solid {
+            color: white;
+        }
+        .left .btn-solid {
+            background: #2563eb;
+        }
+        .left .btn-solid:hover {
+            background: #1d4ed8;
+            transform: scale(0.98);
+        }
+        .right .btn-solid {
+            background: #4299E1;
+        }
+        .right .btn-solid:hover {
+            background: #3182CE;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        .left table {
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        }
+        .left th {
+            background: #eff6ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .left td {
+            padding: 12px;
+            color: #0f172a;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .left tbody tr:hover {
+            background: #eff6ff;
+        }
+        .right table {
+            border: 1px solid #E2E8F0;
+        }
+        .right th {
+            background: #F7FAFC;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #2D3748;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .right td {
+            padding: 12px;
+            color: #4A5568;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .right tbody tr:hover {
+            background: #F7FAFC;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .left .badge {
+            border-radius: 9999px;
+        }
+        .badge-green { background: #C6F6D5; color: #22543D; }
+
+        @media (max-width: 1400px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="main-title">Complete Chakra UI Comparison</h1>
+    <p class="subtitle">Your Custom Theme vs Default Chakra UI - Including Sidebar Navigation</p>
+
+    <div class="comparison-grid">
+        <!-- LEFT COLUMN: YOUR THEME -->
+        <div class="column left">
+            <div class="column-title">Your Custom Theme (njcabinets)</div>
+            <div class="theme-info">
+                <strong>Sidebar BG:</strong> #0f172a (Slate 900)<br>
+                <strong>Brand Color:</strong> #2563eb (Blue 500)<br>
+                <strong>Border Radius:</strong> 12px<br>
+                <strong>Button Height:</strong> 44px
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <div class="section">
+                <div class="section-name">Sidebar Navigation</div>
+                <div class="sidebar-demo-container">
+                    <!-- Collapsed Sidebar -->
+                    <div class="sidebar-demo sidebar-collapsed">
+                        <div class="sidebar-header">
+                            <div class="sidebar-logo-icon"></div>
+                        </div>
+                        <div class="sidebar-nav">
+                            <div class="nav-item">
+                                <div class="nav-icon">📊</div>
+                            </div>
+                            <div class="nav-item active">
+                                <div class="nav-icon">📦</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">👥</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">💰</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">⚙️</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-footer">
+                            <button class="pin-btn">
+                                📌
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Expanded Sidebar -->
+                    <div class="sidebar-demo sidebar-expanded">
+                        <div class="sidebar-header">
+                            <div class="sidebar-logo-text">NJ Cabinets</div>
+                            <button class="close-btn" style="background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; font-size: 20px;">✕</button>
+                        </div>
+                        <div class="sidebar-nav">
+                            <div class="nav-item">
+                                <div class="nav-icon">📊</div>
+                                <div class="nav-label">Dashboard</div>
+                            </div>
+                            <div class="nav-item active">
+                                <div class="nav-icon">📦</div>
+                                <div class="nav-label">Orders</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">👥</div>
+                                <div class="nav-label">Customers</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">💰</div>
+                                <div class="nav-label">Payments</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">⚙️</div>
+                                <div class="nav-label">Settings</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-footer">
+                            <button class="pin-btn">
+                                📌 <span class="pin-btn-text">Pin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 13px; color: #64748b;">
+                    <strong>Features:</strong> 56px collapsed → 256px expanded • Hover to expand • Pin to keep open • Mobile drawer
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="section">
+                <div class="section-name">Buttons</div>
+                <div class="demo-grid">
+                    <button class="btn btn-solid">Primary Button</button>
+                    <button class="btn btn-solid">Action</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="section">
+                <div class="section-name">Table</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cabinet A</td>
+                                <td><span class="badge badge-green">In Stock</span></td>
+                                <td>$1,250</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet B</td>
+                                <td><span class="badge badge-green">Available</span></td>
+                                <td>$850</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: DEFAULT CHAKRA -->
+        <div class="column right">
+            <div class="column-title">Default Chakra UI</div>
+            <div class="theme-info">
+                <strong>Sidebar BG:</strong> #1A202C (Gray 800)<br>
+                <strong>Brand Color:</strong> #4299E1 (Blue 400)<br>
+                <strong>Border Radius:</strong> 6px<br>
+                <strong>Button Height:</strong> 40px
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <div class="section">
+                <div class="section-name">Sidebar Navigation</div>
+                <div class="sidebar-demo-container">
+                    <!-- Collapsed Sidebar -->
+                    <div class="sidebar-demo sidebar-collapsed">
+                        <div class="sidebar-header">
+                            <div class="sidebar-logo-icon"></div>
+                        </div>
+                        <div class="sidebar-nav">
+                            <div class="nav-item">
+                                <div class="nav-icon">📊</div>
+                            </div>
+                            <div class="nav-item active">
+                                <div class="nav-icon">📦</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">👥</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">💰</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">⚙️</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-footer">
+                            <button class="pin-btn">
+                                📌
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Expanded Sidebar -->
+                    <div class="sidebar-demo sidebar-expanded">
+                        <div class="sidebar-header">
+                            <div class="sidebar-logo-text">Application</div>
+                            <button class="close-btn" style="background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; font-size: 20px;">✕</button>
+                        </div>
+                        <div class="sidebar-nav">
+                            <div class="nav-item">
+                                <div class="nav-icon">📊</div>
+                                <div class="nav-label">Dashboard</div>
+                            </div>
+                            <div class="nav-item active">
+                                <div class="nav-icon">📦</div>
+                                <div class="nav-label">Orders</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">👥</div>
+                                <div class="nav-label">Customers</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">💰</div>
+                                <div class="nav-label">Payments</div>
+                            </div>
+                            <div class="nav-item">
+                                <div class="nav-icon">⚙️</div>
+                                <div class="nav-label">Settings</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-footer">
+                            <button class="pin-btn">
+                                📌 <span class="pin-btn-text">Pin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 13px; color: #64748b;">
+                    <strong>Standard:</strong> Chakra Drawer component • Similar collapse behavior • Default gray tones
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="section">
+                <div class="section-name">Buttons</div>
+                <div class="demo-grid">
+                    <button class="btn btn-solid">Primary Button</button>
+                    <button class="btn btn-solid">Action</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="section">
+                <div class="section-name">Table</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cabinet A</td>
+                                <td><span class="badge badge-green">IN STOCK</span></td>
+                                <td>$1,250</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet B</td>
+                                <td><span class="badge badge-green">AVAILABLE</span></td>
+                                <td>$850</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 1800px; margin: 40px auto; padding: 32px; background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #334155;">Sidebar Navigation Comparison</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; color: #2563eb; margin-bottom: 12px;">Your Custom Sidebar ✨</h3>
+                <ul style="line-height: 1.8; color: #64748b; padding-left: 20px;">
+                    <li><strong>Background:</strong> #0f172a (Slate 900) - darker, more contrast</li>
+                    <li><strong>Collapsed width:</strong> 56px (icon-only mode)</li>
+                    <li><strong>Expanded width:</strong> 256px (full navigation)</li>
+                    <li><strong>Hover behavior:</strong> Auto-expand on desktop hover</li>
+                    <li><strong>Pin feature:</strong> Keep sidebar expanded permanently</li>
+                    <li><strong>Mobile:</strong> Drawer with 280px max width (85vw)</li>
+                    <li><strong>Active indicator:</strong> Blue highlight + 3px right border</li>
+                    <li><strong>Transitions:</strong> 0.2s cubic-bezier easing</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; color: #4299e1; margin-bottom: 12px;">Default Chakra Sidebar</h3>
+                <ul style="line-height: 1.8; color: #64748b; padding-left: 20px;">
+                    <li><strong>Background:</strong> #1A202C (Gray 800) - standard gray</li>
+                    <li><strong>Implementation:</strong> Chakra Drawer component</li>
+                    <li><strong>Behavior:</strong> Similar collapse/expand pattern</li>
+                    <li><strong>Styling:</strong> Default Chakra spacing and colors</li>
+                    <li><strong>Transitions:</strong> Standard Chakra transitions</li>
+                    <li><strong>Mobile:</strong> Full-screen drawer on small screens</li>
+                    <li><strong>Active state:</strong> Background color change only</li>
+                    <li><strong>Customization:</strong> Requires theme overrides</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

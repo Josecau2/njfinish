@@ -39,6 +39,11 @@ export const resolveAssetUrl = (input, apiUrl = import.meta.env?.VITE_API_URL) =
     return buildUploadUrl(uploadPath)
   }
 
+  // Bare image filenames (png/jpg/jpeg/webp/svg/gif) → assume /uploads/images/<file>
+  if (/^[a-zA-Z0-9_\-\.]+\.(png|jpe?g|webp|svg|gif)$/i.test(raw)) {
+    return buildUploadUrl(`/uploads/images/${raw}`)
+  }
+
   if (raw.startsWith('/assets/') || raw.startsWith('assets/')) {
     const assetPath = raw.startsWith('/') ? raw : `/${raw}`
     const base = normalizeBaseUrl(apiUrl)
@@ -46,7 +51,8 @@ export const resolveAssetUrl = (input, apiUrl = import.meta.env?.VITE_API_URL) =
   }
 
   const normalizedBase = normalizeBaseUrl(apiUrl)
-  const normalizedPath = normalizePath(raw)
+  // Normalize backslashes (in case of Windows-style paths in settings)
+  const normalizedPath = normalizePath(raw.replace(/\\/g, '/'))
 
   if (!normalizedBase) {
     return normalizedPath

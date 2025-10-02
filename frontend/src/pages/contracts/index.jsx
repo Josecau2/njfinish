@@ -513,7 +513,7 @@ const Contracts = () => {
             <CardBody p={0}>
               <Box overflowX="auto" data-scroll-region>
                 <Table variant="simple">
-                  <Thead bg="gray.50">
+                  <Thead>
                     <Tr>
                       <Th>{t('contracts.table.date')}</Th>
                       <Th>{t('contracts.table.customer')}</Th>
