@@ -14,7 +14,7 @@ export const CUSTOMIZATION_CONFIG = {
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
   "updatedAt": "2025-10-02T02:22:30.000Z",
-  "_generated": "2025-10-02T02:37:17.062Z",
+  "_generated": "2025-10-02T02:42:49.398Z",
   "_version": "1.0.0"
 }
 

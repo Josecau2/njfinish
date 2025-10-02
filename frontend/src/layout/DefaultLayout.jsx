@@ -142,7 +142,7 @@ const DefaultLayout = () => {
   }
 
   return (
-    <Box minH="100vh" background="background">
+    <Box background="background">
       {/* Skip to main content link for accessibility */}
       <Link
         href="#main-content"
@@ -166,7 +166,6 @@ const DefaultLayout = () => {
       <Box
         ml={{ base: 0, lg: sidebarWidth }}
         transition="margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-        minH="100vh"
         className="main-content-area"
       >
         <Flex direction="column" minH="100vh">
