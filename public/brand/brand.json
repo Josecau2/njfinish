@@ -1,10 +1,10 @@
 {
-  "version": 1759350246702,
+  "version": 1759371750506,
   "colors": {
     "headerBg": "#050505",
     "headerText": "#ffffff",
     "sidebarBg": "#1a1919",
-    "sidebarText": "#100f0f",
+    "sidebarText": "#f5f5f5",
     "text": "#0f172a",
     "accent": "#2563eb",
     "surface": "#f8fafc",

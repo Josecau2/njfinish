@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect } from 'react'
-import { Box, Container, SimpleGrid, FormControl, FormLabel, FormErrorMessage, Input, Select, Switch, Button, VStack, HStack, Text, Heading, useToast, Icon, Flex, Divider } from '@chakra-ui/react'
+import { Box, CardBody, Container, SimpleGrid, FormControl, FormLabel, FormErrorMessage, Input, Select, Switch, Button, VStack, HStack, Text, Heading, useToast, Icon, Flex, Divider } from '@chakra-ui/react'
 import { useForm, Controller } from 'react-hook-form'
 import { motion, useReducedMotion } from 'framer-motion'
 import { User, Lock, ArrowLeft, Home, Building } from '@/icons-lucide'

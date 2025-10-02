@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
-import { FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast } from '@chakra-ui/react'
+import { CardBody, FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast } from '@chakra-ui/react'
 import { User, Mail, ArrowLeft, Save, Eye, Settings, Home, Building, UserPlus, Lock } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -67,7 +67,7 @@ const CustomFormInput = ({
         placeholder={placeholder}
         borderColor={isInvalid ? 'red.300' : 'gray.300'}
         _hover={{ borderColor: isInvalid ? 'red.400' : 'gray.400' }}
-        _focus={{
+        _focusVisible={{
           borderColor: isInvalid ? 'red.500' : 'brand.500',
           boxShadow: `0 0 0 1px ${isInvalid ? 'red.500' : 'brand.500'}`,
         }}

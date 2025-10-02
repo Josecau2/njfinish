@@ -135,7 +135,7 @@ const AppSidebar = () => {
       borderRight="1px solid"
       borderRightColor="whiteAlpha.100"
       role="navigation"
-      transition="width 0.15s ease-in-out"
+      transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       overflow="hidden"
     >
       {/* Sidebar Header - matches legacy CSidebarHeader */}
@@ -305,7 +305,7 @@ const AppSidebar = () => {
       left="0"
       h="100vh"
       w={collapsed ? "56px" : "256px"}
-      transition="width 0.15s ease-in-out"
+      transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       zIndex="1040"

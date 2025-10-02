@@ -66,10 +66,6 @@ const Button = {
       boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
       outline: 'none',
     },
-    _focus: {
-      boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-      outline: 'none',
-    },
     _active: {
       transform: 'scale(0.98)',
     },
@@ -156,18 +152,9 @@ const inputLikeComponent = {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
-      _focus: {
-        borderColor: 'brand.500',
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
       _invalid: {
         borderColor: 'red.500',
         _focusVisible: {
-          borderColor: 'red.500',
-          boxShadow: '0 0 0 2px var(--chakra-colors-focusRingError)',
-        },
-        _focus: {
           borderColor: 'red.500',
           boxShadow: '0 0 0 2px var(--chakra-colors-focusRingError)',
         },
@@ -267,10 +254,6 @@ const Tabs = {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
-      _focus: {
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
     },
   },
   variants: {
@@ -361,15 +344,6 @@ const Menu = {
           color: 'brand.300',
         },
       },
-      _focus: {
-        bg: 'brand.50',
-        color: 'brand.700',
-        outline: 'none',
-        _dark: {
-          bg: 'whiteAlpha.100',
-          color: 'brand.300',
-        },
-      },
       _focusVisible: {
         bg: 'brand.50',
         color: 'brand.700',
@@ -386,10 +360,6 @@ const Menu = {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
-      _focus: {
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
     },
   },
 }
@@ -400,10 +370,6 @@ const IconButton = {
       boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
       outline: 'none',
     },
-    _focus: {
-      boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-      outline: 'none',
-    },
   },
 }
 
@@ -411,10 +377,6 @@ const Checkbox = {
   baseStyle: {
     control: {
       _focusVisible: {
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
-      _focus: {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
@@ -429,10 +391,6 @@ const Radio = {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
-      _focus: {
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
     },
   },
 }
@@ -444,10 +402,6 @@ const Switch = {
         boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
         outline: 'none',
       },
-      _focus: {
-        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-        outline: 'none',
-      },
     },
   },
 }
@@ -455,11 +409,6 @@ const Switch = {
 const Link = {
   baseStyle: {
     _focusVisible: {
-      boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
-      outline: 'none',
-      borderRadius: 'sm',
-    },
-    _focus: {
       boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
       outline: 'none',
       borderRadius: 'sm',

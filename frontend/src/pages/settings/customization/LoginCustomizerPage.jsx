@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useState, useEffect } from 'react'
-import { Box, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Textarea, Checkbox, Grid, GridItem, Container, Spinner, InputGroup, InputLeftElement, Slider, SliderTrack, SliderFilledTrack, SliderThumb, VStack, HStack, Text, Flex, useToast, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Textarea, Checkbox, Grid, GridItem, Container, Spinner, InputGroup, InputLeftElement, Slider, SliderTrack, SliderFilledTrack, SliderThumb, VStack, HStack, Text, Flex, useToast, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Settings,
