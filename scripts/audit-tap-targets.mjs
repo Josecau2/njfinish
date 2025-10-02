@@ -40,6 +40,47 @@ function findJsxFiles(dir, fileList = []) {
 }
 
 /**
+ * Extract full component from starting line
+ */
+function extractFullComponent(lines, startIndex) {
+  let component = lines[startIndex]
+  let i = startIndex + 1
+  let braceDepth = 0
+
+  // Count braces in the starting line
+  for (const char of component) {
+    if (char === '{') braceDepth++
+    if (char === '}') braceDepth--
+  }
+
+  // Keep adding lines until we find the self-closing tag or closing tag
+  // Make sure we're not inside a JSX expression
+  while (i < lines.length) {
+    const line = lines[i]
+
+    // Count braces in this line
+    for (const char of line) {
+      if (char === '{') braceDepth++
+      if (char === '}') braceDepth--
+    }
+
+    component += '\n' + line
+
+    // Check if we've reached the end of the component
+    // Only stop if braces are balanced and we have a closing tag
+    if (braceDepth === 0 && (line.includes('/>') || line.trim().startsWith('</'))) {
+      break
+    }
+
+    i++
+    // Safety limit
+    if (i - startIndex > 50) break
+  }
+
+  return component
+}
+
+/**
  * Check if a component has proper tap target sizing
  */
 function checkTapTargets(filePath) {
@@ -52,12 +93,15 @@ function checkTapTargets(filePath) {
 
     // Check for IconButton without size prop or with size="sm"
     if (line.includes('<IconButton')) {
-      const hasMinW = /minW\s*=/.test(line)
-      const hasMinH = /minH\s*=/.test(line)
-      const hasSize = /size\s*=\s*["'](lg|md)["']/.test(line)
-      const hasSmallSize = /size\s*=\s*["']sm["']/.test(line)
+      const fullComponent = extractFullComponent(lines, index)
 
-      if (hasSmallSize || (!hasMinW && !hasMinH && !hasSize)) {
+      const hasMinW = /minW\s*=/.test(fullComponent)
+      const hasMinH = /minH\s*=/.test(fullComponent)
+      const hasSize = /size\s*=\s*["'](lg|md)["']/.test(fullComponent)
+      const hasSmallSize = /size\s*=\s*["']sm["']/.test(fullComponent)
+      const hasButtonSize = /\{\.\.\.ICON_BUTTON_SIZE\}/.test(fullComponent)
+
+      if (hasSmallSize || (!hasMinW && !hasMinH && !hasSize && !hasButtonSize)) {
         issues.push({
           file: relativePath,
           line: lineNum,
@@ -72,7 +116,9 @@ function checkTapTargets(filePath) {
 
     // Check for Button with size="sm"
     if (line.includes('<Button') && /size\s*=\s*["']sm["']/.test(line)) {
-      const hasMinH = /minH\s*=/.test(line)
+      const fullComponent = extractFullComponent(lines, index)
+      const hasMinH = /minH\s*=/.test(fullComponent)
+
       if (!hasMinH) {
         issues.push({
           file: relativePath,
@@ -86,9 +132,11 @@ function checkTapTargets(filePath) {
 
     // Check for Link components that might be interactive
     if (line.includes('<Link') || line.includes('<a ')) {
-      const hasMinH = /minH\s*=/.test(line)
-      const hasMinW = /minW\s*=/.test(line)
-      const hasPadding = /p[xy]?\s*=/.test(line) || /padding/.test(line)
+      const fullComponent = extractFullComponent(lines, index)
+
+      const hasMinH = /minH\s*=/.test(fullComponent)
+      const hasMinW = /minW\s*=/.test(fullComponent)
+      const hasPadding = /p[xy]?\s*=/.test(fullComponent) || /padding/.test(fullComponent)
 
       if (!hasMinH && !hasMinW && !hasPadding) {
         issues.push({
