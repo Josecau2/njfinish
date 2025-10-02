@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Box,
   Button,
+  Flex,
   HStack,
   Icon,
   Modal,
@@ -218,18 +219,30 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
 
     return (
       <>
-        <Tooltip label={tooltipLabel} placement="right">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={openModal}
-            leftIcon={<Icon as={Eye} color={showroomMode ? 'green.500' : 'gray.400'} />}
-          >
-            <Text as="span" fontWeight="medium">
-              {showroomMode ? `${showroomMultiplier.toFixed(2)}x` : t('showroom.compact.label', 'Show')}
-            </Text>
-          </Button>
-        </Tooltip>
+        <Flex align="center" w="100%" px={2}>
+          <Tooltip label={tooltipLabel} placement="right">
+            <Button
+              size="sm"
+              variant="outline"
+              ml="auto"
+              onClick={openModal}
+              leftIcon={<Icon as={Eye} color={showroomMode ? 'green.500' : 'currentColor'} />}
+              color={showroomMode ? 'green.500' : 'whiteAlpha.800'}
+              borderColor={showroomMode ? 'green.500' : 'whiteAlpha.300'}
+              _hover={{
+                bg: showroomMode ? 'rgba(34, 197, 94, 0.1)' : 'whiteAlpha.100',
+                borderColor: showroomMode ? 'green.600' : 'whiteAlpha.500',
+                color: showroomMode ? 'green.400' : 'white'
+              }}
+              fontSize="xs"
+              className="sidebar-footer-pin-btn"
+            >
+              <Text as="span" fontWeight="medium" className="pin-label">
+                {showroomMode ? `${showroomMultiplier.toFixed(2)}x` : t('showroom.compact.label', 'Show')}
+              </Text>
+            </Button>
+          </Tooltip>
+        </Flex>
         {ModalUI}
       </>
     )

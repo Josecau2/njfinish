@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import {
   Box,
+  Button,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -233,20 +234,20 @@ const AppSidebar = () => {
         direction="column"
         borderTop="1px solid"
         borderTopColor="whiteAlpha.100"
-        p={2}
         flexShrink={0}
         className={styles.modernSidebarFooter}
         display={{ base: "none", lg: "flex" }}
       >
-        {/* Showroom Mode Toggle - Admin only (above pin button) - EXACT LEGACY POSITIONING */}
-        {isAdmin(user) && (
-          <ShowroomModeToggle compact collapsed={collapsed} />
-        )}
+        {/* Showroom Mode Toggle - Admin only (above pin button) - wraps itself */}
+        {isAdmin(user) && <ShowroomModeToggle compact collapsed={collapsed} />}
 
-        {/* Pin button container - matches legacy structure */}
-        <Flex align="center" justify={collapsed ? "center" : "flex-end"} w="100%" px={2}>
+        {/* Pin button container - matches legacy structure exactly */}
+        <Flex align="center" w="100%" px={2}>
           {collapsed ? (
-            <IconButton size="lg" aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
+            <IconButton
+              size="sm"
+              ml="auto"
+              aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
               icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               variant="outline"
               color="whiteAlpha.800"
@@ -260,16 +261,13 @@ const AppSidebar = () => {
               className="sidebar-footer-pin-btn"
             />
           ) : (
-            <HStack
-              as="button"
-              spacing={2}
-              px={3}
-              py={2}
-              borderRadius="md"
-              border="1px solid"
-              borderColor="whiteAlpha.300"
+            <Button
+              size="sm"
+              variant="outline"
+              ml="auto"
+              leftIcon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               color="whiteAlpha.800"
-              bg="transparent"
+              borderColor="whiteAlpha.300"
               _hover={{
                 bg: "whiteAlpha.100",
                 borderColor: "whiteAlpha.500",
@@ -277,13 +275,12 @@ const AppSidebar = () => {
               }}
               onClick={handlePinToggle}
               className="sidebar-footer-pin-btn"
-              cursor="pointer"
+              fontSize="xs"
             >
-              <Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />
               <Text fontSize="xs" className="pin-label">
                 {sidebarPinned ? 'Unpin' : 'Pin'}
               </Text>
-            </HStack>
+            </Button>
           )}
         </Flex>
       </Flex>
