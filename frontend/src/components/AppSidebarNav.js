@@ -89,8 +89,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
     }
 
     if (!collapsedOverride) {
-      // Base padding 0.85rem, nested items add 0.5rem per level
-      sharedStyle.paddingLeft = depth > 0 ? `calc(0.85rem + ${depth} * 0.5rem)` : '0.85rem'
+      // No indentation - all items same padding regardless of depth
+      sharedStyle.paddingLeft = '0.85rem'
       sharedStyle.paddingRight = '0.85rem'
     }
 
@@ -235,7 +235,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
             color: open || active ? colors.accentColor : colors.fontColor,
             backgroundColor: open || active ? colors.activeBg : 'transparent',
             minHeight: '44px',
-            paddingLeft: depth > 0 ? `calc(0.85rem + ${depth} * 0.5rem)` : '0.85rem',
+            paddingLeft: '0.85rem',
             paddingRight: '0.85rem',
           }}
         >
