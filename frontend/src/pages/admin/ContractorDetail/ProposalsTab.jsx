@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
-import { Flex, Box, Table, Tbody, Td, Thead, Th, Tr, Badge, Button, Select, InputGroup, InputLeftElement, Input, Spinner, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, List, ListItem, Alert, ButtonGroup, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Progress, Tooltip, TableContainer, Text } from '@chakra-ui/react'
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Alert, Badge, Box, Button, ButtonGroup, CardBody, Flex, Input, InputGroup, InputLeftElement, List, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Progress, Select, Spinner, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react'
 import EmptyState from '../../../components/common/EmptyState'
 import { notifyError } from '../../../helpers/notify'
 import {

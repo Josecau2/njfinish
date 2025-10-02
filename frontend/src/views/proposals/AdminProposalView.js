@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import { Container, Stack, Box, SimpleGrid, HStack, VStack, Text, Button, Icon, Badge, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Center, Alert, AlertIcon, Divider } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, Center, Container, Divider, HStack, Icon, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react'
 import {
   ArrowLeft,
   User,

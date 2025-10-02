@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React, { useMemo, useState } from 'react'
-import { Badge, Box, Button, Checkbox, FormControl, FormLabel, HStack, Input, SimpleGrid, Stack, Text, Textarea } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Checkbox, FormControl, FormLabel, HStack, Input, SimpleGrid, Stack, Text, Textarea } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'

@@ -12,7 +12,7 @@ import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal'
 import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Badge, Button, IconButton, Box, Flex, Text, VStack, HStack, Heading, Container, Menu, MenuButton, MenuList, MenuItem, Input, InputGroup, InputLeftElement, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Container, Flex, HStack, Heading, IconButton, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import {
   Pencil,

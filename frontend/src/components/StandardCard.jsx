@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Card, useColorModeValue } from '@chakra-ui/react'
+import { Card, CardBody, useColorModeValue } from '@chakra-ui/react'
 
 /**
  * StandardCard - Consistent card styling across the entire app

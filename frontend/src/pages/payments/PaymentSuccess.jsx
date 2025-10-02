@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertIcon, Container, Box, Icon, Button, Heading, Text, HStack, VStack, Code } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, Code, Container, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CheckCircle, CreditCard } from 'lucide-react'

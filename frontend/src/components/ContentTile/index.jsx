@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React from 'react'
-import { Badge, Button, HStack, VStack, Text, Box } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, HStack, Text, VStack } from '@chakra-ui/react'
 import StandardCard from '../StandardCard'
 import { motion } from 'framer-motion'
 import { Download, Edit2, Trash2, File, Image } from 'lucide-react'

@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import React, { useState, useEffect, useRef } from 'react'
-import { Container, Stack, Box, SimpleGrid, HStack, VStack, Text, Button, Icon, Badge, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Center, Alert, AlertIcon, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Textarea, Input, Image, FormControl, FormLabel } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, Center, Container, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack } from '@chakra-ui/react'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { FileText, Settings, Image as ImageIcon, Save, Trash, Globe, Building } from 'lucide-react'
 import { useTranslation } from 'react-i18next'

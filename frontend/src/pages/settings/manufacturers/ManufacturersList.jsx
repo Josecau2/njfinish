@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
-import { Box, Button, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
 import {
   Building2,
   Mail,

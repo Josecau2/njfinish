@@ -2,7 +2,7 @@ import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Alert, AlertIcon, Badge, Box, Button, Container, Flex, HStack, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 import PageHeader from '../../components/PageHeader'

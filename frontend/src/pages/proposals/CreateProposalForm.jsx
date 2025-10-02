@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
-import { Badge, Box, Button, Container, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { ClipboardList, Settings as SettingsIcon, FileSignature, Printer, Mail, FileText } from 'lucide-react'
 
 import CustomerInfoStep from './CreateProposal/CustomerInfo'

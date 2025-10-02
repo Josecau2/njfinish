@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Alert, AlertIcon, Badge, Box, Button, Container, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
 import { Search, Users, User, Layers, BriefcaseBusiness as Briefcase, BarChart3 as ChartBar } from 'lucide-react'
 
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'

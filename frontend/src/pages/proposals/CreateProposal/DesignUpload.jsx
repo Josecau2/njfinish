@@ -1,7 +1,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tabs, TabList, Tab, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tab, TabList, Tabs, Text, useBreakpointValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { LazyLoadImage } from 'react-lazy-load-image-component'

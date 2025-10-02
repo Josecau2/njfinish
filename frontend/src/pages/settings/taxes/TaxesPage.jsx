@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Box, Button, Container, Flex, FormLabel, Icon, IconButton, Input, InputGroup, InputRightAddon, Radio, RadioGroup, Spinner, Stack, Text, Tooltip, useToast } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Container, Flex, FormLabel, Icon, IconButton, Input, InputGroup, InputRightAddon, Radio, RadioGroup, Spinner, Stack, Text, Tooltip, useToast } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { Check, Coins, HelpCircle, Percent, Plus, Save, Trash, X } from 'lucide-react'

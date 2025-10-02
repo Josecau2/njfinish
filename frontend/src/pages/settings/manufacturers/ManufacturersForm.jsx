@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addManufacturer } from '../../../store/slices/manufacturersSlice'
 import { getContrastColor } from '../../../utils/colorUtils'
-import { FormControl, Input, FormLabel, Textarea, Checkbox, Alert, AlertIcon, Flex, Box, Container, FormHelperText, FormErrorMessage, InputGroup, InputLeftAddon, Spinner, Button, Icon, VStack, HStack, Text, CloseButton } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, Checkbox, CloseButton, Container, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Spinner, Text, Textarea, VStack } from '@chakra-ui/react'
 import {
   Mail,
   Image,

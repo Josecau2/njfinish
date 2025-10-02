@@ -1,6 +1,6 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Flex, Box, Spinner, Alert, Badge, Input, FormLabel, Modal, ModalBody, ModalFooter, ModalOverlay, ModalContent, ModalHeader, Textarea, Checkbox, Button, Text, HStack, VStack, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Menu, MenuButton, MenuList, MenuItem, InputGroup, InputLeftElement, IconButton, Stack, SimpleGrid, Image, useToast } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import PageHeader from '../../../../components/PageHeader'

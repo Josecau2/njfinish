@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, Container, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, SimpleGrid, Skeleton, SkeletonText, Spinner, Stack, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text, Select, useDisclosure, useToast, Center, VStack } from '@chakra-ui/react'
+import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Center, Container, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Skeleton, SkeletonText, Spinner, Stack, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useDisclosure, useToast } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'

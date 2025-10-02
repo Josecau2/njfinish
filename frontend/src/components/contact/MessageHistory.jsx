@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React, { useEffect, useMemo } from 'react'
-import { Badge, Box, Button, Flex, HStack, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Flex, HStack, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, AlertIcon, Box, Button, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Radio, RadioGroup, Select, Stack, Switch, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Radio, RadioGroup, Select, Stack, Switch, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
 
