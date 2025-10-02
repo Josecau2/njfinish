@@ -261,15 +261,13 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       const IconComponent = action.icon
       return (
         <IconButton
-          minW="44px"
-          minH="44px"
           key={action.type}
           aria-label={action.label}
           icon={<IconComponent size={ICON_SIZE_MD} />}
           variant="outline"
           colorScheme={action.colorScheme}
           minW="44px"
-          h="44px"
+          minH="44px"
           onClick={() => {
             if (action.type === 'send') {
               handleSendProposal(proposal.id)
@@ -622,27 +620,23 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                           {renderStatusActions(item)}
                           <PermissionGate action="update" resource="proposal" item={item}>
                             <IconButton
-                              minW="44px"
-                              minH="44px"
                               aria-label={t('common.edit')}
                               icon={<Pencil size={ICON_SIZE_MD} />}
                               variant="ghost"
                               minW="44px"
-                              h="44px"
+                              minH="44px"
                               onClick={() => handleNavigate(item.id)}
                             />
                           </PermissionGate>
                           {(isAdmin(loggedInUser) || !item.is_locked) && (
                             <PermissionGate action="delete" resource="proposal" item={item}>
                               <IconButton
-                                minW="44px"
-                                minH="44px"
                                 aria-label={t('common.delete')}
                                 icon={<Trash2 size={ICON_SIZE_MD} />}
                                 variant="ghost"
                                 colorScheme="red"
                                 minW="44px"
-                                h="44px"
+                                minH="44px"
                                 onClick={() => handleDelete(item.id)}
                               />
                             </PermissionGate>
@@ -709,24 +703,20 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     {/* Primary visible actions */}
                     {!item.is_locked && (
                       <IconButton
-                        minW="44px"
-                        minH="44px"
                         aria-label={t('proposals.actions.send')}
                         icon={<Send size={ICON_SIZE_MD} />}
                         variant="outline"
                         minW="44px"
-                        h="44px"
+                        minH="44px"
                         onClick={() => handleSendProposal(item.id)}
                       />
                     )}
                     <IconButton
-                      minW="44px"
-                      minH="44px"
                       aria-label={t('common.edit')}
                       icon={<Pencil size={ICON_SIZE_MD} />}
                       variant="outline"
                       minW="44px"
-                      h="44px"
+                      minH="44px"
                       onClick={() => handleNavigate(item.id)}
                     />
                     {/* Overflow menu for secondary actions */}
@@ -737,7 +727,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                         icon={<Text fontSize="lg">⋮</Text>}
                         variant="outline"
                         minW="44px"
-                        h="44px"
+                        minH="44px"
                       />
                       <MenuList>
                         {(isAdmin(loggedInUser) || !item.is_locked) && (
