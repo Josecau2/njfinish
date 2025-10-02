@@ -16,8 +16,9 @@ const isActivePath = (pathname, target) => {
 }
 
 const buildColors = (fontColor) => {
-  const base = fontColor && fontColor.trim() ? fontColor : 'gray.200'
-  const icon = base.toLowerCase() === '#ffffff' || base === 'white' ? 'gray.200' : 'blue.200'
+  const base = fontColor && fontColor.trim() ? fontColor : 'rgba(226, 232, 240, 0.87)'
+  // For icons, use currentColor to inherit from parent or a visible color
+  const icon = 'currentColor'
   return {
     fontColor: base,
     iconColor: icon,
@@ -79,13 +80,17 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const renderLink = (item, depth = 0, opts = {}) => {
     const collapsedOverride = opts.collapsed ?? collapsed
     const active = isActivePath(location.pathname, item.to)
-    const paddingLeft = collapsedOverride ? undefined : `calc(0.9rem + ${depth} * 0.85rem)`
     const classNames = ['nav-link']
     if (active) classNames.push('active')
     const sharedStyle = {
       color: active ? colors.accentColor : colors.fontColor,
       backgroundColor: active ? colors.activeBg : 'transparent',
-      paddingLeft,
+      minHeight: '44px',
+    }
+
+    if (!collapsedOverride) {
+      sharedStyle.paddingLeft = `calc(1rem + ${depth} * 0.75rem)`
+      sharedStyle.paddingRight = '1rem'
     }
 
     const content = (
@@ -228,7 +233,9 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           style={{
             color: open || active ? colors.accentColor : colors.fontColor,
             backgroundColor: open || active ? colors.activeBg : 'transparent',
-            paddingLeft: `calc(0.9rem + ${depth} * 0.85rem)`,
+            minHeight: '44px',
+            paddingLeft: `calc(1rem + ${depth} * 0.75rem)`,
+            paddingRight: '1rem',
           }}
         >
           {getIconElement(item.icon, colors)}
@@ -301,7 +308,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           gap: 0.75rem;
           font-size: 0.95rem;
           font-weight: 500;
-          padding: 0.55rem 0.9rem;
+          padding: 0.85rem 1rem;
+          min-height: 44px;
           border-radius: 10px;
           cursor: pointer;
           transition: background 0.15s ease, color 0.15s ease;
@@ -312,7 +320,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         }
         .c-sidebar-nav[data-collapsed="true"] .nav-link {
           justify-content: center;
-          padding: 0.65rem 0;
+          padding: 0.75rem 0;
+          min-height: 44px;
         }
         .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-label,
         .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-link-badge,
@@ -390,6 +399,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           font-size: 0.9rem;
           display: flex;
           align-items: center;
+          min-height: 44px;
+          padding: 0.5rem 0.75rem;
         }
         .nav-group-menu-item .nav-link--menu {
           display: flex;

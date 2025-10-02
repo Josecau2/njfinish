@@ -221,7 +221,7 @@ const AppSidebar = () => {
           },
         }}
       >
-        <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} />
+        <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} />
       </Box>
 
       {/* Sidebar Footer - matches legacy CSidebarFooter */}
@@ -290,7 +290,7 @@ const AppSidebar = () => {
     return (
       <Drawer isOpen={sidebarShow} placement="left" onClose={handleClose} size="xs">
         <DrawerOverlay bg={overlayColor} />
-        <DrawerContent maxW="256px" className={sidebarClassNames} bg="transparent">
+        <DrawerContent maxW="360px" w="85vw" className={sidebarClassNames} bg="transparent">
           {SidebarBody}
         </DrawerContent>
       </Drawer>
