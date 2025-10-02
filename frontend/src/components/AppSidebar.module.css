@@ -165,6 +165,10 @@
   display: none;
 }
 
+.sidebarCollapsed :global(.sidebar-brand-narrow) {
+  display: block;
+}
+
 /* Collapsed: Center all nav icons - force centering with specificity */
 .sidebarCollapsed :global(.sidebar-nav) :global(.nav-icon) {
   margin: 0 auto;
@@ -207,6 +211,10 @@
 
 .sidebarExpanded :global(.sidebar-brand-full) {
   display: block;
+}
+
+.sidebarExpanded :global(.sidebar-brand-narrow) {
+  display: none;
 }
 
 /* ============================================ */

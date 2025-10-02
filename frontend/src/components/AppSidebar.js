@@ -6,7 +6,6 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
-  HStack,
   Icon,
   IconButton,
   Text,
@@ -147,49 +146,70 @@ const AppSidebar = () => {
       <Flex
         align="center"
         justify="space-between"
-        px={4}
+        px={collapsed ? 0 : 4}
         py={3}
         h="60px"
         borderBottom="1px solid"
         borderBottomColor="whiteAlpha.100"
         flexShrink={0}
       >
-        <HStack spacing={3} minW={0} flex="1">
-          {collapsed ? (
-            <Icon
-              boxSize="28px"
-              color={sidebarColor}
-              as={() => (
-                <svg viewBox="0 0 118 46" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="currentColor" d="M0 0h118v46H0z"/>
-                </svg>
-              )}
-            />
-          ) : resolvedLogo ? (
-            <LazyLoadImage
-              src={resolvedLogo}
-              alt="Logo"
-              style={{
-                maxHeight: '32px',
-                maxWidth: '160px',
-                objectFit: 'contain'
-              }}
-              effect="blur"
-              placeholderSrc=""
-            />
+        <Flex minW={0} flex="1" justify={collapsed ? "center" : "flex-start"}>
+          {resolvedLogo ? (
+            <>
+              {/* Full sidebar logo - visible when expanded */}
+              <LazyLoadImage
+                src={resolvedLogo}
+                alt="Logo"
+                className="sidebar-brand-full"
+                style={{
+                  maxHeight: '40px',
+                  maxWidth: '160px',
+                  objectFit: 'contain'
+                }}
+                effect="blur"
+                placeholderSrc=""
+              />
+              {/* Collapsed sidebar logo - visible when collapsed */}
+              <LazyLoadImage
+                src={resolvedLogo}
+                alt="Logo"
+                className="sidebar-brand-narrow"
+                style={{
+                  maxHeight: '28px',
+                  maxWidth: '28px',
+                  objectFit: 'contain'
+                }}
+                effect="blur"
+                placeholderSrc=""
+              />
+            </>
           ) : (
-            <Text
-              fontWeight="bold"
-              fontSize="lg"
-              lineHeight="1"
-              noOfLines={1}
-              color="white"
-              className="sidebar-brand-full"
-            >
-              {customization.logoText || 'NJ Cabinets'}
-            </Text>
+            <>
+              {/* Full sidebar text - visible when expanded */}
+              <Text
+                fontWeight="bold"
+                fontSize="lg"
+                lineHeight="1"
+                noOfLines={1}
+                color="white"
+                className="sidebar-brand-full"
+              >
+                {customization.logoText || 'NJ Cabinets'}
+              </Text>
+              {/* Collapsed sidebar icon - visible when collapsed */}
+              <Icon
+                boxSize="28px"
+                color={sidebarColor}
+                className="sidebar-brand-narrow"
+                as={() => (
+                  <svg viewBox="0 0 118 46" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M0 0h118v46H0z"/>
+                  </svg>
+                )}
+              />
+            </>
           )}
-        </HStack>
+        </Flex>
         {!isDesktop && (
           <IconButton size="lg" aria-label="Close sidebar"
             icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
