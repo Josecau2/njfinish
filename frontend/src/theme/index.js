@@ -47,6 +47,7 @@ const shadows = {
 
 const baseSemanticTokens = {
   colors: {
+    // Base semantic colors
     background: { default: '#F8FAFC', _dark: '#0f172a' },
     surface: { default: '#FFFFFF', _dark: '#111827' },
     text: { default: '#0f172a', _dark: '#E2E8F0' },
@@ -55,6 +56,40 @@ const baseSemanticTokens = {
     focusRing: { default: 'rgba(37, 99, 235, 0.6)', _dark: 'rgba(59, 130, 246, 0.7)' },
     focusRingError: { default: 'rgba(220, 38, 38, 0.6)', _dark: 'rgba(248, 113, 113, 0.7)' },
     focusRingSuccess: { default: 'rgba(34, 197, 94, 0.6)', _dark: 'rgba(74, 222, 128, 0.7)' },
+
+    // Additional semantic tokens for replacing hardcoded colors
+    bgSubtle: { default: '#f8f9fa', _dark: '#1a1a1a' },
+    bgHover: { default: '#e9ecef', _dark: '#2a2a2a' },
+    bgActive: { default: '#dee2e6', _dark: '#3a3a3a' },
+    textStrong: { default: '#212529', _dark: '#ffffff' },
+    textSubtle: { default: '#6c757d', _dark: '#a0a0a0' },
+    borderSubtle: { default: '#e9ecef', _dark: 'rgba(255, 255, 255, 0.1)' },
+    borderStrong: { default: '#dee2e6', _dark: 'rgba(255, 255, 255, 0.2)' },
+
+    // Status colors
+    success: { default: '#28a745', _dark: '#4ade80' },
+    successBg: { default: '#d4edda', _dark: 'rgba(74, 222, 128, 0.2)' },
+    warning: { default: '#ffc107', _dark: '#fbbf24' },
+    warningBg: { default: '#fff3cd', _dark: 'rgba(251, 191, 36, 0.2)' },
+    error: { default: '#dc3545', _dark: '#f87171' },
+    errorBg: { default: '#f8d7da', _dark: 'rgba(248, 113, 113, 0.2)' },
+    info: { default: '#17a2b8', _dark: '#06b6d4' },
+    infoBg: { default: '#d1ecf1', _dark: 'rgba(6, 182, 212, 0.2)' },
+
+    // Component-specific colors (to replace hardcoded values)
+    cardBg: { default: '#ffffff', _dark: '#1e293b' },
+    cardBorder: { default: 'rgba(0, 0, 0, 0.125)', _dark: 'rgba(255, 255, 255, 0.1)' },
+    modalOverlay: { default: 'rgba(0, 0, 0, 0.5)', _dark: 'rgba(0, 0, 0, 0.7)' },
+    inputBg: { default: '#ffffff', _dark: '#1e293b' },
+    inputBorder: { default: '#ced4da', _dark: 'rgba(255, 255, 255, 0.2)' },
+    inputFocus: { default: '#80bdff', _dark: '#3b82f6' },
+
+    // Legacy Bootstrap color replacements
+    primary: { default: '#007bff', _dark: '#3b82f6' },
+    primaryHover: { default: '#0056b3', _dark: '#2563eb' },
+    secondary: { default: '#6c757d', _dark: '#94a3b8' },
+    light: { default: '#f8f9fa', _dark: '#374151' },
+    dark: { default: '#343a40', _dark: '#1f2937' },
   },
 }
 
