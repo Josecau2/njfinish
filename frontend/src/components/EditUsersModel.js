@@ -56,7 +56,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
   }
 
   return (
-    <Modal isOpen={visible} onClose={onClose}>
+    <Modal isOpen={visible} onClose={onClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
       {/* UI-TASK: Scoped responsive/touch styles */}
       <style>{`
                             .edit-user-modal .form-control, .edit-user-modal .form-select { min-height: 44px; }

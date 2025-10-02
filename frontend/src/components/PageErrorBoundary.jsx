@@ -3,6 +3,7 @@ import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, Button, CardBody, 
 import StandardCard from './StandardCard'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 /**
  * Page-level error boundary for graceful error handling
@@ -59,7 +60,7 @@ class PageErrorBoundaryClass extends Component {
 
                 <Stack direction={{ base: 'column', md: 'row' }} spacing={4} w="full" justify="center">
                   <Button
-                    leftIcon={<Icon as={RefreshCw} boxSize={4} />}
+                    leftIcon={<Icon as={RefreshCw} boxSize={ICON_BOX_MD} />}
                     colorScheme="blue"
                     onClick={() => window.location.reload()}
                     minH="44px"
@@ -67,7 +68,7 @@ class PageErrorBoundaryClass extends Component {
                     Reload Page
                   </Button>
                   <Button
-                    leftIcon={<Icon as={Home} boxSize={4} />}
+                    leftIcon={<Icon as={Home} boxSize={ICON_BOX_MD} />}
                     variant="outline"
                     colorScheme="gray"
                     onClick={() => {

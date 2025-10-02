@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const Contracts = () => {
   const { t } = useTranslation()
@@ -335,7 +336,7 @@ const Contracts = () => {
             >
               <InputGroup maxW={{ base: 'full', lg: '360px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={4} />
+                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
                 </InputLeftElement>
                 <Input
                   value={searchTerm}
@@ -431,7 +432,7 @@ const Contracts = () => {
                       <CardHeader pb={2}>
                         <HStack justify="space-between" align="center">
                           <HStack spacing={4} align="center">
-                            <Icon as={Calendar} boxSize={4} color="gray.400" />
+                            <Icon as={Calendar} boxSize={ICON_BOX_MD} color="gray.400" />
                             <Text fontSize="sm" color="gray.500">
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
                             </Text>
@@ -476,7 +477,7 @@ const Contracts = () => {
                               color="green.600"
                               p={1}
                             >
-                              <Icon as={Briefcase} boxSize={4} />
+                              <Icon as={Briefcase} boxSize={ICON_BOX_MD} />
                             </Box>
                             <Text fontSize="sm" color="gray.600">
                               {item.designerData?.name || t('contracts.noDesigner')}
@@ -491,7 +492,7 @@ const Contracts = () => {
                               variant="ghost"
                               colorScheme="brand"
                               onClick={() => handleNavigate(item.id)}
-                              leftIcon={<Icon as={FileText} boxSize={4} />}
+                              leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
                             >
                               {t('contracts.viewDetails')}
                             </Button>
@@ -573,7 +574,7 @@ const Contracts = () => {
                                 variant="outline"
                                 colorScheme="brand"
                                 onClick={() => handleNavigate(item.id)}
-                                leftIcon={<Icon as={FileText} boxSize={4} />}
+                                leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
                               >
                                 {t('contracts.viewDetails')}
                               </Button>
@@ -582,7 +583,7 @@ const Contracts = () => {
                                 variant="outline"
                                 colorScheme="red"
                                 onClick={() => handleDelete(item.id)}
-                                leftIcon={<Icon as={Trash2} boxSize={4} />}
+                                leftIcon={<Icon as={Trash2} boxSize={ICON_BOX_MD} />}
                               >
                                 {t('common.delete')}
                               </Button>
@@ -610,7 +611,7 @@ const Contracts = () => {
           </StandardCard>
         )}
       </Stack>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="5xl">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size={{ base: 'full', md: 'xl', lg: '5xl' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={headerBg} color={headerTextColor} borderTopRadius="md">

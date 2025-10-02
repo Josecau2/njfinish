@@ -31,6 +31,7 @@ import {
   buildProposalPdfHtml,
   DEFAULT_PROPOSAL_PDF_COLUMNS,
 } from '../../helpers/proposalPdfBuilder'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const BASE_PAGE_WIDTH_PX = 794
 const MotionButton = motion(Button)
@@ -553,7 +554,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 flex={isMobile ? '1' : 'unset'}
               >
                 <HStack spacing={4} justify="center" width="100%">
-                  <Icon as={Eye} boxSize={4} />
+                  <Icon as={Eye} boxSize={ICON_BOX_MD} />
                   <Text>{t('proposalCommon.preview', 'Preview')}</Text>
                 </HStack>
               </MotionButton>
@@ -565,7 +566,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 flex={isMobile ? '1' : 'unset'}
               >
                 <HStack spacing={4} justify="center" width="100%">
-                  <Icon as={Printer} boxSize={4} />
+                  <Icon as={Printer} boxSize={ICON_BOX_MD} />
                   <Text>{t('proposalCommon.print', 'Print')}</Text>
                 </HStack>
               </MotionButton>
@@ -583,7 +584,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                   </HStack>
                 ) : (
                   <HStack spacing={4} justify="center" width="100%">
-                    <Icon as={Download} boxSize={4} />
+                    <Icon as={Download} boxSize={ICON_BOX_MD} />
                     <Text>{t('proposalCommon.downloadPdf')}</Text>
                   </HStack>
                 )}
@@ -661,7 +662,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                   </HStack>
                 ) : (
                   <HStack spacing={4}>
-                    <Icon as={Download} boxSize={4} />
+                    <Icon as={Download} boxSize={ICON_BOX_MD} />
                     <Text>{t('proposalCommon.downloadPdf')}</Text>
                   </HStack>
                 )}

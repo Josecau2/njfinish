@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Switch, Spinner, Alert, Container, Button, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Grid, GridItem, Box, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Switch, Spinner, Alert, Container, Button, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, VStack, HStack, Grid, GridItem, Box, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
@@ -9,6 +9,7 @@ import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { motion } from 'framer-motion'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const UserGroupList = () => {
   const { t } = useTranslation()
@@ -148,7 +149,7 @@ const UserGroupList = () => {
         actions={[
           <Button
             key="create"
-            leftIcon={<Plus size={16} />}
+            leftIcon={<Plus size={ICON_SIZE_MD} />}
             colorScheme="brand"
             onClick={handleCreateGroup}
             as={motion.button}
@@ -172,7 +173,8 @@ const UserGroupList = () => {
 
           {/* Desktop table */}
           <Box display={{ base: 'none', md: 'block' }}>
-            <Table variant="simple" size="sm">
+            <TableContainer overflowX="auto" data-scroll-region>
+              <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th scope="col">{t('settings.userGroups.table.name')}</Th>
@@ -226,7 +228,7 @@ const UserGroupList = () => {
                           as={motion.button}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <Pencil size={16} />
+                          <Pencil size={ICON_SIZE_MD} />
                         </Button>
                       </Td>
                     </Tr>
@@ -234,6 +236,7 @@ const UserGroupList = () => {
                 )}
               </Tbody>
             </Table>
+            </TableContainer>
           </Box>
 
           {/* Mobile card list */}
@@ -303,7 +306,7 @@ const UserGroupList = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        leftIcon={<Pencil size={16} />}
+                        leftIcon={<Pencil size={ICON_SIZE_MD} />}
                         onClick={() => handleEditGroup(group.id)}
                         aria-label={t('settings.userGroups.actions.edit')}
                         as={motion.button}

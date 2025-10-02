@@ -912,7 +912,7 @@ const EditProposal = ({
       />
       <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
 
-      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size="lg" isCentered>
+      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>
@@ -944,7 +944,8 @@ const EditProposal = ({
       <Modal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        size="sm"
+        size={{ base: 'full', md: 'sm' }}
+        scrollBehavior="inside"
         isCentered
       >
         <ModalOverlay>

@@ -17,6 +17,7 @@ import LoginPreview from '../../../components/LoginPreview'
 import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../../../config/customization'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion(Button)
 
@@ -269,7 +270,7 @@ const LoginCustomizerPage = () => {
           variant="outline"
           colorScheme="gray"
           size="md"
-          leftIcon={<Save size={18} />}
+          leftIcon={<Save size={ICON_SIZE_MD} />}
           onClick={() => setShowPreview(true)}
           isDisabled={loading}
           whileTap={{ scale: 0.98 }}
@@ -281,7 +282,7 @@ const LoginCustomizerPage = () => {
           variant="solid"
           colorScheme="green"
           size="md"
-          leftIcon={saving ? <Spinner size="sm" /> : <Save size={18} />}
+          leftIcon={saving ? <Spinner size="sm" /> : <Save size={ICON_SIZE_MD} />}
           onClick={handleSave}
           isDisabled={loading || saving}
           isLoading={saving}
@@ -320,7 +321,7 @@ const LoginCustomizerPage = () => {
                         bg="blue.50"
                         borderRadius="8px"
                       >
-                        <Type size={16} color="blue.500" />
+                        <Type size={ICON_SIZE_MD} color="blue.500" />
                       </Flex>
                       <Text fontSize="lg" fontWeight="bold" color="gray.800">
                         {t('settings.customization.login.form.title')}
@@ -467,7 +468,7 @@ const LoginCustomizerPage = () => {
                         bg="green.50"
                         borderRadius="8px"
                       >
-                        <Palette size={16} color="green.600" />
+                        <Palette size={ICON_SIZE_MD} color="green.600" />
                       </Flex>
                       <Text fontSize="lg" fontWeight="bold" color="gray.800">
                         {t('settings.customization.login.rightPanel.title')}
@@ -558,7 +559,7 @@ const LoginCustomizerPage = () => {
                       bg="blue.50"
                       borderRadius="8px"
                     >
-                      <Settings size={16} color="blue.600" />
+                      <Settings size={ICON_SIZE_MD} color="blue.600" />
                     </Flex>
                     <Text fontSize="lg" fontWeight="bold" color="gray.800">
                       {t('settings.customization.login.smtp.title')}
@@ -697,7 +698,7 @@ const LoginCustomizerPage = () => {
                           isDisabled={testingEmail}
                           isLoading={testingEmail}
                           loadingText={t('settings.customization.login.smtp.testing')}
-                          leftIcon={testingEmail ? <Spinner size="sm" /> : <TestTube size={18} />}
+                          leftIcon={testingEmail ? <Spinner size="sm" /> : <TestTube size={ICON_SIZE_MD} />}
                           onClick={handleSendTestEmail}
                           whileTap={{ scale: 0.98 }}
                           aria-label={t('settings.customization.login.smtp.testButton')}
@@ -724,7 +725,7 @@ const LoginCustomizerPage = () => {
                           bg="orange.50"
                           borderRadius="8px"
                         >
-                          <PaintBucket size={16} color="orange.400" />
+                          <PaintBucket size={ICON_SIZE_MD} color="orange.400" />
                         </Flex>
                         <Text fontSize="lg" fontWeight="bold" color="gray.800">
                           {t('settings.customization.login.requestAccess.title')}
@@ -811,7 +812,7 @@ const LoginCustomizerPage = () => {
                           bg="blue.50"
                           borderRadius="8px"
                         >
-                          <Mail size={16} color="blue.700" />
+                          <Mail size={ICON_SIZE_MD} color="blue.700" />
                         </Flex>
                         <Text fontSize="lg" fontWeight="bold" color="gray.800">
                           {t('settings.customization.login.requestAccess.requestEmails')}
@@ -917,6 +918,7 @@ const LoginCustomizerPage = () => {
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         size="full"
+        scrollBehavior="inside"
         motionPreset="slideInBottom"
       >
         <ModalOverlay />

@@ -6,6 +6,7 @@ import { FileText, Settings, Image as ImageIcon, Save, Trash, Globe, Building } 
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const PdfLayoutCustomization = () => {
   const api_url = import.meta.env.VITE_API_URL
@@ -257,7 +258,7 @@ const PdfLayoutCustomization = () => {
       key="preview"
       variant="outline"
       colorScheme="brand"
-      leftIcon={<Icon as={Globe} boxSize={4} />}
+      leftIcon={<Icon as={Globe} boxSize={ICON_BOX_MD} />}
       onClick={() => setPreviewOpen(true)}
       isDisabled={loading}
     >
@@ -266,7 +267,7 @@ const PdfLayoutCustomization = () => {
     <Button
       key="save"
       colorScheme="brand"
-      leftIcon={<Icon as={Save} boxSize={4} />}
+      leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} />}
       onClick={handleSave}
       isLoading={loading}
     >
@@ -481,7 +482,7 @@ const PdfLayoutCustomization = () => {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Icon as={FileText} boxSize={4} />
+                  <Icon as={FileText} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="flex-start" spacing={0}>
                   <Text fontWeight="semibold" color="gray.800">
@@ -586,7 +587,7 @@ const PdfLayoutCustomization = () => {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Icon as={Building} boxSize={4} />
+                  <Icon as={Building} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="flex-start" spacing={0}>
                   <Text fontWeight="semibold" color="gray.800">
@@ -675,7 +676,7 @@ const PdfLayoutCustomization = () => {
                         onClick={removeLogo}
                         isDisabled={loading}
                       >
-                        {loading ? <Spinner size="sm" /> : <Icon as={Trash} boxSize={4} />}
+                        {loading ? <Spinner size="sm" /> : <Icon as={Trash} boxSize={ICON_BOX_MD} />}
                       </Button>
                     </HStack>
                   </Box>
@@ -747,7 +748,7 @@ const PdfLayoutCustomization = () => {
         </SimpleGrid>
       </Stack>
 
-      <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} size="6xl">
+      <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} size={{ base: 'full', md: 'xl', lg: '6xl' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent maxH="90vh" overflow="hidden">
           <ModalHeader bg={formData.headerBgColor} color={getContrastColor(formData.headerBgColor)}>

@@ -21,6 +21,7 @@ import {
   Newspaper,
   Video,
 } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const modernCardStyle = {
   borderRadius: '16px',
@@ -241,12 +242,12 @@ const Dashboard = () => {
 
   const getFileIcon = (type) => {
     const IconComponent = fileIconMap[type?.toLowerCase()] || FileIcon
-    return <Icon as={IconComponent} boxSize={5} color="blue.500" />
+    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color="blue.500" />
   }
 
   const getLinkIcon = (type) => {
     const IconComponent = linkIconMap[type?.toLowerCase()] || Link2
-    return <Icon as={IconComponent} boxSize={5} color="blue.500" />
+    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color="blue.500" />
   }
 
   const proposalStatLoading = typeof activeProposals !== 'number'

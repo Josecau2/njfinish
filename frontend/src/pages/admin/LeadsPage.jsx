@@ -7,6 +7,7 @@ import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const STATUS_VALUES = ['all', 'new', 'reviewing', 'contacted', 'closed']
 const statusBadgeColor = {
@@ -257,7 +258,7 @@ const LeadsPage = () => {
   const refreshButton = (
     <Button
       key="refresh"
-      leftIcon={<Icon as={RefreshCw} boxSize={4} aria-hidden="true" />}
+      leftIcon={<Icon as={RefreshCw} boxSize={ICON_BOX_MD} aria-hidden="true" />}
       variant="outline"
       onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
       isDisabled={loading}
@@ -309,7 +310,7 @@ const LeadsPage = () => {
                   {t('leadsPage.filters.help', 'Need help?')}
                 </FormLabel>
                 <Flex align="center" gap={4} color="gray.500">
-                  <Icon as={HelpCircle} boxSize={5} aria-hidden="true" />
+                  <Icon as={HelpCircle} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   <Text fontSize="sm">{t('leadsPage.helpText', 'Use filters to narrow down leads.')}</Text>
                 </Flex>
               </FormControl>
@@ -380,7 +381,7 @@ const LeadsPage = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
+                                leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
                               >
                                 {t('leadsPage.table.actions.details')}
@@ -469,7 +470,7 @@ const LeadsPage = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                leftIcon={<Icon as={FileText} boxSize={4} aria-hidden="true" />}
+                                leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
                                 minH="44px"
                               >
@@ -507,7 +508,7 @@ const LeadsPage = () => {
                     </Badge>
                   )}
                   <IconButton size="lg" aria-label={t('common.close', 'Close')}
-                    icon={<Icon as={X} boxSize={4} aria-hidden="true" />}
+                    icon={<Icon as={X} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                     variant="ghost"
                     onClick={closeModal}
                   />
@@ -550,7 +551,7 @@ const LeadsPage = () => {
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
-                        <Icon as={Send} boxSize={5} aria-hidden="true" />
+                        <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.message.heading')}</Text>
                       </HStack>
                     </CardHeader>
@@ -568,7 +569,7 @@ const LeadsPage = () => {
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
-                        <Icon as={FileText} boxSize={5} aria-hidden="true" />
+                        <Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.notes.heading')}</Text>
                       </HStack>
                     </CardHeader>
@@ -604,7 +605,7 @@ const LeadsPage = () => {
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
                       <HStack spacing={4} color="blue.500">
-                        <Icon as={Send} boxSize={5} aria-hidden="true" />
+                        <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.addNote.heading')}</Text>
                       </HStack>
                     </CardHeader>
@@ -619,7 +620,7 @@ const LeadsPage = () => {
                         <Flex justify="flex-end">
                           <Button
                             colorScheme="blue"
-                            leftIcon={savingNote ? undefined : <Icon as={Send} boxSize={4} aria-hidden="true" />}
+                            leftIcon={savingNote ? undefined : <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             onClick={handleNoteSubmit}
                             isLoading={savingNote}
                             loadingText={t('leadsPage.modal.addNote.saving', 'Saving...')}

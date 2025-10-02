@@ -12,7 +12,7 @@ import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal'
 import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
-import { Table, Thead, Tbody, Tr, Th, Td, Badge, Button, IconButton, Box, Flex, Text, VStack, HStack, Heading, Container, Menu, MenuButton, MenuList, MenuItem, Input, InputGroup, InputLeftElement, useColorModeValue } from '@chakra-ui/react'
+import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Badge, Button, IconButton, Box, Flex, Text, VStack, HStack, Heading, Container, Menu, MenuButton, MenuList, MenuItem, Input, InputGroup, InputLeftElement, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import {
   Pencil,
@@ -28,6 +28,7 @@ import {
   Send as SendIcon,
   CheckCircle,
 } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const Proposals = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const { t } = useTranslation()
@@ -262,7 +263,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         <IconButton
           key={action.type}
           aria-label={action.label}
-          icon={<IconComponent size={16} />}
+          icon={<IconComponent size={ICON_SIZE_MD} />}
           variant="outline"
           colorScheme={action.colorScheme}
           minW="44px"
@@ -484,7 +485,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         <PermissionGate permission="proposals:create">
           <motion.div whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}>
             <Button variant="outline" onClick={handleCreateProposal}>
-              <Plus size={16} style={{ marginRight: 8 }} />
+              <Plus size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
               {t('proposals.new')}
             </Button>
           </motion.div>
@@ -533,7 +534,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
           <HStack spacing={4} flex={1} maxW="520px">
             <InputGroup>
               <InputLeftElement>
-                <Search size={16} />
+                <Search size={ICON_SIZE_MD} />
               </InputLeftElement>
               <Input
                 placeholder={t('proposals.searchPlaceholder')}
@@ -555,7 +556,8 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       <Box display={{ base: 'none', lg: 'block' }}>
         <StandardCard>
           <CardBody p={0}>
-            <Table variant="simple">
+            <TableContainer overflowX="auto" data-scroll-region>
+              <Table variant="simple">
               <Thead>
                 <Tr>
                   <Th
@@ -601,10 +603,12 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                         onClick={() =>
                           item.customer?.id && navigate(`/customers/edit/${item.customer.id}`)
                         }
+                        isTruncated
+                        maxW="200px"
                       >
                         {item.customer?.name || t('common.na')}
                       </Td>
-                      <Td color="gray.600">{item.description || t('common.na')}</Td>
+                      <Td color="gray.600" isTruncated maxW="250px">{item.description || t('common.na')}</Td>
                       {canAssignDesigner && <Td>{item.designerData?.name || t('common.na')}</Td>}
                       <Td>
                         <Badge colorScheme={getStatusColorScheme(item.status || 'Draft')}>
@@ -617,7 +621,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                           <PermissionGate action="update" resource="proposal" item={item}>
                             <IconButton
                               aria-label={t('common.edit')}
-                              icon={<Pencil size={16} />}
+                              icon={<Pencil size={ICON_SIZE_MD} />}
                               variant="ghost"
                               minW="44px"
                               h="44px"
@@ -628,7 +632,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                             <PermissionGate action="delete" resource="proposal" item={item}>
                               <IconButton
                                 aria-label={t('common.delete')}
-                                icon={<Trash2 size={16} />}
+                                icon={<Trash2 size={ICON_SIZE_MD} />}
                                 variant="ghost"
                                 colorScheme="red"
                                 minW="44px"
@@ -644,6 +648,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 )}
               </Tbody>
             </Table>
+            </TableContainer>
           </CardBody>
         </StandardCard>
       </Box>
@@ -699,7 +704,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     {!item.is_locked && (
                       <IconButton
                         aria-label={t('proposals.actions.send')}
-                        icon={<Send size={16} />}
+                        icon={<Send size={ICON_SIZE_MD} />}
                         variant="outline"
                         minW="44px"
                         h="44px"
@@ -708,7 +713,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     )}
                     <IconButton
                       aria-label={t('common.edit')}
-                      icon={<Pencil size={16} />}
+                      icon={<Pencil size={ICON_SIZE_MD} />}
                       variant="outline"
                       minW="44px"
                       h="44px"
@@ -727,12 +732,12 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       <MenuList>
                         {(isAdmin(loggedInUser) || !item.is_locked) && (
                           <MenuItem onClick={() => handleDelete(item.id)}>
-                            <Trash2 size={16} style={{ marginRight: 8 }} />
+                            <Trash2 size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
                             {t('common.delete')}
                           </MenuItem>
                         )}
                         <MenuItem onClick={() => handleCreateShareLink(item)}>
-                          <SendIcon size={16} style={{ marginRight: 8 }} />
+                          <SendIcon size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
                           {t('proposals.actions.share')}
                         </MenuItem>
                       </MenuList>

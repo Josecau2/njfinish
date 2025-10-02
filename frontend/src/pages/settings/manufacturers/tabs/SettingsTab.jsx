@@ -5,6 +5,7 @@ import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Inp
 import { ChevronDown, Search } from 'lucide-react'
 import PaginationControls from '../../../../components/PaginationControls'
 import axiosInstance from '../../../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
 
 const SettingsTab = ({ manufacturer }) => {
   const { t } = useTranslation()
@@ -184,7 +185,7 @@ const SettingsTab = ({ manufacturer }) => {
           as={Button}
           size="sm"
           variant="outline"
-          rightIcon={<Icon as={ChevronDown} boxSize={4} />}
+          rightIcon={<Icon as={ChevronDown} boxSize={ICON_BOX_MD} />}
           minW="220px"
         >
           <Text noOfLines={1} fontWeight="medium">
@@ -355,7 +356,7 @@ const SettingsTab = ({ manufacturer }) => {
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={4} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
                 </InputLeftElement>
                 <Input
                   value={searchCode1}
@@ -471,7 +472,7 @@ const SettingsTab = ({ manufacturer }) => {
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={4} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
                 </InputLeftElement>
                 <Input
                   value={searchCode2}

@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useRef } from 'react'
-import { Input, Spinner, Container, Flex, Box, Badge, Button, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure, Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Select } from '@chakra-ui/react'
+import { Input, Spinner, Container, Flex, Box, Badge, Button, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure, Table, Thead, Tbody, Tr, Th, Td, TableContainer, InputGroup, InputLeftElement, Select } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Plus,
@@ -18,6 +18,7 @@ import { deleteUser, fetchUsers } from '../../../store/slices/userSlice'
 import PaginationComponent from '../../../components/common/PaginationComponent'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const UsersPage = () => {
   const [filterText, setFilterText] = useState('')
@@ -140,7 +141,7 @@ const UsersPage = () => {
               aria-label={t('settings.users.addUser')}
               whileTap={{ scale: 0.98 }}
               height="44px"
-              leftIcon={<Plus size={20} />}
+              leftIcon={<Plus size={ICON_SIZE_MD} />}
             >
               {t('settings.users.addUser')}
             </Button>
@@ -152,7 +153,7 @@ const UsersPage = () => {
               aria-label={t('settings.users.addGroup')}
               whileTap={{ scale: 0.98 }}
               height="44px"
-              leftIcon={<Gear size={20} />}
+              leftIcon={<Gear size={ICON_SIZE_MD} />}
             >
               {t('settings.users.addGroup')}
             </Button>
@@ -167,7 +168,7 @@ const UsersPage = () => {
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon primary">
-                  <Users size={20} aria-hidden="true" />
+                  <Users size={ICON_SIZE_MD} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-primary">{filteredUsers.length}</h4>
@@ -182,7 +183,7 @@ const UsersPage = () => {
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon success">
-                  <Gear size={20} aria-hidden="true" />
+                  <Gear size={ICON_SIZE_MD} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-success">{adminCount}</h4>
@@ -197,7 +198,7 @@ const UsersPage = () => {
             <CardBody>
               <Flex align="center" justify="center" mb={2}>
                 <div className="settings-stat-icon warning">
-                  <UserIcon size={20} aria-hidden="true" />
+                  <UserIcon size={ICON_SIZE_MD} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className="mb-0 fw-bold text-warning">{regularCount}</h4>
@@ -216,7 +217,7 @@ const UsersPage = () => {
             <Box md={6} lg={4}>
               <InputGroup>
                 <InputLeftElement>
-                  <Search size={16} aria-hidden="true" />
+                  <Search size={ICON_SIZE_MD} aria-hidden="true" />
                 </InputLeftElement>
                 <Input
                   type="text"
@@ -270,8 +271,9 @@ const UsersPage = () => {
         <StandardCard className="settings-table-card">
           <CardBody>
             {/* Desktop Table View */}
-            <Box display={{ base: 'none', lg: 'block' }} className="table-wrap">
-              <Table variant="simple" className="mb-0 table-modern">
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <TableContainer overflowX="auto" data-scroll-region>
+                <Table variant="simple" className="mb-0 table-modern">
                 <Thead className="settings-table-header">
                   <Tr>
                     <Th>#</Th>
@@ -347,7 +349,7 @@ const UsersPage = () => {
                               minW="44px"
                               h="44px"
                             >
-                              <Pencil size={20} />
+                              <Pencil size={ICON_SIZE_MD} />
                             </Button>
 
                             <Button
@@ -362,7 +364,7 @@ const UsersPage = () => {
                               minW="44px"
                               h="44px"
                             >
-                              <Trash size={20} />
+                              <Trash size={ICON_SIZE_MD} />
                             </Button>
                           </div>
                         </Td>
@@ -371,6 +373,7 @@ const UsersPage = () => {
                   )}
                 </Tbody>
               </Table>
+              </TableContainer>
             </Box>
 
             {/* Mobile Card View */}
@@ -422,7 +425,7 @@ const UsersPage = () => {
                         minW="44px"
                         h="44px"
                       >
-                        <Pencil size={20} />
+                        <Pencil size={ICON_SIZE_MD} />
                       </Button>
                       <Button
                         as={motion.button}
@@ -436,7 +439,7 @@ const UsersPage = () => {
                         minW="44px"
                         h="44px"
                       >
-                        <Trash size={20} />
+                        <Trash size={ICON_SIZE_MD} />
                       </Button>
                       </div>
                     </div>

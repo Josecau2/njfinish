@@ -15,6 +15,7 @@ import {
 import PaginationComponent from '../../../components/common/PaginationComponent'
 import PageHeader from '../../../components/PageHeader'
 import { fetchUserMultipliers, fetchUsers } from '../../../store/slices/userGroupSlice'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const ManuMultipliers = () => {
   const { t } = useTranslation()
@@ -205,7 +206,7 @@ const ManuMultipliers = () => {
           actions={[
             <Badge key="group-count" variant="subtle" colorScheme="gray" px={3} py={1} borderRadius="md">
               <HStack spacing={4}>
-                <Icon as={Users} boxSize={4} aria-hidden="true" />
+                <Icon as={Users} boxSize={ICON_BOX_MD} aria-hidden="true" />
                 <Text fontSize="sm">{mergedGroups.length} {t('settings.userGroups.multipliers.groups')}</Text>
               </HStack>
             </Badge>,
@@ -281,7 +282,7 @@ const ManuMultipliers = () => {
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <InputGroup maxW={{ base: 'full', md: '360px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={4} />
+                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
                 </InputLeftElement>
                 <Input
                   value={filterText}
@@ -314,7 +315,7 @@ const ManuMultipliers = () => {
                   <Tr>
                     <Th>
                       <HStack spacing={4}>
-                        <Icon as={Users} boxSize={4} aria-hidden="true" />
+                        <Icon as={Users} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text>{t('settings.userGroups.multipliers.table.groupName')}</Text>
                       </HStack>
                     </Th>
@@ -380,7 +381,7 @@ const ManuMultipliers = () => {
                         </Td>
                         <Td py={4} textAlign="center">
                           <IconButton size="lg" aria-label={t('settings.userGroups.multipliers.actions.edit')}
-                            icon={<Icon as={Pencil} boxSize={4} />}
+                            icon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                             variant="outline"
                             color={accentColor}
                             borderColor="gray.200"

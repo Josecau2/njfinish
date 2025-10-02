@@ -8,6 +8,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import { CloudUpload, PenSquare, UploadCloud } from 'lucide-react'
 import axiosInstance from '../../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion(Button)
 
@@ -283,7 +284,7 @@ const DesignImportStep = ({
               colorScheme="brand"
               onClick={() => setActiveTab('manual')}
               whileTap={{ scale: 0.98 }}
-              leftIcon={<Icon as={PenSquare} boxSize={4} />}
+              leftIcon={<Icon as={PenSquare} boxSize={ICON_BOX_MD} />}
             >
               {t('proposals.create.design.tabs.manualEntry')}
             </MotionButton>
@@ -292,7 +293,7 @@ const DesignImportStep = ({
               colorScheme="brand"
               onClick={() => setActiveTab('import')}
               whileTap={{ scale: 0.98 }}
-              leftIcon={<Icon as={UploadCloud} boxSize={4} />}
+              leftIcon={<Icon as={UploadCloud} boxSize={ICON_BOX_MD} />}
             >
               {t('proposals.create.design.tabs.import2020')}
             </MotionButton>

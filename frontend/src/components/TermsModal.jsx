@@ -153,7 +153,8 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
       isOpen={visible}
       onClose={modalCloseHandler}
       isCentered
-      size='lg'
+      size={{ base: 'full', md: 'md', lg: 'lg' }}
+      scrollBehavior="inside"
       closeOnOverlayClick={!isForced}
       closeOnEsc={!isForced}
     >

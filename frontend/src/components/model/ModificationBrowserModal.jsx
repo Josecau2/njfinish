@@ -41,6 +41,7 @@ import { useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const FALLBACK_LEAD_TIME_DAYS = 8
 
@@ -688,7 +689,7 @@ const ModificationBrowserModal = ({
             <HStack spacing={4} align="center">
               {showBackButton && (
                 <IconButton
-                  icon={<ArrowLeft size={18} />}
+                  icon={<ArrowLeft size={ICON_SIZE_MD} />}
                   variant="ghost"
                   aria-label={t('modificationBrowser.buttons.back', 'Back')}
                   onClick={handleBack}
@@ -699,7 +700,7 @@ const ModificationBrowserModal = ({
               </Text>
             </HStack>
             <IconButton
-              icon={<X size={18} />}
+              icon={<X size={ICON_SIZE_MD} />}
               variant="ghost"
               aria-label={t('modificationBrowser.buttons.close', 'Close')}
               onClick={onClose}
@@ -732,7 +733,7 @@ const ModificationBrowserModal = ({
                   placeholder={t('modificationBrowser.search.placeholder', 'Search modifications')}
                 />
                 <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color="gray.400">
-                  <Search size={16} />
+                  <Search size={ICON_SIZE_MD} />
                 </Box>
               </Box>
               <Button variant="ghost" onClick={() => setSearchTerm('')} isDisabled={!searchTerm}>

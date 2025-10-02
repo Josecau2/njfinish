@@ -2,6 +2,7 @@ import React from 'react'
 import { Box, HStack, IconButton, Text, createStandaloneToast } from '@chakra-ui/react'
 import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react'
 import theme from '../theme'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const toast = createStandaloneToast({
   theme,
@@ -50,7 +51,7 @@ const showToast = ({ status, title, description, duration = 4000 }) => {
       >
         <HStack align="flex-start" spacing={3}>
           <Box color={mapping.accent} mt={0.5} aria-hidden>
-            <Icon size={18} />
+            <Icon size={ICON_SIZE_MD} />
           </Box>
           <Box flex="1">
             <Text fontWeight="semibold" fontSize="sm">

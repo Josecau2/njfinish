@@ -29,6 +29,7 @@ import { getOptimalColors } from '../../utils/colorUtils';
 import BrandLogo from '../../components/BrandLogo';
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
 import { installTokenEverywhere } from '../../utils/authToken';
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -226,7 +227,7 @@ const LoginPage = () => {
                     <InputRightElement width="44px" height="44px">
                       <IconButton
                         aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
-                        icon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        icon={showPassword ? <EyeOff size={ICON_SIZE_MD} /> : <Eye size={ICON_SIZE_MD} />}
                         onClick={() => setShowPassword(!showPassword)}
                         variant="ghost"
                         size="sm"

@@ -12,6 +12,7 @@ import {
   savePaymentConfig,
   updatePaymentConfig,
 } from '../../store/slices/paymentsSlice'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const SECRET_ACTIONS = {
   KEEP: 'keep',
@@ -197,7 +198,7 @@ const PaymentConfiguration = () => {
         actions={[
           <Button
             key="save"
-            leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+            leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             colorScheme="blue"
             onClick={handleSave}
             isLoading={configLoading}
@@ -222,7 +223,7 @@ const PaymentConfiguration = () => {
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
-              <Icon as={CreditCard} boxSize={5} color="blue.500" />
+              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color="blue.500" />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.gateway.title', 'Gateway Settings')}
               </Text>
@@ -398,7 +399,7 @@ const PaymentConfiguration = () => {
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
-              <Icon as={CreditCard} boxSize={5} color="green.500" />
+              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color="green.500" />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.preview.title', 'Configuration Preview')}
               </Text>

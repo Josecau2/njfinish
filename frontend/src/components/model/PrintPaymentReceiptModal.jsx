@@ -209,7 +209,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   }
 
   return (
-    <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} isCentered>
+    <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('paymentReceipt.modal.title', 'Payment receipt')}</ModalHeader>

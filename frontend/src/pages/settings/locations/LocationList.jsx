@@ -47,6 +47,7 @@ import PageHeader from '../../../components/PageHeader'
 import { MobileListCard } from '../../../components/StandardCard'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { deleteLocation, fetchLocations } from '../../../store/slices/locationSlice'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const LocationPage = () => {
   const { t } = useTranslation()
@@ -172,7 +173,7 @@ const LocationPage = () => {
   const headerActions = [
     <Button
       key="create"
-      leftIcon={<Icon as={Plus} boxSize={4} aria-hidden="true" />}
+      leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} aria-hidden="true" />}
       colorScheme="brand"
       onClick={handleCreateLocation}
       as={motion.button}
@@ -203,7 +204,7 @@ const LocationPage = () => {
             <Box flex={1} maxW={{ base: 'full', md: '400px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={4} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
                 </InputLeftElement>
                 <Input
                   placeholder={t('settings.locations.searchPlaceholder')}
@@ -242,20 +243,20 @@ const LocationPage = () => {
                   <Th textAlign="center">#</Th>
                   <Th>
                     <HStack spacing={4}>
-                      <Icon as={MapPin} boxSize={4} aria-hidden="true" />
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} aria-hidden="true" />
                       <Text>{t('settings.locations.table.locationName')}</Text>
                     </HStack>
                   </Th>
                   <Th>{t('settings.locations.table.address')}</Th>
                   <Th>
                     <HStack spacing={4}>
-                      <Icon as={Mail} boxSize={4} aria-hidden="true" />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} aria-hidden="true" />
                       <Text>{t('settings.locations.table.email')}</Text>
                     </HStack>
                   </Th>
                   <Th>
                     <HStack spacing={4}>
-                      <Icon as={Globe} boxSize={4} aria-hidden="true" />
+                      <Icon as={Globe} boxSize={ICON_BOX_MD} aria-hidden="true" />
                       <Text>{t('settings.locations.table.website')}</Text>
                     </HStack>
                   </Th>
@@ -343,7 +344,7 @@ const LocationPage = () => {
                             minW="44px"
                             h="44px"
                           >
-                            <Icon as={Edit} boxSize={4} aria-hidden="true" />
+                            <Icon as={Edit} boxSize={ICON_BOX_MD} aria-hidden="true" />
                           </Button>
                           <Button
                             variant="outline"
@@ -356,7 +357,7 @@ const LocationPage = () => {
                             minW="44px"
                             h="44px"
                           >
-                            <Icon as={Trash} boxSize={4} aria-hidden="true" />
+                            <Icon as={Trash} boxSize={ICON_BOX_MD} aria-hidden="true" />
                           </Button>
                         </HStack>
                       </Td>
@@ -436,14 +437,14 @@ const LocationPage = () => {
 
                   {location.address && (
                     <HStack spacing={2} align="flex-start">
-                      <Icon as={MapPin} boxSize={4} color="gray.500" mt={0.5} flexShrink={0} />
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color="gray.500" mt={0.5} flexShrink={0} />
                       <Text fontSize="sm" color="gray.600">{location.address}</Text>
                     </HStack>
                   )}
 
                   {location.email && (
                     <HStack spacing={2}>
-                      <Icon as={Mail} boxSize={4} color="gray.500" flexShrink={0} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.500" flexShrink={0} />
                       <Link
                         href={`mailto:${location.email}`}
                         color="brand.500"
@@ -457,7 +458,7 @@ const LocationPage = () => {
 
                   {location.website && (
                     <HStack spacing={2}>
-                      <Icon as={Globe} boxSize={4} color="gray.500" flexShrink={0} />
+                      <Icon as={Globe} boxSize={ICON_BOX_MD} color="gray.500" flexShrink={0} />
                       <Link
                         href={location.website?.startsWith('http') ? location.website : `https://${location.website}`}
                         isExternal
@@ -480,7 +481,7 @@ const LocationPage = () => {
                     size="sm"
                     onClick={() => handleUpdateLocation(location.id)}
                     aria-label={t('settings.locations.actions.edit')}
-                    leftIcon={<Icon as={Edit} boxSize={4} />}
+                    leftIcon={<Icon as={Edit} boxSize={ICON_BOX_MD} />}
                     minH="44px"
                   >
                     {t('common.edit')}
@@ -491,7 +492,7 @@ const LocationPage = () => {
                     size="sm"
                     onClick={() => handleDelete(location.id)}
                     aria-label={t('settings.locations.actions.delete')}
-                    leftIcon={<Icon as={Trash} boxSize={4} />}
+                    leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
                     minH="44px"
                   >
                     {t('common.delete')}

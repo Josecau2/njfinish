@@ -27,6 +27,7 @@ import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 import { resolveBrandAssetUrl } from '../utils/brandAssets'
 import { isAdmin } from '../helpers/permissions'
 import styles from './AppSidebar.module.css'
+import { ICON_BOX_MD } from '../constants/iconSizes'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -184,7 +185,7 @@ const AppSidebar = () => {
         </HStack>
         {!isDesktop && (
           <IconButton size="lg" aria-label="Close sidebar"
-            icon={<Icon as={X} boxSize={5} />}
+            icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
             variant="ghost"
             color="rgba(255, 255, 255, 0.8)"
             _hover={{ bg: "rgba(255, 255, 255, 0.1)", color: "white" }}
@@ -239,7 +240,7 @@ const AppSidebar = () => {
         <Flex align="center" justify={collapsed ? "center" : "flex-end"} w="100%" px={2}>
           {collapsed ? (
             <IconButton size="lg" aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
-              icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={4} />}
+              icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               variant="outline"
               color="rgba(255, 255, 255, 0.8)"
               borderColor="rgba(255, 255, 255, 0.3)"
@@ -270,7 +271,7 @@ const AppSidebar = () => {
               className="sidebar-footer-pin-btn"
               cursor="pointer"
             >
-              <Icon as={sidebarPinned ? PinOff : Pin} boxSize={4} />
+              <Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />
               <Text fontSize="xs" className="pin-label">
                 {sidebarPinned ? 'Unpin' : 'Pin'}
               </Text>

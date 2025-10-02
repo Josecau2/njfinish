@@ -10,6 +10,7 @@ import axiosInstance from '../../helpers/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const EVENT_TYPES = [
   'All',
@@ -147,7 +148,7 @@ const CalendarView = () => {
               </HStack>
 
               <Button
-                leftIcon={<Icon as={RefreshCw} boxSize={4} />}
+                leftIcon={<Icon as={RefreshCw} boxSize={ICON_BOX_MD} />}
                 onClick={handleRefresh}
                 variant="outline"
                 colorScheme="blue"

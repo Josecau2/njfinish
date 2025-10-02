@@ -4,6 +4,7 @@ import { Badge, Button, HStack, VStack, Text, Box } from '@chakra-ui/react'
 import StandardCard from '../StandardCard'
 import { motion } from 'framer-motion'
 import { Download, Edit2, Trash2, File, Image } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const MotionButton = motion(Button)
 
@@ -74,7 +75,7 @@ export default function ContentTile({
                     onDownload()
                   }}
                 >
-                  <Download size={20} />
+                  <Download size={ICON_SIZE_MD} />
                 </MotionButton>
               )}
               {onEdit && (
@@ -91,7 +92,7 @@ export default function ContentTile({
                     onEdit()
                   }}
                 >
-                  <Edit2 size={20} />
+                  <Edit2 size={ICON_SIZE_MD} />
                 </MotionButton>
               )}
               {onDelete && (
@@ -108,7 +109,7 @@ export default function ContentTile({
                     onDelete()
                   }}
                 >
-                  <Trash2 size={20} />
+                  <Trash2 size={ICON_SIZE_MD} />
                 </MotionButton>
               )}
             </HStack>
@@ -116,7 +117,7 @@ export default function ContentTile({
 
           <HStack spacing={4} align="flex-start">
             <Box color="gray.500" flexShrink={0} mt={0.5}>
-              {isImage ? <Image size={18} /> : <File size={18} />}
+              {isImage ? <Image size={ICON_SIZE_MD} /> : <File size={ICON_SIZE_MD} />}
             </Box>
             <VStack align="flex-start" spacing={4} flex={1} minW={0}>
               <Text

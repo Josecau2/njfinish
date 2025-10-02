@@ -9,6 +9,7 @@ import {
   Tr,
   Th,
   Td,
+  TableContainer,
   Badge,
   Button,
   Box,
@@ -34,6 +35,7 @@ import { fetchPayments } from '../../store/slices/paymentsSlice'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
 import Swal from 'sweetalert2'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const OrdersList = ({
   title,
@@ -478,7 +480,7 @@ const OrdersList = ({
         <Box flex={1} maxW="520px">
           <InputGroup>
             <InputLeftElement>
-              <Search size={16} />
+              <Search size={ICON_SIZE_MD} />
             </InputLeftElement>
             <Input
             type="search"
@@ -498,8 +500,9 @@ const OrdersList = ({
       </Flex>
 
       {/* Desktop / tablet table */}
-      <Box display={{ base: 'none', lg: 'block' }} overflowX="auto">
-        <Table size="sm" variant="simple">
+      <Box display={{ base: 'none', lg: 'block' }}>
+        <TableContainer overflowX="auto" data-scroll-region>
+          <Table size="sm" variant="simple">
           <Thead>
             <Tr>
               <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>
@@ -543,12 +546,12 @@ const OrdersList = ({
                       ).toLocaleDateString()}
                     </Td>
                     <Td>{getDisplayOrderNumber(item)}</Td>
-                    <Td>{renderCustomerCell(item)}</Td>
-                    <Td color="gray.500">
+                    <Td isTruncated maxW="200px">{renderCustomerCell(item)}</Td>
+                    <Td color="gray.500" isTruncated maxW="250px">
                       {(item.description || item?.proposal?.description || '').trim() ||
                         t('common.na')}
                     </Td>
-                    <Td>{resolveManuName(item)}</Td>
+                    <Td isTruncated maxW="150px">{resolveManuName(item)}</Td>
                     <Td>
                       <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
                         {item.status || 'accepted'}
@@ -573,7 +576,7 @@ const OrdersList = ({
                           <Button
                             colorScheme="blue"
                             size="sm"
-                            leftIcon={<CreditCard size={16} />}
+                            leftIcon={<CreditCard size={ICON_SIZE_MD} />}
                             onClick={(e) => {
                               e.stopPropagation()
                               handleMakePayment(item.id)
@@ -587,7 +590,7 @@ const OrdersList = ({
                             colorScheme="green"
                             size="sm"
                             variant="outline"
-                            leftIcon={<Download size={16} />}
+                            leftIcon={<Download size={ICON_SIZE_MD} />}
                             onClick={(e) => {
                               e.stopPropagation()
                               const payment = getOrderPayment(item.id)
@@ -605,6 +608,7 @@ const OrdersList = ({
               )}
           </Tbody>
         </Table>
+        </TableContainer>
       </Box>
 
       {/* Mobile card list */}
@@ -694,7 +698,7 @@ const OrdersList = ({
                           <Button
                             colorScheme="blue"
                             size="sm"
-                            leftIcon={<CreditCard size={16} />}
+                            leftIcon={<CreditCard size={ICON_SIZE_MD} />}
                             onClick={(e) => {
                               e.stopPropagation()
                               handleMakePayment(item.id)
@@ -708,7 +712,7 @@ const OrdersList = ({
                             colorScheme="green"
                             size="sm"
                             variant="outline"
-                            leftIcon={<Download size={16} />}
+                            leftIcon={<Download size={ICON_SIZE_MD} />}
                             onClick={(e) => {
                               e.stopPropagation()
                               const payment = getOrderPayment(item.id)

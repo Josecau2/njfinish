@@ -9,6 +9,7 @@ import { createCustomer, updateCustomer, fetchCustomers } from '../../store/slic
 import withContractorScope from '../../components/withContractorScope'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 const CustomerForm = ({
   isContractor,
   contractorGroupId,
@@ -167,7 +168,7 @@ const CustomerForm = ({
             </VStack>
             <Button
               variant="outline"
-              leftIcon={<ArrowLeft size={18} />}
+              leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
               onClick={handleCancel}
               colorScheme="gray"
               minH="44px"
@@ -192,7 +193,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <User size={18} />
+                          <User size={ICON_SIZE_MD} />
                         </InputLeftAddon>
                         <Input
                           type="text"
@@ -215,7 +216,7 @@ const CustomerForm = ({
                       <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Mail size={18} />
+                          <Mail size={ICON_SIZE_MD} />
                         </InputLeftAddon>
                         <Input
                           type="email"
@@ -239,7 +240,7 @@ const CustomerForm = ({
                       <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Phone size={18} />
+                          <Phone size={ICON_SIZE_MD} />
                         </InputLeftAddon>
                         <Input
                           type="tel"
@@ -260,7 +261,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <Phone size={18} />
+                          <Phone size={ICON_SIZE_MD} />
                         </InputLeftAddon>
                         <Input
                           type="tel"
@@ -286,7 +287,7 @@ const CustomerForm = ({
                       </FormLabel>
                       <InputGroup>
                         <InputLeftAddon>
-                          <MapPin size={18} />
+                          <MapPin size={ICON_SIZE_MD} />
                         </InputLeftAddon>
                         <Input
                           type="text"
@@ -465,7 +466,7 @@ const CustomerForm = ({
                     disabled={loading}
 
                   >
-                    {loading ? <Spinner size="sm" /> : <Save size={18} />}
+                    {loading ? <Spinner size="sm" /> : <Save size={ICON_SIZE_MD} />}
                     {isEditing
                       ? t('customers.form.actions.update')
                       : t('customers.form.actions.create')}

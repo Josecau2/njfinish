@@ -16,6 +16,7 @@ import {
 import { Download, File, Link2Off } from '@/icons-lucide'
 import axiosInstance from '../helpers/axiosInstance'
 import NeutralModal from './NeutralModal'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const Editor = lazy(() => import('@monaco-editor/react'))
 const ReactXmlViewer = lazy(() => import('react-xml-viewer'))
@@ -163,7 +164,7 @@ export default function FileViewerModal({
       return (
         <Alert status="warning" borderRadius="md">
           <HStack spacing={4} align="center">
-            <Icon as={Link2Off} boxSize={5} />
+            <Icon as={Link2Off} boxSize={ICON_BOX_MD} />
             <Text>Preview unavailable. Try downloading the file.</Text>
           </HStack>
         </Alert>
@@ -214,7 +215,7 @@ export default function FileViewerModal({
         return (
           <Alert status="warning" borderRadius="md">
             <HStack spacing={4} align="center">
-              <Icon as={Link2Off} boxSize={5} />
+              <Icon as={Link2Off} boxSize={ICON_BOX_MD} />
               <Text>PDF preview unavailable. Try downloading the file.</Text>
             </HStack>
           </Alert>

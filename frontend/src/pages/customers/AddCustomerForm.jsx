@@ -16,6 +16,7 @@ import axiosInstance from '../../helpers/axiosInstance'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 // External component definitions to prevent re-rendering
 const FormSection = ({ title, icon, children, className = '' }) => (
@@ -31,7 +32,7 @@ const FormSection = ({ title, icon, children, className = '' }) => (
             color: "blue.500",
           }}
         >
-          <Icon as={icon} boxSize={4} />
+          <Icon as={icon} boxSize={ICON_BOX_MD} />
         </div>
         <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
       </div>
@@ -67,7 +68,7 @@ const CustomFormInput = ({
             borderRight: 'none',
           }}
         >
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftAddon>
       )}
       <Input
@@ -134,7 +135,7 @@ const CustomFormSelect = ({
             borderRight: 'none',
           }}
         >
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftAddon>
       )}
       <Select

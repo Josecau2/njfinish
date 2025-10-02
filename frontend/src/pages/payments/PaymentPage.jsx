@@ -13,6 +13,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import PageHeader from '../../components/PageHeader'
 import { fetchPaymentById, fetchPublicPaymentConfig } from '../../store/slices/paymentsSlice'
 import axiosInstance from '../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const formatCurrency = (amountCents = 0, currency = 'USD') => {
   const value = (amountCents || 0) / 100
@@ -249,7 +250,7 @@ const PaymentPage = () => {
               <AlertIcon />
               {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
             </Alert>
-            <Button colorScheme="blue" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}>
+            <Button colorScheme="blue" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}>
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
@@ -405,7 +406,7 @@ const PaymentPage = () => {
                   variant="outline"
                   onClick={handleGoBack}
                   minH="44px"
-                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                  leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>

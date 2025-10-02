@@ -7,6 +7,7 @@ import axiosInstance from '../../helpers/axiosInstance'
 import EmptyState from '../../components/common/EmptyState'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const NotificationsPage = () => {
   const { t } = useTranslation()
@@ -215,7 +216,7 @@ const NotificationsPage = () => {
                 onClick={handleRefresh}
                 isLoading={refreshing}
                 loadingText={t('notifications.actions.refreshing', 'Refreshing...')}
-                leftIcon={!refreshing ? <Icon as={RefreshCw} boxSize={4} /> : undefined}
+                leftIcon={!refreshing ? <Icon as={RefreshCw} boxSize={ICON_BOX_MD} /> : undefined}
                 type="button"
                 aria-label={refreshing ? t('notifications.actions.refreshing', 'Refreshing notifications') : t('notifications.actions.refresh', 'Refresh notifications')}
               >
@@ -228,7 +229,7 @@ const NotificationsPage = () => {
                   minH="44px"
                   onClick={handleMarkAllAsRead}
                   type="button"
-                  leftIcon={<Icon as={Check} boxSize={4} />}
+                  leftIcon={<Icon as={Check} boxSize={ICON_BOX_MD} />}
                   aria-label={t('notifications.actions.markAllReadAria', 'Mark all notifications as read')}
                 >
                   {t('notifications.actions.markAllRead', 'Mark all as read')} ({unreadCount})

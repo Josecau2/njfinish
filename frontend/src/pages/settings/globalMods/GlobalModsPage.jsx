@@ -1414,7 +1414,7 @@ const GlobalModsPage = () => {
       </Flex>
 
       {/* Add Modification Modal */}
-      <Modal isOpen={showCreateModModal} onClose={() => setShowCreateModModal(false)} size="lg">
+      <Modal isOpen={showCreateModModal} onClose={() => setShowCreateModModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
             <ModalHeader>
@@ -2056,7 +2056,8 @@ const GlobalModsPage = () => {
       <Modal
         isOpen={showEditCategoryModal}
         onClose={() => setShowEditCategoryModal(false)}
-        size="md"
+        size={{ base: 'full', md: 'md' }}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
@@ -2138,7 +2139,8 @@ const GlobalModsPage = () => {
       <Modal
         isOpen={showEditTemplateModal}
         onClose={() => setShowEditTemplateModal(false)}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
@@ -2232,7 +2234,7 @@ const GlobalModsPage = () => {
       </Modal>
 
       {/* Modification Gallery Modal */}
-      <Modal isOpen={showGalleryModal} onClose={() => setShowGalleryModal(false)} size="xl">
+      <Modal isOpen={showGalleryModal} onClose={() => setShowGalleryModal(false)} size={{ base: 'full', md: 'lg', lg: 'xl' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
             <ModalHeader>
@@ -2339,7 +2341,7 @@ const GlobalModsPage = () => {
       </Modal>
 
       {/* Assign Modification Modal */}
-      <Modal isOpen={showAssignModal} onClose={() => setShowAssignModal(false)} size="lg">
+      <Modal isOpen={showAssignModal} onClose={() => setShowAssignModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
             <ModalHeader>
@@ -2452,7 +2454,8 @@ const GlobalModsPage = () => {
       <Modal
         isOpen={showDeleteCategoryModal}
         onClose={() => setShowDeleteCategoryModal(false)}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>

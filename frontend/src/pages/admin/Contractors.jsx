@@ -11,6 +11,7 @@ import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
 import { fetchContractors } from '../../store/slices/contractorSlice'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const Contractors = () => {
   const dispatch = useDispatch()
@@ -130,7 +131,7 @@ const Contractors = () => {
             <Stack spacing={5}>
               <InputGroup maxW={{ base: 'full', lg: '360px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={4} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
                 </InputLeftElement>
                 <Input
                   placeholder={t('contractorsAdmin.searchPlaceholder', 'Search contractors')}
@@ -143,7 +144,7 @@ const Contractors = () => {
               <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={4}>
                 <Box bg="blue.50" borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={Users} boxSize={5} color="blue.600" />
+                    <Icon as={Users} boxSize={ICON_BOX_MD} color="blue.600" />
                     <Box>
                       <Text fontSize="xs" color="blue.700" textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.stats.totalContractors', 'Total Contractors')}
@@ -156,7 +157,7 @@ const Contractors = () => {
                 </Box>
                 <Box bg="teal.50" borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={User} boxSize={5} color="teal.600" />
+                    <Icon as={User} boxSize={ICON_BOX_MD} color="teal.600" />
                     <Box>
                       <Text fontSize="xs" color="teal.700" textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.table.users', 'Users')}
@@ -169,7 +170,7 @@ const Contractors = () => {
                 </Box>
                 <Box bg="orange.50" borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={Layers} boxSize={5} color="orange.600" />
+                    <Icon as={Layers} boxSize={ICON_BOX_MD} color="orange.600" />
                     <Box>
                       <Text fontSize="xs" color="orange.700" textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.table.customers', 'Customers')}
@@ -182,7 +183,7 @@ const Contractors = () => {
                 </Box>
                 <Box bg="green.50" borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={ChartBar} boxSize={5} color="green.600" />
+                    <Icon as={ChartBar} boxSize={ICON_BOX_MD} color="green.600" />
                     <Box>
                       <Text fontSize="xs" color="green.700" textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.table.proposals', 'Proposals')}
@@ -251,7 +252,7 @@ const Contractors = () => {
                             size="sm"
                             variant="outline"
                             colorScheme="blue"
-                            leftIcon={<Icon as={ChartBar} boxSize={4} aria-hidden="true" />}
+                            leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             onClick={() => handleView(contractor)}
                             minH="36px"
                           >
@@ -283,7 +284,7 @@ const Contractors = () => {
                             variant="outline"
                             colorScheme="blue"
                             onClick={() => handleView(contractor)}
-                            leftIcon={<Icon as={ChartBar} boxSize={4} aria-hidden="true" />}
+                            leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                           >
                             {t('contractorsAdmin.actions.view', 'View')}
                           </Button>

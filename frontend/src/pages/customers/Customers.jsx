@@ -12,6 +12,7 @@ import PaginationComponent from '../../components/common/PaginationComponent'
 import withContractorScope from '../../components/withContractorScope'
 import PermissionGate from '../../components/PermissionGate'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const CustomerTable = ({
   isContractor,
@@ -166,7 +167,7 @@ const CustomerTable = ({
           icon={Users}
           actions={[
             <PermissionGate permission="customers:create" key="create">
-              <Button colorScheme="brand" leftIcon={<Icon as={Plus} boxSize={4} />} onClick={handleNewCustomer}>
+              <Button colorScheme="brand" leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />} onClick={handleNewCustomer}>
                 {t('nav.addCustomer')}
               </Button>
             </PermissionGate>,
@@ -213,7 +214,7 @@ const CustomerTable = ({
             <Stack direction={{ base: 'column', lg: 'row' }} spacing={4} align={{ base: 'stretch', lg: 'center' }}>
               <InputGroup maxW={{ base: 'full', lg: '360px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={4} />
+                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
                 </InputLeftElement>
                 <Input
                   value={searchTerm}
@@ -333,10 +334,10 @@ const CustomerTable = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => handleSort('name')}
-                              rightIcon={<Icon as={getSortIcon('name')} boxSize={4} />}
+                              rightIcon={<Icon as={getSortIcon('name')} boxSize={ICON_BOX_MD} />}
                             >
                               <HStack spacing={4}>
-                                <Icon as={User} boxSize={4} />
+                                <Icon as={User} boxSize={ICON_BOX_MD} />
                                 <Text>{t('customers.name', 'Name')}</Text>
                               </HStack>
                             </Button>
@@ -346,23 +347,23 @@ const CustomerTable = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => handleSort('email')}
-                              rightIcon={<Icon as={getSortIcon('email')} boxSize={4} />}
+                              rightIcon={<Icon as={getSortIcon('email')} boxSize={ICON_BOX_MD} />}
                             >
                               <HStack spacing={4}>
-                                <Icon as={Mail} boxSize={4} />
+                                <Icon as={Mail} boxSize={ICON_BOX_MD} />
                                 <Text>{t('customers.email', 'Email')}</Text>
                               </HStack>
                             </Button>
                           </Th>
                           <Th>
                             <HStack spacing={4}>
-                              <Icon as={Phone} boxSize={4} />
+                              <Icon as={Phone} boxSize={ICON_BOX_MD} />
                               <Text>{t('customers.phone', 'Phone')}</Text>
                             </HStack>
                           </Th>
                           <Th>
                             <HStack spacing={4}>
-                              <Icon as={MapPin} boxSize={4} />
+                              <Icon as={MapPin} boxSize={ICON_BOX_MD} />
                               <Text>{t('customers.address', 'Address')}</Text>
                             </HStack>
                           </Th>
@@ -392,10 +393,10 @@ const CustomerTable = ({
                                   {t('customers.main', 'Main')}
                                 </Badge>
                               </Td>
-                              <Td fontWeight="medium">{cust.name || 'N/A'}</Td>
-                              <Td color="gray.600">{cust.email || 'N/A'}</Td>
-                              <Td color="gray.600">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
-                              <Td color="gray.600">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
+                              <Td fontWeight="medium" isTruncated maxW="200px">{cust.name || 'N/A'}</Td>
+                              <Td color="gray.600" isTruncated maxW="200px">{cust.email || 'N/A'}</Td>
+                              <Td color="gray.600" isTruncated maxW="150px">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
+                              <Td color="gray.600" isTruncated maxW="250px">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
                               <Td>
                                 <Badge colorScheme="blue">
                                   {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
@@ -410,7 +411,7 @@ const CustomerTable = ({
                                 <HStack spacing={4} justify="center">
                                   <PermissionGate action="update" resource="customer" item={cust}>
                                     <IconButton size="lg" aria-label={t('customers.editTooltip', 'Edit customer')}
-                                      icon={<Icon as={Pencil} boxSize={4} />}
+                                      icon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                                       variant="outline"
                                       colorScheme="blue"
                                       onClick={() => handleEdit(cust)}
@@ -418,7 +419,7 @@ const CustomerTable = ({
                                   </PermissionGate>
                                   <PermissionGate action="delete" resource="customer" item={cust}>
                                     <IconButton size="lg" aria-label={t('customers.deleteTooltip', 'Delete customer')}
-                                      icon={<Icon as={Trash} boxSize={4} />}
+                                      icon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
                                       variant="outline"
                                       colorScheme="red"
                                       onClick={() => handleDelete(cust.id)}
@@ -464,15 +465,15 @@ const CustomerTable = ({
                         </HStack>
                         <Stack spacing={4} fontSize="sm" color="gray.600">
                           <HStack spacing={4}>
-                            <Icon as={Mail} boxSize={4} />
+                            <Icon as={Mail} boxSize={ICON_BOX_MD} />
                             <Text>{cust.email || 'N/A'}</Text>
                           </HStack>
                           <HStack spacing={4}>
-                            <Icon as={Phone} boxSize={4} />
+                            <Icon as={Phone} boxSize={ICON_BOX_MD} />
                             <Text>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Text>
                           </HStack>
                           <HStack spacing={4}>
-                            <Icon as={MapPin} boxSize={4} />
+                            <Icon as={MapPin} boxSize={ICON_BOX_MD} />
                             <Text>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Text>
                           </HStack>
                         </Stack>
@@ -490,7 +491,7 @@ const CustomerTable = ({
                               size="sm"
                               variant="outline"
                               colorScheme="blue"
-                              leftIcon={<Icon as={Pencil} boxSize={4} />}
+                              leftIcon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                               flex="1"
                               onClick={() => handleEdit(cust)}
                             >
@@ -502,7 +503,7 @@ const CustomerTable = ({
                               size="sm"
                               variant="outline"
                               colorScheme="red"
-                              leftIcon={<Icon as={Trash} boxSize={4} />}
+                              leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
                               flex="1"
                               onClick={() => handleDelete(cust.id)}
                             >

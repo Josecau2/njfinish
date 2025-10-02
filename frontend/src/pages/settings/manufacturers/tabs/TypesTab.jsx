@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import PageHeader from '../../../../components/PageHeader'
 import { Pencil, Trash, Search, Plus, ChevronDown } from '@/icons-lucide'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
 
 // Helper function to get auth headers
 
@@ -656,7 +657,7 @@ const TypesTab = ({ manufacturer }) => {
             <HStack spacing={4} wrap="wrap">
               <Button
                 colorScheme="green"
-                leftIcon={<Plus size={16} />}
+                leftIcon={<Plus size={ICON_SIZE_MD} />}
                 onClick={() => {
                   setCreateForm({ typeName: '', longDescription: '', imageFile: null })
                   setCreateError(null)
@@ -679,7 +680,7 @@ const TypesTab = ({ manufacturer }) => {
 
               {selectedItems.length > 0 && (
                 <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDown size={16} />} colorScheme="gray" size="md">
+                  <MenuButton as={Button} rightIcon={<ChevronDown size={ICON_SIZE_MD} />} colorScheme="gray" size="md">
                     {t('types.ui.actions', 'Actions')} ({selectedItems.length})
                   </MenuButton>
                   <MenuList>
@@ -714,7 +715,7 @@ const TypesTab = ({ manufacturer }) => {
             </FormLabel>
             <InputGroup size="lg">
               <InputLeftElement pointerEvents="none">
-                <Search color="gray.400" size={20} />
+                <Search color="gray.400" size={ICON_SIZE_MD} />
               </InputLeftElement>
               <Input
                 placeholder={t('types.ui.searchPlaceholder', 'Search types...')}
@@ -896,7 +897,7 @@ const TypesTab = ({ manufacturer }) => {
                                         handleEditType(type)
                                       }}
                                     >
-                                      <Pencil size={16} aria-hidden="true" mr={1} />{' '}
+                                      <Pencil size={ICON_SIZE_MD} aria-hidden="true" mr={1} />{' '}
                                       {t('types.meta.editType', 'Edit Type')}
                                     </Button>
                                     <Button
@@ -908,7 +909,7 @@ const TypesTab = ({ manufacturer }) => {
                                         setReassignTypeTo('')
                                       }}
                                     >
-                                      <Trash size={16} aria-hidden="true" />
+                                      <Trash size={ICON_SIZE_MD} aria-hidden="true" />
                                     </Button>
                                   </Flex>
                                 )}
@@ -993,7 +994,7 @@ const TypesTab = ({ manufacturer }) => {
                         onClick={() => handleEditType(type)}
                         style={{ minHeight: '44px', minWidth: '44px' }}
                       >
-                        <Pencil size={18} aria-hidden="true" />
+                        <Pencil size={ICON_SIZE_MD} aria-hidden="true" />
                       </Button>
                     </Td>
                   </Tr>
@@ -1156,7 +1157,7 @@ const TypesTab = ({ manufacturer }) => {
                   {/* Search and Filter */}
                   <InputGroup mb={3}>
                     <InputLeftElement pointerEvents="none">
-                      <Search color="gray.400" size={16} />
+                      <Search color="gray.400" size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       placeholder={t('common.searchItems', 'Search items...')}

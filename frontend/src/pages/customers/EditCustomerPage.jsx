@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const FormSection = ({ title, icon, children }) => (
   <StandardCard variant="outline" borderRadius="xl" shadow="sm">
@@ -27,7 +28,7 @@ const FormSection = ({ title, icon, children }) => (
             alignItems="center"
             justifyContent="center"
           >
-            <Icon as={icon} boxSize={5} aria-hidden="true" />
+            <Icon as={icon} boxSize={ICON_BOX_MD} aria-hidden="true" />
           </Box>
           <Text fontWeight="semibold" color="gray.800">
             {title}
@@ -60,7 +61,7 @@ const CustomFormInput = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftElement>
       )}
       <Input
@@ -101,7 +102,7 @@ const CustomFormSelect = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftElement>
       )}
       <Select
@@ -279,7 +280,7 @@ const EditCustomerPage = () => {
             key="back"
             variant="outline"
             colorScheme="gray"
-            leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+            leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             onClick={() => navigate(-1)}
             minH="44px"
           >
@@ -485,7 +486,7 @@ const EditCustomerPage = () => {
                   colorScheme="gray"
                   onClick={() => navigate('/customers')}
                   minH="44px"
-                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                  leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                 >
                   {t('customers.form.actions.cancel')}
                 </Button>
@@ -494,7 +495,7 @@ const EditCustomerPage = () => {
                   colorScheme="blue"
                   minH="44px"
                   isLoading={isSubmitting}
-                  leftIcon={!isSubmitting ? <Icon as={Save} boxSize={4} aria-hidden="true" /> : undefined}
+                  leftIcon={!isSubmitting ? <Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" /> : undefined}
                   bg={headerBg}
                   _hover={{ opacity: 0.9 }}
                   color={textColor}

@@ -14,6 +14,7 @@ import {
   Video,
 } from 'lucide-react'
 import axiosInstance from '../../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionBox = motion(Box)
 const MotionButton = motion(Button)
@@ -343,17 +344,17 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                               colorScheme="gray"
                               aria-label={t('files.actions', 'File actions')}
                             >
-                              <Icon as={MenuIcon} boxSize={4} />
+                              <Icon as={MenuIcon} boxSize={ICON_BOX_MD} />
                             </MenuButton>
                             <MenuList>
-                              <MenuItem icon={<Icon as={Eye} boxSize={4} />} onClick={() => previewFile(file)}>
+                              <MenuItem icon={<Icon as={Eye} boxSize={ICON_BOX_MD} />} onClick={() => previewFile(file)}>
                                 {t('files.preview')}
                               </MenuItem>
-                              <MenuItem icon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(file)}>
+                              <MenuItem icon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(file)}>
                                 {t('files.download')}
                               </MenuItem>
                               <MenuItem
-                                icon={<Icon as={Trash2} boxSize={4} />}
+                                icon={<Icon as={Trash2} boxSize={ICON_BOX_MD} />}
                                 onClick={() => confirmDelete(file)}
                                 color="red.500"
                               >
@@ -391,7 +392,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         </CardBody>
       </StandardCard>
 
-      <Modal isOpen={previewModal.open} onClose={() => setPreviewModal({ open: false, file: null })} size="xl" isCentered>
+      <Modal isOpen={previewModal.open} onClose={() => setPreviewModal({ open: false, file: null })} size={{ base: 'full', md: 'lg', lg: 'xl' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{previewModal.file?.name}</ModalHeader>
@@ -401,7 +402,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             <Button variant="ghost" onClick={() => setPreviewModal({ open: false, file: null })} mr={3}>
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="brand" leftIcon={<Icon as={Download} boxSize={4} />} onClick={() => downloadFile(previewModal.file)}>
+            <Button colorScheme="brand" leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(previewModal.file)}>
               {t('files.download')}
             </Button>
           </ModalFooter>

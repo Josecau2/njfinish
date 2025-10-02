@@ -22,6 +22,7 @@ import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
 import { getFreshestToken } from '../utils/authToken'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const ICON_CONFIG = {
   proposal_accepted: { icon: CheckCircle2, color: 'brand.500' },
@@ -229,7 +230,7 @@ const NotificationBell = () => {
     const Icon = config.icon || Info
     return (
       <Box color={config.color} mt={0.5} aria-hidden>
-        <Icon size={18} />
+        <Icon size={ICON_SIZE_MD} />
       </Box>
     )
   }

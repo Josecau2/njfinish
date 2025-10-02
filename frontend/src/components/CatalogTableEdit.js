@@ -268,7 +268,8 @@ const CatalogTableEdit = ({
       <Modal
         isOpen={showTypeModal}
         onClose={() => setShowTypeModal(false)}
-        size="xl"
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
+        scrollBehavior="inside"
         isCentered
       >
         <ModalOverlay />

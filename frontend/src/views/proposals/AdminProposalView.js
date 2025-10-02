@@ -21,6 +21,7 @@ import {
   Send,
 } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const statusDefinitions = {
   draft: { color: 'gray', icon: ClipboardList },
@@ -280,7 +281,7 @@ const AdminProposalView = () => {
       variant="outline"
       colorScheme="brand"
       size="sm"
-      leftIcon={<Icon as={Printer} boxSize={4} />}
+      leftIcon={<Icon as={Printer} boxSize={ICON_BOX_MD} />}
       onClick={handlePrint}
     >
       {t('adminQuote.ui.print', 'Print')}
@@ -290,7 +291,7 @@ const AdminProposalView = () => {
       variant="outline"
       colorScheme="brand"
       size="sm"
-      leftIcon={<Icon as={Download} boxSize={4} />}
+      leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
       onClick={handleDownload}
     >
       {t('proposalCommon.downloadPdf', 'Download PDF')}
@@ -300,7 +301,7 @@ const AdminProposalView = () => {
       size="sm"
       variant="outline"
       colorScheme="gray"
-      leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+      leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
       onClick={() => navigate(-1)}
     >
       {t('common.back', 'Back')}
@@ -318,7 +319,7 @@ const AdminProposalView = () => {
         >
           <Badge colorScheme={getStatusColor(proposal.status)} borderRadius="full" px={3} py={1}>
             <HStack spacing={2}>
-              <Icon as={getStatusIcon(proposal.status)} boxSize={4} />
+              <Icon as={getStatusIcon(proposal.status)} boxSize={ICON_BOX_MD} />
               <Text fontSize="sm">{getStatusLabel(proposal.status)}</Text>
             </HStack>
           </Badge>
@@ -515,7 +516,7 @@ const AdminProposalView = () => {
                           color="white"
                           flexShrink={0}
                         >
-                          <Icon as={item.icon} boxSize={4} />
+                          <Icon as={item.icon} boxSize={ICON_BOX_MD} />
                         </Center>
                         <Stack spacing={1} flex="1">
                           <HStack justify="space-between" align="flex-start">

@@ -9,6 +9,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const ITEM_WIDTH = 148
 const SCROLL_AMOUNT = ITEM_WIDTH * 2
@@ -35,13 +36,13 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
         <HStack spacing={4}>
           <IconButton
             aria-label="Scroll left"
-            icon={<ChevronLeft size={18} />}
+            icon={<ChevronLeft size={ICON_SIZE_MD} />}
             variant="ghost"
             onClick={() => scrollBy(-SCROLL_AMOUNT)}
           />
           <IconButton
             aria-label="Scroll right"
-            icon={<ChevronRight size={18} />}
+            icon={<ChevronRight size={ICON_SIZE_MD} />}
             variant="ghost"
             onClick={() => scrollBy(SCROLL_AMOUNT)}
           />

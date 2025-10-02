@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '../../store/slices/authSlice'
 import { clearAllTokens } from '../../utils/authToken'
 import { forceBrowserCleanup } from '../../utils/browserCleanup'
+import { ICON_SIZE_MD, ICON_SIZE_SM } from '../../constants/iconSizes'
 
 const AppHeaderDropdown = () => {
   const dispatch = useDispatch()
@@ -51,7 +52,7 @@ const AppHeaderDropdown = () => {
           name={displayName}
           bg={accent}
           color="white"
-          icon={<User size={18} />}
+          icon={<User size={ICON_SIZE_MD} />}
         />
       </MenuButton>
       <MenuList minW="220px" py={2}>
@@ -73,10 +74,10 @@ const AppHeaderDropdown = () => {
           </Box>
         )}
         {user?.name && <MenuDivider />}
-        <MenuItem icon={<User size={16} />} onClick={() => navigate('/profile')}>
+        <MenuItem icon={<User size={ICON_SIZE_MD} />} onClick={() => navigate('/profile')}>
           Profile
         </MenuItem>
-        <MenuItem icon={<LogOut size={16} />} onClick={handleLogout}>
+        <MenuItem icon={<LogOut size={ICON_SIZE_MD} />} onClick={handleLogout}>
           Logout
         </MenuItem>
       </MenuList>

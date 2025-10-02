@@ -30,6 +30,7 @@ import {
   clearProposalDetails
 } from '../../../store/slices/contractorSlice'
 import PaginationComponent from '../../../components/common/PaginationComponent'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const ProposalsTab = ({ contractor, groupId }) => {
   const { t } = useTranslation()
@@ -293,7 +294,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
           <StandardCard>
             <CardHeader>
               <strong>
-                <BriefcaseBusiness size={16} aria-hidden="true" />
+                <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
                 {t('contractorsAdmin.detail.proposals.header', { count: pagination?.total || 0 })}
               </strong>
             </CardHeader>
@@ -305,7 +306,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 <Box md={6}>
                   <InputGroup>
                     <InputLeftElement aria-hidden="true">
-                      <Search size={16} />
+                      <Search size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       type="text"
@@ -355,7 +356,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </div>
 
               {/* Table */}
-              <TableContainer className="table-wrap">
+              <TableContainer overflowX="auto" data-scroll-region>
                 <Table variant="striped" className="table-modern">
                   <Thead>
                     <Tr>
@@ -486,7 +487,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.viewDetails', 'View proposal details')}
                                   onClick={() => handleViewProposal(proposal)}
                                 >
-                                  <Search size={16} aria-hidden="true" />
+                                  <Search size={ICON_SIZE_MD} aria-hidden="true" />
                                 </Button>
                               </Tooltip>
                               <Tooltip content="Go to Proposal">
@@ -497,7 +498,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   aria-label={t('contractorsAdmin.detail.proposals.actions.open', 'Open proposal')}
                                   onClick={() => handleGoToProposal(proposal.id)}
                                 >
-                                  <ExternalLink size={16} aria-hidden="true" />
+                                  <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
                                 </Button>
                               </Tooltip>
                             </ButtonGroup>
@@ -530,13 +531,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
         isOpen={showModal}
         onClose={handleCloseModal}
         size={{ base: "full", lg: "xl" }}
-        scrollable
+        scrollBehavior="inside"
         className="proposal-detail-modal"
       >
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>
-              <BriefcaseBusiness size={16} aria-hidden="true" />
+              <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
               {t('contractorsAdmin.detail.proposals.modal.title')}
               {selectedProposal && (
                 <Badge color={getStatusColor(selectedProposal.status)}>
@@ -584,7 +585,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                         onClick={() => handleGoToProposal(proposalDetails.data.id)}
                       >
-                        <ExternalLink size={16} aria-hidden="true" />
+                        <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
                         {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                       </Button>
                     </Box>
@@ -595,7 +596,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     <AccordionItem>
                       <AccordionButton>
                         <Box flex="1" textAlign="left">
-                          <Info size={16} aria-hidden="true" />
+                          <Info size={ICON_SIZE_MD} aria-hidden="true" />
                           {t('contractorsAdmin.detail.proposals.modal.basicInfo')}
                         </Box>
                         <AccordionIcon />
@@ -670,7 +671,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     <AccordionItem>
                       <AccordionButton>
                         <Box flex="1" textAlign="left">
-                          <History size={16} aria-hidden="true" />
+                          <History size={ICON_SIZE_MD} aria-hidden="true" />
                           {t('contractorsAdmin.detail.proposals.timeline.title')}
                         </Box>
                         <AccordionIcon />
@@ -683,7 +684,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
                                 style={{ width: '40px', height: '40px', minWidth: '40px' }}
                               >
-                                {(() => { const Icon = item.Icon || Clipboard; return <Icon size={18} aria-hidden="true" />; })()}
+                                {(() => { const Icon = item.Icon || Clipboard; return <Icon size={ICON_SIZE_MD} aria-hidden="true" />; })()}
                               </div>
                               <div>
                                 <div>
@@ -714,7 +715,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       <AccordionItem>
                         <AccordionButton>
                           <Box flex="1" textAlign="left">
-                            <Clipboard size={16} aria-hidden="true" />
+                            <Clipboard size={ICON_SIZE_MD} aria-hidden="true" />
                             {t('contractorsAdmin.detail.proposals.itemsTitle', { count: proposalDetails.data.items.length })}
                           </Box>
                           <AccordionIcon />
@@ -777,7 +778,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 </div>
               ) : (
                 <Alert status="warning">
-                  <Info size={16} aria-hidden="true" />
+                  <Info size={ICON_SIZE_MD} aria-hidden="true" />
                   {t('contractorsAdmin.detail.proposals.modal.failed')}
                 </Alert>
               )}
@@ -792,7 +793,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                     onClick={() => handleGoToProposal(selectedProposal.id)}
                   >
-                    <ExternalLink size={16} aria-hidden="true" />
+                    <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
                     {t('contractorsAdmin.detail.proposals.modal.openFull')}
                   </Button>
                 )}

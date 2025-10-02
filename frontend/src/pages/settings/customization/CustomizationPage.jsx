@@ -11,6 +11,7 @@ import { setCustomization } from '../../../store/slices/customizationSlice'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { resolveBrandAssetUrl } from '../../../utils/brandAssets'
 import { getContrastColor } from '../../../utils/colorUtils'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const ColorField = ({ label, name, value, onChange }) => (
   <FormControl>
@@ -146,7 +147,7 @@ const CustomizationPage = () => {
         actions={[
           <Button
             key="save"
-            leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+            leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             colorScheme="blue"
             onClick={handleSave}
             isLoading={loading}
@@ -181,7 +182,7 @@ const CustomizationPage = () => {
                     bg="blue.50"
                     color="blue.600"
                   >
-                    <Icon as={Image} boxSize={5} aria-hidden="true" />
+                    <Icon as={Image} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   </Flex>
                   <Box>
                     <Text fontWeight="semibold" fontSize="lg" color="gray.800">
@@ -217,7 +218,7 @@ const CustomizationPage = () => {
                   <Button
                     variant="outline"
                     colorScheme="blue"
-                    leftIcon={<Icon as={Image} boxSize={4} aria-hidden="true" />}
+                    leftIcon={<Icon as={Image} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                     onClick={() => fileInputRef.current?.click()}
                     minH="44px"
                   >
@@ -242,7 +243,7 @@ const CustomizationPage = () => {
                     <Button
                       variant="outline"
                       colorScheme="red"
-                      leftIcon={<Icon as={Trash} boxSize={4} aria-hidden="true" />}
+                      leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                       onClick={handleRemoveLogo}
                       minH="44px"
                       isLoading={loading}
@@ -268,7 +269,7 @@ const CustomizationPage = () => {
                     bg="purple.50"
                     color="purple.600"
                   >
-                    <Icon as={Palette} boxSize={5} aria-hidden="true" />
+                    <Icon as={Palette} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   </Flex>
                   <Box>
                     <Text fontWeight="semibold" fontSize="lg" color="gray.800">

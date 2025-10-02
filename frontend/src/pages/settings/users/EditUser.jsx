@@ -11,6 +11,7 @@ import { fetchUserById, updateUser } from '../../../store/slices/userSlice'
 import { fetchUsers as fetchUserGroups } from '../../../store/slices/userGroupSlice'
 import { fetchLocations } from '../../../store/slices/locationSlice'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const initialForm = {
   name: '',
@@ -131,7 +132,7 @@ const EditUserForm = () => {
         <HStack spacing={4} align="center">
           <Button
             variant="ghost"
-            leftIcon={<Icon as={ArrowLeft} boxSize={5} />}
+            leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
             onClick={() => navigate('/settings/users')}
             as={motion.button}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
@@ -151,7 +152,7 @@ const EditUserForm = () => {
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={User} boxSize={5} color="brand.600" />
+                      <Icon as={User} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color="gray.800">
                       {t('settings.users.form.basicInfo', 'Basic Information')}
@@ -271,7 +272,7 @@ const EditUserForm = () => {
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Home} boxSize={5} color="brand.600" />
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color="gray.800">
                       {t('settings.users.form.titles.personalAddress', 'Personal Address')}
@@ -353,7 +354,7 @@ const EditUserForm = () => {
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Building} boxSize={5} color="brand.600" />
+                      <Icon as={Building} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color="gray.800">
                       {t('settings.users.form.titles.companyInfo', 'Company Information')}
@@ -449,7 +450,7 @@ const EditUserForm = () => {
                 <CardHeader>
                   <HStack spacing={4}>
                     <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Lock} boxSize={5} color="brand.600" />
+                      <Icon as={Lock} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color="gray.800">
                       {t('settings.users.form.security', 'Security')}

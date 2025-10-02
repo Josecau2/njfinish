@@ -40,6 +40,7 @@ import DatePicker from 'react-datepicker'
 import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
 import Swal from 'sweetalert2'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 import FileUploadSection from './FileUploadSection'
 import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
 import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation'
@@ -708,13 +709,13 @@ const ItemSelectionStep = ({
                 <TabList>
                   <Tab>
                     <Flex align='center' gap={4}>
-                      <Icon as={List} boxSize={4} />
+                      <Icon as={List} boxSize={ICON_BOX_MD} />
                       <Text>{t('proposalColumns.items')}</Text>
                     </Flex>
                   </Tab>
                   <Tab>
                     <Flex align='center' gap={4}>
-                      <Icon as={File} boxSize={4} />
+                      <Icon as={File} boxSize={ICON_BOX_MD} />
                       <Text>{t('proposals.create.files.title')}</Text>
                     </Flex>
                   </Tab>
@@ -770,7 +771,7 @@ const ItemSelectionStep = ({
         </Formik>
       </div>
 
-      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} isCentered>
+      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t('proposals.create.summary.editVersionTitle')}</ModalHeader>
@@ -792,7 +793,7 @@ const ItemSelectionStep = ({
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} isCentered>
+      <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t('customers.confirmTitle')}</ModalHeader>

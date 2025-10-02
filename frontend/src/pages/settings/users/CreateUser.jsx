@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 import { fetchUsers } from '../../../store/slices/userGroupSlice'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children }) => (
@@ -17,7 +18,7 @@ const FormSection = ({ title, icon, children }) => (
     <CardBody p={6}>
       <HStack spacing={4} mb={4}>
         <Box p={2} borderRadius="md" bg="brand.50">
-          <Icon as={icon} boxSize={5} color="brand.600" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="brand.600" />
         </Box>
         <Text fontSize="lg" fontWeight="semibold" color="gray.800">
           {title}
@@ -54,7 +55,7 @@ const CustomFormInput = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={4} color="gray.400" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.400" />
         </InputLeftElement>
       )}
       <Input
@@ -101,7 +102,7 @@ const CustomFormSelect = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={4} color="gray.400" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.400" />
         </InputLeftElement>
       )}
       <Select
@@ -406,7 +407,7 @@ const AddUserForm = () => {
                   bg={formData.isSalesRep ? 'green.100' : 'yellow.100'}
                   color={formData.isSalesRep ? 'green.600' : 'yellow.600'}
                 >
-                  <Icon as={User} boxSize={4} />
+                  <Icon as={User} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="start" spacing={0}>
                   <Text fontWeight="semibold" fontSize="sm" color="gray.800">

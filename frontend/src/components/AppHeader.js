@@ -20,6 +20,7 @@ import {
   setSidebarPinned,
 } from '../store/slices/sidebarSlice'
 import { getContrastColor } from '../utils/colorUtils'
+import { ICON_SIZE_MD } from '../constants/iconSizes'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -68,7 +69,7 @@ const AppHeader = () => {
                 ? t('nav.closeSidebar', 'Close sidebar')
                 : t('nav.openSidebar', 'Open sidebar')
             }
-            icon={<Menu size={20} />}
+            icon={<Menu size={ICON_SIZE_MD} />}
             onClick={() => dispatch(setSidebarShow(!sidebarShow))}
             _hover={{ bg: hoverBg }}
             color={headerTextColor}
@@ -86,7 +87,7 @@ const AppHeader = () => {
           <IconButton
             variant="ghost"
             aria-label={t('common.toggleTheme', 'Toggle color mode')}
-            icon={colorMode === 'light' ? <Moon size={18} /> : <SunMedium size={18} />}
+            icon={colorMode === 'light' ? <Moon size={ICON_SIZE_MD} /> : <SunMedium size={ICON_SIZE_MD} />}
             onClick={toggleColorMode}
             _hover={{ bg: hoverBg }}
             color={headerTextColor}

@@ -5,6 +5,7 @@ import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import { useState } from 'react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const PaymentTest = () => {
   const { t } = useTranslation()
@@ -54,7 +55,7 @@ const PaymentTest = () => {
                     onClick={handleDispatchSuccess}
                     aria-label={t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   >
-                    <CreditCard size={18} />
+                    <CreditCard size={ICON_SIZE_MD} />
                     {t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   </Button>
                   <Button
@@ -71,7 +72,7 @@ const PaymentTest = () => {
                     onClick={() => navigate(-1)}
                     aria-label={t('common.goBack', 'Go Back')}
                   >
-                    <ArrowLeft size={18} />
+                    <ArrowLeft size={ICON_SIZE_MD} />
                     {t('common.goBack', 'Go Back')}
                   </Button>
                 </div>

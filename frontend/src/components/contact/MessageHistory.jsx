@@ -4,6 +4,7 @@ import { Badge, Box, Button, Flex, HStack, Icon, Spinner, Stack, Text } from '@c
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const MessageHistory = ({
   loading,
@@ -150,7 +151,7 @@ const MessageHistory = ({
       <Button
         size="sm"
         variant="ghost"
-        leftIcon={<Icon as={ChevronLeft} boxSize={4} />}
+        leftIcon={<Icon as={ChevronLeft} boxSize={ICON_BOX_MD} />}
         onClick={() => onPageChange(page - 1)}
         isDisabled={page === 1}
       >
@@ -174,7 +175,7 @@ const MessageHistory = ({
       <Button
         size="sm"
         variant="ghost"
-        rightIcon={<Icon as={ChevronRight} boxSize={4} />}
+        rightIcon={<Icon as={ChevronRight} boxSize={ICON_BOX_MD} />}
         onClick={() => onPageChange(page + 1)}
         isDisabled={page === totalPages}
       >

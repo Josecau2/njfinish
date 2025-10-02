@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
 import axiosInstance from '../../../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
 
 const StylePicturesTab = ({ manufacturer }) => {
   const { t } = useTranslation()
@@ -262,7 +263,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 maxW={{ base: '100%', md: '260px' }}
               />
-              <Button leftIcon={<Plus size={16} />} colorScheme="brand" onClick={() => setCreateModal(true)}>
+              <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => setCreateModal(true)}>
                 {t('styles.create', 'Add Style')}
               </Button>
             </HStack>
@@ -372,7 +373,7 @@ const StylePicturesTab = ({ manufacturer }) => {
       </StandardCard>
 
       {/* Create Style Modal */}
-      <Modal isOpen={createModal} onClose={() => setCreateModal(false)}>
+      <Modal isOpen={createModal} onClose={() => setCreateModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t('styles.createHeader', 'Add Style')}</ModalHeader>
@@ -430,7 +431,7 @@ const StylePicturesTab = ({ manufacturer }) => {
       </Modal>
 
       {/* Delete Confirm Modal */}
-      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })}>
+      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t('styles.deleteHeader', 'Delete Style')}</ModalHeader>
@@ -469,7 +470,8 @@ const StylePicturesTab = ({ manufacturer }) => {
           setSelectedStyle(null)
           setSelectedFile(null)
         }}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
@@ -570,7 +572,7 @@ const StylePicturesTab = ({ manufacturer }) => {
               colorScheme="brand"
               onClick={handleImageUpload}
               isDisabled={!selectedFile || uploadingImage}
-              leftIcon={<Upload size={16} />}
+              leftIcon={<Upload size={ICON_SIZE_MD} />}
               isLoading={uploadingImage}
             >
               {t('types.ui.uploadImage', 'Upload Image')}

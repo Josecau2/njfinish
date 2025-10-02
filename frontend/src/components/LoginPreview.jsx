@@ -23,6 +23,7 @@ import { Eye, EyeOff } from '@/icons-lucide'
 import { getContrastColor, getOptimalColors } from '../utils/colorUtils'
 import { resolveAssetUrl } from '../utils/assetUtils'
 import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../config/customization'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const LoginPreview = ({ config }) => {
   const [activeView, setActiveView] = useState('login')
@@ -164,7 +165,7 @@ const LoginPreview = ({ config }) => {
                 variant='ghost'
                 size='sm'
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                icon={<Icon as={showPassword ? EyeOff : Eye} boxSize={4} />}
+                icon={<Icon as={showPassword ? EyeOff : Eye} boxSize={ICON_BOX_MD} />}
                 onClick={() => setShowPassword((prev) => !prev)}
                 tabIndex={-1}
               />

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Flex, Box, CardBody, CardHeader, Badge, Alert, List, ListItem } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { Settings, Shield, Users, CheckCircle, XCircle, Info } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const SettingsTab = ({ contractor }) => {
   const { t } = useTranslation()
@@ -70,14 +71,14 @@ const SettingsTab = ({ contractor }) => {
         <StandardCard>
           <CardHeader>
             <strong>
-              <Shield size={16} aria-hidden="true" />
+              <Shield size={ICON_SIZE_MD} aria-hidden="true" />
               {t('contractorsAdmin.detail.moduleAccess.title')}
             </strong>
           </CardHeader>
           <CardBody>
             {Object.keys(modules).length === 0 ? (
               <Alert status="info">
-                <Info size={16} aria-hidden="true" />
+                <Info size={ICON_SIZE_MD} aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noModuleSettings')}
               </Alert>
             ) : (
@@ -115,14 +116,14 @@ const SettingsTab = ({ contractor }) => {
         <StandardCard>
           <CardHeader>
             <strong>
-              <Settings size={16} aria-hidden="true" />
+              <Settings size={ICON_SIZE_MD} aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.title')}
             </strong>
           </CardHeader>
           <CardBody>
             {Object.keys(parsedContractorSettings).length === 0 ? (
               <Alert status="info">
-                <Info size={16} aria-hidden="true" />
+                <Info size={ICON_SIZE_MD} aria-hidden="true" />
                 {t('contractorsAdmin.detail.settings.noneConfigured')}
               </Alert>
             ) : (
@@ -174,7 +175,7 @@ const SettingsTab = ({ contractor }) => {
         <StandardCard>
           <CardHeader>
             <strong>
-              <Info size={16} aria-hidden="true" />
+              <Info size={ICON_SIZE_MD} aria-hidden="true" />
               {t('contractorsAdmin.detail.settings.raw.title')}
             </strong>
           </CardHeader>

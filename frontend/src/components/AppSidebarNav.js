@@ -7,6 +7,7 @@ import 'simplebar-react/dist/simplebar.min.css'
 import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
 import { ChevronDown } from 'lucide-react'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
+import { ICON_SIZE_MD, ICON_SIZE_SM } from '../constants/iconSizes'
 
 const isActivePath = (pathname, target) => {
   if (!target) return false
@@ -47,7 +48,7 @@ const getIconElement = (IconComponent, colors) => {
   }
   return (
     <span className="nav-icon" aria-hidden>
-      <IconComponent size={20} color={colors.iconColor} strokeWidth={1.75} />
+      <IconComponent size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
     </span>
   )
 }
@@ -233,7 +234,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           {getIconElement(item.icon, colors)}
           <span className="nav-label">{item.label}</span>
           <span className="nav-caret" aria-hidden>
-            <ChevronDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            <ChevronDown size={ICON_SIZE_SM} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
           </span>
         </button>
         <ul className="nav-group-items" style={{ display: open ? 'block' : 'none' }}>

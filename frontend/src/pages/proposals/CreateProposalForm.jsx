@@ -18,6 +18,7 @@ import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { sendFormDataToBackend } from '../../queries/proposalQueries'
 import withContractorScope from '../../components/withContractorScope'
 import PageHeader from '../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const TOTAL_STEPS = 4
 
@@ -197,7 +198,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       <HStack spacing={4} flexWrap="wrap">
         <Button
           colorScheme="green"
-          leftIcon={<Icon as={Printer} boxSize={4} />}
+          leftIcon={<Icon as={Printer} boxSize={ICON_BOX_MD} />}
           minH="44px"
           onClick={() => setShowPrintModal(true)}
         >
@@ -207,7 +208,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
           <>
             <Button
               colorScheme="blue"
-              leftIcon={<Icon as={Mail} boxSize={4} />}
+              leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
               minH="44px"
               onClick={() => setShowEmailModal(true)}
             >
@@ -215,7 +216,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             </Button>
             <Button
               colorScheme="yellow"
-              leftIcon={<Icon as={FileText} boxSize={4} />}
+              leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
               minH="44px"
               onClick={() => setShowContractModal(true)}
             >

@@ -67,7 +67,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
   }
 
   return (
-    <Modal isOpen={show} onClose={onClose} size='lg' isCentered>
+    <Modal isOpen={show} onClose={onClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
       <ModalContent as='form' onSubmit={handleSubmit} className='edit-group-modal'>
         <ModalHeader>{t('settings.userGroups.multipliers.modal.title')}</ModalHeader>

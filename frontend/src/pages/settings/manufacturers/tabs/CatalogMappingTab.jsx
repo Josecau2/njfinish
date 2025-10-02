@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, Al
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
 import axiosInstance from '../../../../helpers/axiosInstance'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
 // Removed Swal - using Chakra useToast
 // Removed CreatableSelect - using Chakra Select
 
@@ -2235,7 +2236,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               onClick={() => setFileModalVisible(true)}
               aria-label={t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
-              leftIcon={<Icon as={Upload} boxSize={4} />}
+              leftIcon={<Icon as={Upload} boxSize={ICON_BOX_MD} />}
               minH="44px"
             >
               <Text display={{ base: 'none', sm: 'inline' }}>
@@ -2251,7 +2252,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               size="sm"
               onClick={() => setManualModalVisible(true)}
               aria-label={t('settings.manufacturers.catalogMapping.buttons.addItem')}
-              leftIcon={<Icon as={Plus} boxSize={4} />}
+              leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
               minH="44px"
             >
               <Text display={{ base: 'none', sm: 'inline' }}>
@@ -2269,7 +2270,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               aria-label={t(
                 'settings.manufacturers.catalogMapping.actions.modificationManagementTitle',
               )}
-              leftIcon={<Icon as={Wrench} boxSize={4} />}
+              leftIcon={<Icon as={Wrench} boxSize={ICON_BOX_MD} />}
               minH="44px"
             >
               <Text display={{ base: 'none', sm: 'inline' }}>
@@ -2285,7 +2286,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onClick={openAssignGlobal}
               title={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
               aria-label={t('settings.manufacturers.catalogMapping.actions.assignGlobalModsTitle')}
-              leftIcon={<Icon as={Sparkles} boxSize={4} />}
+              leftIcon={<Icon as={Sparkles} boxSize={ICON_BOX_MD} />}
               minH="44px"
             >
               <Text display={{ base: 'none', sm: 'inline' }}>
@@ -2303,7 +2304,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               title={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
               aria-label={t('settings.manufacturers.catalogMapping.cleanupDuplicates.tooltip')}
               leftIcon={
-                isCleaningDuplicates ? <Spinner size="sm" /> : <Icon as={RefreshCw} boxSize={4} />
+                isCleaningDuplicates ? <Spinner size="sm" /> : <Icon as={RefreshCw} boxSize={ICON_BOX_MD} />
               }
               minH="44px"
             >
@@ -2332,7 +2333,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 'Rollback recent catalog upload',
               )}
               aria-label={t('settings.manufacturers.catalogMapping.rollback.buttonText')}
-              leftIcon={<Icon as={ChevronDown} boxSize={4} transform="rotate(90deg)" />}
+              leftIcon={<Icon as={ChevronDown} boxSize={ICON_BOX_MD} transform="rotate(90deg)" />}
               minH="44px"
             >
               <Text display={{ base: 'none', sm: 'inline' }}>
@@ -2526,7 +2527,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setShowSubTypeModal(true)
             }}
           >
-            <Plus size={16} aria-hidden="true" />{' '}
+            <Plus size={ICON_SIZE_MD} aria-hidden="true" />{' '}
             {t('settings.manufacturers.catalogMapping.subTypes.create')}
           </Button>
         </CardHeader>
@@ -2855,7 +2856,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         sortBy === 'code' ? (
                           <Icon
                             as={sortOrder === 'ASC' ? ChevronUp : ChevronDown}
-                            boxSize={4}
+                            boxSize={ICON_BOX_MD}
                             aria-hidden="true"
                           />
                         ) : undefined
@@ -3189,7 +3190,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       )}
 
       {/* File Upload Modal */}
-      <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)}>
+      <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
@@ -3213,10 +3214,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Assign Global Mods Modal */}
-      <Modal
-        isOpen={showAssignGlobalModsModal}
-        onClose={() => setShowAssignGlobalModsModal(false)}
-        size="lg"
+      <Modal isOpen={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
@@ -3404,7 +3402,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal
         isOpen={showItemGlobalModsModal}
         onClose={() => setShowItemGlobalModsModal(false)}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
       >
         <ModalOverlay />
         <ModalContent>
@@ -3546,7 +3544,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Manual Upload Modal */}
-      <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)}>
+      <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
@@ -3612,7 +3610,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)}>
+      <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
@@ -3689,7 +3687,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Style Modal */}
-      <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)}>
+      <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader
@@ -3783,7 +3781,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Style View Modal */}
-      <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size="lg">
+      <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader
@@ -4189,7 +4187,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)}>
+      <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
@@ -4254,7 +4252,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)}>
+      <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
@@ -4318,7 +4316,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Delete Style Modal */}
-      <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)}>
+      <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader
@@ -4445,7 +4443,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Individual Delete Item Modal */}
-      <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)}>
+      <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
@@ -4495,7 +4493,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Bulk Delete Modal */}
-      <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)}>
+      <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
@@ -4559,7 +4557,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Rollback Modal */}
-      <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)}>
+      <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
@@ -4651,7 +4649,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Bulk Edit Modal */}
-      <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size="lg">
+      <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader
@@ -4752,7 +4750,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Edit Style Name Modal */}
-      <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)}>
+      <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title="Edit Style Name" />
@@ -6273,7 +6271,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal
         isOpen={showEditCategoryModal}
         onClose={() => setShowEditCategoryModal(false)}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
       >
         <ModalOverlay />
         <ModalContent>
@@ -6361,7 +6359,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Delete Category Modal */}
-      <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)}>
+      <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader
@@ -6451,7 +6449,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Move Modification Modal */}
-      <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)}>
+      <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('common.move', 'Move Modification')} />

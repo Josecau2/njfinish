@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useMemo, startTransition, useRef } fr
 import { useTranslation } from 'react-i18next';
 import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 import ModificationBrowserModal from './model/ModificationBrowserModal'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTaxes } from '../store/slices/taxSlice';
@@ -1360,19 +1361,19 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     flex="1"
                                 >
                                     <Flex align="center" fontSize="md">
-                                        <Icon as={Home} boxSize={5} color="blue.500" mr={2} />
+                                        <Icon as={Home} boxSize={ICON_BOX_MD} color="blue.500" mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectVersion?.manufacturerData?.name}
                                         </Heading>
                                     </Flex>
                                     <Flex align="center" fontSize="md" color="gray.600">
-                                        <Icon as={Brush} boxSize={5} color="gray.500" mr={2} />
+                                        <Icon as={Brush} boxSize={ICON_BOX_MD} color="gray.500" mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectedStyleData.style}
                                         </Heading>
                                     </Flex>
                                     <Flex align="center" fontSize="lg">
-                                        <Icon as={Settings} boxSize={5} color="green.500" mr={2} />
+                                        <Icon as={Settings} boxSize={ICON_BOX_MD} color="green.500" mr={2} />
                                         <Text mr={2}>{t('proposalColumns.assembled')}</Text>
                                         <Switch
                                             size="md"
@@ -1435,7 +1436,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         : t('proposalUI.compactView')
                                                 }
                                             >
-                                                <Icon as={List} boxSize={4} mr={1} />
+                                                <Icon as={List} boxSize={ICON_BOX_MD} mr={1} />
                                                 <Text display={{ base: 'none', sm: 'inline' }}>
                                                     {isStylesCollapsed
                                                         ? t('proposalUI.expandImages')
@@ -1457,7 +1458,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     display={{ base: 'flex', md: 'none' }}
                                                 >
                                                     <IconButton
-                                                        icon={<ChevronLeft size={16} />}
+                                                        icon={<ChevronLeft size={ICON_SIZE_MD} />}
                                                         size="sm"
                                                         variant="outline"
                                                         colorScheme="gray"
@@ -1468,7 +1469,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                         minW="44px"
                                                     />
                                                     <IconButton
-                                                        icon={<ChevronRight size={16} />}
+                                                        icon={<ChevronRight size={ICON_SIZE_MD} />}
                                                         size="sm"
                                                         variant="outline"
                                                         colorScheme="gray"

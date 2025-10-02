@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react'
 import { getFreshestToken } from '../../utils/authToken'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
@@ -52,7 +53,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       <HStack spacing={4} justify="center">
         <IconButton
           aria-label="Zoom out"
-          icon={<ZoomOut size={18} />}
+          icon={<ZoomOut size={ICON_SIZE_MD} />}
           size="sm"
           onClick={() => setScale((prev) => Math.max(0.5, prev - 0.1))}
         />
@@ -61,7 +62,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         </Text>
         <IconButton
           aria-label="Zoom in"
-          icon={<ZoomIn size={18} />}
+          icon={<ZoomIn size={ICON_SIZE_MD} />}
           size="sm"
           onClick={() => setScale((prev) => Math.min(2, prev + 0.1))}
         />
@@ -96,7 +97,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       <HStack justify="center" spacing={4}>
         <IconButton
           aria-label="Previous page"
-          icon={<ChevronLeft size={18} />}
+          icon={<ChevronLeft size={ICON_SIZE_MD} />}
           size="sm"
           onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
           isDisabled={!canGoBack}
@@ -106,7 +107,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         </Text>
         <IconButton
           aria-label="Next page"
-          icon={<ChevronRight size={18} />}
+          icon={<ChevronRight size={ICON_SIZE_MD} />}
           size="sm"
           onClick={() => setPageNumber((prev) => Math.min(numPages || prev, prev + 1))}
           isDisabled={!canGoForward}

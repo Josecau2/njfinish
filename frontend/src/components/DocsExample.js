@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Box, Flex, HStack, Icon, Link } from '@chakra-ui/react'
 import { Code, Play } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const DocsExample = ({ children, href, tabContentClassName }) => {
   const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
@@ -17,7 +18,7 @@ const DocsExample = ({ children, href, tabContentClassName }) => {
           fontWeight="medium"
         >
           <HStack spacing={2}>
-            <Icon as={Play} boxSize={4} />
+            <Icon as={Play} boxSize={ICON_BOX_MD} />
             <Box as="span">Preview</Box>
           </HStack>
         </Link>
@@ -32,7 +33,7 @@ const DocsExample = ({ children, href, tabContentClassName }) => {
             fontWeight="medium"
           >
             <HStack spacing={2}>
-              <Icon as={Code} boxSize={4} />
+              <Icon as={Code} boxSize={ICON_BOX_MD} />
               <Box as="span">Code</Box>
             </HStack>
           </Link>

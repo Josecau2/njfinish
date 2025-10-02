@@ -11,6 +11,7 @@ import axiosInstance from '../../../helpers/axiosInstance'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { getContrastColor } from '../../../utils/colorUtils'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const FormSection = ({ title, icon, customization, children }) => (
   <StandardCard variant="outline" borderRadius="xl" shadow="sm">
@@ -25,7 +26,7 @@ const FormSection = ({ title, icon, customization, children }) => (
           bg={`${(customization.headerBg || "purple.500")}20`}
           color={customization.headerBg || "purple.500"}
         >
-          <Icon as={icon} boxSize={4} />
+          <Icon as={icon} boxSize={ICON_BOX_MD} />
         </Flex>
         <Text fontWeight="semibold" color="gray.800">
           {title}
@@ -56,7 +57,7 @@ const CustomFormInput = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftElement>
       )}
       <Input
@@ -224,7 +225,7 @@ const EditUserGroupForm = () => {
             key="back"
             variant="outline"
             colorScheme="gray"
-            leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+            leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             onClick={handleCancel}
             minH="44px"
           >
@@ -285,7 +286,7 @@ const EditUserGroupForm = () => {
                     bg={customization.headerBg || "purple.500"}
                     color={getContrastColor(customization.headerBg || "purple.500")}
                   >
-                    <Icon as={Settings} boxSize={4} />
+                    <Icon as={Settings} boxSize={ICON_BOX_MD} />
                   </Flex>
                   <Box>
                     <Text fontWeight="semibold" fontSize="sm" color="gray.800">
@@ -338,7 +339,7 @@ const EditUserGroupForm = () => {
                 <Button
                   variant="outline"
                   colorScheme="gray"
-                  leftIcon={<Icon as={ArrowLeft} boxSize={4} aria-hidden="true" />}
+                  leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                   onClick={handleCancel}
                   minH="44px"
                 >
@@ -349,7 +350,7 @@ const EditUserGroupForm = () => {
                   colorScheme="blue"
                   minH="44px"
                   isLoading={loading}
-                  leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+                  leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                   bg={customization.headerBg || undefined}
                   _hover={customization.headerBg ? { opacity: 0.9 } : undefined}
                   color={customization.headerBg ? getContrastColor(customization.headerBg) : undefined}

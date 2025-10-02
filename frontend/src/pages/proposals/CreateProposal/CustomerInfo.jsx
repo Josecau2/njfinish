@@ -11,6 +11,7 @@ import { fetchUsers } from '../../../store/slices/userSlice'
 import { fetchLocations } from '../../../store/slices/locationSlice'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion(Button)
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -574,7 +575,7 @@ const CustomerInfoStep = ({
                   variant="link"
                   colorScheme="brand"
                   onClick={toggleMoreOptions}
-                  rightIcon={<Icon as={showMoreOptions ? ChevronUp : ChevronDown} boxSize={4} />}
+                  rightIcon={<Icon as={showMoreOptions ? ChevronUp : ChevronDown} boxSize={ICON_BOX_MD} />}
                   whileTap={{ scale: 0.98 }}
                   aria-expanded={showMoreOptions}
                   aria-controls="customer-more-options"

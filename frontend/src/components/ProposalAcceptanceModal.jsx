@@ -147,7 +147,7 @@ const ProposalAcceptanceModal = ({
       }
 
   return (
-    <Modal isOpen={show} onClose={handleClose} size='lg' closeOnOverlayClick={!isSubmitting}>
+    <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting}>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
       <ModalContent as={motion.div} {...contentMotionProps}>
         <form onSubmit={submitProposal}>

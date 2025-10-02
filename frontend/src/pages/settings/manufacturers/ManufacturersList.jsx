@@ -20,6 +20,7 @@ import { fetchManufacturers, updateManufacturerStatus } from '../../../store/sli
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const getContrastColor = (hexColor) => {
   if (!hexColor) return "white"
@@ -134,7 +135,7 @@ const ManufacturersList = () => {
     <Button
       key="create"
       colorScheme="blue"
-      leftIcon={<Icon as={Plus} boxSize={4} />}
+      leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
       onClick={handleCreateManufacturer}
     >
       {t('settings.manufacturers.create')}
@@ -160,7 +161,7 @@ const ManufacturersList = () => {
               <GridItem>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={4} color="gray.400" />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
                   </InputLeftElement>
                   <Input
                     placeholder={t('settings.manufacturers.searchPlaceholder', 'Search manufacturers')}
@@ -261,7 +262,7 @@ const ManufacturersList = () => {
                     <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={4}>
                       <Box minW="0">
                         <HStack spacing={4} align="center">
-                          <Icon as={Building2} boxSize={5} color="blue.500" />
+                          <Icon as={Building2} boxSize={ICON_BOX_MD} color="blue.500" />
                           <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
                             {manufacturer.name}
                           </Text>
@@ -276,7 +277,7 @@ const ManufacturersList = () => {
                           size="sm"
                           variant="outline"
                           colorScheme="blue"
-                          leftIcon={<Icon as={Edit3} boxSize={4} />}
+                          leftIcon={<Icon as={Edit3} boxSize={ICON_BOX_MD} />}
                           onClick={() => handleEdit(manufacturer.id)}
                         >
                           {t('common.edit')}
@@ -286,14 +287,14 @@ const ManufacturersList = () => {
 
                     <HStack spacing={4} align="flex-start" flexWrap="wrap">
                       <HStack spacing={4} minW="0">
-                        <Icon as={Mail} boxSize={4} color="gray.400" />
+                        <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" />
                         <Text fontSize="sm" color="gray.600" noOfLines={1}>
                           {manufacturer.email || t('settings.manufacturers.noEmail', 'No email provided')}
                         </Text>
                       </HStack>
 
                       <HStack spacing={4}>
-                        <Icon as={FileText} boxSize={4} color="gray.400" />
+                        <Icon as={FileText} boxSize={ICON_BOX_MD} color="gray.400" />
                         <Tag size="sm" variant="subtle" colorScheme="gray">
                           <TagLabel>
                             {t('settings.manufacturers.labels.capacity', {

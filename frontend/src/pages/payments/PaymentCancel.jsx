@@ -4,6 +4,7 @@ import { Container, CardBody, Box, Button } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CreditCard } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const PaymentCancel = () => {
   const { t } = useTranslation()
@@ -48,7 +49,7 @@ const PaymentCancel = () => {
                   aria-label={t('common.goBack', 'Go Back')}
                   minH="44px"
                 >
-                  <ArrowLeft size={18} style={{ marginRight: '0.5rem' }} />
+                  <ArrowLeft size={ICON_SIZE_MD} style={{ marginRight: '0.5rem' }} />
                   {t('common.goBack', 'Go Back')}
                 </Button>
               </div>

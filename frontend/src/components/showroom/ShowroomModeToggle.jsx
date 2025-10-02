@@ -123,7 +123,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
 
   // Shared modal (rendered for both compact and full modes)
   const ModalUI = (
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size="sm">
+    <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size={{ base: 'full', md: 'sm' }} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('showroom.modal.titleExact', 'Showroom Mode Configuration')}</ModalHeader>

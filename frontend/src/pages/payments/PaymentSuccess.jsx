@@ -5,6 +5,7 @@ import { Alert, AlertIcon, Container, Box, Icon, Button, Heading, Text, HStack, 
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CheckCircle, CreditCard } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const PaymentSuccess = () => {
   const { t } = useTranslation()
@@ -81,7 +82,7 @@ const PaymentSuccess = () => {
                   colorScheme="gray"
                   onClick={() => navigate(-1)}
                   aria-label={t('common.goBack', 'Go Back')}
-                  leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+                  leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
                   minH="44px"
                   size="lg"
                 >

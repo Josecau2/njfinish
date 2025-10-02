@@ -10,6 +10,7 @@ import {
   Tr,
   Th,
   Td,
+  TableContainer,
   Badge,
   Button,
   Box,
@@ -46,6 +47,7 @@ import PageHeader from '../../components/PageHeader'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import withContractorScope from '../../components/withContractorScope'
 import { usePayments, useCreatePayment, useApplyPayment } from '../../queries/paymentsQueries'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const STATUS_OPTIONS = ['all', 'pending', 'processing', 'completed', 'failed', 'cancelled']
 
@@ -298,7 +300,7 @@ const PaymentsList = ({ isContractor }) => {
         <Box flex={1} maxW="520px">
           <InputGroup>
             <InputLeftElement>
-              <Search size={16} />
+              <Search size={ICON_SIZE_MD} />
             </InputLeftElement>
             <Input
               type="search"
@@ -311,7 +313,7 @@ const PaymentsList = ({ isContractor }) => {
         </Box>
         <HStack spacing={4}>
           {!isContractor && (
-            <Button colorScheme="blue" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={16} />} aria-label={t('payments.create.button', 'Create payment')}>
+            <Button colorScheme="blue" minH="44px" onClick={handleCreatePayment} leftIcon={<Plus size={ICON_SIZE_MD} />} aria-label={t('payments.create.button', 'Create payment')}>
               <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
             </Button>
           )}
@@ -321,8 +323,9 @@ const PaymentsList = ({ isContractor }) => {
         </HStack>
       </Flex>
 
-      <Box display={{ base: 'none', lg: 'block' }} overflowX="auto">
-        <Table size="sm" variant="simple">
+      <Box display={{ base: 'none', lg: 'block' }}>
+        <TableContainer overflowX="auto" data-scroll-region>
+          <Table size="sm" variant="simple">
           <Thead>
             <Tr>
               <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>{t('payments.headers.date', 'Date')}</Th>
@@ -354,7 +357,7 @@ const PaymentsList = ({ isContractor }) => {
                 return (
                   <Tr key={payment?.id || Math.random()} cursor="pointer" _hover={{ bg: rowHoverBg }} onClick={() => handlePaymentClick(payment)}>
                     <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Td>
-                    <Td>{renderCustomerCell(payment)}</Td>
+                    <Td isTruncated maxW="200px">{renderCustomerCell(payment)}</Td>
                     <Td>{getDisplayOrderNumber(payment)}</Td>
                     <Td>
                       <HStack spacing={4}>
@@ -398,6 +401,7 @@ const PaymentsList = ({ isContractor }) => {
             )}
           </Tbody>
         </Table>
+        </TableContainer>
       </Box>
 
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
@@ -453,7 +457,7 @@ const PaymentsList = ({ isContractor }) => {
       ) : null}
 
       {/* Create Payment Modal */}
-      <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose}>
+      <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)}>
           <ModalHeader>{t('payments.create.title', 'Create Payment')}</ModalHeader>
@@ -485,7 +489,7 @@ const PaymentsList = ({ isContractor }) => {
       </Modal>
 
       {/* Gateway Selection Modal */}
-      <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose}>
+      <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)}>
           <ModalHeader>{t('payments.create.gatewayTitle', 'Select payment type')}</ModalHeader>
@@ -518,7 +522,7 @@ const PaymentsList = ({ isContractor }) => {
       </Modal>
 
       {/* Apply Payment Modal */}
-      <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose}>
+      <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)}>
           <ModalHeader>{t('payments.apply.title', 'Apply Payment')}</ModalHeader>

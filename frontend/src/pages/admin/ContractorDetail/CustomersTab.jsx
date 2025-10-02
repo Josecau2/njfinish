@@ -18,6 +18,7 @@ import { fetchContractorCustomers } from '../../../store/slices/contractorSlice'
 import PaginationComponent from '../../../components/common/PaginationComponent'
 import EmptyState from '../../../components/common/EmptyState'
 import { notifyError } from '../../../helpers/notify'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const CustomersTab = ({ contractor, groupId }) => {
   const { t } = useTranslation()
@@ -221,7 +222,7 @@ const CustomersTab = ({ contractor, groupId }) => {
       <StandardCard>
         <CardHeader borderBottomWidth="1px">
           <Flex align="center" gap={4}>
-            <Icon as={Users} boxSize={5} color="gray.500" aria-hidden="true" />
+            <Icon as={Users} boxSize={ICON_BOX_MD} color="gray.500" aria-hidden="true" />
             <Heading size="sm">
               {t('contractorsAdmin.detail.customers.header', {
                 count: filteredAndSortedCustomers.length,
@@ -245,7 +246,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             >
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={4} color="gray.400" aria-hidden="true" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                 </InputLeftElement>
                 <Input
                   type="text"
@@ -299,7 +300,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           {sortConfig.key === 'name' && (
                             <Icon
                               as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
-                              boxSize={4}
+                              boxSize={ICON_BOX_MD}
                               aria-hidden="true"
                             />
                           )}
@@ -311,7 +312,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           {sortConfig.key === 'email' && (
                             <Icon
                               as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
-                              boxSize={4}
+                              boxSize={ICON_BOX_MD}
                               aria-hidden="true"
                             />
                           )}
@@ -325,7 +326,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           {sortConfig.key === 'created_at' && (
                             <Icon
                               as={sortConfig.direction === 'asc' ? ChevronUp : ChevronDown}
-                              boxSize={4}
+                              boxSize={ICON_BOX_MD}
                               aria-hidden="true"
                             />
                           )}
@@ -349,7 +350,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         <Tr key={customer.id}>
                           <Td>
                             <Flex align="center" gap={4}>
-                              <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
+                              <Icon as={User} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                               <Box>
                                 <Text fontWeight="semibold">{customer.name}</Text>
                                 <Text fontSize="xs" color="gray.500">
@@ -361,7 +362,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           <Td>
                             {customer.email ? (
                               <Flex align="center" gap={4}>
-                                <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
+                                <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                                 <Text>{customer.email}</Text>
                               </Flex>
                             ) : (
@@ -373,7 +374,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           <Td>
                             {customer.phone ? (
                               <Flex align="center" gap={4}>
-                                <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
+                                <Icon as={Phone} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                                 <Text>{formatPhone(customer.phone)}</Text>
                               </Flex>
                             ) : (
@@ -385,7 +386,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           <Td>
                             {formatAddress(customer) ? (
                               <Flex align="center" gap={4} alignItems="flex-start">
-                                <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
+                                <Icon as={MapPin} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" mt={1} />
                                 <Text>{formatAddress(customer)}</Text>
                               </Flex>
                             ) : (
@@ -396,7 +397,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                           </Td>
                           <Td>
                             <Flex align="center" gap={4}>
-                              <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
+                              <Icon as={Calendar} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                               <Text>{formatDate(customer.created_at)}</Text>
                             </Flex>
                           </Td>
@@ -429,7 +430,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                         <Stack spacing={4}>
                           <Flex justify="space-between" align="flex-start" gap={4}>
                             <Flex align="center" gap={4} minW={0}>
-                              <Icon as={User} boxSize={5} color="gray.400" aria-hidden="true" />
+                              <Icon as={User} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                               <Box minW={0}>
                                 <Text fontWeight="semibold" noOfLines={1}>
                                   {customer.name}
@@ -451,7 +452,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                               <Text color="gray.500">{t('customers.email')}</Text>
                               {customer.email ? (
                                 <Flex align="center" gap={4}>
-                                  <Icon as={Mail} boxSize={4} color="gray.400" aria-hidden="true" />
+                                  <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                                   <Text noOfLines={1}>{customer.email}</Text>
                                 </Flex>
                               ) : (
@@ -468,7 +469,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                 </Text>
                                 {customer.phone ? (
                                   <Flex align="center" gap={4}>
-                                    <Icon as={Phone} boxSize={4} color="gray.400" aria-hidden="true" />
+                                    <Icon as={Phone} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                                     <Text>{formatPhone(customer.phone)}</Text>
                                   </Flex>
                                 ) : (
@@ -482,7 +483,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                   {t('contractorsAdmin.detail.customers.table.created')}
                                 </Text>
                                 <Flex align="center" gap={4}>
-                                  <Icon as={Calendar} boxSize={4} color="gray.400" aria-hidden="true" />
+                                  <Icon as={Calendar} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" />
                                   <Text>{formatDate(customer.created_at)}</Text>
                                 </Flex>
                               </Box>
@@ -494,7 +495,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                                   {t('contractorsAdmin.detail.customers.table.address')}
                                 </Text>
                                 <Flex align="flex-start" gap={4}>
-                                  <Icon as={MapPin} boxSize={4} color="gray.400" aria-hidden="true" mt={1} />
+                                  <Icon as={MapPin} boxSize={ICON_BOX_MD} color="gray.400" aria-hidden="true" mt={1} />
                                   <Text>{formatAddress(customer)}</Text>
                                 </Flex>
                               </Box>

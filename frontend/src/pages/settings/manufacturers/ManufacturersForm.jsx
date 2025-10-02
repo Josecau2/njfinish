@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, className = '', customization }) => {
@@ -41,7 +42,7 @@ const FormSection = ({ title, icon, children, className = '', customization }) =
               color: textColor,
             }}
           >
-            <Icon as={icon} boxSize={4} />
+            <Icon as={icon} boxSize={ICON_BOX_MD} />
           </div>
           <h6 className="mb-0 fw-semibold text-dark">{title}</h6>
         </div>
@@ -72,7 +73,7 @@ const CustomFormInput = ({
     <InputGroup>
       {icon && (
         <InputLeftAddon bg="gray.50">
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftAddon>
       )}
       <Input
@@ -112,7 +113,7 @@ const CustomFormTextarea = ({
     <InputGroup>
       {icon && (
         <InputLeftAddon bg="gray.50">
-          <Icon as={icon} boxSize={4} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
         </InputLeftAddon>
       )}
       <Textarea
@@ -171,13 +172,13 @@ const FileUploadCard = ({
               <span className="text-danger small">{t('common.noFilesSelected')}</span>
             ) : (
               <div className="text-success small">
-                <CloudUpload size={18} style={{ marginRight: '0.25rem' }} />
+                <CloudUpload size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                 {selectedFiles.length} file(s) selected
               </div>
             )
           ) : (
             <div className="text-success small">
-              <Image size={18} />
+              <Image size={ICON_SIZE_MD} />
               Image selected: {selectedFiles.name}
             </div>
           )}
@@ -367,7 +368,7 @@ const ManufacturerForm = () => {
 
     return (
       <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
-        <Info size={16} style={{ marginRight: '0.25rem' }} />
+        <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
       </Text>
@@ -407,7 +408,7 @@ const ManufacturerForm = () => {
             colorScheme="gray"
             size="md"
             onClick={() => window.history.back()}
-            leftIcon={<ArrowLeft size={18} />}
+            leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
             borderRadius="md"
             px={4}
             fontWeight="semibold"
@@ -445,7 +446,7 @@ const ManufacturerForm = () => {
         <StandardCard className="border-0 shadow-sm mb-4" style={{ borderLeft: `4px solid ${headerBg}` }}>
           <CardBody className="py-3 px-4" bg="blue.50">
             <HStack align="flex-start" spacing={4}>
-              <Info size={16} style={{ color: "blue.500", marginTop: '0.25rem' }} />
+              <Info size={ICON_SIZE_MD} style={{ color: "blue.500", marginTop: '0.25rem' }} />
               <Text mb={0} color="blue.600">
                 <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}
@@ -674,7 +675,7 @@ const ManufacturerForm = () => {
               />
               {formData.costMultiplier && (
                 <Text fontSize="sm" className="text-info mt-2" display="flex" alignItems="center">
-                  <Info size={16} style={{ marginRight: '0.25rem' }} />
+                  <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
                     cost: (100.0).toFixed(2),
@@ -731,7 +732,7 @@ const ManufacturerForm = () => {
                 colorScheme="gray"
                 size="lg"
                 onClick={() => window.history.back()}
-                leftIcon={<ArrowLeft size={18} />}
+                leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
                 borderRadius="12px"
                 px={4}
                 fontWeight="semibold"
@@ -745,7 +746,7 @@ const ManufacturerForm = () => {
                 colorScheme="green"
                 size="lg"
                 isDisabled={loading}
-                leftIcon={<Save size={18} />}
+                leftIcon={<Save size={ICON_SIZE_MD} />}
                 borderRadius="12px"
                 px={5}
                 fontWeight="semibold"

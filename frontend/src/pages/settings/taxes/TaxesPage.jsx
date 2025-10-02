@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import PageHeader from '../../../components/PageHeader'
 import { addTax, deleteTax, fetchTaxes, setDefaultTax } from '../../../store/slices/taxSlice'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const TaxesPage = () => {
   const dispatch = useDispatch()
@@ -115,7 +116,7 @@ const TaxesPage = () => {
   const headerActions = [
     <Button
       key="add-tax"
-      leftIcon={<Icon as={Plus} boxSize={4} aria-hidden="true" />}
+      leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} aria-hidden="true" />}
       colorScheme="brand"
       onClick={handleAddTaxRow}
       as={motion.button}
@@ -144,7 +145,7 @@ const TaxesPage = () => {
           <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'flex-start', md: 'center' }}>
             <Tooltip label={t('settings.taxes.help.tooltip')} placement="bottom-start">
               <Flex align="center" gap={4} color="gray.500">
-                <Icon as={HelpCircle} boxSize={5} aria-hidden="true" />
+                <Icon as={HelpCircle} boxSize={ICON_BOX_MD} aria-hidden="true" />
                 <Text fontSize="sm">{t('settings.taxes.help.hover')}</Text>
               </Flex>
             </Tooltip>
@@ -187,7 +188,7 @@ const TaxesPage = () => {
                           <InputGroup size="sm">
                             <Input value={tax.value} readOnly fontWeight="medium" />
                             <InputRightAddon>
-                              <Icon as={Percent} boxSize={4} aria-hidden="true" />
+                              <Icon as={Percent} boxSize={ICON_BOX_MD} aria-hidden="true" />
                             </InputRightAddon>
                           </InputGroup>
                         </Box>
@@ -198,7 +199,7 @@ const TaxesPage = () => {
                           </FormLabel>
                           {tax.isDefault ? (
                             <Badge colorScheme="green" borderRadius="full" px={3} py={1} display="inline-flex" alignItems="center" gap={4}>
-                              <Icon as={Check} boxSize={4} aria-hidden="true" />
+                              <Icon as={Check} boxSize={ICON_BOX_MD} aria-hidden="true" />
                               {t('settings.taxes.fields.defaultBadge')}
                             </Badge>
                           ) : (
@@ -210,7 +211,7 @@ const TaxesPage = () => {
 
                         <Flex justify={{ base: 'flex-start', md: 'flex-end' }} flex={{ base: 1, md: 1 }}>
                           <IconButton size="lg" aria-label={t('settings.taxes.fields.actions')}
-                            icon={<Icon as={Trash} boxSize={4} aria-hidden="true" />}
+                            icon={<Icon as={Trash} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             variant="outline"
                             colorScheme="red"
                             onClick={() => handleDelete(tax.id)}
@@ -281,7 +282,7 @@ const TaxesPage = () => {
                             step="0.01"
                           />
                           <InputRightAddon>
-                            <Icon as={Percent} boxSize={4} aria-hidden="true" />
+                            <Icon as={Percent} boxSize={ICON_BOX_MD} aria-hidden="true" />
                           </InputRightAddon>
                         </InputGroup>
                       </Box>
@@ -292,7 +293,7 @@ const TaxesPage = () => {
                           flex={1}
                           onClick={() => handleSaveNewTax(index)}
                           isDisabled={!tax.label.trim() || !tax.value.trim()}
-                          leftIcon={<Icon as={Save} boxSize={4} aria-hidden="true" />}
+                          leftIcon={<Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                           as={motion.button}
                           whileTap={{ scale: 0.98 }}
                         >
@@ -302,7 +303,7 @@ const TaxesPage = () => {
                           variant="outline"
                           flex={1}
                           onClick={() => handleCancelNewTax(index)}
-                          leftIcon={<Icon as={X} boxSize={4} aria-hidden="true" />}
+                          leftIcon={<Icon as={X} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                           as={motion.button}
                           whileTap={{ scale: 0.98 }}
                         >

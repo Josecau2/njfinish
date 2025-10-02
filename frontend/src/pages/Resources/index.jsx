@@ -47,6 +47,7 @@ import {
 import PageHeader from '../../components/PageHeader'
 import withContractorScope from '../../components/withContractorScope'
 import FileViewerModal from '../../components/FileViewerModal'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const LINK_TYPE_OPTIONS = [
   { value: 'external', icon: LinkIcon, color: 'blue', key: 'resources.linkType.external' },
@@ -688,7 +689,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             <HStack spacing={4}>
               <InputGroup flex={1}>
                 <InputLeftElement>
-                  <Search color="gray.400" size={20} />
+                  <Search color="gray.400" size={ICON_SIZE_MD} />
                 </InputLeftElement>
                 <Input
                   placeholder={t('resources.search.placeholder', 'Search resources...')}
@@ -731,14 +732,14 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         {isAdmin && (
           <HStack spacing={4}>
             <Button
-              leftIcon={<Plus size={20} />}
+              leftIcon={<Plus size={ICON_SIZE_MD} />}
               colorScheme="blue"
               onClick={() => openCategoryModal()}
             >
               {t('resources.actions.newCategory', 'New Category')}
             </Button>
             <Button
-              leftIcon={<Settings size={20} />}
+              leftIcon={<Settings size={ICON_SIZE_MD} />}
               variant="outline"
               onClick={handleCreateCategoryScaffold}
               isLoading={scaffoldLoading}
@@ -799,7 +800,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           alignItems="center"
                           justifyContent="center"
                         >
-                          <Folder color={color} size={16} />
+                          <Folder color={color} size={ICON_SIZE_MD} />
                         </Box>
                         <VStack align="start" spacing={0}>
                           <Text fontWeight="bold" fontSize="sm" noOfLines={1}>
@@ -879,7 +880,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
           <VStack spacing={6} align="stretch">
             {/* Back button */}
             <Button
-              leftIcon={<ArrowLeft size={20} />}
+              leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
               variant="ghost"
               alignSelf="flex-start"
               onClick={() => setFilters(prev => ({ ...prev, categoryId: 'all' }))}
@@ -899,7 +900,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={20} />} colorScheme="blue" onClick={() => openAnnouncementModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openAnnouncementModal()} alignSelf="flex-start">
                         {t('resources.actions.newAnnouncement', 'New Announcement')}
                       </Button>
                     )}
@@ -924,7 +925,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             {isAdmin && (
                               <HStack>
                                 <Button size="sm" variant="ghost" minH="44px" onClick={() => openAnnouncementModal(announcement)}>
-                                  <Edit size={16} />
+                                  <Edit size={ICON_SIZE_MD} />
                                 </Button>
                                 <Button
                                   size="sm"
@@ -945,7 +946,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                     }
                                   }}
                                 >
-                                  <Trash size={16} />
+                                  <Trash size={ICON_SIZE_MD} />
                                 </Button>
                               </HStack>
                             )}
@@ -965,7 +966,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={20} />} colorScheme="blue" onClick={() => openLinkModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openLinkModal()} alignSelf="flex-start">
                         {t('resources.actions.newLink', 'New Link')}
                       </Button>
                     )}
@@ -995,7 +996,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             {isAdmin && (
                               <HStack>
                                 <Button size="sm" variant="ghost" minH="44px" onClick={() => openLinkModal(link)}>
-                                  <Edit size={16} />
+                                  <Edit size={ICON_SIZE_MD} />
                                 </Button>
                                 <Button
                                   size="sm"
@@ -1016,7 +1017,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                     }
                                   }}
                                 >
-                                  <Trash size={16} />
+                                  <Trash size={ICON_SIZE_MD} />
                                 </Button>
                               </HStack>
                             )}
@@ -1036,7 +1037,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={20} />} colorScheme="blue" onClick={() => openFileModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="blue" onClick={() => openFileModal()} alignSelf="flex-start">
                         {t('resources.actions.newFile', 'New File')}
                       </Button>
                     )}
@@ -1077,7 +1078,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   variant="ghost"
                                   onClick={() => setViewerModal({ visible: true, file })}
                                 >
-                                  <Eye size={16} />
+                                  <Eye size={ICON_SIZE_MD} />
                                 </Button>
                                 {canDownload && (
                                   <Button
@@ -1088,13 +1089,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                       if (url) window.open(url, '_blank')
                                     }}
                                   >
-                                    <Download size={16} />
+                                    <Download size={ICON_SIZE_MD} />
                                   </Button>
                                 )}
                                 {isAdmin && (
                                   <>
                                     <Button size="sm" variant="ghost" minH="44px" onClick={() => openFileModal(file)}>
-                                      <Edit size={16} />
+                                      <Edit size={ICON_SIZE_MD} />
                                     </Button>
                                     <Button
                                       size="sm"
@@ -1115,7 +1116,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                         }
                                       }}
                                     >
-                                      <Trash size={16} />
+                                      <Trash size={ICON_SIZE_MD} />
                                     </Button>
                                   </>
                                 )}
@@ -1140,7 +1141,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </VStack>
 
       {/* Category Modal */}
-      <Modal isOpen={categoryModal.visible} onClose={closeCategoryModal} size={{ base: "full", lg: "lg" }}>
+      <Modal isOpen={categoryModal.visible} onClose={closeCategoryModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1203,7 +1204,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Link Modal */}
-      <Modal isOpen={linkModal.visible} onClose={closeLinkModal} size={{ base: "full", lg: "lg" }}>
+      <Modal isOpen={linkModal.visible} onClose={closeLinkModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1313,7 +1314,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* File Modal */}
-      <Modal isOpen={fileModal.visible} onClose={closeFileModal} size={{ base: "full", lg: "lg" }}>
+      <Modal isOpen={fileModal.visible} onClose={closeFileModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -1431,7 +1432,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Announcement Modal */}
-      <Modal isOpen={announcementModal.visible} onClose={closeAnnouncementModal} size={{ base: "full", lg: "lg" }}>
+      <Modal isOpen={announcementModal.visible} onClose={closeAnnouncementModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>

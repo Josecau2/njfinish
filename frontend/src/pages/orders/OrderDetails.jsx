@@ -51,6 +51,7 @@ import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlic
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { isAdmin } from '../../helpers/permissions'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 // Helpers for modification measurements (inches with mixed fractions)
 const _gcd = (a, b) => (b ? _gcd(b, a % b) : a)
@@ -417,7 +418,7 @@ const OrderDetails = () => {
         size="sm"
         variant="outline"
         colorScheme="brand"
-        leftIcon={<Icon as={FileText} boxSize={4} />}
+        leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
         onClick={handleViewPdf}
       >
         {t('orders.actions.viewPdf', 'View PDF')}
@@ -429,7 +430,7 @@ const OrderDetails = () => {
         size="sm"
         variant="outline"
         colorScheme="gray"
-        leftIcon={<Icon as={Download} boxSize={4} />}
+        leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
         onClick={handleDownloadPdf}
         isLoading={downloading}
       >
@@ -442,7 +443,7 @@ const OrderDetails = () => {
         size="sm"
         colorScheme="brand"
         variant="solid"
-        leftIcon={<Icon as={Mail} boxSize={4} />}
+        leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
         onClick={handleResendEmail}
         isLoading={resending}
       >
@@ -455,7 +456,7 @@ const OrderDetails = () => {
         size="sm"
         colorScheme="red"
         variant="outline"
-        leftIcon={<Icon as={Trash} boxSize={4} />}
+        leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
         onClick={handleDeleteOrder}
       >
         {t('orders.actions.deleteOrder', 'Delete Order')}
@@ -469,7 +470,7 @@ const OrderDetails = () => {
       size="sm"
       variant="outline"
       colorScheme="gray"
-      leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
+      leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
       onClick={handleBack}
     >
       {t('common.back', 'Back')}
@@ -1034,7 +1035,7 @@ const OrderDetails = () => {
           </CardBody>
         </Card>
       </Stack>
-      <Modal size={{ base: "full", lg: "5xl" }} isOpen={showPdf} onClose={closePdfModal}>
+      <Modal size={{ base: "full", lg: "5xl" }} scrollBehavior="inside" isOpen={showPdf} onClose={closePdfModal}>
         <ModalOverlay />
         <ModalContent maxH="90vh">
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1065,7 +1066,7 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal size={{ base: "full", lg: "xl" }} isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
+      <Modal size={{ base: "full", lg: "xl" }} scrollBehavior="inside" isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1080,7 +1081,7 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={notice.visible} onClose={closeNotice}>
+      <Modal isOpen={notice.visible} onClose={closeNotice} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">

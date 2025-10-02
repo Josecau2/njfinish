@@ -11,6 +11,7 @@ import OverviewTab from './ContractorDetail/OverviewTab'
 import ProposalsTab from './ContractorDetail/ProposalsTab'
 import CustomersTab from './ContractorDetail/CustomersTab'
 import SettingsTab from './ContractorDetail/SettingsTab'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const tabConfig = [
   { key: 'overview', labelKey: 'contractorsAdmin.detail.tabs.overview', icon: BarChart3, component: OverviewTab },
@@ -57,7 +58,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.errorTitle')}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={16} />} onClick={handleBack} colorScheme="blue">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="blue">
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -74,7 +75,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.notFoundTitle')}</AlertTitle>
             <AlertDescription>{t('contractorsAdmin.detail.notFoundText')}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={16} />} onClick={handleBack} colorScheme="blue">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="blue">
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -87,7 +88,7 @@ const ContractorDetail = () => {
     <Container maxW="6xl" py={8}>
       <Stack spacing={6}>
         <Flex align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
-          <Button onClick={handleBack} leftIcon={<ArrowLeft size={16} />} variant="outline" colorScheme="gray">
+          <Button onClick={handleBack} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} variant="outline" colorScheme="gray">
             {t('common.back')}
           </Button>
 
@@ -121,7 +122,7 @@ const ContractorDetail = () => {
               <TabList flexWrap="wrap" gap={4}>
                 {tabConfig.map((tab) => (
                   <Tab key={tab.key} px={4} py={2} display="flex" alignItems="center" gap={4}>
-                    <Icon as={tab.icon} boxSize={4} />
+                    <Icon as={tab.icon} boxSize={ICON_BOX_MD} />
                     {t(tab.labelKey)}
                   </Tab>
                 ))}

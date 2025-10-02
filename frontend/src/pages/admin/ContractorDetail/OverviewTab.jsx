@@ -12,6 +12,7 @@ import {
   XCircle,
   LayoutGrid,
 } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const OverviewTab = ({ contractor }) => {
   const { t } = useTranslation()
@@ -106,14 +107,14 @@ const OverviewTab = ({ contractor }) => {
             <List flush>
               <ListItem>
                 <span>
-                  <Users size={16} aria-hidden="true" />
+                  <Users size={ICON_SIZE_MD} aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.contractorName')}
                 </span>
                 <strong>{contractor.name}</strong>
               </ListItem>
               <ListItem>
                 <span>
-                  <Calendar size={16} aria-hidden="true" />
+                  <Calendar size={ICON_SIZE_MD} aria-hidden="true" />
                   {t('contractorsAdmin.detail.basicInfo.createdDate')}
                 </span>
                 <span>{formatDate(contractor.created_at)}</span>
@@ -171,9 +172,9 @@ const OverviewTab = ({ contractor }) => {
                 >
                   <span>
                     {module.enabled ? (
-                      <CheckCircle size={16} className="me-2 text-success" aria-hidden="true" />
+                      <CheckCircle size={ICON_SIZE_MD} className="me-2 text-success" aria-hidden="true" />
                     ) : (
-                      <XCircle size={16} className="me-2 text-danger" aria-hidden="true" />
+                      <XCircle size={ICON_SIZE_MD} className="me-2 text-danger" aria-hidden="true" />
                     )}
                     {module.label}
                   </span>

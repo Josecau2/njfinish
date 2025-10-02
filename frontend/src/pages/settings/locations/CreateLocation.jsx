@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import PageHeader from '../../../components/PageHeader'
 import { Mail, Clock, ArrowLeft, CheckCircle, MapPin, Home, Phone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const initialForm = {
   locationName: '',
@@ -189,7 +190,7 @@ const LocationForm = () => {
               color: 'white',
             }}
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={ICON_SIZE_MD} />
           </Button>
         }
       />
@@ -211,7 +212,7 @@ const LocationForm = () => {
                     color: "blue.500",
                   }}
                 >
-                  <Home size={18} />
+                  <Home size={ICON_SIZE_MD} />
                 </div>
                 {t('settings.locations.form.titles.basicInfo')}
               </h5>
@@ -227,7 +228,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <MapPin size={18} />
+                      <MapPin size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       name="locationName"
@@ -258,7 +259,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Home size={18} />
+                      <Home size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       name="address"
@@ -295,7 +296,7 @@ const LocationForm = () => {
                     color: "green.500",
                   }}
                 >
-                  <Mail size={18} />
+                  <Mail size={ICON_SIZE_MD} />
                 </div>
                 {t('settings.locations.form.titles.contactInfo')}
               </h5>
@@ -311,7 +312,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Mail size={18} />
+                      <Mail size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       name="website"
@@ -342,7 +343,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Mail size={18} />
+                      <Mail size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       name="email"
@@ -377,7 +378,7 @@ const LocationForm = () => {
                       pointerEvents="none"
                       style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
                     >
-                      <Phone size={18} />
+                      <Phone size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       name="phone"
@@ -415,7 +416,7 @@ const LocationForm = () => {
                     color: '#856404',
                   }}
                 >
-                  <Clock size={18} />
+                  <Clock size={ICON_SIZE_MD} />
                 </div>
                 {t('settings.locations.form.titles.locationTime')}
               </h5>
@@ -496,7 +497,7 @@ const LocationForm = () => {
                         pointerEvents="none"
                         style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}
                       >
-                        <Clock size={18} />
+                        <Clock size={ICON_SIZE_MD} />
                       </InputLeftElement>
                       <Input
                         value={currentTime}
@@ -538,7 +539,7 @@ const LocationForm = () => {
                 }}
                 aria-label={t('common.cancel')}
               >
-                <ArrowLeft size={18} />
+                <ArrowLeft size={ICON_SIZE_MD} />
                 {t('common.cancel')}
               </Button>
               <Button
@@ -563,7 +564,7 @@ const LocationForm = () => {
                   </>
                 ) : (
                   <>
-                    <CheckCircle size={18} />
+                    <CheckCircle size={ICON_SIZE_MD} />
                     {t('settings.locations.create.submit')}
                   </>
                 )}

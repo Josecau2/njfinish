@@ -24,6 +24,7 @@ import MessageComposer from '../../components/contact/MessageComposer'
 import MessageHistory from '../../components/contact/MessageHistory'
 import ThreadView from '../../components/contact/ThreadView'
 import { Inbox, Info, Mail, MessageSquare } from 'lucide-react'
+import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const ContactUs = () => {
   const { t } = useTranslation()
@@ -180,11 +181,11 @@ const ContactUs = () => {
               >
                 <TabList overflowX="auto">
                   <Tab>
-                    <Icon as={Inbox} boxSize={4} mr={2} />
+                    <Icon as={Inbox} boxSize={ICON_BOX_MD} mr={2} />
                     {t('contact.inbox')}
                   </Tab>
                   <Tab>
-                    <Icon as={Info} boxSize={4} mr={2} />
+                    <Icon as={Info} boxSize={ICON_BOX_MD} mr={2} />
                     {t('contact.infoTab')}
                   </Tab>
                 </TabList>
