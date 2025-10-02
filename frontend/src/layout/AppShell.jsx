@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import { Box, Flex } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
-import { AppSidebar } from '../components/AppSidebar'
-import { AppHeader } from '../components/AppHeader'
+import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 const AppShell = ({ children }) => {
   const { sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
