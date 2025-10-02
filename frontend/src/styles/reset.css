@@ -18,8 +18,9 @@ body {
   overflow-x: hidden;
 }
 
-/* Remove default button styles - Preserve some critical properties for Chakra compatibility */
-button {
+/* Remove default button styles - Only for non-Chakra buttons */
+/* Chakra buttons use .chakra-button class, so exclude them from reset */
+button:not([class*="chakra"]):not([class*="btn"]) {
   background: none;
   border: none;
   font: inherit;
