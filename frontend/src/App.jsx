@@ -17,9 +17,11 @@ import { useDispatch } from 'react-redux'
 import { debounce } from 'lodash'
 import { addLogoutListener } from './utils/browserCleanup'
 import performanceMonitor from './utils/performanceMonitor'
+import { UseRouteRegistrar } from './audit/routeRegistrar'
 
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout.jsx'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404.jsx'))
+const AuditRoutes = React.lazy(() => import('./routes/__audit__/index.jsx').then(m => ({ default: m.AuditRoutes })))
 
 const LoadingFallback = () => (
   <Center py={10}>
@@ -78,16 +80,20 @@ const AppContent = () => {
   }, [])
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route
-        path='/login'
-        element={
-          <PublicRoute>
-            <LoginPage />
-          </PublicRoute>
-        }
-      />
+    <>
+      {/* Dev-only route tracking */}
+      {import.meta.env.DEV && <UseRouteRegistrar />}
+
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path='/login'
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
       <Route
         path='/forgot-password'
         element={
@@ -132,6 +138,18 @@ const AppContent = () => {
         }
       />
 
+      {/* Dev-only audit playground */}
+      {import.meta.env.DEV && (
+        <Route
+          path='/__audit__/*'
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <AuditRoutes />
+            </Suspense>
+          }
+        />
+      )}
+
       {/* Protected application */}
       <Route
         path='/*'
@@ -144,16 +162,17 @@ const AppContent = () => {
         }
       />
 
-      {/* Catch-all */}
-      <Route
-        path='*'
-        element={
-          <Suspense fallback={<LoadingFallback />}>
-            <Page404 />
-          </Suspense>
-        }
-      />
-    </Routes>
+        {/* Catch-all */}
+        <Route
+          path='*'
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <Page404 />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </>
   )
 }
 

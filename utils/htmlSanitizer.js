@@ -174,6 +174,7 @@ function sanitizePaymentEmbed(html, options = {}) {
     allowedSchemesByTag: { script: ['https'], iframe: ['https'], img: ['https', 'data'] },
     allowProtocolRelative: false,
     allowDataAttributes: true,
+    allowVulnerableTags: true,
     textFilter: removeNullBytes,
     transformTags: {
       ...withAnchorTransform(),

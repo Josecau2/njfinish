@@ -2,26 +2,29 @@
 
 **Date**: 2025-10-02
 **Files Audited**: 34 files with overflow declarations
-**Total Issues Found**: 1 CRITICAL (fixed), 17 false positives/acceptable patterns
+**Total Issues Found**: 2 CRITICAL (both fixed), 17 false positives/acceptable patterns
 
 ## Executive Summary
 
 ✅ **DOUBLE SCROLLER FOUND AND FIXED**
 
-**Critical Issue Discovered**: DefaultLayout.jsx had TRIPLE nested `minH="100vh"` containers causing double scrollbar in main render window
+**Critical Issues Discovered**:
+1. DefaultLayout.jsx had TRIPLE nested `minH="100vh"` containers
+2. reset.css had `overflow-y: scroll` on html element forcing scrollbar
 
-**Status**: ✅ FIXED
+**Status**: ✅ BOTH FIXED
 
 The application now has proper scrolling patterns with:
-- ✅ No double scrollers (fixed the triple minH issue)
+- ✅ No double scrollers (fixed triple minH + forced html scrollbar)
 - ✅ Proper modal scroll behavior (61 modals fixed in CRITICAL-3)
 - ✅ Correct table responsive patterns
 - ✅ Appropriate body overflow handling
+- ✅ Smart scrollbar visibility (auto instead of always visible)
 
 ## Detailed Findings
 
 ### 1. Double Scrollers ❌ → ✅ FIXED
-**Status**: 1 CRITICAL ISSUE FOUND AND FIXED
+**Status**: 2 CRITICAL ISSUES FOUND AND FIXED
 
 #### ❌ **CRITICAL ISSUE**: DefaultLayout.jsx - Triple Nested 100vh Containers
 
@@ -63,10 +66,41 @@ The application now has proper scrolling patterns with:
 </Box>
 ```
 
-**Result**: ✅ Only ONE viewport-height container, no double scroller
+**Result**: ✅ Only ONE viewport-height container
 
 **File**: frontend/src/layout/DefaultLayout.jsx
 **Lines affected**: 145, 169 (removed minH), 172 (kept minH)
+
+---
+
+#### ❌ **CRITICAL ISSUE 2**: reset.css - Forced Scrollbar on HTML Element
+
+**Problem**:
+```css
+/* BEFORE - Forces scrollbar creating double scroller */
+html {
+  overflow-y: scroll;  /* Always shows scrollbar */
+  scrollbar-gutter: stable;
+}
+```
+
+**Issue**: Combined with the `minH="100vh"` Flex in DefaultLayout, this created two scrollbars:
+1. One on the `html` element (forced by `overflow-y: scroll`)
+2. One on the content area when it exceeds viewport height
+
+**Fix Applied**:
+```css
+/* AFTER - Only shows scrollbar when needed */
+html {
+  overflow-y: auto;  /* Shows scrollbar only when content overflows */
+  scrollbar-gutter: stable;
+}
+```
+
+**Result**: ✅ Scrollbar only appears when content actually overflows, no double scroller
+
+**File**: frontend/src/styles/reset.css
+**Line affected**: 43 (changed from scroll to auto)
 
 ---
 
@@ -179,11 +213,14 @@ The application follows proper scrolling patterns:
 
 ## Conclusion
 
-**The audit found ZERO actual scrolling issues.**
+**The audit found and FIXED 2 critical scrolling issues:**
 
-All flagged items were either:
+1. ✅ **Triple nested minH="100vh"** in DefaultLayout.jsx - FIXED
+2. ✅ **Forced scrollbar on html element** in reset.css - FIXED
+
+All other flagged items were:
 - False positives from the automated scan
 - Acceptable patterns that work correctly
 - Already fixed in previous commits (CRITICAL-3)
 
-The application has **excellent scrolling UX** with no double scrollers or problematic overflow patterns.
+The application now has **excellent scrolling UX** with no double scrollers or problematic overflow patterns.

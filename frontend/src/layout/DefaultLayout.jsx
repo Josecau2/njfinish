@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Flex, Box, Center, Spinner, Text, Link } from '@chakra-ui/react'
-import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
+import { AppContent, AppFooter } from '../components/index'
+import AppShell from './AppShell'
 import TermsModal from '../components/TermsModal'
 import { useSelector, useDispatch } from 'react-redux'
 import { getLatestTerms } from '../helpers/termsApi'
@@ -162,21 +163,13 @@ const DefaultLayout = () => {
       >
         Skip to main content
       </Link>
-      <AppSidebar />
-      <Box
-        ml={{ base: 0, lg: sidebarWidth }}
-        transition="margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-        className="main-content-area"
-      >
-        <Flex direction="column" minH="100vh">
-          <AppHeader />
-          <AppBreadcrumb />
-          <Box id="main-content" as="main" flex="1" pb={6} className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <AppContent />
-          </Box>
-          <AppFooter />
-        </Flex>
-      </Box>
+      <AppShell>
+        <AppBreadcrumb />
+        <Box id="main-content" as="main" flex="1" pb={6} className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AppContent />
+        </Box>
+        <AppFooter />
+      </AppShell>
     </Box>
   )
 }

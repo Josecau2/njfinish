@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import autoprefixer from 'autoprefixer'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -92,12 +93,21 @@ export default defineConfig(({ mode }) => {
         target: 'es2020'
       },
     },
-    plugins: [react({
-      // Enable React Fast Refresh for better dev experience
-      fastRefresh: true,
-      // Exclude production optimizations from dev
-      include: "**/*.{jsx,tsx}",
-    })],
+    plugins: [
+      react({
+        // Enable React Fast Refresh for better dev experience
+        fastRefresh: true,
+        // Exclude production optimizations from dev
+        include: "**/*.{jsx,tsx}",
+      }),
+      // Bundle analyzer - runs in analyze mode only
+      mode === 'analyze' && visualizer({
+        filename: 'build/stats.html',
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+      })
+    ].filter(Boolean),
     resolve: {
       alias: [
         {

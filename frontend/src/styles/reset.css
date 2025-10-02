@@ -40,7 +40,7 @@ ul, ol {
 
 /* Prevent layout shift from scrollbar */
 html {
-  overflow-y: scroll;
+  overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
@@ -48,5 +48,17 @@ html {
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
+  }
+}
+
+/* Respect reduced motion preferences - WCAG 2.1 Level AA */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
