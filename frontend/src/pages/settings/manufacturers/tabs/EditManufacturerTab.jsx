@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getContrastColor } from '../../../../utils/colorUtils'
 import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Checkbox, Container, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, Textarea, VStack } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -144,7 +145,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
   }
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         {message.text && (
           <Alert status={alertStatusMap[message.type] ?? 'info'} borderRadius="md">
@@ -411,7 +412,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
           </Stack>
         </form>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

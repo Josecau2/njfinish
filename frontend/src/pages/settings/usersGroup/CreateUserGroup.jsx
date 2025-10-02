@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FormControl, Input, FormLabel, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
 import { Settings, ArrowLeft, UserPlus } from '@/icons-lucide'
@@ -144,7 +145,7 @@ const AddUserGroupForm = () => {
   const isFormDirty = () => JSON.stringify(formData) !== JSON.stringify(initialFormRef.current)
 
   return (
-    <Container maxW="1200px" py={4}>
+    <PageContainer>
       <style>{`.settings-form-container .btn, .notification-mobile-dropdown .btn, .btn { min-height: 44px; }`}</style>
       <PageHeader
         title={
@@ -312,7 +313,7 @@ const AddUserGroupForm = () => {
           </StandardCard>
         </FormControl>
       </form>
-    </Container>
+    </PageContainer>
   )
 }
 

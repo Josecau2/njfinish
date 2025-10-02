@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Alert, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { Search, Users, User, Layers, BriefcaseBusiness as Briefcase, BarChart3 as ChartBar } from 'lucide-react'
 
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
@@ -104,14 +105,14 @@ const Contractors = () => {
 
   if (loading && (!contractors || contractors.length === 0)) {
     return (
-      <Container maxW="6xl" py={12} textAlign="center">
+      <PageContainer textAlign="center">
         <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
-      </Container>
+      </PageContainer>
     )
   }
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('contractorsAdmin.title', 'Contractors')}
         subtitle={t('contractorsAdmin.subtitle', 'Manage contractor accounts and module access')}
@@ -346,7 +347,7 @@ const Contractors = () => {
           </CardBody>
         </StandardCard>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

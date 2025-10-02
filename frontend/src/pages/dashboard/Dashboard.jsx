@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
 import { useTranslation } from 'react-i18next'
 import { getFreshestToken } from '../../utils/authToken'
-import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, List, ListItem, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Flex, HStack, Icon, List, ListItem, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -273,7 +274,7 @@ const Dashboard = () => {
   ]
 
   return (
-    <Container maxW="7xl" px={{ base: 4, md: 6 }} py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={t('dashboard.title', 'Dashboard')}
@@ -498,7 +499,7 @@ const Dashboard = () => {
           </StandardCard>
         </SimpleGrid>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { ClipboardList, Settings as SettingsIcon, FileSignature, Printer, Mail, FileText } from 'lucide-react'
 
 import CustomerInfoStep from './CreateProposal/CustomerInfo'
@@ -316,7 +317,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   }
 
   return (
-    <Container maxW="7xl" py={6} className="proposal-create">
+    <PageContainer className="proposal-create">
       <Stack spacing={6}>
         <PageHeader
           title={currentStepInfo.title}
@@ -433,7 +434,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
         />
         <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

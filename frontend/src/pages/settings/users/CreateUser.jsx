@@ -1,6 +1,7 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
 import { CardBody, FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { User, Mail, ArrowLeft, Save, Eye, Settings, Home, Building, UserPlus, Lock } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -247,7 +248,7 @@ const AddUserForm = () => {
     return JSON.stringify(formData) !== JSON.stringify(initialFormRef.current)
   }
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       {/* Header Section */}
       <PageHeader
         title={t('settings.users.create.title')}
@@ -638,7 +639,7 @@ const AddUserForm = () => {
           </CardBody>
         </StandardCard>
       </form>
-    </Container>
+    </PageContainer>
   )
 }
 

@@ -2627,6 +2627,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 setCurrentPage(1)
                 fetchCatalogData(1, value, typeFilter, styleFilter, sortBy, sortOrder)
               }}
+              name="items-per-page"
+              id="catalog-items-per-page"
             >
               {[10, 25, 50, 100, 200].map((num) => (
                 <option key={num} value={num}>
@@ -2652,6 +2654,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               value={searchFilter}
               onChange={(event) => setSearchFilter(event.currentTarget.value)}
               style={{ paddingRight: searchFilter ? '35px' : '12px' }}
+              name="catalog-search"
+              id="catalog-search"
             />
             {searchFilter && (
               <button
@@ -2677,6 +2681,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setCurrentPage(1)
               setTypeFilter(event.currentTarget.value)
             }}
+            name="catalog-type-filter"
+            id="catalog-type-filter"
           >
             <option value="">All Types</option>
             {uniqueTypes.map((type, idx) => (
@@ -2697,6 +2703,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               setCurrentPage(1)
               setStyleFilter(event.currentTarget.value)
             }}
+            name="catalog-style-filter"
+            id="catalog-style-filter"
           >
             <option value="">All Styles</option>
             {sortedUniqueStyles.map((style, idx) => (
@@ -2823,7 +2831,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       type="checkbox"
                       checked={isSelectAll}
                       onChange={(event) => handleSelectAll(event.currentTarget.checked)}
-
+                      name="catalog-select-all"
+                      id="catalog-select-all"
                       style={{
                         bordercolor: "gray.500",
                         borderWidth: '2px',
@@ -2890,7 +2899,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={(event) => handleSelectItem(item.id, event.currentTarget.checked)}
-
+                        name={`catalog-select-${item.id}`}
+                        id={`catalog-select-${item.id}`}
                         aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
                         style={{
                           bordercolor: "gray.500",
@@ -3277,6 +3287,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
                   }
                   placeholder="optional"
+                  name="assign-override-price"
+                  id="assign-override-price"
                 />
               </div>
             </div>
@@ -3504,6 +3516,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
                   }
                   placeholder="optional"
+                  name="item-assign-override-price"
+                  id="item-assign-override-price"
                 />
               </div>
               <div className="col-md-3 d-flex align-items-end">

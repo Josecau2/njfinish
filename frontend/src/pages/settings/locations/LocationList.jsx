@@ -144,7 +144,7 @@ const LocationPage = () => {
 
   if (loading) {
     return (
-      <Container maxW="container.xl" py={8}>
+      <PageContainer>
         <Card variant="outline">
           <CardBody textAlign="center" py={10}>
             <Spinner size="lg" color="brand.500" />
@@ -153,20 +153,20 @@ const LocationPage = () => {
             </Text>
           </CardBody>
         </Card>
-      </Container>
+      </PageContainer>
     )
   }
 
   if (error) {
     return (
-      <Container maxW="container.xl" py={8}>
+      <PageContainer>
         <Alert status="error" borderRadius="md">
           <Text fontWeight="semibold" mr={2}>
             {t('common.error')}:
           </Text>
           <Text>{t('settings.locations.errorLoad')}: {error}</Text>
         </Alert>
-      </Container>
+      </PageContainer>
     )
   }
 
@@ -185,7 +185,7 @@ const LocationPage = () => {
   ]
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <PageContainer>
       <PageHeader
         title={t('settings.locations.header')}
         subtitle={t('settings.locations.subtitle')}
@@ -574,7 +574,7 @@ const LocationPage = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-    </Container>
+    </PageContainer>
   )
 }
 

@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Box, Button, CardBody, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Switch, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { User, Settings, ArrowLeft, Save, Users } from '@/icons-lucide'
 import { useSelector } from 'react-redux'
@@ -205,17 +206,17 @@ const EditUserGroupForm = () => {
 
   if (loadingData) {
     return (
-      <Container maxW="4xl" py={12}>
+      <PageContainer>
         <Flex direction="column" align="center" justify="center" minH="300px" gap={4}>
           <Spinner size="lg" color={customization.headerBg ? undefined : 'blue.500'} thickness="4px" speed="0.7s" />
           <Text color="gray.500">{t('settings.userGroups.edit.loadingOne')}</Text>
         </Flex>
-      </Container>
+      </PageContainer>
     )
   }
 
   return (
-    <Container maxW="4xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('settings.userGroups.edit.title')}
         subtitle={t('settings.userGroups.edit.subtitle')}
@@ -364,7 +365,7 @@ const EditUserGroupForm = () => {
           </StandardCard>
         </Stack>
       </Box>
-    </Container>
+    </PageContainer>
   )
 }
 

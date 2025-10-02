@@ -1,6 +1,7 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect } from 'react'
 import { Box, Button, CardBody, CardHeader, Container, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Select, SimpleGrid, Switch, Text, VStack, useToast } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { useForm, Controller } from 'react-hook-form'
 import { motion, useReducedMotion } from 'framer-motion'
 import { User, Lock, ArrowLeft, Home, Building } from '@/icons-lucide'
@@ -126,7 +127,7 @@ const EditUserForm = () => {
   const password = watch('password')
 
   return (
-    <Container maxW="1200px" py={6}>
+    <PageContainer>
       {/* Header Section */}
       <VStack spacing={6} align="stretch">
         <HStack spacing={4} align="center">
@@ -519,7 +520,7 @@ const EditUserForm = () => {
             </VStack>
           </form>
         </VStack>
-      </Container>
+      </PageContainer>
   )
 }
 export default EditUserForm

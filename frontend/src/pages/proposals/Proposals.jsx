@@ -13,6 +13,7 @@ import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
 import { Badge, Box, Button, CardBody, Container, Flex, HStack, Heading, IconButton, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import {
   Pencil,
@@ -458,7 +459,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   }
 
   return (
-    <Container maxW="7xl" py={6} className="dashboard-container">
+    <PageContainer className="dashboard-container">
       {/* Scoped mobile layout improvements for Quotes */}
       <style>{`
         /* Visibility helpers hook into our global _responsive.scss classes */
@@ -778,7 +779,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         onAcceptanceComplete={handleAcceptanceComplete}
         isContractor={isContractor}
       />
-    </Container>
+    </PageContainer>
   )
 }
 

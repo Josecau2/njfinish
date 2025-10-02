@@ -1,6 +1,7 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
 import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import {
   Building2,
   Mail,
@@ -146,7 +147,7 @@ const ManufacturersList = () => {
   const brandText = getContrastColor(brandBg)
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={t('settings.manufacturers.title')}
@@ -167,12 +168,14 @@ const ManufacturersList = () => {
                     placeholder={t('settings.manufacturers.searchPlaceholder', 'Search manufacturers')}
                     value={filterText}
                     onChange={handleFilterChange}
+                    name="manufacturers-search"
+                    id="manufacturers-search"
                   />
                 </InputGroup>
               </GridItem>
 
               <GridItem>
-                <Select value={sortBy} onChange={handleSortByChange}>
+                <Select value={sortBy} onChange={handleSortByChange} name="sort-by" id="manufacturers-sort-by">
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {t(`settings.manufacturers.sort.${option.value}`, option.label)}
@@ -182,7 +185,7 @@ const ManufacturersList = () => {
               </GridItem>
 
               <GridItem>
-                <Select value={sortDirection} onChange={handleSortDirectionChange}>
+                <Select value={sortDirection} onChange={handleSortDirectionChange} name="sort-direction" id="manufacturers-sort-direction">
                   <option value="asc">
                     {t('settings.manufacturers.sort.asc', 'Ascending')}
                   </option>
@@ -250,7 +253,9 @@ const ManufacturersList = () => {
                     <img
                       src={
                         manufacturer.image
-                          ? `${apiUrl}/uploads/images/${manufacturer.image}`
+                          ? require('../../../utils/uploads').buildUploadUrl(
+                              `/uploads/images/${String(manufacturer.image).trim()}`,
+                            )
                           : '/images/nologo.png'
                       }
                       alt={manufacturer.name}
@@ -339,7 +344,7 @@ const ManufacturersList = () => {
           ))}
         </Stack>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

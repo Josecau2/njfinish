@@ -141,7 +141,7 @@ const ContractorDashboard = () => {
   }
 
   return (
-    <PageContainer maxW="container.xl" py={{ base: 6, md: 10 }}>
+    <PageContainer>
       <StandardCard>
         <CardHeader borderBottomWidth="1px">
           <Stack spacing={4}>

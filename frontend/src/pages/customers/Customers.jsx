@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Center, Container, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Skeleton, SkeletonText, Spinner, Stack, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useDisclosure, useToast } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -159,7 +160,7 @@ const CustomerTable = ({
   const filteredCount = sortedFilteredCustomers.length
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={t('customers.header')}
@@ -552,7 +553,7 @@ const CustomerTable = ({
           </AlertDialogOverlay>
         </AlertDialog>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

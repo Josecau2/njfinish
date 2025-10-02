@@ -3,6 +3,7 @@ import StandardCard from '../../components/StandardCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Alert, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 
 import PageHeader from '../../components/PageHeader'
@@ -158,7 +159,7 @@ const ContactUs = () => {
   const tabIndex = Math.max(adminTabs.indexOf(activeTab), 0)
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('contact.header')}
         subtitle={t('contact.subtitle')}
@@ -287,7 +288,7 @@ const ContactUs = () => {
           </StandardCard>
         )}
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

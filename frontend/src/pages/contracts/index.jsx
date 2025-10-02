@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
 import { getContracts } from '../../queries/proposalQueries'
@@ -319,7 +320,7 @@ const Contracts = () => {
   const headerBg = customization?.headerBg || "purple.500"
   const headerTextColor = getContrastColor(headerBg)
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={t('nav.contracts')}
@@ -659,7 +660,7 @@ const Contracts = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Container>
+    </PageContainer>
   )
 }
 export default Contracts

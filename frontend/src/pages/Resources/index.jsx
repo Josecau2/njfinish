@@ -6,6 +6,7 @@ import axiosInstance from '../../helpers/axiosInstance'
 import { getFreshestToken } from '../../utils/authToken'
 import { getContrastColor } from '../../utils/colorUtils'
 import { Alert, AspectRatio, Badge, Box, Button, CardBody, CardHeader, Center, Container, Divider, Flex, FormControl, FormLabel, Grid, GridItem, HStack, Heading, Icon, Image, Input, InputGroup, InputLeftElement, Link, List, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Switch, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import {
   ArrowLeft,
   Download,
@@ -666,17 +667,17 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   if (loading) {
     return (
-      <Container maxW="container.xl" py={6}>
+      <PageContainer>
         <Center h="400px">
           <Spinner size="xl" color={accentColor} thickness="4px" />
         </Center>
-      </Container>
+      </PageContainer>
     )
   }
 
   // Main render - simplified category tiles + resources list
   return (
-    <Container maxW="container.xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('resources.title', 'Resources')}
         subtitle={isContractor ? t('resources.contractorSubtitle', 'Browse available resources and documentation') : t('resources.adminSubtitle', 'Manage resources, categories, and content')}
@@ -695,6 +696,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   placeholder={t('resources.search.placeholder', 'Search resources...')}
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  name="resources-search"
+                  id="resources-search"
                 />
               </InputGroup>
 
@@ -702,6 +705,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 w="200px"
                 value={filters.categoryId}
                 onChange={(e) => setFilters(prev => ({ ...prev, categoryId: e.target.value }))}
+                name="resources-category"
+                id="resources-category"
               >
                 <option value="all">{t('resources.filters.allCategories', 'All Categories')}</option>
                 {flattenedCategories.map(({ id, name, level }) => (
@@ -718,6 +723,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 w="150px"
                 value={filters.medium}
                 onChange={(e) => setFilters(prev => ({ ...prev, medium: e.target.value }))}
+                name="resources-medium"
+                id="resources-medium"
               >
                 <option value="all">{t('resources.filters.allTypes', 'All Types')}</option>
                 <option value="announcements">{t('resources.types.announcements', 'Announcements')}</option>
@@ -1537,7 +1544,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         onClose={() => setViewerModal({ visible: false, file: null })}
         file={viewerModal.file}
       />
-    </Container>
+    </PageContainer>
   )
 }
 

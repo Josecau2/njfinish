@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert, Badge, Box, Button, CardBody, Container, Grid, GridItem, HStack, Spinner, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
@@ -121,28 +122,28 @@ const UserGroupList = () => {
 
   if (loading) {
     return (
-      <Container maxW="container.xl" py={8}>
+      <PageContainer>
         <VStack spacing={4} justify="center" minH="200px">
           <Spinner size="lg" color="brand.500" />
           <Text color="gray.500">{t('common.loadingUserGroups')}</Text>
         </VStack>
-      </Container>
+      </PageContainer>
     )
   }
 
   if (error) {
     return (
-      <Container maxW="container.xl" py={8}>
+      <PageContainer>
         <Alert status="error" borderRadius="md">
           <Text fontWeight="semibold">{t('settings.userGroups.errorLoading')}</Text>
           <Text ml={2}>{error.message || error.toString() || 'Unknown error'}</Text>
         </Alert>
-      </Container>
+      </PageContainer>
     )
   }
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <PageContainer>
       <PageHeader
         title={t('settings.userGroups.header')}
         icon={Users}
@@ -322,7 +323,7 @@ const UserGroupList = () => {
           </VStack>
         </CardBody>
       </StandardCard>
-    </Container>
+    </PageContainer>
   )
 }
 

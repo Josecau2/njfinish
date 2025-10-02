@@ -143,7 +143,25 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       if (!manufacturer.image || status === 'error') {
         return '/images/nologo.png'
       }
-      return `${apiUrl}/uploads/images/${manufacturer.image}`
+      const img = String(manufacturer.image || '').trim()
+      // If absolute URL, data URI, or already /uploads based, use resolver to add token when needed
+      if (/^(data:|https?:\/\/|\/)/i.test(img)) {
+        // Prefer resolveAssetUrl which will append token for uploads
+        try {
+          const { resolveAssetUrl } = require('../../../utils/assetUtils')
+          return resolveAssetUrl(img, apiUrl)
+        } catch (_) {
+          // Fallback: return as-is
+          return img
+        }
+      }
+      // Bare filename (e.g., precision.png) → assume uploads/images
+      try {
+        const { buildUploadUrl } = require('../../../utils/uploads')
+        return buildUploadUrl(`/uploads/images/${img}`)
+      } catch (_) {
+        return `${apiUrl}/uploads/images/${img}`
+      }
     },
     [apiUrl, cardImageState],
   )

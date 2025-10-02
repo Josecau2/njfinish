@@ -274,7 +274,7 @@ const PaymentsList = ({ isContractor }) => {
   const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <PageHeader title={title} subtitle={subtitle} icon={CreditCardIcon} />
 
       {error ? (
@@ -585,7 +585,7 @@ const PaymentsList = ({ isContractor }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Container>
+    </PageContainer>
   )
 }
 

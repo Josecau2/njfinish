@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
 import Swal from 'sweetalert2'
@@ -230,15 +231,15 @@ const PaymentPage = () => {
 
   if (loading || !currentPayment) {
     return (
-      <Container maxW="4xl" py={12} textAlign="center">
+      <PageContainer textAlign="center">
         <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
-      </Container>
+      </PageContainer>
     )
   }
 
   if (!publicPaymentConfig?.cardPaymentsEnabled) {
     return (
-      <Container maxW="4xl" py={6}>
+      <PageContainer>
         <PageHeader
           title={t('payment.unavailable.title', 'Payment Unavailable')}
           subtitle={t('payment.unavailable.subtitle', 'Card payments are currently disabled')}
@@ -255,7 +256,7 @@ const PaymentPage = () => {
             </Button>
           </CardBody>
         </StandardCard>
-      </Container>
+      </PageContainer>
     )
   }
 
@@ -264,7 +265,7 @@ const PaymentPage = () => {
   const alertStatus = statusVariant === 'error' ? 'error' : statusVariant === 'success' ? 'success' : 'info'
 
   return (
-    <Container maxW="4xl" py={6} className="payment-page">
+    <PageContainer className="payment-page">
       <PageHeader
         title={t('payment.title', 'Make Payment')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
@@ -415,7 +416,7 @@ const PaymentPage = () => {
           </CardBody>
         </StandardCard>
       </Flex>
-    </Container>
+    </PageContainer>
   )
 }
 

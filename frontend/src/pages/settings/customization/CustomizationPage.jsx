@@ -2,6 +2,7 @@ import StandardCard from '../../../components/StandardCard'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert, AlertIcon, Box, Button, CardBody, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, SimpleGrid, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { useDispatch, useSelector } from 'react-redux'
 import { Settings, Image, Palette, Save, Trash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -139,7 +140,7 @@ const CustomizationPage = () => {
   const headerTextColor = getContrastColor(headerBg)
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('settings.customization.ui.headerTitle')}
         subtitle={t('settings.customization.ui.headerSubtitle')}
@@ -340,7 +341,7 @@ const CustomizationPage = () => {
           </StandardCard>
         </SimpleGrid>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

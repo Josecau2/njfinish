@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Radio, RadioGroup, Select, Stack, Switch, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
 
@@ -190,7 +191,7 @@ const PaymentConfiguration = () => {
   )
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('paymentConfig.title', 'Payment Configuration')}
         subtitle={t('paymentConfig.subtitle', 'Manage payment gateway integration settings')}
@@ -424,7 +425,7 @@ const PaymentConfiguration = () => {
           </CardBody>
         </StandardCard>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

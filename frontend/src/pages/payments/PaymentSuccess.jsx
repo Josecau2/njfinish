@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertIcon, Box, Button, CardBody, Code, Container, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
 import { ArrowLeft, CheckCircle, CreditCard } from 'lucide-react'
@@ -23,7 +24,7 @@ const PaymentSuccess = () => {
   const transactionId = params.get('transactionId')
 
   return (
-    <Container maxW="4xl" py={6}>
+    <PageContainer>
       <PageHeader
         title={t('payment.success.title', 'Payment Successful!')}
         subtitle={t('payment.success.message', 'Your payment has been processed successfully.')}
@@ -93,7 +94,7 @@ const PaymentSuccess = () => {
           </CardBody>
         </StandardCard>
       </Box>
-    </Container>
+    </PageContainer>
   )
 }
 export default PaymentSuccess

@@ -2,6 +2,7 @@ import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Badge, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
@@ -269,7 +270,7 @@ const LeadsPage = () => {
   )
 
   return (
-    <Container maxW="6xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={t('leadsPage.title')}
@@ -638,7 +639,7 @@ const LeadsPage = () => {
           </ModalContent>
         </Modal>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

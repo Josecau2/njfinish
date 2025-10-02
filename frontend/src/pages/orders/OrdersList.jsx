@@ -454,7 +454,7 @@ const OrdersList = ({
   }
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <PageHeader title={title} subtitle={subtitle} icon={ShoppingCart} />
 
       {/* Status Filter Buttons */}
@@ -747,7 +747,7 @@ const OrdersList = ({
         payment={selectedPaymentForReceipt}
         order={selectedOrderForReceipt}
       />
-    </Container>
+    </PageContainer>
   )
 }
 

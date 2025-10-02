@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Select, Spinner, Stack, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { Calendar, Filter, RefreshCw } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useNavigate } from 'react-router-dom'
@@ -125,7 +126,7 @@ const CalendarView = () => {
   }, [events])
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title="Calendar"
@@ -300,7 +301,7 @@ const CalendarView = () => {
           }
         `}</style>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

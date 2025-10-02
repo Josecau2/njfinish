@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../../utils/colorUtils'
 import { Box, Button, CardBody, Container, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Text, Textarea } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -256,7 +257,7 @@ const EditCustomerPage = () => {
 
   if (isLoading) {
     return (
-      <Container maxW="5xl" py={12}>
+      <PageContainer>
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
             <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
@@ -265,12 +266,12 @@ const EditCustomerPage = () => {
             </Text>
           </CardBody>
         </StandardCard>
-      </Container>
+      </PageContainer>
     )
   }
 
   return (
-    <Container maxW="5xl" py={6} className="edit-customer-page">
+    <PageContainer className="edit-customer-page">
       <PageHeader
         title={t('customers.form.titles.edit')}
         subtitle={t('customers.form.descriptions.edit', 'Update customer profile with detailed information')}
@@ -509,7 +510,7 @@ const EditCustomerPage = () => {
           </StandardCard>
         </Stack>
       </Box>
-    </Container>
+    </PageContainer>
   )
 }
 

@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, CardBody, CardHeader, Container, Flex, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from 'lucide-react'
 import { fetchContractor } from '../../store/slices/contractorSlice'
 import OverviewTab from './ContractorDetail/OverviewTab'
@@ -42,17 +43,17 @@ const ContractorDetail = () => {
 
   if (loading) {
     return (
-      <Container maxW="6xl" py={16}>
+      <PageContainer>
         <Flex align="center" justify="center" minH="300px">
           <Spinner size="lg" color="blue.500" />
         </Flex>
-      </Container>
+      </PageContainer>
     )
   }
 
   if (error) {
     return (
-      <Container maxW="3xl" py={8}>
+      <PageContainer>
         <Alert status="error" borderRadius="md">
           <AlertIcon />
           <Box>
@@ -63,13 +64,13 @@ const ContractorDetail = () => {
             </Button>
           </Box>
         </Alert>
-      </Container>
+      </PageContainer>
     )
   }
 
   if (!contractor) {
     return (
-      <Container maxW="3xl" py={8}>
+      <PageContainer>
         <Alert status="warning" borderRadius="md">
           <AlertIcon />
           <Box>
@@ -80,12 +81,12 @@ const ContractorDetail = () => {
             </Button>
           </Box>
         </Alert>
-      </Container>
+      </PageContainer>
     )
   }
 
   return (
-    <Container maxW="6xl" py={8}>
+    <PageContainer>
       <Stack spacing={6}>
         <Flex align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
           <Button onClick={handleBack} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} variant="outline" colorScheme="gray">
@@ -143,7 +144,7 @@ const ContractorDetail = () => {
           </Tabs>
         </StandardCard>
       </Stack>
-    </Container>
+    </PageContainer>
   )
 }
 

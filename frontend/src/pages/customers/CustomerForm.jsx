@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { Alert, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Spinner, Text, Textarea, VStack } from '@chakra-ui/react'
+import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { User, Mail, Save, ArrowLeft, Phone, MapPin } from 'lucide-react'
 import { createCustomer, updateCustomer, fetchCustomers } from '../../store/slices/customerSlice'
@@ -152,7 +153,7 @@ const CustomerForm = ({
   }
 
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <StandardCard variant="outline" borderRadius="xl" shadow="sm">
         <CardHeader>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
@@ -475,7 +476,7 @@ const CustomerForm = ({
               </form>
             </CardBody>
           </StandardCard>
-    </Container>
+    </PageContainer>
   )
 }
 export default withContractorScope(CustomerForm, 'customers')

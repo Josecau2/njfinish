@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
+import PageContainer from '../../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import {
   Container,
@@ -291,12 +292,12 @@ const OrderDetails = () => {
 
   if (error) {
     return (
-      <Container maxW="lg" py={10}>
+      <PageContainer>
         <Alert status="error" borderRadius="md">
           <AlertIcon />
           <Text>{error}</Text>
         </Alert>
-      </Container>
+      </PageContainer>
     )
   }
   const handleViewPdf = async () => {
@@ -521,7 +522,7 @@ const OrderDetails = () => {
     return 'brand'
   }
   return (
-    <Container maxW="7xl" py={6}>
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={`${t('orders.details.title', 'Order Details')} - ${displayOrderNumber}`}
@@ -1132,7 +1133,7 @@ const OrderDetails = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-    </Container>
+    </PageContainer>
   )
 }
 
