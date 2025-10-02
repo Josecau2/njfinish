@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert, Badge, Box, Button, CardBody, Container, Grid, GridItem, HStack, Spinner, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
-import PageContainer from '../../components/PageContainer'
+import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'

@@ -36,6 +36,8 @@ const Page404 = () => {
                 type="text"
                 placeholder="What are you looking for?"
                 aria-label="Search site"
+                name="search"
+                id="page404-search"
                 borderRightRadius={0}
               />
               <Button

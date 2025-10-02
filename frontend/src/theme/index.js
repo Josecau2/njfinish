@@ -320,6 +320,21 @@ const Table = {
   baseStyle: {
     table: {
       borderSpacing: 0,
+      width: '100%',
+      minWidth: '100%',
+      tableLayout: { base: 'fixed', xl: 'auto' },
+    },
+    thead: {
+      th: {
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+      },
+    },
+    tbody: {
+      td: {
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+      },
     },
     th: {
       fontWeight: '600',
@@ -327,10 +342,14 @@ const Table = {
       fontSize: 'sm',
       color: 'muted',
       borderColor: 'border',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
     },
     td: {
       borderColor: 'border',
       fontSize: 'sm',
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
     },
   },
   variants: {

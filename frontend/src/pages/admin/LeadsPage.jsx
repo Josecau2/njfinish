@@ -270,18 +270,20 @@ const LeadsPage = () => {
   )
 
   return (
-    <PageContainer>
+    <PageContainer maxW="full">
       <Stack spacing={6}>
         <PageHeader
           title={t('leadsPage.title')}
           subtitle={t('leadsPage.description', 'Manage incoming customer inquiries and statuses')}
           icon={FileText}
           actions={[refreshButton]}
+          maxW="full"
+          containerProps={{ px: { base: 4, md: 6, xl: 8, "2xl": 10 } }}
         />
 
         <StandardCard variant="outline">
           <CardBody>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 3, md: 4 }}>
               <FormControl>
                 <FormLabel fontSize="sm" color="gray.600">
                   {t('leadsPage.filters.status.label')}
@@ -323,18 +325,19 @@ const LeadsPage = () => {
           <CardHeader borderBottomWidth="1px">
             <Text fontWeight="semibold">{t('leadsPage.table.title', 'Leads')}</Text>
           </CardHeader>
-          <CardBody>
+          <CardBody p={0}>
             {loading ? (
               <Flex justify="center" py={12}>
                 <Spinner size="lg" color="brand.500" />
               </Flex>
             ) : filteredLeads.length === 0 ? (
-              <Text color="gray.500">{t('leadsPage.table.noResults')}</Text>
+              <Text color="gray.500" py={6} px={6}>{t('leadsPage.table.noResults')}</Text>
             ) : (
               <>
                 {/* Desktop table view */}
-                <Box overflowX="auto" data-scroll-region display={{ base: 'none', lg: 'block' }}>
-                  <Table variant="simple">
+                <Box overflowX="auto" data-scroll-region display={{ base: 'none', xl: 'block' }}>
+                  <Table variant="simple" size="md" width="full" tableLayout={{ base: "fixed", xl: "auto" }}>
+
                     <Thead>
                       <Tr>
                         <Th>{t('leadsPage.table.columns.name')}</Th>
@@ -358,12 +361,24 @@ const LeadsPage = () => {
                           : '�'
                         return (
                           <Tr key={lead.id}>
-                            <Td>{displayName}</Td>
-                            <Td>{lead.email}</Td>
-                            <Td>{phone}</Td>
-                            <Td>{location}</Td>
-                            <Td>{company}</Td>
-                            <Td>{submittedAt}</Td>
+                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {displayName}
+                            </Td>
+                            <Td maxW={{ base: '240px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {lead.email || '?'}
+                            </Td>
+                            <Td maxW={{ base: '180px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {phone}
+                            </Td>
+                            <Td maxW={{ base: '240px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {location}
+                            </Td>
+                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {company}
+                            </Td>
+                            <Td maxW={{ base: '220px', xl: 'none' }} whiteSpace="normal" wordBreak="break-word">
+                              {submittedAt}
+                            </Td>
                             <Td>
                               <Select
                                 size="sm"
@@ -396,7 +411,7 @@ const LeadsPage = () => {
                 </Box>
 
                 {/* Mobile card view */}
-                <VStack spacing={4} display={{ base: 'flex', lg: 'none' }}>
+                <VStack spacing={4} display={{ base: 'flex', xl: 'none' }} px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }}>
                   {filteredLeads.map((lead) => {
                     const displayName = getLeadFullName(lead) || lead.name || '�'
                     const phone = getLeadValue(lead, 'phone') || '�'

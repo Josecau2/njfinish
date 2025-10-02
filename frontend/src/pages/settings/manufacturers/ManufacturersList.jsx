@@ -1,7 +1,7 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
 import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
-import PageContainer from '../../components/PageContainer'
+import PageContainer from '../../../components/PageContainer'
 import {
   Building2,
   Mail,
@@ -16,6 +16,7 @@ import {
 } from '@/icons-lucide'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
+import { buildUploadUrl } from '../../../utils/uploads'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice'
 import Swal from 'sweetalert2'
@@ -253,7 +254,7 @@ const ManufacturersList = () => {
                     <img
                       src={
                         manufacturer.image
-                          ? require('../../../utils/uploads').buildUploadUrl(
+                          ? buildUploadUrl(
                               `/uploads/images/${String(manufacturer.image).trim()}`,
                             )
                           : '/images/nologo.png'

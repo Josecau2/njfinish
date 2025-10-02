@@ -18,7 +18,9 @@ function resolveSafePath(requestPath) {
 
 function serveUpload(req, res, next) {
   try {
-    const relativePath = req.params[0] || '';
+    // Derive relative path from router mount point and request path
+    // req.baseUrl is '/uploads', req.path starts with '/...'
+    let relativePath = (req.path || '').replace(/^\//, '');
     const absolutePath = resolveSafePath(relativePath);
 
     if (!absolutePath) {
@@ -28,20 +30,34 @@ function serveUpload(req, res, next) {
     fs.stat(absolutePath, (err, stats) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          return res.status(404).json({ success: false, message: 'File not found' });
+          // Return a minimal 404 with text/plain to avoid CORB blocking JSON
+          res.type('text/plain');
+          return res.status(404).send('Not found');
         }
         return next(err);
       }
 
       if (!stats.isFile()) {
-        return res.status(404).json({ success: false, message: 'File not found' });
+        res.type('text/plain');
+        return res.status(404).send('Not found');
       }
 
-      res.set('Cache-Control', 'private, max-age=300');
+      // Best-effort content type to satisfy CORB sniffing rules
+      const ext = path.extname(absolutePath).toLowerCase();
+      const ctype = (
+        ext === '.png' ? 'image/png' :
+        ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' :
+        ext === '.svg' ? 'image/svg+xml' :
+        ext === '.webp' ? 'image/webp' :
+        ext === '.gif' ? 'image/gif' : 'application/octet-stream'
+      );
+      res.set('Content-Type', ctype);
+      res.set('Cache-Control', 'public, max-age=300, immutable');
       res.sendFile(absolutePath, (sendErr) => {
         if (sendErr) {
           if (sendErr.code === 'ENOENT') {
-            return res.status(404).json({ success: false, message: 'File not found' });
+            res.type('text/plain');
+            return res.status(404).send('Not found');
           }
           return next(sendErr);
         }

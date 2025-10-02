@@ -23,6 +23,8 @@ const PageHeader = ({
   actions = [],
   rightContent,
   children,
+  maxW = "1200px",
+  containerProps = {},
 }) => {
   const { t } = useTranslation()
   const borderColor = useColorModeValue('gray.200', 'gray.600')
@@ -40,7 +42,7 @@ const PageHeader = ({
       as="header"
       role="banner"
     >
-      <Container maxW="1200px" px={{ base: 4, md: 6 }}>
+      <Container maxW={maxW} px={{ base: 4, md: 6 }} {...containerProps}>
         {/* Breadcrumbs */}
         {breadcrumbs.length > 0 && (
           <Breadcrumb

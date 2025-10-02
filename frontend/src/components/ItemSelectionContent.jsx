@@ -1609,32 +1609,28 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             spacing={4}
                                             display={{ base: 'flex', md: 'none' }}
                                         >
-                                            <IconButton
-                                              minW="44px"
-                                              minH="44px"
-                                                icon={<ChevronLeft size={ICON_SIZE_MD} />}
-                                                size="sm"
-                                                variant="outline"
-                                                colorScheme="gray"
-                                                onClick={prevSlide}
-                                                isDisabled={!canGoPrev()}
-                                                aria-label="Previous styles"
-                                                minH="44px"
-                                                minW="44px"
-                                            />
-                                            <IconButton
-                                              minW="44px"
-                                              minH="44px"
-                                                icon={<ChevronRight size={ICON_SIZE_MD} />}
-                                                size="sm"
-                                                variant="outline"
-                                                colorScheme="gray"
-                                                onClick={nextSlide}
-                                                isDisabled={!canGoNext()}
-                                                aria-label="Next styles"
-                                                minH="44px"
-                                                minW="44px"
-                                            />
+                                                                                        <IconButton
+                                                                                                icon={<ChevronLeft size={ICON_SIZE_MD} />}
+                                                                                                size="sm"
+                                                                                                variant="outline"
+                                                                                                colorScheme="gray"
+                                                                                                onClick={prevSlide}
+                                                                                                isDisabled={!canGoPrev()}
+                                                                                                aria-label="Previous styles"
+                                                                                                minH="44px"
+                                                                                                minW="44px"
+                                                                                        />
+                                                                                        <IconButton
+                                                                                                icon={<ChevronRight size={ICON_SIZE_MD} />}
+                                                                                                size="sm"
+                                                                                                variant="outline"
+                                                                                                colorScheme="gray"
+                                                                                                onClick={nextSlide}
+                                                                                                isDisabled={!canGoNext()}
+                                                                                                aria-label="Next styles"
+                                                                                                minH="44px"
+                                                                                                minW="44px"
+                                                                                        />
                                         </HStack>
                                     )}
                                 </HStack>

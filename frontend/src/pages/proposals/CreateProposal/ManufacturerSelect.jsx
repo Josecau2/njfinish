@@ -9,6 +9,8 @@ import { motion } from 'framer-motion'
 import { useForm, Controller } from 'react-hook-form'
 import { fetchManufacturers } from '../../../store/slices/manufacturersSlice'
 import { isAdmin } from '../../../helpers/permissions'
+import { resolveAssetUrl } from '../../../utils/assetUtils'
+import { buildUploadUrl } from '../../../utils/uploads'
 
 const MotionBox = motion.create(Box)
 const MotionButton = motion.create(Button)
@@ -147,21 +149,10 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
       // If absolute URL, data URI, or already /uploads based, use resolver to add token when needed
       if (/^(data:|https?:\/\/|\/)/i.test(img)) {
         // Prefer resolveAssetUrl which will append token for uploads
-        try {
-          const { resolveAssetUrl } = require('../../../utils/assetUtils')
-          return resolveAssetUrl(img, apiUrl)
-        } catch (_) {
-          // Fallback: return as-is
-          return img
-        }
+        return resolveAssetUrl(img, apiUrl)
       }
       // Bare filename (e.g., precision.png) → assume uploads/images
-      try {
-        const { buildUploadUrl } = require('../../../utils/uploads')
-        return buildUploadUrl(`/uploads/images/${img}`)
-      } catch (_) {
-        return `${apiUrl}/uploads/images/${img}`
-      }
+      return buildUploadUrl(`/uploads/images/${img}`)
     },
     [apiUrl, cardImageState],
   )

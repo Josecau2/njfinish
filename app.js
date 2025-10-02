@@ -103,9 +103,23 @@ app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
 const uploadsRouter = express.Router();
-uploadsRouter.use(attachTokenFromQuery({ extraParams: ['access_token', 'authToken'] }));
-uploadsRouter.use(verifyTokenWithGroup);
-uploadsRouter.use('/', serveUpload);
+// Basic CORS for image/file requests (img tags can't send auth headers)
+uploadsRouter.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+// Publicly serve uploaded assets safely (controller validates path)
+uploadsRouter.use(serveUpload);
 app.use('/uploads', uploadsRouter);
 
 // Serve SPA static assets from configurable directory (defaults to /app/build)

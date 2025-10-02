@@ -1,4 +1,3 @@
-import StandardCard from '../StandardCard'
 import React from 'react'
 import { Badge, Box, Button, CardBody, HStack, Text, VStack } from '@chakra-ui/react'
 import StandardCard from '../StandardCard'
@@ -44,9 +43,6 @@ export default function ContentTile({
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           onOpen?.()
-    </div>
-
-  )
         }
       }}
     >

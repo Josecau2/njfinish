@@ -268,8 +268,8 @@ const UsersPage = () => {
 
       {/* Table */}
       {!loading && (
-        <StandardCard className="settings-table-card">
-          <CardBody>
+        <StandardCard className="settings-table-card" mx={{ base: -4, md: -6 }}>
+          <CardBody p={0}>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
               <Box overflowX="auto" data-scroll-region>

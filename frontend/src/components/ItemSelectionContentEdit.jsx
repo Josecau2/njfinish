@@ -1457,32 +1457,28 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     spacing={4}
                                                     display={{ base: 'flex', md: 'none' }}
                                                 >
-                                                    <IconButton
-                                                      minW="44px"
-                                                      minH="44px"
-                                                        icon={<ChevronLeft size={ICON_SIZE_MD} />}
-                                                        size="sm"
-                                                        variant="outline"
-                                                        colorScheme="gray"
-                                                        onClick={prevSlide}
-                                                        isDisabled={!canGoPrev() || readOnly}
-                                                        aria-label="Previous styles"
-                                                        minH="44px"
-                                                        minW="44px"
-                                                    />
-                                                    <IconButton
-                                                      minW="44px"
-                                                      minH="44px"
-                                                        icon={<ChevronRight size={ICON_SIZE_MD} />}
-                                                        size="sm"
-                                                        variant="outline"
-                                                        colorScheme="gray"
-                                                        onClick={nextSlide}
-                                                        isDisabled={!canGoNext() || readOnly}
-                                                        aria-label="Next styles"
-                                                        minH="44px"
-                                                        minW="44px"
-                                                    />
+                                                                                                        <IconButton
+                                                                                                                icon={<ChevronLeft size={ICON_SIZE_MD} />}
+                                                                                                                size="sm"
+                                                                                                                variant="outline"
+                                                                                                                colorScheme="gray"
+                                                                                                                onClick={prevSlide}
+                                                                                                                isDisabled={!canGoPrev() || readOnly}
+                                                                                                                aria-label="Previous styles"
+                                                                                                                minH="44px"
+                                                                                                                minW="44px"
+                                                                                                        />
+                                                                                                        <IconButton
+                                                                                                                icon={<ChevronRight size={ICON_SIZE_MD} />}
+                                                                                                                size="sm"
+                                                                                                                variant="outline"
+                                                                                                                colorScheme="gray"
+                                                                                                                onClick={nextSlide}
+                                                                                                                isDisabled={!canGoNext() || readOnly}
+                                                                                                                aria-label="Next styles"
+                                                                                                                minH="44px"
+                                                                                                                minW="44px"
+                                                                                                        />
                                                 </HStack>
                                             )}
                                         </HStack>

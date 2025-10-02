@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Badge, Box, CardBody, Center, Container, Flex, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, SimpleGrid, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
-import PageContainer from '../../components/PageContainer'
+import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { useDispatch, useSelector } from 'react-redux'
 import { Search, Settings, Users, User, Pencil } from 'lucide-react'

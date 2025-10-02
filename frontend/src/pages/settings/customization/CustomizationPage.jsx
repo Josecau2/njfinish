@@ -2,7 +2,7 @@ import StandardCard from '../../../components/StandardCard'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert, AlertIcon, Box, Button, CardBody, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, SimpleGrid, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
-import PageContainer from '../../components/PageContainer'
+import PageContainer from '../../../components/PageContainer'
 import { useDispatch, useSelector } from 'react-redux'
 import { Settings, Image, Palette, Save, Trash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'

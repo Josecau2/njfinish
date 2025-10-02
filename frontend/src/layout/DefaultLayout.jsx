@@ -165,7 +165,17 @@ const DefaultLayout = () => {
       </Link>
       <AppShell>
         <AppBreadcrumb />
-        <Box id="main-content" as="main" flex="1" pb={6} className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Box
+          id="main-content"
+          as="main"
+          flex="1"
+          pb={6}
+          data-page-container
+          maxW="100%"
+          mx="auto"
+          px={{ base: 4, md: 6, xl: 8, "2xl": 10 }}
+          w="100%"
+        >
           <AppContent />
         </Box>
         <AppFooter />
