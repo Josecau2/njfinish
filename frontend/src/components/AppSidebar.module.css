@@ -100,10 +100,6 @@
     display: flex;
   }
 
-  .modernSidebarFooter {
-    display: none;
-  }
-
   /* Mobile: Ensure sidebar is above mobile actions bar */
   .modernSidebar {
     z-index: 1050;

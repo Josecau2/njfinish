@@ -229,24 +229,28 @@ const AppSidebar = () => {
         <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} />
       </Box>
 
-      {/* Sidebar Footer - matches legacy CSidebarFooter */}
+      {/* Sidebar Footer - visible on both mobile and desktop */}
       <Flex
         direction="column"
         borderTop="1px solid"
         borderTopColor="whiteAlpha.100"
         flexShrink={0}
         className={styles.modernSidebarFooter}
-        display={{ base: "none", lg: "flex" }}
+        p={2}
       >
-        {/* Showroom Mode Toggle - Admin only (above pin button) - wraps itself */}
-        {isAdmin(user) && <ShowroomModeToggle compact collapsed={collapsed} />}
+        {/* Footer buttons row - both buttons side by side when expanded */}
+        <Flex align="center" justify="space-between" w="100%" gap={2}>
+          {/* Showroom Mode Toggle - Admin only */}
+          {isAdmin(user) && !collapsed ? (
+            <ShowroomModeToggle compact collapsed={collapsed} />
+          ) : (
+            <Box flex="1" />
+          )}
 
-        {/* Pin button container - matches legacy structure exactly */}
-        <Flex align="center" w="100%" px={2}>
+          {/* Pin button */}
           {collapsed ? (
             <IconButton
               size="sm"
-              ml="auto"
               aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
               icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               variant="outline"
@@ -264,10 +268,10 @@ const AppSidebar = () => {
             <Button
               size="sm"
               variant="outline"
-              ml="auto"
               leftIcon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               color="whiteAlpha.800"
               borderColor="whiteAlpha.300"
+              flex="1"
               _hover={{
                 bg: "whiteAlpha.100",
                 borderColor: "whiteAlpha.500",
