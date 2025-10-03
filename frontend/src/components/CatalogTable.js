@@ -114,6 +114,9 @@ const CatalogTable = ({
   const headerBg = customization.headerBg || 'brand.500'
   const textColor = getContrastColor(headerBg)
 
+  // Dark mode colors
+  const descriptionColor = useColorModeValue("gray.600", "gray.400")
+
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [typesMeta, setTypesMeta] = useState([])
@@ -614,7 +617,7 @@ const CatalogTable = ({
                         >
                           <strong>{item.code}</strong>
                           {item.description ? (
-                            <Text as="span" color={useColorModeValue("gray.600", "gray.400")} ml={1}>— {item.description}</Text>
+                            <Text as="span" color={descriptionColor} ml={1}>— {item.description}</Text>
                           ) : null}
                         </Text>
                         {(() => {
