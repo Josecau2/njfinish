@@ -263,6 +263,10 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   const bgColor = useColorModeValue('gray.50', 'gray.900')
   const cardBg = useColorModeValue('white', 'gray.800')
+  const searchIconColor = useColorModeValue("gray.400", "gray.500")
+  const textSecondary = useColorModeValue("gray.600", "gray.400")
+  const textMuted = useColorModeValue("gray.500", "gray.400")
+  const linkColor = useColorModeValue("blue.500", "blue.300")
   const accentColor = customization?.primaryColor || 'blue.600'
 
   const canDownloadFile = useCallback((fileId) => {
@@ -690,7 +694,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             <HStack spacing={4}>
               <InputGroup flex={1}>
                 <InputLeftElement>
-                  <Search color={useColorModeValue("gray.400", "gray.500")} size={ICON_SIZE_MD} />
+                  <Search color={searchIconColor} size={ICON_SIZE_MD} />
                 </InputLeftElement>
                 <Input
                   placeholder={t('resources.search.placeholder', 'Search resources...')}
@@ -779,7 +783,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               return (
                 <StandardCard
                   key={category.id}
-                  bg={useColorModeValue("white", "gray.800")}
+                  bg={cardBg}
                   shadow="sm"
                   cursor="pointer"
                   transition="all 0.2s"
@@ -859,7 +863,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                   <CardBody pt={0}>
                     {category.description && (
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} noOfLines={2} mb={3}>
+                      <Text fontSize="sm" color={textSecondary} noOfLines={2} mb={3}>
                         {category.description}
                       </Text>
                     )}
@@ -913,13 +917,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     )}
 
                     {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).map((announcement) => (
-                      <StandardCard key={announcement.id} bg={useColorModeValue("white", "gray.800")}>
+                      <StandardCard key={announcement.id} bg={cardBg}>
                         <CardBody>
                           <HStack justify="space-between">
                             <VStack align="start" flex={1}>
                               <Heading size="sm">{announcement.title}</Heading>
                               {announcement.summary && (
-                                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{announcement.summary}</Text>
+                                <Text fontSize="sm" color={textSecondary}>{announcement.summary}</Text>
                               )}
                               {announcement.isPinned && (
                                 <Badge colorScheme="yellow">
@@ -963,7 +967,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     ))}
 
                     {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).length === 0 && (
-                      <Text textAlign="center" color={useColorModeValue("gray.500", "gray.400")} py={8}>
+                      <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.announcements', 'No announcements found')}
                       </Text>
                     )}
@@ -979,17 +983,17 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     )}
 
                     {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).map((link) => (
-                      <StandardCard key={link.id} bg={useColorModeValue("white", "gray.800")}>
+                      <StandardCard key={link.id} bg={cardBg}>
                         <CardBody>
                           <HStack justify="space-between">
                             <VStack align="start" flex={1}>
-                              <Link href={link.url} isExternal color={useColorModeValue("blue.500", "blue.300")} fontWeight="bold">
+                              <Link href={link.url} isExternal color={linkColor} fontWeight="bold">
                                 minH="44px"
                                 py={2}
                                 {link.title}
                               </Link>
                               {link.description && (
-                                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{link.description}</Text>
+                                <Text fontSize="sm" color={textSecondary}>{link.description}</Text>
                               )}
                               <HStack>
                                 <Badge>{link.type}</Badge>
@@ -1036,7 +1040,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     ))}
 
                     {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).length === 0 && (
-                      <Text textAlign="center" color={useColorModeValue("gray.500", "gray.400")} py={8}>
+                      <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.links', 'No links found')}
                       </Text>
                     )}
@@ -1057,7 +1061,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       const canDownload = canDownloadFile(file.id)
 
                       return (
-                        <StandardCard key={file.id} bg={useColorModeValue("white", "gray.800")}>
+                        <StandardCard key={file.id} bg={cardBg}>
                           <CardBody>
                             <HStack justify="space-between">
                               <HStack flex={1}>
@@ -1067,7 +1071,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 <VStack align="start" flex={1}>
                                   <Text fontWeight="bold">{file.name}</Text>
                                   {file.description && (
-                                    <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{file.description}</Text>
+                                    <Text fontSize="sm" color={textSecondary}>{file.description}</Text>
                                   )}
                                   <HStack>
                                     <Badge>{fileKind}</Badge>
@@ -1137,7 +1141,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     })}
 
                     {(resourceData?.files || []).filter(item => passesFilters(item, 'files')).length === 0 && (
-                      <Text textAlign="center" color={useColorModeValue("gray.500", "gray.400")} py={8}>
+                      <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.files', 'No files found')}
                       </Text>
                     )}
