@@ -3,7 +3,7 @@ import PageContainer from '../../components/PageContainer'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Alert, Badge, Box, Button, CardBody, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
@@ -439,14 +439,14 @@ const EditProposal = ({
         py={3}
         px={4}
         borderBottom="1px"
-        borderColor="gray.200"
+        borderColor={useColorModeValue("gray.200", "gray.600")}
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         flexWrap="wrap"
       >
         <HStack spacing={4}>
-          <Text fontSize="lg" color="gray.500" fontWeight="medium">
+          <Text fontSize="lg" color={useColorModeValue("gray.500", "gray.400")} fontWeight="medium">
             {t('proposals.edit.title', 'Edit Quote')}
           </Text>
           {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
@@ -706,7 +706,7 @@ const EditProposal = ({
             })}
           </HStack>
 
-          <Box borderTop="1px" borderColor="gray.200" my={4} />
+          <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} my={4} />
 
           <Tabs
             index={activeTab === 'item' ? 0 : 1}
@@ -743,7 +743,7 @@ const EditProposal = ({
                   <Text fontSize="lg" fontWeight="medium">
                     {t('proposals.fileUpload.title', 'File Upload Section')}
                   </Text>
-                  <Text color="gray.600">
+                  <Text color={useColorModeValue("gray.600", "gray.400")}>
                     {t(
                       'proposals.fileUpload.description',
                       'This section allows users to upload or manage files.',
@@ -758,7 +758,7 @@ const EditProposal = ({
             </TabPanels>
           </Tabs>
 
-          <Box borderTop="1px" borderColor="gray.200" my={4} />
+          <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} my={4} />
           <VStack spacing={4} align="center" p={4} maxW="600px" mx="auto">
             {isFormDisabled ? (
               // Show status message instead of buttons when quote is locked OR when contractor views accepted quote
@@ -776,7 +776,7 @@ const EditProposal = ({
                       'This quote has been accepted and is now locked.',
                     )}
                   </Text>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                     {t('proposals.lockedStatus.processingNote', 'No further changes can be made.')}
                   </Text>
                 </VStack>

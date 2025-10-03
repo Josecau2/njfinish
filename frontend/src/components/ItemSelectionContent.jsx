@@ -1,7 +1,7 @@
 import StandardCard from './StandardCard'
 import { useEffect, useMemo, useRef, useState, useDeferredValue, startTransition, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
 import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 import ModificationBrowserModal from './model/ModificationBrowserModal'
@@ -1510,7 +1510,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                         h="240px"
                                         objectFit="contain"
                                         borderRadius="10px"
-                                        bg="gray.50"
+                                        bg={useColorModeValue("gray.50", "gray.800")}
                                         onError={(e) => {
                                             const fname = selectedStyleData.styleVariants?.[0]?.image;
                                             if (fname && !e.target.dataset.fallbackTried) {
@@ -1528,13 +1528,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     flex="1"
                                 >
                                     <Flex align="center" fontSize="md">
-                                        <Icon as={Home} boxSize={ICON_BOX_MD} color="blue.500" mr={2} />
+                                        <Icon as={Home} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.500", "blue.300")} mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectVersion?.manufacturerData?.name}
                                         </Heading>
                                     </Flex>
-                                    <Flex align="center" fontSize="md" color="gray.600">
-                                        <Icon as={Brush} boxSize={ICON_BOX_MD} color="gray.500" mr={2} />
+                                    <Flex align="center" fontSize="md" color={useColorModeValue("gray.600", "gray.400")}>
+                                        <Icon as={Brush} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectedStyleData.style}
                                         </Heading>
@@ -1650,17 +1650,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}
                             >
                                 {collectionsLoading ? (
-                                    <Text py={4} color="gray.500">
+                                    <Text py={4} color={useColorModeValue("gray.500", "gray.400")}>
                                         {t('proposalUI.loadingStyles')}
                                     </Text>
                                 ) : stylesMeta.length === 0 ? (
-                                    <Text py={4} color="gray.500">
+                                    <Text py={4} color={useColorModeValue("gray.500", "gray.400")}>
                                         {t('proposalUI.noStyles')}
                                     </Text>
                                 ) : (
                                     <Box className="styles-carousel-container">
                                         {filteredItems.length === 0 ? (
-                                            <Text py={4} textAlign="center" color="gray.500" fontSize="sm">
+                                            <Text py={4} textAlign="center" color={useColorModeValue("gray.500", "gray.400")} fontSize="sm">
                                                 {t('proposalUI.styleComparison.selectItemsMessage')}
                                             </Text>
                                         ) : isStylesCollapsed ? (
@@ -1739,7 +1739,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 h="220px"
                                                                 objectFit="contain"
                                                                 borderRadius="10px"
-                                                                bg="gray.50"
+                                                                bg={useColorModeValue("gray.50", "gray.800")}
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
@@ -1766,7 +1766,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                     {styleItem.style}
                                                                 </Text>
                                                                 {styleItem.id === selectedStyleData?.id && (
-                                                                    <Text fontSize="xs" color="blue.500" mb="0.25rem">
+                                                                    <Text fontSize="xs" color={useColorModeValue("blue.500", "blue.300")} mb="0.25rem">
                                                                         {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                     </Text>
                                                                 )}
@@ -1939,7 +1939,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         {customItems && customItems.filter((ci) => ci.selectVersion === selectVersion?.versionName).length > 0 && (
                             <Flex
                                 fontWeight="semibold"
-                                color="gray.600"
+                                color={useColorModeValue("gray.600", "gray.400")}
                                 mb={2}
                                 px={2}
                                 fontSize="sm"
@@ -1961,7 +1961,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     py={2}
                                     px={2}
                                     borderBottom="1px solid"
-                                    borderColor="gray.200"
+                                    borderColor={useColorModeValue("gray.200", "gray.600")}
                                     align="center"
                                 >
                                     <Text flex="0 0 10%" textAlign="center">{idx + 1}</Text>
@@ -1985,7 +1985,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                         {(!customItems ||
                             customItems.filter((ci) => ci.selectVersion === selectVersion?.versionName).length === 0) && (
-                            <Text color="gray.500" textAlign="center" py={3} fontSize="sm">
+                            <Text color={useColorModeValue("gray.500", "gray.400")} textAlign="center" py={3} fontSize="sm">
                                 No custom items added yet
                             </Text>
                         )}
@@ -2003,27 +2003,27 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         <Table variant="simple" size="sm">
                             <Tbody>
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.cabinets')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalDoc.priceSummary.cabinets')}</Th>
                                     <Td textAlign="center" fontWeight="semibold">
                                         {money(selectedResult?.partsCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.assembly')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalDoc.priceSummary.assembly')}</Th>
                                     <Td textAlign="center">
                                         {money(selectedResult?.assemblyCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.modifications')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalDoc.priceSummary.modifications')}</Th>
                                     <Td textAlign="center">
                                         {money(selectedResult?.modsCents)}
                                     </Td>
                                 </Tr>
 
-                                <Tr bg="gray.100">
+                                <Tr bg={useColorModeValue("gray.100", "gray.700")}>
                                     <Th>{t('proposalDoc.priceSummary.styleTotal')}</Th>
                                     <Td textAlign="center" fontWeight="semibold">
                                         {money(selectedResult?.subtotalBeforeDiscountCents)}
@@ -2032,7 +2032,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                                 {isUserAdmin && (
                                     <Tr>
-                                        <Th bg="gray.50">{t('proposalUI.summary.discountPct')}</Th>
+                                        <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalUI.summary.discountPct')}</Th>
                                         <Td textAlign="center">
                                             <NumberInput
                                                 value={discountPercent}
@@ -2061,34 +2061,34 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 )}
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.total')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalDoc.priceSummary.total')}</Th>
                                     <Td textAlign="center">
                                         {money((selectedResult?.subtotalBeforeDiscountCents || 0) - (selectedResult?.discountCents || 0))}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('settings.manufacturers.edit.deliveryFee')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('settings.manufacturers.edit.deliveryFee')}</Th>
                                     <Td textAlign="center">
                                         {money(selectedResult?.deliveryCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalUI.summary.taxRate')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalUI.summary.taxRate')}</Th>
                                     <Td textAlign="center">
                                         {(selectedResult?.taxRatePct ?? defaultTaxValue) || 0}%
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.tax')}</Th>
+                                    <Th bg={useColorModeValue("gray.50", "gray.800")}>{t('proposalDoc.priceSummary.tax')}</Th>
                                     <Td textAlign="center">
                                         {money(selectedResult?.taxCents)}
                                     </Td>
                                 </Tr>
 
-                                <Tr bg="green.50">
+                                <Tr bg={useColorModeValue("green.50", "green.900")}>
                                     <Th>{t('proposalDoc.priceSummary.grandTotal')}</Th>
                                     <Td textAlign="center" fontWeight="bold">
                                         {money(selectedResult?.grandTotalCents)}

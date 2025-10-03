@@ -259,7 +259,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             <StandardCard variant="outline">
               <CardBody textAlign="center" py={10}>
                 <Spinner size="lg" color="brand.500" />
-                <Text mt={4} color="gray.500">
+                <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
                   {t('proposals.create.loadingManufacturer')}
                 </Text>
               </CardBody>

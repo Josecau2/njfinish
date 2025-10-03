@@ -3,7 +3,7 @@ import StandardCard from '../../components/StandardCard'
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../../utils/colorUtils'
-import { Box, Button, CardBody, Container, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Text, Textarea } from '@chakra-ui/react'
+import { Box, Button, CardBody, Container, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
@@ -23,15 +23,15 @@ const FormSection = ({ title, icon, children }) => (
             w="40px"
             h="40px"
             borderRadius="full"
-            bg="blue.50"
-            color="blue.600"
+            bg={useColorModeValue("blue.50", "blue.900")}
+            color={useColorModeValue("blue.600", "blue.300")}
             display="flex"
             alignItems="center"
             justifyContent="center"
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} aria-hidden="true" />
           </Box>
-          <Text fontWeight="semibold" color="gray.800">
+          <Text fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
             {title}
           </Text>
         </Stack>
@@ -56,13 +56,13 @@ const CustomFormInput = ({
   ...props
 }) => (
   <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
+    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
     </FormLabel>
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
         </InputLeftElement>
       )}
       <Input
@@ -97,13 +97,13 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color="gray.700">
+    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
     </FormLabel>
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
         </InputLeftElement>
       )}
       <Select
@@ -260,8 +260,8 @@ const EditCustomerPage = () => {
       <PageContainer>
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
-            <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
-            <Text mt={4} color="gray.500">
+            <Spinner size="lg" color={useColorModeValue("blue.500", "blue.300")} thickness="4px" speed="0.7s" />
+            <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
               {t('customers.loading')}
             </Text>
           </CardBody>
@@ -463,7 +463,7 @@ const EditCustomerPage = () => {
               />
             </SimpleGrid>
             <FormControl mb={4}>
-              <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
+              <FormLabel fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
                 {t('customers.form.labels.notes')}
               </FormLabel>
               <Textarea

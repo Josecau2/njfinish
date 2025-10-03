@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react'
+import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
@@ -338,7 +338,7 @@ const Contracts = () => {
               <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                   </InputLeftElement>
                   <Input
                     type="search"
@@ -357,7 +357,7 @@ const Contracts = () => {
                 flex="1"
               >
                 <HStack spacing={4} justify="flex-end">
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                     {t('common.itemsPerPage')}
                   </Text>
                   <Select
@@ -408,7 +408,7 @@ const Contracts = () => {
             <CardBody>
               <Center py={12} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                   {t('common.loading', 'Loading...')}
                 </Text>
               </Center>
@@ -422,7 +422,7 @@ const Contracts = () => {
                   <Center flexDirection="column" gap={4}>
                     <Icon as={Search} boxSize={10} color="gray.300" />
                     <Text fontWeight="medium">{t('contracts.empty.title')}</Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                       {t('contracts.empty.subtitle')}
                     </Text>
                   </Center>
@@ -438,8 +438,8 @@ const Contracts = () => {
                       <CardHeader pb={2}>
                         <HStack justify="space-between" align="center">
                           <HStack spacing={4} align="center">
-                            <Icon as={Calendar} boxSize={ICON_BOX_MD} color="gray.400" />
-                            <Text fontSize="sm" color="gray.500">
+                            <Icon as={Calendar} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
                             </Text>
                           </HStack>
@@ -470,7 +470,7 @@ const Contracts = () => {
                               {customerName}
                             </Text>
                           </HStack>
-                          <Text fontSize="sm" color="gray.600" noOfLines={2}>
+                          <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} noOfLines={2}>
                             {item.description || t('contracts.noDescription')}
                           </Text>
                           <HStack spacing={4} align="center">
@@ -479,13 +479,13 @@ const Contracts = () => {
                               alignItems="center"
                               justifyContent="center"
                               rounded="sm"
-                              bg="green.50"
+                              bg={useColorModeValue("green.50", "green.900")}
                               color="green.600"
                               p={1}
                             >
                               <Icon as={Briefcase} boxSize={ICON_BOX_MD} />
                             </Box>
-                            <Text fontSize="sm" color="gray.600">
+                            <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                               {item.designerData?.name || t('contracts.noDesigner')}
                             </Text>
                           </HStack>
@@ -533,7 +533,7 @@ const Contracts = () => {
                           <Center py={12} flexDirection="column" gap={4}>
                             <Icon as={Search} boxSize={10} color="gray.300" />
                             <Text>{t('contracts.empty.title')}</Text>
-                            <Text fontSize="sm" color="gray.500">
+                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                               {t('contracts.empty.subtitle')}
                             </Text>
                           </Center>
@@ -543,7 +543,7 @@ const Contracts = () => {
                       paginatedItems.map((item) => (
                         <Tr key={item.id}>
                           <Td>
-                            <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                            <Text fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
                             </Text>
                           </Td>
@@ -559,12 +559,12 @@ const Contracts = () => {
                             </Text>
                           </Td>
                           <Td>
-                            <Text fontSize="sm" color="gray.600">
+                            <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                               {item.description || t('common.na')}
                             </Text>
                           </Td>
                           <Td>
-                            <Text fontSize="sm" color="gray.700">
+                            <Text fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
                               {item.designerData?.name || t('common.na')}
                             </Text>
                           </Td>
@@ -628,7 +628,7 @@ const Contracts = () => {
             {loadings ? (
               <Center py={10} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                   {t('contracts.loadingDetails')}
                 </Text>
               </Center>
@@ -639,7 +639,7 @@ const Contracts = () => {
                 borderWidth="1px"
                 borderRadius="md"
                 p={5}
-                bg="white"
+                bg={useColorModeValue("white", "gray.800")}
                 sx={{
                   '&::-webkit-scrollbar': { width: '8px' },
                   '&::-webkit-scrollbar-track': { bg: 'gray.100', borderRadius: 'full' },
@@ -650,13 +650,13 @@ const Contracts = () => {
               />
             ) : (
               <Center py={10}>
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                   {t('contracts.noData')}
                 </Text>
               </Center>
             )}
           </ModalBody>
-          <ModalFooter bg="gray.50" borderBottomRadius="md">
+          <ModalFooter bg={useColorModeValue("gray.50", "gray.800")} borderBottomRadius="md">
             <Button variant="outline" onClick={() => setShowModal(false)}>
               {t('common.close')}
             </Button>

@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -287,10 +287,10 @@ const CatalogTableEdit = ({
               <Box
                 textAlign={{ base: "center", md: "start" }}
                 border="1px solid"
-                borderColor="gray.300"
+                borderColor={useColorModeValue("gray.300", "gray.600")}
                 borderRadius="md"
                 p={3}
-                bg="gray.50"
+                bg={useColorModeValue("gray.50", "gray.800")}
                 w="full"
                 maxW="520px"
                 mx="auto"
@@ -323,31 +323,31 @@ const CatalogTableEdit = ({
                   }}
                 />
               </Box>
-              <Box flex="1" border="1px solid" borderColor="gray.300" borderRadius="md" p={3} bg="gray.50" minW={0}>
+              <Box flex="1" border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} bg={useColorModeValue("gray.50", "gray.800")} minW={0}>
                 <Flex mb={3} align="center" gap={2}>
                   <Badge colorScheme="gray">{t('Type')}</Badge>
                   <Text as="strong" fontSize="lg">{selectedTypeInfo.type}</Text>
                 </Flex>
                 {selectedTypeInfo.code && (
-                  <Box mb={2} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Code:</Text>{' '}
+                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Code:</Text>{' '}
                     <strong>{selectedTypeInfo.code}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
-                  <Box mb={2} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Name:</Text>{' '}
+                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Name:</Text>{' '}
                     <strong>{selectedTypeInfo.name}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
-                  <Box mb={3} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Short:</Text>{' '}
+                  <Box mb={3} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Short:</Text>{' '}
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </Box>
                 )}
                 <Box mt={3}>
-                  <Text as="strong" color="gray.600" display="block" mb={2}>Description:</Text>
+                  <Text as="strong" color={useColorModeValue("gray.600", "gray.400")} display="block" mb={2}>Description:</Text>
                   <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
                     {selectedTypeInfo.longDescription ||
                       selectedTypeInfo.description ||
@@ -357,7 +357,7 @@ const CatalogTableEdit = ({
               </Box>
             </Flex>
           ) : (
-            <Box color="gray.600" textAlign="center" p={4} border="1px solid" borderColor="gray.200" borderRadius="md" bg="gray.50">
+            <Box color={useColorModeValue("gray.600", "gray.400")} textAlign="center" p={4} border="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")}>
               {t('No type information available.')}
             </Box>
           )}
@@ -615,7 +615,7 @@ const CatalogTableEdit = ({
                           {item?.description ? (
                             <Text
                               as="span"
-                              color="gray.600"
+                              color={useColorModeValue("gray.600", "gray.400")}
                               noOfLines={1}
                               style={{
                                 maxWidth: '420px',
@@ -759,7 +759,7 @@ const CatalogTableEdit = ({
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
                         </span>
                       ) : (
-                        <Text as="span" color="gray.600">{formatPrice(0)}</Text>
+                        <Text as="span" color={useColorModeValue("gray.600", "gray.400")}>{formatPrice(0)}</Text>
                       )}
                     </Td>
 
@@ -834,7 +834,7 @@ const CatalogTableEdit = ({
                                 <Td
                                   colSpan={10}
                                   fontWeight="semibold"
-                                  color="gray.600"
+                                  color={useColorModeValue("gray.600", "gray.400")}
                                   pl="72px"
                                   fontSize="14px"
                                   borderLeft={`6px solid ${headerBg}`}
@@ -876,9 +876,9 @@ const CatalogTableEdit = ({
                                             px={2.5}
                                             py={0.5}
                                             borderRadius="full"
-                                            bg="gray.100"
+                                            bg={useColorModeValue("gray.100", "gray.700")}
                                             border={`1px solid ${headerBg}`}
-                                            color="gray.800"
+                                            color={useColorModeValue("gray.800", "gray.200")}
                                             fontWeight="600"
                                             lineHeight={1.2}
                                             boxShadow="sm"
@@ -892,11 +892,11 @@ const CatalogTableEdit = ({
                                             return details ? (
                                               <Text
                                                 as="span"
-                                                color="gray.600"
+                                                color={useColorModeValue("gray.600", "gray.400")}
                                                 fontSize="14px"
                                                 padding="2px 8px"
                                                 borderRadius="6px"
-                                                bg="gray.50"
+                                                bg={useColorModeValue("gray.50", "gray.800")}
                                                 border="1px dashed"
                                                 borderColor="gray.400"
                                               >
@@ -1030,7 +1030,7 @@ const CatalogTableEdit = ({
                     {item?.description ? (
                       <Text
                         as="span"
-                        color="gray.600"
+                        color={useColorModeValue("gray.600", "gray.400")}
                         noOfLines={1}
                         maxWidth="220px"
                         overflow="hidden"

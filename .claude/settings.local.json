@@ -156,7 +156,9 @@
       "Bash(else echo \"No Vite cache found\")",
       "Bash(dir \"C:\\njtake2\\njcabinets-main\\frontend\\src\" /s /b)",
       "Bash(if [ -f \"nul\" ])",
-      "Bash(then rm -f nul)"
+      "Bash(then rm -f nul)",
+      "Bash(tee:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

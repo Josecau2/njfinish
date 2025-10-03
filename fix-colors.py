@@ -51,7 +51,7 @@ def ensure_import(content):
     if not chakra_import:
         return content, False
 
-    imports = [imp.strip() for imp in chakra_import.group(1).split(',')]
+    imports = [imp.strip() for imp in chakra_import.group(1).split(',') if imp.strip()]  # Filter out empty strings
 
     if 'useColorModeValue' in imports:
         return content, False
@@ -147,6 +147,50 @@ PHASES = {
             'frontend/src/pages/settings/customization/LoginCustomizerPage.jsx',
             'frontend/src/pages/settings/users/CreateUser.jsx',
             'frontend/src/components/common/PaginationComponent.jsx',
+        ]
+    },
+    'phase10': {
+        'name': 'Additional Pages',
+        'files': [
+            'frontend/src/pages/contracts/index.jsx',
+            'frontend/src/pages/proposals/CreateProposal/DesignUpload.jsx',
+            'frontend/src/pages/Resources/index.jsx',
+            'frontend/src/pages/orders/OrderDetails.jsx',
+            'frontend/src/pages/proposals/EditProposal.jsx',
+            'frontend/src/pages/admin/LeadsPage.jsx',
+            'frontend/src/pages/contractor/ContractorDashboard.jsx',
+        ]
+    },
+    'phase11': {
+        'name': 'Settings Pages',
+        'files': [
+            'frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx',
+            'frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx',
+            'frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx',
+            'frontend/src/pages/settings/locations/LocationList.jsx',
+            'frontend/src/pages/settings/locations/CreateLocation.jsx',
+            'frontend/src/pages/settings/locations/EditLocation.jsx',
+            'frontend/src/pages/settings/globalMods/GlobalModsPage.jsx',
+            'frontend/src/pages/settings/taxes/TaxesPage.jsx',
+        ]
+    },
+    'phase12': {
+        'name': 'Components',
+        'files': [
+            'frontend/src/components/model/PrintProposalModal.jsx',
+            'frontend/src/components/ItemSelectionContent.jsx',
+            'frontend/src/components/CatalogTableEdit.js',
+            'frontend/src/components/AppBreadcrumb.jsx',
+            'frontend/src/components/showroom/ShowroomModeToggle.jsx',
+        ]
+    },
+    'phase13': {
+        'name': 'Customers & Proposals',
+        'files': [
+            'frontend/src/pages/customers/AddCustomerForm.jsx',
+            'frontend/src/pages/customers/EditCustomerPage.jsx',
+            'frontend/src/pages/customers/CustomerForm.jsx',
+            'frontend/src/pages/proposals/CreateProposalForm.jsx',
         ]
     },
 }

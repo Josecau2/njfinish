@@ -1,28 +1,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Box,
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  Divider,
-  HStack,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Switch,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react'
+import { Box, Button, Checkbox, CheckboxGroup, Divider, HStack, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Switch, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { Controller, useForm } from 'react-hook-form'
 import { Eye, Printer, Download } from 'lucide-react'
@@ -371,7 +350,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
-                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color="gray.500" mb={4}>
+                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color={useColorModeValue("gray.500", "gray.400")} mb={4}>
                   {t('proposalCommon.visibilityOptions', 'Visibility Options')}
                 </Text>
                 <SimpleGrid columns={isMobile ? 1 : 3} spacing={4}>
@@ -610,11 +589,11 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           </ModalHeader>
           <ModalCloseButton aria-label="Close modal" />
           <ModalBody p={0}>
-            <Box px={previewPadding} py={4} bg="gray.50">
+            <Box px={previewPadding} py={4} bg={useColorModeValue("gray.50", "gray.800")}>
               <Box
                 maxH={previewMaxHeight}
                 overflow="auto"
-                bg="white"
+                bg={useColorModeValue("white", "gray.800")}
                 borderWidth="1px"
                 borderRadius="lg"
                 boxShadow="base"

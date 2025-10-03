@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { FileText, Settings, Image as ImageIcon, Save, Trash, Globe, Building } from 'lucide-react'
@@ -280,7 +280,7 @@ const PdfLayoutCustomization = () => {
 
   const PreviewContent = () => (
     <Box
-      bg="white"
+      bg={useColorModeValue("white", "gray.800")}
       borderRadius="2xl"
       overflow="hidden"
       boxShadow="0 10px 40px rgba(0,0,0,0.1)"
@@ -328,12 +328,12 @@ const PdfLayoutCustomization = () => {
 
       <Box px={8} py={6}>
         {formData.pdfHeader && (
-          <Text fontSize="xl" fontWeight="semibold" mb={4} color="gray.700">
+          <Text fontSize="xl" fontWeight="semibold" mb={4} color={useColorModeValue("gray.700", "gray.300")}>
             {formData.pdfHeader}
           </Text>
         )}
 
-        <Box overflowX="auto" borderWidth="1px" borderColor="gray.200" borderRadius="lg" mb={6}>
+        <Box overflowX="auto" borderWidth="1px" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="lg" mb={6}>
           <Table variant="simple" size="sm">
             <Thead>
               <Tr>
@@ -403,10 +403,10 @@ const PdfLayoutCustomization = () => {
         </Box>
 
         <Box
-          bg="gray.50"
+          bg={useColorModeValue("gray.50", "gray.800")}
           borderRadius="lg"
           borderWidth="1px"
-          borderColor="gray.200"
+          borderColor={useColorModeValue("gray.200", "gray.600")}
           p={6}
           mb={6}
         >
@@ -425,7 +425,7 @@ const PdfLayoutCustomization = () => {
               fontWeight={isTotal ? 'bold' : 'normal'}
               fontSize={isTotal ? 'lg' : 'md'}
               borderTopWidth={isEmphasis || isTotal ? '1px' : '0'}
-              borderColor="gray.200"
+              borderColor={useColorModeValue("gray.200", "gray.600")}
               pt={isEmphasis || isTotal ? 3 : 0}
               pb={2}
             >
@@ -437,12 +437,12 @@ const PdfLayoutCustomization = () => {
 
         {formData.pdfFooter && (
           <Box
-            bg="gray.50"
+            bg={useColorModeValue("gray.50", "gray.800")}
             borderRadius="lg"
             borderWidth="1px"
-            borderColor="gray.200"
+            borderColor={useColorModeValue("gray.200", "gray.600")}
             p={6}
-            color="gray.600"
+            color={useColorModeValue("gray.600", "gray.400")}
             fontSize="sm"
             whiteSpace="pre-line"
           >
@@ -472,7 +472,7 @@ const PdfLayoutCustomization = () => {
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
           <StandardCard variant="outline">
-            <CardHeader bg="gray.50" borderBottomWidth="1px">
+            <CardHeader bg={useColorModeValue("gray.50", "gray.800")} borderBottomWidth="1px">
               <HStack spacing={4} align="center">
                 <Box
                   bg="brand.500"
@@ -486,10 +486,10 @@ const PdfLayoutCustomization = () => {
                   <Icon as={FileText} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="flex-start" spacing={0}>
-                  <Text fontWeight="semibold" color="gray.800">
+                  <Text fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
                     {t('settings.customization.pdf.sections.headerFooter.title')}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                     {t('settings.customization.pdf.sections.headerFooter.subtitle')}
                   </Text>
                 </VStack>
@@ -527,13 +527,13 @@ const PdfLayoutCustomization = () => {
                     <Badge colorScheme="brand" textTransform="uppercase" fontSize="xs" borderRadius="sm">
                       {t('settings.customization.pdf.badges.colors')}
                     </Badge>
-                    <Text fontWeight="semibold" color="gray.700">
+                    <Text fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                       {t('settings.customization.pdf.labels.headerColors')}
                     </Text>
                   </HStack>
                   <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
                     <FormControl>
-                      <FormLabel fontSize="sm" color="gray.600">
+                      <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                         {t('settings.customization.pdf.labels.backgroundColor')}
                       </FormLabel>
                       <HStack spacing={4}>
@@ -546,13 +546,13 @@ const PdfLayoutCustomization = () => {
                           h={12}
                           p={0}
                         />
-                        <Badge fontFamily="mono" px={3} py={2} borderRadius="md" bg="gray.50" borderWidth="1px">
+                        <Badge fontFamily="mono" px={3} py={2} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")} borderWidth="1px">
                           {formData.headerBgColor}
                         </Badge>
                       </HStack>
                     </FormControl>
                     <FormControl>
-                      <FormLabel fontSize="sm" color="gray.600">
+                      <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                         {t('settings.customization.pdf.labels.textColor')}
                       </FormLabel>
                       <HStack spacing={4}>
@@ -565,7 +565,7 @@ const PdfLayoutCustomization = () => {
                           h={12}
                           p={0}
                         />
-                        <Badge fontFamily="mono" px={3} py={2} borderRadius="md" bg="gray.50" borderWidth="1px">
+                        <Badge fontFamily="mono" px={3} py={2} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")} borderWidth="1px">
                           {formData.headerTxtColor}
                         </Badge>
                       </HStack>
@@ -577,7 +577,7 @@ const PdfLayoutCustomization = () => {
           </StandardCard>
 
           <StandardCard variant="outline">
-            <CardHeader bg="gray.50" borderBottomWidth="1px">
+            <CardHeader bg={useColorModeValue("gray.50", "gray.800")} borderBottomWidth="1px">
               <HStack spacing={4} align="center">
                 <Box
                   bg="brand.500"
@@ -591,10 +591,10 @@ const PdfLayoutCustomization = () => {
                   <Icon as={Building} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="flex-start" spacing={0}>
-                  <Text fontWeight="semibold" color="gray.800">
+                  <Text fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
                     {t('settings.customization.pdf.sections.companyInfo.title')}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                     {t('settings.customization.pdf.sections.companyInfo.subtitle')}
                   </Text>
                 </VStack>
@@ -632,14 +632,14 @@ const PdfLayoutCustomization = () => {
                     role="button"
                     tabIndex={0}
                   >
-                    <VStack spacing={4} color="gray.600">
+                    <VStack spacing={4} color={useColorModeValue("gray.600", "gray.400")}>
                       <Icon as={ImageIcon} boxSize={6} />
                       <Text>
                         {dragActive
                           ? t('settings.customization.pdf.dropHere')
                           : t('settings.customization.pdf.chooseLogo')}
                       </Text>
-                      <Text fontSize="xs" color="gray.500">
+                      <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
                         {t('settings.customization.pdf.supportedTypes')}
                       </Text>
                     </VStack>
@@ -653,10 +653,10 @@ const PdfLayoutCustomization = () => {
                     </FormLabel>
                     <HStack
                       spacing={4}
-                      bg="gray.50"
+                      bg={useColorModeValue("gray.50", "gray.800")}
                       borderRadius="md"
                       borderWidth="1px"
-                      borderColor="gray.200"
+                      borderColor={useColorModeValue("gray.200", "gray.600")}
                       p={3}
                       align="center"
                     >
@@ -667,7 +667,7 @@ const PdfLayoutCustomization = () => {
                         objectFit="contain"
                         borderRadius="md"
                         boxShadow="sm"
-                        bg="white"
+                        bg={useColorModeValue("white", "gray.800")}
                         p={1}
                       />
                       <Button
@@ -759,7 +759,7 @@ const PdfLayoutCustomization = () => {
             </HStack>
           </ModalHeader>
           <ModalCloseButton color={getContrastColor(formData.headerBgColor)} />
-          <ModalBody bg="gray.50" p={8}>
+          <ModalBody bg={useColorModeValue("gray.50", "gray.800")} p={8}>
             <PreviewContent />
           </ModalBody>
           <ModalFooter>

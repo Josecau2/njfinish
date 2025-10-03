@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Text, Textarea, useToast, VStack } from '@chakra-ui/react'
+import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Text, Textarea, useToast, VStack, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
@@ -30,12 +30,12 @@ const FormSection = ({ title, icon, children, className = '' }) => (
           borderRadius="full"
           w="40px"
           h="40px"
-          bg="blue.50"
-          color="blue.500"
+          bg={useColorModeValue("blue.50", "blue.900")}
+          color={useColorModeValue("blue.500", "blue.300")}
         >
           <Icon as={icon} boxSize={ICON_BOX_MD} />
         </Flex>
-        <Text as="h6" mb={0} fontWeight="semibold" color="gray.700">{title}</Text>
+        <Text as="h6" mb={0} fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>{title}</Text>
       </HStack>
       {children}
     </CardBody>
@@ -56,7 +56,7 @@ const CustomFormInput = ({
   ...props
 }) => (
   <div>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700" mb={2}>
+    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
       {label}
       {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
@@ -69,7 +69,7 @@ const CustomFormInput = ({
             borderRight: 'none',
           }}
         >
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
         </InputLeftAddon>
       )}
       <Input
@@ -123,7 +123,7 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <div>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700" mb={2}>
+    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
       {label}
       {required && <Text as="span" color="red.500" ml={1}>*</Text>}
     </FormLabel>
@@ -136,7 +136,7 @@ const CustomFormSelect = ({
             borderRight: 'none',
           }}
         >
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
         </InputLeftAddon>
       )}
       <Select
@@ -594,7 +594,7 @@ const AddCustomerForm = () => {
           </SimpleGrid>
 
           <div>
-            <FormLabel fontWeight="medium" color="gray.700" mb={2}>{t('form.labels.notes')}</FormLabel>
+            <FormLabel fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>{t('form.labels.notes')}</FormLabel>
             <Textarea
               id="note"
               name="note"

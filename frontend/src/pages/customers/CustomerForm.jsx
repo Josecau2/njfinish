@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import { Alert, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Spinner, Text, Textarea, VStack } from '@chakra-ui/react'
+import { Alert, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Spinner, Text, Textarea, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { User, Mail, Save, ArrowLeft, Phone, MapPin } from 'lucide-react'
@@ -158,11 +158,11 @@ const CustomerForm = ({
         <CardHeader>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <VStack align="start" spacing={4}>
-              <Text fontSize="xl" fontWeight="bold" color="gray.800">
+              <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                 {isEditing ? t('customers.form.titles.edit') : t('customers.form.titles.add')}
               </Text>
               {isContractor && (
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                   {contractorGroupName}
                 </Text>
               )}

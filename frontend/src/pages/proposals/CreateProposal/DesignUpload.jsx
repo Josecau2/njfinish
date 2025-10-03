@@ -1,7 +1,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tab, TabList, Tabs, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tab, TabList, Tabs, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
@@ -96,7 +96,7 @@ const DesignImportStep = ({
       <StandardCard my={4} shadow="md" w="full">
         <CardBody p={{ base: 4, md: 6 }}>
           <Flex justify="space-between" align="center" mb={6} gap={4} flexWrap="wrap">
-            <Heading size="md" color="gray.800">
+            <Heading size="md" color={useColorModeValue("gray.800", "gray.200")}>
               {t('proposals.create.design.title')}
             </Heading>
             {!hideBack && (
@@ -127,7 +127,7 @@ const DesignImportStep = ({
 
           {activeTab === 'import' ? (
             <Stack spacing={6} align="center" textAlign="center" py={6}>
-              <Text color="gray.600">
+              <Text color={useColorModeValue("gray.600", "gray.400")}>
                 {t('proposals.create.design.supportedTypes', { types: '.TXT, .CSV' })}
               </Text>
 
@@ -139,7 +139,7 @@ const DesignImportStep = ({
                 borderWidth="2px"
                 borderStyle="dashed"
                 borderRadius="xl"
-                bg="gray.50"
+                bg={useColorModeValue("gray.50", "gray.800")}
                 py={10}
                 px={6}
                 display="flex"
@@ -149,8 +149,8 @@ const DesignImportStep = ({
                 transition="all 0.2s"
                 _hover={{ borderColor: 'brand.400', bg: 'gray.100' }}
               >
-                <Icon as={CloudUpload} boxSize={12} color="gray.400" mb={3} />
-                <Text color="gray.600" mb={4}>
+                <Icon as={CloudUpload} boxSize={12} color={useColorModeValue("gray.400", "gray.500")} mb={3} />
+                <Text color={useColorModeValue("gray.600", "gray.400")} mb={4}>
                   {t('proposals.create.design.selectExportedFile')}
                 </Text>
                 <MotionButton
@@ -194,7 +194,7 @@ const DesignImportStep = ({
               {isFetchingStyles ? (
                 <Spinner size="lg" color="brand.500" />
               ) : filteredCollections.length === 0 ? (
-                <Text color="gray.500" fontStyle="italic">
+                <Text color={useColorModeValue("gray.500", "gray.400")} fontStyle="italic">
                   {t('proposals.create.design.noStylesFound', 'No styles found for this search.')}
                 </Text>
               ) : (
@@ -255,7 +255,7 @@ const DesignImportStep = ({
                           </Text>
                         </Box>
                       </Box>
-                      <Text mt={2} color="gray.600" fontWeight="semibold" noOfLines={1}>
+                      <Text mt={2} color={useColorModeValue("gray.600", "gray.400")} fontWeight="semibold" noOfLines={1}>
                         {style.styleVariants?.[0]?.shortName || style.style}
                       </Text>
                     </Box>
@@ -271,7 +271,7 @@ const DesignImportStep = ({
         <Box
           position="sticky"
           bottom={0}
-          bg="white"
+          bg={useColorModeValue("white", "gray.800")}
           borderTopWidth="1px"
           boxShadow="md"
           px={4}

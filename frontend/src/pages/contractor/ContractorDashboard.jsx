@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Alert, Button, CardBody, CardHeader, Flex, Heading, Icon, SimpleGrid, Spinner, Stack, Text, Wrap } from '@chakra-ui/react'
+import { Alert, Button, CardBody, CardHeader, Flex, Heading, Icon, SimpleGrid, Spinner, Stack, Text, Wrap, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { FileText, User } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -146,7 +146,7 @@ const ContractorDashboard = () => {
         <CardHeader borderBottomWidth="1px">
           <Stack spacing={4}>
             <Heading size="md">{t('dashboard.welcome', { group: groupName })}</Heading>
-            <Text color="gray.500">{t('dashboard.portal')}</Text>
+            <Text color={useColorModeValue("gray.500", "gray.400")}>{t('dashboard.portal')}</Text>
           </Stack>
         </CardHeader>
         <CardBody>
