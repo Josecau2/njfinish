@@ -69,6 +69,8 @@ const OrdersList = ({
   // Color mode values for consistent theming
   const hoverBg = useColorModeValue('gray.50', 'gray.700')
   const stickyBg = useColorModeValue('white', 'gray.800')
+  const emptyIconColor = useColorModeValue('gray.400', 'gray.500')
+  const emptyTextColor = useColorModeValue("gray.500", "gray.400")
 
   // Resolve manufacturer name from order snapshot first; fall back to legacy manufacturersData if present
   const resolveManuName = (item) => {
@@ -525,9 +527,9 @@ const OrdersList = ({
               <Tr>
                 <Td colSpan={8} textAlign="center" py={5}>
                   <VStack spacing={4}>
-                    <ShoppingCart size={48} color="gray" />
+                    <ShoppingCart size={48} color={emptyIconColor} />
                     <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
-                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                    <Text fontSize="sm" color={emptyTextColor}>
                       {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
                     </Text>
                   </VStack>
@@ -618,9 +620,9 @@ const OrdersList = ({
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch" w="full">
         {paged.length === 0 ? (
           <VStack spacing={4} textAlign="center" py={5}>
-            <ShoppingCart size={48} color="gray" />
+            <ShoppingCart size={48} color={emptyIconColor} />
             <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
-            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+            <Text fontSize="sm" color={emptyTextColor}>
               {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
             </Text>
           </VStack>

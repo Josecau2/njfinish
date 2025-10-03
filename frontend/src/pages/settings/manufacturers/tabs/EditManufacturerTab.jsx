@@ -2,7 +2,7 @@ import StandardCard from '../../../../components/StandardCard'
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getContrastColor } from '../../../../utils/colorUtils'
-import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Checkbox, Container, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, Textarea, VStack } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Checkbox, Container, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, SimpleGrid, Stack, Switch, Text, Textarea, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../../components/PageContainer'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -24,6 +24,10 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
 
   const headerBg = customization.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
+
+  // Dark mode colors
+  const helperTextColor = useColorModeValue("gray.500", "gray.400")
+  const cardHeaderBg = useColorModeValue("gray.50", "gray.800")
 
   const [formData, setFormData] = useState({
     name: '',
@@ -95,7 +99,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
     const multiplier = parseFloat(formData.costMultiplier)
     if (Number.isNaN(multiplier)) return null
     return (
-      <FormHelperText color="gray.500">
+      <FormHelperText color={helperTextColor}>
         {t('settings.manufacturers.example.multiplier', {
           msrp: msrp.toFixed(2),
           cost: cost.toFixed(2),
@@ -157,7 +161,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
         <form onSubmit={handleSubmit}>
           <Stack spacing={6}>
             <StandardCard variant="outline">
-              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+              <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.basicInfo', 'Basic Information')}
               </CardHeader>
               <CardBody>
@@ -187,7 +191,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </StandardCard>
 
             <StandardCard variant="outline">
-              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+              <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.emailSettings', 'Manufacturer Email Settings')}
               </CardHeader>
               <CardBody>
@@ -252,7 +256,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </StandardCard>
 
             <StandardCard variant="outline">
-              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+              <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.pricing', 'Pricing & Delivery')}
               </CardHeader>
               <CardBody>
@@ -341,7 +345,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </StandardCard>
 
             <StandardCard variant="outline">
-              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+              <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
                 {t('settings.manufacturers.fields.instructions')}
               </CardHeader>
               <CardBody>
@@ -358,7 +362,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
             </StandardCard>
 
             <StandardCard variant="outline">
-              <CardHeader fontWeight="semibold" bg="gray.50" borderBottomWidth="1px">
+              <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
                 {t('settings.manufacturers.edit.assets', 'Assets & Uploads')}
               </CardHeader>
               <CardBody>
