@@ -27,6 +27,19 @@ const LocationForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
+  // Color mode values
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const color3 = useColorModeValue('white', 'gray.700')
+  const color4 = useColorModeValue('gray.200', 'gray.600')
+  const colorYellow100 = useColorModeValue('yellow.100', 'yellow.900')
+  const colorYellow700 = useColorModeValue('yellow.700', 'yellow.300')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const bgGray50_1 = useColorModeValue('gray.50', 'gray.900')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+
   // Dark mode colors
   const inputIconBg = bgGray50
   const inputIconBorder = borderGray200
@@ -36,19 +49,6 @@ const LocationForm = () => {
   const timeIconColor = colorYellow700
   const readonlyInputBg = bgGray50
   const readonlyInputColor = borderGray600
-
-  // Color mode values
-  const bgGray50 = bgGray50
-  const borderGray200 = borderGray200
-  const color3 = color3
-  const color4 = color4
-  const colorYellow100 = colorYellow100
-  const colorYellow700 = colorYellow700
-  const borderGray600 = borderGray600
-  const bgGray50_1 = bgGray50_1
-  const borderGray700 = borderGray700
-  const iconRed500 = iconRed500
-  const iconGray400 = iconGray400
 
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)

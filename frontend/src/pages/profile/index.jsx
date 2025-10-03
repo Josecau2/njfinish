@@ -20,8 +20,8 @@ const ProfilePage = () => {
   const customization = useSelector((state) => state.customization)
 
   // Color mode values
-  const iconRed500 = iconRed500
-  const bgGray100 = bgGray100
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
   const [formData, setFormData] = useState({
     name: '',
     email: '',

@@ -9,7 +9,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 const MobilePdfViewer = ({ fileUrl }) => {
 
   // Color mode values
-  const iconRed500 = iconRed500
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
   const [numPages, setNumPages] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)

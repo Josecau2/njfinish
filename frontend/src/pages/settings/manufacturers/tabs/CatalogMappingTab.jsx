@@ -23,15 +23,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   // AlertDialog confirmation system (replaces SweetAlert)
 
   // Color mode values
-  const borderGray600 = borderGray600
-  const iconGray500 = iconGray500
-  const iconGray300 = iconGray300
-  const bgGray50 = bgGray50
-  const iconGreen500 = iconGreen500
-  const iconBlue500 = iconBlue500
-  const bgBlue50 = bgBlue50
-  const iconRed500 = iconRed500
-  const colorOrange50 = colorOrange50
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const iconGray300 = useColorModeValue('gray.300', 'gray.600')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const iconGreen500 = useColorModeValue('green.500', 'green.300')
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
+  const colorOrange50 = useColorModeValue('orange.50', 'orange.900')
+
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',

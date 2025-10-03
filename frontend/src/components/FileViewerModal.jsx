@@ -51,8 +51,8 @@ export default function FileViewerModal({
 }) {
 
   // Color mode values
-  const iconBlue500 = iconBlue500
-  const iconGray400 = iconGray400
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
   const [textContent, setTextContent] = useState('')
   const [xmlContent, setXmlContent] = useState('')
   const [isMobile, setIsMobile] = useState(false)

@@ -29,8 +29,8 @@ const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, 
   const elements = useElements()
 
   // Color mode values
-  const iconBlue500 = iconBlue500
-  const iconGray500 = iconGray500
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (event) => {

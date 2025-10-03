@@ -25,7 +25,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const dispatch = useDispatch();
 
   // Color mode values
-  const color1 = color1
+  const color1 = useColorModeValue('white', 'gray.800')
     const [selectedStyleData, setSelectedStyleData] = useState(null);
     // Base-priced styles list for style comparison (mirror Create)
     const [stylesMeta, setStylesMeta] = useState([]);

@@ -12,8 +12,8 @@ const ContractorDashboard = () => {
   const { t } = useTranslation()
 
   // Color mode values
-  const iconGray500 = iconGray500
-  const textGreen600 = textGreen600
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
   const [stats, setStats] = useState({
     proposals: 0,
     customers: 0,

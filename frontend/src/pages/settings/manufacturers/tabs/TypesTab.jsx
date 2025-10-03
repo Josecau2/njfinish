@@ -19,13 +19,14 @@ const TypesTab = ({ manufacturer }) => {
   const isContractor = loggedInUser?.group?.group_type === 'contractor'
 
   // Color mode values
-  const bgGray50 = bgGray50
-  const borderGray200 = borderGray200
-  const borderGray700 = borderGray700
-  const iconGray400 = iconGray400
-  const iconGray500 = iconGray500
-  const color6 = color6
-  const borderGray600 = borderGray600
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const color6 = useColorModeValue('white', 'gray.700')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+
   const [types, setTypes] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)

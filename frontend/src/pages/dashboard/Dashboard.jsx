@@ -66,10 +66,10 @@ const Dashboard = () => {
   const latestProposals = useSelector((state) => state.dashboard.latestProposals || [])
 
   // Color mode values
-  const iconBlue500 = iconBlue500
-  const borderGray600 = borderGray600
-  const colorGray800 = colorGray800
-  const iconGray500 = iconGray500
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const colorGray800 = useColorModeValue('gray.800', 'gray.200')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const [displayedProposals, setDisplayedProposals] = useState(0)
   const [displayedOrders, setDisplayedOrders] = useState(0)
   const [hoveredCard, setHoveredCard] = useState(null)

@@ -29,13 +29,13 @@ const PdfLayoutCustomization = () => {
   const textColor = getContrastColor(headerBgColor)
 
   // Color mode values
-  const color1 = color1
-  const borderGray700 = borderGray700
-  const borderGray200 = borderGray200
-  const bgGray50 = bgGray50
-  const borderGray600 = borderGray600
-  const colorGray800 = colorGray800
-  const iconGray500 = iconGray500
+  const color1 = useColorModeValue('white', 'gray.800')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const colorGray800 = useColorModeValue('gray.800', 'gray.200')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
 
   const [formData, setFormData] = useState({
     pdfHeader: '',

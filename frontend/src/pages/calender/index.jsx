@@ -41,9 +41,9 @@ const BADGE_SCHEMES = {
 const CalendarView = () => {
 
   // Color mode values
-  const iconGray400 = iconGray400
-  const iconBlue500 = iconBlue500
-  const iconGray500 = iconGray500
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const [events, setEvents] = useState([])
   const [filteredEvents, setFilteredEvents] = useState([])
   const [eventType, setEventType] = useState('All')

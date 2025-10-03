@@ -166,9 +166,9 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   const customization = useSelector((state) => state.customization)
 
   // Color mode values
-  const bgGray50 = bgGray50
-  const bgGray100 = bgGray100
-  const borderGray600 = borderGray600
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const toast = useToast()

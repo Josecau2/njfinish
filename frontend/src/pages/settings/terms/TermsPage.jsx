@@ -17,7 +17,8 @@ const TermsPage = () => {
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
 
   // Color mode values
-  const iconGray500 = iconGray500
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+
   const [content, setContent] = useState('')
   const [version, setVersion] = useState(null)
   const [saving, setSaving] = useState(false)

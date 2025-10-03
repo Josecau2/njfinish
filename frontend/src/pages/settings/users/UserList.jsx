@@ -23,9 +23,10 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 const UsersPage = () => {
 
   // Color mode values
-  const borderGray600 = borderGray600
-  const iconGreen500 = iconGreen500
-  const iconGray500 = iconGray500
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const iconGreen500 = useColorModeValue('green.500', 'green.300')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)

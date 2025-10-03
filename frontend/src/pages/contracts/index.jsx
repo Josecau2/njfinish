@@ -15,15 +15,15 @@ const Contracts = () => {
   const { t } = useTranslation()
 
   // Color mode values
-  const iconGray400 = iconGray400
-  const iconGray500 = iconGray500
-  const iconGray300 = iconGray300
-  const borderGray600 = borderGray600
-  const bgGreen50 = bgGreen50
-  const textGreen600 = textGreen600
-  const borderGray700 = borderGray700
-  const color8 = color8
-  const bgGray50 = bgGray50
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const iconGray300 = useColorModeValue('gray.300', 'gray.600')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const color8 = useColorModeValue('white', 'gray.800')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [viewMode, setViewMode] = useState('card')

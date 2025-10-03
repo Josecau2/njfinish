@@ -31,8 +31,8 @@ const LoginPreview = ({ config }) => {
   const { t } = useTranslation()
 
   // Color mode values
-  const color1 = color1
-  const bgGray50 = bgGray50
+  const color1 = useColorModeValue('white', 'gray.800')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.900')
   const [activeView, setActiveView] = useState('login')
   const [showPassword, setShowPassword] = useState(false)
   const customizationState = useSelector((state) => state.customization)

@@ -31,12 +31,12 @@ const EditLocation = () => {
   const dispatch = useDispatch()
 
   // Color mode values
-  const borderGray600 = borderGray600
-  const borderGray700 = borderGray700
-  const iconRed500 = iconRed500
-  const iconGray400 = iconGray400
-  const bgGray100 = bgGray100
-  const iconGray500 = iconGray500
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
 
   const [formData, setFormData] = useState(INITIAL_FORM)
   const [errors, setErrors] = useState({})

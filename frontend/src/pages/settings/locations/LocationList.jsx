@@ -57,10 +57,10 @@ const LocationPage = () => {
   const navigate = useNavigate()
 
   // Color mode values
-  const iconGray500 = iconGray500
-  const borderGray600 = borderGray600
-  const iconGray400 = iconGray400
-  const bgGray100 = bgGray100
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
 
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)

@@ -12,9 +12,9 @@ const StylePicturesTab = ({ manufacturer }) => {
   const api_url = import.meta.env.VITE_API_URL
 
   // Color mode values
-  const iconGray500 = iconGray500
-  const bgGray50 = bgGray50
-  const borderGray600 = borderGray600
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
 
   const [stylesMeta, setStylesMeta] = useState([])
   const [loading, setLoading] = useState(false)

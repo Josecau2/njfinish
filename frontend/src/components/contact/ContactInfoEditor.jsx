@@ -12,8 +12,8 @@ const ContactInfoEditor = ({ info, onSave }) => {
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
 
   // Color mode values
-  const bgGray50 = bgGray50
-  const bgGray100 = bgGray100
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
 
   const [form, setForm] = useState({
     companyName: info?.companyName || '',

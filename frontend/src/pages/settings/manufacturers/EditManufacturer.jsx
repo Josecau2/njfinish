@@ -27,7 +27,8 @@ const EditManufacturer = () => {
   const dispatch = useDispatch()
 
   // Color mode values
-  const borderGray200 = borderGray200
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+
   const [activeKey, setActiveKey] = useState(0)
   const manufacturer = useSelector((state) => state.manufacturers.selected)
   const { t } = useTranslation()

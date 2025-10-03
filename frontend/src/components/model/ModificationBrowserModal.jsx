@@ -52,14 +52,14 @@ const ModificationBrowserModal = ({
   const prefersReducedMotion = useReducedMotion()
 
   // Color mode values
-  const iconGray500 = iconGray500
-  const borderGray200 = borderGray200
-  const bgGray50 = bgGray50
-  const borderGray600 = borderGray600
-  const iconRed500 = iconRed500
-  const color6 = color6
-  const bgGray100 = bgGray100
-  const iconGray400 = iconGray400
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
+  const color6 = useColorModeValue('white', 'gray.700')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [gallery, setGallery] = useState([])

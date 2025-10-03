@@ -68,18 +68,18 @@ const LoginCustomizerPage = () => {
   const cardBg = useColorModeValue('white', 'gray.800')
 
   // Color mode values
-  const iconBlue500 = iconBlue500
-  const iconGray500 = iconGray500
-  const bgBlue50 = bgBlue50
-  const colorGray800 = colorGray800
-  const borderGray700 = borderGray700
-  const borderGray200 = borderGray200
-  const bgGray50 = bgGray50
-  const bgGreen50 = bgGreen50
-  const textGreen600 = textGreen600
-  const textBlue600 = textBlue600
-  const colorOrange50 = colorOrange50
-  const textBlue700 = textBlue700
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const colorGray800 = useColorModeValue('gray.800', 'gray.200')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
+  const textBlue600 = useColorModeValue('blue.600', 'blue.300')
+  const colorOrange50 = useColorModeValue('orange.50', 'orange.900')
+  const textBlue700 = useColorModeValue('blue.700', 'blue.300')
 
   const [showPreview, setShowPreview] = useState(false)
   const [loading, setLoading] = useState(true)

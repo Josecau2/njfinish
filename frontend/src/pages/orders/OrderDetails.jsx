@@ -110,13 +110,13 @@ const OrderDetails = () => {
   const deleteDisclosure = useDisclosure()
 
   // Color mode values
-  const iconGray500 = iconGray500
-  const borderGray700 = borderGray700
-  const bgGray50 = bgGray50
-  const borderGray600 = borderGray600
-  const borderGray200 = borderGray200
-  const iconGray400 = iconGray400
-  const bgGray100 = bgGray100
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const borderGray700 = useColorModeValue('gray.700', 'gray.300')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const bgGray100 = useColorModeValue('gray.100', 'gray.700')
   const [showPdf, setShowPdf] = useState(false)
   const [pdfUrl, setPdfUrl] = useState(null)
   const [resending, setResending] = useState(false)

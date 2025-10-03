@@ -233,7 +233,7 @@ const ManufacturerForm = () => {
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
 
   // Color mode values
-  const bgBlue50 = bgBlue50
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
 
   const [formData, setFormData] = useState({
     name: '',

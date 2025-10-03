@@ -23,8 +23,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const { t } = useTranslation()
 
   // Color mode values
-  const bgGray50 = bgGray50
-  const iconRed500 = iconRed500
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const iconRed500 = useColorModeValue('red.500', 'red.300')
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [scale, setScale] = useState(1.0)
