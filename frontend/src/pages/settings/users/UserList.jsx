@@ -22,10 +22,12 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const UsersPage = () => {
 
-  // Color mode values
+  // Color mode values - MUST be before useState
   const borderGray600 = useColorModeValue('gray.600', 'gray.400')
   const iconGreen500 = useColorModeValue('green.500', 'green.300')
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
+  const iconBrand = useColorModeValue('brand.500', 'brand.400')
+  const iconOrange = useColorModeValue('orange.500', 'orange.400')
 
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -174,11 +176,11 @@ const UsersPage = () => {
             <Stat>
               <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
-                  <Icon as={Users} boxSize={ICON_BOX_MD} color="brand.500" aria-hidden="true" />
+                  <Icon as={Users} boxSize={ICON_BOX_MD} color={iconBrand} aria-hidden="true" />
                   {t('settings.users.stats.totalUsers')}
                 </Flex>
               </StatLabel>
-              <StatNumber fontSize="2xl" fontWeight="bold" color="brand.500">
+              <StatNumber fontSize="2xl" fontWeight="bold" color={iconBrand}>
                 {filteredUsers.length}
               </StatNumber>
             </Stat>
@@ -204,11 +206,11 @@ const UsersPage = () => {
             <Stat>
               <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
-                  <Icon as={UserIcon} boxSize={ICON_BOX_MD} color="orange.500" aria-hidden="true" />
+                  <Icon as={UserIcon} boxSize={ICON_BOX_MD} color={iconOrange} aria-hidden="true" />
                   {t('settings.users.stats.regularUsers')}
                 </Flex>
               </StatLabel>
-              <StatNumber fontSize="2xl" fontWeight="bold" color="orange.500">
+              <StatNumber fontSize="2xl" fontWeight="bold" color={iconOrange}>
                 {regularCount}
               </StatNumber>
             </Stat>
