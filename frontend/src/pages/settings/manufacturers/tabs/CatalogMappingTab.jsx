@@ -2544,7 +2544,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <CardBody>
                       <h6>{subType.name}</h6>
                       {subType.description && (
-                        <p className="card-text small text-muted">{subType.description}</p>
+                        <Text fontSize="sm" color="gray.600">{subType.description}</Text>
                       )}
                       <div>
                         {subType.requires_hinge_side && (
@@ -2608,7 +2608,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </StandardCard>
 
       {/* Mobile-Optimized Filters and Pagination */}
-      <div className="row g-2 mb-3">
+      <Box className="row" gap={2} mb={3}>
         {/* Items per page - Full width on mobile */}
         <div className="col-12 col-sm-6 col-lg-auto">
           <div>
@@ -2636,10 +2636,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </option>
               ))}
             </select>
-            <span className="text-muted small d-none d-sm-inline">
+            <Text as="span" color="gray.600" fontSize="sm" display={{ base: "none", sm: "inline" }}>
               {t('settings.manufacturers.catalogMapping.pagination.perPage')}
-            </span>
-            <span className="text-muted small d-sm-none">per page</span>
+            </Text>
+            <Text as="span" color="gray.600" fontSize="sm" display={{ base: "inline", sm: "none" }}>per page</Text>
           </div>
         </div>
 
@@ -2658,15 +2658,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               id="catalog-search"
             />
             {searchFilter && (
-              <button
-                type="button"
+              <Button
+                size="sm"
+                variant="link"
+                position="absolute"
+                top={0}
+                right={0}
+                p={1}
                 aria-label={t('common.clearSearch', 'Clear search')}
-                className="btn btn-sm btn-link position-absolute top-0 end-0 p-1"
                 onClick={() => setSearchFilter('')}
-                style={{ color: "gray.500", textDecoration: 'none', zIndex: 5 }}
+                color="gray.500"
+                textDecoration="none"
+                zIndex={5}
               >
                 ×
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -2714,7 +2720,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             ))}
           </select>
         </div>
-      </div>
+      </Box>
 
       <>
         {/* Debug info - remove this later */}
@@ -2726,8 +2732,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Style Management Section */}
         {styleFilter && (
-          <div className="mb-3 p-3 border rounded bg-light">
-            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+          <Box mb={3} p={3} border="1px solid" borderColor="gray.300" borderRadius="md" bg="gray.50">
+            <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} gap={2}>
               <div>
                 <strong>Managing Style: "{styleFilter}"</strong>
                 <br />
@@ -2736,7 +2742,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   style
                 </small>
               </div>
-              <div className="d-flex gap-2 flex-shrink-0">
+              <Flex gap={2} flexShrink={0}>
                 <Button
                   color="info"
                   size="sm"
@@ -2767,9 +2773,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <>🗑️ Delete/Merge Style</>
                   )}
                 </Button>
-              </div>
-            </div>
-          </div>
+              </Flex>
+            </Flex>
+          </Box>
         )}
 
         {/* Bulk Actions */}
