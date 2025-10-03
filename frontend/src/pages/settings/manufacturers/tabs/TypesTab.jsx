@@ -2,6 +2,7 @@ import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import PageHeader from '../../../../components/PageHeader'
 import { Pencil, Trash, Search, Plus, ChevronDown } from '@/icons-lucide'
@@ -14,6 +15,8 @@ const TypesTab = ({ manufacturer }) => {
   const { t } = useTranslation()
   const toast = useToast()
   const api_url = import.meta.env.VITE_API_URL
+  const loggedInUser = useSelector((state) => state.user?.user)
+  const isContractor = loggedInUser?.group?.group_type === 'contractor'
   const [types, setTypes] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)

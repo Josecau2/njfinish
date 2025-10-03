@@ -147,7 +147,9 @@
       "Bash(__NEW_LINE__ if grep -q \"Container\" \"$file\")",
       "Bash(! grep -q \"PageContainer\" \"$file\")",
       "Bash(then)",
-      "Bash(do echo \"Fixing $file\")"
+      "Bash(do echo \"Fixing $file\")",
+      "Bash(./eliminate-bootstrap-catalogtable.sh:*)",
+      "Bash(./eliminate-bootstrap-catalogtable-v2.sh:*)"
     ],
     "deny": [],
     "ask": []
