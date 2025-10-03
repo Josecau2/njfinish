@@ -2780,18 +2780,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 p-3 bg-light rounded gap-2">
-            <span>
+          <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} mb={3} p={3} bg="gray.50" borderRadius="md" gap={2}>
+            <Text>
               {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', {
                 count: selectedItems.length,
               })}
-            </span>
-            <div className="d-flex gap-2 flex-shrink-0">
+            </Text>
+            <Flex gap={2} flexShrink={0}>
               <Button
                 colorScheme="blue"
                 size="sm"
                 onClick={handleBulkEditClick}
-                disabled={isBulkEditing}
+                isDisabled={isBulkEditing}
               >
                 {isBulkEditing ? (
                   <>
@@ -2806,7 +2806,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 colorScheme="red"
                 size="sm"
                 onClick={handleBulkDeleteClick}
-                disabled={isBulkDeleting}
+                isDisabled={isBulkDeleting}
               >
                 {isBulkDeleting ? (
                   <>
@@ -2817,8 +2817,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <>{t('settings.manufacturers.catalogMapping.buttons.deleteSelected')}</>
                 )}
               </Button>
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         )}
       </>
 

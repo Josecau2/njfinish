@@ -4,6 +4,7 @@
     "dealerPortal": "Dealer Portal",
     "save": "Save",
     "cancel": "Cancel",
+    "create": "Create",
     "edit": "Edit",
     "delete": "Delete",
     "back": "Back",
@@ -19,6 +20,7 @@
     "auto": "Auto",
     "next": "Next",
     "confirm": "Are you sure?",
+    "order": "Order",
     "search": "Search",
     "displayedColumns": "Displayed Columns",
     "noData": "No data found.",
@@ -866,6 +868,7 @@
       "button": "Test Configuration",
       "noUrl": "Please configure a gateway URL first",
       "success": "Configuration appears valid. Please test with a real payment to confirm.",
+      "error": "Unable to test configuration right now",
       "invalidUrl": "Invalid gateway URL"
     },
     "stripe": {
@@ -3033,6 +3036,13 @@
           "uploadedOn": "Uploaded On",
           "download": "Download"
         }
+      },
+      "users": {
+        "form": {
+          "validation": {
+            "required": "This field is required"
+          }
+        }
       }
     },
     "globalMods": {
@@ -3244,6 +3254,213 @@
             "deleteFailed": "Failed to delete category"
           }
         }
+      }
+    },
+    "demo": {
+      "styleMerger": {
+        "title": "Style Merger Demo",
+        "subtitle": "Visual-only demo of the style merger UI",
+        "header": "Demo",
+        "description": "This is a placeholder demo page. No business logic. Use it to validate responsive patterns, spacing, and a11y."
+      }
+    },
+    "payment": {
+      "title": "Process payment",
+      "subtitle": "Complete your payment securely",
+      "details": {
+        "title": "Payment details"
+      },
+      "order": "Order",
+      "customer": {
+        "title": "Customer information",
+        "name": "Name",
+        "order": "Order date"
+      },
+      "external": {
+        "title": "Secure payment",
+        "description": "You will be redirected to our secure payment gateway to complete your transaction.",
+        "button": "Pay now",
+        "security": "Your payment is processed securely through our certified provider.",
+        "redirecting": "Redirecting to payment processor...",
+        "newWindow": "A new window will open",
+        "instructions": "You will be redirected to our secure payment processor to complete the transaction."
+      },
+      "embed": {
+        "notConfigured": "Embedded payment form is not configured. Please contact support.",
+        "loading": "Loading payment form...",
+        "error": "Error loading payment form"
+      },
+      "gateway": {
+        "notConfigured": "Payment gateway is not configured. Please contact support."
+      },
+      "completed": {
+        "title": "Payment completed",
+        "subtitle": "This payment has already been processed",
+        "message": "Payment successfully completed",
+        "details": "This payment was completed on"
+      },
+      "unavailable": {
+        "title": "Payment unavailable",
+        "subtitle": "This payment cannot be processed right now",
+        "configuration": "Please contact an administrator to enable Stripe payments.",
+        "status": "This payment is not available for processing right now. Current status:",
+        "message": "This payment is not available for processing. Status:"
+      },
+      "success": {
+        "title": "Payment successful!",
+        "message": "Your payment has been processed successfully.",
+        "viewPayments": "View payments",
+        "stay": "Stay here",
+        "backToOrders": "Back to orders",
+        "continue": "Continue",
+        "transactionId": "Transaction ID: {{id}}"
+      },
+      "error": {
+        "title": "Payment error",
+        "generic": "There was an error processing your payment. Please try again.",
+        "statusUpdate": "Payment was successful but there was an error updating the status. Please contact support.",
+        "message": "There was a problem processing your payment.",
+        "retry": "Retry",
+        "contact": "Contact support"
+      },
+      "processing": "Processing payment...",
+      "transactionId": "Transaction ID",
+      "test": {
+        "dispatchSuccess": "Dispatch paymentSuccess",
+        "dispatchError": "Dispatch paymentError",
+        "simulatedFailure": "Simulated failure",
+        "transactionIdLabel": "Transaction ID"
+      },
+      "formRegion": "Payment form",
+      "retry": "Retry Payment",
+      "confirm": "Confirm Payment",
+      "viewPayments": "View Payments",
+      "failed": {
+        "title": "Payment failed",
+        "message": "Stripe was unable to complete the payment. Please try again."
+      },
+      "status": {
+        "completed": "Payment completed successfully.",
+        "failed": "Payment failed. Please try again.",
+        "pending": "Awaiting confirmation...",
+        "pendingTitle": "Awaiting confirmation",
+        "processing": "Payment is processing. Please wait..."
+      },
+      "receipt": {
+        "available": "Receipt available",
+        "view": "View Receipt"
+      },
+      "orderDetails": "Order details",
+      "orderId": "Order ID",
+      "amount": "Amount to pay",
+      "description": "Description",
+      "paymentMethods": "Payment methods",
+      "creditCard": "Credit card",
+      "bankTransfer": "Bank transfer",
+      "paypal": "PayPal",
+      "other": "Other"
+    },
+    "paymentReceipt": {
+      "title": "Payment Receipt",
+      "modal": {
+        "title": "Print Payment Receipt",
+        "confirmGenerate": "Generate a PDF receipt for payment #{{paymentId}}?",
+        "paymentAmount": "Payment Amount",
+        "order": "Order",
+        "status": "Status",
+        "paymentMethod": "Payment Method",
+        "paidDate": "Paid Date",
+        "generating": "Generating...",
+        "downloadReceipt": "Download Receipt"
+      },
+      "receiptInformation": "Receipt Information",
+      "receiptNumber": "Receipt #",
+      "paymentDate": "Payment Date",
+      "transactionId": "Transaction ID",
+      "orderInformation": "Order Information",
+      "orderNumber": "Order #",
+      "orderDate": "Order Date",
+      "customer": "Customer",
+      "email": "Email",
+      "paymentDetails": "Payment Details",
+      "description": "Description",
+      "status": "Status",
+      "amount": "Amount",
+      "paymentForOrder": "Payment for Order",
+      "totalPayment": "Total Payment",
+      "orderDetails": "Order Details",
+      "officialReceipt": "This is an official payment receipt from {{company}}.",
+      "generatedOn": "Generated on {{date}}",
+      "thankYou": "Thank you for your business!",
+      "paymentMethod": {
+        "label": "Payment Method",
+        "notSpecified": "Not specified",
+        "cash": "Cash",
+        "debitCard": "Debit Card",
+        "creditCard": "Credit Card",
+        "check": "Check",
+        "other": "Other"
+      },
+      "errors": {
+        "generateFailed": "Failed to generate payment receipt. Please try again."
+      },
+      "statusValues": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      }
+    },
+    "paymentConfig": {
+      "title": "Payment configuration",
+      "gateway": {
+        "title": "Payment gateway",
+        "url": "Gateway URL",
+        "urlPlaceholder": "https://payments.example.com",
+        "embedCode": "Embed code",
+        "embedPlaceholder": "HTML/JS code for embedded form",
+        "testMode": "Test mode",
+        "testModeHelp": "Enable to use the gateway's sandbox environment"
+      },
+      "settings": {
+        "title": "General settings",
+        "currency": "Default currency",
+        "currencyHelp": "Currency used when displaying amounts",
+        "timeout": "Timeout (seconds)",
+        "timeoutHelp": "Maximum time allowed to complete the payment",
+        "retries": "Allowed retries",
+        "retriesHelp": "Maximum number of retries for failed payments"
+      },
+      "webhook": {
+        "title": "Webhook",
+        "url": "Webhook URL",
+        "urlPlaceholder": "https://yourdomain.com/webhook/payments",
+        "secret": "Webhook secret",
+        "secretPlaceholder": "Secret to validate webhooks",
+        "events": "Events",
+        "eventsHelp": "Events sent via webhook",
+        "testWebhook": "Test webhook"
+      },
+      "advanced": {
+        "title": "Advanced configuration",
+        "customSettings": "Custom configuration",
+        "customPlaceholder": "JSON payload with additional gateway configuration",
+        "supportedMethods": "Supported methods",
+        "methodsHelp": "Payment methods that should be enabled"
+      },
+      "actions": {
+        "save": "Save configuration",
+        "test": "Test configuration",
+        "reset": "Reset",
+        "export": "Export configuration",
+        "import": "Import configuration"
+      },
+      "toast": {
+        "saved": "Configuration saved successfully",
+        "testSuccess": "Test completed successfully",
+        "testFailed": "Test failed",
+        "exportSuccess": "Configuration exported",
+        "importSuccess": "Configuration imported"
       }
     }
   },
