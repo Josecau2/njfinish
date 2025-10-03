@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, Container, Input, Flex, Heading, Text, Button, InputGroup, InputLeftElement, VStack, HStack, Icon } from '@chakra-ui/react'
+import { Box, Container, Input, Flex, Heading, Text, InputGroup, InputLeftElement, VStack, HStack, Icon } from '@chakra-ui/react'
+import { AppButton } from '../../../components/common/AppButton'
 import { Search } from 'lucide-react'
 
 const Page404 = () => {
@@ -40,7 +41,7 @@ const Page404 = () => {
                 id="page404-search"
                 borderRightRadius={0}
               />
-              <Button
+              <AppButton
                 colorScheme="brand"
                 size="lg"
                 type="button"
@@ -48,7 +49,7 @@ const Page404 = () => {
                 borderLeftRadius={0}
               >
                 Search
-              </Button>
+              </AppButton>
             </InputGroup>
           </Box>
         </Flex>

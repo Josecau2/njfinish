@@ -84,7 +84,7 @@ const CustomFormInput = ({
         style={{
           border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize="sm",
+          fontSize: 'sm',
           padding: '12px 16px',
           transition: 'all 0.3s ease',
           borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
@@ -149,7 +149,7 @@ const CustomFormSelect = ({
         style={{
           border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
           borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize="sm",
+          fontSize: 'sm',
           padding: '12px 16px',
           transition: 'all 0.3s ease',
           borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
@@ -666,3 +666,5 @@ const AddCustomerForm = () => {
 }
 
 export default AddCustomerForm
+
+

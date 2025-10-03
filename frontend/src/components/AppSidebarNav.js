@@ -8,6 +8,7 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
 import { ChevronDown } from 'lucide-react'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 import { ICON_SIZE_MD, ICON_SIZE_SM } from '../constants/iconSizes'
+import { AppButton } from './common/AppButton'
 
 const isActivePath = (pathname, target) => {
   if (!target) return false
@@ -113,7 +114,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
     if (item.to) {
       return (
         <li key={key} className="nav-item">
-          <button
+          <AppButton
             type="button"
             className={classNames.join(' ')}
             style={sharedStyle}
@@ -126,9 +127,10 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
               }
             }}
             aria-current={active ? 'page' : undefined}
+            variant="unstyled"
           >
             {content}
-          </button>
+          </AppButton>
         </li>
       )
     }
@@ -191,14 +193,17 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
       <li key={key} className={`nav-group nav-group--compact ${active ? 'show' : ''}`}>
         <Menu placement="right-start" offset={[8, 12]} isLazy>
           <MenuButton
-            as="button"
+            as={AppButton}
             type="button"
             className={classNames.join(' ')}
             title={item.label}
+            aria-label={`${item.label} navigation`}
             style={{
               color: active ? colors.accentColor : colors.fontColor,
               backgroundColor: active ? colors.activeBg : 'transparent',
             }}
+            variant="unstyled"
+            minH="44px"
           >
             {getIconElement(item.icon, colors)}
           </MenuButton>
@@ -220,7 +225,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
 
     return (
       <li className={`nav-group ${open ? 'show' : ''}`}>
-        <button
+        <AppButton
           type="button"
           className={`nav-link nav-group-toggle ${open ? 'active' : ''}`}
           onClick={handleToggle}
@@ -238,13 +243,14 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
             paddingLeft: '0.85rem',
             paddingRight: '0.85rem',
           }}
+          variant="unstyled"
         >
           {getIconElement(item.icon, colors)}
           <span className="nav-label">{item.label}</span>
           <span className="nav-caret" aria-hidden>
             <ChevronDown size={ICON_SIZE_SM} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
           </span>
-        </button>
+        </AppButton>
         <ul className="nav-group-items" style={{ display: open ? 'block' : 'none' }}>
           {item.children?.map((child) => {
             if (child.type === 'group') {

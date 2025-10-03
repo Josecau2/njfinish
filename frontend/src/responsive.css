@@ -1819,7 +1819,7 @@ body {
 
 @media (max-width: 767.98px) {
   /* Hide desktop table on mobile */
-  
+
   /* Show mobile card view */
   .mobile-card-view {
     display: block;

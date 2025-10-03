@@ -5,6 +5,7 @@ import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
 import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
+import { AppIconButton } from '../../../components/common/AppButton'
 
 const GlobalModsPage = () => {
   const { t } = useTranslation()
@@ -425,7 +426,6 @@ const GlobalModsPage = () => {
         /* Local, scoped mobile/a11y tweaks for Global Mods */
         .global-mods-actions { flex-wrap: wrap; gap: .5rem; }
         .global-mods-actions .btn { min-height: 44px; }
-        .icon-btn-44 { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
         @media (max-width: 575.98px) {
           .global-mods-actions { width: 100%; }
           .global-mods-actions .btn { flex: 1 1 48%; }
@@ -499,7 +499,7 @@ const GlobalModsPage = () => {
                       <label>{t('globalMods.category.actionLabel')}</label>
                       <Button
                         colorScheme="brand"
-                       
+
                         onClick={createCategory}
                         isDisabled={!newCategory.name.trim()}
                       >
@@ -548,7 +548,7 @@ const GlobalModsPage = () => {
                         </div>
                       ) : (
                         <div
-                         
+
                           style={{ backgroundColor: "gray.50", width: 60, height: 60 }}
                         >
                           <small>📁</small>
@@ -577,38 +577,34 @@ const GlobalModsPage = () => {
                     <span>{cat.name}</span>
                     <Badge colorScheme="gray">{(cat.templates || []).length}</Badge>
                     <div className="ms-auto d-flex gap-1">
-                      <Button
+                      <AppIconButton
                         size="sm"
                         colorScheme="orange"
                         variant="outline"
                         onClick={() => openEditCategory(cat)}
                         title={t('globalMods.category.editTooltip')}
                         aria-label={t('globalMods.category.editTooltip')}
-                        className="icon-btn-44"
+                        icon="✏️"
                         type="button"
-                      >
-                        ✏️
-                      </Button>
+                      />
                       {/* Task 6: Add delete category button */}
-                      <Button
+                      <AppIconButton
                         size="sm"
                         colorScheme="red"
                         variant="outline"
                         onClick={() => openDeleteCategory(cat)}
                         title={t('globalMods.category.deleteTooltip')}
                         aria-label={t('globalMods.category.deleteTooltip')}
-                        className="icon-btn-44"
+                        icon="🗑️"
                         type="button"
-                      >
-                        🗑️
-                      </Button>
+                      />
                     </div>
                   </h6>
                   <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={3}>
                     {(cat.templates || []).map((tpl) => (
                       <Box key={tpl.id}>
                         <Box
-                         
+
                           style={{ gap: 10 }}
                         >
                           {(tpl.sampleImage || tpl.fieldsConfig?.modSampleImage?.enabled) && (
@@ -638,18 +634,17 @@ const GlobalModsPage = () => {
                                 ? `$${Number(tpl.defaultPrice).toFixed(2)}`
                                 : t('globalMods.template.blueprint')}
                             </div>
-                          <Button
+                          <AppIconButton
                             size="sm"
                             colorScheme="orange"
                             variant="outline"
-                            className="position-absolute top-0 end-0 m-1 icon-btn-44"
+                            className="position-absolute top-0 end-0 m-1"
                             onClick={() => openEditTemplate(tpl)}
                             title={t('globalMods.template.editTooltip')}
                             aria-label={t('globalMods.template.editTooltip')}
+                            icon="✏️"
                             type="button"
-                          >
-                            ✏️
-                          </Button>
+                          />
                         </div>
                         {/* close border container and column */}
                         </Box>
@@ -985,7 +980,7 @@ const GlobalModsPage = () => {
                     />
                     {guided.sideSelector.enabled && (
                       <Input
-                       
+
                         placeholder={t('globalMods.builder.sideSelector.placeholder')}
                         value={guided.sideSelector.options?.join(',')}
                         onChange={(e) =>
@@ -1073,7 +1068,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                         
+
                           label={t('globalMods.builder.customerNotes.showInRed')}
                           checked={guided.notes.showInRed}
                           onChange={(e) =>
@@ -1110,7 +1105,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                         
+
                           label={t('globalMods.builder.customerUpload.required')}
                           checked={guided.customerUpload.required}
                           onChange={(e) =>
@@ -1198,7 +1193,7 @@ const GlobalModsPage = () => {
                             if (filename) setNewTemplate((n) => ({ ...n, sampleImage: filename }))
                           }
                         }}
-                       
+
                       />
                       <small>
                         {t('globalMods.builder.sampleUpload.hint')}
@@ -1231,7 +1226,7 @@ const GlobalModsPage = () => {
                         </div>
                       ) : (
                         <div
-                         
+
                           style={{ backgroundColor: "gray.50" }}
                         >
                           <div>📷</div>
@@ -1449,7 +1444,7 @@ const GlobalModsPage = () => {
                     placeholder={t('globalMods.modal.add.orderIndex')}
                     value={newCategory.orderIndex}
                     onChange={(e) => setNewCategory((n) => ({ ...n, orderIndex: e.target.value }))}
-                   
+
                   />
                   <Input
                     type="file"
@@ -1459,7 +1454,7 @@ const GlobalModsPage = () => {
                       const filename = await handleUploadImage(file)
                       if (filename) setNewCategory((n) => ({ ...n, image: filename }))
                     }}
-                   
+
                   />
                 </div>
               )}
@@ -1768,7 +1763,7 @@ const GlobalModsPage = () => {
                     />
                     {guided.sideSelector.enabled && (
                       <Input
-                       
+
                         placeholder={t('globalMods.builder.sideSelector.placeholder')}
                         value={guided.sideSelector.options?.join(',')}
                         onChange={(e) =>
@@ -1856,7 +1851,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                         
+
                           label={t('globalMods.builder.customerNotes.showInRed')}
                           checked={guided.notes.showInRed}
                           onChange={(e) =>
@@ -1893,7 +1888,7 @@ const GlobalModsPage = () => {
                           }
                         />
                         <Checkbox
-                         
+
                           label={t('globalMods.builder.customerUpload.required')}
                           checked={guided.customerUpload.required}
                           onChange={(e) =>
@@ -1981,7 +1976,7 @@ const GlobalModsPage = () => {
                             if (filename) setNewTemplate((n) => ({ ...n, sampleImage: filename }))
                           }
                         }}
-                       
+
                       />
                       <small>
                         {t('globalMods.builder.sampleUpload.hint')}
@@ -2014,7 +2009,7 @@ const GlobalModsPage = () => {
                         </div>
                       ) : (
                         <div
-                         
+
                           style={{ backgroundColor: "gray.50" }}
                         >
                           <div>📷</div>
@@ -2061,61 +2056,60 @@ const GlobalModsPage = () => {
       >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>
-              {t('globalMods.modal.editCategory.title')}
-            </ModalHeader>
-        <ModalBody>
-          <Flex>
-            <Box md={8}>
-              <Input
-                placeholder={t('globalMods.modal.editCategory.namePlaceholder')}
-                value={editCategory.name}
-                onChange={(e) => setEditCategory((c) => ({ ...c, name: e.target.value }))}
-              />
-            </Box>
-            <Box md={4}>
-              <Input
-                type="number"
-                placeholder={t('globalMods.modal.editCategory.orderPlaceholder')}
-                value={editCategory.orderIndex}
-                onChange={(e) => setEditCategory((c) => ({ ...c, orderIndex: e.target.value }))}
-              />
-            </Box>
-          </Flex>
-          <Flex>
-            <Box md={12}>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  const filename = await handleUploadImage(file)
-                  if (filename) {
-                    setEditCategory((c) => ({ ...c, image: filename }))
-                  }
-                }}
-              />
-              {editCategory.image && (
-                <div>
-                  <img
-                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
-                    alt="Category"
-                    style={{
-                      width: '100%',
-                      maxHeight: 140,
-                      objectFit: 'cover',
-                      borderRadius: 8,
-                      border: '1px solid #e9ecef',
-                    }}
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/nologo.png'
-                    }}
-                  />
-                </div>
-              )}
-            </Box>
-          </Flex>
-          <div className="d-flex gap-2 justify-content-end">
+          <ModalHeader>{t('globalMods.modal.editCategory.title')}</ModalHeader>
+          <ModalBody>
+            <Flex>
+              <Box md={8}>
+                <Input
+                  placeholder={t('globalMods.modal.editCategory.namePlaceholder')}
+                  value={editCategory.name}
+                  onChange={(e) => setEditCategory((c) => ({ ...c, name: e.target.value }))}
+                />
+              </Box>
+              <Box md={4}>
+                <Input
+                  type="number"
+                  placeholder={t('globalMods.modal.editCategory.orderPlaceholder')}
+                  value={editCategory.orderIndex}
+                  onChange={(e) => setEditCategory((c) => ({ ...c, orderIndex: e.target.value }))}
+                />
+              </Box>
+            </Flex>
+            <Flex>
+              <Box md={12}>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    const filename = await handleUploadImage(file)
+                    if (filename) {
+                      setEditCategory((c) => ({ ...c, image: filename }))
+                    }
+                  }}
+                />
+                {editCategory.image && (
+                  <div>
+                    <img
+                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
+                      alt="Category"
+                      style={{
+                        width: '100%',
+                        maxHeight: 140,
+                        objectFit: 'cover',
+                        borderRadius: 8,
+                        border: '1px solid #e9ecef',
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/nologo.png'
+                      }}
+                    />
+                  </div>
+                )}
+              </Box>
+            </Flex>
+          </ModalBody>
+          <ModalFooter className="d-flex gap-2 justify-content-end">
             <Button
               colorScheme="gray"
               variant="outline"
@@ -2130,8 +2124,7 @@ const GlobalModsPage = () => {
             >
               {t('globalMods.modal.editCategory.save')}
             </Button>
-          </div>
-        </ModalBody>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
@@ -2144,80 +2137,79 @@ const GlobalModsPage = () => {
       >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>
-              {t('globalMods.modal.editTemplate.title')}
-            </ModalHeader>
-        <ModalBody>
-          <Flex>
-            <Box md={6}>
-              <label>{t('globalMods.modal.editTemplate.nameLabel')}</label>
-              <Input
-                placeholder={t('globalMods.modal.editTemplate.nameLabel')}
-                value={editTemplate.name}
-                onChange={(e) => setEditTemplate((t) => ({ ...t, name: e.target.value }))}
-              />
-            </Box>
-            <Box md={6}>
-              <label>{t('globalMods.modal.editTemplate.priceLabel')}</label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder={t('globalMods.modal.editTemplate.priceLabel')}
-                value={editTemplate.defaultPrice}
-                onChange={(e) => setEditTemplate((t) => ({ ...t, defaultPrice: e.target.value }))}
-              />
-            </Box>
-          </Flex>
-          <Flex>
-            <Box md={12}>
-              <label>
-                {t('globalMods.modal.editTemplate.sampleUploadLabel')}
-              </label>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  const filename = await handleUploadImage(file)
-                  if (filename) setEditTemplate((t) => ({ ...t, sampleImage: filename }))
-                }}
-              />
-              {editTemplate.sampleImage && (
-                <div>
-                  <img
-                    src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
-                    alt={t('globalMods.modal.editTemplate.sampleAlt')}
-                    style={{
-                      width: '100%',
-                      maxHeight: 140,
-                      objectFit: 'cover',
-                      borderRadius: 8,
-                      border: '1px solid #e9ecef',
-                    }}
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/nologo.png'
-                    }}
-                  />
-                </div>
-              )}
-            </Box>
-          </Flex>
-          {/* Task 7: Add "Mark as Ready" toggle */}
-          <Flex>
-            <Box md={12}>
-              <div className="border-top pt-3">
-                <Checkbox
-                  label={t('globalMods.modal.editTemplate.ready.label')}
-                  checked={editTemplate.isReady}
-                  onChange={(e) => setEditTemplate((t) => ({ ...t, isReady: e.target.checked }))}
+          <ModalHeader>{t('globalMods.modal.editTemplate.title')}</ModalHeader>
+          <ModalBody>
+            <Flex>
+              <Box md={6}>
+                <label>{t('globalMods.modal.editTemplate.nameLabel')}</label>
+                <Input
+                  placeholder={t('globalMods.modal.editTemplate.nameLabel')}
+                  value={editTemplate.name}
+                  onChange={(e) => setEditTemplate((t) => ({ ...t, name: e.target.value }))}
                 />
-                <small className="text-muted d-block mt-1">
-                  {t('globalMods.modal.editTemplate.ready.hint')}
-                </small>
-              </div>
-            </Box>
-          </Flex>
-          <div className="d-flex gap-2 justify-content-end">
+              </Box>
+              <Box md={6}>
+                <label>{t('globalMods.modal.editTemplate.priceLabel')}</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder={t('globalMods.modal.editTemplate.priceLabel')}
+                  value={editTemplate.defaultPrice}
+                  onChange={(e) => setEditTemplate((t) => ({ ...t, defaultPrice: e.target.value }))}
+                />
+              </Box>
+            </Flex>
+            <Flex>
+              <Box md={12}>
+                <label>{t('globalMods.modal.editTemplate.sampleUploadLabel')}</label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    const filename = await handleUploadImage(file)
+                    if (filename) setEditTemplate((t) => ({ ...t, sampleImage: filename }))
+                  }}
+                />
+                {editTemplate.sampleImage && (
+                  <div>
+                    <img
+                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
+                      alt={t('globalMods.modal.editTemplate.sampleAlt')}
+                      style={{
+                        width: '100%',
+                        maxHeight: 140,
+                        objectFit: 'cover',
+                        borderRadius: 8,
+                        border: '1px solid #e9ecef',
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/nologo.png'
+                      }}
+                    />
+                  </div>
+                )}
+              </Box>
+            </Flex>
+            {/* Task 7: Add "Mark as Ready" toggle */}
+            <Flex>
+              <Box md={12}>
+                <div className="border-top pt-3">
+                  <Checkbox
+                    label={t('globalMods.modal.editTemplate.ready.label')}
+                    checked={editTemplate.isReady}
+                    onChange={(e) =>
+                      setEditTemplate((t) => ({ ...t, isReady: e.target.checked }))
+                    }
+                  />
+                  <small className="text-muted d-block mt-1">
+                    {t('globalMods.modal.editTemplate.ready.hint')}
+                  </small>
+                </div>
+              </Box>
+            </Flex>
+          </ModalBody>
+          <ModalFooter className="d-flex gap-2 justify-content-end">
             <Button colorScheme="gray" onClick={() => setShowEditTemplateModal(false)}>
               {t('common.cancel')}
             </Button>
@@ -2228,19 +2220,21 @@ const GlobalModsPage = () => {
             >
               {t('globalMods.modal.editTemplate.saveChanges')}
             </Button>
-          </div>
-        </ModalBody>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
       {/* Modification Gallery Modal */}
-      <Modal isOpen={showGalleryModal} onClose={() => setShowGalleryModal(false)} size={{ base: 'full', md: 'lg', lg: 'xl' }} scrollBehavior="inside">
+      <Modal
+        isOpen={showGalleryModal}
+        onClose={() => setShowGalleryModal(false)}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>
-              {t('globalMods.modal.gallery.title')}
-            </ModalHeader>
-        <ModalBody>
+          <ModalHeader>{t('globalMods.modal.gallery.title')}</ModalHeader>
+          <ModalBody>
           <div>
             {gallery.map((category) => (
               <div key={category.id} className="col-md-6 mb-4">
@@ -2279,7 +2273,7 @@ const GlobalModsPage = () => {
                       category.templates.map((template) => (
                         <div
                           key={template.id}
-                         
+
                         >
                           <div>
                             <strong>{template.name}</strong>
@@ -2291,7 +2285,7 @@ const GlobalModsPage = () => {
                             )}
                             <Badge
                               color={template.isReady ? 'success' : 'warning'}
-                             
+
                             >
                               {template.isReady
                                 ? t('globalMods.template.status.ready')
@@ -2336,18 +2330,21 @@ const GlobalModsPage = () => {
               </div>
             ))}
           </div>
-        </ModalBody>
+          </ModalBody>
         </ModalContent>
       </Modal>
 
       {/* Assign Modification Modal */}
-      <Modal isOpen={showAssignModal} onClose={() => setShowAssignModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
+      <Modal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>
-              {t('globalMods.modal.assign.title')}
-            </ModalHeader>
-        <ModalBody>
+          <ModalHeader>{t('globalMods.modal.assign.title')}</ModalHeader>
+          <ModalBody>
           <Flex>
             <Box md={6}>
               <Select
@@ -2430,7 +2427,8 @@ const GlobalModsPage = () => {
             </Box>
           </Flex>
 
-          <div>
+          </ModalBody>
+          <ModalFooter className="d-flex gap-2 justify-content-end">
             <Button colorScheme="gray" onClick={() => setShowAssignModal(false)}>
               {t('globalMods.modal.assign.cancel')}
             </Button>
@@ -2445,8 +2443,7 @@ const GlobalModsPage = () => {
             >
               {t('globalMods.modal.assign.assign')}
             </Button>
-          </div>
-        </ModalBody>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
@@ -2459,125 +2456,123 @@ const GlobalModsPage = () => {
       >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>
+          <ModalHeader>
             {t('globalMods.modal.deleteCategory.title', { name: deleteCategory.name })}
           </ModalHeader>
-        <ModalBody>
-          <div>
-            <div className="alert alert-warning">
-              <strong>
-                <Trans i18nKey="globalMods.modal.deleteCategory.warning">⚠️ Warning:</Trans>
-              </strong>{' '}
-              <Trans
-                i18nKey="globalMods.modal.deleteCategory.aboutToDelete"
-                values={{ name: deleteCategory.name }}
-              />
-            </div>
+          <ModalBody>
+            <div>
+              <div className="alert alert-warning">
+                <strong>
+                  <Trans i18nKey="globalMods.modal.deleteCategory.warning">⚠️ Warning:</Trans>
+                </strong>{' '}
+                <Trans
+                  i18nKey="globalMods.modal.deleteCategory.aboutToDelete"
+                  values={{ name: deleteCategory.name }}
+                />
+              </div>
 
-            {deleteCategory.templateCount > 0 ? (
-              <div>
-                <p>
-                  <Trans
-                    i18nKey="globalMods.modal.deleteCategory.contains"
-                    values={{ count: deleteCategory.templateCount }}
-                    components={{ strong: <strong /> }}
-                  />
-                </p>
-
-              <div>
+              {deleteCategory.templateCount > 0 ? (
                 <div>
-                  <input
-                   
-                    type="radio"
-                    name="deleteMode"
-                    id="moveMode"
-                    checked={deleteMode === 'move'}
-                    onChange={() => setDeleteMode('move')}
-                  />
-                  <label htmlFor="moveMode">
-                    <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
-                    {t('globalMods.modal.deleteCategory.move.recommended')}
-                  </label>
-                </div>
+                  <p>
+                    <Trans
+                      i18nKey="globalMods.modal.deleteCategory.contains"
+                      values={{ count: deleteCategory.templateCount }}
+                      components={{ strong: <strong /> }}
+                    />
+                  </p>
 
-                {deleteMode === 'move' && (
-                  <div className="mt-2 ms-4">
-                    <Select
-                      value={moveToCategoryId}
-                      onChange={(e) => setMoveToCategoryId(e.target.value)}
-                     
-                    >
-                      <option value="">
-                        {t('globalMods.modal.deleteCategory.move.selectTarget')}
-                      </option>
-                      {gallery
-                        .filter((cat) => cat.id !== deleteCategory.id)
-                        .map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {t('globalMods.modal.deleteCategory.move.optionWithCount', {
-                              name: cat.name,
-                              count: (cat.templates || []).length,
-                            })}
+                  <div className="d-flex flex-column gap-3">
+                    <div className="form-check">
+                      <input
+                        type="radio"
+                        name="deleteMode"
+                        id="moveMode"
+                        checked={deleteMode === 'move'}
+                        onChange={() => setDeleteMode('move')}
+                      />
+                      <label htmlFor="moveMode">
+                        <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
+                        {t('globalMods.modal.deleteCategory.move.recommended')}
+                      </label>
+                    </div>
+
+                    {deleteMode === 'move' && (
+                      <div className="mt-2 ms-4">
+                        <Select
+                          value={moveToCategoryId}
+                          onChange={(e) => setMoveToCategoryId(e.target.value)}
+                        >
+                          <option value="">
+                            {t('globalMods.modal.deleteCategory.move.selectTarget')}
                           </option>
-                        ))}
-                    </Select>
-                    {!moveToCategoryId && (
-                      <small className="text-muted d-block mt-1">
-                        {t('globalMods.modal.deleteCategory.move.mustSelect')}
-                      </small>
+                          {gallery
+                            .filter((cat) => cat.id !== deleteCategory.id)
+                            .map((cat) => (
+                              <option key={cat.id} value={cat.id}>
+                                {t('globalMods.modal.deleteCategory.move.optionWithCount', {
+                                  name: cat.name,
+                                  count: (cat.templates || []).length,
+                                })}
+                              </option>
+                            ))}
+                        </Select>
+                        {!moveToCategoryId && (
+                          <small className="text-muted d-block mt-1">
+                            {t('globalMods.modal.deleteCategory.move.mustSelect')}
+                          </small>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="form-check">
+                      <input
+                        type="radio"
+                        name="deleteMode"
+                        id="withModsMode"
+                        checked={deleteMode === 'withMods'}
+                        onChange={() => setDeleteMode('withMods')}
+                      />
+                      <label htmlFor="withModsMode">
+                        <strong>
+                          {t('globalMods.modal.deleteCategory.withMods.label')}
+                        </strong>{' '}
+                        {t('globalMods.modal.deleteCategory.withMods.permanent')}
+                      </label>
+                    </div>
+
+                    {deleteMode === 'withMods' && (
+                      <div className="alert alert-danger mt-2 ms-4">
+                        <small>
+                          <Trans
+                            i18nKey="globalMods.modal.deleteCategory.withMods.danger"
+                            values={{ count: deleteCategory.templateCount }}
+                          />
+                        </small>
+                      </div>
                     )}
                   </div>
-                )}
-
-                <div className="form-check mt-2">
-                  <input
-                   
-                    type="radio"
-                    name="deleteMode"
-                    id="withModsMode"
-                    checked={deleteMode === 'withMods'}
-                    onChange={() => setDeleteMode('withMods')}
-                  />
-                  <label htmlFor="withModsMode">
-                    <strong>
-                      {t('globalMods.modal.deleteCategory.withMods.label')}
-                    </strong>{' '}
-                    {t('globalMods.modal.deleteCategory.withMods.permanent')}
-                  </label>
                 </div>
-
-                {deleteMode === 'withMods' && (
-                  <div className="alert alert-danger mt-2 ms-4">
-                    <small>
-                      <Trans
-                        i18nKey="globalMods.modal.deleteCategory.withMods.danger"
-                        values={{ count: deleteCategory.templateCount }}
-                      />
-                    </small>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p>{t('globalMods.modal.deleteCategory.emptySafe')}</p>
-            )}
-          </Container>
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
-            {t('globalMods.modal.deleteCategory.cancel')}
-          </Button>
-          <Button
-            colorScheme="red"
-            onClick={confirmDeleteCategory}
-            disabled={deleteMode === 'move' && !moveToCategoryId}
-          >
-            {deleteMode === 'only'
-              ? t('globalMods.modal.deleteCategory.deleteOnly')
-              : deleteMode === 'withMods'
-                ? t('globalMods.modal.deleteCategory.deleteWithMods')
-                : t('globalMods.modal.deleteCategory.deleteMoveMods')}
-          </Button>
-        </ModalFooter>
+              ) : (
+                <p>{t('globalMods.modal.deleteCategory.emptySafe')}</p>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
+              {t('globalMods.modal.deleteCategory.cancel')}
+            </Button>
+            <Button
+              colorScheme="red"
+              onClick={confirmDeleteCategory}
+              disabled={deleteMode === 'move' && !moveToCategoryId}
+            >
+              {deleteMode === 'only'
+                ? t('globalMods.modal.deleteCategory.deleteOnly')
+                : deleteMode === 'withMods'
+                  ? t('globalMods.modal.deleteCategory.deleteWithMods')
+                  : t('globalMods.modal.deleteCategory.deleteMoveMods')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </div>
