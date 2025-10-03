@@ -85,6 +85,9 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const { id } = useParams()
 
+  // Color mode values - MUST be before useState
+  const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+
   const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
   const [stripePromise, setStripePromise] = useState(null)
   const [clientSecret, setClientSecret] = useState('')
