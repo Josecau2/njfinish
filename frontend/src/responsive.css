@@ -3361,3 +3361,60 @@ body {
     font-size: 13px;
   }
 }
+
+/* Additional dark mode fixes for settings pages */
+[data-theme='dark'] .settings-mobile-field,
+.chakra-ui-dark .settings-mobile-field {
+  border-bottom-color: var(--chakra-colors-gray-700);
+}
+
+[data-theme='dark'] .settings-form-label,
+.chakra-ui-dark .settings-form-label {
+  color: var(--chakra-colors-gray-300);
+}
+
+[data-theme='dark'] .settings-section-title,
+.chakra-ui-dark .settings-section-title {
+  color: var(--chakra-colors-gray-200);
+}
+
+[data-theme='dark'] .settings-form-input,
+.chakra-ui-dark .settings-form-input {
+  border-color: var(--chakra-colors-gray-600);
+  background-color: var(--chakra-colors-gray-800);
+  color: var(--chakra-colors-gray-200);
+}
+
+[data-theme='dark'] .settings-form-input::placeholder,
+.chakra-ui-dark .settings-form-input::placeholder {
+  color: var(--chakra-colors-gray-500);
+}
+
+[data-theme='dark'] .settings-form-container,
+.chakra-ui-dark .settings-form-container {
+  background-color: var(--chakra-colors-gray-900);
+}
+
+[data-theme='dark'] .settings-section-card,
+.chakra-ui-dark .settings-section-card {
+  background-color: var(--chakra-colors-gray-800);
+  border-color: var(--chakra-colors-gray-700);
+}
+
+[data-theme='dark'] .settings-form-cancel-btn,
+.chakra-ui-dark .settings-form-cancel-btn {
+  border-color: var(--chakra-colors-gray-600);
+  color: var(--chakra-colors-gray-300);
+}
+
+[data-theme='dark'] .settings-form-cancel-btn:hover,
+.chakra-ui-dark .settings-form-cancel-btn:hover {
+  background-color: var(--chakra-colors-gray-700);
+}
+
+[data-theme='dark'] .settings-form-input-group-text,
+.chakra-ui-dark .settings-form-input-group-text {
+  background-color: var(--chakra-colors-gray-700);
+  border-color: var(--chakra-colors-gray-600);
+  color: var(--chakra-colors-gray-300);
+}
