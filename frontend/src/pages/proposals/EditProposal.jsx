@@ -2,6 +2,7 @@ import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 import { Alert, Badge, Box, Button, CardBody, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -52,6 +53,17 @@ const EditProposal = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
+
+  // Dark mode colors - MUST be before any useState hooks
+  const borderColor = useColorModeValue("gray.200", "gray.600")
+  const textColor = useColorModeValue("gray.500", "gray.400")
+  const labelColor = useColorModeValue("gray.600", "gray.400")
+  const deleteColor = useColorModeValue("red.500", "red.300")
+  const pageBg = useColorModeValue("gray.50", "gray.900")
+  const badgeBgSelected = useColorModeValue("blue.600", "blue.500")
+  const badgeBgUnselected = useColorModeValue("blue.100", "blue.900")
+  const badgeColorSelected = useColorModeValue("white", "white")
+  const badgeColorUnselected = useColorModeValue("blue.600", "blue.200")
 
   // Get user info from store/localStorage
   const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
@@ -439,14 +451,14 @@ const EditProposal = ({
         py={3}
         px={4}
         borderBottom="1px"
-        borderColor={useColorModeValue("gray.200", "gray.600")}
+        borderColor={borderColor}
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         flexWrap="wrap"
       >
         <HStack spacing={4}>
-          <Text fontSize="lg" color={useColorModeValue("gray.500", "gray.400")} fontWeight="medium">
+          <Text fontSize="lg" color={textColor} fontWeight="medium">
             {t('proposals.edit.title', 'Edit Quote')}
           </Text>
           {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
@@ -492,7 +504,8 @@ const EditProposal = ({
       <PageContainer
         fluid
         className="dashboard-container"
-        style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
+        bg={pageBg}
+        minH="100vh"
       >
         <Box
           as="form"
@@ -653,8 +666,8 @@ const EditProposal = ({
                   p={3}
                   display="flex"
                   fontSize="sm"
-                  bg={isSelected ? 'blue.600' : 'blue.100'}
-                  color={isSelected ? 'blue.100' : 'blue.600'}
+                  bg={isSelected ? badgeBgSelected : badgeBgUnselected}
+                  color={isSelected ? badgeColorSelected : badgeColorUnselected}
                   borderRadius="lg"
                   transition="all 0.3s ease"
                   cursor="pointer"
@@ -692,7 +705,7 @@ const EditProposal = ({
                         <MenuItem onClick={() => openEditModal(index)}>
                           <Icon as={Edit} mr={2} /> {t('common.edit', 'Edit')}
                         </MenuItem>
-                        <MenuItem onClick={() => openDeleteModal(index)} color={useColorModeValue("red.500","red.300")}>
+                        <MenuItem onClick={() => openDeleteModal(index)} color={deleteColor}>
                           <Icon as={Trash} mr={2} /> {t('common.delete', 'Delete')}
                         </MenuItem>
                         <MenuItem onClick={() => duplicateVersion(index)}>
@@ -706,7 +719,7 @@ const EditProposal = ({
             })}
           </HStack>
 
-          <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} my={4} />
+          <Box borderTop="1px" borderColor={borderColor} my={4} />
 
           <Tabs
             index={activeTab === 'item' ? 0 : 1}
@@ -743,7 +756,7 @@ const EditProposal = ({
                   <Text fontSize="lg" fontWeight="medium">
                     {t('proposals.fileUpload.title', 'File Upload Section')}
                   </Text>
-                  <Text color={useColorModeValue("gray.600", "gray.400")}>
+                  <Text color={labelColor}>
                     {t(
                       'proposals.fileUpload.description',
                       'This section allows users to upload or manage files.',
@@ -758,7 +771,7 @@ const EditProposal = ({
             </TabPanels>
           </Tabs>
 
-          <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} my={4} />
+          <Box borderTop="1px" borderColor={borderColor} my={4} />
           <VStack spacing={4} align="center" p={4} maxW="600px" mx="auto">
             {isFormDisabled ? (
               // Show status message instead of buttons when quote is locked OR when contractor views accepted quote
@@ -776,7 +789,7 @@ const EditProposal = ({
                       'This quote has been accepted and is now locked.',
                     )}
                   </Text>
-                  <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                  <Text fontSize="sm" color={labelColor}>
                     {t('proposals.lockedStatus.processingNote', 'No further changes can be made.')}
                   </Text>
                 </VStack>

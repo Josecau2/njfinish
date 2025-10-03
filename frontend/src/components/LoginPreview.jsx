@@ -54,6 +54,9 @@ const LoginPreview = ({ config }) => {
   const brandLogo = useMemo(() => resolveAssetUrl(rawLogo, apiUrl), [rawLogo, apiUrl])
   const logoHeight = Number(config.logoHeight) || Number(resolvedAppCustomization.logoHeight) || 60
 
+  // Dark mode colors
+  const panelBg = useColorModeValue("white", "gray.800")
+
   const previewOptions = useMemo(
     () => [
       { key: 'login', label: 'Login' },
@@ -350,7 +353,7 @@ const LoginPreview = ({ config }) => {
           w={{ base: '100%', lg: '50%' }}
           px={{ base: 6, lg: 12 }}
           py={{ base: 10, lg: 12 }}
-          bg='white'
+          bg={panelBg}
         >
           {renderActiveView()}
         </Flex>

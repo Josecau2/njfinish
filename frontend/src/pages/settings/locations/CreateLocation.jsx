@@ -26,6 +26,17 @@ const initialForm = {
 const LocationForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+
+  // Dark mode colors
+  const inputIconBg = useColorModeValue("gray.50", "gray.700")
+  const inputIconBorder = useColorModeValue("gray.200", "gray.600")
+  const timezoneIconBg = useColorModeValue("#e7f3ff", "blue.900")
+  const timezoneIconBorder = useColorModeValue("#b6d7ff", "blue.700")
+  const timeIconBg = useColorModeValue("yellow.100", "yellow.900")
+  const timeIconColor = useColorModeValue("yellow.700", "yellow.200")
+  const readonlyInputBg = useColorModeValue("gray.50", "gray.700")
+  const readonlyInputColor = useColorModeValue("gray.600", "gray.400")
+
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)
   const [errors, setErrors] = useState({})
@@ -158,7 +169,8 @@ const LocationForm = () => {
     <PageContainer
       p={2}
       m={2}
-      style={{ backgroundColor: 'var(--chakra-colors-gray-50)', minHeight: '100vh' }}
+      bg={useColorModeValue("gray.50", "gray.900")}
+      minH="100vh"
     >
       {/* Header Section */}
       <PageHeader
@@ -254,7 +266,9 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
+                      bg={inputIconBg}
+                      border="1px solid"
+                      borderColor={inputIconBorder}
                     >
                       <Icon as={Home} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                     </InputLeftElement>
@@ -308,7 +322,9 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
+                      bg={inputIconBg}
+                      border="1px solid"
+                      borderColor={inputIconBorder}
                     >
                       <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                     </InputLeftElement>
@@ -339,7 +355,9 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
+                      bg={inputIconBg}
+                      border="1px solid"
+                      borderColor={inputIconBorder}
                     >
                       <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                     </InputLeftElement>
@@ -374,7 +392,9 @@ const LocationForm = () => {
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      style={{ backgroundColor: "gray.50", border: '1px solid var(--chakra-colors-gray-200)' }}
+                      bg={inputIconBg}
+                      border="1px solid"
+                      borderColor={inputIconBorder}
                     >
                       <Icon as={Phone} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                     </InputLeftElement>
@@ -409,9 +429,9 @@ const LocationForm = () => {
                   justify="center"
                   w="32px"
                   h="32px"
-                  bg="yellow.100"
+                  bg={timeIconBg}
                   borderRadius="8px"
-                  color="yellow.700"
+                  color={timeIconColor}
                 >
                   <Clock size={ICON_SIZE_MD} />
                 </Flex>
@@ -491,7 +511,9 @@ const LocationForm = () => {
                     <InputGroup>
                       <InputLeftElement
                         pointerEvents="none"
-                        style={{ backgroundColor: '#e7f3ff', border: '1px solid #b6d7ff' }}
+                        bg={timezoneIconBg}
+                        border="1px solid"
+                        borderColor={timezoneIconBorder}
                       >
                         <Icon as={Clock} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                       </InputLeftElement>
@@ -499,14 +521,12 @@ const LocationForm = () => {
                         value={currentTime}
                         readOnly
                         tabIndex={-1}
-                        style={{
-                          backgroundColor: "gray.50",
-                          border: '1px solid var(--chakra-colors-gray-200)',
-                          cursor: 'not-allowed',
-                          fontSize: "sm",
-                          fontWeight: '500',
-                          color: "gray.600",
-                        }}
+                        bg={readonlyInputBg}
+                        borderColor={inputIconBorder}
+                        cursor="not-allowed"
+                        fontSize="sm"
+                        fontWeight="500"
+                        color={readonlyInputColor}
                       />
                     </InputGroup>
                     <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mt={1}>
