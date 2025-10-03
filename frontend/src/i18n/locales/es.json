@@ -85,7 +85,11 @@
     "leaveEmptyKeepExisting": "Dejar vacío para mantener el existente",
     "egSevenToFourteenDays": "ej., 7-14 días",
     "egThreeToSevenDays": "ej., 3-7 días",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "description": "Descripción",
+    "items": "elementos",
+    "saving": "Guardando...",
+    "uploading": "Subiendo..."
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -462,7 +466,9 @@
       "customer": "Cliente",
       "description": "Descripción",
       "manufacturer": "Fabricante",
-      "status": "Estado"
+      "status": "Estado",
+      "actions": "Acciones",
+      "payment": "Pago"
     },
     "empty": {
       "title": "No se encontraron pedidos",
@@ -515,6 +521,12 @@
         "subtitleDefault": "Tus cotizaciones aceptadas y bloqueadas",
         "subtitleForGroup": "Cotizaciones aceptadas y bloqueadas para {{group}}"
       }
+    },
+    "actions": {
+      "makePayment": "Realizar pago"
+    },
+    "common": {
+      "manufacturer": "Fabricante"
     }
   },
   "payments": {
@@ -612,7 +624,9 @@
     "editor": {
       "title": "Editar información",
       "subtitle": "Actualice los datos de contacto visibles para todos",
-      "save": "Guardar"
+      "save": "Guardar",
+      "visibilitySettings": "Visibilidad de campos",
+      "contentSettings": "Información de contacto"
     },
     "compose": {
       "title": "Enviar mensaje",
@@ -627,7 +641,8 @@
     "history": {
       "title": "Tus mensajes",
       "subtitle": "Historial de conversaciones",
-      "empty": "Aún no has enviado mensajes"
+      "empty": "Aún no has enviado mensajes",
+      "unknownUser": "Usuario desconocido"
     },
     "thread": {
       "title": "Conversación",
@@ -2001,7 +2016,18 @@
         },
         "previewBadge": "Los cambios serán visibles en la vista previa",
         "previewTitle": "Vista previa de la página de inicio",
-        "closePreview": "Cerrar vista previa"
+        "closePreview": "Cerrar vista previa",
+        "logoSize": {
+          "label": "Tamaño del logo de inicio de sesión",
+          "aria": "Ajustar el tamaño del logo de inicio de sesión"
+        }
+      },
+      "users": {
+        "form": {
+          "validation": {
+            "required": "Este campo es obligatorio"
+          }
+        }
       }
     },
     "users": {
@@ -2789,7 +2815,14 @@
         "costMultiplierTitle": "Su multiplicador de costo",
         "costMultiplierHelp": "El multiplicador de costo controla el precio que paga al fabricante. Puede ver su costo en la Cotización cuando desactiva el multiplicador del cliente.",
         "customerMultiplierTitle": "Multiplicador de precio al cliente",
-        "customerMultiplierHelp": "El multiplicador de precio al cliente controla el precio al que vende a sus clientes. Esto es lo que determina su ganancia."
+        "customerMultiplierHelp": "El multiplicador de precio al cliente controla el precio al que vende a sus clientes. Esto es lo que determina su ganancia.",
+        "users": {
+          "form": {
+            "validation": {
+              "required": "Este campo es obligatorio"
+            }
+          }
+        }
       },
       "filesHistory": {
         "title": "Archivos de catálogo subidos",
@@ -3039,7 +3072,9 @@
       "unavailable": {
         "title": "Pago no disponible",
         "subtitle": "Este pago no puede procesarse en este momento",
-        "message": "Este pago no está disponible para procesar. Estado:"
+        "message": "Este pago no está disponible para procesar. Estado:",
+        "configuration": "Contacta a un administrador para habilitar Stripe.",
+        "status": "Este pago no está disponible para procesar en este momento. Estado actual:"
       },
       "completed": {
         "title": "Pago completado",
@@ -3052,7 +3087,9 @@
         "message": "Tu pago ha sido procesado exitosamente",
         "transactionId": "ID de transacción: {{id}}",
         "backToOrders": "Volver a pedidos",
-        "continue": "Continuar"
+        "continue": "Continuar",
+        "viewPayments": "Ver pagos",
+        "stay": "Permanecer aquí"
       },
       "error": {
         "title": "Error en el pago",
@@ -3094,6 +3131,24 @@
       "transactionId": "ID de transacción",
       "details": {
         "title": "Detalles del Pago"
+      },
+      "retry": "Reintentar pago",
+      "confirm": "Confirmar pago",
+      "viewPayments": "Ver pagos",
+      "failed": {
+        "title": "Pago fallido",
+        "message": "Stripe no pudo completar el pago. Inténtalo nuevamente."
+      },
+      "status": {
+        "completed": "Pago completado correctamente.",
+        "failed": "El pago falló. Inténtalo nuevamente.",
+        "pending": "Esperando confirmación...",
+        "pendingTitle": "Esperando confirmación",
+        "processing": "El pago se está procesando. Espera por favor..."
+      },
+      "receipt": {
+        "available": "Recibo disponible",
+        "view": "Ver recibo"
       }
     },
     "paymentReceipt": {
@@ -3300,7 +3355,10 @@
       "title": "¡Pago realizado con éxito!",
       "message": "Tu pago se procesó correctamente.",
       "viewPayments": "Ver pagos",
-      "stay": "Permanecer aquí"
+      "stay": "Permanecer aquí",
+      "transactionId": "ID de transacción: {{id}}",
+      "backToOrders": "Volver a pedidos",
+      "continue": "Continuar"
     },
     "failed": {
       "title": "Pago fallido",
@@ -3321,8 +3379,62 @@
       "title": "Pago no disponible",
       "subtitle": "Los pagos con tarjeta están deshabilitados",
       "configuration": "Contacta a un administrador para habilitar Stripe.",
-      "status": "Este pago no está disponible para procesar en este momento. Estado actual:"
-    }
+      "status": "Este pago no está disponible para procesar en este momento. Estado actual:",
+      "message": "Este pago no está disponible para procesar. Estado:"
+    },
+    "orderDetails": "Detalles del pedido",
+    "orderId": "ID del pedido",
+    "amount": "Monto a pagar",
+    "description": "Descripción",
+    "paymentMethods": "Métodos de pago",
+    "creditCard": "Tarjeta de crédito",
+    "bankTransfer": "Transferencia bancaria",
+    "paypal": "PayPal",
+    "other": "Otro",
+    "completed": {
+      "title": "Pago completado",
+      "subtitle": "Este pago ya fue procesado",
+      "message": "Pago procesado exitosamente",
+      "details": "Este pago se completó el"
+    },
+    "error": {
+      "title": "Error en el pago",
+      "message": "Hubo un problema procesando tu pago",
+      "retry": "Reintentar",
+      "contact": "Contactar soporte",
+      "generic": "Hubo un error procesando tu pago. Por favor intenta de nuevo.",
+      "statusUpdate": "El pago fue exitoso pero hubo un error actualizando el estado. Contacta soporte."
+    },
+    "customer": {
+      "title": "Información del Cliente",
+      "name": "Nombre",
+      "order": "Fecha del Pedido"
+    },
+    "embed": {
+      "loading": "Cargando formulario de pago...",
+      "error": "Error cargando el formulario de pago",
+      "notConfigured": "El formulario de pago embebido no está configurado. Contacte soporte."
+    },
+    "external": {
+      "title": "Pago Seguro",
+      "description": "Serás redirigido a nuestro gateway de pago seguro para completar tu transacción.",
+      "button": "Pagar ahora",
+      "security": "Tu pago se procesa de forma segura a través de nuestro proveedor certificado.",
+      "redirecting": "Redirigiendo al procesador de pagos...",
+      "newWindow": "Se abrirá una nueva ventana",
+      "instructions": "Serás redirigido a nuestro procesador de pagos seguro para completar la transacción."
+    },
+    "gateway": {
+      "notConfigured": "El gateway de pago no está configurado. Contacte soporte."
+    },
+    "test": {
+      "dispatchSuccess": "Despachar paymentSuccess",
+      "dispatchError": "Despachar paymentError",
+      "simulatedFailure": "Fallo simulado",
+      "transactionIdLabel": "ID de transacción"
+    },
+    "formRegion": "Formulario de pago",
+    "transactionId": "ID de transacción"
   },
   "paymentConfig": {
     "title": "Configuración de pagos",
@@ -3337,7 +3449,9 @@
     },
     "providers": {
       "stripe": "Stripe",
-      "custom": "Personalizado"
+      "custom": "Personalizado",
+      "paypal": "PayPal",
+      "square": "Square"
     },
     "currencies": {
       "label": "Monedas soportadas",
@@ -3383,7 +3497,69 @@
     "test": {
       "noUrl": "Configura primero una URL del proveedor",
       "success": "La configuración se probó correctamente",
-      "error": "No se pudo probar la configuración"
+      "error": "No se pudo probar la configuración",
+      "button": "Probar configuración",
+      "invalidUrl": "URL del proveedor inválida"
+    }
+  },
+  "demo": {
+    "styleMerger": {
+      "title": "Demo Fusionador de Estilos",
+      "subtitle": "Demostración solo visual de la interfaz del fusionador de estilos",
+      "header": "Demo",
+      "description": "Esta es una página de demostración de marcador de posición. Sin lógica de negocio. Úsala para validar patrones responsivos, espaciado y accesibilidad."
+    }
+  },
+  "new": "Nuevo",
+  "paymentReceipt": {
+    "title": "Recibo de Pago",
+    "modal": {
+      "title": "Imprimir Recibo de Pago",
+      "confirmGenerate": "¿Generar un recibo PDF para el pago #{{paymentId}}?",
+      "paymentAmount": "Monto del Pago",
+      "order": "Pedido",
+      "status": "Estado",
+      "paymentMethod": "Método de Pago",
+      "paidDate": "Fecha de Pago",
+      "generating": "Generando...",
+      "downloadReceipt": "Descargar Recibo"
+    },
+    "receiptInformation": "Información del Recibo",
+    "receiptNumber": "Recibo #",
+    "paymentDate": "Fecha de Pago",
+    "transactionId": "ID de Transacción",
+    "orderInformation": "Información del Pedido",
+    "orderNumber": "Pedido #",
+    "orderDate": "Fecha del Pedido",
+    "customer": "Cliente",
+    "email": "Correo Electrónico",
+    "paymentDetails": "Detalles del Pago",
+    "description": "Descripción",
+    "status": "Estado",
+    "amount": "Monto",
+    "paymentForOrder": "Pago para el Pedido",
+    "totalPayment": "Pago Total",
+    "orderDetails": "Detalles del Pedido",
+    "officialReceipt": "Este es un recibo de pago oficial de {{company}}.",
+    "generatedOn": "Generado el {{date}}",
+    "thankYou": "¡Gracias por su negocio!",
+    "paymentMethod": {
+      "label": "Método de Pago",
+      "notSpecified": "No especificado",
+      "cash": "Efectivo",
+      "debitCard": "Tarjeta de Débito",
+      "creditCard": "Tarjeta de Crédito",
+      "check": "Cheque",
+      "other": "Otro"
+    },
+    "errors": {
+      "generateFailed": "Error al generar el recibo de pago. Por favor, inténtelo de nuevo."
+    },
+    "statusValues": {
+      "completed": "Completado",
+      "pending": "Pendiente",
+      "failed": "Fallido",
+      "refunded": "Reembolsado"
     }
   }
 }
