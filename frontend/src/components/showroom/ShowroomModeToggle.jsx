@@ -43,19 +43,18 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const authUser = useSelector((state) => state.auth?.user)
   const user = authUser || getStoredUser()
 
-  // Color mode values
-  const iconRed500 = iconRed500
+  // Color mode values - MUST be before useState
+  const iconRed = useColorModeValue("red.600", "red.300")
+  const cardBg = useColorModeValue('surface', 'gray.800')
+  const borderColor = useColorModeValue('border', 'gray.600')
+  const subtitleColor = useColorModeValue('gray.500', 'gray.400')
+  const descriptionColor = useColorModeValue('gray.600', 'gray.400')
 
   const [showroomMode, setShowroomMode] = useState(false)
   const [showroomMultiplier, setShowroomMultiplier] = useState(1.0)
   const [showModal, setShowModal] = useState(false)
   const [tempMultiplier, setTempMultiplier] = useState(1.0)
   const [validationError, setValidationError] = useState('')
-
-  const cardBg = useColorModeValue('surface', 'gray.800')
-  const borderColor = useColorModeValue('border', 'gray.600')
-  const subtitleColor = useColorModeValue('gray.500', 'gray.400')
-  const descriptionColor = useColorModeValue('gray.600', 'gray.400')
 
   const allowed = isAdmin(user)
   useEffect(() => {
@@ -167,7 +166,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
               )}
             </FormHelperText>
             {validationError && (
-              <Text fontSize="xs" color={iconRed500} mt={1}>
+              <Text fontSize="xs" color={iconRed} mt={1}>
                 {validationError}
               </Text>
             )}
