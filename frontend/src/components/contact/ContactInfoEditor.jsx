@@ -11,7 +11,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
   const user = useSelector((state) => state.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
 
-  // Color mode values
+  // Color mode values - MUST be before any conditional returns
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const bgGray100 = useColorModeValue('gray.100', 'gray.700')
 
@@ -34,6 +34,9 @@ const ContactInfoEditor = ({ info, onSave }) => {
 
   const [saving, setSaving] = useState(false)
 
+  // Early return AFTER all hooks
+  if (!isAdmin) return null
+
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
     setForm((prev) => ({
@@ -52,8 +55,6 @@ const ContactInfoEditor = ({ info, onSave }) => {
       setSaving(false)
     }
   }
-
-  if (!isAdmin) return null
 
   const visibilityControls = [
     { key: 'showCompanyName', label: t('contact.info.companyName') },
