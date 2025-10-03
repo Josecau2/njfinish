@@ -4,29 +4,39 @@ import { Badge, Box, Button, CardBody, Flex, Stack, Text, Textarea, useColorMode
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
-const Bubble = ({ mine, author, text, time }) => (
-  <Flex justify={mine ? 'flex-end' : 'flex-start'} mb={2}>
-    <Box
-      maxW="85%"
-      px={3}
-      py={2}
-      borderWidth="1px"
-      borderColor={useColorModeValue("gray.200","gray.600")}
-      bg={mine ? 'blue.50' : 'gray.50'}
-      borderRadius="md"
-    >
-      <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} mb={1}>
-        {author} � {new Date(time).toLocaleString()}
-      </Text>
-      <Text fontWeight="semibold" whiteSpace="pre-wrap">
-        {text}
-      </Text>
-    </Box>
-  </Flex>
-)
+const Bubble = ({ mine, author, text, time, bubbleBgMine, bubbleBgOther, borderColor, timeColor }) => {
+  return (
+    <Flex justify={mine ? 'flex-end' : 'flex-start'} mb={2}>
+      <Box
+        maxW="85%"
+        px={3}
+        py={2}
+        borderWidth="1px"
+        borderColor={borderColor}
+        bg={mine ? bubbleBgMine : bubbleBgOther}
+        borderRadius="md"
+      >
+        <Text fontSize="xs" color={timeColor} mb={1}>
+          {author} � {new Date(time).toLocaleString()}
+        </Text>
+        <Text fontWeight="semibold" whiteSpace="pre-wrap">
+          {text}
+        </Text>
+      </Box>
+    </Flex>
+  )
+}
 
 const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
   const { t } = useTranslation()
+
+  // Color mode values - MUST be before useState
+  const bubbleBgMine = useColorModeValue("blue.50", "blue.900")
+  const bubbleBgOther = useColorModeValue("gray.50", "gray.800")
+  const bubbleBorderColor = useColorModeValue("gray.200", "gray.600")
+  const bubbleTimeColor = useColorModeValue("gray.500", "gray.400")
+  const emptyTextColor = useColorModeValue("gray.500", "gray.400")
+
   const [body, setBody] = useState('')
 
   if (!thread) {
@@ -83,7 +93,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
 
         {loading ? (
           <Box py={4} textAlign="center">
-            <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
+            <Text fontSize="sm" color={emptyTextColor}>
               {t('common.loading')}
             </Text>
           </Box>
@@ -100,12 +110,16 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
                   }
                   text={message.body}
                   time={message.createdAt}
+                  bubbleBgMine={bubbleBgMine}
+                  bubbleBgOther={bubbleBgOther}
+                  borderColor={bubbleBorderColor}
+                  timeColor={bubbleTimeColor}
                 />
               ))}
 
               {thread.messages?.length === 0 && (
                 <Box textAlign="center" py={6}>
-                  <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
+                  <Text fontSize="sm" color={emptyTextColor}>
                     {t('contact.thread.noMessages')}
                   </Text>
                 </Box>

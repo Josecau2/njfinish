@@ -19,6 +19,9 @@ const MessageHistory = ({
 }) => {
   const { t } = useTranslation()
 
+  // Color mode values - MUST be before any other hooks
+  const hoverBg = useColorModeValue("gray.50", "gray.700")
+
   const groupedThreads = useMemo(() => {
     if (!groupByUser || !isAdmin || !Array.isArray(threads)) return []
 
@@ -72,7 +75,7 @@ const MessageHistory = ({
           px={4}
           py={3}
           cursor="pointer"
-          _hover={{ bg: 'gray.50' }}
+          _hover={{ bg: hoverBg }}
           onClick={() => onSelectUser && onSelectUser(group.userId)}
         >
           <Flex justify="space-between" align="center" gap={4}>
@@ -107,7 +110,7 @@ const MessageHistory = ({
           px={4}
           py={3}
           cursor="pointer"
-          _hover={{ bg: 'gray.50' }}
+          _hover={{ bg: hoverBg }}
           onClick={() => onSelect(thread.id)}
         >
           <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" gap={4}>
