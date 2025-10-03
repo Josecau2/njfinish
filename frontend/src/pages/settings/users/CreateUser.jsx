@@ -14,22 +14,28 @@ import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 // Move component definitions outside to prevent re-creation on every render
-const FormSection = ({ title, icon, children }) => (
-  <StandardCard mb={6} shadow="sm" borderRadius="lg">
-    <CardBody p={6}>
-      <HStack spacing={4} mb={4}>
-        <Box p={2} borderRadius="md" bg="brand.50">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="brand.600" />
-        </Box>
-        <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
-          {title}
-        </Text>
-      </HStack>
-      <Divider mb={4} />
-      {children}
-    </CardBody>
-  </StandardCard>
-)
+const FormSection = ({ title, icon, children }) => {
+  const iconBg = useColorModeValue("brand.50", "brand.900")
+  const iconColor = useColorModeValue("brand.600", "brand.400")
+  const titleColor = useColorModeValue("gray.800", "gray.200")
+
+  return (
+    <StandardCard mb={6} shadow="sm" borderRadius="lg">
+      <CardBody p={6}>
+        <HStack spacing={4} mb={4}>
+          <Box p={2} borderRadius="md" bg={iconBg}>
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </Box>
+          <Text fontSize="lg" fontWeight="semibold" color={titleColor}>
+            {title}
+          </Text>
+        </HStack>
+        <Divider mb={4} />
+        {children}
+      </CardBody>
+    </StandardCard>
+  )
+}
 
 const CustomFormInput = ({
   label,
@@ -43,41 +49,53 @@ const CustomFormInput = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <FormControl isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
-      {label}
-      {required && (
-        <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>
-          *
-        </Text>
-      )}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
-        </InputLeftElement>
-      )}
-      <Input
-        type={type}
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        borderColor={isInvalid ? 'red.300' : 'gray.300'}
-        _hover={{ borderColor: isInvalid ? 'red.400' : 'gray.400' }}
-        _focusVisible={{
-          borderColor: isInvalid ? 'red.500' : 'brand.500',
-          boxShadow: `0 0 0 1px ${isInvalid ? 'red.500' : 'brand.500'}`,
-        }}
-        {...props}
-      />
-    </InputGroup>
-    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-  </FormControl>
-)
+}) => {
+  const labelColor = useColorModeValue("gray.700", "gray.300")
+  const requiredColor = useColorModeValue("red.500", "red.300")
+  const iconColor = useColorModeValue("gray.400", "gray.500")
+  const borderNormal = useColorModeValue("gray.300", "gray.600")
+  const borderError = useColorModeValue("red.300", "red.400")
+  const hoverNormal = useColorModeValue("gray.400", "gray.500")
+  const hoverError = useColorModeValue("red.400", "red.500")
+  const focusBorderNormal = useColorModeValue("brand.500", "brand.400")
+  const focusBorderError = useColorModeValue("red.500", "red.400")
+
+  return (
+    <FormControl isInvalid={isInvalid} mb={4}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor}>
+        {label}
+        {required && (
+          <Text as="span" color={requiredColor} ml={1}>
+            *
+          </Text>
+        )}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftElement pointerEvents="none">
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftElement>
+        )}
+        <Input
+          type={type}
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          borderColor={isInvalid ? borderError : borderNormal}
+          _hover={{ borderColor: isInvalid ? hoverError : hoverNormal }}
+          _focusVisible={{
+            borderColor: isInvalid ? focusBorderError : focusBorderNormal,
+            boxShadow: `0 0 0 1px ${isInvalid ? focusBorderError : focusBorderNormal}`,
+          }}
+          {...props}
+        />
+      </InputGroup>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </FormControl>
+  )
+}
 
 const CustomFormSelect = ({
   label,
@@ -90,41 +108,53 @@ const CustomFormSelect = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <FormControl isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
-      {label}
-      {required && (
-        <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>
-          *
-        </Text>
-      )}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
-        </InputLeftElement>
-      )}
-      <Select
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        borderColor={isInvalid ? 'red.300' : 'gray.300'}
-        _hover={{ borderColor: isInvalid ? 'red.400' : 'gray.400' }}
-        _focus={{
-          borderColor: isInvalid ? 'red.500' : 'brand.500',
-          boxShadow: `0 0 0 1px ${isInvalid ? 'red.500' : 'brand.500'}`,
-        }}
-        {...props}
-      >
-        {children}
-      </Select>
-    </InputGroup>
-    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-  </FormControl>
-)
+}) => {
+  const labelColor = useColorModeValue("gray.700", "gray.300")
+  const requiredColor = useColorModeValue("red.500", "red.300")
+  const iconColor = useColorModeValue("gray.400", "gray.500")
+  const borderNormal = useColorModeValue("gray.300", "gray.600")
+  const borderError = useColorModeValue("red.300", "red.400")
+  const hoverNormal = useColorModeValue("gray.400", "gray.500")
+  const hoverError = useColorModeValue("red.400", "red.500")
+  const focusBorderNormal = useColorModeValue("brand.500", "brand.400")
+  const focusBorderError = useColorModeValue("red.500", "red.400")
+
+  return (
+    <FormControl isInvalid={isInvalid} mb={4}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor}>
+        {label}
+        {required && (
+          <Text as="span" color={requiredColor} ml={1}>
+            *
+          </Text>
+        )}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftElement pointerEvents="none">
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftElement>
+        )}
+        <Select
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          borderColor={isInvalid ? borderError : borderNormal}
+          _hover={{ borderColor: isInvalid ? hoverError : hoverNormal }}
+          _focus={{
+            borderColor: isInvalid ? focusBorderError : focusBorderNormal,
+            boxShadow: `0 0 0 1px ${isInvalid ? focusBorderError : focusBorderNormal}`,
+          }}
+          {...props}
+        >
+          {children}
+        </Select>
+      </InputGroup>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </FormControl>
+  )
+}
 
 const initialForm = {
   name: '',
@@ -153,6 +183,13 @@ const AddUserForm = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
+
+  // Color mode values - MUST be before useState
+  const salesRepBgActive = useColorModeValue("green.100", "green.900")
+  const salesRepColorActive = useColorModeValue("green.600", "green.300")
+  const salesRepBgInactive = useColorModeValue("yellow.100", "yellow.900")
+  const salesRepColorInactive = useColorModeValue("yellow.600", "yellow.300")
+
   const { error } = useSelector((state) => state.users)
   const { list: usersGroup = [] } = useSelector((state) => state.usersGroup || {})
   const { list: locations = [] } = useSelector((state) => state.locations || {})
@@ -405,8 +442,8 @@ const AddUserForm = () => {
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
-                  bg={formData.isSalesRep ? 'green.100' : 'yellow.100'}
-                  color={formData.isSalesRep ? 'green.600' : 'yellow.600'}
+                  bg={formData.isSalesRep ? salesRepBgActive : salesRepBgInactive}
+                  color={formData.isSalesRep ? salesRepColorActive : salesRepColorInactive}
                 >
                   <Icon as={User} boxSize={ICON_BOX_MD} />
                 </Box>

@@ -51,11 +51,13 @@ const EditUserForm = () => {
   const { list: userGroups = [] } = useSelector((state) => state.usersGroup || {})
   const customization = useSelector((state) => state.customization)
 
-  // Dark mode colors
+  // Dark mode colors - MUST be before useState
   const textGray600 = useColorModeValue('gray.600', 'gray.300')
   const textGray800 = useColorModeValue('gray.800', 'gray.200')
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const borderGray = useColorModeValue('gray.200', 'gray.600')
+  const iconBgBrand = useColorModeValue('brand.50', 'brand.900')
+  const iconColorBrand = useColorModeValue('brand.600', 'brand.400')
 
   // React Hook Form setup
   const {
@@ -158,8 +160,8 @@ const EditUserForm = () => {
               <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
-                    <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={User} boxSize={ICON_BOX_MD} color="brand.600" />
+                    <Box p={2} borderRadius="md" bg={iconBgBrand}>
+                      <Icon as={User} boxSize={ICON_BOX_MD} color={iconColorBrand} />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.basicInfo', 'Basic Information')}
@@ -278,8 +280,8 @@ const EditUserForm = () => {
               <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
-                    <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Home} boxSize={ICON_BOX_MD} color="brand.600" />
+                    <Box p={2} borderRadius="md" bg={iconBgBrand}>
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color={iconColorBrand} />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.titles.personalAddress', 'Personal Address')}
@@ -360,8 +362,8 @@ const EditUserForm = () => {
               <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
-                    <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Building} boxSize={ICON_BOX_MD} color="brand.600" />
+                    <Box p={2} borderRadius="md" bg={iconBgBrand}>
+                      <Icon as={Building} boxSize={ICON_BOX_MD} color={iconColorBrand} />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.titles.companyInfo', 'Company Information')}
@@ -456,8 +458,8 @@ const EditUserForm = () => {
               <StandardCard>
                 <CardHeader>
                   <HStack spacing={4}>
-                    <Box p={2} borderRadius="md" bg="brand.50">
-                      <Icon as={Lock} boxSize={ICON_BOX_MD} color="brand.600" />
+                    <Box p={2} borderRadius="md" bg={iconBgBrand}>
+                      <Icon as={Lock} boxSize={ICON_BOX_MD} color={iconColorBrand} />
                     </Box>
                     <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.security', 'Security')}
