@@ -568,72 +568,164 @@ const EditProposal = ({
               </Text>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 <FormControl>
-                  <FormLabel htmlFor="date">Date</FormLabel>
-                  <Input
-                    type="date"
-                    id="date"
-                    value={formData.date ? new Date(formData.date).toISOString().split('T')[0] : ''}
-                    onChange={(e) => updateFormData({ date: e.target.value })}
-                    isDisabled={isFormDisabled}
-                  />
+                  <Box position="relative">
+                    <FormLabel htmlFor="date">Date</FormLabel>
+                    <DatePicker
+                      id="date"
+                      selected={formData.date ? new Date(formData.date) : new Date()}
+                      onChange={(date) => updateFormData({ date })}
+                     
+                      dateFormat="MM/dd/yyyy"
+                      wrapperClassName="w-100"
+                      isDisabled={isFormDisabled}
+                      placeholderText={t('common.date', 'Date')}
+                    />
+                    <Calendar
+                      style={{
+                        position: 'absolute',
+                        top: '70%',
+                        right: '12px',
+                        transform: 'translateY(-50%)',
+                        color: "gray.500",
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Box>
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="designDate">
+                  <Box position="relative">
+                    <FormLabel htmlFor="designDate">
                       {t('common.designDate', 'Design Date')}
                     </FormLabel>
-                  <Input
-                    type="date"
-                    id="designDate"
-                    value={formData.designDate ? new Date(formData.designDate).toISOString().split('T')[0] : ''}
-                    onChange={(e) => updateFormData({ designDate: e.target.value })}
-                    isDisabled={isFormDisabled}
-                  />
+                    <DatePicker
+                      id="designDate"
+                      selected={formData.designDate ? new Date(formData.designDate) : null}
+                      onChange={(date) => updateFormData({ designDate: date })}
+                     
+                      dateFormat="MM/dd/yyyy"
+                      wrapperClassName="w-100"
+                      isDisabled={isFormDisabled}
+                      placeholderText={t('common.designDate', 'Design Date')}
+                    />
+                    <Calendar
+                      style={{
+                        position: 'absolute',
+                        top: '70%',
+                        right: '12px',
+                        transform: 'translateY(-50%)',
+                        color: "gray.500",
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Box>
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="measurementDate">
+                  <Box position="relative">
+                    <FormLabel htmlFor="measurementDate">
                       {t('common.measurementDate', 'Measurement Date')}
                     </FormLabel>
-                  <Input
-                    type="date"
-                    id="measurementDate"
-                    value={formData.measurementDate ? new Date(formData.measurementDate).toISOString().split('T')[0] : ''}
-                    onChange={(e) => updateFormData({ measurementDate: e.target.value })}
-                    isDisabled={isFormDisabled}
-                  />
+                    <DatePicker
+                      id="measurementDate"
+                      selected={
+                        formData.measurementDate ? new Date(formData.measurementDate) : null
+                      }
+                      onChange={(date) => updateFormData({ measurementDate: date })}
+                     
+                      dateFormat="MM/dd/yyyy"
+                      wrapperClassName="w-100"
+                      isDisabled={isFormDisabled}
+                      placeholderText={t('common.measurementDate', 'Measurement Date')}
+                    />
+                    <Calendar
+                      style={{
+                        position: 'absolute',
+                        top: '70%',
+                        right: '12px',
+                        transform: 'translateY(-50%)',
+                        color: "gray.500",
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Box>
                 </FormControl>
               </SimpleGrid>
               {/* Follow up dates commented out
                     {!isContractor && (
                       <Flex>
                         <Box xs={12} md={6} lg={4}>
-                          <FormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1Date', 'followUp1Date')} {t('proposals.headers.date')}</FormLabel>
-                            <Input
-                              type="date"
+                          <div style={{ position: 'relative' }}>
+                            <FormLabel htmlFor="followUp1Date">Follow up 1 Date</FormLabel>
+                            <DatePicker
                               id="followUp1Date"
-                              value={formData.followUp1Date ? new Date(formData.followUp1Date).toISOString().split('T')[0] : ''}
-                              onChange={(e) => updateFormData({ followUp1Date: e.target.value })}
+                              selected={formData.followUp1Date ? new Date(formData.followUp1Date) : null}
+                              onChange={(date) => updateFormData({ followUp1Date: date })}
+                             
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
                               isDisabled={isFormDisabled}
+                              placeholderText="Follow up 1 Date"
                             />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: "gray.500",
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
                         </Box>
                         <Box xs={12} md={6} lg={4}>
-                          <FormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2Date', 'followUp2Date')} {t('proposals.headers.date')}</FormLabel>
-                            <Input
-                              type="date"
+                          <div style={{ position: 'relative' }}>
+                            <FormLabel htmlFor="followUp2Date">Follow up 2 Date</FormLabel>
+                            <DatePicker
                               id="followUp2Date"
-                              value={formData.followUp2Date ? new Date(formData.followUp2Date).toISOString().split('T')[0] : ''}
-                              onChange={(e) => updateFormData({ followUp2Date: e.target.value })}
+                              selected={formData.followUp2Date ? new Date(formData.followUp2Date) : null}
+                              onChange={(date) => updateFormData({ followUp2Date: date })}
+                             
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
                               isDisabled={isFormDisabled}
+                              placeholderText="Follow up 2 Date"
                             />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: "gray.500",
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
                         </Box>
                         <Box xs={12} md={6} lg={4}>
-                          <FormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3Date', 'followUp3Date')} {t('proposals.headers.date')}</FormLabel>
-                            <Input
-                              type="date"
+                          <div style={{ position: 'relative' }}>
+                            <FormLabel htmlFor="followUp3Date">Follow up 3 Date</FormLabel>
+                            <DatePicker
                               id="followUp3Date"
-                              value={formData.followUp3Date ? new Date(formData.followUp3Date).toISOString().split('T')[0] : ''}
-                              onChange={(e) => updateFormData({ followUp3Date: e.target.value })}
+                              selected={formData.followUp3Date ? new Date(formData.followUp3Date) : null}
+                              onChange={(date) => updateFormData({ followUp3Date: date })}
+                             
+                              dateFormat="MM/dd/yyyy"
+                              wrapperClassName="w-100"
                               isDisabled={isFormDisabled}
+                              placeholderText="Follow up 3 Date"
                             />
+                            <FaCalendarAlt
+                              style={{
+                                position: 'absolute',
+                                top: '70%',
+                                right: '12px',
+                                transform: 'translateY(-50%)',
+                                color: "gray.500",
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          </div>
                         </Box>
                       </Flex>
                     )}

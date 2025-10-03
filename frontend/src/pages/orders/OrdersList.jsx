@@ -483,7 +483,7 @@ const OrdersList = ({
         <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
           <InputGroup>
             <InputLeftElement pointerEvents="none">
-              <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+              <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
             </InputLeftElement>
             <Input
             type="search"
@@ -494,7 +494,7 @@ const OrdersList = ({
           />
         </InputGroup>
         </Box>
-        <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
+        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} aria-live="polite" aria-atomic="true">
           {t('orders.showingCount', {
             count: filtered.length,
             total: Array.isArray(orders) ? orders.length : 0,
@@ -527,7 +527,7 @@ const OrdersList = ({
                   <VStack spacing={4}>
                     <ShoppingCart size={48} color="gray" />
                     <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                       {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
                     </Text>
                   </VStack>
@@ -550,7 +550,7 @@ const OrdersList = ({
                     </Td>
                     <Td>{getDisplayOrderNumber(item)}</Td>
                     <Td isTruncated maxW="200px">{renderCustomerCell(item)}</Td>
-                    <Td color="gray.500" isTruncated maxW="250px">
+                    <Td color={useColorModeValue("gray.500", "gray.400")} isTruncated maxW="250px">
                       {(item.description || item?.proposal?.description || '').trim() ||
                         t('common.na')}
                     </Td>
@@ -566,7 +566,7 @@ const OrdersList = ({
                           {paymentInfo.label}
                         </Badge>
                         {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                          <Text fontSize="xs" color="gray.500">
+                          <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
                             {t('payments.appliedOn', 'Applied on')}{' '}
                             {new Date(paymentInfo.paidAt).toLocaleDateString()}
                           </Text>
@@ -620,7 +620,7 @@ const OrdersList = ({
           <VStack spacing={4} textAlign="center" py={5}>
             <ShoppingCart size={48} color="gray" />
             <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
-            <Text fontSize="sm" color="gray.500">
+            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
               {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
             </Text>
           </VStack>
@@ -655,7 +655,7 @@ const OrdersList = ({
                                 item?.Owner?.name ||
                                 t('common.na')}
                             </Text>
-                            <Text fontSize="sm" color="gray.500">
+                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                               {item?.customer?.name || t('common.na')}
                             </Text>
                           </VStack>
@@ -670,7 +670,7 @@ const OrdersList = ({
                             {paymentInfo.label}
                           </Badge>
                           {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                            <Text fontSize="xs" color="gray.500">
+                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
                               {t('payments.appliedOn', 'Applied on')}{' '}
                               {new Date(paymentInfo.paidAt).toLocaleDateString()}
                             </Text>
@@ -679,19 +679,19 @@ const OrdersList = ({
                       </VStack>
                     </Flex>
                     <VStack align="stretch" spacing={4}>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                         {new Date(
                           item.accepted_at || item.date || item.createdAt,
                         ).toLocaleDateString()}
                       </Text>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                         {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
                       </Text>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                         {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
                       </Text>
                     </VStack>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                       {(item.description || item?.proposal?.description || '').trim() ||
                         t('common.na')}
                     </Text>

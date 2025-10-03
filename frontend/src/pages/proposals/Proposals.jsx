@@ -536,7 +536,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
           <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
             <InputGroup>
               <InputLeftElement pointerEvents="none">
-                <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
               </InputLeftElement>
               <Input
                 type="search"
@@ -547,7 +547,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
               />
             </InputGroup>
           </Box>
-          <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
+          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} aria-live="polite" aria-atomic="true">
             {t('proposals.showingCount', {
               count: filteredProposals?.length || 0,
               total: proposal?.length || 0,
@@ -588,7 +588,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       <VStack spacing={4}>
                         <Search size={48} color="gray" />
                         <Text>{t('proposals.empty.title')}</Text>
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                           {t('proposals.empty.subtitle')}
                         </Text>
                       </VStack>
@@ -602,7 +602,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       <Td
                         fontWeight="medium"
                         cursor="pointer"
-                        color="blue.500"
+                        color={useColorModeValue("blue.500", "blue.300")}
                         _hover={{ textDecoration: 'underline' }}
                         onClick={() =>
                           item.customer?.id && navigate(`/customers/edit/${item.customer.id}`)
@@ -612,7 +612,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       >
                         {item.customer?.name || t('common.na')}
                       </Td>
-                      <Td color="gray.600" isTruncated maxW="250px">{item.description || t('common.na')}</Td>
+                      <Td color={useColorModeValue("gray.600", "gray.400")} isTruncated maxW="250px">{item.description || t('common.na')}</Td>
                       {canAssignDesigner && <Td>{item.designerData?.name || t('common.na')}</Td>}
                       <Td>
                         <Badge colorScheme={getStatusColorScheme(item.status || 'Draft')}>
@@ -667,7 +667,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 <VStack spacing={4}>
                   <Search size={32} color="gray" />
                   <Text>{t('proposals.empty.title')}</Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                     {t('proposals.empty.subtitle')}
                   </Text>
                 </VStack>
@@ -699,7 +699,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     {item.manufacturer?.name && <Text fontSize="sm">{item.manufacturer.name}</Text>}
                   </VStack>
                   {item.description && (
-                    <Text fontSize="sm" color="gray.600" mb={3} noOfLines={2}>
+                    <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={3} noOfLines={2}>
                       {item.description}
                     </Text>
                   )}
