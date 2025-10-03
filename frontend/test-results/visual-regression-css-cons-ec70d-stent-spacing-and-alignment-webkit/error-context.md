@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - heading "NJ CONTRACTOR'S PORTAL" [level=1] [ref=e6]
+      - paragraph [ref=e7]: See Your Cabinet Price in Seconds
+      - paragraph
+    - generic [ref=e10]:
+      - img "NJ Contractors" [ref=e12]
+      - heading "Sign In" [level=2] [ref=e13]
+      - paragraph [ref=e14]: Enter your email and password to sign in!
+      - generic [ref=e16]:
+        - group [ref=e17]:
+          - generic [ref=e18]:
+            - text: Email
+            - generic [ref=e19]: "*"
+          - textbox "Email" [ref=e20]
+        - group [ref=e21]:
+          - generic [ref=e22]:
+            - text: Password
+            - generic [ref=e23]: "*"
+          - generic [ref=e24]:
+            - textbox "Password" [ref=e25]
+            - button "Show password" [ref=e27] [cursor=pointer]:
+              - img [ref=e28] [cursor=pointer]
+        - generic [ref=e31]:
+          - generic [ref=e32] [cursor=pointer]:
+            - checkbox "Keep me logged in" [ref=e33]
+            - generic [ref=e35] [cursor=pointer]: Keep me logged in
+          - link "Forgot password?" [ref=e36] [cursor=pointer]:
+            - /url: /forgot-password
+        - button "Sign In" [ref=e37] [cursor=pointer]
+      - paragraph [ref=e38]:
+        - text: Don't have an account?
+        - link "Request Access" [ref=e39] [cursor=pointer]:
+          - /url: /request-access
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```

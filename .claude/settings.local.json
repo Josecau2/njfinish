@@ -153,7 +153,10 @@
       "Bash(python:*)",
       "Bash(if [ -d \"node_modules/.vite\" ])",
       "Bash(then rm -rf node_modules/.vite)",
-      "Bash(else echo \"No Vite cache found\")"
+      "Bash(else echo \"No Vite cache found\")",
+      "Bash(dir \"C:\\njtake2\\njcabinets-main\\frontend\\src\" /s /b)",
+      "Bash(if [ -f \"nul\" ])",
+      "Bash(then rm -f nul)"
     ],
     "deny": [],
     "ask": []

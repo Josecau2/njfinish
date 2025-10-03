@@ -42,7 +42,7 @@ export default async function globalSetup(config: FullConfig) {
   await page.goto(loginUrl, { waitUntil: 'networkidle' });
 
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/password/i).fill(password);
+  await page.locator('input[type="password"]').fill(password);
   await page.getByRole('button', { name: /sign in|log in/i }).click();
 
   await acceptTermsIfPresent(page);

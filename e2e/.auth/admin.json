@@ -1,0 +1,22 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "user",
+          "value": "{\"email\":\"joseca@symmetricalwolf.com\",\"userId\":5,\"name\":\"Jose Symmetricalwolf\",\"role\":\"admin\",\"role_id\":1,\"group_id\":14,\"group\":{\"id\":14,\"name\":\"QA Administrators\",\"group_type\":\"standard\",\"modules\":{\"dashboard\":true,\"proposals\":true,\"customers\":true,\"resources\":true}}}"
+        },
+        {
+          "name": "coreui-free-react-admin-template-theme",
+          "value": "light"
+        },
+        {
+          "name": "__auth_changed__",
+          "value": "1759460223622"
+        }
+      ]
+    }
+  ]
+}

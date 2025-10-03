@@ -1,0 +1,41 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e6]:
+    - img "NJ Contractors" [ref=e8]
+    - heading "Sign In" [level=2] [ref=e9]
+    - paragraph [ref=e10]: Enter your email and password to sign in!
+    - generic [ref=e12]:
+      - group [ref=e13]:
+        - generic [ref=e14]:
+          - text: Email
+          - generic [ref=e15]: "*"
+        - textbox "Email" [ref=e16]
+      - group [ref=e17]:
+        - generic [ref=e18]:
+          - text: Password
+          - generic [ref=e19]: "*"
+        - generic [ref=e20]:
+          - textbox "Password" [ref=e21]
+          - button "Show password" [ref=e23] [cursor=pointer]:
+            - img [ref=e24] [cursor=pointer]
+      - generic [ref=e27]:
+        - generic [ref=e28] [cursor=pointer]:
+          - checkbox "Keep me logged in" [ref=e29]
+          - generic [ref=e31] [cursor=pointer]: Keep me logged in
+        - link "Forgot password?" [ref=e32] [cursor=pointer]:
+          - /url: /forgot-password
+      - button "Sign In" [ref=e33] [cursor=pointer]
+    - paragraph [ref=e34]:
+      - text: Don't have an account?
+      - link "Request Access" [ref=e35] [cursor=pointer]:
+        - /url: /request-access
+  - generic:
+    - region "Notifications-top"
+    - region "Notifications-top-left"
+    - region "Notifications-top-right"
+    - region "Notifications-bottom-left"
+    - region "Notifications-bottom"
+    - region "Notifications-bottom-right"
+```
