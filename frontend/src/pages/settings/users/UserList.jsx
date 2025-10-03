@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useRef } from 'react'
-import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, Heading, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, Heading, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useToast, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   Plus,
@@ -166,7 +166,7 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
                 <Flex align="center" gap={2}>
                   <Icon as={Users} boxSize={ICON_BOX_MD} color="brand.500" aria-hidden="true" />
                   {t('settings.users.stats.totalUsers')}
@@ -181,7 +181,7 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
                 <Flex align="center" gap={2}>
                   <Icon as={Gear} boxSize={ICON_BOX_MD} color="green.500" aria-hidden="true" />
                   {t('settings.users.stats.administrators')}
@@ -196,7 +196,7 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color="gray.600" mb={2}>
+              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
                 <Flex align="center" gap={2}>
                   <Icon as={UserIcon} boxSize={ICON_BOX_MD} color="orange.500" aria-hidden="true" />
                   {t('settings.users.stats.regularUsers')}
@@ -222,7 +222,7 @@ const UsersPage = () => {
             <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
                 </InputLeftElement>
                 <Input
                   type="search"
@@ -238,7 +238,7 @@ const UsersPage = () => {
               </InputGroup>
             </Box>
             <Box textAlign={{ base: 'left', md: 'right' }}>
-              <Text color="gray.600">
+              <Text color={useColorModeValue("gray.600", "gray.400")}>
                 {t('settings.users.showing', {
                   count: filteredUsers?.length || 0,
                   total: users?.length || 0,
@@ -269,7 +269,7 @@ const UsersPage = () => {
         <StandardCard className="settings-table-card">
           <CardBody className="settings-empty-state">
             <Spinner colorScheme="brand" size="lg" />
-            <Text color="gray.500" mt={3} mb={0}>{t('settings.users.loading')}</Text>
+            <Text color={useColorModeValue("gray.500", "gray.400")} mt={3} mb={0}>{t('settings.users.loading')}</Text>
           </CardBody>
         </StandardCard>
       )}
@@ -418,7 +418,7 @@ const UsersPage = () => {
                         <span className="settings-mobile-label">
                           {t('settings.users.table.email')}
                         </span>
-                        <Text className="settings-mobile-value" color="gray.500">{user.email}</Text>
+                        <Text className="settings-mobile-value" color={useColorModeValue("gray.500", "gray.400")}>{user.email}</Text>
                       </div>
                       <div className="settings-mobile-actions">
                       <Button

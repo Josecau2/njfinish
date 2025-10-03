@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
-import { CardBody, FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast } from '@chakra-ui/react'
+import { CardBody, FormControl, Input, FormLabel, Select, Switch, Container, Flex, Box, Icon, Button, FormErrorMessage, InputGroup, InputLeftElement, Text, VStack, HStack, Alert, AlertIcon, Divider, useToast, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import { User, Mail, ArrowLeft, Save, Eye, Settings, Home, Building, UserPlus, Lock } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
@@ -21,7 +21,7 @@ const FormSection = ({ title, icon, children }) => (
         <Box p={2} borderRadius="md" bg="brand.50">
           <Icon as={icon} boxSize={ICON_BOX_MD} color="brand.600" />
         </Box>
-        <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+        <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
           {title}
         </Text>
       </HStack>
@@ -45,7 +45,7 @@ const CustomFormInput = ({
   ...props
 }) => (
   <FormControl isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700">
+    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
       {required && (
         <Text as="span" color="red.500" ml={1}>
@@ -56,7 +56,7 @@ const CustomFormInput = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.400" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
         </InputLeftElement>
       )}
       <Input
@@ -92,7 +92,7 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <FormControl isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.700">
+    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
       {required && (
         <Text as="span" color="red.500" ml={1}>
@@ -103,7 +103,7 @@ const CustomFormSelect = ({
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.400" />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
         </InputLeftElement>
       )}
       <Select
@@ -391,9 +391,9 @@ const AddUserForm = () => {
           <Box
             p={4}
             borderRadius="lg"
-            bg="gray.50"
+            bg={useColorModeValue("gray.50", "gray.800")}
             border="1px"
-            borderColor="gray.200"
+            borderColor={useColorModeValue("gray.200", "gray.600")}
             mb={4}
           >
             <Flex align="center" justify="space-between">
@@ -411,10 +411,10 @@ const AddUserForm = () => {
                   <Icon as={User} boxSize={ICON_BOX_MD} />
                 </Box>
                 <VStack align="start" spacing={0}>
-                  <Text fontWeight="semibold" fontSize="sm" color="gray.800">
+                  <Text fontWeight="semibold" fontSize="sm" color={useColorModeValue("gray.800", "gray.200")}>
                     {t('settings.users.form.labels.salesRep')}
                   </Text>
-                  <Text fontSize="xs" color="gray.600">
+                  <Text fontSize="xs" color={useColorModeValue("gray.600", "gray.400")}>
                     {t('settings.users.form.hints.salesRep')}
                   </Text>
                 </VStack>

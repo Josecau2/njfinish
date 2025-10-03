@@ -297,8 +297,8 @@ const LoginCustomizerPage = () => {
       {loading && (
         <StandardCard bg={cardBg} shadow="sm" borderWidth="0">
           <CardBody textAlign="center" py={8}>
-            <Spinner color="blue.500" size="lg" />
-            <Text color="gray.500" mt={3} mb={0}>
+            <Spinner color={useColorModeValue("blue.500", "blue.300")} size="lg" />
+            <Text color={useColorModeValue("gray.500", "gray.400")} mt={3} mb={0}>
               {t('settings.customization.login.loading')}
             </Text>
           </CardBody>
@@ -318,18 +318,18 @@ const LoginCustomizerPage = () => {
                         justify="center"
                         w="32px"
                         h="32px"
-                        bg="blue.50"
+                        bg={useColorModeValue("blue.50", "blue.900")}
                         borderRadius="8px"
                       >
-                        <Type size={ICON_SIZE_MD} color="blue.500" />
+                        <Type size={ICON_SIZE_MD} color={useColorModeValue("blue.500", "blue.300")} />
                       </Flex>
-                      <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                         {t('settings.customization.login.form.title')}
                       </Text>
                     </Flex>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.form.loginTitle')}
                       </FormLabel>
                       <Input
@@ -337,7 +337,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('title', e.target.value)}
                         placeholder={t('settings.customization.login.form.placeholders.title')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -346,7 +346,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.form.loginSubtitle')}
                       </FormLabel>
                       <Input
@@ -354,7 +354,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('subtitle', e.target.value)}
                         placeholder={t('settings.customization.login.form.placeholders.subtitle')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -363,7 +363,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.form.backgroundColor')}
                       </FormLabel>
                       <InputGroup>
@@ -387,7 +387,7 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('backgroundColor', e.target.value)}
                           placeholder="black"
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           fontSize="sm"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -396,7 +396,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.logoSize.label')}
                       </FormLabel>
                       <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'center' }} gap={4}>
@@ -414,18 +414,18 @@ const LoginCustomizerPage = () => {
                           </SliderTrack>
                           <SliderThumb />
                         </Slider>
-                        <Text fontWeight="semibold" color="gray.500" minW="60px" textAlign="center">
+                        <Text fontWeight="semibold" color={useColorModeValue("gray.500", "gray.400")} minW="60px" textAlign="center">
                           {Math.round(Number(settings.logoHeight) || 60)}px
                         </Text>
                       </Flex>
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={3}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={3}>
                         {t('settings.customization.login.options.title')}
                       </FormLabel>
                       <VStack spacing={4} align="stretch">
-                        <Box p={3} bg="gray.50" borderWidth="1px" borderColor="gray.200" borderRadius="8px">
+                        <Box p={3} bg={useColorModeValue("gray.50", "gray.800")} borderWidth="1px" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="8px">
                           <Checkbox
                             isChecked={settings.showForgotPassword}
                             onChange={(e) => handleChange('showForgotPassword', e.target.checked)}
@@ -434,12 +434,12 @@ const LoginCustomizerPage = () => {
                           >
                             {t('settings.customization.login.options.showForgot')}
                           </Checkbox>
-                          <Text fontSize="sm" color="gray.500">
+                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                             {t('settings.customization.login.options.showForgotHint')}
                           </Text>
                         </Box>
 
-                        <Box p={3} bg="gray.50" borderWidth="1px" borderColor="gray.200" borderRadius="8px">
+                        <Box p={3} bg={useColorModeValue("gray.50", "gray.800")} borderWidth="1px" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="8px">
                           <Checkbox
                             isChecked={settings.showKeepLoggedIn}
                             onChange={(e) => handleChange('showKeepLoggedIn', e.target.checked)}
@@ -448,7 +448,7 @@ const LoginCustomizerPage = () => {
                           >
                             {t('settings.customization.login.options.showKeep')}
                           </Checkbox>
-                          <Text fontSize="sm" color="gray.500">
+                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                             {t('settings.customization.login.options.showKeepHint')}
                           </Text>
                         </Box>
@@ -465,18 +465,18 @@ const LoginCustomizerPage = () => {
                         justify="center"
                         w="32px"
                         h="32px"
-                        bg="green.50"
+                        bg={useColorModeValue("green.50", "green.900")}
                         borderRadius="8px"
                       >
                         <Palette size={ICON_SIZE_MD} color="green.600" />
                       </Flex>
-                      <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                         {t('settings.customization.login.rightPanel.title')}
                       </Text>
                     </Flex>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.rightPanel.panelTitle')}
                       </FormLabel>
                       <Input
@@ -484,7 +484,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('rightTitle', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.title')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -493,7 +493,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.rightPanel.panelSubtitle')}
                       </FormLabel>
                       <Input
@@ -501,7 +501,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('rightSubtitle', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.subtitle')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -510,7 +510,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.rightPanel.tagline')}
                       </FormLabel>
                       <Input
@@ -518,7 +518,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('rightTagline', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.tagline')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         _hover={{ borderColor: 'gray.300' }}
                         _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -527,7 +527,7 @@ const LoginCustomizerPage = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                      <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                         {t('settings.customization.login.rightPanel.description')}
                       </FormLabel>
                       <Textarea
@@ -536,7 +536,7 @@ const LoginCustomizerPage = () => {
                         onChange={(e) => handleChange('rightDescription', e.target.value)}
                         placeholder={t('settings.customization.login.rightPanel.placeholders.description')}
                         borderRadius="8px"
-                        borderColor="gray.200"
+                        borderColor={useColorModeValue("gray.200", "gray.600")}
                         fontSize="sm"
                         resize="vertical"
                         _hover={{ borderColor: 'gray.300' }}
@@ -556,24 +556,24 @@ const LoginCustomizerPage = () => {
                       justify="center"
                       w="32px"
                       h="32px"
-                      bg="blue.50"
+                      bg={useColorModeValue("blue.50", "blue.900")}
                       borderRadius="8px"
                     >
-                      <Settings size={ICON_SIZE_MD} color="blue.600" />
+                      <Settings size={ICON_SIZE_MD} color={useColorModeValue("blue.600", "blue.300")} />
                     </Flex>
-                    <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                    <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                       {t('settings.customization.login.smtp.title')}
                     </Text>
                   </Flex>
 
-                  <Text color="gray.500" mb={4}>
+                  <Text color={useColorModeValue("gray.500", "gray.400")} mb={4}>
                     {t('settings.customization.login.smtp.subtitle')}
                   </Text>
 
                   <Grid templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }} gap={4}>
                     <GridItem colSpan={{ base: 1, md: 3 }}>
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.smtp.host')}
                         </FormLabel>
                         <Input
@@ -581,7 +581,7 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('smtpHost', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.host')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -590,7 +590,7 @@ const LoginCustomizerPage = () => {
 
                     <GridItem colSpan={{ base: 1, md: 2 }}>
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.smtp.port')}
                         </FormLabel>
                         <Input
@@ -599,7 +599,7 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('smtpPort', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.port')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -620,7 +620,7 @@ const LoginCustomizerPage = () => {
 
                     <GridItem colSpan={{ base: 1, md: 3 }}>
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.smtp.user')}
                         </FormLabel>
                         <Input
@@ -629,7 +629,7 @@ const LoginCustomizerPage = () => {
                           placeholder={t('settings.customization.login.smtp.placeholders.user')}
                           autoComplete="username"
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -638,7 +638,7 @@ const LoginCustomizerPage = () => {
 
                     <GridItem colSpan={{ base: 1, md: 3 }}>
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.smtp.pass')}
                         </FormLabel>
                         <Input
@@ -648,7 +648,7 @@ const LoginCustomizerPage = () => {
                           placeholder={t('settings.customization.login.smtp.placeholders.pass')}
                           autoComplete="new-password"
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -657,7 +657,7 @@ const LoginCustomizerPage = () => {
 
                     <GridItem colSpan={{ base: 1, md: 3 }}>
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.smtp.from')}
                         </FormLabel>
                         <Input
@@ -665,7 +665,7 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('emailFrom', e.target.value)}
                           placeholder={t('settings.customization.login.smtp.placeholders.from')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
@@ -673,11 +673,11 @@ const LoginCustomizerPage = () => {
                     </GridItem>
                   </Grid>
 
-                  <Box borderTop="1px" borderColor="gray.200" pt={4} mt={4}>
+                  <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} pt={4} mt={4}>
                     <Flex direction={{ base: 'column', md: 'row' }} align={{ md: 'end' }} gap={4}>
                       <Box flex="1">
                         <FormControl>
-                          <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                          <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                             {t('settings.customization.login.smtp.testLabel')}
                           </FormLabel>
                           <Input
@@ -685,7 +685,7 @@ const LoginCustomizerPage = () => {
                             onChange={(e) => setTestEmail(e.target.value)}
                             placeholder={t('settings.customization.login.smtp.testPlaceholder')}
                             borderRadius="8px"
-                            borderColor="gray.200"
+                            borderColor={useColorModeValue("gray.200", "gray.600")}
                             _hover={{ borderColor: 'gray.300' }}
                             _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                           />
@@ -722,18 +722,18 @@ const LoginCustomizerPage = () => {
                           justify="center"
                           w="32px"
                           h="32px"
-                          bg="orange.50"
+                          bg={useColorModeValue("orange.50", "orange.900")}
                           borderRadius="8px"
                         >
                           <PaintBucket size={ICON_SIZE_MD} color="orange.400" />
                         </Flex>
-                        <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                        <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                           {t('settings.customization.login.requestAccess.title')}
                         </Text>
                       </Flex>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.pageTitle')}
                         </FormLabel>
                         <Input
@@ -741,14 +741,14 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessTitle', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.pageTitle')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.subtitle')}
                         </FormLabel>
                         <Input
@@ -756,14 +756,14 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessSubtitle', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.subtitle')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.description')}
                         </FormLabel>
                         <Textarea
@@ -772,7 +772,7 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessDescription', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.description')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           resize="vertical"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
@@ -780,7 +780,7 @@ const LoginCustomizerPage = () => {
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.benefits')}
                         </FormLabel>
                         <Textarea
@@ -789,12 +789,12 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleBenefitsChange(e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.benefits')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           resize="vertical"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                        <Text fontSize="sm" color="gray.500" mt={1}>
+                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
                           {t('settings.customization.login.requestAccess.benefitsHint')}
                         </Text>
                       </FormControl>
@@ -809,18 +809,18 @@ const LoginCustomizerPage = () => {
                           justify="center"
                           w="32px"
                           h="32px"
-                          bg="blue.50"
+                          bg={useColorModeValue("blue.50", "blue.900")}
                           borderRadius="8px"
                         >
                           <Mail size={ICON_SIZE_MD} color="blue.700" />
                         </Flex>
-                        <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                        <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                           {t('settings.customization.login.requestAccess.requestEmails')}
                         </Text>
                       </Flex>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.successMessage')}
                         </FormLabel>
                         <Input
@@ -828,14 +828,14 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessSuccessMessage', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.successMessage')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.leadEmailSubject')}
                         </FormLabel>
                         <Input
@@ -843,14 +843,14 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessLeadSubject', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailSubject')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.leadEmailBody')}
                         </FormLabel>
                         <Textarea
@@ -859,19 +859,19 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessLeadBody', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.leadEmailBody')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           resize="vertical"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                        <Text fontSize="sm" color="gray.500" mt={1}>
+                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
                           {t('settings.customization.login.requestAccess.placeholdersAvailable')}{' '}
                           {'{{firstName}}'}, {'{{name}}'}, {'{{email}}'}
                         </Text>
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.adminEmailSubject')}
                         </FormLabel>
                         <Input
@@ -879,14 +879,14 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessAdminSubject', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailSubject')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel fontWeight="semibold" color="gray.700" mb={2}>
+                        <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
                           {t('settings.customization.login.requestAccess.adminEmailBody')}
                         </FormLabel>
                         <Textarea
@@ -895,12 +895,12 @@ const LoginCustomizerPage = () => {
                           onChange={(e) => handleChange('requestAccessAdminBody', e.target.value)}
                           placeholder={t('settings.customization.login.requestAccess.placeholders.adminEmailBody')}
                           borderRadius="8px"
-                          borderColor="gray.200"
+                          borderColor={useColorModeValue("gray.200", "gray.600")}
                           resize="vertical"
                           _hover={{ borderColor: 'gray.300' }}
                           _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
                         />
-                        <Text fontSize="sm" color="gray.500" mt={1}>
+                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
                           {t('settings.customization.login.requestAccess.placeholdersAvailable')}{' '}
                           {'{{name}}'}, {'{{email}}'}, {'{{companyLine}}'}, {'{{messageBlock}}'}
                         </Text>
@@ -929,7 +929,7 @@ const LoginCustomizerPage = () => {
             alignItems="center"
             p={3}
             borderBottom="1px"
-            borderColor="gray.200"
+            borderColor={useColorModeValue("gray.200", "gray.600")}
           >
             <Text fontSize="lg" fontWeight="bold" mb={0}>
               {t('settings.customization.login.previewTitle')}

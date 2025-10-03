@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
 import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
-import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack } from '@chakra-ui/react'
+import { Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -411,10 +411,10 @@ const CatalogTable = ({
               <Box
                 textAlign={{ base: "center", md: "start" }}
                 border="1px solid"
-                borderColor="gray.300"
+                borderColor={useColorModeValue("gray.300", "gray.600")}
                 borderRadius="md"
                 p={3}
-                bg="gray.50"
+                bg={useColorModeValue("gray.50", "gray.800")}
                 w="full"
                 maxW="520px"
                 mx="auto"
@@ -447,31 +447,31 @@ const CatalogTable = ({
                   }}
                 />
               </Box>
-              <Box flex="1" border="1px solid" borderColor="gray.300" borderRadius="md" p={3} bg="gray.50" minW={0}>
+              <Box flex="1" border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} bg={useColorModeValue("gray.50", "gray.800")} minW={0}>
                 <Flex mb={3} align="center" gap={2}>
                   <Badge colorScheme="gray">{t('Type')}</Badge>
                   <Text as="strong" fontSize="lg">{selectedTypeInfo.type}</Text>
                 </Flex>
                 {selectedTypeInfo.code && (
-                  <Box mb={2} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Code:</Text>{' '}
+                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Code:</Text>{' '}
                     <strong>{selectedTypeInfo.code}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
-                  <Box mb={2} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Name:</Text>{' '}
+                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Name:</Text>{' '}
                     <strong>{selectedTypeInfo.name}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
-                  <Box mb={3} borderBottom="1px solid" borderColor="gray.200" pb={2}>
-                    <Text as="span" color="gray.600" fontWeight="medium">Short:</Text>{' '}
+                  <Box mb={3} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Short:</Text>{' '}
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </Box>
                 )}
                 <Box mt={3}>
-                  <Text as="strong" color="gray.600" display="block" mb={2}>Description:</Text>
+                  <Text as="strong" color={useColorModeValue("gray.600", "gray.400")} display="block" mb={2}>Description:</Text>
                   <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
                     {selectedTypeInfo.longDescription ||
                       selectedTypeInfo.description ||
@@ -482,7 +482,7 @@ const CatalogTable = ({
               {/* close outer flex wrapper */}
             </Flex>
           ) : (
-            <Box color="gray.600" textAlign="center" p={4} border="1px solid" borderColor="gray.300" borderRadius="md" bg="gray.50">
+            <Box color={useColorModeValue("gray.600", "gray.400")} textAlign="center" p={4} border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")}>
               {t('No type information available.')}
             </Box>
           )}
@@ -614,7 +614,7 @@ const CatalogTable = ({
                         >
                           <strong>{item.code}</strong>
                           {item.description ? (
-                            <Text as="span" color="gray.600" ml={1}>— {item.description}</Text>
+                            <Text as="span" color={useColorModeValue("gray.600", "gray.400")} ml={1}>— {item.description}</Text>
                           ) : null}
                         </Text>
                         {(() => {
@@ -837,7 +837,7 @@ const CatalogTable = ({
                                 <Td
                                   colSpan={10}
                                   fontWeight="semibold"
-                                  color="gray.600"
+                                  color={useColorModeValue("gray.600", "gray.400")}
                                   pl="72px"
                                   fontSize="14px"
                                   borderLeft={`6px solid ${headerBg}`}
@@ -879,9 +879,9 @@ const CatalogTable = ({
                                             px={2.5}
                                             py={0.5}
                                             borderRadius="full"
-                                            bg="gray.100"
+                                            bg={useColorModeValue("gray.100", "gray.700")}
                                             border={`1px solid ${headerBg}`}
-                                            color="gray.800"
+                                            color={useColorModeValue("gray.800", "gray.200")}
                                             fontWeight="600"
                                             lineHeight={1.2}
                                             boxShadow="sm"
@@ -895,12 +895,12 @@ const CatalogTable = ({
                                             return details ? (
                                               <Text
                                                 as="span"
-                                                color="gray.600"
+                                                color={useColorModeValue("gray.600", "gray.400")}
                                                 fontSize="14px"
                                                 px={2}
                                                 py={0.5}
                                                 borderRadius="md"
-                                                bg="gray.50"
+                                                bg={useColorModeValue("gray.50", "gray.800")}
                                                 border="1px dashed"
                                                 borderColor="gray.400"
                                               >
@@ -962,7 +962,7 @@ const CatalogTable = ({
                                       <Td fontWeight="medium" color="green.500">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
-                                      <Td color="gray.500">
+                                      <Td color={useColorModeValue("gray.500", "gray.400")}>
                                         -
                                       </Td>
                                       <Td>
@@ -1066,7 +1066,7 @@ const CatalogTable = ({
                     >
                       <strong>{item.code}</strong>
                       {item.description ? (
-                        <Text as="span" color="gray.600" ml={1}>— {item.description}</Text>
+                        <Text as="span" color={useColorModeValue("gray.600", "gray.400")} ml={1}>— {item.description}</Text>
                       ) : null}
                     </Text>
                     {hasTypeMetadata(item.type) && (

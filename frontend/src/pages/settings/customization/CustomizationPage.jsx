@@ -16,7 +16,7 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const ColorField = ({ label, name, value, onChange }) => (
   <FormControl>
-    <FormLabel fontSize="sm" fontWeight="medium" color="gray.600">
+    <FormLabel fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.600", "gray.400")}>
       {label}
     </FormLabel>
     <HStack spacing={4} align="center">
@@ -30,7 +30,7 @@ const ColorField = ({ label, name, value, onChange }) => (
         p={0}
         borderRadius="md"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor={useColorModeValue("gray.200", "gray.600")}
         cursor="pointer"
       />
       <Box
@@ -40,9 +40,9 @@ const ColorField = ({ label, name, value, onChange }) => (
         fontFamily="mono"
         fontSize="sm"
         borderWidth="1px"
-        borderColor="gray.200"
-        bg="gray.50"
-        color="gray.600"
+        borderColor={useColorModeValue("gray.200", "gray.600")}
+        bg={useColorModeValue("gray.50", "gray.800")}
+        color={useColorModeValue("gray.600", "gray.400")}
       >
         {value || "white"}
       </Box>
@@ -180,23 +180,23 @@ const CustomizationPage = () => {
                     w="48px"
                     h="48px"
                     borderRadius="lg"
-                    bg="blue.50"
-                    color="blue.600"
+                    bg={useColorModeValue("blue.50", "blue.900")}
+                    color={useColorModeValue("blue.600", "blue.300")}
                   >
                     <Icon as={Image} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   </Flex>
                   <Box>
-                    <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                    <Text fontWeight="semibold" fontSize="lg" color={useColorModeValue("gray.800", "gray.200")}>
                       {t('settings.customization.ui.brandLogo.title')}
                     </Text>
-                    <Text fontSize="sm" color="gray.600">
+                    <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                       {t('settings.customization.ui.brandLogo.subtitle')}
                     </Text>
                   </Box>
                 </Stack>
 
                 <FormControl>
-                  <FormLabel fontSize="sm" fontWeight="medium" color="gray.700">
+                  <FormLabel fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.customization.ui.brandLogo.labels.logoText')}
                   </FormLabel>
                   <Input
@@ -225,7 +225,7 @@ const CustomizationPage = () => {
                   >
                     {t('settings.customization.ui.brandLogo.chooseImageCta')}
                   </Button>
-                  <Text fontSize="xs" color="gray.500" mt={2}>
+                  <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")} mt={2}>
                     {t('settings.customization.ui.brandLogo.supportedTypes')}
                   </Text>
                 </Box>
@@ -237,8 +237,8 @@ const CustomizationPage = () => {
                     p={4}
                     borderRadius="lg"
                     borderWidth="1px"
-                    borderColor="gray.200"
-                    bg="gray.50"
+                    borderColor={useColorModeValue("gray.200", "gray.600")}
+                    bg={useColorModeValue("gray.50", "gray.800")}
                   >
                     <Box as="img" src={previewLogo} alt={t('settings.customization.ui.brandLogo.alt.logoPreview')} h="48px" borderRadius="md" shadow="sm" />
                     <Button
@@ -267,16 +267,16 @@ const CustomizationPage = () => {
                     w="48px"
                     h="48px"
                     borderRadius="lg"
-                    bg="purple.50"
+                    bg={useColorModeValue("purple.50", "purple.900")}
                     color="purple.600"
                   >
                     <Icon as={Palette} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   </Flex>
                   <Box>
-                    <Text fontWeight="semibold" fontSize="lg" color="gray.800">
+                    <Text fontWeight="semibold" fontSize="lg" color={useColorModeValue("gray.800", "gray.200")}>
                       {t('settings.customization.ui.colorPalette.title')}
                     </Text>
-                    <Text fontSize="sm" color="gray.600">
+                    <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                       {t('settings.customization.ui.colorPalette.subtitle')}
                     </Text>
                   </Box>
@@ -284,7 +284,7 @@ const CustomizationPage = () => {
 
                 <Stack spacing={6}>
                   <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+                    <Text fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={3}>
                       {t('settings.customization.ui.colorPalette.headerTitle')}
                     </Text>
                     <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
@@ -310,7 +310,7 @@ const CustomizationPage = () => {
                   </Box>
 
                   <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+                    <Text fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={3}>
                       {t('settings.customization.ui.colorPalette.sidebarTitle')}
                     </Text>
                     <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>

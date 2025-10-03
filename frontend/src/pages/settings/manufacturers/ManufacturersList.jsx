@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
-import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import {
   Building2,
@@ -163,7 +163,7 @@ const ManufacturersList = () => {
               <GridItem>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                   </InputLeftElement>
                   <Input
                     placeholder={t('settings.manufacturers.searchPlaceholder', 'Search manufacturers')}
@@ -201,7 +201,7 @@ const ManufacturersList = () => {
 
         {loading && (
           <Flex align="center" justify="center" py={16}>
-            <Spinner size="lg" color="blue.500" />
+            <Spinner size="lg" color={useColorModeValue("blue.500", "blue.300")} />
           </Flex>
         )}
 
@@ -220,7 +220,7 @@ const ManufacturersList = () => {
           <StandardCard>
             <CardBody textAlign="center" py={16}>
               <Icon as={Filter} boxSize={10} color="gray.300" mb={4} />
-              <Text fontSize="lg" color="gray.600">
+              <Text fontSize="lg" color={useColorModeValue("gray.600", "gray.400")}>
                 {t('settings.manufacturers.emptyState', 'No manufacturers match the current filters.')}
               </Text>
             </CardBody>
@@ -241,7 +241,7 @@ const ManufacturersList = () => {
                   <Box
                     w={{ base: '100%', md: '140px' }}
                     h={{ base: '120px', md: '140px' }}
-                    bg="gray.50"
+                    bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                     borderWidth="1px"
                     borderColor="gray.100"
@@ -268,12 +268,12 @@ const ManufacturersList = () => {
                     <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={4}>
                       <Box minW="0">
                         <HStack spacing={4} align="center">
-                          <Icon as={Building2} boxSize={ICON_BOX_MD} color="blue.500" />
+                          <Icon as={Building2} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.500", "blue.300")} />
                           <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
                             {manufacturer.name}
                           </Text>
                         </HStack>
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                           ID: {manufacturer.id}
                         </Text>
                       </Box>
@@ -293,14 +293,14 @@ const ManufacturersList = () => {
 
                     <HStack spacing={4} align="flex-start" flexWrap="wrap">
                       <HStack spacing={4} minW="0">
-                        <Icon as={Mail} boxSize={ICON_BOX_MD} color="gray.400" />
-                        <Text fontSize="sm" color="gray.600" noOfLines={1}>
+                        <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} noOfLines={1}>
                           {manufacturer.email || t('settings.manufacturers.noEmail', 'No email provided')}
                         </Text>
                       </HStack>
 
                       <HStack spacing={4}>
-                        <Icon as={FileText} boxSize={ICON_BOX_MD} color="gray.400" />
+                        <Icon as={FileText} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
                         <Tag size="sm" variant="subtle" colorScheme="gray">
                           <TagLabel>
                             {t('settings.manufacturers.labels.capacity', {
@@ -318,7 +318,7 @@ const ManufacturersList = () => {
                           isChecked={Boolean(manufacturer.status)}
                           onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
                         />
-                        <Text fontSize="sm" color="gray.600">
+                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
                           {manufacturer.status
                             ? t('settings.manufacturers.labels.active')
                             : t('settings.manufacturers.labels.inactive')}
