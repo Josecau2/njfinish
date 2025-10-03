@@ -1,0 +1,76 @@
+frontend\src\components\ItemSelectionContent.jsx
+  1661: <Box className="styles-carousel-container">
+  1845: <Box mt={5} className="custom-items-mobile" maxW="100%">
+frontend\src\components\PaymentModal.jsx
+  8: <div className='container py-4' role='status' aria-live='polite'>
+frontend\src\pages\customers\AddCustomerForm.jsx
+  301: <PageContainer fluid p={2} m={2} className="add-new-customer bg-body" minH="100vh">
+  326: className="shadow-sm"
+frontend\src\pages\customers\CustomerForm.jsx
+  460: <div className="d-flex justify-content-end gap-2">
+frontend\src\pages\payments\PaymentCancel.jsx
+  29: <CardBody className="text-center py-5">
+frontend\src\pages\payments\PaymentTest.jsx
+  53: <div className="d-flex gap-2 flex-wrap">
+frontend\src\pages\profile\index.jsx
+  135: <Box className="profile-container" role="status" aria-live="polite">
+  147: <Box className="profile-container">
+frontend\src\pages\proposals\ProposalEditor.jsx
+  6: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\proposals\Proposals.jsx
+  462: <PageContainer className="dashboard-container">
+frontend\src\pages\public\PublicProposalPage.jsx
+  81: <div className="container py-5">
+  93: <div className="container py-5">
+  101: <div className="container py-4">
+  114: {isLocked && <span className="badge bg-success">{t('publicQuote.acceptedBadge')}</span>}
+frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx
+  136: <div className="form-check mb-3">
+  152: <div className="d-flex justify-content-end gap-2">
+frontend\src\pages\settings\users\UserList.jsx
+  130: <Container maxW="full" className="settings-container">
+  312: <Tr key={user.id} className="settings-table-row">
+frontend\src\pages\settings\manufacturers\tabs\FilesHistoryTab.jsx
+  56: <Td className="text-break">{file.original_name}</Td>
+  57: <Td className="text-break">{file.filename}</Td>
+frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx
+  1048: className="d-flex justify-content-center p-3 border rounded"
+frontend\src\pages\quotes\Create\CreateQuote.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\quotes\Create\QuoteEditor.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\quotes\CreateQuote\QuoteEditorWrapper.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx
+  61: <User size={32} className="text-primary mb-3" aria-hidden="true" />
+  71: <Users size={32} className="text-warning mb-3" aria-hidden="true" />
+  81: <BriefcaseBusiness size={32} className="text-success mb-3" aria-hidden="true" />
+  91: <LayoutGrid size={32} className="text-info mb-3" aria-hidden="true" />
+frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx
+  664: <div className="bg-light p-3 rounded">
+frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx
+  186: <pre className="bg-light p-3 rounded small">
+  192: <pre className="bg-light p-3 rounded small">
+frontend\src\components\showroom\ShowroomModeToggle.jsx
+  237: className="sidebar-footer-pin-btn"
+frontend\src\components\AppSidebar.js
+  176: className="sidebar-brand-narrow"
+  203: className="sidebar-brand-narrow"
+  285: className="sidebar-footer-pin-btn"
+  301: className="sidebar-footer-pin-btn"
+frontend\src\components\CatalogTable.js
+  570: className="shadow-sm"
+  766: <span className="text-muted">{formatPrice(0)}</span>
+  1058: <div className="item-detail-row">
+  1089: <div className="item-detail-row">
+  1100: <div className="item-detail-row">
+   ... 6 more occurrences
+frontend\src\components\CatalogTableEdit.js
+  286: <div className="d-flex flex-column flex-md-row gap-4">
+  288: className="text-center text-md-start border rounded p-3 bg-light"
+  319: <div className="flex-grow-1 border rounded p-3 bg-light" style={{ minWidth: 0 }}>
+  320: <div className="mb-3">
+  325: <div className="mb-2 border-bottom pb-2">
+   ... 28 more occurrences
+frontend\src\components\DocsLink.js
+  21: <small className="text-body-secondary">{text || 'docs'}</small>

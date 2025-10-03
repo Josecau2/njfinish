@@ -1,0 +1,181 @@
+frontend\src\components\BrandLogo.jsx
+  14: className={`brand-logo-img ${className}`.trim()}
+  23: className={`brand-logo-img ${className}`.trim()}
+frontend\src\components\EditManufacturerModal.jsx
+  74: <ModalContent as="form" onSubmit={handleSubmit} className="edit-manufacturer-modal">
+frontend\src\components\EmbeddedPaymentForm.jsx
+  33: <Box className={className} maxW="900px" mx="auto">
+frontend\src\components\FileViewerModal.jsx
+  337: className='file-viewer-modal'
+frontend\src\components\ItemSelectionContent.jsx
+  1482: className="style-selection-mobile"
+  1485: className="current-style-section"
+  1493: className="current-style-content"
+  1498: className="current-style-image"
+  1526: className="current-style-info"
+   ... 15 more occurrences
+frontend\src\components\ItemSelectionContentEdit.jsx
+  1315: className="style-selection-mobile"
+  1318: className="current-style-section"
+  1326: className="current-style-content"
+  1331: className="current-style-image"
+  1359: className="current-style-info"
+   ... 13 more occurrences
+frontend\src\components\NeutralModal.jsx
+  57: className={`neutral-modal ${className}`.trim()}
+frontend\src\components\PaymentModal.jsx
+  8: <div className='container py-4' role='status' aria-live='polite'>
+frontend\src\components\StandardCard.jsx
+  59: className={className}
+  90: className={className}
+frontend\src\components\StyleCarousel.jsx
+  33: <VStack align="stretch" spacing={4} className={className}>
+frontend\src\components\withDynamicContrast.jsx
+  237: className={`dynamic-contrast-wrapper-${colorSource} ${className}`.trim()}
+frontend\src\layout\AppShell.jsx
+  17: <Box minH="100vh" className="app-shell">
+  24: className="content-wrapper"
+  28: <Box flex="1" minW="0" className="main-content">
+frontend\src\pages\auth\ForgotPasswordPage.jsx
+  83: <Flex minH="100vh" className="login-page-wrapper">
+  92: className="login-left-panel"
+  113: className="login-right-panel"
+frontend\src\pages\auth\LoginPage.jsx
+  138: <Flex minH="100vh" className="login-page-wrapper">
+  147: className="login-left-panel"
+  168: className="login-right-panel"
+frontend\src\pages\auth\RequestAccessPage.jsx
+  150: <Flex minH="100vh" className="login-page-wrapper">
+  159: className="login-left-panel"
+  181: className="login-right-panel"
+frontend\src\pages\auth\ResetPasswordPage.jsx
+  69: <Flex minH="100vh" className="login-page-wrapper">
+  78: className="login-left-panel"
+  99: className="login-right-panel"
+frontend\src\pages\auth\SignupPage.jsx
+  189: className="login-right-panel"
+frontend\src\pages\calender\index.jsx
+  106: <Box className="calendar-event" px={2} py={1} fontSize="xs">
+frontend\src\pages\customers\AddCustomerForm.jsx
+  24: <StandardCard className={`border-0 shadow-sm ${className}`} mb={4}>
+  301: <PageContainer fluid p={2} m={2} className="add-new-customer bg-body" minH="100vh">
+  326: className="shadow-sm"
+  612: <Flex gap={3} justify="flex-end" className="form-buttons">
+frontend\src\pages\customers\CustomerForm.jsx
+  210: <div className="invalid-feedback d-block">{formErrors.name}</div>
+  232: <div className="invalid-feedback d-block">{formErrors.email}</div>
+  277: <div className="invalid-feedback d-block">{formErrors.phone}</div>
+  460: <div className="d-flex justify-content-end gap-2">
+frontend\src\pages\customers\EditCustomerPage.jsx
+  274: <PageContainer className="edit-customer-page">
+frontend\src\pages\payments\PaymentCancel.jsx
+  15: <PageContainer className="payment-result">
+  29: <CardBody className="text-center py-5">
+frontend\src\pages\payments\PaymentPage.jsx
+  268: <PageContainer className="payment-page">
+frontend\src\pages\payments\PaymentTest.jsx
+  27: <PageContainer className="payment-test">
+  53: <div className="d-flex gap-2 flex-wrap">
+frontend\src\pages\profile\index.jsx
+  135: <Box className="profile-container" role="status" aria-live="polite">
+  136: <StandardCard className="profile-card">
+  147: <Box className="profile-container">
+  154: <StandardCard className="profile-card">
+  159: <Box as="form" onSubmit={handleSubmit} className="profile-form">
+frontend\src\pages\proposals\CreateProposalForm.jsx
+  320: <PageContainer className="proposal-create">
+frontend\src\pages\proposals\EditProposal.jsx
+  494: className="dashboard-container"
+frontend\src\pages\proposals\ProposalEditor.jsx
+  6: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\proposals\Proposals.jsx
+  462: <PageContainer className="dashboard-container">
+frontend\src\pages\public\PublicProposalPage.jsx
+  81: <div className="container py-5">
+  93: <div className="container py-5">
+  101: <div className="container py-4">
+  114: {isLocked && <span className="badge bg-success">{t('publicQuote.acceptedBadge')}</span>}
+frontend\src\pages\settings\customization\index.jsx
+  12: <StandardCard className="main-div-cutomization">
+frontend\src\pages\settings\customization\LoginCustomizerPage.jsx
+  262: className="main-div-custom-login"
+  925: <ModalContent borderRadius="0" border="none" className="login-preview-modal">
+frontend\src\pages\settings\globalMods\GlobalModsPage.jsx
+  439: <div className="global-mods-actions d-flex">
+  473: <StandardCard className="mb-3 border-success">
+  474: <CardHeader className="bg-success text-white">
+  564: <h6 className="mb-2 d-flex align-items-center gap-2">
+  579: <div className="ms-auto d-flex gap-1">
+   ... 41 more occurrences
+frontend\src\pages\settings\manufacturers\EditManufacturer.jsx
+  68: <Box className="edit-manufacturer-page">
+  78: className="manufacturer-tabs"
+frontend\src\pages\settings\manufacturers\ManufacturersForm.jsx
+  386: className="manufacturer-form"
+frontend\src\pages\settings\multipliers\EditManuMultiplier.jsx
+  70: if (loading) return <Spinner className="mx-auto d-block" />
+  80: <div className="multiplier-edit">
+  136: <div className="form-check mb-3">
+  152: <div className="d-flex justify-content-end gap-2">
+frontend\src\pages\settings\users\UserList.jsx
+  130: <Container maxW="full" className="settings-container">
+  166: <StandardCard className="settings-stats-card">
+  181: <StandardCard className="settings-stats-card">
+  196: <StandardCard className="settings-stats-card">
+  214: <StandardCard className="settings-search-card">
+   ... 27 more occurrences
+frontend\src\pages\settings\usersGroup\CreateUserGroup.jsx
+  14: <StandardCard mb={{ base: 2, md: 4 }} className={`border-0 shadow-sm ${className}`}>
+frontend\src\pages\settings\usersGroup\EditUserGroup.jsx
+  239: <Box as="form" onSubmit={handleSubmit} className="user-group-edit">
+frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx
+  2230: <HStack spacing={4} flexWrap="wrap" className="catalog-actions">
+  2540: <div className="row g-3">
+  2542: <div key={subType.id} className="col-md-6 col-lg-4">
+  2547: <p className="card-text small text-muted">{subType.description}</p>
+  2611: <div className="row g-2 mb-3">
+   ... 100 more occurrences
+frontend\src\pages\settings\manufacturers\tabs\FilesHistoryTab.jsx
+  28: <div className="table-wrap">
+  56: <Td className="text-break">{file.original_name}</Td>
+  57: <Td className="text-break">{file.filename}</Td>
+frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx
+  1030: className="no-gradient-modal"
+  1048: className="d-flex justify-content-center p-3 border rounded"
+frontend\src\pages\quotes\Create\CreateQuote.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\quotes\Create\QuoteEditor.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\quotes\CreateQuote\QuoteEditorWrapper.jsx
+  5: <div className="container py-4" role="status" aria-live="polite">
+frontend\src\pages\proposals\CreateProposal\ProposalSummary.jsx
+  314: <div className="quote-form-mobile">
+  315: <div className="button-group">
+  338: <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
+  339: <div className="form-section">
+  613: <div className="proposal-version-badges">
+   ... 1 more occurrences
+frontend\src\pages\admin\ContractorDetail\OverviewTab.jsx
+  61: <User size={32} className="text-primary mb-3" aria-hidden="true" />
+  71: <Users size={32} className="text-warning mb-3" aria-hidden="true" />
+  81: <BriefcaseBusiness size={32} className="text-success mb-3" aria-hidden="true" />
+  91: <LayoutGrid size={32} className="text-info mb-3" aria-hidden="true" />
+frontend\src\pages\admin\ContractorDetail\ProposalsTab.jsx
+  537: className="proposal-detail-modal"
+  664: <div className="bg-light p-3 rounded">
+  682: <div className="timeline">
+  686: className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
+frontend\src\pages\admin\ContractorDetail\SettingsTab.jsx
+  186: <pre className="bg-light p-3 rounded small">
+  192: <pre className="bg-light p-3 rounded small">
+frontend\src\components\common\EmptyState.jsx
+  13: <VStack spacing={4} py={4} textAlign="center" className={className} role="status" aria-live="polite">
+frontend\src\components\model\EditGroupModal.jsx
+  72: <ModalContent as='form' onSubmit={handleSubmit} className='edit-group-modal'>
+frontend\src\components\model\EditManufacturerModal.jsx
+  72: <ModalContent as='form' onSubmit={handleSubmit} className='edit-manufacturer-modal'>
+frontend\src\components\model\EmailProposalModal.jsx
+  206: <ModalContent as='form' onSubmit={handleSubmit(onSubmit)} className='email-proposal-modal'>
+frontend\src\components\showroom\ShowroomModeToggle.jsx
+  237: className="sidebar-footer-pin-btn"
+  239: <Text as="span" fontWeight="medium" className="pin-label">
