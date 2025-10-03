@@ -64,6 +64,12 @@ const Dashboard = () => {
   const activeProposals = useSelector((state) => state.dashboard.activeProposals)
   const activeOrders = useSelector((state) => state.dashboard.activeOrders)
   const latestProposals = useSelector((state) => state.dashboard.latestProposals || [])
+
+  // Color mode values
+  const iconBlue500 = iconBlue500
+  const borderGray600 = borderGray600
+  const colorGray800 = colorGray800
+  const iconGray500 = iconGray500
   const [displayedProposals, setDisplayedProposals] = useState(0)
   const [displayedOrders, setDisplayedOrders] = useState(0)
   const [hoveredCard, setHoveredCard] = useState(null)
@@ -249,12 +255,12 @@ const Dashboard = () => {
 
   const getFileIcon = useCallback((type) => {
     const IconComponent = fileIconMap[type?.toLowerCase()] || FileIcon
-    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.500", "blue.300")} />
+    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color={iconBlue500} />
   }, [])
 
   const getLinkIcon = useCallback((type) => {
     const IconComponent = linkIconMap[type?.toLowerCase()] || Link2
-    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.500", "blue.300")} />
+    return <Icon as={IconComponent} boxSize={ICON_BOX_MD} color={iconBlue500} />
   }, [])
 
   const proposalStatLoading = typeof activeProposals !== 'number'
@@ -325,14 +331,14 @@ const Dashboard = () => {
                     >
                       <Icon as={icon} boxSize={6} />
                     </Flex>
-                    <Text fontSize="md" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">
+                    <Text fontSize="md" color={borderGray600} fontWeight="medium">
                       {label}
                     </Text>
                   </HStack>
                   <Text
                     fontSize="3xl"
                     fontWeight="bold"
-                    color={useColorModeValue("gray.800", "gray.200")}
+                    color={colorGray800}
                     aria-live="polite"
                     aria-atomic="true"
                   >
@@ -363,7 +369,7 @@ const Dashboard = () => {
                       <Flex justify="space-between" align="center" gap={4}>
                         <Box>
                           <Text fontWeight="semibold">{update.title}</Text>
-                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="sm" color={iconGray500}>
                             {update.date}
                           </Text>
                         </Box>
@@ -375,7 +381,7 @@ const Dashboard = () => {
                   ))}
                 </List>
               ) : (
-                <Box textAlign="center" py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                <Box textAlign="center" py={8} color={iconGray500}>
                   {t('dashboard.noProductUpdates')}
                 </Box>
               )}
@@ -385,7 +391,7 @@ const Dashboard = () => {
           <StandardCard>
             <CardBody>
               <HStack spacing={4} mb={4}>
-                <Icon as={Link2} boxSize={6} color={useColorModeValue("blue.500", "blue.300")} />
+                <Icon as={Link2} boxSize={6} color={iconBlue500} />
                 <Text fontSize="lg" fontWeight="semibold">
                   {t('dashboard.quickLinks')}
                 </Text>
@@ -417,7 +423,7 @@ const Dashboard = () => {
                   ))}
                 </List>
               ) : (
-                <Box textAlign="center" py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                <Box textAlign="center" py={8} color={iconGray500}>
                   {t('dashboard.noQuickLinks', 'No quick links yet')}
                 </Box>
               )}
@@ -445,7 +451,7 @@ const Dashboard = () => {
                           <Text fontWeight="medium" fontSize="sm" wordBreak="break-all">
                             {file.name}
                           </Text>
-                          <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="xs" color={iconGray500}>
                             {file.size} | {file.date}
                           </Text>
                         </Box>
@@ -454,7 +460,7 @@ const Dashboard = () => {
                   ))}
                 </List>
               ) : (
-                <Box textAlign="center" py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                <Box textAlign="center" py={8} color={iconGray500}>
                   {t('dashboard.noRecentFiles', 'No files uploaded yet')}
                 </Box>
               )}
@@ -479,7 +485,7 @@ const Dashboard = () => {
                           <Text fontWeight="medium" fontSize="sm" wordBreak="break-word">
                             {proposal.description || t('dashboard.noDescription', 'No description')}
                           </Text>
-                          <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="xs" color={iconGray500}>
                             {new Date(proposal.createdAt).toLocaleDateString()}
                           </Text>
                         </Box>
@@ -491,7 +497,7 @@ const Dashboard = () => {
                   ))}
                 </List>
               ) : (
-                <Box textAlign="center" py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                <Box textAlign="center" py={8} color={iconGray500}>
                   {t('dashboard.noRecentProposals', 'No proposals yet')}
                 </Box>
               )}

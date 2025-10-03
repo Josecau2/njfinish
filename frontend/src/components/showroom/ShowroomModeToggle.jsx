@@ -43,6 +43,9 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const authUser = useSelector((state) => state.auth?.user)
   const user = authUser || getStoredUser()
 
+  // Color mode values
+  const iconRed500 = iconRed500
+
   const [showroomMode, setShowroomMode] = useState(false)
   const [showroomMultiplier, setShowroomMultiplier] = useState(1.0)
   const [showModal, setShowModal] = useState(false)
@@ -164,7 +167,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
               )}
             </FormHelperText>
             {validationError && (
-              <Text fontSize="xs" color={useColorModeValue("red.500","red.300")} mt={1}>
+              <Text fontSize="xs" color={iconRed500} mt={1}>
                 {validationError}
               </Text>
             )}

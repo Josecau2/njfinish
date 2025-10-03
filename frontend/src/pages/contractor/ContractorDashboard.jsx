@@ -10,6 +10,10 @@ import PageContainer from '../../components/PageContainer'
 const ContractorDashboard = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+
+  // Color mode values
+  const iconGray500 = iconGray500
+  const textGreen600 = textGreen600
   const [stats, setStats] = useState({
     proposals: 0,
     customers: 0,
@@ -146,7 +150,7 @@ const ContractorDashboard = () => {
         <CardHeader borderBottomWidth="1px">
           <Stack spacing={4}>
             <Heading size="md">{t('dashboard.welcome', { group: groupName })}</Heading>
-            <Text color={useColorModeValue("gray.500", "gray.400")}>{t('dashboard.portal')}</Text>
+            <Text color={iconGray500}>{t('dashboard.portal')}</Text>
           </Stack>
         </CardHeader>
         <CardBody>
@@ -178,7 +182,7 @@ const ContractorDashboard = () => {
                 )}
 
                 {showCustomers && (
-                  <StandardCard bg={useColorModeValue("green.600","green.700")} color="white" shadow="lg">
+                  <StandardCard bg={textGreen600} color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
                       <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">

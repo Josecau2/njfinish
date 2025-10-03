@@ -28,14 +28,27 @@ const LocationForm = () => {
   const navigate = useNavigate()
 
   // Dark mode colors
-  const inputIconBg = useColorModeValue("gray.50", "gray.700")
-  const inputIconBorder = useColorModeValue("gray.200", "gray.600")
-  const timezoneIconBg = useColorModeValue("#e7f3ff", "blue.900")
-  const timezoneIconBorder = useColorModeValue("#b6d7ff", "blue.700")
-  const timeIconBg = useColorModeValue("yellow.100", "yellow.900")
-  const timeIconColor = useColorModeValue("yellow.700", "yellow.200")
-  const readonlyInputBg = useColorModeValue("gray.50", "gray.700")
-  const readonlyInputColor = useColorModeValue("gray.600", "gray.400")
+  const inputIconBg = bgGray50
+  const inputIconBorder = borderGray200
+  const timezoneIconBg = color3
+  const timezoneIconBorder = color4
+  const timeIconBg = colorYellow100
+  const timeIconColor = colorYellow700
+  const readonlyInputBg = bgGray50
+  const readonlyInputColor = borderGray600
+
+  // Color mode values
+  const bgGray50 = bgGray50
+  const borderGray200 = borderGray200
+  const color3 = color3
+  const color4 = color4
+  const colorYellow100 = colorYellow100
+  const colorYellow700 = colorYellow700
+  const borderGray600 = borderGray600
+  const bgGray50_1 = bgGray50_1
+  const borderGray700 = borderGray700
+  const iconRed500 = iconRed500
+  const iconGray400 = iconGray400
 
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)
@@ -169,7 +182,7 @@ const LocationForm = () => {
     <PageContainer
       p={2}
       m={2}
-      bg={useColorModeValue("gray.50", "gray.900")}
+      bg={bgGray50_1}
       minH="100vh"
     >
       {/* Header Section */}
@@ -213,7 +226,7 @@ const LocationForm = () => {
           <form onSubmit={handleSubmit}>
             {/* Basic Information Section */}
             <Box>
-              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} display="flex" alignItems="center" gap={2}>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={borderGray700} display="flex" alignItems="center" gap={2}>
                 <Flex
                   align="center"
                   justify="center"
@@ -232,13 +245,13 @@ const LocationForm = () => {
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.locationName')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input
                       name="locationName"
@@ -246,7 +259,7 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.locationName}
                       placeholder={t('settings.locations.form.placeholders.locationName')}
-                      borderColor={useColorModeValue("gray.200", "gray.600")}
+                      borderColor={borderGray200}
                       fontSize="sm"
                       py={3}
                       px={4}
@@ -259,9 +272,9 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.address')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -270,7 +283,7 @@ const LocationForm = () => {
                       border="1px solid"
                       borderColor={inputIconBorder}
                     >
-                      <Icon as={Home} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input
                       name="address"
@@ -296,7 +309,7 @@ const LocationForm = () => {
 
             {/* Contact Information Section */}
             <Box mt={6}>
-              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} display="flex" alignItems="center" gap={2}>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={borderGray700} display="flex" alignItems="center" gap={2}>
                 <Flex
                   align="center"
                   justify="center"
@@ -315,9 +328,9 @@ const LocationForm = () => {
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.website')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -326,7 +339,7 @@ const LocationForm = () => {
                       border="1px solid"
                       borderColor={inputIconBorder}
                     >
-                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input
                       name="website"
@@ -348,9 +361,9 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.email')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -359,7 +372,7 @@ const LocationForm = () => {
                       border="1px solid"
                       borderColor={inputIconBorder}
                     >
-                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input
                       name="email"
@@ -385,9 +398,9 @@ const LocationForm = () => {
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.phone')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -396,7 +409,7 @@ const LocationForm = () => {
                       border="1px solid"
                       borderColor={inputIconBorder}
                     >
-                      <Icon as={Phone} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Phone} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input
                       name="phone"
@@ -423,7 +436,7 @@ const LocationForm = () => {
 
             {/* Location & Time Settings Section */}
             <Box mt={6}>
-              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} display="flex" alignItems="center" gap={2}>
+              <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={borderGray700} display="flex" alignItems="center" gap={2}>
                 <Flex
                   align="center"
                   justify="center"
@@ -440,9 +453,9 @@ const LocationForm = () => {
 
               <Flex>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.country')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="country"
@@ -470,9 +483,9 @@ const LocationForm = () => {
                   )}
                 </Box>
                 <Box md={6}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.timezone')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="timezone"
@@ -480,7 +493,7 @@ const LocationForm = () => {
                     onChange={handleChange}
                     isInvalid={!!errors.timezone}
                     isDisabled={!formData.country}
-                    borderColor={useColorModeValue("gray.200", "gray.600")}
+                    borderColor={borderGray200}
                     borderRadius="md"
                     fontSize="sm"
                     px={4}
@@ -505,7 +518,7 @@ const LocationForm = () => {
               {currentTime && (
                 <Flex>
                   <Box md={6}>
-                    <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                    <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                       {t('settings.locations.form.labels.currentTime')}
                     </FormLabel>
                     <InputGroup>
@@ -515,7 +528,7 @@ const LocationForm = () => {
                         border="1px solid"
                         borderColor={timezoneIconBorder}
                       >
-                        <Icon as={Clock} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                        <Icon as={Clock} boxSize={ICON_BOX_MD} color={iconGray400} />
                       </InputLeftElement>
                       <Input
                         value={currentTime}
@@ -529,7 +542,7 @@ const LocationForm = () => {
                         color={readonlyInputColor}
                       />
                     </InputGroup>
-                    <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mt={1}>
+                    <Text fontSize="sm" color={borderGray600} mt={1}>
                       {t('settings.locations.form.hints.liveTime')}
                     </Text>
                   </Box>
@@ -538,7 +551,7 @@ const LocationForm = () => {
             </Box>
 
             {/* Divider */}
-            <Divider my={4} borderColor={useColorModeValue("gray.200", "gray.600")} />
+            <Divider my={4} borderColor={borderGray200} />
 
             {/* Action Buttons */}
             <Flex gap={3} justify="flex-end">

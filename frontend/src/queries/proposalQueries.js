@@ -22,7 +22,7 @@ export const useProposals = (groupId = null) => {
         url += `?group_id=${groupId}`
       }
       const response = await axiosInstance.get(url)
-      return response.data
+      return response.data?.data ?? []
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -39,7 +39,7 @@ export const useOrders = ({ groupId = null, mineOnly = false } = {}) => {
       if (mineOnly) params.append('mine', 'true')
       const url = `/api/get-proposals?${params.toString()}`
       const response = await axiosInstance.get(url)
-      return response.data
+      return response.data?.data ?? []
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -81,7 +81,7 @@ export const useUpdateProposalStatus = () => {
 
       // Optimistically update proposals list
       queryClient.setQueriesData({ queryKey: proposalKeys.lists() }, (old) => {
-        if (!old) return old
+        if (!Array.isArray(old)) return old
         return old.map((proposal) =>
           proposal.id === parseInt(id)
             ? { ...proposal, status: status, updated_at: new Date().toISOString() }
@@ -146,7 +146,7 @@ export const useAcceptProposal = () => {
 
       // Optimistically update proposals list
       queryClient.setQueriesData({ queryKey: proposalKeys.lists() }, (old) => {
-        if (!old) return old
+        if (!Array.isArray(old)) return old
         return old.map((proposal) =>
           proposal.id === parseInt(id)
             ? { ...proposal, status: 'accepted', updated_at: new Date().toISOString() }
@@ -221,8 +221,11 @@ export const useCreateProposal = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (formData) => {
-      const response = await axiosInstance.post('/api/send-form-data-to-backend', formData)
+    mutationFn: async (payload) => {
+      const normalized = payload && typeof payload === 'object' && 'formData' in payload
+        ? payload
+        : { action: payload?.action ?? '', formData: payload }
+      const response = await sendFormDataToBackend(normalized)
       return response.data
     },
     onSuccess: () => {
@@ -237,14 +240,20 @@ export const useUpdateProposal = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, formData }) => {
-      const response = await axiosInstance.put(`/api/proposals/${id}`, formData)
+    mutationFn: async (payload) => {
+      const normalized = payload && typeof payload === 'object' && 'formData' in payload
+        ? payload
+        : { action: payload?.action ?? '', formData: payload }
+      const response = await sendFormDataToBackend(normalized)
       return response.data
     },
     onSuccess: (data, variables) => {
       // Invalidate proposals list and detail
       queryClient.invalidateQueries({ queryKey: proposalKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: proposalKeys.detail(variables.id) })
+      const targetId = variables?.id ?? variables?.formData?.id ?? variables?.formData?.formData?.id
+      if (targetId) {
+        queryClient.invalidateQueries({ queryKey: proposalKeys.detail(targetId) })
+      }
     },
   })
 }
@@ -259,7 +268,7 @@ export const useContracts = (groupId = null) => {
         url += `?group_id=${groupId}`
       }
       const response = await axiosInstance.get(url)
-      return response.data
+      return response.data?.data ?? []
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -286,3 +295,4 @@ export const getContracts = (groupId = null) => {
 export const acceptProposal = (id, data = {}) => {
   return axiosInstance.post(`/api/quotes/${id}/accept`, data)
 }
+

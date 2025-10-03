@@ -17,6 +17,13 @@ const MotionButton = motion.create(Button)
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
   const { t, i18n } = useTranslation()
+
+  // Color mode values - MUST be before useState
+  const iconGray = useColorModeValue("gray.500", "gray.400")
+  const checkboxBg = useColorModeValue("brand.50", "brand.900")
+  const disabledColor = useColorModeValue("gray.500", "gray.400")
+  const spinnerColor = useColorModeValue("blue.500", "blue.300")
+  const previewContainerBg = useColorModeValue("gray.50", "gray.900")
   const [pdfCustomization, setPdfCustomization] = useState(null)
   const [styleData, setStyleData] = useState(null)
   const [manufacturerNameData, setManufacturerNameData] = useState(null)
@@ -350,7 +357,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
-                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color={useColorModeValue("gray.500", "gray.400")} mb={4}>
+                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color={iconGray} mb={4}>
                   {t('proposalCommon.visibilityOptions', 'Visibility Options')}
                 </Text>
                 <SimpleGrid columns={isMobile ? 1 : 3} spacing={4}>
@@ -461,7 +468,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                               px={3}
                               borderWidth="1px"
                               borderRadius="md"
-                              _checked={{ bg: useColorModeValue('brand.50', 'brand.900'), borderColor: 'brand.300' }}
+                              _checked={{ bg: checkboxBg, borderColor: 'brand.300' }}
                             >
                               <Text isTruncated>{opt.label}</Text>
                             </Checkbox>
@@ -510,8 +517,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             borderWidth="1px"
                             borderRadius="md"
                             isDisabled={opt.isFixed}
-                            _checked={{ bg: useColorModeValue('brand.50', 'brand.900'), borderColor: 'brand.300' }}
-                            _disabled={{ cursor: 'not-allowed', color: useColorModeValue('gray.500', 'gray.400') }}
+                            _checked={{ bg: checkboxBg, borderColor: 'brand.300' }}
+                            _disabled={{ cursor: 'not-allowed', color: disabledColor }}
                           >
                             <Text isTruncated>{opt.label}</Text>
                           </Checkbox>
@@ -589,11 +596,11 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           </ModalHeader>
           <ModalCloseButton aria-label="Close modal" />
           <ModalBody p={0}>
-            <Box px={previewPadding} py={4} bg={useColorModeValue("gray.50", "gray.800")}>
+            <Box px={previewPadding} py={4} bg={previewContainerBg}>
               <Box
                 maxH={previewMaxHeight}
                 overflow="auto"
-                bg={useColorModeValue("white", "gray.800")}
+                bg="white"
                 borderWidth="1px"
                 borderRadius="lg"
                 boxShadow="base"

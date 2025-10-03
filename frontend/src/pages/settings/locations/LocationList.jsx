@@ -56,6 +56,12 @@ const LocationPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  // Color mode values
+  const iconGray500 = iconGray500
+  const borderGray600 = borderGray600
+  const iconGray400 = iconGray400
+  const bgGray100 = bgGray100
+
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -103,8 +109,10 @@ const LocationPage = () => {
     navigate(noisy)
   }
 
+  // Color mode values - MUST be before useState
   const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
   const stickyBorder = useColorModeValue('gray.200', 'gray.700')
+  const borderGray = useColorModeValue('gray.200', 'gray.700')
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [deleteLocationId, setDeleteLocationId] = useState(null)
@@ -148,7 +156,7 @@ const LocationPage = () => {
         <Card variant="outline">
           <CardBody textAlign="center" py={10}>
             <Spinner size="lg" color="brand.500" />
-            <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
+            <Text mt={4} color={iconGray500}>
               {t('settings.locations.loading')}
             </Text>
           </CardBody>
@@ -204,7 +212,7 @@ const LocationPage = () => {
             <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray500} />
                 </InputLeftElement>
                 <Input
                   type="search"
@@ -224,7 +232,7 @@ const LocationPage = () => {
               <Badge colorScheme="brand" variant="subtle" px={3} py={1} borderRadius="full">
                 {t('settings.locations.stats.total', { count: locations?.length || 0 })}
               </Badge>
-              <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+              <Text fontSize="sm" color={iconGray500}>
                 {t('settings.locations.stats.showingResults', {
                   count: filteredData?.length || 0,
                 })}
@@ -238,7 +246,7 @@ const LocationPage = () => {
       <Box display={{ base: 'none', lg: 'block' }}>
         <Card>
           <CardBody p={0}>
-            <TableContainer borderWidth="1px" borderColor={useColorModeValue('gray.200', 'gray.700')} borderRadius="md">
+            <TableContainer borderWidth="1px" borderColor={borderGray} borderRadius="md">
               <Table variant="simple">
               <Thead>
                 <Tr>
@@ -269,7 +277,7 @@ const LocationPage = () => {
                 {filteredData.length === 0 ? (
                   <Tr>
                     <Td colSpan={6} textAlign="center" py={8}>
-                      <VStack spacing={4} color={useColorModeValue("gray.500", "gray.400")}>
+                      <VStack spacing={4} color={iconGray500}>
                         <Icon as={MapPin} boxSize={8} opacity={0.3} aria-hidden="true" />
                         <Text>{t('settings.locations.empty.title')}</Text>
                         <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
@@ -290,7 +298,7 @@ const LocationPage = () => {
                         </Text>
                       </Td>
                       <Td>
-                        <Text color={useColorModeValue("gray.600", "gray.400")} fontSize="sm">
+                        <Text color={borderGray600} fontSize="sm">
                           {location.address || t('common.na')}
                         </Text>
                       </Td>
@@ -307,7 +315,7 @@ const LocationPage = () => {
                             {location.email}
                           </Link>
                         ) : (
-                          <Text color={useColorModeValue("gray.400", "gray.500")} fontSize="sm">
+                          <Text color={iconGray400} fontSize="sm">
                             {t('common.na')}
                           </Text>
                         )}
@@ -333,7 +341,7 @@ const LocationPage = () => {
                             </HStack>
                           </Link>
                         ) : (
-                          <Text color={useColorModeValue("gray.400", "gray.500")} fontSize="sm">
+                          <Text color={iconGray400} fontSize="sm">
                             {t('common.na')}
                           </Text>
                         )}
@@ -377,7 +385,7 @@ const LocationPage = () => {
           {totalPages > 1 && (
             <Box borderTopWidth="1px" borderColor={stickyBorder} p={4}>
               <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('settings.locations.showingRange', {
                     start: filteredData.length === 0 ? 0 : startIdx,
                     end: endIdx,
@@ -420,7 +428,7 @@ const LocationPage = () => {
         {filteredData.length === 0 ? (
           <Card variant="outline">
             <CardBody>
-              <VStack spacing={4} color={useColorModeValue("gray.500", "gray.400")} py={8}>
+              <VStack spacing={4} color={iconGray500} py={8}>
                 <Icon as={MapPin} boxSize={8} opacity={0.3} aria-hidden="true" />
                 <Text>{t('settings.locations.empty.title')}</Text>
                 <Text fontSize="sm">{t('settings.locations.empty.subtitle')}</Text>
@@ -443,14 +451,14 @@ const LocationPage = () => {
 
                   {location.address && (
                     <HStack spacing={2} align="flex-start">
-                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} mt={0.5} flexShrink={0} />
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{location.address}</Text>
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={iconGray500} mt={0.5} flexShrink={0} />
+                      <Text fontSize="sm" color={borderGray600}>{location.address}</Text>
                     </HStack>
                   )}
 
                   {location.email && (
                     <HStack spacing={2}>
-                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} flexShrink={0} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={iconGray500} flexShrink={0} />
                       <Link
                         minH="44px"
                         py={2}
@@ -466,7 +474,7 @@ const LocationPage = () => {
 
                   {location.website && (
                     <HStack spacing={2}>
-                      <Icon as={Globe} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} flexShrink={0} />
+                      <Icon as={Globe} boxSize={ICON_BOX_MD} color={iconGray500} flexShrink={0} />
                       <Link
                         minH="44px"
                         py={2}
@@ -485,7 +493,7 @@ const LocationPage = () => {
                   )}
                 </VStack>
 
-                <HStack spacing={3} justify="flex-end" pt={2} borderTopWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+                <HStack spacing={3} justify="flex-end" pt={2} borderTopWidth="1px" borderColor={bgGray100}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -518,7 +526,7 @@ const LocationPage = () => {
           <Card>
             <CardBody>
               <VStack spacing={4}>
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('settings.locations.showingRange', {
                     start: filteredData.length === 0 ? 0 : startIdx,
                     end: endIdx,

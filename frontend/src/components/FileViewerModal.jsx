@@ -49,6 +49,10 @@ export default function FileViewerModal({
   title,
   size = 'xl',
 }) {
+
+  // Color mode values
+  const iconBlue500 = iconBlue500
+  const iconGray400 = iconGray400
   const [textContent, setTextContent] = useState('')
   const [xmlContent, setXmlContent] = useState('')
   const [isMobile, setIsMobile] = useState(false)
@@ -244,7 +248,7 @@ export default function FileViewerModal({
       if (!textContent) {
         return (
           <Center h={FALLBACK_HEIGHT}>
-            <Spinner color={useColorModeValue("blue.500","blue.300")} />
+            <Spinner color={iconBlue500} />
           </Center>
         )
       }
@@ -279,7 +283,7 @@ export default function FileViewerModal({
       if (!xmlContent) {
         return (
           <Center h={FALLBACK_HEIGHT}>
-            <Spinner color={useColorModeValue("blue.500","blue.300")} />
+            <Spinner color={iconBlue500} />
           </Center>
         )
       }
@@ -317,7 +321,7 @@ export default function FileViewerModal({
 
     return (
       <VStack spacing={4} py={4} textAlign="center">
-        <Icon as={File} boxSize={12} color={useColorModeValue("gray.400","gray.500")} />
+        <Icon as={File} boxSize={12} color={iconGray400} />
         <Text>Preview is not available for this file type.</Text>
         <Button colorScheme="brand" onClick={handleDownload} leftIcon={<Icon as={Download} />}>
           Download

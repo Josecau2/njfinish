@@ -25,6 +25,9 @@ const EditManufacturer = () => {
   const { id: rawId } = useParams()
   const id = decodeParam(rawId)
   const dispatch = useDispatch()
+
+  // Color mode values
+  const borderGray200 = borderGray200
   const [activeKey, setActiveKey] = useState(0)
   const manufacturer = useSelector((state) => state.manufacturers.selected)
   const { t } = useTranslation()
@@ -74,7 +77,7 @@ const EditManufacturer = () => {
           display={{ base: 'grid', md: 'flex' }}
           gridTemplateColumns={tabColumns}
           borderBottom="1px solid"
-          borderColor={useColorModeValue("gray.200","gray.600")}
+          borderColor={borderGray200}
           pb={{ base: 2, md: 0 }}
           className="manufacturer-tabs"
           sx={{

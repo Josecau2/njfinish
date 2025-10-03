@@ -15,6 +15,11 @@ const SignupPage = () => {
   const brandColors = getBrandColors()
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
 
+  // Color mode values
+  const bgWhite = useColorModeValue("white", "gray.800")
+  const textGray600 = useColorModeValue("gray.600", "gray.400")
+  const linkBlue = useColorModeValue("blue.600", "blue.300")
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -58,14 +63,14 @@ const SignupPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg={useColorModeValue("white", "gray.800")}
+        bg={bgWhite}
       >
         <Container maxW="md" py={8}>
           <VStack spacing={6} align="stretch">
             <Heading as="h2" size="lg" fontWeight="bold">
               Sign Up
             </Heading>
-            <Text color={useColorModeValue("gray.600", "gray.400")}>
+            <Text color={textGray600}>
               Create your account to get started.
             </Text>
 
@@ -153,7 +158,7 @@ const SignupPage = () => {
 
             <Text textAlign="center">
               Already have an account?{' '}
-              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
                 Sign In
               </Link>
             </Text>

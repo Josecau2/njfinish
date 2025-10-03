@@ -17,6 +17,10 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 const OverviewTab = ({ contractor }) => {
   const { t } = useTranslation()
 
+  // Color mode values
+  const iconGreenColor = useColorModeValue("green.500", "green.300")
+  const iconRedColor = useColorModeValue("red.500", "red.300")
+
   const getModuleBadges = (modules) => {
     if (!modules || typeof modules !== 'object') return []
 
@@ -172,9 +176,9 @@ const OverviewTab = ({ contractor }) => {
                 >
                   <span>
                     {module.enabled ? (
-                      <Icon as={CheckCircle} boxSize={ICON_BOX_MD} color={useColorModeValue("green.500","green.300")} mr={2} aria-hidden="true" />
+                      <Icon as={CheckCircle} boxSize={ICON_BOX_MD} color={iconGreenColor} mr={2} aria-hidden="true" />
                     ) : (
-                      <Icon as={XCircle} boxSize={ICON_BOX_MD} color={useColorModeValue("red.500","red.300")} mr={2} aria-hidden="true" />
+                      <Icon as={XCircle} boxSize={ICON_BOX_MD} color={iconRedColor} mr={2} aria-hidden="true" />
                     )}
                     {module.label}
                   </span>

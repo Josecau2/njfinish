@@ -29,6 +29,13 @@ const ContractorDetail = () => {
   const dispatch = useDispatch()
 
   const { selectedContractor: contractor, loading, error } = useSelector((state) => state.contractors)
+
+  // Color mode values - MUST be before useState
+  const spinnerColor = useColorModeValue("blue.500", "blue.300")
+  const iconBlue = useColorModeValue("blue.500", "blue.300")
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const borderGray = useColorModeValue("gray.100", "gray.700")
+
   const [activeTabIndex, setActiveTabIndex] = useState(0)
 
   useEffect(() => {
@@ -45,7 +52,7 @@ const ContractorDetail = () => {
     return (
       <PageContainer>
         <Flex align="center" justify="center" minH="300px">
-          <Spinner size="lg" color={useColorModeValue("blue.500","blue.300")} />
+          <Spinner size="lg" color={iconBlue} />
         </Flex>
       </PageContainer>
     )
@@ -95,12 +102,12 @@ const ContractorDetail = () => {
 
           <Flex align="center" gap={4} flex="1" flexWrap="wrap">
             <Flex align="center" gap={4} minW="0">
-              <Icon as={Users} boxSize={6} color={useColorModeValue("blue.500","blue.300")} />
+              <Icon as={Users} boxSize={6} color={iconBlue} />
               <Box minW="0">
                 <Text fontSize="xl" fontWeight="semibold" noOfLines={1}>
                   {contractor.name}
                 </Text>
-                <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
+                <Text fontSize="sm" color={textGray500}>
                   {t('contractorsAdmin.detail.contractorId')}: {contractor.id}
                 </Text>
               </Box>
@@ -119,7 +126,7 @@ const ContractorDetail = () => {
             colorScheme="brand"
             isLazy
           >
-            <CardHeader borderBottomWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+            <CardHeader borderBottomWidth="1px" borderColor={borderGray}>
               <TabList flexWrap="wrap" gap={4}>
                 {tabConfig.map((tab) => (
                   <Tab key={tab.key} px={4} py={2} display="flex" alignItems="center" gap={4}>

@@ -70,6 +70,10 @@ const ItemSelectionStep = ({
   const toast = useToast()
   const cancelRef = useRef()
 
+  // Color mode values - MUST be before useState
+  const borderGray = useColorModeValue("gray.200", "gray.600")
+  const textRed = useColorModeValue("red.600", "red.300")
+
   const statusOptions = [
     { label: t('proposals.status.draft'), value: 'Draft' },
     { label: t('proposals.status.followUp1'), value: 'Follow up 1' },
@@ -240,7 +244,7 @@ const ItemSelectionStep = ({
       }
 
       // Step 2: Now accept the newly created proposal using the acceptance API
-      const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {})
+      const acceptResponse = await axiosInstance.post(`/api/quotes/${newProposalId}/accept`, {})
 
       if (acceptResponse.data.success) {
         toast({
@@ -542,7 +546,7 @@ const ItemSelectionStep = ({
                           />
                           <MenuList
                             minW="120px"
-                            borderColor={useColorModeValue("gray.200","gray.600")}
+                            borderColor={borderGray}
                             boxShadow="md"
                             borderRadius="md"
                             py={1}
@@ -561,7 +565,7 @@ const ItemSelectionStep = ({
                               py={2}
                               px={3}
                               fontSize="sm"
-                              color={useColorModeValue("red.600","red.300")}
+                              color={textRed}
                               icon={<Icon as={Trash} />}
                             >
                               {t('common.delete')}

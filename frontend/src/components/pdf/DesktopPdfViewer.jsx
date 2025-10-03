@@ -21,6 +21,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
 const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const bgGray50 = bgGray50
+  const iconRed500 = iconRed500
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [scale, setScale] = useState(1.0)
@@ -75,7 +79,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         />
       </HStack>
 
-      <Box flex="1" borderWidth="1px" borderRadius="md" bg={useColorModeValue("gray.50","gray.800")} overflow="auto" p={4}>
+      <Box flex="1" borderWidth="1px" borderRadius="md" bg={bgGray50} overflow="auto" p={4}>
         {isLoading && !error && (
           <Center h="full" py={8}>
             <Spinner />
@@ -83,7 +87,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         )}
         {error && (
           <Center py={8}>
-            <Text color={useColorModeValue("red.500","red.300")} fontSize="sm">
+            <Text color={iconRed500} fontSize="sm">
               {error}
             </Text>
           </Center>

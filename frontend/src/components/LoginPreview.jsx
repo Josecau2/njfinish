@@ -29,6 +29,10 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const LoginPreview = ({ config }) => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const color1 = color1
+  const bgGray50 = bgGray50
   const [activeView, setActiveView] = useState('login')
   const [showPassword, setShowPassword] = useState(false)
   const customizationState = useSelector((state) => state.customization)
@@ -55,7 +59,7 @@ const LoginPreview = ({ config }) => {
   const logoHeight = Number(config.logoHeight) || Number(resolvedAppCustomization.logoHeight) || 60
 
   // Dark mode colors
-  const panelBg = useColorModeValue("white", "gray.800")
+  const panelBg = color1
 
   const previewOptions = useMemo(
     () => [
@@ -102,7 +106,7 @@ const LoginPreview = ({ config }) => {
       borderRadius="lg"
       boxShadow="lg"
       overflow="hidden"
-      bg={useColorModeValue("gray.50","gray.800")}
+      bg={bgGray50}
     >
       {children}
     </Flex>

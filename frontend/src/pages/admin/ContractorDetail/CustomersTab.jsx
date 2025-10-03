@@ -41,6 +41,7 @@ const CustomersTab = ({ contractor, groupId }) => {
   const textGray600 = useColorModeValue('gray.600', 'gray.300')
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const borderGray = useColorModeValue('gray.200', 'gray.600')
+  const borderGray100 = useColorModeValue('gray.100', 'gray.700')
   const iconGray = useColorModeValue('gray.400', 'gray.500')
 
   // Debounced search effect
@@ -297,7 +298,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             </SimpleGrid>
 
             <Box display={{ base: 'none', md: 'block' }}>
-              <TableContainer borderWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")} borderRadius="lg">
+              <TableContainer borderWidth="1px" borderColor={borderGray100} borderRadius="lg">
                 <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
@@ -517,7 +518,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             </Box>
 
             {effectiveTotalPages > 1 && (
-              <Box pt={4} borderTopWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+              <Box pt={4} borderTopWidth="1px" borderColor={borderGray100}>
                 <PaginationComponent
                   currentPage={currentPage}
                   totalPages={effectiveTotalPages}

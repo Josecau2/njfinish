@@ -24,6 +24,15 @@ const CustomerTable = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  // Color mode values - MUST be before useState
+  const statLabelColor = useColorModeValue("gray.500", "gray.400")
+  const borderBlue = useColorModeValue("blue.500", "blue.400")
+  const iconGray = useColorModeValue("gray.400", "gray.500")
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const iconGray300 = useColorModeValue("gray.300", "gray.600")
+  const textGray600 = useColorModeValue("gray.600", "gray.400")
+
   const customers = useSelector((state) => state.customers.list)
   const loading = useSelector((state) => state.customers.loading)
   const error = useSelector((state) => state.customers.error)
@@ -179,7 +188,7 @@ const CustomerTable = ({
           <StandardCard variant="outline" borderColor="brand.500">
             <CardBody>
               <Stat>
-                <StatLabel color={useColorModeValue("gray.500", "gray.400")}>{t('customers.total')}</StatLabel>
+                <StatLabel color={statLabelColor}>{t('customers.total')}</StatLabel>
                 <StatNumber>{total || 0}</StatNumber>
               </Stat>
             </CardBody>
@@ -187,15 +196,15 @@ const CustomerTable = ({
           <StandardCard variant="outline" borderColor="green.500">
             <CardBody>
               <Stat>
-                <StatLabel color={useColorModeValue("gray.500", "gray.400")}>{t('customers.active')}</StatLabel>
+                <StatLabel color={statLabelColor}>{t('customers.active')}</StatLabel>
                 <StatNumber>{activeCustomers}</StatNumber>
               </Stat>
             </CardBody>
           </StandardCard>
-          <StandardCard variant="outline" borderColor={useColorModeValue("blue.500","blue.400")}>
+          <StandardCard variant="outline" borderColor={borderBlue}>
             <CardBody>
               <Stat>
-                <StatLabel color={useColorModeValue("gray.500", "gray.400")}>{t('customers.withEmail')}</StatLabel>
+                <StatLabel color={statLabelColor}>{t('customers.withEmail')}</StatLabel>
                 <StatNumber>{customersWithEmail}</StatNumber>
               </Stat>
             </CardBody>
@@ -203,7 +212,7 @@ const CustomerTable = ({
           <StandardCard variant="outline" borderColor="red.500">
             <CardBody>
               <Stat>
-                <StatLabel color={useColorModeValue("gray.500", "gray.400")}>{t('customers.filtered')}</StatLabel>
+                <StatLabel color={statLabelColor}>{t('customers.filtered')}</StatLabel>
                 <StatNumber>{filteredCount}</StatNumber>
               </Stat>
             </CardBody>
@@ -216,7 +225,7 @@ const CustomerTable = ({
               <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                   </InputLeftElement>
                   <Input
                     type="search"
@@ -241,7 +250,7 @@ const CustomerTable = ({
               </Select>
 
               <Box flex="1" textAlign={{ base: 'left', lg: 'right' }}>
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={textGray500}>
                   {t('customers.showing', 'Showing')} {filteredCount} {t('customers.of', 'of')} {total}{' '}
                   {t('customers.customersLower', 'customers')}
                   {isContractor && contractorGroupName && (
@@ -381,9 +390,9 @@ const CustomerTable = ({
                           <Tr>
                             <Td colSpan={8}>
                               <Center py={12} flexDirection="column" gap={4}>
-                                <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
+                                <Icon as={Search} boxSize={10} color={iconGray300} />
                                 <Text>{t('customers.noResults')}</Text>
-                                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                                <Text fontSize="sm" color={textGray500}>
                                   {t('customers.tryAdjusting')}
                                 </Text>
                               </Center>
@@ -398,9 +407,9 @@ const CustomerTable = ({
                                 </Badge>
                               </Td>
                               <Td fontWeight="medium" isTruncated maxW="200px">{cust.name || 'N/A'}</Td>
-                              <Td color={useColorModeValue("gray.600", "gray.400")} isTruncated maxW="200px">{cust.email || 'N/A'}</Td>
-                              <Td color={useColorModeValue("gray.600", "gray.400")} isTruncated maxW="150px">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
-                              <Td color={useColorModeValue("gray.600", "gray.400")} isTruncated maxW="250px">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
+                              <Td color={textGray600} isTruncated maxW="200px">{cust.email || 'N/A'}</Td>
+                              <Td color={textGray600} isTruncated maxW="150px">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
+                              <Td color={textGray600} isTruncated maxW="250px">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
                               <Td>
                                 <Badge colorScheme="brand">
                                   {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
@@ -448,7 +457,7 @@ const CustomerTable = ({
                     <Center flexDirection="column" gap={4}>
                       <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
                       <Text>{t('customers.noResults')}</Text>
-                      <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                      <Text fontSize="sm" color={textGray500}>
                         {t('customers.tryAdjusting')}
                       </Text>
                     </Center>
@@ -467,7 +476,7 @@ const CustomerTable = ({
                             </Badge>
                           </Stack>
                         </HStack>
-                        <Stack spacing={4} fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                        <Stack spacing={4} fontSize="sm" color={textGray600}>
                           <HStack spacing={4}>
                             <Icon as={Mail} boxSize={ICON_BOX_MD} />
                             <Text>{cust.email || 'N/A'}</Text>

@@ -21,6 +21,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const textColor = customization?.headerTextColor || "white"
 
   // AlertDialog confirmation system (replaces SweetAlert)
+
+  // Color mode values
+  const borderGray600 = borderGray600
+  const iconGray500 = iconGray500
+  const iconGray300 = iconGray300
+  const bgGray50 = bgGray50
+  const iconGreen500 = iconGreen500
+  const iconBlue500 = iconBlue500
+  const bgBlue50 = bgBlue50
+  const iconRed500 = iconRed500
+  const colorOrange50 = colorOrange50
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
@@ -2544,7 +2555,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <CardBody>
                       <h6>{subType.name}</h6>
                       {subType.description && (
-                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{subType.description}</Text>
+                        <Text fontSize="sm" color={borderGray600}>{subType.description}</Text>
                       )}
                       <div>
                         {subType.requires_hinge_side && (
@@ -2636,10 +2647,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </option>
               ))}
             </select>
-            <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontSize="sm" display={{ base: "none", sm: "inline" }}>
+            <Text as="span" color={borderGray600} fontSize="sm" display={{ base: "none", sm: "inline" }}>
               {t('settings.manufacturers.catalogMapping.pagination.perPage')}
             </Text>
-            <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontSize="sm" display={{ base: "inline", sm: "none" }}>per page</Text>
+            <Text as="span" color={borderGray600} fontSize="sm" display={{ base: "inline", sm: "none" }}>per page</Text>
           </div>
         </div>
 
@@ -2667,7 +2678,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 p={1}
                 aria-label={t('common.clearSearch', 'Clear search')}
                 onClick={() => setSearchFilter('')}
-                color={useColorModeValue("gray.500", "gray.400")}
+                color={iconGray500}
                 textDecoration="none"
                 zIndex={5}
               >
@@ -2732,7 +2743,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Style Management Section */}
         {styleFilter && (
-          <Box mb={3} p={3} border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")}>
+          <Box mb={3} p={3} border="1px solid" borderColor={iconGray300} borderRadius="md" bg={bgGray50}>
             <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} gap={2}>
               <div>
                 <strong>Managing Style: "{styleFilter}"</strong>
@@ -2780,7 +2791,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} mb={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md" gap={2}>
+          <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} mb={3} p={3} bg={bgGray50} borderRadius="md" gap={2}>
             <Text>
               {t('settings.manufacturers.catalogMapping.pagination.itemsSelected', {
                 count: selectedItems.length,
@@ -3047,7 +3058,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           {/* Mobile Card View - Visible only on mobile */}
           <Box display={{ base: "block", md: "none" }}>
             {/* Mobile Select All */}
-            <Flex align="center" mb={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+            <Flex align="center" mb={3} p={3} bg={bgGray50} borderRadius="md">
               <Checkbox
                 isChecked={isSelectAll}
                 onChange={(event) => handleSelectAll(event.currentTarget.checked)}
@@ -3074,7 +3085,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       />
                       <VStack align="start" spacing={0}>
                         <Text fontWeight="semibold">{item.code}</Text>
-                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>{item.description}</Text>
+                        <Text fontSize="sm" color={borderGray600}>{item.description}</Text>
                       </VStack>
                     </HStack>
                     <Badge
@@ -3090,11 +3101,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {/* Card Content */}
                   <HStack spacing={4} mb={3}>
                     <VStack align="start" spacing={0}>
-                      <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>Price</Text>
+                      <Text fontSize="xs" color={iconGray500}>Price</Text>
                       <Text>${item.price}</Text>
                     </VStack>
                     <VStack align="start" spacing={0}>
-                      <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>Type</Text>
+                      <Text fontSize="xs" color={iconGray500}>Type</Text>
                       <Text>{item.type || 'N/A'}</Text>
                     </VStack>
                   </HStack>
@@ -3334,7 +3345,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             )}
             {assignFormGM.scope === 'item' && (
-              <Text mt={2} color={useColorModeValue("gray.600", "gray.400")} fontSize="sm">
+              <Text mt={2} color={borderGray600} fontSize="sm">
                 {selectedItems.length} selected item(s) will receive this assignment.
               </Text>
             )}
@@ -3750,7 +3761,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Show selected image name or current image */}
             {styleImage ? (
-              <Text mt={2} color={useColorModeValue("green.500","green.300")}>
+              <Text mt={2} color={iconGreen500}>
                 {t('settings.manufacturers.catalogMapping.style.imageSelected', {
                   name: styleImage.name,
                 })}
@@ -3897,7 +3908,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 }}
               >
                 <Box>
-                  <Spinner color={useColorModeValue("blue.500", "blue.300")} mb={2} />
+                  <Spinner color={iconBlue500} mb={2} />
                   <Text>Applying assembly cost...</Text>
                 </Box>
               </div>
@@ -3967,8 +3978,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               selectedCatalogItem &&
               selectedCatalogItem.type &&
               assemblyCostsByType[selectedCatalogItem.type]?.assemblyCosts?.length > 0 && (
-                <Box mt={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
-                  <Text fontSize="sm" fontWeight="bold" color={useColorModeValue("gray.600", "gray.400")}>
+                <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
+                  <Text fontSize="sm" fontWeight="bold" color={borderGray600}>
                     Existing Assembly Costs for "{selectedCatalogItem.code}" (
                     {selectedCatalogItem.type}):
                   </Text>
@@ -3990,8 +4001,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               )}
 
             {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
-              <Box mt={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
-                <Text fontSize="sm" fontWeight="bold" color={useColorModeValue("gray.600", "gray.400")}>Existing Assembly Costs by Type:</Text>
+              <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" color={borderGray600}>Existing Assembly Costs by Type:</Text>
                 <Box>
                   {availableTypes.map((typeItem) => {
                     const typeAssemblyCosts =
@@ -4032,7 +4043,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </FormLabel>
                 <Box
                   border="1px solid"
-                  borderColor={useColorModeValue("gray.300", "gray.600")}
+                  borderColor={iconGray300}
                   borderRadius="md"
                   p={3}
                   maxH="300px"
@@ -4093,7 +4104,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </FormLabel>
                 <Box
                   border="1px solid"
-                  borderColor={useColorModeValue("gray.300", "gray.600")}
+                  borderColor={iconGray300}
                   borderRadius="md"
                   p={3}
                   maxH="300px"
@@ -4178,7 +4189,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </Flex>
 
                 {assemblyData.selectedTypes.length > 0 && (
-                  <Box mt={3} p={3} bg={useColorModeValue("blue.50", "blue.900")} borderRadius="md">
+                  <Box mt={3} p={3} bg={bgBlue50} borderRadius="md">
                     <Text fontSize="sm">
                       {t(
                         'settings.manufacturers.catalogMapping.assembly.multipleTypesWarning',
@@ -4380,7 +4391,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     checked={!mergeToStyle}
                     onChange={() => setMergeToStyle('')}
                   />
-                  <Text as="label" htmlFor="deleteItems" color={useColorModeValue("red.500","red.300")} ml={2}>
+                  <Text as="label" htmlFor="deleteItems" color={iconRed500} ml={2}>
                     <strong>Delete all items</strong> with this style permanently
                   </Text>
                 </Flex>
@@ -4396,7 +4407,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       setMergeToStyle(sortedUniqueStyles.find((s) => s !== styleToDelete) || '')
                     }
                   />
-                  <Text as="label" htmlFor="mergeItems" color={useColorModeValue("blue.500", "blue.300")} ml={2}>
+                  <Text as="label" htmlFor="mergeItems" color={iconBlue500} ml={2}>
                     <strong>Merge items</strong> to another style
                   </Text>
                 </Flex>
@@ -4421,7 +4432,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </Box>
               )}
 
-              <Box mt={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+              <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
                 <Text fontSize="sm">
                   {mergeToStyle ? (
                     <>
@@ -4486,7 +4497,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {itemToDelete && (
               <Box>
                 <Text>Are you sure you want to delete this catalog item?</Text>
-                <Box p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+                <Box p={3} bg={bgGray50} borderRadius="md">
                   <strong>Code:</strong> {itemToDelete.code}
                   <br />
                   <strong>Description:</strong> {itemToDelete.description || 'N/A'}
@@ -4495,7 +4506,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <br />
                   <strong>Price:</strong> ${itemToDelete.price || '0.00'}
                 </Box>
-                <Text color={useColorModeValue("red.500","red.300")} mt={3} fontSize="sm">
+                <Text color={iconRed500} mt={3} fontSize="sm">
                   ⚠️ This action cannot be undone.
                 </Text>
               </Box>
@@ -4539,7 +4550,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 catalog items?
               </Text>
 
-              <Box p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+              <Box p={3} bg={bgGray50} borderRadius="md">
                 <strong>Items to be deleted:</strong>
                 <Box as="ul" mt={2} mb={0}>
                   {currentItems
@@ -4558,7 +4569,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </Box>
               </Box>
 
-              <Text color={useColorModeValue("red.500","red.300")} mt={3} fontSize="sm">
+              <Text color={iconRed500} mt={3} fontSize="sm">
                 ⚠️ This action cannot be undone. All selected items will be permanently deleted.
               </Text>
             </Box>
@@ -4604,7 +4615,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Text>Loading backups...</Text>
                 </Flex>
               ) : availableBackups.length === 0 ? (
-                <Box p={3} bg={useColorModeValue("blue.50", "blue.900")} borderRadius="md">
+                <Box p={3} bg={bgBlue50} borderRadius="md">
                   {t('settings.manufacturers.catalogMapping.rollback.noBackups')}
                 </Box>
               ) : (
@@ -4642,7 +4653,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </Box>
 
             {selectedBackup && (
-              <Box mt={3} p={3} bg={useColorModeValue("orange.50", "orange.900")} borderRadius="md">
+              <Box mt={3} p={3} bg={colorOrange50} borderRadius="md">
                 <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
                 <br />
                 {t('settings.manufacturers.catalogMapping.rollback.confirmText')}
@@ -4749,7 +4760,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </div>
               </Box>
 
-              <Box mt={3} p={3} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+              <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
                 <Text fontSize="sm">
                   <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will
                   preserve the existing values for each item.
@@ -4801,7 +4812,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   type="text"
                   value={styleNameEditForm.oldStyleName}
                   disabled
-                  bg={useColorModeValue("gray.50", "gray.800")}
+                  bg={bgGray50}
                 />
               </Box>
 
@@ -4820,7 +4831,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 />
               </Box>
 
-              <Box p={3} bg={useColorModeValue("orange.50", "orange.900")} borderRadius="md">
+              <Box p={3} bg={colorOrange50} borderRadius="md">
                 <Text fontSize="sm">
                   <strong>Warning:</strong> This will rename the style for all items currently using
                   "{styleNameEditForm.oldStyleName}". The change applies to all{' '}
@@ -5022,7 +5033,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     <HStack>
                                       <Text fontWeight="semibold">{template.name}</Text>
                                       {template.defaultPrice && (
-                                        <Text color={useColorModeValue("gray.600", "gray.400")}>
+                                        <Text color={borderGray600}>
                                           - ${Number(template.defaultPrice).toFixed(2)}
                                         </Text>
                                       )}
@@ -5135,7 +5146,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </HStack>
                             ))
                           ) : (
-                            <Text color={useColorModeValue("gray.500", "gray.400")} py={4} textAlign="center">
+                            <Text color={iconGray500} py={4} textAlign="center">
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
                             </Text>
                           )}
@@ -5181,7 +5192,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </div>
 
                     {selectedModificationCategory === 'new' && (
-                      <Box border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} mb={3}>
+                      <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
                         <h6>{t('globalMods.modal.add.createNew')}</h6>
                         <div>
                           <div>
@@ -5233,7 +5244,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <h5>Step 2: Build Modification Template</h5>
 
                     {/* Default Required Fields */}
-                    <Box border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} mb={3}>
+                    <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
                       <h6>Required Fields</h6>
                       <div>
                         <div>
@@ -5267,7 +5278,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </Box>
 
                     {/* Optional Field Builder */}
-                    <Box border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} mb={3}>
+                    <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
                       <h6>Optional Field Builder (Building Blocks)</h6>
 
                       {/* Slider Controls */}
@@ -5887,9 +5898,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 {newTemplate.sampleImage && (
                                   <Box
                                     p={2}
-                                    bg={useColorModeValue("gray.50", "gray.800")}
+                                    bg={bgGray50}
                                     border="1px solid"
-                                    borderColor={useColorModeValue("gray.300", "gray.600")}
+                                    borderColor={iconGray300}
                                     borderRadius="md"
                                     h="200px"
                                     display="flex"
@@ -5919,7 +5930,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Box>
 
                       {/* Ready Checkbox */}
-                      <Box borderTop="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} pt={3}>
+                      <Box borderTop="1px solid" borderColor={iconGray300} pt={3}>
                         <Checkbox
                           isChecked={newTemplate.isReady}
                           onChange={(event) =>
@@ -5941,7 +5952,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
                         </Checkbox>
-                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} display="block" mt={1}>
+                        <Text fontSize="sm" color={iconGray500} display="block" mt={1}>
                           {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
                         </Text>
                       </Box>
@@ -6352,9 +6363,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Box
                     mt={2}
                     p={2}
-                    bg={useColorModeValue("gray.50", "gray.800")}
+                    bg={bgGray50}
                     border="1px solid"
-                    borderColor={useColorModeValue("gray.300", "gray.600")}
+                    borderColor={iconGray300}
                     borderRadius="md"
                     h="220px"
                     display="flex"
@@ -6416,7 +6427,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   })}
                 </p>
                 {categoryToDelete.templates?.length > 0 && (
-                  <Box p={3} bg={useColorModeValue("orange.50", "orange.900")} borderRadius="md">
+                  <Box p={3} bg={colorOrange50} borderRadius="md">
                     <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
                     {t('globalMods.modal.deleteCategory.contains', {
                       count: categoryToDelete.templates.length,
@@ -6530,7 +6541,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </optgroup>
                   </select>
                 </div>
-                <Box p={3} bg={useColorModeValue("blue.50", "blue.900")} borderRadius="md">
+                <Box p={3} bg={bgBlue50} borderRadius="md">
                   <Text fontSize="sm">
                     <strong>{t('common.note', 'Note')}:</strong>{' '}
                     {t(
@@ -6574,7 +6585,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
           <ModalBody>
             {/* Basic Information */}
-            <Box border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} mb={3}>
+            <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
               <h6>{t('common.basicInformation', 'Basic Information')}</h6>
               <Box className="row g-3">
                 <div>
@@ -6657,9 +6668,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Box
                       mt={2}
                       p={2}
-                      bg={useColorModeValue("gray.50", "gray.800")}
+                      bg={bgGray50}
                       border="1px solid"
-                      borderColor={useColorModeValue("gray.300", "gray.600")}
+                      borderColor={iconGray300}
                       borderRadius="md"
                       h="240px"
                       display="flex"
@@ -6681,7 +6692,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </Box>
 
             {/* Advanced Field Configuration */}
-            <Box border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} mb={3}>
+            <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
               <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
 
               {/* Slider Controls */}
@@ -7332,7 +7343,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 'Select catalog items to assign to this sub-type:',
               )}
             </FormLabel>
-            <Text fontSize="sm" display="block" color={useColorModeValue("gray.500", "gray.400")} mb={3}>
+            <Text fontSize="sm" display="block" color={iconGray500} mb={3}>
               {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', {
                 codes: selectedCatalogCodes.length,
                 items: selectedCatalogItem.length,

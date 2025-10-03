@@ -164,6 +164,11 @@ const generateReceiptHtml = ({ payment, order, customization, t }) => {
 const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
+
+  // Color mode values
+  const bgGray50 = bgGray50
+  const bgGray100 = bgGray100
+  const borderGray600 = borderGray600
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const toast = useToast()
@@ -229,7 +234,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
               </Alert>
             )}
 
-            <Stack spacing={4} fontSize="sm" bg={useColorModeValue("gray.50","gray.800")} borderRadius="md" p={4} borderWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+            <Stack spacing={4} fontSize="sm" bg={bgGray50} borderRadius="md" p={4} borderWidth="1px" borderColor={bgGray100}>
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('paymentReceipt.modal.paymentAmount', 'Amount')}:
@@ -266,7 +271,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
               )}
             </Stack>
 
-            <Text fontSize="sm" color={useColorModeValue("gray.600","gray.300")}>
+            <Text fontSize="sm" color={borderGray600}>
               {t('paymentReceipt.modal.notice', 'The receipt will include branding, payment summary, and signature-ready footer.')}
             </Text>
           </Stack>

@@ -108,6 +108,15 @@ const OrderDetails = () => {
   const authUser = useSelector((state) => state.auth?.user)
   const toast = useToast()
   const deleteDisclosure = useDisclosure()
+
+  // Color mode values
+  const iconGray500 = iconGray500
+  const borderGray700 = borderGray700
+  const bgGray50 = bgGray50
+  const borderGray600 = borderGray600
+  const borderGray200 = borderGray200
+  const iconGray400 = iconGray400
+  const bgGray100 = bgGray100
   const [showPdf, setShowPdf] = useState(false)
   const [pdfUrl, setPdfUrl] = useState(null)
   const [resending, setResending] = useState(false)
@@ -242,7 +251,7 @@ const OrderDetails = () => {
     return (
       <Center py={16} flexDirection="column" gap={4}>
         <Spinner size="lg" color="brand.500" />
-        <Text color={useColorModeValue("gray.500", "gray.400")}>{t('common.loading', 'Loading...')}</Text>
+        <Text color={iconGray500}>{t('common.loading', 'Loading...')}</Text>
       </Center>
     )
   }
@@ -534,7 +543,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.order', 'Order')}
             </CardHeader>
-            <CardBody as={Stack} spacing={4} fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
+            <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.headers.orderNumber', 'Order #')}:
@@ -576,7 +585,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.customer', 'Customer')}
             </CardHeader>
-            <CardBody as={Stack} spacing={4} fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
+            <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.name', 'Name')}:
@@ -608,7 +617,7 @@ const OrderDetails = () => {
             <CardHeader fontWeight="semibold">
               {t('orders.details.totals', 'Totals')}
             </CardHeader>
-            <CardBody as={Stack} spacing={4} fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
+            <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.subtotalStyles', 'Subtotal (Styles)')}:
@@ -663,7 +672,7 @@ const OrderDetails = () => {
             <Box display={{ base: 'none', md: 'block' }}>
               <TableContainer>
                 <Table variant="simple" size="sm">
-                  <Thead bg={useColorModeValue("gray.50", "gray.800")}>
+                  <Thead bg={bgGray50}>
                     <Tr>
                       <Th>{t('orders.details.item', 'Item')}</Th>
                       <Th>{t('orders.details.specs', 'Specs')}</Th>
@@ -679,7 +688,7 @@ const OrderDetails = () => {
                     {parsed.items.length === 0 ? (
                       <Tr>
                         <Td colSpan={8}>
-                          <Center py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                          <Center py={8} color={iconGray500}>
                             {t('orders.details.noItems', 'No items')}
                           </Center>
                         </Td>
@@ -705,7 +714,7 @@ const OrderDetails = () => {
                             <Td maxW="320px">
                               <Text fontWeight="medium">{it.name || it.description || it.item || '-'}</Text>
                               {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                                <Stack spacing={4} mt={2} fontSize="xs" color={useColorModeValue("gray.600", "gray.400")}>
+                                <Stack spacing={4} mt={2} fontSize="xs" color={borderGray600}>
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
                                     const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
@@ -726,7 +735,7 @@ const OrderDetails = () => {
                                       objectFit="cover"
                                       borderRadius="md"
                                       borderWidth="1px"
-                                      borderColor={useColorModeValue("gray.200", "gray.600")}
+                                      borderColor={borderGray200}
                                       cursor="pointer"
                                       onClick={(e) => {
                                         e.stopPropagation()
@@ -753,7 +762,7 @@ const OrderDetails = () => {
                                   }}
                                 />
                               ) : (
-                                <Text color={useColorModeValue("gray.400", "gray.500")}>-</Text>
+                                <Text color={iconGray400}>-</Text>
                               )}
                             </Td>
                             <Td textAlign="center">
@@ -781,7 +790,7 @@ const OrderDetails = () => {
 
             <Box display={{ base: 'block', md: 'none' }}>
               {parsed.items.length === 0 ? (
-                <Center py={8} color={useColorModeValue("gray.500", "gray.400")}>
+                <Center py={8} color={iconGray500}>
                   {t('orders.details.noItems', 'No items')}
                 </Center>
               ) : (
@@ -821,11 +830,11 @@ const OrderDetails = () => {
                               <Box
                                 boxSize={16}
                                 borderRadius="md"
-                                bg={useColorModeValue("gray.100", "gray.700")}
+                                bg={bgGray100}
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="center"
-                                color={useColorModeValue("gray.400", "gray.500")}
+                                color={iconGray400}
                                 fontWeight="bold"
                               >
                                 —
@@ -834,7 +843,7 @@ const OrderDetails = () => {
                             <Stack spacing={4} flex="1">
                               <Text fontWeight="semibold">{title}</Text>
                               {Array.isArray(it.modifications) && it.modifications.length > 0 && (
-                                <Stack spacing={4} fontSize="xs" color={useColorModeValue("gray.600", "gray.400")}>
+                                <Stack spacing={4} fontSize="xs" color={borderGray600}>
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
                                     const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
@@ -846,11 +855,11 @@ const OrderDetails = () => {
                                   })}
                                 </Stack>
                               )}
-                              <Text fontSize="xs" color={useColorModeValue("gray.600", "gray.400")}>
+                              <Text fontSize="xs" color={borderGray600}>
                                 {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
                               </Text>
                               {(it.hingeSide || it.exposedSide) && (
-                                <HStack spacing={4} fontSize="xs" color={useColorModeValue("gray.600", "gray.400")}>
+                                <HStack spacing={4} fontSize="xs" color={borderGray600}>
                                   {it.hingeSide && (
                                     <Badge colorScheme="brand" borderRadius="full" px={2}>
                                       {t('orders.details.hingeSide', 'Hinge Side')}: {it.hingeSide}
@@ -908,7 +917,7 @@ const OrderDetails = () => {
           </CardHeader>
           <CardBody>
             {parsed.manufacturers.length === 0 ? (
-              <Text color={useColorModeValue("gray.500", "gray.400")}>{t('orders.details.noManufacturers', 'No manufacturers found')}</Text>
+              <Text color={iconGray500}>{t('orders.details.noManufacturers', 'No manufacturers found')}</Text>
             ) : (
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 {parsed.manufacturers.map((m, i) => {
@@ -918,7 +927,7 @@ const OrderDetails = () => {
                   return (
                     <StandardCard key={`manufacturer-${i}`} variant="outline">
                       <CardHeader fontWeight="semibold">{headerLabel}</CardHeader>
-                      <CardBody as={Stack} spacing={4} fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
+                      <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
                         {(m?.styleName || m?.style || m?.styleImage) && (
                           <HStack spacing={4} align="center">
                             {m.styleImage && (
@@ -933,7 +942,7 @@ const OrderDetails = () => {
                               />
                             )}
                             <Stack spacing={4}>
-                              <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                              <Text fontSize="xs" color={iconGray500}>
                                 {t('orders.details.selectedStyle', 'Selected Style')}
                               </Text>
                               <Text fontWeight="semibold">{m.styleName || m.style || t('common.na')}</Text>
@@ -1013,7 +1022,7 @@ const OrderDetails = () => {
                 />
               </Box>
             ) : (
-              <Center py={10} color={useColorModeValue("gray.500", "gray.400")}>
+              <Center py={10} color={iconGray500}>
                 {t('orders.pdf.loading', 'Loading...')}
               </Center>
             )}

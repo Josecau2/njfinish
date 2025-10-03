@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '../helpers/axiosInstance'
 
 // Query keys
@@ -12,27 +12,22 @@ export const paymentsKeys = {
 
 // Fetch payments with pagination
 export const usePayments = (filters = {}) => {
-  const { page, ...otherFilters } = filters
+  const { page = 1, limit = 10, ...otherFilters } = filters
 
-  return useInfiniteQuery({
-    queryKey: paymentsKeys.list({ page, ...otherFilters }),
-    queryFn: async ({ pageParam = page || 1 }) => {
-      const params = new URLSearchParams({
-        page: pageParam,
-        limit: 20, // Keep page sizes modest
-        ...otherFilters,
+  return useQuery({
+    queryKey: paymentsKeys.list({ page, limit, ...otherFilters }),
+    queryFn: async () => {
+      const params = { page, limit, ...otherFilters }
+      Object.keys(params).forEach((key) => {
+        if (params[key] === undefined || params[key] === null || params[key] === '') {
+          delete params[key]
+        }
       })
 
-      const response = await axiosInstance.get(`/api/payments?${params}`)
+      const response = await axiosInstance.get('/api/payments', { params })
       return response.data
     },
-    getNextPageParam: (lastPage, pages) => {
-      // Return next page number if there are more results
-      if (lastPage.hasMore) {
-        return pages.length + 1
-      }
-      return undefined
-    },
+    keepPreviousData: true,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
@@ -70,49 +65,16 @@ export const useCreatePayment = () => {
   })
 }
 
-// Apply payment mutation with optimistic updates
+// Apply payment mutation
 export const useApplyPayment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ paymentId, data }) => {
-      const response = await axiosInstance.post(`/api/payments/${paymentId}/apply`, data)
+      const response = await axiosInstance.put(`/api/payments/${paymentId}/apply`, data)
       return response.data
     },
-    onMutate: async ({ paymentId, data }) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: paymentsKeys.lists() })
-
-      // Snapshot previous value
-      const previousPayments = queryClient.getQueryData(paymentsKeys.lists())
-
-      // Optimistically update to the new value
-      queryClient.setQueryData(paymentsKeys.lists(), (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          pages: old.pages.map(page => ({
-            ...page,
-            data: page.data.map(payment =>
-              payment.id === paymentId
-                ? { ...payment, status: 'applied', ...data }
-                : payment
-            )
-          }))
-        }
-      })
-
-      // Return context with snapshotted value
-      return { previousPayments }
-    },
-    onError: (err, variables, context) => {
-      // Rollback on error
-      if (context?.previousPayments) {
-        queryClient.setQueryData(paymentsKeys.lists(), context.previousPayments)
-      }
-    },
-    onSettled: () => {
-      // Always refetch after error or success
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: paymentsKeys.lists() })
     },
   })

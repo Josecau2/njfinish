@@ -24,12 +24,17 @@ const CustomerInfoStep = ({
   isContractor,
   contractorGroupId,
 }) => {
-  const [showMoreOptions, setShowMoreOptions] = useState(false)
-  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
-  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false)
   const { t } = useTranslation()
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
+
+  // Color mode values - MUST be before useState
+  const headingColor = useColorModeValue("gray.800", "gray.200")
+  const subheadingColor = useColorModeValue("gray.700", "gray.200")
+
+  const [showMoreOptions, setShowMoreOptions] = useState(false)
+  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false)
   const [customerOptions, setCustomerOptions] = useState([])
   const dispatch = useDispatch()
   const { list: users, loading: usersLoading } = useSelector((state) => state.users)
@@ -294,7 +299,7 @@ const CustomerInfoStep = ({
           })}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
-                <Heading size="md" color={useColorModeValue("gray.800","gray.200")}>
+                <Heading size="md" color={headingColor}>
                   {t('proposals.create.customerInfo.title')}
                 </Heading>
                 {!hideBack && (
@@ -521,7 +526,7 @@ const CustomerInfoStep = ({
                 <Collapse in={showMoreOptions} animateOpacity={!prefersReducedMotion} id="customer-more-options">
                   <Stack spacing={6} mt={4}>
                     <Divider />
-                    <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue("gray.700","gray.200")}>
+                    <Text fontSize="lg" fontWeight="semibold" color={subheadingColor}>
                       {t('proposals.create.customerInfo.additionalInfo')}
                     </Text>
 

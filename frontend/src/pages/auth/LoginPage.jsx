@@ -25,6 +25,11 @@ const LoginPage = () => {
   const logoHeight = Number(loginBrand.logoHeight) || 60;
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900";
 
+  // Color mode values
+  const bgWhite = useColorModeValue("white", "gray.800")
+  const textGray700 = useColorModeValue("gray.700", "gray.300")
+  const linkBlue = useColorModeValue("blue.600", "blue.300")
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -145,7 +150,7 @@ const LoginPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg={useColorModeValue("white", "gray.800")}
+        bg={bgWhite}
         className="login-right-panel"
       >
         <Container maxW="md" py={8}>
@@ -156,7 +161,7 @@ const LoginPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.title}
             </Heading>
-            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
+            <Text textAlign="center" color={textGray700}>
               {loginBrand.subtitle}
             </Text>
 
@@ -233,7 +238,7 @@ const LoginPage = () => {
                     </Checkbox>
                   )}
                   {loginBrand.showForgotPassword && (
-                    <Link as={RouterLink} to="/forgot-password" color={useColorModeValue("blue.600", "blue.300")} minH="44px" display="flex" alignItems="center">
+                    <Link as={RouterLink} to="/forgot-password" color={linkBlue} minH="44px" display="flex" alignItems="center">
                       {t('auth.forgotPasswordLink')}
                     </Link>
                   )}
@@ -253,7 +258,7 @@ const LoginPage = () => {
 
             <Text textAlign="center">
               {t('auth.noAccountPrompt')}{' '}
-              <Link as={RouterLink} to="/request-access" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
+              <Link as={RouterLink} to="/request-access" color={linkBlue} minH="44px" py={2}>
                 {t('auth.requestAccess.submit')}
               </Link>
             </Text>

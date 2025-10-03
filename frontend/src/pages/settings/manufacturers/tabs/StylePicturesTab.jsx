@@ -11,6 +11,11 @@ const StylePicturesTab = ({ manufacturer }) => {
   const { t } = useTranslation()
   const api_url = import.meta.env.VITE_API_URL
 
+  // Color mode values
+  const iconGray500 = iconGray500
+  const bgGray50 = bgGray50
+  const borderGray600 = borderGray600
+
   const [stylesMeta, setStylesMeta] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -249,7 +254,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                   </Badge>
                 )}
               </HStack>
-              <Text mt={1} fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
+              <Text mt={1} fontSize="sm" color={iconGray500}>
                 {t(
                   'styles.helperText',
                   'View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.',
@@ -291,7 +296,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     borderWidth="1px"
                     borderRadius="md"
                     p={3}
-                    bg={useColorModeValue("gray.50","gray.800")}
+                    bg={bgGray50}
                   >
                     <LazyLoadImage
                       src={
@@ -484,7 +489,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     <strong>{t('common.style', 'Style')}:</strong> {selectedStyle.style}
                   </Text>
                 </Box>
-                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg={useColorModeValue("gray.50","gray.800")}>
+                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>
                   <Text fontWeight="semibold" mb={2}>
                     {t('types.ui.currentImage', 'Current Image:')}
                   </Text>
@@ -521,7 +526,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                  <Text mt={2} color={useColorModeValue("gray.600","gray.300")} fontSize="sm">
+                  <Text mt={2} color={borderGray600} fontSize="sm">
                     {selectedFile
                       ? `${t('styles.selected', 'Selected')}: ${selectedFile.name}`
                       : selectedStyle.styleVariants?.[0]?.image
@@ -535,7 +540,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     <Text fontWeight="semibold" mb={2}>
                       {t('styles.previewNewImage', 'New Image Preview:')}
                     </Text>
-                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg={useColorModeValue("gray.50","gray.800")}>
+                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>
                       <LazyLoadImage
                         src={URL.createObjectURL(selectedFile)}
                         alt="Preview"

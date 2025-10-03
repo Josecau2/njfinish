@@ -21,6 +21,11 @@ import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const UsersPage = () => {
+
+  // Color mode values
+  const borderGray600 = borderGray600
+  const iconGreen500 = iconGreen500
+  const iconGray500 = iconGray500
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -166,7 +171,7 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
+              <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
                   <Icon as={Users} boxSize={ICON_BOX_MD} color="brand.500" aria-hidden="true" />
                   {t('settings.users.stats.totalUsers')}
@@ -181,13 +186,13 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
+              <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
-                  <Icon as={Gear} boxSize={ICON_BOX_MD} color={useColorModeValue("green.500","green.300")} aria-hidden="true" />
+                  <Icon as={Gear} boxSize={ICON_BOX_MD} color={iconGreen500} aria-hidden="true" />
                   {t('settings.users.stats.administrators')}
                 </Flex>
               </StatLabel>
-              <StatNumber fontSize="2xl" fontWeight="bold" color={useColorModeValue("green.500","green.300")}>
+              <StatNumber fontSize="2xl" fontWeight="bold" color={iconGreen500}>
                 {adminCount}
               </StatNumber>
             </Stat>
@@ -196,7 +201,7 @@ const UsersPage = () => {
         <StandardCard className="settings-stats-card">
           <CardBody>
             <Stat>
-              <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
+              <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
                   <Icon as={UserIcon} boxSize={ICON_BOX_MD} color="orange.500" aria-hidden="true" />
                   {t('settings.users.stats.regularUsers')}
@@ -222,7 +227,7 @@ const UsersPage = () => {
             <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray500} />
                 </InputLeftElement>
                 <Input
                   type="search"
@@ -238,7 +243,7 @@ const UsersPage = () => {
               </InputGroup>
             </Box>
             <Box textAlign={{ base: 'left', md: 'right' }}>
-              <Text color={useColorModeValue("gray.600", "gray.400")}>
+              <Text color={borderGray600}>
                 {t('settings.users.showing', {
                   count: filteredUsers?.length || 0,
                   total: users?.length || 0,
@@ -269,7 +274,7 @@ const UsersPage = () => {
         <StandardCard className="settings-table-card">
           <CardBody className="settings-empty-state">
             <Spinner colorScheme="brand" size="lg" />
-            <Text color={useColorModeValue("gray.500", "gray.400")} mt={3} mb={0}>{t('settings.users.loading')}</Text>
+            <Text color={iconGray500} mt={3} mb={0}>{t('settings.users.loading')}</Text>
           </CardBody>
         </StandardCard>
       )}
@@ -418,7 +423,7 @@ const UsersPage = () => {
                         <span className="settings-mobile-label">
                           {t('settings.users.table.email')}
                         </span>
-                        <Text className="settings-mobile-value" color={useColorModeValue("gray.500", "gray.400")}>{user.email}</Text>
+                        <Text className="settings-mobile-value" color={iconGray500}>{user.email}</Text>
                       </div>
                       <div className="settings-mobile-actions">
                       <Button

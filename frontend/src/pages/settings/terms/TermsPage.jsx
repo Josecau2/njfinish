@@ -15,6 +15,9 @@ const TermsPage = () => {
   const { t } = useTranslation()
   const user = useSelector((s) => s.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
+
+  // Color mode values
+  const iconGray500 = iconGray500
   const [content, setContent] = useState('')
   const [version, setVersion] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -119,7 +122,7 @@ const TermsPage = () => {
                   </Button>
                 </HStack>
                 {version && (
-                  <Text color={useColorModeValue("gray.500","gray.400")} mt={2} fontSize="sm">
+                  <Text color={iconGray500} mt={2} fontSize="sm">
                     {t('settings.terms.currentVersion', 'Current version')}: {version}
                   </Text>
                 )}
@@ -131,7 +134,7 @@ const TermsPage = () => {
           <StandardCard>
             <CardBody>
               <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
-              <Text color={useColorModeValue("gray.500","gray.400")} fontSize="sm" mb={2}>
+              <Text color={iconGray500} fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </Text>
               <Table variant="simple">

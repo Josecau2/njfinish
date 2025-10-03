@@ -13,6 +13,17 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const Contracts = () => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const iconGray400 = iconGray400
+  const iconGray500 = iconGray500
+  const iconGray300 = iconGray300
+  const borderGray600 = borderGray600
+  const bgGreen50 = bgGreen50
+  const textGreen600 = textGreen600
+  const borderGray700 = borderGray700
+  const color8 = color8
+  const bgGray50 = bgGray50
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [viewMode, setViewMode] = useState('card')
@@ -338,7 +349,7 @@ const Contracts = () => {
               <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray400} />
                   </InputLeftElement>
                   <Input
                     type="search"
@@ -357,7 +368,7 @@ const Contracts = () => {
                 flex="1"
               >
                 <HStack spacing={4} justify="flex-end">
-                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                  <Text fontSize="sm" color={iconGray500}>
                     {t('common.itemsPerPage')}
                   </Text>
                   <Select
@@ -408,7 +419,7 @@ const Contracts = () => {
             <CardBody>
               <Center py={12} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('common.loading', 'Loading...')}
                 </Text>
               </Center>
@@ -420,9 +431,9 @@ const Contracts = () => {
               <StandardCard variant="outline">
                 <CardBody>
                   <Center flexDirection="column" gap={4}>
-                    <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
+                    <Icon as={Search} boxSize={10} color={iconGray300} />
                     <Text fontWeight="medium">{t('contracts.empty.title')}</Text>
-                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                    <Text fontSize="sm" color={iconGray500}>
                       {t('contracts.empty.subtitle')}
                     </Text>
                   </Center>
@@ -438,8 +449,8 @@ const Contracts = () => {
                       <CardHeader pb={2}>
                         <HStack justify="space-between" align="center">
                           <HStack spacing={4} align="center">
-                            <Icon as={Calendar} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
-                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Icon as={Calendar} boxSize={ICON_BOX_MD} color={iconGray400} />
+                            <Text fontSize="sm" color={iconGray500}>
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
                             </Text>
                           </HStack>
@@ -470,7 +481,7 @@ const Contracts = () => {
                               {customerName}
                             </Text>
                           </HStack>
-                          <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} noOfLines={2}>
+                          <Text fontSize="sm" color={borderGray600} noOfLines={2}>
                             {item.description || t('contracts.noDescription')}
                           </Text>
                           <HStack spacing={4} align="center">
@@ -479,13 +490,13 @@ const Contracts = () => {
                               alignItems="center"
                               justifyContent="center"
                               rounded="sm"
-                              bg={useColorModeValue("green.50", "green.900")}
-                              color={useColorModeValue("green.600","green.300")}
+                              bg={bgGreen50}
+                              color={textGreen600}
                               p={1}
                             >
                               <Icon as={Briefcase} boxSize={ICON_BOX_MD} />
                             </Box>
-                            <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                            <Text fontSize="sm" color={borderGray600}>
                               {item.designerData?.name || t('contracts.noDesigner')}
                             </Text>
                           </HStack>
@@ -531,9 +542,9 @@ const Contracts = () => {
                       <Tr>
                         <Td colSpan={6}>
                           <Center py={12} flexDirection="column" gap={4}>
-                            <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
+                            <Icon as={Search} boxSize={10} color={iconGray300} />
                             <Text>{t('contracts.empty.title')}</Text>
-                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="sm" color={iconGray500}>
                               {t('contracts.empty.subtitle')}
                             </Text>
                           </Center>
@@ -543,7 +554,7 @@ const Contracts = () => {
                       paginatedItems.map((item) => (
                         <Tr key={item.id}>
                           <Td>
-                            <Text fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+                            <Text fontSize="sm" fontWeight="medium" color={borderGray700}>
                               {new Date(item.date || item.createdAt).toLocaleDateString()}
                             </Text>
                           </Td>
@@ -559,12 +570,12 @@ const Contracts = () => {
                             </Text>
                           </Td>
                           <Td>
-                            <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                            <Text fontSize="sm" color={borderGray600}>
                               {item.description || t('common.na')}
                             </Text>
                           </Td>
                           <Td>
-                            <Text fontSize="sm" color={useColorModeValue("gray.700", "gray.300")}>
+                            <Text fontSize="sm" color={borderGray700}>
                               {item.designerData?.name || t('common.na')}
                             </Text>
                           </Td>
@@ -628,7 +639,7 @@ const Contracts = () => {
             {loadings ? (
               <Center py={10} flexDirection="column" gap={4}>
                 <Spinner size="lg" color="brand.500" />
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('contracts.loadingDetails')}
                 </Text>
               </Center>
@@ -639,7 +650,7 @@ const Contracts = () => {
                 borderWidth="1px"
                 borderRadius="md"
                 p={5}
-                bg={useColorModeValue("white", "gray.800")}
+                bg={color8}
                 sx={{
                   '&::-webkit-scrollbar': { width: '8px' },
                   '&::-webkit-scrollbar-track': { bg: 'gray.100', borderRadius: 'full' },
@@ -650,13 +661,13 @@ const Contracts = () => {
               />
             ) : (
               <Center py={10}>
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('contracts.noData')}
                 </Text>
               </Center>
             )}
           </ModalBody>
-          <ModalFooter bg={useColorModeValue("gray.50", "gray.800")} borderBottomRadius="md">
+          <ModalFooter bg={bgGray50} borderBottomRadius="md">
             <Button variant="outline" onClick={() => setShowModal(false)}>
               {t('common.close')}
             </Button>

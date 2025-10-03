@@ -24,6 +24,10 @@ const CustomerForm = ({
   const isEditing = Boolean(id)
   const { t } = useTranslation()
 
+  // Color mode values - MUST be before useState
+  const textColor = useColorModeValue("gray.800", "gray.200")
+  const subtextColor = useColorModeValue("gray.600", "gray.400")
+
   const { loading, error } = useSelector((state) => state.customers)
   const customers = useSelector((state) => state.customers.list)
 
@@ -158,11 +162,11 @@ const CustomerForm = ({
         <CardHeader>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <VStack align="start" spacing={4}>
-              <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
+              <Text fontSize="xl" fontWeight="bold" color={textColor}>
                 {isEditing ? t('customers.form.titles.edit') : t('customers.form.titles.add')}
               </Text>
               {isContractor && (
-                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                <Text fontSize="sm" color={subtextColor}>
                   {contractorGroupName}
                 </Text>
               )}

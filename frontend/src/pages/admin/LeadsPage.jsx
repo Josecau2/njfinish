@@ -78,6 +78,15 @@ const getLeadLocation = (lead) => {
 
 const LeadsPage = () => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const textGray600 = useColorModeValue("gray.600", "gray.400")
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const iconGray = useColorModeValue("gray.500", "gray.400")
+  const iconBlue = useColorModeValue("blue.500", "blue.300")
+  const bgGray50 = useColorModeValue("gray.50", "gray.800")
+  const borderGray100 = useColorModeValue("gray.100", "gray.700")
+
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -285,7 +294,7 @@ const LeadsPage = () => {
           <CardBody>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 3, md: 4 }}>
               <FormControl>
-                <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                <FormLabel fontSize="sm" color={textGray600}>
                   {t('leadsPage.filters.status.label')}
                 </FormLabel>
                 <Select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
@@ -298,12 +307,12 @@ const LeadsPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                <FormLabel fontSize="sm" color={textGray600}>
                   {t('leadsPage.filters.searchLabel', 'Search')}
                 </FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                   </InputLeftElement>
                   <Input
                     type="search"
@@ -316,10 +325,10 @@ const LeadsPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                <FormLabel fontSize="sm" color={textGray600}>
                   {t('leadsPage.filters.help', 'Need help?')}
                 </FormLabel>
-                <Flex align="center" gap={4} color={useColorModeValue("gray.500", "gray.400")}>
+                <Flex align="center" gap={4} color={textGray500}>
                   <Icon as={HelpCircle} boxSize={ICON_BOX_MD} aria-hidden="true" />
                   <Text fontSize="sm">{t('leadsPage.helpText', 'Use filters to narrow down leads.')}</Text>
                 </Flex>
@@ -338,7 +347,7 @@ const LeadsPage = () => {
                 <Spinner size="lg" color="brand.500" />
               </Flex>
             ) : filteredLeads.length === 0 ? (
-              <Text color={useColorModeValue("gray.500", "gray.400")} py={6} px={6}>{t('leadsPage.table.noResults')}</Text>
+              <Text color={textGray500} py={6} px={6}>{t('leadsPage.table.noResults')}</Text>
             ) : (
               <>
                 {/* Desktop table view */}
@@ -436,7 +445,7 @@ const LeadsPage = () => {
                                 <Text fontWeight="600" fontSize="md">
                                   {displayName}
                                 </Text>
-                                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                                <Text fontSize="sm" color={textGray600}>
                                   {lead.email}
                                 </Text>
                               </Box>
@@ -470,7 +479,7 @@ const LeadsPage = () => {
                                   {company}
                                 </Text>
                               )}
-                              <Text color={useColorModeValue("gray.500", "gray.400")} fontSize="xs" mt={1}>
+                              <Text color={textGray500} fontSize="xs" mt={1}>
                                 {t('leadsPage.table.columns.submitted')}: {submittedAt}
                               </Text>
                             </Box>
@@ -520,7 +529,7 @@ const LeadsPage = () => {
                   <Text fontWeight="semibold" fontSize="lg">
                     {t('leadsPage.modal.title')}
                   </Text>
-                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                  <Text fontSize="sm" color={textGray500}>
                     {selectedLeadSubmittedText}
                   </Text>
                 </Box>
@@ -549,16 +558,16 @@ const LeadsPage = () => {
                           <Text fontWeight="semibold" fontSize="md">
                             {selectedLeadDisplayName || t('leadsPage.modal.status.unknownLead')}
                           </Text>
-                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="sm" color={textGray500}>
                             {selectedLead.email || t('common.na')}
                           </Text>
                         </Box>
                         <Stack spacing={4}>
-                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="sm" color={textGray500}>
                             {t('leadsPage.modal.contact.phone')}
                           </Text>
                           <Text fontWeight="medium">{selectedLeadPhone || t('common.na')}</Text>
-                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="sm" color={textGray500}>
                             {t('leadsPage.modal.contact.location')}
                           </Text>
                           <Text fontWeight="medium">
@@ -573,13 +582,13 @@ const LeadsPage = () => {
 
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={4} color={useColorModeValue("blue.500", "blue.300")}>
+                      <HStack spacing={4} color={iconBlue}>
                         <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.message.heading')}</Text>
                       </HStack>
                     </CardHeader>
                     <CardBody pt={3}>
-                      <Box bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md" borderLeftWidth="4px" borderColor="blue.500" p={4}>
+                      <Box bg={bgGray50} borderRadius="md" borderLeftWidth="4px" borderColor="blue.500" p={4}>
                         <Text fontSize="sm" lineHeight="1.6">
                           {selectedLead.message
                             ? selectedLead.message
@@ -591,7 +600,7 @@ const LeadsPage = () => {
 
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={4} color={useColorModeValue("blue.500", "blue.300")}>
+                      <HStack spacing={4} color={iconBlue}>
                         <Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.notes.heading')}</Text>
                       </HStack>
@@ -600,12 +609,12 @@ const LeadsPage = () => {
                       {Array.isArray(selectedLead.metadata?.notes) && selectedLead.metadata.notes.length > 0 ? (
                         <Stack spacing={4}>
                           {selectedLead.metadata.notes.map((item, index) => (
-                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor={useColorModeValue("gray.100","gray.700")} pb={3}>
+                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor={borderGray100} pb={3}>
                               <Flex justify="space-between" align="flex-start" mb={2}>
                                 <Text fontWeight="semibold">
                                   {item.byName || t('leadsPage.modal.notes.defaultAuthor')}
                                 </Text>
-                                <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                                <Text fontSize="xs" color={textGray500}>
                                   {item.at ? new Date(item.at).toLocaleString() : ''}
                                 </Text>
                               </Flex>
@@ -616,8 +625,8 @@ const LeadsPage = () => {
                           ))}
                         </Stack>
                       ) : (
-                        <Box bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md" p={4} textAlign="center">
-                          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                        <Box bg={bgGray50} borderRadius="md" p={4} textAlign="center">
+                          <Text fontSize="sm" color={textGray500}>
                             {t('leadsPage.modal.notes.empty')}
                           </Text>
                         </Box>
@@ -627,7 +636,7 @@ const LeadsPage = () => {
 
                   <StandardCard variant="outline">
                     <CardHeader pb={0}>
-                      <HStack spacing={4} color={useColorModeValue("blue.500", "blue.300")}>
+                      <HStack spacing={4} color={iconBlue}>
                         <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />
                         <Text fontWeight="semibold">{t('leadsPage.modal.addNote.heading')}</Text>
                       </HStack>

@@ -7,6 +7,9 @@ import { getFreshestToken } from '../../utils/authToken'
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
 const MobilePdfViewer = ({ fileUrl }) => {
+
+  // Color mode values
+  const iconRed500 = iconRed500
   const [numPages, setNumPages] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -36,7 +39,7 @@ const MobilePdfViewer = ({ fileUrl }) => {
         )}
         {error && (
           <Center py={12}>
-            <Text fontSize="sm" color={useColorModeValue("red.500","red.300")}>
+            <Text fontSize="sm" color={iconRed500}>
               {error}
             </Text>
           </Center>

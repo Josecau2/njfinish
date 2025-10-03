@@ -39,6 +39,11 @@ const BADGE_SCHEMES = {
 }
 
 const CalendarView = () => {
+
+  // Color mode values
+  const iconGray400 = iconGray400
+  const iconBlue500 = iconBlue500
+  const iconGray500 = iconGray500
   const [events, setEvents] = useState([])
   const [filteredEvents, setFilteredEvents] = useState([])
   const [eventType, setEventType] = useState('All')
@@ -142,7 +147,7 @@ const CalendarView = () => {
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <HStack spacing={4} flex="1">
-                <Icon as={Filter} color={useColorModeValue("gray.400","gray.500")} />
+                <Icon as={Filter} color={iconGray400} />
                 <Select value={eventType} onChange={handleFilterChange} maxW="240px">
                   {EVENT_TYPES.map((type) => (
                     <option key={type} value={type}>
@@ -169,7 +174,7 @@ const CalendarView = () => {
           <CardBody>
             {loading ? (
               <Flex align="center" justify="center" minH="360px">
-                <Spinner size="lg" color={useColorModeValue("blue.500","blue.300")} />
+                <Spinner size="lg" color={iconBlue500} />
               </Flex>
             ) : (
               <Stack spacing={6}>
@@ -221,7 +226,7 @@ const CalendarView = () => {
                 </Box>
 
                 {filteredEvents.length === 0 && (
-                  <Flex direction="column" align="center" py={10} color={useColorModeValue("gray.500","gray.400")} gap={4}>
+                  <Flex direction="column" align="center" py={10} color={iconGray500} gap={4}>
                     <Icon as={Calendar} boxSize={12} opacity={0.3} />
                     <Text fontSize="lg" fontWeight="medium">
                       No events found

@@ -33,13 +33,14 @@ const DesignImportStep = ({
   const isMobile = useBreakpointValue({ base: true, md: false })
   const tabIndex = activeTab === 'import' ? 1 : 0
 
-  // Dark mode colors
+  // Dark mode colors - MUST be before useState
   const headingColor = useColorModeValue("gray.800", "gray.200")
   const textColor = useColorModeValue("gray.600", "gray.400")
   const dropzoneBg = useColorModeValue("gray.50", "gray.800")
   const iconColor = useColorModeValue("gray.400", "gray.500")
   const textSecondary = useColorModeValue("gray.500", "gray.400")
   const stickyBg = useColorModeValue("white", "gray.800")
+  const hoverBg = useColorModeValue("gray.100", "gray.700")
 
   const handleTabSelect = (index) => {
     setActiveTab(index === 1 ? 'import' : 'manual')
@@ -155,7 +156,7 @@ const DesignImportStep = ({
                 alignItems="center"
                 justifyContent="center"
                 transition="all 0.2s"
-                _hover={{ borderColor: 'brand.400', bg: useColorModeValue('gray.100', 'gray.700') }}
+                _hover={{ borderColor: 'brand.400', bg: hoverBg }}
               >
                 <Icon as={CloudUpload} boxSize={12} color={iconColor} mb={3} />
                 <Text color={textColor} mb={4}>

@@ -17,6 +17,13 @@ const TaxesPage = () => {
   const { t } = useTranslation()
   const { taxes, loading } = useSelector((state) => state.taxes)
 
+  // Color mode values
+  const iconGray500 = iconGray500
+  const bgGray50 = bgGray50
+  const borderGray200 = borderGray200
+  const colorYellow50 = colorYellow50
+  const borderGray600 = borderGray600
+
   const [newTaxes, setNewTaxes] = useState([])
   const newTaxInputRefs = useRef([])
 
@@ -145,7 +152,7 @@ const TaxesPage = () => {
         <CardBody>
           <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'flex-start', md: 'center' }}>
             <Tooltip label={t('settings.taxes.help.tooltip')} placement="bottom-start">
-              <Flex align="center" gap={4} color={useColorModeValue("gray.500", "gray.400")}>
+              <Flex align="center" gap={4} color={iconGray500}>
                 <Icon as={HelpCircle} boxSize={ICON_BOX_MD} aria-hidden="true" />
                 <Text fontSize="sm">{t('settings.taxes.help.hover')}</Text>
               </Flex>
@@ -171,10 +178,10 @@ const TaxesPage = () => {
               >
                 <Stack spacing={4}>
                   {taxes.map((tax) => (
-                    <Box key={tax.id} borderWidth="1px" borderRadius="lg" p={4} bg={useColorModeValue("gray.50", "gray.800")} _dark={{ bg: 'gray.800' }}>
+                    <Box key={tax.id} borderWidth="1px" borderRadius="lg" p={4} bg={bgGray50} _dark={{ bg: 'gray.800' }}>
                       <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
                         <Box flex={{ base: 1, md: 2 }}>
-                          <FormLabel fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mb={1}>
+                          <FormLabel fontSize="sm" color={iconGray500} mb={1}>
                             {t('settings.taxes.fields.taxLabel')}
                           </FormLabel>
                           <Text fontWeight="semibold" fontSize="md">
@@ -183,7 +190,7 @@ const TaxesPage = () => {
                         </Box>
 
                         <Box flex={{ base: 1, md: 1 }}>
-                          <FormLabel fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mb={1}>
+                          <FormLabel fontSize="sm" color={iconGray500} mb={1}>
                             {t('settings.taxes.fields.taxRate')}
                           </FormLabel>
                           <InputGroup size="sm">
@@ -195,7 +202,7 @@ const TaxesPage = () => {
                         </Box>
 
                         <Box flex={{ base: 1, md: 1 }}>
-                          <FormLabel fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mb={1}>
+                          <FormLabel fontSize="sm" color={iconGray500} mb={1}>
                             {t('settings.taxes.fields.default')}
                           </FormLabel>
                           {tax.isDefault ? (
@@ -227,7 +234,7 @@ const TaxesPage = () => {
               </RadioGroup>
             </Stack>
           ) : (
-            <Flex direction="column" align="center" justify="center" py={12} color={useColorModeValue("gray.500", "gray.400")} gap={4}>
+            <Flex direction="column" align="center" justify="center" py={12} color={iconGray500} gap={4}>
               <Icon as={Coins} boxSize={12} opacity={0.2} aria-hidden="true" />
               <Text fontSize="lg" fontWeight="semibold">
                 {t('settings.taxes.empty.title')}
@@ -237,8 +244,8 @@ const TaxesPage = () => {
           )}
 
           {newTaxes.length > 0 && (
-            <Box mt={10} borderTopWidth="1px" borderColor={useColorModeValue("gray.200", "gray.600")} pt={6}>
-              <Text fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.500", "gray.400")} mb={4}>
+            <Box mt={10} borderTopWidth="1px" borderColor={borderGray200} pt={6}>
+              <Text fontSize="sm" fontWeight="semibold" color={iconGray500} mb={4}>
                 {t('settings.taxes.new.title')}
               </Text>
               <Stack spacing={4}>
@@ -249,13 +256,13 @@ const TaxesPage = () => {
                     borderRadius="lg"
                     borderStyle="dashed"
                     borderColor="yellow.400"
-                    bg={useColorModeValue("yellow.50", "yellow.900")}
+                    bg={colorYellow50}
                     _dark={{ bg: 'yellow.900' }}
                     p={4}
                   >
                     <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'flex-end' }}>
                       <Box flex={{ base: 1, md: 2 }}>
-                        <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={1}>
+                        <FormLabel fontSize="sm" color={borderGray600} mb={1}>
                           {t('settings.taxes.new.taxLabelRequired')}
                         </FormLabel>
                         <Input
@@ -269,7 +276,7 @@ const TaxesPage = () => {
                       </Box>
 
                       <Box flex={{ base: 1, md: 1 }}>
-                        <FormLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={1}>
+                        <FormLabel fontSize="sm" color={borderGray600} mb={1}>
                           {t('settings.taxes.new.taxRateRequired')}
                         </FormLabel>
                         <InputGroup>

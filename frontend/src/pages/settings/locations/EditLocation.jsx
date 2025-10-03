@@ -30,6 +30,14 @@ const EditLocation = () => {
   const locationId = useMemo(() => decodeParam(rawId), [rawId])
   const dispatch = useDispatch()
 
+  // Color mode values
+  const borderGray600 = borderGray600
+  const borderGray700 = borderGray700
+  const iconRed500 = iconRed500
+  const iconGray400 = iconGray400
+  const bgGray100 = bgGray100
+  const iconGray500 = iconGray500
+
   const [formData, setFormData] = useState(INITIAL_FORM)
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
@@ -191,7 +199,7 @@ const EditLocation = () => {
         <StandardCard>
           <CardHeader>
             <Heading size="md">{t('settings.locations.edit.title', 'Edit Location')}</Heading>
-            <Text mt={2} color={useColorModeValue("gray.600", "gray.400")}>
+            <Text mt={2} color={borderGray600}>
               {t('settings.locations.edit.subtitle', 'Update your location details below.')}
             </Text>
           </CardHeader>
@@ -199,13 +207,13 @@ const EditLocation = () => {
             <Stack spacing={6}>
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.locationName}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.locationName')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={MapPin} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input name="locationName" value={formData.locationName} onChange={handleChange} />
                   </InputGroup>
@@ -213,13 +221,13 @@ const EditLocation = () => {
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.address}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.address')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={Home} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Home} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input name="address" value={formData.address} onChange={handleChange} />
                   </InputGroup>
@@ -229,13 +237,13 @@ const EditLocation = () => {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.website}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.website')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={Globe} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Globe} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input name="website" value={formData.website} onChange={handleChange} />
                   </InputGroup>
@@ -243,13 +251,13 @@ const EditLocation = () => {
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.email}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.email')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Mail} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input type="email" name="email" value={formData.email} onChange={handleChange} />
                   </InputGroup>
@@ -259,13 +267,13 @@ const EditLocation = () => {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.phone}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.phone')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={Phone} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Phone} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
                     <Input name="phone" value={formData.phone} onChange={handleChange} />
                   </InputGroup>
@@ -273,9 +281,9 @@ const EditLocation = () => {
                 </FormControl>
 
                 <FormControl isRequired isInvalid={!!errors.country}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.country')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <Select name="country" value={formData.country} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.country')}</option>
@@ -291,9 +299,9 @@ const EditLocation = () => {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <FormControl isRequired isInvalid={!!errors.timezone}>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.timezone')}
-                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
+                    <Text as="span" color={iconRed500} ml={1}>*</Text>
                   </FormLabel>
                   <Select name="timezone" value={formData.timezone} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.timezone')}</option>
@@ -307,20 +315,20 @@ const EditLocation = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
+                  <FormLabel fontSize="sm" fontWeight="semibold" color={borderGray700}>
                     {t('settings.locations.form.labels.currentTime')}
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={Clock} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                      <Icon as={Clock} boxSize={ICON_BOX_MD} color={iconGray400} />
                     </InputLeftElement>
-                    <Input value={currentTime} isReadOnly tabIndex={-1} bg={useColorModeValue("gray.100", "gray.700")} cursor="not-allowed" />
+                    <Input value={currentTime} isReadOnly tabIndex={-1} bg={bgGray100} cursor="not-allowed" />
                   </InputGroup>
                 </FormControl>
               </SimpleGrid>
 
               <Box pt={2}>
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {t('settings.locations.edit.timezoneHelp', 'Current time updates automatically based on the selected timezone.')}
                 </Text>
               </Box>

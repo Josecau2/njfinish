@@ -11,6 +11,10 @@ const ContactInfoEditor = ({ info, onSave }) => {
   const user = useSelector((state) => state.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
 
+  // Color mode values
+  const bgGray50 = bgGray50
+  const bgGray100 = bgGray100
+
   const [form, setForm] = useState({
     companyName: info?.companyName || '',
     email: info?.email || '',
@@ -118,7 +122,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
         />
 
         <Box as="form" mt={4} onSubmit={handleSave}>
-          <Box bg={useColorModeValue("gray.50","gray.800")} borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+          <Box bg={bgGray50} borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor={bgGray100}>
             <HStack spacing={4} mb={3}>
               <Badge colorScheme="brand">{t('contact.editor.visibilityBadge', 'Settings')}</Badge>
               <Text fontWeight="semibold">{t('contact.editor.visibilitySettings')}</Text>

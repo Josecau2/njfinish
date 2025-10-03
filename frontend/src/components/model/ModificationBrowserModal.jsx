@@ -50,6 +50,16 @@ const ModificationBrowserModal = ({
   const { t } = useTranslation()
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
+
+  // Color mode values
+  const iconGray500 = iconGray500
+  const borderGray200 = borderGray200
+  const bgGray50 = bgGray50
+  const borderGray600 = borderGray600
+  const iconRed500 = iconRed500
+  const color6 = color6
+  const bgGray100 = bgGray100
+  const iconGray400 = iconGray400
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [gallery, setGallery] = useState([])
@@ -314,7 +324,7 @@ const ModificationBrowserModal = ({
                   <Text fontWeight="medium" textTransform="capitalize">
                     {t('proposalUI.custom.choose', 'Choose')} {sliderKey}
                   </Text>
-                  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                  <Text fontSize="sm" color={iconGray500}>
                     {formatInches(value)}
                   </Text>
                 </HStack>
@@ -338,7 +348,7 @@ const ModificationBrowserModal = ({
                   </SliderTrack>
                   <SliderThumb />
                 </Slider>
-                <HStack justify="space-between" fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                <HStack justify="space-between" fontSize="xs" color={iconGray500}>
                   <Text>{formatInches(slider.min)}</Text>
                   <Text>{formatInches(slider.max)}</Text>
                 </HStack>
@@ -406,8 +416,8 @@ const ModificationBrowserModal = ({
         )}
 
         {config.notes && config.notes.enabled !== false && (
-          <Box borderWidth="1px" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="md" p={3} bg={useColorModeValue("gray.50", "gray.800")}>
-            <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+          <Box borderWidth="1px" borderColor={borderGray200} borderRadius="md" p={3} bg={bgGray50}>
+            <Text fontSize="sm" color={borderGray600}>
               {config.notes.placeholder || t('proposalUI.custom.notesFallback', 'No additional notes configured for this modification.')}
             </Text>
           </Box>
@@ -419,7 +429,7 @@ const ModificationBrowserModal = ({
               <Text fontWeight="medium">
                 {config.customerUpload.title || t('modificationBrowser.upload.label', 'File Upload')}
               </Text>
-              {config.customerUpload.required && <Text color={useColorModeValue("red.500","red.300")}>*</Text>}
+              {config.customerUpload.required && <Text color={iconRed500}>*</Text>}
             </HStack>
             <Input
               type="file"
@@ -432,7 +442,7 @@ const ModificationBrowserModal = ({
               }
             />
             {config.customerUpload.description && (
-              <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+              <Text fontSize="xs" color={iconGray500}>
                 {config.customerUpload.description}
               </Text>
             )}
@@ -450,7 +460,7 @@ const ModificationBrowserModal = ({
           borderWidth="1px"
           borderRadius="lg"
           p={5}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={color6}
           shadow="sm"
           _hover={{ shadow: 'md', borderColor: 'brand.500' }}
           cursor="pointer"
@@ -460,7 +470,7 @@ const ModificationBrowserModal = ({
             <Text fontWeight="semibold" noOfLines={2}>
               {category.name}
             </Text>
-            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+            <Text fontSize="sm" color={iconGray500}>
               {t('modificationBrowser.category.count', {
                 defaultValue: '{{count}} templates',
                 count: category.templates?.length || 0,
@@ -480,7 +490,7 @@ const ModificationBrowserModal = ({
           borderWidth="1px"
           borderRadius="lg"
           p={4}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={color6}
           shadow="sm"
           _hover={{ shadow: 'md', borderColor: 'brand.500' }}
           cursor="pointer"
@@ -489,10 +499,10 @@ const ModificationBrowserModal = ({
           <Stack spacing={4} h="100%">
             {(template.sampleImage || template.fieldsConfig?.modSampleImage?.enabled) && (
               <Box
-                bg={useColorModeValue("gray.50", "gray.800")}
+                bg={bgGray50}
                 borderRadius="md"
                 borderWidth="1px"
-                borderColor={useColorModeValue("gray.200", "gray.600")}
+                borderColor={borderGray200}
                 h="150px"
                 display="flex"
                 alignItems="center"
@@ -519,7 +529,7 @@ const ModificationBrowserModal = ({
                 </Tag>
               </HStack>
               {template.descriptions?.customer && (
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} noOfLines={2}>
+                <Text fontSize="sm" color={iconGray500} noOfLines={2}>
                   {template.descriptions.customer}
                 </Text>
               )}
@@ -529,7 +539,7 @@ const ModificationBrowserModal = ({
                     ${Number(template.effectivePrice).toFixed(2)}
                   </Text>
                   {template.overridePrice && (
-                    <Text as="span" fontSize="xs" color={useColorModeValue("gray.500", "gray.400")} ml={1}>
+                    <Text as="span" fontSize="xs" color={iconGray500} ml={1}>
                       {t('modificationBrowser.template.price.overrideShort', 'Override')}
                     </Text>
                   )}
@@ -556,7 +566,7 @@ const ModificationBrowserModal = ({
                 {selectedTemplate.name}
               </Text>
               {selectedTemplate.descriptions?.customer && (
-                <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="sm" color={iconGray500}>
                   {selectedTemplate.descriptions.customer}
                 </Text>
               )}
@@ -568,7 +578,7 @@ const ModificationBrowserModal = ({
                 </Text>
               )}
               {selectedTemplate.overridePrice && (
-                <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                <Text fontSize="xs" color={iconGray500}>
                   {t('modificationBrowser.template.price.overrideLabel', 'Override price')}
                 </Text>
               )}
@@ -585,8 +595,8 @@ const ModificationBrowserModal = ({
           <Box
             borderWidth="1px"
             borderRadius="md"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            borderColor={useColorModeValue("gray.200", "gray.600")}
+            bg={bgGray50}
+            borderColor={borderGray200}
             h="230px"
             display="flex"
             alignItems="center"
@@ -649,7 +659,7 @@ const ModificationBrowserModal = ({
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent borderRadius="xl" overflow="hidden">
-        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor={bgGray100}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">
               {showBackButton && (
@@ -677,7 +687,7 @@ const ModificationBrowserModal = ({
           </HStack>
         </ModalHeader>
 
-        <ModalBody px={6} py={4} bg={useColorModeValue("gray.50", "gray.800")}>
+        <ModalBody px={6} py={4} bg={bgGray50}>
           <Stack spacing={6}>
             <PageHeader
               title={t('modificationBrowser.header.title', 'Modification Library')}
@@ -701,7 +711,7 @@ const ModificationBrowserModal = ({
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder={t('modificationBrowser.search.placeholder', 'Search modifications')}
                 />
-                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color={useColorModeValue("gray.400", "gray.500")}>
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color={iconGray400}>
                   <Search size={ICON_SIZE_MD} />
                 </Box>
               </Box>
@@ -713,7 +723,7 @@ const ModificationBrowserModal = ({
             {loading ? (
               <Box py={16} textAlign="center">
                 <Spinner size="lg" />
-                <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
+                <Text mt={4} color={iconGray500}>
                   {t('modificationBrowser.loading', 'Loading modifications...')}
                 </Text>
               </Box>
@@ -750,9 +760,9 @@ const ModificationBrowserModal = ({
           </Stack>
         </ModalBody>
 
-        <Divider borderColor={useColorModeValue("gray.100","gray.700")} />
+        <Divider borderColor={bgGray100} />
 
-        <ModalFooter px={6} py={4} bg={useColorModeValue("white", "gray.800")}>
+        <ModalFooter px={6} py={4} bg={color6}>
           <HStack spacing={4} justify="flex-end" w="full">
             <Button variant="outline" onClick={onClose}>
               {t('common.cancel', 'Cancel')}

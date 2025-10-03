@@ -51,6 +51,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
   const [showModal, setShowModal] = useState(false)
   const [selectedProposal, setSelectedProposal] = useState(null)
 
+  // Color mode values
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+
   // Status definitions with counts and colors
   const statusDefinitions = {
     all: { label: t('proposals.tabs.all'), color: 'brand', Icon: Clipboard },
@@ -318,7 +321,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   </InputGroup>
                 </Box>
                 <Box>
-                  <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
+                  <Text fontSize="sm" color={textGray500}>{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
                 </Box>
               </SimpleGrid>
 

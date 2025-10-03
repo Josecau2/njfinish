@@ -30,6 +30,11 @@ const RequestAccessPage = () => {
   const logoHeight = Number(loginBrand.logoHeight) || 60
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
 
+  // Color mode values
+  const bgWhite = useColorModeValue("white", "gray.800")
+  const textGray700 = useColorModeValue("gray.700", "gray.300")
+  const linkBlue = useColorModeValue("blue.600", "blue.300")
+
   const [form, setForm] = useState(() => ({ ...EMPTY_FORM }))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -157,7 +162,7 @@ const RequestAccessPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg={useColorModeValue("white", "gray.800")}
+        bg={bgWhite}
         overflowY="auto"
         className="login-right-panel"
       >
@@ -169,11 +174,11 @@ const RequestAccessPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {pageTitle}
             </Heading>
-            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
+            <Text textAlign="center" color={textGray700}>
               {pageSubtitle}
             </Text>
             {pageDescription && (
-              <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")} fontSize="sm">
+              <Text textAlign="center" color={textGray700} fontSize="sm">
                 {pageDescription}
               </Text>
             )}
@@ -366,7 +371,7 @@ const RequestAccessPage = () => {
                     maxLength={2000}
                     minH="44px"
                   />
-                  <Text fontSize="xs" textAlign="right" color={useColorModeValue("gray.700", "gray.300")} mt={1}>
+                  <Text fontSize="xs" textAlign="right" color={textGray700} mt={1}>
                     {form.message.length}/2000
                   </Text>
                 </FormControl>
@@ -387,7 +392,7 @@ const RequestAccessPage = () => {
 
             <Text textAlign="center" fontSize="sm">
               {copy.alreadyHaveAccess}{' '}
-              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} fontWeight="600" minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={linkBlue} fontWeight="600" minH="44px" py={2}>
                 {copy.signIn}
               </Link>
             </Text>

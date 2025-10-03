@@ -21,6 +21,24 @@ const Contractors = () => {
 
   const { list: contractors, loading, error, pagination } = useSelector((state) => state.contractors)
 
+  // Color mode values
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const textGray400 = useColorModeValue("gray.400", "gray.500")
+  const spinnerColor = useColorModeValue("blue.500", "blue.300")
+  const iconGray = useColorModeValue("gray.400", "gray.500")
+  const bgBlue = useColorModeValue("blue.50", "blue.900")
+  const iconBlue = useColorModeValue("blue.600", "blue.300")
+  const textBlue700 = useColorModeValue("blue.700", "blue.300")
+  const textBlue800 = useColorModeValue("blue.800", "blue.200")
+  const bgTeal = useColorModeValue("teal.50", "teal.900")
+  const bgOrange = useColorModeValue("orange.50", "orange.900")
+  const bgGreen = useColorModeValue("green.50", "green.900")
+  const iconGreen = useColorModeValue("green.600", "green.300")
+  const textGreen700 = useColorModeValue("green.700", "green.300")
+  const textGreen800 = useColorModeValue("green.800", "green.200")
+  const iconGray300 = useColorModeValue("gray.300", "gray.600")
+  const borderGray = useColorModeValue("gray.100", "gray.700")
+
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -87,7 +105,7 @@ const Contractors = () => {
         </Badge>
       ))
 
-    return enabledModules.length > 0 ? enabledModules : <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>{t('contractorsAdmin.noModules')}</Text>
+    return enabledModules.length > 0 ? enabledModules : <Text fontSize="xs" color={textGray500}>{t('contractorsAdmin.noModules')}</Text>
   }
 
   const formatDate = (dateString) => {
@@ -106,7 +124,7 @@ const Contractors = () => {
   if (loading && (!contractors || contractors.length === 0)) {
     return (
       <PageContainer textAlign="center">
-        <Spinner size="lg" color={useColorModeValue("blue.500", "blue.300")} thickness="4px" speed="0.7s" />
+        <Spinner size="lg" color={spinnerColor} thickness="4px" speed="0.7s" />
       </PageContainer>
     )
   }
@@ -133,7 +151,7 @@ const Contractors = () => {
               <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                   </InputLeftElement>
                   <Input
                     type="search"
@@ -147,20 +165,20 @@ const Contractors = () => {
               </Box>
 
               <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={4}>
-                <Box bg={useColorModeValue("blue.50", "blue.900")} borderRadius="lg" p={4}>
+                <Box bg={bgBlue} borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={Users} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.600", "blue.300")} />
+                    <Icon as={Users} boxSize={ICON_BOX_MD} color={iconBlue} />
                     <Box>
-                      <Text fontSize="xs" color={useColorModeValue("blue.700","blue.300")} textTransform="uppercase" fontWeight="semibold">
+                      <Text fontSize="xs" color={textBlue700} textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.stats.totalContractors', 'Total Contractors')}
                       </Text>
-                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("blue.800","blue.200")}>
+                      <Text fontSize="lg" fontWeight="bold" color={textBlue800}>
                         {totalContractors}
                       </Text>
                     </Box>
                   </HStack>
                 </Box>
-                <Box bg={useColorModeValue("teal.50", "teal.900")} borderRadius="lg" p={4}>
+                <Box bg={bgTeal} borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
                     <Icon as={User} boxSize={ICON_BOX_MD} color="teal.600" />
                     <Box>
@@ -173,7 +191,7 @@ const Contractors = () => {
                     </Box>
                   </HStack>
                 </Box>
-                <Box bg={useColorModeValue("orange.50", "orange.900")} borderRadius="lg" p={4}>
+                <Box bg={bgOrange} borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
                     <Icon as={Layers} boxSize={ICON_BOX_MD} color="orange.600" />
                     <Box>
@@ -186,14 +204,14 @@ const Contractors = () => {
                     </Box>
                   </HStack>
                 </Box>
-                <Box bg={useColorModeValue("green.50", "green.900")} borderRadius="lg" p={4}>
+                <Box bg={bgGreen} borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={ChartBar} boxSize={ICON_BOX_MD} color={useColorModeValue("green.600","green.300")} />
+                    <Icon as={ChartBar} boxSize={ICON_BOX_MD} color={iconGreen} />
                     <Box>
-                      <Text fontSize="xs" color={useColorModeValue("green.700","green.300")} textTransform="uppercase" fontWeight="semibold">
+                      <Text fontSize="xs" color={textGreen700} textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.table.proposals', 'Proposals')}
                       </Text>
-                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("green.800","green.200")}>
+                      <Text fontSize="lg" fontWeight="bold" color={textGreen800}>
                         {totalProposals}
                       </Text>
                     </Box>
@@ -224,9 +242,9 @@ const Contractors = () => {
                     <Tr>
                       <Td colSpan={7} textAlign="center" py={10}>
                         <Stack spacing={4} align="center">
-                          <Icon as={Search} boxSize={8} color={useColorModeValue("gray.300","gray.600")} />
-                          <Text color={useColorModeValue("gray.500", "gray.400")}>{t('contractorsAdmin.empty.title', 'No contractors found')}</Text>
-                          <Text fontSize="sm" color={useColorModeValue("gray.400", "gray.500")}>
+                          <Icon as={Search} boxSize={8} color={iconGray300} />
+                          <Text color={textGray500}>{t('contractorsAdmin.empty.title', 'No contractors found')}</Text>
+                          <Text fontSize="sm" color={textGray400}>
                             {t('contractorsAdmin.empty.tryAdjusting', 'Try adjusting your filters.')}
                           </Text>
                         </Stack>
@@ -238,7 +256,7 @@ const Contractors = () => {
                         <Td>
                           <Stack spacing={4}>
                             <Text fontWeight="semibold">{contractor.name}</Text>
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               ID: {contractor.id}
                             </Text>
                           </Stack>
@@ -280,7 +298,7 @@ const Contractors = () => {
                         <HStack justify="space-between" align="flex-start">
                           <Stack spacing={4}>
                             <Text fontWeight="semibold">{contractor.name}</Text>
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               ID: {contractor.id}
                             </Text>
                           </Stack>
@@ -296,7 +314,7 @@ const Contractors = () => {
                         </HStack>
                         <SimpleGrid columns={3} spacing={4}>
                           <Box textAlign="center">
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               {t('contractorsAdmin.table.users', 'Users')}
                             </Text>
                             <Badge colorScheme="teal" borderRadius="full" px={3}>
@@ -304,7 +322,7 @@ const Contractors = () => {
                             </Badge>
                           </Box>
                           <Box textAlign="center">
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               {t('contractorsAdmin.table.customers', 'Customers')}
                             </Text>
                             <Badge colorScheme="orange" borderRadius="full" px={3}>
@@ -312,7 +330,7 @@ const Contractors = () => {
                             </Badge>
                           </Box>
                           <Box textAlign="center">
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               {t('contractorsAdmin.table.proposals', 'Proposals')}
                             </Text>
                             <Badge colorScheme="green" borderRadius="full" px={3}>
@@ -321,14 +339,14 @@ const Contractors = () => {
                           </Box>
                         </SimpleGrid>
                         <Stack spacing={4}>
-                          <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="xs" color={textGray500}>
                             {t('contractorsAdmin.table.modules', 'Modules')}
                           </Text>
                           <HStack spacing={4} flexWrap="wrap" align="flex-start">
                             {getModuleBadges(contractor.modules)}
                           </HStack>
                         </Stack>
-                        <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")} textAlign="right">
+                        <Text fontSize="xs" color={textGray500} textAlign="right">
                           {t('contractorsAdmin.table.created', 'Created')}: {formatDate(contractor.created_at)}
                         </Text>
                       </Stack>
@@ -339,7 +357,7 @@ const Contractors = () => {
             </Box>
 
             {totalPages > 1 && (
-              <Box mt={6} pt={4} borderTopWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
+              <Box mt={6} pt={4} borderTopWidth="1px" borderColor={borderGray}>
                 <PaginationComponent
                   currentPage={currentPage}
                   totalPages={totalPages}

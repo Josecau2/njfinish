@@ -17,6 +17,15 @@ const TypesTab = ({ manufacturer }) => {
   const api_url = import.meta.env.VITE_API_URL
   const loggedInUser = useSelector((state) => state.user?.user)
   const isContractor = loggedInUser?.group?.group_type === 'contractor'
+
+  // Color mode values
+  const bgGray50 = bgGray50
+  const borderGray200 = borderGray200
+  const borderGray700 = borderGray700
+  const iconGray400 = iconGray400
+  const iconGray500 = iconGray500
+  const color6 = color6
+  const borderGray600 = borderGray600
   const [types, setTypes] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -652,7 +661,7 @@ const TypesTab = ({ manufacturer }) => {
   return (
     <Box>
       <StandardCard>
-        <CardHeader bg={useColorModeValue("gray.50", "gray.800")} borderBottom="1px" borderColor={useColorModeValue("gray.200", "gray.600")}>
+        <CardHeader bg={bgGray50} borderBottom="1px" borderColor={borderGray200}>
           <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
             <Text fontSize="xl" fontWeight="bold" color="brand.600">
               {t('types.ui.header', 'Type Pictures & Management')}
@@ -713,12 +722,12 @@ const TypesTab = ({ manufacturer }) => {
         <CardBody p={6}>
           {/* Search Bar */}
           <Box mb={6}>
-            <FormLabel fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
+            <FormLabel fontWeight="semibold" color={borderGray700} mb={2}>
               {t('types.ui.searchLabel', 'Search Types')}
             </FormLabel>
             <InputGroup size="lg">
               <InputLeftElement pointerEvents="none">
-                <Search color={useColorModeValue("gray.400", "gray.500")} size={ICON_SIZE_MD} />
+                <Search color={iconGray400} size={ICON_SIZE_MD} />
               </InputLeftElement>
               <Input
                 placeholder={t('types.ui.searchPlaceholder', 'Search types...')}
@@ -729,7 +738,7 @@ const TypesTab = ({ manufacturer }) => {
           </Box>
 
           {/* Filter Controls */}
-          <Box mb={6} p={4} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+          <Box mb={6} p={4} bg={bgGray50} borderRadius="md">
             <Flex gap={4} wrap="wrap">
               <Box flex="1" minW="200px">
                 <FormLabel fontWeight="semibold" color="brand.600">
@@ -837,13 +846,13 @@ const TypesTab = ({ manufacturer }) => {
 
               {Object.keys(groupedTypes).length === 0 ? (
                 <VStack spacing={4} py={10} textAlign="center">
-                  <Box fontSize="6xl" color={useColorModeValue("gray.400", "gray.500")}>
+                  <Box fontSize="6xl" color={iconGray400}>
                     📷
                   </Box>
-                  <Text fontSize="xl" color={useColorModeValue("gray.500", "gray.400")} fontWeight="medium">
+                  <Text fontSize="xl" color={iconGray500} fontWeight="medium">
                     {t('types.ui.noTypesFound', 'No types found')}
                   </Text>
-                  <Text color={useColorModeValue("gray.500", "gray.400")}>
+                  <Text color={iconGray500}>
                     {searchTerm
                       ? t('types.ui.tryAdjust', 'Try adjusting your search criteria')
                       : t('types.ui.typesWillAppear', 'Types will appear here when available')}
@@ -862,7 +871,7 @@ const TypesTab = ({ manufacturer }) => {
                           return (
                             <Box
                               key={type.id}
-                              bg={useColorModeValue("gray.50", "gray.800")}
+                              bg={bgGray50}
                               borderRadius="md"
                               borderWidth="1px"
                               borderColor={isSelected ? 'brand.200' : 'gray.200'}
@@ -877,7 +886,7 @@ const TypesTab = ({ manufacturer }) => {
                                   onError={handleImageError}
                                   maxH="130px"
                                   objectFit="contain"
-                                  bg={useColorModeValue("white", "gray.800")}
+                                  bg={color6}
                                   borderRadius="md"
                                   w="full"
                                 />
@@ -918,7 +927,7 @@ const TypesTab = ({ manufacturer }) => {
                                 )}
                               </Box>
                               <Stack spacing={4} px={3} pb={3}>
-                                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} minH="2.5em">
+                                <Text fontSize="sm" color={borderGray600} minH="2.5em">
                                   {type.longDescription ||
                                     t(
                                       'types.meta.descriptionPlaceholder',
@@ -1076,7 +1085,7 @@ const TypesTab = ({ manufacturer }) => {
                     onChange={handleFileChange}
                     p={1}
                   />
-                  <Text mt={2} color={useColorModeValue("gray.600", "gray.400")} fontSize="sm">
+                  <Text mt={2} color={borderGray600} fontSize="sm">
                     {selectedFile ? (
                       <>{t('types.ui.selected', 'Selected')}: {selectedFile.name}</>
                     ) : selectedType.image ? (
@@ -1095,9 +1104,9 @@ const TypesTab = ({ manufacturer }) => {
                       justify="center"
                       p={3}
                       border="1px"
-                      borderColor={useColorModeValue("gray.200", "gray.600")}
+                      borderColor={borderGray200}
                       borderRadius="md"
-                      bg={useColorModeValue("gray.50", "gray.800")}
+                      bg={bgGray50}
                     >
                       <img
                         src={URL.createObjectURL(selectedFile)}
@@ -1149,7 +1158,7 @@ const TypesTab = ({ manufacturer }) => {
                   <Text fontWeight="bold" color="brand.600" fontSize="lg" mb={2}>
                     {t('types.assign.header', 'Assign Catalog Items to This Type')}
                   </Text>
-                  <Text color={useColorModeValue("gray.600", "gray.400")} fontSize="sm" mb={4}>
+                  <Text color={borderGray600} fontSize="sm" mb={4}>
                     {t(
                       'types.assign.help',
                       'Select catalog items from this manufacturer to assign them to the "{{type}}" type.',
@@ -1160,7 +1169,7 @@ const TypesTab = ({ manufacturer }) => {
                   {/* Search and Filter */}
                   <InputGroup mb={3}>
                     <InputLeftElement pointerEvents="none">
-                      <Search color={useColorModeValue("gray.400", "gray.500")} size={ICON_SIZE_MD} />
+                      <Search color={iconGray400} size={ICON_SIZE_MD} />
                     </InputLeftElement>
                     <Input
                       placeholder={t('common.searchItems', 'Search items...')}
@@ -1179,7 +1188,7 @@ const TypesTab = ({ manufacturer }) => {
                   {/* Type badges sourced from API filters (complete set) */}
                   {modalCatalogItems?.filters?.uniqueTypes?.length && (
                     <Box mb={3}>
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
+                      <Text fontSize="sm" color={borderGray600} mb={2}>
                         {t('types.assign.filterByType', 'Filter by type:')}
                       </Text>
                       <Flex wrap="wrap" gap={4}>
@@ -1202,7 +1211,7 @@ const TypesTab = ({ manufacturer }) => {
                   )}
 
                   {/* Select All */}
-                  <Box mb={3} p={2} bg={useColorModeValue("gray.50", "gray.800")} borderRadius="md">
+                  <Box mb={3} p={2} bg={bgGray50} borderRadius="md">
                     <Checkbox
                       isChecked={
                         selectedModalItems.length === filteredModalItems.length &&
@@ -1224,7 +1233,7 @@ const TypesTab = ({ manufacturer }) => {
                       </VStack>
                     ) : !modalSearchTerm && !modalTypeFilter ? (
                       <VStack py={4}>
-                        <Text color={useColorModeValue("gray.500", "gray.400")} textAlign="center">
+                        <Text color={iconGray500} textAlign="center">
                           {t(
                             'types.assign.startHint',
                             'Search or filter to see available items'
@@ -1233,7 +1242,7 @@ const TypesTab = ({ manufacturer }) => {
                       </VStack>
                     ) : filteredModalItems.length === 0 ? (
                       <VStack py={4}>
-                        <Text color={useColorModeValue("gray.500", "gray.400")} textAlign="center">
+                        <Text color={iconGray500} textAlign="center">
                           {modalCatalogItems?.catalogData?.length > 0
                             ? modalSearchTerm || modalTypeFilter
                               ? t('types.assign.noMatch', 'No items match your search criteria')
@@ -1254,11 +1263,11 @@ const TypesTab = ({ manufacturer }) => {
                           <Box
                             key={item.id}
                             border="1px"
-                            borderColor={useColorModeValue("gray.200", "gray.600")}
+                            borderColor={borderGray200}
                             borderRadius="md"
                             p={3}
                             mb={2}
-                            bg={useColorModeValue("white", "gray.800")}
+                            bg={color6}
                             cursor="pointer"
                             _hover={{ bg: 'gray.50' }}
                             onClick={() =>
@@ -1275,7 +1284,7 @@ const TypesTab = ({ manufacturer }) => {
                             >
                               <VStack align="start" spacing={4}>
                                 <Text fontWeight="semibold">{item.description}</Text>
-                                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                                <Text fontSize="sm" color={borderGray600}>
                                   {t('types.assign.currentType', 'Current Type')}: {item.type || t('common.none', 'None')} | {t('common.style', 'Style')}: {item.style || t('common.none', 'None')}
                                 </Text>
                               </VStack>
@@ -1463,7 +1472,7 @@ const TypesTab = ({ manufacturer }) => {
                   }
                 />
                 {createForm.imageFile && (
-                  <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mt={1}>
+                  <Text fontSize="sm" color={borderGray600} mt={1}>
                     {t('types.ui.selected', 'Selected')}: {createForm.imageFile.name}
                   </Text>
                 )}
@@ -1626,7 +1635,7 @@ const TypesTab = ({ manufacturer }) => {
                 <Input
                   value={typeNameEditForm.oldTypeName}
                   isDisabled
-                  bg={useColorModeValue("gray.50", "gray.800")}
+                  bg={bgGray50}
                 />
               </Box>
 
@@ -1703,7 +1712,7 @@ const TypesTab = ({ manufacturer }) => {
                     <option key={type} value={type} />
                   ))}
                 </datalist>
-                <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mt={2}>
+                <Text fontSize="sm" color={borderGray600} mt={2}>
                   You can enter a new type category or select from existing ones.
                 </Text>
               </Box>

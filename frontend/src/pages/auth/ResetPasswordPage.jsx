@@ -18,6 +18,11 @@ const ResetPasswordPage = () => {
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
   const rightPanelColors = getOptimalColors(loginBackground)
 
+  // Color mode values
+  const bgWhite = useColorModeValue("white", "gray.800")
+  const textGray700 = useColorModeValue("gray.700", "gray.300")
+  const linkBlue = useColorModeValue("blue.600", "blue.300")
+
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -81,7 +86,7 @@ const ResetPasswordPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg={useColorModeValue("white", "gray.800")}
+        bg={bgWhite}
         className="login-right-panel"
       >
         <Container maxW="md" py={8}>
@@ -92,7 +97,7 @@ const ResetPasswordPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
             </Heading>
-            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
+            <Text textAlign="center" color={textGray700}>
               {loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}
             </Text>
 
@@ -143,7 +148,7 @@ const ResetPasswordPage = () => {
             </Box>
 
             <Text textAlign="center">
-              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
                 {t('auth.backToLogin')}
               </Link>
             </Text>

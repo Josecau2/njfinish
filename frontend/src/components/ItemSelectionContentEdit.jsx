@@ -23,6 +23,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
     const api_url = import.meta.env.VITE_API_URL;
     const dispatch = useDispatch();
+
+  // Color mode values
+  const color1 = color1
     const [selectedStyleData, setSelectedStyleData] = useState(null);
     // Base-priced styles list for style comparison (mirror Create)
     const [stylesMeta, setStylesMeta] = useState([]);
@@ -1615,7 +1618,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         mt={2}
                                                                         p={2}
                                                                         borderRadius="md"
-                                                                        bg={styleItem.id === selectedStyleData?.id ? "blue.100" : useColorModeValue("white", "gray.700")}
+                                                                        bg={styleItem.id === selectedStyleData?.id ? "blue.100" : color1}
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                         borderStyle="solid"
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? "blue.500" : "gray.300"}

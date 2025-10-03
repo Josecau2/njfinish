@@ -232,6 +232,9 @@ const ManufacturerForm = () => {
   const labelColor = useColorModeValue('gray.800', 'gray.200')
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
 
+  // Color mode values
+  const bgBlue50 = bgBlue50
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -480,7 +483,7 @@ const ManufacturerForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Information Notice */}
         <StandardCard border="none" boxShadow="sm" mb={4} borderLeft={`4px solid ${headerBg}`}>
-          <CardBody py={3} px={4} bg={useColorModeValue("blue.50","blue.900")}>
+          <CardBody py={3} px={4} bg={bgBlue50}>
             <HStack align="flex-start" spacing={4}>
               <Info size={ICON_SIZE_MD} style={{ color: "blue.500", marginTop: '0.25rem' }} />
               <Text mb={0} color={textBlue600}>
