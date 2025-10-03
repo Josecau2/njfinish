@@ -23,7 +23,7 @@ const PageHeader = ({
   actions = [],
   rightContent,
   children,
-  maxW = "1200px",
+  noContainer = false,
   containerProps = {},
 }) => {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ const PageHeader = ({
   const iconColor = useColorModeValue('brand.500', 'brand.300')
   const titleColor = useColorModeValue('gray.900', 'white')
 
-  return (
+  const content = (
     <Box
       borderBottom="1px solid"
       borderColor={borderColor}
@@ -42,95 +42,105 @@ const PageHeader = ({
       as="header"
       role="banner"
     >
-      <Container maxW={maxW} px={{ base: 4, md: 6 }} {...containerProps}>
-        {/* Breadcrumbs */}
-        {breadcrumbs.length > 0 && (
-          <Breadcrumb
-            spacing="8px"
-            separator={<ChevronRight size={14} />}
-            fontSize="sm"
-            color={useColorModeValue("gray.500","gray.400")}
-            mb={4}
-          >
-            {breadcrumbs.map((crumb, index) => (
-              <BreadcrumbItem key={index}>
-                {crumb.href ? (
-                  <BreadcrumbLink
-                    as={RouterLink}
-                    to={crumb.href}
-                    _hover={{ color: 'brand.500' }}
-                    maxW="200px"
-                    isTruncated
-                  >
-                    {crumb.label}
-                  </BreadcrumbLink>
-                ) : (
-                  <Text maxW="200px" isTruncated>
-                    {crumb.label}
-                  </Text>
-                )}
-              </BreadcrumbItem>
-            ))}
-          </Breadcrumb>
-        )}
-
-        {/* Header Content */}
-        <Flex
-          direction={{ base: 'column', md: 'row' }}
-          justify="space-between"
-          align={{ base: 'flex-start', md: 'flex-end' }}
-          gap={4}
+      {/* Breadcrumbs */}
+      {breadcrumbs.length > 0 && (
+        <Breadcrumb
+          spacing="8px"
+          separator={<ChevronRight size={14} />}
+          fontSize="sm"
+          color={useColorModeValue("gray.500","gray.400")}
+          mb={4}
         >
-          {/* Title Section */}
-          <Box flex="1" minW="0">
-            <Flex align="center" gap={4} mb={2}>
-              {Icon && (
-                <Box
-                  p={2}
-                  borderRadius="md"
-                  bg={iconBg}
-                  color={iconColor}
-                  aria-hidden="true"
+          {breadcrumbs.map((crumb, index) => (
+            <BreadcrumbItem key={index}>
+              {crumb.href ? (
+                <BreadcrumbLink
+                  as={RouterLink}
+                  to={crumb.href}
+                  _hover={{ color: 'brand.500' }}
+                  maxW="200px"
+                  isTruncated
                 >
-                  <Icon size={24} />
-                </Box>
+                  {crumb.label}
+                </BreadcrumbLink>
+              ) : (
+                <Text maxW="200px" isTruncated>
+                  {crumb.label}
+                </Text>
               )}
-              <Heading
-                as="h1"
-                size="lg"
-                fontWeight="semibold"
-                color={titleColor}
-                noOfLines={2}
-              >
-                {title}
-              </Heading>
-            </Flex>
-            {subtitle && (
-              <Text color={subtitleColor} fontSize="md" maxW="600px">
-                {subtitle}
-              </Text>
-            )}
-          </Box>
+            </BreadcrumbItem>
+          ))}
+        </Breadcrumb>
+      )}
 
-          {/* Actions Section */}
-          {(actions.length > 0 || rightContent || children) && (
-            <Box flexShrink={0}>
-              <HStack
-                spacing={4}
-                flexWrap={{ base: 'wrap', md: 'nowrap' }}
-                justify={{ base: 'flex-start', md: 'flex-end' }}
+      {/* Header Content */}
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        justify="space-between"
+        align={{ base: 'flex-start', md: 'flex-end' }}
+        gap={4}
+      >
+        {/* Title Section */}
+        <Box flex="1" minW="0">
+          <Flex align="center" gap={4} mb={2}>
+            {Icon && (
+              <Box
+                p={2}
+                borderRadius="md"
+                bg={iconBg}
+                color={iconColor}
+                aria-hidden="true"
               >
-                {actions.map((action, index) => (
-                  <Box key={index}>{action}</Box>
-                ))}
-                {rightContent}
-                {children}
-              </HStack>
-            </Box>
+                <Icon size={24} />
+              </Box>
+            )}
+            <Heading
+              as="h1"
+              size="lg"
+              fontWeight="semibold"
+              color={titleColor}
+              noOfLines={2}
+            >
+              {title}
+            </Heading>
+          </Flex>
+          {subtitle && (
+            <Text color={subtitleColor} fontSize="md" maxW="600px">
+              {subtitle}
+            </Text>
           )}
-        </Flex>
-      </Container>
+        </Box>
+
+        {/* Actions Section */}
+        {(actions.length > 0 || rightContent || children) && (
+          <Box flexShrink={0}>
+            <HStack
+              spacing={4}
+              flexWrap={{ base: 'wrap', md: 'nowrap' }}
+              justify={{ base: 'flex-start', md: 'flex-end' }}
+            >
+              {actions.map((action, index) => (
+                <Box key={index}>{action}</Box>
+              ))}
+              {rightContent}
+              {children}
+            </HStack>
+          </Box>
+        )}
+      </Flex>
     </Box>
+  )
+
+  // If noContainer is true, return content directly (parent has container)
+  // Otherwise, wrap in Container for standalone usage
+  if (noContainer) {
+    return content
+  }
+
+  return (
+    <Container maxW="1320px" px={{ base: 4, md: 6 }} {...containerProps}>
+      {content}
+    </Container>
   )
 }
 export default PageHeader

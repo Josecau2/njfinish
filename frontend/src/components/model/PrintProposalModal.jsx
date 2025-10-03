@@ -461,7 +461,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                               px={3}
                               borderWidth="1px"
                               borderRadius="md"
-                              _checked={{ bg: 'brand.50', borderColor: 'brand.300' }}
+                              _checked={{ bg: useColorModeValue('brand.50', 'brand.900'), borderColor: 'brand.300' }}
                             >
                               <Text isTruncated>{opt.label}</Text>
                             </Checkbox>
@@ -510,8 +510,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             borderWidth="1px"
                             borderRadius="md"
                             isDisabled={opt.isFixed}
-                            _checked={{ bg: 'brand.50', borderColor: 'brand.300' }}
-                            _disabled={{ cursor: 'not-allowed', color: 'gray.500' }}
+                            _checked={{ bg: useColorModeValue('brand.50', 'brand.900'), borderColor: 'brand.300' }}
+                            _disabled={{ cursor: 'not-allowed', color: useColorModeValue('gray.500', 'gray.400') }}
                           >
                             <Text isTruncated>{opt.label}</Text>
                           </Checkbox>

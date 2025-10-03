@@ -24,20 +24,7 @@ import {
 } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
-const modernCardStyle = {
-  borderRadius: '16px',
-  border: 'none',
-  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  cursor: 'pointer',
-  overflow: 'hidden',
-  position: 'relative',
-}
-
-const hoverStyle = {
-  transform: 'translateY(-4px)',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
-}
+// Card styles moved to useColorModeValue hooks in component
 
 const fileIconMap = {
   pdf: FileText,
@@ -85,6 +72,25 @@ const Dashboard = () => {
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
+
+  // Card styles with color mode support
+  const cardShadow = useColorModeValue('0 4px 20px rgba(0, 0, 0, 0.08)', '0 4px 20px rgba(0, 0, 0, 0.3)')
+  const cardHoverShadow = useColorModeValue('0 12px 40px rgba(0, 0, 0, 0.15)', '0 12px 40px rgba(0, 0, 0, 0.5)')
+
+  const modernCardStyle = {
+    borderRadius: '16px',
+    border: 'none',
+    boxShadow: cardShadow,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    cursor: 'pointer',
+    overflow: 'hidden',
+    position: 'relative',
+  }
+
+  const hoverStyle = {
+    transform: 'translateY(-4px)',
+    boxShadow: cardHoverShadow,
+  }
 
   const productUpdates = []
 

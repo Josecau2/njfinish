@@ -167,12 +167,10 @@ const LocationForm = () => {
             <Flex
               align="center"
               justify="center"
-              style={{
-                width: '48px',
-                height: '48px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-              }}
+              w="48px"
+              h="48px"
+              bg="whiteAlpha.200"
+              borderRadius="12px"
             >
               <MapPin size={24} style={{ color: 'white' }} />
             </Flex>
@@ -409,13 +407,11 @@ const LocationForm = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: '#fff3cd',
-                    borderRadius: '8px',
-                    color: '#856404',
-                  }}
+                  w="32px"
+                  h="32px"
+                  bg="yellow.100"
+                  borderRadius="8px"
+                  color="yellow.700"
                 >
                   <Clock size={ICON_SIZE_MD} />
                 </Flex>

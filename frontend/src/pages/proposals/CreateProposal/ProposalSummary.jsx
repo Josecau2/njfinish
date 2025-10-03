@@ -359,8 +359,8 @@ const ItemSelectionStep = ({
         .proposal-summary-form .btn { min-height: 44px; }
         .proposal-version-badges { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       `}</style>
-      <div className="quote-form-mobile">
-        <div className="button-group">
+      <Box className="quote-form-mobile">
+        <Flex className="button-group" gap={3}>
           {!hideBack && (
             <Button
               variant="outline"
@@ -374,7 +374,7 @@ const ItemSelectionStep = ({
               Back
             </Button>
           )}
-        </div>
+        </Flex>
         <Box className="proposal-summary-form">
           <Box className="form-section">
             <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
@@ -509,12 +509,12 @@ const ItemSelectionStep = ({
                       key={index}
                       className={`proposal-version-badge p-2 d-flex ${isSelected ? 'selected' : ''}`}
                       fontSize="sm"
-                      style={{
-                        backgroundColor: isSelected ? '#084298' : '#d0e7ff',
-                        color: isSelected ? '#d0e7ff' : '#084298',
-                        borderRadius: '5px',
-                        transition: 'all 0.3s ease',
-                      }}
+                      bg={isSelected ? 'blue.700' : 'blue.100'}
+                      color={isSelected ? 'blue.50' : 'blue.700'}
+                      borderRadius="md"
+                      transition="all 0.3s ease"
+                      cursor="pointer"
+                      _hover={{ transform: 'scale(1.05)' }}
                       onClick={() => handleBadgeClick(index, version)}
                     >
                       <VStack align="start" spacing={1}>
@@ -636,22 +636,23 @@ const ItemSelectionStep = ({
                 justify='flex-start'
                 align={{ base: 'stretch', md: 'center' }}
               >
-                <Button variant='outline' colorScheme='gray' onClick={handleSaveOrder}>
+                <Button variant='outline' colorScheme='gray' onClick={handleSaveOrder} minH="44px">
                   {t('common.save')}
                 </Button>
                 <Button
                   colorScheme='green'
                   onClick={handleAcceptOrder}
                   isDisabled={isSubmitting}
+                  minH="44px"
                 >
                   {isSubmitting ? 'Submitting...' : t('proposals.create.summary.acceptAndOrder')}
                 </Button>
-                <Button variant='outline' colorScheme='red' onClick={handleRejectOrder}>
+                <Button variant='outline' colorScheme='red' onClick={handleRejectOrder} minH="44px">
                   {t('proposals.create.summary.rejectAndArchive')}
                 </Button>
             </Stack>
         </Box>
-      </div>
+      </Box>
 
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
@@ -665,10 +666,10 @@ const ItemSelectionStep = ({
             />
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" colorScheme="gray" onClick={() => setEditModalOpen(false)} mr={3}>
+            <Button variant="ghost" colorScheme="gray" onClick={() => setEditModalOpen(false)} mr={3} minH="44px">
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={saveEditVersionName}>
+            <Button colorScheme="brand" onClick={saveEditVersionName} minH="44px">
               {t('common.save')}
             </Button>
           </ModalFooter>
@@ -681,10 +682,10 @@ const ItemSelectionStep = ({
           <ModalHeader>{t('customers.confirmTitle')}</ModalHeader>
           <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
           <ModalFooter>
-            <Button variant="ghost" colorScheme="gray" onClick={() => setDeleteModalOpen(false)} mr={3}>
+            <Button variant="ghost" colorScheme="gray" onClick={() => setDeleteModalOpen(false)} mr={3} minH="44px">
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="red" onClick={confirmDelete}>
+            <Button colorScheme="red" onClick={confirmDelete} minH="44px">
               {t('common.delete')}
             </Button>
           </ModalFooter>
@@ -715,10 +716,10 @@ const ItemSelectionStep = ({
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsAcceptDialogOpen(false)} variant="outline" colorScheme="gray">
+              <Button ref={cancelRef} onClick={() => setIsAcceptDialogOpen(false)} variant="outline" colorScheme="gray" minH="44px">
                 {t('proposals.confirm.goBack', 'Go Back')}
               </Button>
-              <Button colorScheme="green" onClick={confirmAcceptOrder} ml={3}>
+              <Button colorScheme="green" onClick={confirmAcceptOrder} ml={3} minH="44px">
                 {t('proposals.confirm.submitConfirm', 'Accept and Submit')}
               </Button>
             </AlertDialogFooter>

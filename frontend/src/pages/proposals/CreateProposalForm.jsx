@@ -302,7 +302,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
     }
   }
 
-  const stickyBg = useColorModeValue('rgba(255,255,255,0.96)', 'rgba(26,32,44,0.96)')
+  const stickyBg = useColorModeValue('whiteAlpha.900', 'gray.800')
   const stickyBorder = useColorModeValue('gray.200', 'gray.700')
   const progressLineBg = useColorModeValue('gray.200', 'gray.700')
   const progressActiveBg = useColorModeValue('gray.900', 'gray.100')
@@ -379,7 +379,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                       fontWeight={isActive ? 'extrabold' : 'semibold'}
                       borderWidth="2px"
                       borderColor={isActive ? progressActiveBg : stepBorderInactive}
-                      boxShadow={isActive ? '0 3px 6px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.05)'}
+                      boxShadow={isActive ? 'md' : 'sm'}
                     >
                       {step}
                     </Flex>

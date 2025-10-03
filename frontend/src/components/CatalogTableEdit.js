@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
+import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -121,6 +121,9 @@ const CatalogTableEdit = ({
   const textRed500 = useColorModeValue("red.500", "red.300")
   const textGreen500 = useColorModeValue("green.500", "green.300")
   const borderGray400 = useColorModeValue("gray.400", "gray.600")
+  const rowBgEven = useColorModeValue("gray.50", "gray.700")
+  const rowBgOdd = useColorModeValue("white", "gray.800")
+  const rowBorder = useColorModeValue("gray.200", "gray.600")
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -511,8 +514,9 @@ const CatalogTableEdit = ({
       </Flex>
 
       {/* Desktop table view */}
-      <div className="table-responsive table-responsive-md desktop-only">
-        <Table>
+      <Box display={{ base: 'none', lg: 'block' }}>
+        <TableContainer>
+          <Table variant="simple">
           <Thead>
             <Tr>
               <Th>{t('proposalColumns.no')}</Th>
@@ -856,8 +860,8 @@ const CatalogTableEdit = ({
                                   <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
                                     <Tr
                                       className="modification-item"
+                                      bg={rowBgEven}
                                       style={{
-                                        backgroundColor: 'var(--chakra-colors-gray-50)',
                                         borderLeft: `6px solid ${headerBg}`,
                                         fontSize: "14px",
                                         borderBottom: isLastRow
@@ -968,9 +972,11 @@ const CatalogTableEdit = ({
             })}
           </Tbody>
         </Table>
-      </div>
+        </TableContainer>
+      </Box>
 
       {/* Mobile card view to match create */}
+      <Box display={{ base: 'block', lg: 'none' }}>
       <div className="mobile-card-view mobile-only">
         {selectVersion?.items?.map((item, idx) => {
           const assembled = !!isAssembled
@@ -987,15 +993,13 @@ const CatalogTableEdit = ({
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
-              <div
-                className="item-card-mobile"
-                style={{
-                  border: '2px solid',
-                  borderColor: 'var(--chakra-colors-gray-200)',
-                  borderRadius: '8px',
-                  backgroundColor: idx % 2 === 0 ? 'var(--chakra-colors-gray-50)' : 'white',
-                  marginBottom: '12px',
-                }}
+              <Box
+                border="2px solid"
+                borderColor={rowBorder}
+                borderRadius="md"
+                bg={idx % 2 === 0 ? rowBgEven : rowBgOdd}
+                mb={3}
+                p={4}
               >
                 <div className="item-header">
                   <div className="item-number">{idx + 1}</div>
@@ -1201,7 +1205,7 @@ const CatalogTableEdit = ({
                   </strong>
                 </div>
 
-              </div>
+              </Box>
 
               {/* Mobile Modification Cards */}
               {Array.isArray(item.modifications) &&
@@ -1310,6 +1314,7 @@ const CatalogTableEdit = ({
           )
         })}
       </div>
+      </Box>
     </Box>
   )
 }

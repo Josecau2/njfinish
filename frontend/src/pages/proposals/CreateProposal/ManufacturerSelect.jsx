@@ -77,6 +77,13 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
 
   const cardBg = useColorModeValue('white', 'gray.800')
   const cardHoverBorder = useColorModeValue('brand.400', 'brand.300')
+  const headingColor = useColorModeValue("gray.800", "gray.200")
+  const textColor = useColorModeValue("gray.500", "gray.400")
+  const imageBg = useColorModeValue("gray.50", "gray.800")
+  const spinnerBg = useColorModeValue("gray.100", "gray.700")
+  const infoBg = useColorModeValue('blue.50', 'blue.900')
+  const infoBorderColor = useColorModeValue('blue.200', 'blue.600')
+  const infoHeadingColor = useColorModeValue('blue.700', 'blue.200')
 
   const handleManufacturerSelect = useCallback(
     (manufacturer) => {
@@ -183,7 +190,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
-                <Heading size="md" color={useColorModeValue("gray.800","gray.200")}>
+                <Heading size="md" color={headingColor}>
                   {t('proposals.create.manufacturer.title')}
                 </Heading>
                 <Stack direction="row" spacing={4} align="center">
@@ -220,7 +227,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                       {loading ? (
                         <Spinner alignSelf="center" size="lg" color="brand.500" />
                       ) : enabledManufacturers.length === 0 ? (
-                        <Text color={useColorModeValue("gray.500","gray.400")} fontStyle="italic" textAlign="center">
+                        <Text color={textColor} fontStyle="italic" textAlign="center">
                           {t('proposals.create.manufacturer.empty', 'No manufacturers available.')}
                         </Text>
                       ) : (
@@ -266,7 +273,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                 whileTap={{ scale: 0.98 }}
                                 transition="all 0.2s ease"
                               >
-                                <Box position="relative" bg={useColorModeValue("gray.50","gray.800")} overflow="hidden" height="180px">
+                                <Box position="relative" bg={imageBg} overflow="hidden" height="180px">
                                   {!imageStatus && (
                                     <Box
                                       position="absolute"
@@ -274,7 +281,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                       display="flex"
                                       alignItems="center"
                                       justifyContent="center"
-                                      bg={useColorModeValue("gray.100","gray.700")}
+                                      bg={spinnerBg}
                                     >
                                       <Spinner size="md" color="brand.500" />
                                     </Box>
@@ -313,10 +320,10 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                   )}
                                 </Box>
                                 <Stack spacing={4} p={4} align="center">
-                                  <Heading as="h3" size="sm" textAlign="center" color={useColorModeValue("gray.800","gray.200")}>
+                                  <Heading as="h3" size="sm" textAlign="center" color={headingColor}>
                                     {manufacturer.name}
                                   </Heading>
-                                  <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")} textAlign="center">
+                                  <Text fontSize="sm" color={textColor} textAlign="center">
                                     {manufacturer.city || manufacturer.country || t('common.na')}
                                   </Text>
                                 </Stack>
@@ -357,11 +364,11 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                   p={5}
                   borderWidth="1px"
                   borderRadius="lg"
-                  bg={useColorModeValue('blue.50', 'blue.900')}
-                  borderColor={useColorModeValue('blue.200', 'blue.600')}
+                  bg={infoBg}
+                  borderColor={infoBorderColor}
                   textAlign="center"
                 >
-                  <Heading as="h4" size="sm" mb={3} letterSpacing="0.05em" color={useColorModeValue('blue.700', 'blue.200')}>
+                  <Heading as="h4" size="sm" mb={3} letterSpacing="0.05em" color={infoHeadingColor}>
                     {t('proposals.create.manufacturer.cta.needAnother')}
                   </Heading>
                   <Button variant="outline" colorScheme="brand" size="sm" minH="44px">

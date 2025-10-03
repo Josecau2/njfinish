@@ -92,7 +92,7 @@ const CustomFormInput = ({
         onFocus={(e) => {
           if (!validationErrors[name]) {
             e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(66, 153, 225, 0.25)'
+            e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
           }
         }}
         onBlur={(e) => {
@@ -157,7 +157,7 @@ const CustomFormSelect = ({
         onFocus={(e) => {
           if (!validationErrors[name]) {
             e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-            e.target.style.boxShadow = '0 0 0 0.2rem rgba(66, 153, 225, 0.25)'
+            e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
           }
         }}
         onBlur={(e) => {
@@ -311,7 +311,7 @@ const AddCustomerForm = () => {
               justify="center"
               w="48px"
               h="48px"
-              bg="rgba(255, 255, 255, 0.2)"
+              bg="whiteAlpha.200"
               borderRadius="12px"
             >
               <Icon as={UserPlus} boxSize={6} color="white" />

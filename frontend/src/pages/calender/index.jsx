@@ -45,6 +45,10 @@ const CalendarView = () => {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
+  // Chakra color mode values
+  const eventHoverShadow = useColorModeValue('md', 'dark-lg')
+  const todayBg = useColorModeValue('blue.50', 'blue.900')
+
   const fetchEvents = async () => {
     try {
       setLoading(true)
@@ -305,19 +309,15 @@ const CalendarView = () => {
 
           .fc-event:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          }
-
-          [data-theme="dark"] .fc-event:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--chakra-shadows-md);
           }
 
           .fc-day-today {
-            background: rgba(13, 110, 253, 0.05) !important;
+            background: var(--chakra-colors-blue-50) !important;
           }
 
           [data-theme="dark"] .fc-day-today {
-            background: rgba(144, 205, 244, 0.1) !important;
+            background: var(--chakra-colors-blue-900) !important;
           }
         `}</style>
       </Stack>

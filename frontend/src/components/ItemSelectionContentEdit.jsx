@@ -1615,7 +1615,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         mt={2}
                                                                         p={2}
                                                                         borderRadius="md"
-                                                                        bg={styleItem.id === selectedStyleData?.id ? "blue.100" : "white"}
+                                                                        bg={styleItem.id === selectedStyleData?.id ? "blue.100" : useColorModeValue("white", "gray.700")}
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                         borderStyle="solid"
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? "blue.500" : "gray.300"}

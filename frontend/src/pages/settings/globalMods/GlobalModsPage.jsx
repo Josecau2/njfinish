@@ -3,12 +3,16 @@ import { useSelector } from 'react-redux'
 import { Trans, useTranslation } from 'react-i18next'
 import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
-import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react'
+import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { AppIconButton } from '../../../components/common/AppButton'
 
 const GlobalModsPage = () => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const tableBorderColor = useColorModeValue('gray.200', 'gray.700')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [gallery, setGallery] = useState([])
@@ -525,17 +529,17 @@ const GlobalModsPage = () => {
                     </Box>
                     <Box md={6}>
                       {newCategory.image ? (
-                        <div>
-                          <img
+                        <Box>
+                          <Box
+                            as="img"
                             src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newCategory.image}`}
                             alt={t('globalMods.category.imageLabel')}
-                            style={{
-                              width: 60,
-                              height: 60,
-                              objectFit: 'cover',
-                              borderRadius: 8,
-                              border: '1px solid #dee2e6',
-                            }}
+                            w="60px"
+                            h="60px"
+                            objectFit="cover"
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor={borderColor}
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
@@ -568,7 +572,9 @@ const GlobalModsPage = () => {
                         alt={cat.name}
                         width={28}
                         height={28}
-                        style={{ objectFit: 'cover', borderRadius: 4, border: '1px solid #e9ecef' }}
+                        style={{ objectFit: 'cover', borderRadius: 4 }}
+                        borderWidth="1px"
+                        borderColor={borderColor}
                         onError={(e) => {
                           e.currentTarget.src = '/images/nologo.png'
                         }}
@@ -620,7 +626,6 @@ const GlobalModsPage = () => {
                                 height: 72,
                                 objectFit: 'cover',
                                 borderRadius: 6,
-                                border: '1px solid #e9ecef',
                               }}
                               onError={(e) => {
                                 e.currentTarget.src = '/images/nologo.png'
@@ -1210,7 +1215,6 @@ const GlobalModsPage = () => {
                               maxHeight: 120,
                               objectFit: 'cover',
                               borderRadius: 8,
-                              border: '1px solid #dee2e6',
                             }}
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'
@@ -1355,7 +1359,8 @@ const GlobalModsPage = () => {
 
               <div>
                 <h6>{t('common.currentAssignments', 'Current Assignments')}</h6>
-                <Table size="sm" variant="simple">
+                <TableContainer borderWidth="1px" borderColor={tableBorderColor} borderRadius="md" mt={2}>
+                  <Table size="sm" variant="simple">
                   <Thead>
                     <Tr>
                       <Th>{t('globalMods.assign.table.template')}</Th>
@@ -1402,6 +1407,7 @@ const GlobalModsPage = () => {
                     )}
                   </Tbody>
                 </Table>
+                </TableContainer>
               </div>
             </CardBody>
           </StandardCard>
@@ -1993,7 +1999,6 @@ const GlobalModsPage = () => {
                               maxHeight: 120,
                               objectFit: 'cover',
                               borderRadius: 8,
-                              border: '1px solid #dee2e6',
                             }}
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'

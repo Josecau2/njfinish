@@ -2182,7 +2182,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           }
           .form-check-input:focus {
             border-color: var(--chakra-colors-green-500) !important;
-            box-shadow: 0 0 0 0.25rem rgba(72, 187, 120, 0.25) !important;
+            box-shadow: var(--chakra-shadows-outline) !important;
           }
 
           /* Mobile responsive styles */
@@ -2355,7 +2355,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         /* Mobile card styles */
         .mobile-catalog-card {
           border: 1px solid var(--chakra-colors-gray-200);
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          box-shadow: var(--chakra-shadows-sm);
           transition: box-shadow 0.2s ease;
         }
 
@@ -3768,7 +3768,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     maxWidth: '100%',
                     maxHeight: '300px',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    boxShadow: 'var(--chakra-shadows-md)',
                     display: 'block',
                     margin: '0 auto',
                   }}

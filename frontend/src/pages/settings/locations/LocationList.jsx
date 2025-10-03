@@ -28,6 +28,7 @@ import {
   Spinner,
   Stack,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -237,7 +238,7 @@ const LocationPage = () => {
       <Box display={{ base: 'none', lg: 'block' }}>
         <Card>
           <CardBody p={0}>
-            <Box overflowX="auto">
+            <TableContainer borderWidth="1px" borderColor={useColorModeValue('gray.200', 'gray.700')} borderRadius="md">
               <Table variant="simple">
               <Thead>
                 <Tr>
@@ -371,7 +372,7 @@ const LocationPage = () => {
                 )}
               </Tbody>
             </Table>
-          </Box>
+            </TableContainer>
 
           {totalPages > 1 && (
             <Box borderTopWidth="1px" borderColor={stickyBorder} p={4}>
