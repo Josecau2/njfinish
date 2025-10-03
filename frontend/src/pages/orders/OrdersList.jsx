@@ -52,6 +52,16 @@ const OrdersList = ({
   const { list: manuList, byId: manuById } = useSelector((s) => s.manufacturers)
   const { payments } = useSelector((s) => s.payments)
   const authUser = useSelector((s) => s.auth?.user)
+
+  // Color mode values - MUST be before any useState hooks
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+  const stickyBg = useColorModeValue('white', 'gray.800')
+  const emptyIconColor = useColorModeValue('gray.400', 'gray.500')
+  const emptyTextColor = useColorModeValue("gray.500", "gray.400")
+  const iconColor = useColorModeValue("gray.400", "gray.500")
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const textGray600 = useColorModeValue("gray.600", "gray.400")
+
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [page, setPage] = useState(1)
@@ -65,12 +75,6 @@ const OrdersList = ({
   const [receiptModalVisible, setReceiptModalVisible] = useState(false)
   const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState(null)
   const [selectedPaymentForReceipt, setSelectedPaymentForReceipt] = useState(null)
-
-  // Color mode values for consistent theming
-  const hoverBg = useColorModeValue('gray.50', 'gray.700')
-  const stickyBg = useColorModeValue('white', 'gray.800')
-  const emptyIconColor = useColorModeValue('gray.400', 'gray.500')
-  const emptyTextColor = useColorModeValue("gray.500", "gray.400")
 
   // Resolve manufacturer name from order snapshot first; fall back to legacy manufacturersData if present
   const resolveManuName = (item) => {
@@ -485,7 +489,7 @@ const OrdersList = ({
         <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
           <InputGroup>
             <InputLeftElement pointerEvents="none">
-              <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+              <Icon as={Search} boxSize={ICON_BOX_MD} color={iconColor} />
             </InputLeftElement>
             <Input
             type="search"
@@ -496,7 +500,7 @@ const OrdersList = ({
           />
         </InputGroup>
         </Box>
-        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} aria-live="polite" aria-atomic="true">
+        <Text fontSize="sm" color={textGray500} aria-live="polite" aria-atomic="true">
           {t('orders.showingCount', {
             count: filtered.length,
             total: Array.isArray(orders) ? orders.length : 0,
@@ -552,7 +556,7 @@ const OrdersList = ({
                     </Td>
                     <Td>{getDisplayOrderNumber(item)}</Td>
                     <Td isTruncated maxW="200px">{renderCustomerCell(item)}</Td>
-                    <Td color={useColorModeValue("gray.500", "gray.400")} isTruncated maxW="250px">
+                    <Td color={textGray500} isTruncated maxW="250px">
                       {(item.description || item?.proposal?.description || '').trim() ||
                         t('common.na')}
                     </Td>
@@ -568,7 +572,7 @@ const OrdersList = ({
                           {paymentInfo.label}
                         </Badge>
                         {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                          <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                          <Text fontSize="xs" color={textGray500}>
                             {t('payments.appliedOn', 'Applied on')}{' '}
                             {new Date(paymentInfo.paidAt).toLocaleDateString()}
                           </Text>
@@ -657,7 +661,7 @@ const OrdersList = ({
                                 item?.Owner?.name ||
                                 t('common.na')}
                             </Text>
-                            <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="sm" color={textGray500}>
                               {item?.customer?.name || t('common.na')}
                             </Text>
                           </VStack>
@@ -672,7 +676,7 @@ const OrdersList = ({
                             {paymentInfo.label}
                           </Badge>
                           {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                            <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                            <Text fontSize="xs" color={textGray500}>
                               {t('payments.appliedOn', 'Applied on')}{' '}
                               {new Date(paymentInfo.paidAt).toLocaleDateString()}
                             </Text>
@@ -681,19 +685,19 @@ const OrdersList = ({
                       </VStack>
                     </Flex>
                     <VStack align="stretch" spacing={4}>
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                      <Text fontSize="sm" color={textGray600}>
                         {new Date(
                           item.accepted_at || item.date || item.createdAt,
                         ).toLocaleDateString()}
                       </Text>
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                      <Text fontSize="sm" color={textGray600}>
                         {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
                       </Text>
-                      <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                      <Text fontSize="sm" color={textGray600}>
                         {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
                       </Text>
                     </VStack>
-                    <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                    <Text fontSize="sm" color={textGray500}>
                       {(item.description || item?.proposal?.description || '').trim() ||
                         t('common.na')}
                     </Text>
