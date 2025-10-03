@@ -41,9 +41,14 @@
 
 /* Individual style cards */
 .style-carousel-item {
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--chakra-colors-gray-200);
   border-radius: 10px;
-  background: #fff;
+  background: var(--chakra-colors-white);
+}
+
+[data-theme="dark"] .style-carousel-item {
+  border-color: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-800);
 }
 
 /* Compact list rows */
@@ -58,30 +63,53 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--chakra-colors-gray-200);
   border-radius: 8px;
-  background: #fff;
+  background: var(--chakra-colors-white);
+}
+
+[data-theme="dark"] .compact-style-item {
+  border-color: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-800);
 }
 
 .compact-style-item.current-style {
-  border-color: #1a73e8;
-  background: #d0e6ff;
+  border-color: var(--chakra-colors-blue-500);
+  background: var(--chakra-colors-blue-50);
+}
+
+[data-theme="dark"] .compact-style-item.current-style {
+  border-color: var(--chakra-colors-blue-400);
+  background: var(--chakra-colors-blue-900);
 }
 
 .style-info .style-name {
   font-size: 0.9rem;
   font-weight: 500;
+  color: var(--chakra-colors-gray-900);
+}
+
+[data-theme="dark"] .style-info .style-name {
+  color: var(--chakra-colors-gray-100);
 }
 
 .current-style-indicator {
   font-size: 0.75rem;
-  color: #1a73e8;
+  color: var(--chakra-colors-blue-600);
   margin-left: 0.5rem;
+}
+
+[data-theme="dark"] .current-style-indicator {
+  color: var(--chakra-colors-blue-300);
 }
 
 /* Minor helpers for consistent spacing */
 .style-separator {
-  background-color: #ccc;
+  background-color: var(--chakra-colors-gray-300);
+}
+
+[data-theme="dark"] .style-separator {
+  background-color: var(--chakra-colors-gray-600);
 }
 
 .current-style-info {
