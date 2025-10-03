@@ -15,6 +15,17 @@
     <link rel="shortcut icon" href="/favicon.ico">
   <!-- Local Inter font (self-hosted) -->
   <link rel="stylesheet" href="/fonts/inter.css">
+  <!-- Chakra UI Color Mode Script - MUST be before React loads -->
+  <script nonce="__CSP_NONCE__">
+    try {
+      var storageKey = 'chakra-ui-color-mode';
+      var colorMode = localStorage.getItem(storageKey);
+      if (colorMode) {
+        document.documentElement.dataset.theme = colorMode;
+        document.documentElement.style.colorScheme = colorMode;
+      }
+    } catch (e) {}
+  </script>
   </head>
   <body>
     <noscript>
