@@ -14,7 +14,8 @@
 .other-styles-carousel-container {
   position: relative;
   width: 100%;
-  overflow: hidden; /* prevent horizontal scroll jumps */
+  overflow-x: hidden; /* prevent horizontal scroll but allow vertical overflow */
+  overflow-y: visible;
 }
 
 .other-styles-carousel-container:not(.collapsed-view) {
