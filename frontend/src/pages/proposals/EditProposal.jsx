@@ -502,7 +502,7 @@ const EditProposal = ({
       </Box>
 
       <PageContainer
-        fluid
+        maxW="100%"
         className="dashboard-container"
         bg={pageBg}
         minH="100vh"

@@ -1,6 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -64,6 +64,7 @@ const PaymentsList = ({ isContractor }) => {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure()
   const { isOpen: isGatewayModalOpen, onOpen: onGatewayModalOpen, onClose: onGatewayModalClose } = useDisclosure()
@@ -71,10 +72,10 @@ const PaymentsList = ({ isContractor }) => {
   const toast = useToast()
 
   const { publicPaymentConfig } = useSelector((state) => state.payments)
-  const { user } = useSelector((state) => state.auth)
-
-  const { data: paymentsData, isLoading: loading, error } = usePayments({
+  const user = useSelector((s) => s.auth.user)
+  const { data: paymentsData, isLoading, error } = usePayments({
     page,
+    limit: pageSize,
     status: statusFilter !== 'all' ? statusFilter : undefined,
   })
 
@@ -95,8 +96,16 @@ const PaymentsList = ({ isContractor }) => {
   const textGray600 = useColorModeValue('gray.600', 'gray.300')
   const [pendingPaymentId, setPendingPaymentId] = useState(null)
 
-  const payments = paymentsData?.pages?.flatMap((p) => p.data) || []
-  const pagination = paymentsData?.pages?.[paymentsData.pages.length - 1]?.pagination
+  const payments = paymentsData?.payments ?? []
+  const pagination = paymentsData?.pagination
+  const isInitialLoading = isLoading && payments.length === 0
+  const totalPages = pagination?.totalPages || 1
+
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages)
+    }
+  }, [page, totalPages])
 
   const cardPaymentsEnabled = Boolean(publicPaymentConfig?.cardPaymentsEnabled)
 
@@ -228,7 +237,7 @@ const PaymentsList = ({ isContractor }) => {
 
       await applyPaymentMutation.mutateAsync({
         paymentId: pendingPaymentId,
-        data: { method: finalMethod }
+        data: { paymentMethod: finalMethod }
       })
 
       toast({
@@ -261,10 +270,10 @@ const PaymentsList = ({ isContractor }) => {
     if (!isContractor) {
       const contractorName = payment.order?.group?.name || payment.order?.creator?.name || t('common.na')
       return (
-        <div>
-          <div>{contractorName}</div>
-          <div style={{ fontSize: "12px" }}>{customerName}</div>
-        </div>
+        <Box>
+          <Box>{contractorName}</Box>
+          <Box fontSize="12px">{customerName}</Box>
+        </Box>
       )
     }
     return customerName
@@ -285,7 +294,7 @@ const PaymentsList = ({ isContractor }) => {
       <PageHeader title={title} subtitle={subtitle} icon={CreditCardIcon} />
 
       {error ? (
-        <Alert status="error" mb={3} role="alert">{String(error)}</Alert>
+        <Alert status="error" mb={3} role="alert">{String(error?.message || error)}</Alert>
       ) : null}
 
       <HStack spacing={4} wrap="wrap" mb={4}>
@@ -345,7 +354,7 @@ const PaymentsList = ({ isContractor }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {loading ? (
+            {isInitialLoading ? (
               <Tr><Td colSpan={7} textAlign="center" py={4}>{t('common.loading', 'Loading...')}</Td></Tr>
             ) : filtered.length === 0 ? (
               <Tr>
@@ -412,7 +421,7 @@ const PaymentsList = ({ isContractor }) => {
       </Box>
 
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>
-        {loading ? (
+        {isInitialLoading ? (
           <Text textAlign="center" py={4}>{t('common.loading', 'Loading...')}</Text>
         ) : filtered.length === 0 ? (
           <VStack spacing={4} textAlign="center" py={5}>
@@ -427,7 +436,7 @@ const PaymentsList = ({ isContractor }) => {
               <MobileListCard key={payment?.id || Math.random()} minH="280px">
                   <VStack align="stretch" spacing={4} h="full" justify="space-between">
                     <Flex justify="space-between" align="center">
-                      <Text fontWeight="medium">{renderCustomerCell(payment)}</Text>
+                      <Box fontWeight="medium">{renderCustomerCell(payment)}</Box>
                       <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                     </Flex>
                     <VStack align="stretch" spacing={4}>
@@ -452,13 +461,13 @@ const PaymentsList = ({ isContractor }) => {
         )}
       </VStack>
 
-      {!loading && filtered.length > 0 ? (
+      {!isInitialLoading && filtered.length > 0 ? (
         <div>
           <PaginationComponent
             currentPage={pagination?.currentPage || page}
-            totalPages={pagination?.totalPages || 1}
+            totalPages={totalPages}
             onPageChange={setPage}
-            itemsPerPage={pagination?.itemsPerPage || 20}
+            itemsPerPage={pagination?.itemsPerPage || pageSize}
           />
         </div>
       ) : null}
