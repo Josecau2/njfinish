@@ -33,6 +33,14 @@ const DesignImportStep = ({
   const isMobile = useBreakpointValue({ base: true, md: false })
   const tabIndex = activeTab === 'import' ? 1 : 0
 
+  // Dark mode colors
+  const headingColor = useColorModeValue("gray.800", "gray.200")
+  const textColor = useColorModeValue("gray.600", "gray.400")
+  const dropzoneBg = useColorModeValue("gray.50", "gray.800")
+  const iconColor = useColorModeValue("gray.400", "gray.500")
+  const textSecondary = useColorModeValue("gray.500", "gray.400")
+  const stickyBg = useColorModeValue("white", "gray.800")
+
   const handleTabSelect = (index) => {
     setActiveTab(index === 1 ? 'import' : 'manual')
   }
@@ -96,7 +104,7 @@ const DesignImportStep = ({
       <StandardCard my={4} shadow="md" w="full">
         <CardBody p={{ base: 4, md: 6 }}>
           <Flex justify="space-between" align="center" mb={6} gap={4} flexWrap="wrap">
-            <Heading size="md" color={useColorModeValue("gray.800", "gray.200")}>
+            <Heading size="md" color={headingColor}>
               {t('proposals.create.design.title')}
             </Heading>
             {!hideBack && (
@@ -127,7 +135,7 @@ const DesignImportStep = ({
 
           {activeTab === 'import' ? (
             <Stack spacing={6} align="center" textAlign="center" py={6}>
-              <Text color={useColorModeValue("gray.600", "gray.400")}>
+              <Text color={textColor}>
                 {t('proposals.create.design.supportedTypes', { types: '.TXT, .CSV' })}
               </Text>
 
@@ -139,7 +147,7 @@ const DesignImportStep = ({
                 borderWidth="2px"
                 borderStyle="dashed"
                 borderRadius="xl"
-                bg={useColorModeValue("gray.50", "gray.800")}
+                bg={dropzoneBg}
                 py={10}
                 px={6}
                 display="flex"
@@ -149,8 +157,8 @@ const DesignImportStep = ({
                 transition="all 0.2s"
                 _hover={{ borderColor: 'brand.400', bg: 'gray.100' }}
               >
-                <Icon as={CloudUpload} boxSize={12} color={useColorModeValue("gray.400", "gray.500")} mb={3} />
-                <Text color={useColorModeValue("gray.600", "gray.400")} mb={4}>
+                <Icon as={CloudUpload} boxSize={12} color={iconColor} mb={3} />
+                <Text color={textColor} mb={4}>
                   {t('proposals.create.design.selectExportedFile')}
                 </Text>
                 <MotionButton
@@ -194,7 +202,7 @@ const DesignImportStep = ({
               {isFetchingStyles ? (
                 <Spinner size="lg" color="brand.500" />
               ) : filteredCollections.length === 0 ? (
-                <Text color={useColorModeValue("gray.500", "gray.400")} fontStyle="italic">
+                <Text color={textSecondary} fontStyle="italic">
                   {t('proposals.create.design.noStylesFound', 'No styles found for this search.')}
                 </Text>
               ) : (
@@ -255,7 +263,7 @@ const DesignImportStep = ({
                           </Text>
                         </Box>
                       </Box>
-                      <Text mt={2} color={useColorModeValue("gray.600", "gray.400")} fontWeight="semibold" noOfLines={1}>
+                      <Text mt={2} color={textColor} fontWeight="semibold" noOfLines={1}>
                         {style.styleVariants?.[0]?.shortName || style.style}
                       </Text>
                     </Box>
@@ -271,7 +279,7 @@ const DesignImportStep = ({
         <Box
           position="sticky"
           bottom={0}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={stickyBg}
           borderTopWidth="1px"
           boxShadow="md"
           px={4}
